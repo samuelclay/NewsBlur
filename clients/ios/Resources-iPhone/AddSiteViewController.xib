@@ -16,6 +16,7 @@
                 <outlet property="activityIndicator" destination="10" id="22"/>
                 <outlet property="addFolderButton" destination="67" id="69"/>
                 <outlet property="addFolderInput" destination="48" id="66"/>
+                <outlet property="addSiteButton" destination="qg6-4m-56y" id="V9S-TQ-kk5"/>
                 <outlet property="addingLabel" destination="9" id="50"/>
                 <outlet property="errorLabel" destination="8" id="51"/>
                 <outlet property="inFolderInput" destination="36" id="39"/>
@@ -67,7 +68,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Search by site title or address..." minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                    <rect key="frame" x="20" y="57" width="280" height="31"/>
+                    <rect key="frame" x="20" y="57" width="200" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="12"/>
@@ -78,6 +79,15 @@
                         <outlet property="delegate" destination="-1" id="58"/>
                     </connections>
                 </textField>
+                <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qg6-4m-56y">
+                    <rect key="frame" x="228" y="57" width="72" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="12"/>
+                    <state key="normal" title="Add Site"/>
+                    <connections>
+                        <action selector="doAddButton" destination="-1" eventType="touchUpInside" id="K5P-1O-hYH"/>
+                    </connections>
+                </button>
                 <textField opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="New folder title" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="48">
                     <rect key="frame" x="20" y="135" width="280" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>

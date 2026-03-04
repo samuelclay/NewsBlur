@@ -33,26 +33,24 @@ import SwiftUI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .clear
+
         addChild(hostingController)
         view.addSubview(hostingController.view)
+        hostingController.view.backgroundColor = .clear
         hostingController.didMove(toParent: self)
         
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
 //        changedLayout()
     }
     
     @objc func reload() {
-        // Update the hosting controller with a fresh TrainerView that uses
-        // the current storyCache (which may have changed if feedDetailViewController
-        // was recreated). This also ensures SwiftUI picks up the latest
-        // isStoryTrainer value and story data.
         let freshView = TrainerView(interaction: self, cache: storyCache)
         hostingController.rootView = freshView
         storyCache.reload()
@@ -60,10 +58,6 @@ import SwiftUI
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        // Reload when the popover actually appears, same pattern as ShareViewController.
-        // The initial reload() call from openTrainStory fires before the view is in the
-        // hierarchy, so SwiftUI may miss the @Published changes.
         let freshView = TrainerView(interaction: self, cache: storyCache)
         hostingController.rootView = freshView
         storyCache.reload()

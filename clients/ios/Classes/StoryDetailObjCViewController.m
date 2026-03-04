@@ -610,6 +610,9 @@
     NSString *fitvidPath = [bundle pathForResource:@"fitvid" ofType:@"js"];
     NSString *fitvidJS = fitvidPath ? [NSString stringWithContentsOfFile:fitvidPath encoding:NSUTF8StringEncoding error:nil] : @"";
 
+    NSString *markPath = [bundle pathForResource:@"mark" ofType:@"js"];
+    NSString *markJS = markPath ? [NSString stringWithContentsOfFile:markPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
     NSString *storyDetailPath = [bundle pathForResource:@"storyDetailView" ofType:@"js"];
     NSString *storyDetailJS = storyDetailPath ? [NSString stringWithContentsOfFile:storyDetailPath encoding:NSUTF8StringEncoding error:nil] : @"";
 
@@ -625,8 +628,9 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>"
+                    "<script>%@</script>"
                     "<script>%@</script>",
-                    zeptoJS, fitvidJS, storyDetailJS, fastTouchJS];
+                    zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
@@ -1156,7 +1160,93 @@
                                        titleClassifier]];
         }
     }
+
+    // Title regex classifiers
+    NSDictionary *titleRegexClassifiers = [[appDelegate.storiesCollection.activeClassifiers
+                                            objectForKey:feedId]
+                                           objectForKey:@"title_regex"];
+    for (NSString *pattern in titleRegexClassifiers) {
+        NSError *error = nil;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
+        if (!error && regex) {
+            int regexScore = [[titleRegexClassifiers objectForKey:pattern] intValue];
+            NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:storyTitle options:0 range:NSMakeRange(0, storyTitle.length)];
+            // Apply replacements in reverse order to preserve indices
+            for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
+                NSString *matchedText = [storyTitle substringWithRange:match.range];
+                NSString *replacement = [NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
+                                         regexScore > 0 ? @"positive" : regexScore < 0 ? @"negative" : @"",
+                                         matchedText];
+                storyTitle = [storyTitle stringByReplacingCharactersInRange:match.range withString:replacement];
+            }
+        }
+    }
     
+    // URL match classifiers
+    NSString *storyUrlMatch = @"";
+    NSDictionary *urlClassifiers = [[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId] objectForKey:@"urls"];
+    NSDictionary *urlRegexClassifiers = [[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId] objectForKey:@"url_regex"];
+    if ((urlClassifiers.count > 0 || urlRegexClassifiers.count > 0) && storyPermalink.length > 0) {
+        NSString *matchedBefore = nil, *matchedText = nil, *matchedAfter = nil;
+        int matchScore = 0;
+        NSInteger maxDisplayLength = 80;
+
+        // Check exact URL matches
+        for (NSString *classifierUrl in urlClassifiers) {
+            NSRange range = [storyPermalink rangeOfString:classifierUrl options:NSCaseInsensitiveSearch];
+            if (range.location != NSNotFound) {
+                matchScore = [[urlClassifiers objectForKey:classifierUrl] intValue];
+                matchedText = [storyPermalink substringWithRange:range];
+                matchedBefore = [storyPermalink substringToIndex:range.location];
+                matchedAfter = [storyPermalink substringFromIndex:NSMaxRange(range)];
+                break;
+            }
+        }
+
+        // Check regex URL matches
+        if (!matchedText) {
+            for (NSString *pattern in urlRegexClassifiers) {
+                NSError *error = nil;
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
+                if (!error && regex) {
+                    NSTextCheckingResult *result = [regex firstMatchInString:storyPermalink options:0 range:NSMakeRange(0, storyPermalink.length)];
+                    if (result) {
+                        matchScore = [[urlRegexClassifiers objectForKey:pattern] intValue];
+                        matchedText = [storyPermalink substringWithRange:result.range];
+                        matchedBefore = [storyPermalink substringToIndex:result.range.location];
+                        matchedAfter = [storyPermalink substringFromIndex:NSMaxRange(result.range)];
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (matchedText && matchScore != 0) {
+            // Truncate before/after for display
+            NSInteger availableForContext = maxDisplayLength - (NSInteger)matchedText.length;
+            NSInteger beforeMax = availableForContext / 2;
+            NSInteger afterMax = availableForContext - beforeMax;
+            if ((NSInteger)matchedBefore.length > beforeMax && beforeMax > 1) {
+                matchedBefore = [NSString stringWithFormat:@"\u2026%@", [matchedBefore substringFromIndex:matchedBefore.length - beforeMax + 1]];
+            }
+            if ((NSInteger)matchedAfter.length > afterMax && afterMax > 1) {
+                matchedAfter = [NSString stringWithFormat:@"%@\u2026", [matchedAfter substringToIndex:afterMax - 1]];
+            }
+
+            storyUrlMatch = [NSString stringWithFormat:@"<div class=\"NB-story-url-match\">"
+                             "<span class=\"NB-story-url NB-score-%d\">"
+                             "<span class=\"NB-story-url-label\">URL: </span>"
+                             "<span class=\"NB-story-url-before\">%@</span>"
+                             "<span class=\"NB-story-url-matched\">%@</span>"
+                             "<span class=\"NB-story-url-after\">%@</span>"
+                             "</span></div>",
+                             matchScore,
+                             matchedBefore,
+                             matchedText,
+                             matchedAfter];
+        }
+    }
+
     NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
                                                                            "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", self.activeStory[@"story_changes"] != nil ? @"Hide Changes" : @"Show Changes"] : @"";
     
@@ -1175,6 +1265,7 @@
                              "%@"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              storyUnread,
                              storyPermalink,
@@ -1183,6 +1274,7 @@
                              storyDate,
                              storyAuthor,
                              storyTags,
+                             storyUrlMatch,
                              storyStarred,
                              storyUserTags];
     return storyHeader;
@@ -2341,6 +2433,24 @@
 - (void)webViewNotifyLoaded {
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
+    [self applyClassifierHighlights];
+}
+
+- (void)applyClassifierHighlights {
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_feed_id"]];
+    NSDictionary *feedClassifiers = [appDelegate.storiesCollection.activeClassifiers objectForKey:feedId];
+    NSDictionary *texts = [feedClassifiers objectForKey:@"texts"];
+    NSDictionary *textRegex = [feedClassifiers objectForKey:@"text_regex"];
+    if (!texts && !textRegex) return;
+
+    NSMutableDictionary *classifiers = [NSMutableDictionary dictionary];
+    if (texts) [classifiers setObject:texts forKey:@"texts"];
+    if (textRegex) [classifiers setObject:textRegex forKey:@"text_regex"];
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:classifiers options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *js = [NSString stringWithFormat:@"applyClassifierHighlights(%@)", jsonString];
+    [self.webView evaluateJavaScript:js completionHandler:nil];
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
@@ -3016,6 +3126,7 @@
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
         [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
+        [self applyClassifierHighlights];
     }];
 }
 

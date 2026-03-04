@@ -15,11 +15,13 @@ import SwiftUI
 
 struct TrainerView: View {
     var interaction: TrainerInteraction
-    
+
     @ObservedObject var cache: StoryCache
-    
+
     let columns = [GridItem(.adaptive(minimum: 50))]
-    
+
+    @State private var scopeOverrides: [String: ClassifierScope] = [:]
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
@@ -74,13 +76,31 @@ struct TrainerView: View {
 
                         WrappingHStack(models: titles) { title in
                             Button(action: {
-                                cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0)
+                                cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName)
                             }, label: {
-                                TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count)
+                                TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count, showsScope: true, scope: scopeBinding(for: "title", name: title.name, default: title.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                    handleScopeChange(classifierType: "title", name: title.name, score: title.score, newScope: newScope)
+                                })
                             })
                             .buttonStyle(BorderlessButtonStyle())
                             .padding([.top, .bottom], 5)
                         }
+
+                        if !titleRegexes.isEmpty {
+                            WrappingHStack(models: titleRegexes) { item in
+                                Button(action: {
+                                    cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName)
+                                }, label: {
+                                    TrainerCapsule(score: item.score, header: "Title", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "title_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "title_regex", name: item.name, score: item.score, newScope: newScope)
+                                    })
+                                })
+                                .buttonStyle(BorderlessButtonStyle())
+                                .padding([.top, .bottom], 5)
+                            }
+                        }
+
+                        TrainerRegexInput(sectionType: .title, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -90,9 +110,11 @@ struct TrainerView: View {
                 Section(content: {
                     WrappingHStack(models: authors) { author in
                         Button(action: {
-                            cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id)
+                            cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName)
                         }, label: {
-                            TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count)
+                            TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                handleScopeChange(classifierType: "author", name: author.name, score: author.score, newScope: newScope)
+                            })
                         })
                         .buttonStyle(BorderlessButtonStyle())
                         .padding([.top, .bottom], 5)
@@ -105,9 +127,11 @@ struct TrainerView: View {
                 Section(content: {
                     WrappingHStack(models: tags) { tag in
                         Button(action: {
-                            cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id)
+                            cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName)
                         }, label: {
-                            TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count)
+                            TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count, showsScope: true, scope: scopeBinding(for: "tag", name: tag.name, default: tag.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                handleScopeChange(classifierType: "tag", name: tag.name, score: tag.score, newScope: newScope)
+                            })
                         })
                         .buttonStyle(BorderlessButtonStyle())
                         .padding([.top, .bottom], 5)
@@ -115,6 +139,80 @@ struct TrainerView: View {
                     .listRowBackground(rowBackground)
                 }, header: {
                     header(story: "Story Categories & Tags", feed: "Categories & Tags")
+                })
+
+                Section(content: {
+                    VStack(alignment: .leading) {
+                        if !texts.isEmpty {
+                            WrappingHStack(models: texts) { item in
+                                Button(action: {
+                                    cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName)
+                                }, label: {
+                                    TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "text", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "text", name: item.name, score: item.score, newScope: newScope)
+                                    })
+                                })
+                                .buttonStyle(BorderlessButtonStyle())
+                                .padding([.top, .bottom], 5)
+                            }
+                        }
+
+                        if !textRegexes.isEmpty {
+                            WrappingHStack(models: textRegexes) { item in
+                                Button(action: {
+                                    cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName)
+                                }, label: {
+                                    TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "text_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "text_regex", name: item.name, score: item.score, newScope: newScope)
+                                    })
+                                })
+                                .buttonStyle(BorderlessButtonStyle())
+                                .padding([.top, .bottom], 5)
+                            }
+                        }
+
+                        TrainerRegexInput(sectionType: .text, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
+                    }
+                    .listRowBackground(rowBackground)
+                }, header: {
+                    header(story: "Story Text", feed: "Text & Phrases")
+                })
+
+                Section(content: {
+                    VStack(alignment: .leading) {
+                        if !urls.isEmpty {
+                            WrappingHStack(models: urls) { item in
+                                Button(action: {
+                                    cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName)
+                                }, label: {
+                                    TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "url", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "url", name: item.name, score: item.score, newScope: newScope)
+                                    })
+                                })
+                                .buttonStyle(BorderlessButtonStyle())
+                                .padding([.top, .bottom], 5)
+                            }
+                        }
+
+                        if !urlRegexes.isEmpty {
+                            WrappingHStack(models: urlRegexes) { item in
+                                Button(action: {
+                                    cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName)
+                                }, label: {
+                                    TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "url_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "url_regex", name: item.name, score: item.score, newScope: newScope)
+                                    })
+                                })
+                                .buttonStyle(BorderlessButtonStyle())
+                                .padding([.top, .bottom], 5)
+                            }
+                        }
+
+                        TrainerRegexInput(sectionType: .url, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
+                    }
+                    .listRowBackground(rowBackground)
+                }, header: {
+                    header(story: "Story URL", feed: "URLs")
                 })
 
                 Section(content: {
@@ -143,21 +241,24 @@ struct TrainerView: View {
             addingTitle = ""
             cache.reload()
         }
+        .sheet(isPresented: $regexShowingHelp) {
+            regexHelpSheet
+        }
     }
-    
+
     func font(named: String, size: CGFloat) -> Font {
         return Font.custom(named, size: size + cache.settings.fontSize.offset, relativeTo: .caption)
     }
-    
+
     func reload() {
         cache.reload()
         addingTitle = ""
     }
-    
+
     var feedOrStoryLowercase: String {
         return interaction.isStoryTrainer ? "story" : "site"
     }
-    
+
     var listBackground: Color {
         Color.themed([0xF0F2ED, 0xF3E2CB, 0x2C2C2E, 0x1C1C1E])
     }
@@ -186,13 +287,13 @@ struct TrainerView: View {
                 .foregroundColor(textColor)
         }
     }
-    
+
     func score(key: String, value: String) -> Feed.Score {
         guard let classifiers = feed?.classifiers(for: key),
               let score = classifiers[value] as? Int else {
             return .none
         }
-        
+
         if score > 0 {
             return .like
         } else if score < 0 {
@@ -201,7 +302,7 @@ struct TrainerView: View {
             return .none
         }
     }
-    
+
     var titleWords: [String] {
         if interaction.isStoryTrainer, let story = cache.selected {
             return story.title.components(separatedBy: .whitespaces)
@@ -209,13 +310,51 @@ struct TrainerView: View {
             return []
         }
     }
-    
+
     @State private var addingTitle = ""
-    
+    @State private var regexShowingHelp = false
+
+
     var feed: Feed? {
         return cache.currentFeed ?? cache.selected?.feed
     }
-    
+
+    var isArchive: Bool {
+        return cache.appDelegate.isPremiumArchive
+    }
+
+    var currentFolderName: String {
+        guard let feedId = feed?.id else { return "" }
+        let folders = cache.appDelegate.parentFolders(forFeed: feedId) as? [String] ?? []
+        return folders.first ?? ""
+    }
+
+    // MARK: - Scope
+
+    func scopeBinding(for type: String, name: String, default defaultScope: ClassifierScope) -> Binding<ClassifierScope> {
+        let key = "\(type):\(name)"
+        return Binding(
+            get: { scopeOverrides[key] ?? defaultScope },
+            set: { scopeOverrides[key] = $0 }
+        )
+    }
+
+    func currentScope(for type: String, name: String) -> ClassifierScope {
+        return scopeOverrides["\(type):\(name)"] ?? .feed
+    }
+
+    func handleScopeChange(classifierType: String, name: String, score: Feed.Score, newScope: ClassifierScope) {
+        let key = "\(classifierType):\(name)"
+        let oldScope = scopeOverrides[key] ?? .feed
+        let oldFolderName = (oldScope == .folder) ? currentFolderName : ""
+        scopeOverrides[key] = newScope
+
+        guard let feedId = feed?.id else { return }
+        cache.appDelegate.changeClassifierScope(classifierType, value: name, feedId: feedId, score: Int(score.rawValue), oldScope: oldScope.rawValue, oldFolderName: oldFolderName, scope: newScope.rawValue, folderName: currentFolderName)
+    }
+
+    // MARK: - Classifiers
+
     var titles: [Feed.Training] {
         if interaction.isStoryTrainer {
             return cache.selected?.titles ?? []
@@ -223,7 +362,7 @@ struct TrainerView: View {
             return feed?.titles ?? []
         }
     }
-    
+
     var authors: [Feed.Training] {
         if interaction.isStoryTrainer {
             return cache.selected?.authors ?? []
@@ -231,13 +370,150 @@ struct TrainerView: View {
             return feed?.authors ?? []
         }
     }
-    
+
     var tags: [Feed.Training] {
         if interaction.isStoryTrainer {
             return cache.selected?.tags ?? []
         } else {
             return feed?.tags ?? []
         }
+    }
+
+    var titleRegexes: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.titleRegexes ?? []
+        } else {
+            return feed?.titleRegex ?? []
+        }
+    }
+
+    var texts: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.texts ?? []
+        } else {
+            return feed?.texts ?? []
+        }
+    }
+
+    var textRegexes: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.textRegexes ?? []
+        } else {
+            return feed?.textRegex ?? []
+        }
+    }
+
+    var urls: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.urls ?? []
+        } else {
+            return feed?.urls ?? []
+        }
+    }
+
+    var urlRegexes: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.urlRegexes ?? []
+        } else {
+            return feed?.urlRegex ?? []
+        }
+    }
+
+    // MARK: - Regex Help
+
+    private var purpleAccent: Color {
+        Color(red: 0.482, green: 0.408, blue: 0.933) // #7B68EE
+    }
+
+    var regexHelpSheet: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Regex Patterns")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(purpleAccent)
+                Spacer()
+                Button {
+                    regexShowingHelp = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(Color(.systemGray3))
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                regexHelpCard("Word Matching", examples: [
+                    ("\\bcat\\b", "Whole word"),
+                    ("cat|dog", "Either word"),
+                    ("\\bthe cat\\b", "Exact phrase"),
+                ])
+
+                regexHelpCard("Position", examples: [
+                    ("^Breaking", "Starts with"),
+                    ("update$", "Ends with"),
+                    ("breaking.*news", "Words in order"),
+                ])
+
+                regexHelpCard("Patterns", examples: [
+                    ("\\d+", "Numbers"),
+                    ("\\$\\d+", "Dollar amounts"),
+                    ("#\\w+", "Hashtags"),
+                ])
+
+                regexHelpCard("Advanced", examples: [
+                    ("^(?!.*sponsor)", "Exclude word"),
+                    ("\\d{4}", "Exactly 4 digits"),
+                    ("[A-Z]{2,}", "Acronyms"),
+                ])
+            }
+            .padding(.horizontal, 20)
+
+            Spacer()
+
+            Text("All patterns are case-insensitive by default")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+                .padding(.bottom, 16)
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    func regexHelpCard(_ title: String, examples: [(String, String)]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title.uppercased())
+                .font(.system(size: 9, weight: .bold))
+                .foregroundColor(purpleAccent)
+                .tracking(0.8)
+
+            ForEach(examples, id: \.0) { pattern, description in
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(pattern)
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundColor(Color(red: 0.353, green: 0.312, blue: 0.812))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(purpleAccent.opacity(0.1))
+                        .cornerRadius(4)
+
+                    Text(description)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 2)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(purpleAccent.opacity(0.15), lineWidth: 1)
+        )
     }
 }
 
