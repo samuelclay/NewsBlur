@@ -131,6 +131,9 @@ class Feed(models.Model):
     class Meta:
         db_table = "feeds"
         ordering = ["feed_title"]
+        indexes = [
+            models.Index(fields=["is_forbidden"], name="feeds_is_forbidden_idx"),
+        ]
         # unique_together=[('feed_address', 'feed_link')]
 
     def __str__(self):
