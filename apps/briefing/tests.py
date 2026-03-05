@@ -1779,11 +1779,26 @@ class Test_Tasks(BriefingTestCase):
         GenerateBriefings()
         # tests.py: If lock is held, nothing else should happen
 
+    @patch("apps.briefing.tasks.datetime")
     @patch("apps.briefing.models.MBriefing")
     @patch("apps.briefing.tasks.GenerateUserBriefing")
     @patch("redis.Redis")
-    def test_generate_all_dispatches_for_eligible(self, mock_redis_cls, mock_user_task, mock_mbriefing):
+    def test_generate_all_dispatches_for_eligible(self, mock_redis_cls, mock_user_task, mock_mbriefing, mock_dt):
+        import datetime as real_dt
+
+        import pytz
+
         from apps.briefing.tasks import GenerateBriefings
+
+        # tests.py: Pin to 3 PM ET (20:00 UTC) so the morning slot check always passes
+        fake_utc = real_dt.datetime(2026, 3, 5, 20, 0, 0)
+        mock_dt.datetime.utcnow.return_value = fake_utc
+        mock_dt.datetime.now.side_effect = lambda tz=None: (
+            pytz.utc.localize(fake_utc).astimezone(tz) if tz else fake_utc
+        )
+        mock_dt.datetime.combine = real_dt.datetime.combine
+        mock_dt.timedelta = real_dt.timedelta
+        mock_dt.time = real_dt.time
 
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
