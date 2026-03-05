@@ -280,16 +280,21 @@ deps:
 jekyll_build:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll build
 	
-# runs tests
-# Usage: make test [SCOPE=apps.reader] [ARGS="--noinput -v 2"]
+# runs tests with pytest
+# Usage: make test [SCOPE=apps] [ARGS="-v"]
 SCOPE ?= apps
-ARGS ?= --noinput -v 1 --failfast
+ARGS ?= -v --tb=short
 test:
+	docker compose exec -T newsblur_web pytest $(SCOPE) $(ARGS)
+
+# runs Django tests (legacy)
+# Usage: make test-django [SCOPE=apps.reader] [ARGS="--noinput -v 2"]
+test-django:
 	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
 
 # runs river stories tests with query profiling
 test-river:
-	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
+	docker compose exec -T newsblur_web pytest apps/reader/test_river_stories.py -v
 
 keys:
 	@if [ -f "config/certificates/localhost.pem" ]; then \
@@ -382,12 +387,16 @@ build_deploy: buildx_setup
 build: build_web build_node build_monitor build_deploy
 push_web: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+push_web_py313: buildx_setup
+	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3:py313
 push_node: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 push_monitor: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 push_deploy: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+push_deploy_py313: buildx_setup
+	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --build-arg BASE_IMAGE=newsblur/newsblur_python3:py313 --tag=newsblur/newsblur_deploy:py313
 push_images: push_web push_node push_monitor push_deploy
 push: push_images
 

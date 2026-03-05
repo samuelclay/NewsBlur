@@ -1,4 +1,5 @@
-FROM newsblur/newsblur_python3
+ARG BASE_IMAGE=newsblur/newsblur_python3
+FROM ${BASE_IMAGE}
 ENV DOCKERBUILD=True
 
 RUN apt update

@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from apps.briefing import views
 
 urlpatterns = [
-    url(r"^stories$", views.load_briefing_stories, name="load-briefing-stories"),
-    url(r"^preferences$", views.briefing_preferences, name="briefing-preferences"),
-    url(r"^generate$", views.generate_briefing, name="generate-briefing"),
+    re_path(r"^stories$", views.load_briefing_stories, name="load-briefing-stories"),
+    re_path(r"^preferences$", views.briefing_preferences, name="briefing-preferences"),
+    re_path(r"^generate$", views.generate_briefing, name="generate-briefing"),
 ]

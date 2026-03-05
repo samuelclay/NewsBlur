@@ -55,13 +55,13 @@
       - /etc/hosts:/etc/hosts
   with_items:
     - container_name: "task-celery"
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q discover_indexer,search_indexer,new_feeds,push_feeds,update_feeds"
+      command: "celery -A newsblur_web worker --loglevel=INFO -Q discover_indexer,search_indexer,new_feeds,push_feeds,update_feeds"
       when: "{{ inventory_hostname == 'htask-celery-10' }}"
     - container_name: "task-celery"
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer"
+      command: "celery -A newsblur_web worker --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer"
       when: "{{ 'htask-celery' in inventory_hostname and inventory_hostname != 'htask-celery-10' }}"
     - container_name: "task-work"
-      command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
+      command: "celery -A newsblur_web worker --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
       when: "{{ 'htask-work' in inventory_hostname }}"
   when: item.when|default(true)
   tags:

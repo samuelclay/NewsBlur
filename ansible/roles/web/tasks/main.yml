@@ -66,7 +66,7 @@
 - name: Update to latest NewsBlur Web Docker image
   become: yes
   docker_image:
-    name: newsblur/newsblur_python3
+    name: "newsblur/newsblur_python3:{{ newsblur_image_tag | default('latest') }}"
     source: pull
 
 - name: Start NewsBlur Web Docker container
@@ -74,7 +74,7 @@
   throttle: 3
   docker_container:
     name: newsblur_web
-    image: newsblur/newsblur_python3
+    image: "newsblur/newsblur_python3:{{ newsblur_image_tag | default('latest') }}"
     container_default_behavior: no_defaults
     pull: yes
     env:

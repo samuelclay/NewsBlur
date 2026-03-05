@@ -1,48 +1,48 @@
-from django.conf.urls import url
+from django.urls import re_path
 from oauth2_provider import views as op_views
 
 from apps.oauth import views
 
 urlpatterns = [
-    url(r"^twitter_connect/?$", views.twitter_connect, name="twitter-connect"),
-    url(r"^facebook_connect/?$", views.facebook_connect, name="facebook-connect"),
-    url(r"^twitter_disconnect/?$", views.twitter_disconnect, name="twitter-disconnect"),
-    url(r"^facebook_disconnect/?$", views.facebook_disconnect, name="facebook-disconnect"),
-    url(r"^follow_twitter_account/?$", views.follow_twitter_account, name="social-follow-twitter"),
-    url(r"^unfollow_twitter_account/?$", views.unfollow_twitter_account, name="social-unfollow-twitter"),
+    re_path(r"^twitter_connect/?$", views.twitter_connect, name="twitter-connect"),
+    re_path(r"^facebook_connect/?$", views.facebook_connect, name="facebook-connect"),
+    re_path(r"^twitter_disconnect/?$", views.twitter_disconnect, name="twitter-disconnect"),
+    re_path(r"^facebook_disconnect/?$", views.facebook_disconnect, name="facebook-disconnect"),
+    re_path(r"^follow_twitter_account/?$", views.follow_twitter_account, name="social-follow-twitter"),
+    re_path(r"^unfollow_twitter_account/?$", views.unfollow_twitter_account, name="social-unfollow-twitter"),
     # Django OAuth Toolkit - use ExtensionAuthorizationView to allow chrome-extension:// redirects
-    url(r"^status/?$", views.ifttt_status, name="ifttt-status"),
-    url(r"^authorize/?$", views.ExtensionAuthorizationView.as_view(), name="oauth-authorize"),
-    url(r"^token/?$", op_views.TokenView.as_view(), name="oauth-token"),
+    re_path(r"^status/?$", views.ifttt_status, name="ifttt-status"),
+    re_path(r"^authorize/?$", views.ExtensionAuthorizationView.as_view(), name="oauth-authorize"),
+    re_path(r"^token/?$", op_views.TokenView.as_view(), name="oauth-token"),
     # Browser extension OAuth callback - displays success page while extension intercepts the code
-    url(r"^extension-callback/?$", views.extension_oauth_callback, name="oauth-extension-callback"),
-    url(r"^oauth2/authorize/?$", views.ExtensionAuthorizationView.as_view(), name="ifttt-authorize"),
-    url(r"^oauth2/token/?$", op_views.TokenView.as_view(), name="ifttt-token"),
-    url(r"^user/info/?$", views.api_user_info, name="ifttt-user-info"),
-    url(
+    re_path(r"^extension-callback/?$", views.extension_oauth_callback, name="oauth-extension-callback"),
+    re_path(r"^oauth2/authorize/?$", views.ExtensionAuthorizationView.as_view(), name="ifttt-authorize"),
+    re_path(r"^oauth2/token/?$", op_views.TokenView.as_view(), name="ifttt-token"),
+    re_path(r"^user/info/?$", views.api_user_info, name="ifttt-user-info"),
+    re_path(
         r"^triggers/(?P<trigger_slug>new-unread-(focus-)?story)/fields/feed_or_folder/options/?$",
         views.api_feed_list,
         name="ifttt-trigger-feedlist",
     ),
-    url(
+    re_path(
         r"^triggers/(?P<trigger_slug>new-unread-(focus-)?story)/?$",
         views.api_unread_story,
         name="ifttt-trigger-unreadstory",
     ),
-    url(
+    re_path(
         r"^triggers/new-saved-story/fields/story_tag/options/?$",
         views.api_saved_tag_list,
         name="ifttt-trigger-taglist",
     ),
-    url(r"^triggers/new-saved-story/?$", views.api_saved_story, name="ifttt-trigger-saved"),
-    url(
+    re_path(r"^triggers/new-saved-story/?$", views.api_saved_story, name="ifttt-trigger-saved"),
+    re_path(
         r"^triggers/new-shared-story/fields/blurblog_user/options/?$",
         views.api_shared_usernames,
         name="ifttt-trigger-blurbloglist",
     ),
-    url(r"^triggers/new-shared-story/?$", views.api_shared_story, name="ifttt-trigger-shared"),
-    url(r"^actions/share-story/?$", views.api_share_new_story, name="ifttt-action-share"),
-    url(r"^actions/save-story/?$", views.api_save_new_story, name="ifttt-action-saved"),
-    url(r"^actions/add-site/?$", views.api_save_new_subscription, name="ifttt-action-subscription"),
-    url(r"^actions/add-site/fields/folder/options/?$", views.api_folder_list, name="ifttt-action-folderlist"),
+    re_path(r"^triggers/new-shared-story/?$", views.api_shared_story, name="ifttt-trigger-shared"),
+    re_path(r"^actions/share-story/?$", views.api_share_new_story, name="ifttt-action-share"),
+    re_path(r"^actions/save-story/?$", views.api_save_new_story, name="ifttt-action-saved"),
+    re_path(r"^actions/add-site/?$", views.api_save_new_subscription, name="ifttt-action-subscription"),
+    re_path(r"^actions/add-site/fields/folder/options/?$", views.api_folder_list, name="ifttt-action-folderlist"),
 ]

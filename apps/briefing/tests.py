@@ -79,6 +79,10 @@ class BriefingTestCase(TestCase):
         profile.timezone = "America/New_York"
         profile.save()
 
+        # tests.py: Clean up any MongoDB docs left by prior test classes that reused the same user pk
+        MBriefing.objects(user_id=self.user.pk).delete()
+        MBriefingPreferences.objects(user_id=self.user.pk).delete()
+
         self.client.login(username="brieftest", password="testpass")
 
         self.feed = Feed.objects.create(

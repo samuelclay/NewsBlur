@@ -72,7 +72,7 @@
 - name: Restart newsblur_web container
   docker_container:
     name: newsblur_web
-    image: newsblur/newsblur_python3
+    image: "newsblur/newsblur_python3:{{ newsblur_image_tag | default('latest') }}"
     container_default_behavior: no_defaults
     pull: yes
     env:

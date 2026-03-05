@@ -1,3 +1,4 @@
 ---
-git_branch: main
+git_branch: python313
+newsblur_image_tag: py313
 disable_consul_services_ie_staging: yes

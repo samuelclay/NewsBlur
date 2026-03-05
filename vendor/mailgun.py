@@ -1,9 +1,8 @@
 import requests
-import six
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import sanitize_address
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from requests.packages.urllib3.filepost import encode_multipart_formdata
 
 __version__ = "0.8.0"
@@ -72,7 +71,7 @@ class MailgunBackend(BaseEmailBackend):
         :return: 2-item tuples of the form (api_name, api_values)
         """
         api_data = []
-        for smtp_key, api_transformer in six.iteritems(self._headers_map):
+        for smtp_key, api_transformer in self._headers_map.items():
             data_to_transform = email_message.extra_headers.pop(smtp_key, None)
             if data_to_transform is not None:
                 if isinstance(data_to_transform, (list, tuple)):
@@ -80,7 +79,7 @@ class MailgunBackend(BaseEmailBackend):
                     for data in data_to_transform:
                         api_data.append((api_transformer[0], api_transformer[1](data)))
                 elif isinstance(data_to_transform, dict):
-                    for data in six.iteritems(data_to_transform):
+                    for data in data_to_transform.items():
                         api_data.append(api_transformer(data))
                 else:
                     # we only have one value
@@ -174,7 +173,7 @@ class MailgunBackend(BaseEmailBackend):
                     post_data.append(
                         (
                             "h:Reply-To",
-                            ", ".join(map(force_text, email_message.reply_to)),
+                            ", ".join(map(force_str, email_message.reply_to)),
                         )
                     )
                 elif "Reply-To" in email_message.extra_headers:
