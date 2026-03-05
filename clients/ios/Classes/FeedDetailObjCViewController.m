@@ -109,7 +109,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.dashboardSingleMode = NO;
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xF2E9DE, 0x383838, 0x222222);
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
     }
@@ -4455,7 +4455,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xF2E9DE, 0x383838, 0x222222);
     if (@available(iOS 13.0, *)) {
         self.storyTitlesTable.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
     }
