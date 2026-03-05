@@ -113,8 +113,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
-                                        /* 1 */ @"infrequent",
-                                        /* 2 */ @"everything"];
+                                        /* 1 */ @"discover_sites",
+                                        /* 2 */ @"infrequent",
+                                        /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -1721,6 +1722,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     for (NSString *folder in self.appDelegate.dictFoldersArray) {
         if ([folder hasPrefix:@"river_"] ||
             [folder isEqualToString:@"dashboard"] ||
+            [folder isEqualToString:@"discover_sites"] ||
             [folder isEqualToString:@"everything"] ||
             [folder isEqualToString:@"infrequent"] ||
             [folder isEqualToString:@"widget"] ||
@@ -2288,6 +2290,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
     if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
+        section != NewsBlurTopSectionDiscoverSites &&
         section != NewsBlurTopSectionInfrequentSiteStories &&
         section != NewsBlurTopSectionAllStories &&
         ![folderName isEqualToString:@"river_global"] &&
@@ -2366,13 +2369,17 @@ heightForHeaderInSection:(NSInteger)section {
     if ([folder isEqualToString:@"dashboard"]) {
         appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
+    } else if ([folder isEqualToString:@"discover_sites"]) {
+        [appDelegate openDiscoverSitesView];
     } else {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
-    
-    if (!appDelegate.detailViewController.isPhoneOrCompact) {
-        [appDelegate.feedDetailViewController viewWillAppear:NO];
-        [appDelegate.feedDetailViewController viewDidAppear:NO];
+
+    if (![folder isEqualToString:@"discover_sites"]) {
+        if (!appDelegate.detailViewController.isPhoneOrCompact) {
+            [appDelegate.feedDetailViewController viewWillAppear:NO];
+            [appDelegate.feedDetailViewController viewDidAppear:NO];
+        }
     }
 }
 
@@ -2793,6 +2800,7 @@ heightForHeaderInSection:(NSInteger)section {
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         // Skip special folders that don't have collapse functionality
         if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||
@@ -2822,6 +2830,7 @@ heightForHeaderInSection:(NSInteger)section {
         NSString *folderName = appDelegate.dictFoldersArray[i];
         // Skip special folders that don't have collapse functionality
         if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||

@@ -15,6 +15,7 @@ urlpatterns = [
     url(r"^podcast/search/?$", views.podcast_search, name="podcast-search"),
     url(r"^newsletter/convert/?$", views.newsletter_convert, name="newsletter-convert"),
     url(r"^google-news/feed/?$", views.google_news_feed, name="google-news-feed"),
+    url(r"^google-news/categories/?$", views.google_news_categories, name="google-news-categories"),
     url(r"^similar/(?P<feed_id>\d+)/?$", views.discover_feeds, name="discover-feeds"),
     url(r"^similar/feeds/?$", views.discover_feeds, name="discover-feeds-post"),
     url(r"^similar/stories/(?P<story_hash>\w+:[\w\d]+)/?$", views.discover_stories, name="discover-stories"),

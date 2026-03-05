@@ -1,6 +1,8 @@
 import re
 import uuid
 
+import redis
+from django.conf import settings
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
@@ -228,3 +230,28 @@ def reanalyze(request):
         "request_id": request_id,
         "feed_id": feed_id,
     }
+
+
+@ajax_login_required
+@require_http_methods(["GET"])
+@json.json_view
+def status(request):
+    """Poll the status of a web feed analysis task (used by iOS which can't use WebSocket)."""
+    request_id = request.GET.get("request_id", "")
+    if not request_id or not REQUEST_ID_RE.match(request_id):
+        return {"code": -1, "status": "invalid"}
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+
+    status_data = r.get(f"webfeed:status:{request_id}")
+    if not status_data:
+        return {"code": -1, "status": "unknown"}
+
+    status_obj = json.decode(status_data)
+
+    if status_obj.get("type") == "complete":
+        results = r.get(f"webfeed:results:{request_id}")
+        if results:
+            status_obj["variants_data"] = json.decode(results)
+
+    return {"code": 1, **status_obj}

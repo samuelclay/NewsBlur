@@ -738,6 +738,18 @@ def podcast_search(request):
 
 
 @json.json_view
+def google_news_categories(request):
+    """Return Google News categories, subcategories, and topics for the discovery UI."""
+    from apps.discover.constants import GOOGLE_NEWS_CATEGORIES, GOOGLE_NEWS_TOPICS
+
+    return {
+        "code": 1,
+        "categories": GOOGLE_NEWS_CATEGORIES,
+        "topics": GOOGLE_NEWS_TOPICS,
+    }
+
+
+@json.json_view
 def google_news_feed(request):
     """
     Build a Google News RSS feed URL from search parameters.
