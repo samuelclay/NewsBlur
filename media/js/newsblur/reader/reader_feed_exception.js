@@ -95,7 +95,66 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $(".NB-modal-title", this.$modal).text("Site Settings");
         }
 
+        this.setup_mute_state();
         this.resize();
+    },
+
+    setup_mute_state: function () {
+        if (!this.feed) return;
+        var self = this;
+        var is_muted = !this.feed.get('active');
+        var mute_expires_at = this.feed.get('mute_expires_at');
+        var $status_text = $('.NB-mute-current-status', this.$modal);
+        var $mute_section = $('.NB-exception-option-mute', this.$modal);
+        var $slider = $('.NB-mute-settings-slider', this.$modal);
+        var stops = NEWSBLUR.utils.MUTE_SLIDER_STOPS;
+
+        $mute_section.removeClass('NB-mute-state-active NB-mute-state-timed NB-mute-state-permanent');
+        if (!is_muted) {
+            $mute_section.addClass('NB-mute-state-active');
+            $status_text.text('This site is active and receiving stories.');
+        } else if (mute_expires_at) {
+            $mute_section.addClass('NB-mute-state-timed');
+            var remaining = NEWSBLUR.utils.mute_time_remaining(mute_expires_at);
+            $status_text.text('Muted \u00b7 unmutes in ' + remaining.replace(' left', ''));
+            // Find closest slider stop to remaining days
+            var days_left = Math.max(1, Math.round((new Date(mute_expires_at) - new Date()) / (1000 * 60 * 60 * 24)));
+            var closest_index = 0;
+            for (var i = 0; i < stops.length; i++) {
+                if (Math.abs(stops[i] - days_left) < Math.abs(stops[closest_index] - days_left)) {
+                    closest_index = i;
+                }
+            }
+            $slider.val(closest_index);
+            var days = stops[closest_index];
+            $('.NB-mute-settings-timed-save', this.$modal).text('Mute for ' + NEWSBLUR.utils.format_mute_days(days));
+        } else {
+            $mute_section.addClass('NB-mute-state-permanent');
+            $status_text.text('Muted indefinitely.');
+        }
+
+        // Bind slider input
+        $slider.off('input.mute').on('input.mute', function () {
+            var index = parseInt($(this).val(), 10);
+            var days = NEWSBLUR.utils.mute_slider_to_days(index);
+            var label = NEWSBLUR.utils.format_mute_days(days);
+            $('.NB-mute-settings-timed-save', self.$modal).text('Mute for ' + label);
+        });
+    },
+
+    animate_mute_saved: function () {
+        var $status = $('.NB-exception-option-mute .NB-mute-status', this.$modal);
+        $status.text('Saved').animate({
+            'opacity': 1
+        }, {
+            'queue': false,
+            'duration': 600,
+            'complete': function () {
+                _.delay(function () {
+                    $status.animate({ 'opacity': 0 }, { 'queue': false, 'duration': 1000 });
+                }, 300);
+            }
+        });
     },
 
     get_feed_settings: function () {
@@ -255,6 +314,32 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         this.folder ? 'Mark folder stories as unread' : 'Mark stories as unread')
                 ])
             ]),
+            (this.feed && !this.feed.is_social() && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-mute NB-modal-submit NB-settings-only' }, [
+                $.make('h5', [
+                    'Mute',
+                    $.make('div', { className: 'NB-exception-option-status NB-mute-status' })
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', { className: 'NB-mute-slider-container' }, [
+                        $.make('div', { className: 'NB-mute-current-status' }),
+                        $.make('input', {
+                            type: 'range',
+                            className: 'NB-mute-settings-slider',
+                            min: '0',
+                            max: '15',
+                            value: '6',
+                            step: '1'
+                        }),
+                        $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-mute' }, [
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-timed-save', role: 'button' }, 'Mute for 1 week'),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-forever-save', role: 'button' }, 'Mute indefinitely')
+                        ]),
+                        $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-unmute' }, [
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-unmute-save', role: 'button' }, 'Unmute')
+                        ])
+                    ])
+                ])
+            ])),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
@@ -631,6 +716,41 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
             self.handle_auto_mark_read_option_click($t);
         });
+        $.targetIs(e, { tagSelector: '.NB-mute-settings-timed-save' }, function ($t, $p) {
+            e.preventDefault();
+            var $slider = $('.NB-mute-settings-slider', self.$modal);
+            var index = parseInt($slider.val(), 10);
+            var days = NEWSBLUR.utils.mute_slider_to_days(index);
+            self.model.set_feed_mute(self.feed_id, true, days, function () {
+                self.feed.set('active', false);
+                var expires = new Date();
+                expires.setDate(expires.getDate() + days);
+                self.feed.set('mute_expires_at', expires.toISOString());
+                self.setup_mute_state();
+                self.animate_mute_saved();
+                NEWSBLUR.assets.load_feeds();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-mute-settings-forever-save' }, function ($t, $p) {
+            e.preventDefault();
+            self.model.set_feed_mute(self.feed_id, true, null, function () {
+                self.feed.set('active', false);
+                self.feed.set('mute_expires_at', null);
+                self.setup_mute_state();
+                self.animate_mute_saved();
+                NEWSBLUR.assets.load_feeds();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-mute-settings-unmute-save' }, function ($t, $p) {
+            e.preventDefault();
+            self.model.set_feed_mute(self.feed_id, false, null, function () {
+                self.feed.set('active', true);
+                self.feed.set('mute_expires_at', null);
+                self.setup_mute_state();
+                self.animate_mute_saved();
+                NEWSBLUR.assets.load_feeds();
+            });
+        });
         $.targetIs(e, { tagSelector: '.NB-folder-rss-copy' }, function ($t, $p) {
             e.preventDefault();
             var url_type = $t.data('url-type');
@@ -773,12 +893,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $view_settings = $('.NB-exception-option-view', this.$modal).detach();
         var $auto_mark_read = $('.NB-exception-option-auto-mark-read', this.$modal).detach();
         var $mark_unread = $('.NB-exception-option-mark-unread', this.$modal).detach();
+        var $mute_option = $('.NB-exception-option-mute', this.$modal).detach();
         var $retry_option = $('.NB-exception-option-retry', this.$modal).detach();
         var $feed_option = $('.NB-exception-option-feed', this.$modal).detach();
         var $page_option = $('.NB-exception-option-page', this.$modal).detach();
         var $delete_option = $('.NB-exception-option-delete', this.$modal).detach();
-        // Order: view settings, auto-mark-read, mark unread, then Option 1 (retry), Option 2 (feed), Option 3 (page), Option 4 (delete)
-        $settings_tab.append($view_settings).append($auto_mark_read).append($mark_unread).append($retry_option).append($feed_option).append($page_option).append($delete_option);
+        // Order: view settings, auto-mark-read, mark unread, mute, then Option 1 (retry), Option 2 (feed), Option 3 (page), Option 4 (delete)
+        $settings_tab.append($view_settings).append($auto_mark_read).append($mark_unread).append($mute_option).append($retry_option).append($feed_option).append($page_option).append($delete_option);
 
         // Initialize auto-mark-read settings for feed
         this.setup_auto_mark_read_for_feed();

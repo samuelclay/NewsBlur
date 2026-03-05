@@ -15225,6 +15225,82 @@ h5.NB-classifier-section-header {
     display: none;
 }
 
+/* Mute duration slider in manage menu */
+.NB-menu-manage .NB-menu-manage-feed-mute-confirm {
+    display: none;
+}
+
+.NB-menu-manage .NB-menu-manage-feed-mute-confirm .NB-menu-manage-confirm-position {
+    position: static;
+}
+
+.NB-menu-manage .NB-mute-slider-container {
+    margin: 4px 12px 6px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.NB-menu-manage .NB-mute-slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+.NB-menu-manage .NB-mute-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-menu-manage .NB-mute-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-menu-manage .NB-mute-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.NB-menu-manage .NB-mute-forever-save {
+    font-size: 11px;
+    text-align: center;
+    padding: 3px 8px;
+    white-space: nowrap;
+}
+
+.NB-menu-manage .NB-mute-slider-save {
+    font-size: 11px;
+    text-align: center;
+    padding: 3px 8px;
+}
+
+.NB-mute-time-remaining {
+    font-size: 10px;
+    color: #808080;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
 .NB-menu-manage .NB-menu-manage-controls {
     overflow: hidden;
     background: none;
@@ -17260,6 +17336,104 @@ h5.NB-classifier-section-header {
 .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value b {
     color: #4a90d9;
     font-weight: 600;
+}
+
+/* ==================== */
+/* = Mute Section      = */
+/* ==================== */
+
+.NB-exception-option-mute h5 {
+    display: flex;
+    align-items: center;
+}
+
+.NB-exception-option-mute .NB-mute-status {
+    opacity: 0;
+    color: #4A9937;
+    font-size: 11px;
+    font-weight: normal;
+    margin-left: auto;
+}
+
+.NB-exception-option-mute .NB-mute-slider-container {
+    margin: 4px 0 4px 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-exception-option-mute .NB-mute-current-status {
+    font-size: 12px;
+    color: #707070;
+}
+
+.NB-exception-option-mute .NB-mute-settings-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 0 0 8px;
+}
+
+.NB-exception-option-mute .NB-mute-settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-exception-option-mute .NB-mute-settings-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-exception-option-mute .NB-mute-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.NB-exception-option-mute .NB-mute-settings-timed-save,
+.NB-exception-option-mute .NB-mute-settings-forever-save,
+.NB-exception-option-mute .NB-mute-settings-unmute-save {
+    font-size: 12px;
+    text-align: center;
+    padding: 4px 10px;
+    flex: 1;
+    cursor: pointer;
+}
+
+/* Show mute buttons when active, unmute button when muted */
+.NB-mute-state-active .NB-mute-buttons-unmute {
+    display: none;
+}
+
+.NB-mute-state-timed .NB-mute-buttons-unmute,
+.NB-mute-state-permanent .NB-mute-buttons-unmute {
+    margin-top: 4px;
+}
+
+.NB-mute-state-timed .NB-mute-current-status {
+    color: #9a6f30;
+}
+
+.NB-mute-state-permanent .NB-mute-current-status {
+    color: #8b3a3a;
 }
 
 /* ==================== */

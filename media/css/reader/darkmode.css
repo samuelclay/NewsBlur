@@ -1111,6 +1111,33 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* View Settings: Dark mode segmented controls */
+.NB-dark .NB-modal-exception .NB-exception-option-view .segmented-control {
+    background-color: #3a3c3e;
+}
+
+.NB-dark .NB-modal-exception .NB-exception-option-view .segmented-control li {
+    color: #9A9B9C;
+}
+
+.NB-dark .NB-modal-exception .NB-exception-option-view .segmented-control li img {
+    filter: invert(0.7);
+}
+
+.NB-dark .NB-modal-exception .NB-exception-option-view .segmented-control li.NB-active {
+    background-color: #5a5c5e;
+    color: #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-modal-exception .NB-exception-option-view .segmented-control li.NB-active img {
+    filter: invert(0.9);
+}
+
+.NB-dark .NB-modal-exception .NB-view-setting-label {
+    color: #9A9B9C;
+}
+
 /* Auto-Mark Read Settings: Dark mode */
 .NB-dark .NB-exception-option-auto-mark-read .NB-exception-option-status {
     color: #6EA74A;
@@ -1142,6 +1169,80 @@ color: #a85b40;
 
 .NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value b {
     color: #7CA4D8;
+}
+
+/* Mark unread slider dark mode */
+.NB-dark .NB-mark-unread-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-mark-unread-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-mark-unread-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-mark-unread-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-mark-unread-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-mark-unread-slider-value b {
+    color: #7CA4D8;
+}
+
+/* Mute section dark mode */
+.NB-dark .NB-exception-option-mute .NB-mute-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-status {
+    color: #6EA74A;
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-current-status {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-settings-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-settings-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-settings-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-exception-option-mute .NB-mute-settings-slider-value {
+    color: #7CA4D8;
+}
+
+.NB-dark .NB-mute-state-timed .NB-mute-current-status {
+    color: #c9a860;
+}
+
+.NB-dark .NB-mute-state-permanent .NB-mute-current-status {
+    color: #ca8f8f;
+}
+
+.NB-dark .NB-menu-manage .NB-mute-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-menu-manage .NB-mute-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-menu-manage .NB-mute-slider::-moz-range-thumb {
+    background: #7CA4D8;
 }
 
 /* Filter popover auto-mark-read slider dark mode */

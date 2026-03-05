@@ -81,6 +81,9 @@ class UserSubscription(models.Model):
     # None = inherit from folder/site-wide
     # 0 = never auto-mark (explicit override to disable aging)
     # 1-365 = days until auto-mark
+    mute_expires_at = models.DateTimeField(null=True, blank=True, default=None)
+    # None = permanent mute (or not muted if active=True)
+    # datetime = auto-unmute after this time
 
     objects = UserSubscriptionManager()
 
@@ -101,6 +104,8 @@ class UserSubscription(models.Model):
         feed["subscribed"] = True
         if self.auto_mark_read_days is not None:
             feed["auto_mark_read_days"] = self.auto_mark_read_days
+        if self.mute_expires_at is not None:
+            feed["mute_expires_at"] = self.mute_expires_at.isoformat()
         if classifiers:
             feed["classifiers"] = classifiers
 

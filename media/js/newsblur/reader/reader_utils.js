@@ -383,8 +383,49 @@ NEWSBLUR.utils = {
         var now = Math.round((new Date()).getTime() / 1000);
 
         return now - (days_back * 60 * 60 * 24);
+    },
+
+    MUTE_SLIDER_STOPS: [1, 2, 3, 4, 5, 6, 7, 10, 14, 21, 30, 60, 90, 180, 270, 365],
+
+    mute_slider_to_days: function (index) {
+        return this.MUTE_SLIDER_STOPS[index] || 7;
+    },
+
+    format_mute_days: function (days) {
+        if (days == 1) return '1 day';
+        if (days < 7) return days + ' days';
+        if (days == 7) return '1 week';
+        if (days == 10) return '10 days';
+        if (days == 14) return '2 weeks';
+        if (days == 21) return '3 weeks';
+        if (days == 30) return '1 month';
+        if (days == 60) return '2 months';
+        if (days == 90) return '3 months';
+        if (days == 180) return '6 months';
+        if (days == 270) return '9 months';
+        if (days == 365) return '1 year';
+        if (days < 30) return days + ' days';
+        if (days < 365) {
+            var months = Math.round(days / 30);
+            return months + (months == 1 ? ' month' : ' months');
+        }
+        return '1 year';
+    },
+
+    mute_time_remaining: function (expires_at_iso) {
+        var now = new Date();
+        var expires = new Date(expires_at_iso);
+        var diff_ms = expires - now;
+        if (diff_ms <= 0) return 'unmuting soon';
+
+        var days = Math.floor(diff_ms / (1000 * 60 * 60 * 24));
+        var hours = Math.floor(diff_ms / (1000 * 60 * 60));
+
+        if (days >= 365) return Math.round(days / 365) + (days >= 730 ? ' years' : ' year') + ' left';
+        if (days >= 30) return Math.round(days / 30) + (days >= 60 ? ' months' : ' month') + ' left';
+        if (days >= 7) return Math.round(days / 7) + (days >= 14 ? ' weeks' : ' week') + ' left';
+        if (days >= 1) return days + (days > 1 ? ' days' : ' day') + ' left';
+        return hours + (hours > 1 ? ' hours' : ' hour') + ' left';
     }
-
-
 
 };
