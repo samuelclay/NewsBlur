@@ -506,9 +506,26 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)defaultUserAvatar;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
+- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
+- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId;
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId;
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+- (void)changeClassifierScope:(NSString *)classifierType value:(NSString *)value
+                       feedId:(NSString *)feedId score:(NSInteger)score
+                     oldScope:(NSString *)oldScope oldFolderName:(NSString *)oldFolderName
+                        scope:(NSString *)scope folderName:(NSString *)folderName;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;

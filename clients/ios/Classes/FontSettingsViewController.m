@@ -427,8 +427,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger adjustedRow = [self adjustedRow:indexPath.row];
-    if (adjustedRow != 6) {
-        [self dismissViewControllerAnimated:adjustedRow != 3 && adjustedRow != 4 && adjustedRow != 5 completion:nil];
+    if (adjustedRow != 6 && adjustedRow != 3) {
+        [self dismissViewControllerAnimated:adjustedRow != 4 && adjustedRow != 5 completion:nil];
     }
 
     if (adjustedRow == 0) {

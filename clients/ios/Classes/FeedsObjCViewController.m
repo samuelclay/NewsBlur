@@ -81,6 +81,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @synthesize currentSection;
 @synthesize noFocusMessage;
 @synthesize noFocusLabel;
+@synthesize toolbarLeadingConstraint;
+@synthesize toolbarTrailingConstraint;
 @synthesize toolbarLeftMargin;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
@@ -314,13 +316,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
-    if (appDelegate.isPhone && !UIInterfaceOrientationIsLandscape(orientation)) {
-        if (self.defaultFeedToolbarItems.count > 0) {
-            self.feedViewToolbar.items = self.defaultFeedToolbarItems;
-        }
-        return;
-    }
-    
     UIBarButtonItem *intelligenceItem = nil;
     for (UIBarButtonItem *item in self.feedViewToolbar.items) {
         if (item.customView == self.intelligenceControl) {
@@ -345,6 +340,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         space.width = width;
         return space;
     };
+    CGFloat compactToolbarSpacing = self.appDelegate.detailViewController.isPhoneOrCompact ? 0.0 : 8.0;
 
 #if TARGET_OS_MACCATALYST
     self.feedViewToolbar.items = @[
@@ -359,13 +355,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #else
     self.feedViewToolbar.items = @[
         makeFlexSpace(),
-        makeFlexSpace(),
         self.addBarButton,
-        makeFlexSpace(),
+        makeFixedSpace(compactToolbarSpacing),
         intelligenceItem,
-        makeFlexSpace(),
+        makeFixedSpace(compactToolbarSpacing),
         self.settingsBarButton,
-        makeFlexSpace(),
         makeFlexSpace()
     ];
 #endif
@@ -463,6 +457,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // Non-Face ID devices (iPhone SE): 8pt to match side margins
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     CGFloat toolbarBottomGap = (safeAreaBottom > 0) ? 12.0 : 8.0;
+    CGFloat compactToolbarSideInset = self.appDelegate.detailViewController.isPhoneOrCompact ? 8.0 : 0.0;
+    self.toolbarLeadingConstraint.constant = compactToolbarSideInset;
+    self.toolbarTrailingConstraint.constant = compactToolbarSideInset;
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
     CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
