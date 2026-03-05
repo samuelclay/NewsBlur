@@ -130,11 +130,22 @@ class RLLMCosts:
     FEATURES = [
         "archive_assistant",
         "ask_ai",
+        "daily_briefing",
         "story_classification",
         "transcription",
+        "webfeed",
         "search_story_embedding",
         "search_query_embedding",
         "search_feed_embedding",
+        "discover_subreddits_categorize",
+        "discover_podcasts_categorize",
+        "discover_newsletters_categorize",
+        "discover_real_feeds_categorize",
+        "categorize_subreddits",
+        "backfill_keyword_gen",
+        "backfill_llm_suggest",
+        "backfill_underpopulated_feeds",
+        "generate_popular_feeds_taxonomy",
     ]
     METRICS = ["tokens", "cost", "requests"]
 
