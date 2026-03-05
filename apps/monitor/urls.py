@@ -27,6 +27,7 @@ from apps.monitor.views import (
     Updates,
     Users,
     UserSearches,
+    WebFeedUsage,
 )
 
 urlpatterns = [
