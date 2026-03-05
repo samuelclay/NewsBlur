@@ -128,6 +128,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'webfeed_usage'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/webfeed-usage
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'db_times'
       static_configs:
         - targets: ['{{ monitor_server }}']

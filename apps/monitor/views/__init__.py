@@ -23,3 +23,4 @@ from apps.monitor.views.newsblur_trending_subscriptions import TrendingSubscript
 from apps.monitor.views.newsblur_updates import Updates
 from apps.monitor.views.newsblur_user_searches import UserSearches
 from apps.monitor.views.newsblur_users import Users
+from apps.monitor.views.newsblur_webfeed_usage import WebFeedUsage
