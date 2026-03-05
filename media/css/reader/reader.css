@@ -10250,6 +10250,29 @@ form.opml_import_form input {
 }
 
 
+.NB-media-player-fullscreen {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.5;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.NB-media-player-fullscreen:hover {
+    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.NB-media-player-fullscreen svg {
+    width: 14px;
+    height: 14px;
+    fill: #505050;
+}
+
 /* Always-visible queue area */
 .NB-media-player-queue-area {
     border-top: 1px solid #e5e5e4;
