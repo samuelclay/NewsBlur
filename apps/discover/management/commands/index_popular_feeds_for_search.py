@@ -66,7 +66,9 @@ class Command(BaseCommand):
         qs = qs.order_by("pk")
 
         total = qs.count()
-        self.stdout.write(f"Found {total} active PopularFeed entries" + (f" (type={feed_type})" if feed_type else ""))
+        self.stdout.write(
+            f"Found {total} active PopularFeed entries" + (f" (type={feed_type})" if feed_type else "")
+        )
 
         if offset:
             qs = qs[offset:]

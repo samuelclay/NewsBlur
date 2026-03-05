@@ -12,7 +12,9 @@ class PopularFeed(models.Model):
         ("podcast", "Podcast"),
     ]
 
-    feed = models.ForeignKey(Feed, null=True, blank=True, on_delete=models.CASCADE, related_name="popular_entries")
+    feed = models.ForeignKey(
+        Feed, null=True, blank=True, on_delete=models.CASCADE, related_name="popular_entries"
+    )
     feed_url = models.URLField(max_length=764)
     feed_type = models.CharField(max_length=20, choices=FEED_TYPE_CHOICES, db_index=True)
     category = models.CharField(max_length=50, db_index=True)

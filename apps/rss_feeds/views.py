@@ -43,6 +43,7 @@ from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
 
+
 @json.json_view
 def load_single_feed(request, feed_id):
     user = get_user(request)
@@ -161,7 +162,6 @@ def feed_autocomplete(request):
         }
     else:
         return feeds
-
 
 
 @ratelimit(minutes=1, requests=30)

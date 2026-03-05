@@ -159,7 +159,9 @@ class Command(BaseCommand):
             for cat_info in taxonomy:
                 cat_name = cat_info["name"]
                 subcategories = cat_info["subcategories"]
-                self.stdout.write(f"  Generating feeds for {cat_name} ({len(subcategories)} subcategories)...")
+                self.stdout.write(
+                    f"  Generating feeds for {cat_name} ({len(subcategories)} subcategories)..."
+                )
 
                 feeds = self._generate_feeds_for_category(
                     client, ftype, cat_name, subcategories, seed_feeds, verbose
@@ -276,9 +278,7 @@ Example: Technology -> Reviews, Programming, AI, Gadgets, Cybersecurity, Open So
                 if block.type == "tool_use" and block.name == "save_taxonomy_structure":
                     return block.input.get("categories", [])
 
-            self.stderr.write(
-                self.style.ERROR(f"  No tool_use block. Stop: {response.stop_reason}")
-            )
+            self.stderr.write(self.style.ERROR(f"  No tool_use block. Stop: {response.stop_reason}"))
             return None
 
         except anthropic.APIError as e:

@@ -503,9 +503,17 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related("feed").filter(user=user)
     notifications = MUserFeedNotification.feeds_for_user(user.pk)
 
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    now = datetime.datetime.now()
+    day_ago = now - datetime.timedelta(days=1)
     scheduled_feeds = []
+    expired_mute_ids = []
     for sub in user_subs:
+        # Auto-unmute expired timed mutes inline (no extra query)
+        if not sub.active and sub.mute_expires_at and sub.mute_expires_at <= now:
+            sub.active = True
+            sub.mute_expires_at = None
+            expired_mute_ids.append(sub.pk)
+
         pk = sub.feed_id
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
@@ -521,6 +529,15 @@ def load_feeds(request):
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
+
+    if expired_mute_ids:
+        if not user.profile.is_premium:
+            active_count = UserSubscription.objects.filter(user=user, active=True).count()
+            remaining = max(0, 64 - active_count)
+            expired_mute_ids = expired_mute_ids[:remaining]
+        if expired_mute_ids:
+            UserSubscription.objects.filter(pk__in=expired_mute_ids).update(active=True, mute_expires_at=None)
+            logging.user(request, "~BB~FWAuto-unmuted ~SB%s~SN expired feeds" % len(expired_mute_ids))
 
     if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(
@@ -614,7 +631,8 @@ def load_feeds_flat(request):
 
     feeds = {}
     inactive_feeds = {}
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    now = datetime.datetime.now()
+    day_ago = now - datetime.timedelta(days=1)
     scheduled_feeds = []
     iphone_version = "2.1"  # Preserved forever. Don't change.
     latest_ios_build = "52"
@@ -633,7 +651,12 @@ def load_feeds_flat(request):
     except UserSubscriptionFolders.DoesNotExist:
         folders = []
 
-    user_subs = UserSubscription.objects.select_related("feed").filter(user=user, active=True)
+    # Include expired muted feeds alongside active feeds so they get auto-unmuted
+    user_subs = (
+        UserSubscription.objects.select_related("feed")
+        .filter(user=user)
+        .filter(Q(active=True) | Q(active=False, mute_expires_at__isnull=False, mute_expires_at__lte=now))
+    )
     notifications = MUserFeedNotification.feeds_for_user(user.pk)
     if not user_subs and folders:
         folders.auto_activate()
@@ -641,7 +664,14 @@ def load_feeds_flat(request):
     if include_inactive:
         inactive_subs = UserSubscription.objects.select_related("feed").filter(user=user, active=False)
 
+    expired_mute_ids = []
     for sub in user_subs:
+        # Auto-unmute expired timed mutes inline
+        if not sub.active and sub.mute_expires_at and sub.mute_expires_at <= now:
+            sub.active = True
+            sub.mute_expires_at = None
+            expired_mute_ids.append(sub.pk)
+
         pk = sub.feed_id
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
@@ -654,6 +684,15 @@ def load_feeds_flat(request):
             scheduled_feeds.append(sub.feed.pk)
         if pk in notifications:
             feeds[pk].update(notifications[pk])
+
+    if expired_mute_ids:
+        if not user.profile.is_premium:
+            active_count = UserSubscription.objects.filter(user=user, active=True).count()
+            remaining = max(0, 64 - active_count)
+            expired_mute_ids = expired_mute_ids[:remaining]
+        if expired_mute_ids:
+            UserSubscription.objects.filter(pk__in=expired_mute_ids).update(active=True, mute_expires_at=None)
+            logging.user(request, "~BB~FWAuto-unmuted ~SB%s~SN expired feeds" % len(expired_mute_ids))
 
     if include_inactive:
         for sub in inactive_subs:
@@ -962,9 +1001,13 @@ def load_single_feed(request, feed_id):
     # First request returns fast (showing banners / "fetching" indicator), then
     # poll_for_fetch_completion sends insta_fetch=1 to trigger the actual fetch.
     insta_fetch = is_true(request.GET.get("insta_fetch", False))
-    if insta_fetch and not usersub and (
-        not feed.fetched_once
-        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    if (
+        insta_fetch
+        and not usersub
+        and (
+            not feed.fetched_once
+            or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
     ):
         original_title = feed.feed_title
         feed = feed.update(force=True, compute_scores=False, verbose=True)
@@ -1341,8 +1384,7 @@ def load_single_feed(request, feed_id):
                     feed.save(update_fields=["feed_title"])
     # Signal frontend to poll for fetch completion on stale/unfetched try-feeds
     if not usersub and (
-        not feed.fetched_once
-        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        not feed.fetched_once or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
     ):
         data["not_yet_fetched"] = True
         data["fetched_once"] = False
@@ -4226,6 +4268,7 @@ def set_feed_mute(request):
     """
     feed_id = request.POST.get("feed_id")
     mute = request.POST.get("mute", "true").lower() in ("true", "1", "yes")
+    mute_duration_days = request.POST.get("mute_duration_days")
 
     if not feed_id:
         return {"code": -1, "message": "feed_id is required"}
@@ -4240,6 +4283,12 @@ def set_feed_mute(request):
     except UserSubscription.DoesNotExist:
         return {"code": -1, "message": "You are not subscribed to this feed"}
 
+    if mute_duration_days:
+        try:
+            mute_duration_days = int(mute_duration_days)
+        except (ValueError, TypeError):
+            return {"code": -1, "message": "Invalid mute_duration_days"}
+
     is_premium = request.user.profile.is_premium
     if not mute and not is_premium and not sub.active:
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
@@ -4247,13 +4296,24 @@ def set_feed_mute(request):
             return {"code": -1, "message": "Free accounts are limited to 64 active sites."}
 
     if mute:
-        if sub.active:
-            sub.active = False
-            sub.save()
-            logging.user(request, "~BB~FW~SBMuted feed: ~FC%s" % feed_id)
+        sub.active = False
+        if mute_duration_days and mute_duration_days > 0:
+            sub.mute_expires_at = datetime.datetime.now() + datetime.timedelta(
+                days=mute_duration_days
+            )
+        else:
+            sub.mute_expires_at = None
+        sub.save()
+        duration_text = (
+            "%s days" % mute_duration_days
+            if mute_duration_days and mute_duration_days > 0
+            else "forever"
+        )
+        logging.user(request, "~BB~FW~SBMuted feed ~FC%s~FB for %s" % (feed_id, duration_text))
     else:
         if not sub.active:
             sub.active = True
+            sub.mute_expires_at = None
             sub.save()
             if sub.feed.active_subscribers <= 0:
                 sub.feed.count_subscribers()
@@ -4262,7 +4322,10 @@ def set_feed_mute(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
 
-    return {"code": 1, "feed_id": feed_id, "muted": mute}
+    response = {"code": 1, "feed_id": feed_id, "muted": mute}
+    if sub.mute_expires_at:
+        response["mute_expires_at"] = sub.mute_expires_at.isoformat()
+    return response
 
 
 @ajax_login_required

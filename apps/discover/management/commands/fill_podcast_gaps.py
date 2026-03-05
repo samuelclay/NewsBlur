@@ -811,7 +811,9 @@ class Command(BaseCommand):
         cat_counts = Counter(f["category"] for f in podcast_feeds)
         subcat_counts = Counter((f["category"], f["subcategory"]) for f in podcast_feeds)
 
-        self.stdout.write(f"Current state: {len(podcast_feeds)} podcast feeds across {len(cat_counts)} categories")
+        self.stdout.write(
+            f"Current state: {len(podcast_feeds)} podcast feeds across {len(cat_counts)} categories"
+        )
 
         # Track what we'll add
         added = 0
