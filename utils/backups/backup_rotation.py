@@ -153,12 +153,12 @@ def rotate_s3_backups(bucket_name, key_prefix, key_ext, dry_run=False, daily=7, 
         if key in yearly_keys:
             obj = bucket.Object(key)
             obj.load()
-            if obj.storage_class not in ('DEEP_ARCHIVE', 'GLACIER'):
+            if obj.storage_class not in ("DEEP_ARCHIVE", "GLACIER"):
                 if dry_run:
                     print("  [DRY RUN] Would archive to Glacier: %s" % key)
                 else:
-                    copy_source = {'Bucket': bucket_name, 'Key': key}
-                    obj.copy(copy_source, ExtraArgs={'StorageClass': 'DEEP_ARCHIVE'})
+                    copy_source = {"Bucket": bucket_name, "Key": key}
+                    obj.copy(copy_source, ExtraArgs={"StorageClass": "DEEP_ARCHIVE"})
                     print("  Archived to Glacier Deep Archive: %s" % key)
                 archived += 1
 

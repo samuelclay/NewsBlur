@@ -67,7 +67,6 @@ class Test_ExtractPreviewStories(TestCase):
         stories = extract_preview_stories("", variant, "https://example.com")
         self.assertEqual(len(stories), 0)
 
-
     def test_extract_stories_css_background_image(self):
         html = """
         <html><body>

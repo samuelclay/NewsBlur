@@ -384,7 +384,12 @@ class Feed(models.Model):
         min_subscribers = 1
         if settings.DEBUG:
             min_subscribers = 0
-        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter and not self.is_webfeed:
+        if (
+            self.num_subscribers > min_subscribers
+            and not self.branch_from_feed
+            and not self.is_newsletter
+            and not self.is_webfeed
+        ):
             SearchFeed.index(
                 feed_id=self.pk,
                 title=self.feed_title,
@@ -1632,8 +1637,7 @@ class Feed(models.Model):
         # Only fetch if at least one archive subscriber exists
         if self.archive_subscribers <= 0:
             logging.debug(
-                "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers"
-                % (self.log_title[:30],)
+                "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers" % (self.log_title[:30],)
             )
             return self
 

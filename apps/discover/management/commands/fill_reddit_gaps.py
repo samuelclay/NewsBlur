@@ -1692,7 +1692,9 @@ class Command(BaseCommand):
         cat_counts = Counter(f["category"] for f in reddit_feeds)
         subcat_counts = Counter((f["category"], f["subcategory"]) for f in reddit_feeds)
 
-        self.stdout.write(f"Current state: {len(reddit_feeds)} reddit feeds across {len(cat_counts)} categories")
+        self.stdout.write(
+            f"Current state: {len(reddit_feeds)} reddit feeds across {len(cat_counts)} categories"
+        )
 
         # Track what we'll add
         added = 0
@@ -1774,4 +1776,6 @@ class Command(BaseCommand):
             for cat, sub, count in sorted(subcats_under):
                 self.stdout.write(f"  {cat}/{sub}: {count}")
         else:
-            self.stdout.write(self.style.SUCCESS(f"All subcategories have {MIN_SUBCATEGORY_COUNT}+ subreddits"))
+            self.stdout.write(
+                self.style.SUCCESS(f"All subcategories have {MIN_SUBCATEGORY_COUNT}+ subreddits")
+            )

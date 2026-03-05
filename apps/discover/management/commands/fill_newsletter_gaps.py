@@ -447,7 +447,9 @@ class Command(BaseCommand):
         cat_counts = Counter(f["category"] for f in newsletter_feeds)
         subcat_counts = Counter((f["category"], f["subcategory"]) for f in newsletter_feeds)
 
-        self.stdout.write(f"Current state: {len(newsletter_feeds)} newsletter feeds across {len(cat_counts)} categories")
+        self.stdout.write(
+            f"Current state: {len(newsletter_feeds)} newsletter feeds across {len(cat_counts)} categories"
+        )
 
         # Track what we'll add
         added = 0
@@ -492,7 +494,9 @@ class Command(BaseCommand):
         # Sort newsletter feeds within the file: by category, subcategory, subscriber_count desc
         non_newsletter = [f for f in all_feeds if f.get("feed_type") != "newsletter"]
         newsletter_updated = [f for f in all_feeds if f.get("feed_type") == "newsletter"]
-        newsletter_updated.sort(key=lambda f: (f["category"], f["subcategory"], -f.get("subscriber_count", 0)))
+        newsletter_updated.sort(
+            key=lambda f: (f["category"], f["subcategory"], -f.get("subscriber_count", 0))
+        )
 
         all_feeds_out = non_newsletter + newsletter_updated
 
@@ -528,4 +532,6 @@ class Command(BaseCommand):
             for cat, sub, count in sorted(subcats_under):
                 self.stdout.write(f"  {cat}/{sub}: {count}")
         else:
-            self.stdout.write(self.style.SUCCESS(f"All subcategories have {MIN_SUBCATEGORY_COUNT}+ newsletters"))
+            self.stdout.write(
+                self.style.SUCCESS(f"All subcategories have {MIN_SUBCATEGORY_COUNT}+ newsletters")
+            )

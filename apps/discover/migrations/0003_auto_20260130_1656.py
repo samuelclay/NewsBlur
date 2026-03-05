@@ -4,23 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('discover', '0002_popularfeed_subcategory'),
+        ("discover", "0002_popularfeed_subcategory"),
     ]
 
     operations = [
         migrations.RemoveIndex(
-            model_name='popularfeed',
-            name='discover_po_feed_ty_subcat_idx',
+            model_name="popularfeed",
+            name="discover_po_feed_ty_subcat_idx",
         ),
         migrations.AlterField(
-            model_name='popularfeed',
-            name='feed_type',
-            field=models.CharField(choices=[('rss', 'RSS'), ('youtube', 'YouTube'), ('reddit', 'Reddit'), ('newsletter', 'Newsletter'), ('podcast', 'Podcast')], db_index=True, max_length=20),
+            model_name="popularfeed",
+            name="feed_type",
+            field=models.CharField(
+                choices=[
+                    ("rss", "RSS"),
+                    ("youtube", "YouTube"),
+                    ("reddit", "Reddit"),
+                    ("newsletter", "Newsletter"),
+                    ("podcast", "Podcast"),
+                ],
+                db_index=True,
+                max_length=20,
+            ),
         ),
         migrations.AddIndex(
-            model_name='popularfeed',
-            index=models.Index(fields=['feed_type', 'category', 'subcategory'], name='discover_po_feed_ty_1c0413_idx'),
+            model_name="popularfeed",
+            index=models.Index(
+                fields=["feed_type", "category", "subcategory"], name="discover_po_feed_ty_1c0413_idx"
+            ),
         ),
     ]

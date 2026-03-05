@@ -484,7 +484,9 @@ class Command(BaseCommand):
         cat_counts = Counter(f["category"] for f in youtube_feeds)
         subcat_counts = Counter((f["category"], f["subcategory"]) for f in youtube_feeds)
 
-        self.stdout.write(f"Current state: {len(youtube_feeds)} youtube feeds across {len(cat_counts)} categories")
+        self.stdout.write(
+            f"Current state: {len(youtube_feeds)} youtube feeds across {len(cat_counts)} categories"
+        )
 
         # Track what we'll add
         added = 0
