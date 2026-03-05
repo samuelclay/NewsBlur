@@ -1518,7 +1518,8 @@ color: #a85b40;
 }
 
 .NB-dark .NB-media-player-settings svg,
-.NB-dark .NB-media-player-close svg {
+.NB-dark .NB-media-player-close svg,
+.NB-dark .NB-media-player-fullscreen svg {
     fill: #aaa;
 }
 
@@ -1531,7 +1532,8 @@ color: #a85b40;
 .NB-dark .NB-media-player-skip-back:hover,
 .NB-dark .NB-media-player-skip-forward:hover,
 .NB-dark .NB-media-player-settings:hover,
-.NB-dark .NB-media-player-close:hover {
+.NB-dark .NB-media-player-close:hover,
+.NB-dark .NB-media-player-fullscreen:hover {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
