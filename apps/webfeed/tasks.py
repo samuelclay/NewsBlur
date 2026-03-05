@@ -307,11 +307,14 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         logging.user(user, f"~BB~FWWeb Feed: Fetching page ~SB{url}~SN")
 
         # Step 1: Fetch page HTML
+        from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+
         page_html = fetch_page_html(url)
         if not page_html:
             error_msg = "Could not fetch the page. The site may be blocking requests."
             publish_event("error", {"error": error_msg})
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBFetch failed~SN~FW for ~SB{url}~SN")
+            RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
         html_hash = hashlib.sha256(page_html[:10000].encode("utf-8", errors="replace")).hexdigest()[:16]
@@ -335,10 +338,10 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         publish_event("progress", {"message": "Finding story patterns..."})
 
         # Step 2: Call Claude for XPath analysis
-        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_provider
+        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
 
         messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint)
-        provider, model_id, _ = get_provider("opus")
+        provider, model_id = get_briefing_provider("haiku")
 
         if not provider.is_configured():
             error_msg = "Anthropic API key not configured"
@@ -379,11 +382,13 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             error_msg = "Failed to parse AI response. Please try again."
             publish_event("error", {"error": error_msg})
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBJSON parse failed~SN~FW: {response_text[:200]}")
+            RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
         if not isinstance(variants, list) or len(variants) == 0:
             error_msg = "No story patterns found on this page."
             publish_event("error", {"error": error_msg})
+            RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
         # Extract page title
@@ -447,6 +452,8 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         )
         publish_event("complete")
 
+        RTrendingWebFeed.record_analysis_result(success=True)
+
         return {
             "code": 1,
             "message": "Analysis complete",
@@ -460,6 +467,12 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             publish_event("error", {"error": error_msg})
         if user:
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBLLM error~SN~FW - {e}")
+        try:
+            from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+
+            RTrendingWebFeed.record_analysis_result(success=False)
+        except Exception:
+            pass
         return {"code": -1, "message": error_msg}
 
     except Exception as e:
@@ -468,4 +481,10 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             publish_event("error", {"error": error_msg})
         if user:
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBUnexpected error~SN~FW - {e}")
+        try:
+            from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+
+            RTrendingWebFeed.record_analysis_result(success=False)
+        except Exception:
+            pass
         return {"code": -1, "message": error_msg}
