@@ -25,6 +25,7 @@
 @property (nonatomic) IBOutlet UITextField *inFolderInput;
 @property (nonatomic) IBOutlet UITextField *addFolderInput;
 @property (nonatomic) IBOutlet UITextField *siteAddressInput;
+@property (nonatomic) IBOutlet UIButton *addSiteButton;
 
 @property (nonatomic) IBOutlet UIBarButtonItem *addButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *cancelButton;

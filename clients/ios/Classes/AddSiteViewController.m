@@ -31,9 +31,8 @@
 
 - (void)viewDidLoad {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add Site" style:UIBarButtonItemStyleDone target:self action:@selector(addSite)];
+    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.rightBarButtonItem = nil;
     
     UIView *folderPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *folderImage = [[UIImageView alloc]
@@ -82,6 +81,9 @@
     [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     
+    if (self.navigationController) {
+        self.navigationController.navigationBarHidden = YES;
+    }
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.siteTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     // eliminate extra separators at bottom of site table (e.g., while animating)
@@ -129,11 +131,7 @@
 }
 
 - (IBAction)doCancelButton {
-    if (!self.isPhone) {
-        [appDelegate hidePopover];
-    } else {
-        [appDelegate hidePopoverAnimated:YES];
-    }
+    [self dismissAddSiteDialog];
 }
 
 - (IBAction)doAddButton {
@@ -271,11 +269,7 @@
             [self.errorLabel setText:[responseObject valueForKey:@"message"]];
             [self.errorLabel setHidden:NO];
         } else {
-            if (!self.isPhone) {
-                [self->appDelegate hidePopover];
-            } else {
-                [self->appDelegate hidePopoverAnimated:YES];
-            }
+            [self dismissAddSiteDialog];
             [self->appDelegate reloadFeedsView:NO];
         }
         
@@ -290,6 +284,20 @@
         [self preferredContentSize];
         
     }];
+}
+
+- (void)dismissAddSiteDialog {
+    UIViewController *presenter = self.navigationController ?: self;
+    if (presenter.presentingViewController) {
+        [presenter dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+
+    if (!self.isPhone) {
+        [appDelegate hidePopover];
+    } else {
+        [appDelegate hidePopoverAnimated:YES];
+    }
 }
 
 - (NSString *)extractParentFolder {
