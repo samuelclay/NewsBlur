@@ -1521,7 +1521,7 @@
         if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
             AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
             askAIVC.modalPresentationStyle = UIModalPresentationPopover;
-            askAIVC.preferredContentSize = CGSizeMake(500, 440);
+            askAIVC.preferredContentSize = CGSizeMake(500, 480);
 
             // Set up popover presentation
             UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
