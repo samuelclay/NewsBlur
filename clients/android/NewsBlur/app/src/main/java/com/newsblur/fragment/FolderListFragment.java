@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -14,19 +15,25 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
+import android.view.inputmethod.InputMethodManager;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
@@ -45,6 +52,7 @@ import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.databinding.FragmentFolderfeedlistBinding;
+import com.newsblur.databinding.ViewFeedListSearchHeaderBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
@@ -91,6 +99,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
 	private FragmentFolderfeedlistBinding binding;
+    private ViewFeedListSearchHeaderBinding searchHeaderBinding;
+    private boolean isSyncingSearchField = false;
     public boolean firstCursorSeenYet = false;
 
     // the two-step context menu for feeds requires us to temp store the feed long-pressed so
@@ -170,19 +180,56 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
         binding = FragmentFolderfeedlistBinding.bind(v);
+        searchHeaderBinding = ViewFeedListSearchHeaderBinding.inflate(inflater, binding.folderfeedList, false);
 
         binding.folderfeedList.setGroupIndicator(ContextCompat.getDrawable(requireContext(), R.drawable.transparent));
+        binding.folderfeedList.setItemsCanFocus(true);
+        binding.folderfeedList.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         binding.folderfeedList.setOnCreateContextMenuListener(this);
         binding.folderfeedList.setOnChildClickListener(this);
         binding.folderfeedList.setOnGroupClickListener(this);
         binding.folderfeedList.setOnGroupCollapseListener(this);
         binding.folderfeedList.setOnGroupExpandListener(this);
+        binding.folderfeedList.addHeaderView(searchHeaderBinding.getRoot(), null, false);
 
         adapter.listBackref = new WeakReference<>(binding.folderfeedList); // see note in adapter about backref
         binding.folderfeedList.setAdapter(adapter);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
         binding.folderfeedList.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
+        searchHeaderBinding.inputSearchQuery.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isSyncingSearchField) {
+                    return;
+                }
+                if ((s == null) || TextUtils.isEmpty(s.toString().trim())) {
+                    applySearchQuery(null, false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        searchHeaderBinding.inputSearchQuery.setOnEditorActionListener((textView, actionId, event) -> {
+            boolean isSearchAction =
+                    actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    ((event != null) &&
+                     (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) &&
+                     (event.getAction() == KeyEvent.ACTION_DOWN));
+            if (!isSearchAction) {
+                return false;
+            }
+            applySearchQuery((textView.getText() == null) ? null : textView.getText().toString(), false);
+            return true;
+        });
+        syncSearchField(adapter.activeSearchQuery);
 
         return v;
     }
@@ -414,13 +461,75 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     public void setSearchQuery(String q) {
-        adapter.activeSearchQuery = q;
-        adapter.forceRecount();
-        checkOpenFolderPreferences();
+        applySearchQuery(q, true);
     }
 
     public String getSearchQuery() {
         return adapter.activeSearchQuery;
+    }
+
+    private void applySearchQuery(@Nullable String query, boolean syncField) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        boolean shouldRestoreFocus = searchHeaderBinding != null && searchHeaderBinding.inputSearchQuery.hasFocus();
+        int selectionEnd = shouldRestoreFocus ? searchHeaderBinding.inputSearchQuery.getSelectionEnd() : -1;
+        if (!TextUtils.equals(adapter.activeSearchQuery, normalizedQuery)) {
+            adapter.activeSearchQuery = normalizedQuery;
+            adapter.forceRecount();
+            pushUnreadCounts();
+            checkOpenFolderPreferences();
+        }
+        if (syncField) {
+            syncSearchField(normalizedQuery);
+        }
+        if (shouldRestoreFocus) {
+            restoreSearchFieldFocus(normalizedQuery, selectionEnd);
+        }
+    }
+
+    @Nullable
+    private String normalizeSearchQuery(@Nullable CharSequence query) {
+        if (query == null) {
+            return null;
+        }
+        String normalizedQuery = query.toString().trim();
+        return normalizedQuery.isEmpty() ? null : normalizedQuery;
+    }
+
+    private void syncSearchField(@Nullable String query) {
+        if (searchHeaderBinding == null) {
+            return;
+        }
+
+        String displayQuery = (query == null) ? "" : query;
+        if (TextUtils.equals(searchHeaderBinding.inputSearchQuery.getText(), displayQuery)) {
+            return;
+        }
+
+        isSyncingSearchField = true;
+        searchHeaderBinding.inputSearchQuery.setText(displayQuery);
+        searchHeaderBinding.inputSearchQuery.setSelection(displayQuery.length());
+        isSyncingSearchField = false;
+    }
+
+    private void restoreSearchFieldFocus(@Nullable String query, int selectionEnd) {
+        if (searchHeaderBinding == null) {
+            return;
+        }
+
+        String displayQuery = (query == null) ? "" : query;
+        int safeSelectionEnd = Math.max(0, Math.min(selectionEnd, displayQuery.length()));
+        searchHeaderBinding.inputSearchQuery.post(() -> {
+            if (searchHeaderBinding == null) {
+                return;
+            }
+            searchHeaderBinding.inputSearchQuery.requestFocus();
+            searchHeaderBinding.inputSearchQuery.setSelection(safeSelectionEnd);
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.showSoftInput(searchHeaderBinding.inputSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 
     /**

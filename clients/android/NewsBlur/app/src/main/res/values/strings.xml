@@ -218,6 +218,7 @@
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="adding_feed_progress">Adding feed…</string>
+    <string name="feed_list_search_hint">Search feeds</string>
     <string name="add_folder_name">Please enter folder name</string>
     <string name="add_tag_name">Please add tag name</string>
     <string name="add_new_folder">+ Add new folder</string>
@@ -582,6 +583,7 @@
     <string name="sync_status_images">Storing %d images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed</string>
+    <string name="sync_status_done">All done</string>
 
     <string name="volume_key_navigation">Volume key navigation…</string>
     <string name="off">Off</string>
