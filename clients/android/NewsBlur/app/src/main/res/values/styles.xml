@@ -512,6 +512,14 @@
         <item name="trackThickness">3dp</item>
     </style>
 
+    <style name="syncStatusProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">@color/status_overlay_text</item>
+        <item name="indicatorInset">0dp</item>
+        <item name="indicatorSize">10dp</item>
+        <item name="trackColor">@color/transparent</item>
+        <item name="trackThickness">2dp</item>
+    </style>
+
     <style name="linearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
         <item name="android:indeterminate">true</item>
         <item name="indeterminateAnimationType">contiguous</item>

@@ -217,6 +217,7 @@ open class SyncService :
             Log.d(this, "Finishing primary sync")
 
             syncServiceState.setServiceState(ServiceState.Idle)
+            sendSyncUpdate(UPDATE_STATUS)
         }
 
     override fun onDestroy() {
