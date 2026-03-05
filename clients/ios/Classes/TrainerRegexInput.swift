@@ -20,7 +20,7 @@ struct TrainerRegexInput: View {
     let fontBuilder: (String, CGFloat) -> Font
     let cache: StoryCache
 
-    @Binding var showingHelp: Bool
+    @State private var showingHelp = false
     @FocusState private var isTextFieldFocused: Bool
 
     @State private var isRegex = false
@@ -39,8 +39,11 @@ struct TrainerRegexInput: View {
                         }
                     } label: {
                         Image(systemName: "info.circle")
-                            .foregroundColor(Color(red: 0.482, green: 0.408, blue: 0.933)) // #7B68EE
+                            .foregroundColor(purpleAccent)
                             .imageScale(.medium)
+                    }
+                    .popover(isPresented: $showingHelp) {
+                        regexHelpContent
                     }
                 }
             }
@@ -48,7 +51,14 @@ struct TrainerRegexInput: View {
             HStack(spacing: 8) {
                 TextField(placeholder, text: $pattern)
                     .font(isRegex ? .system(.body, design: .monospaced) : fontBuilder("WhitneySSm-Medium", 14))
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .padding(8)
+                    .background(Color(.systemBackground))
+                    .cornerRadius(6)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color(.systemGray4), lineWidth: 1)
+                    )
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .focused($isTextFieldFocused)
@@ -79,7 +89,8 @@ struct TrainerRegexInput: View {
                 }
             }
         }
-        .padding([.top], 6)
+        .padding([.top], 12)
+        .padding([.bottom], 8)
         .onAppear {
             syncFromCache()
         }
@@ -287,6 +298,93 @@ struct TrainerRegexInput: View {
         case .text: return isRegex ? "Text Regex" : "Text"
         case .url: return isRegex ? "URL Regex" : "URL"
         }
+    }
+
+    // MARK: - Regex Help
+
+    private var purpleAccent: Color {
+        Color(red: 0.482, green: 0.408, blue: 0.933) // #7B68EE
+    }
+
+    var regexHelpContent: some View {
+        VStack(spacing: 0) {
+            Text("Regex Patterns")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(purpleAccent)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 16)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                regexHelpCard("Word Matching", examples: [
+                    ("\\bcat\\b", "Whole word"),
+                    ("cat|dog", "Either word"),
+                    ("\\bthe cat\\b", "Exact phrase"),
+                ])
+
+                regexHelpCard("Position", examples: [
+                    ("^Breaking", "Starts with"),
+                    ("update$", "Ends with"),
+                    ("breaking.*news", "Words in order"),
+                ])
+
+                regexHelpCard("Patterns", examples: [
+                    ("\\d+", "Numbers"),
+                    ("\\$\\d+", "Dollar amounts"),
+                    ("#\\w+", "Hashtags"),
+                ])
+
+                regexHelpCard("Advanced", examples: [
+                    ("^(?!.*sponsor)", "Exclude word"),
+                    ("\\d{4}", "Exactly 4 digits"),
+                    ("[A-Z]{2,}", "Acronyms"),
+                ])
+            }
+            .padding(.horizontal, 20)
+
+            Spacer()
+
+            Text("All patterns are case-insensitive by default")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+                .padding(.bottom, 16)
+        }
+        .frame(minWidth: 340, minHeight: 360)
+    }
+
+    @ViewBuilder
+    func regexHelpCard(_ title: String, examples: [(String, String)]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title.uppercased())
+                .font(.system(size: 9, weight: .bold))
+                .foregroundColor(purpleAccent)
+                .tracking(0.8)
+
+            ForEach(examples, id: \.0) { pattern, description in
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(pattern)
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundColor(Color(red: 0.353, green: 0.312, blue: 0.812))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(purpleAccent.opacity(0.1))
+                        .cornerRadius(4)
+
+                    Text(description)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 2)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(purpleAccent.opacity(0.15), lineWidth: 1)
+        )
     }
 
     // MARK: - Save

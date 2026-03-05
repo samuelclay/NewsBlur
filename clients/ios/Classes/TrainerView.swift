@@ -100,7 +100,9 @@ struct TrainerView: View {
                             }
                         }
 
-                        TrainerRegexInput(sectionType: .title, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
+                        TrainerRegexInput(sectionType: .title, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache)
+
+                        Spacer().frame(height: 8)
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -171,7 +173,9 @@ struct TrainerView: View {
                             }
                         }
 
-                        TrainerRegexInput(sectionType: .text, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
+                        TrainerRegexInput(sectionType: .text, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache)
+
+                        Spacer().frame(height: 8)
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -208,7 +212,9 @@ struct TrainerView: View {
                             }
                         }
 
-                        TrainerRegexInput(sectionType: .url, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache, showingHelp: $regexShowingHelp)
+                        TrainerRegexInput(sectionType: .url, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache)
+
+                        Spacer().frame(height: 8)
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -240,9 +246,6 @@ struct TrainerView: View {
         .onAppear {
             addingTitle = ""
             cache.reload()
-        }
-        .sheet(isPresented: $regexShowingHelp) {
-            regexHelpSheet
         }
     }
 
@@ -312,7 +315,6 @@ struct TrainerView: View {
     }
 
     @State private var addingTitle = ""
-    @State private var regexShowingHelp = false
 
 
     var feed: Feed? {
@@ -419,102 +421,6 @@ struct TrainerView: View {
         }
     }
 
-    // MARK: - Regex Help
-
-    private var purpleAccent: Color {
-        Color(red: 0.482, green: 0.408, blue: 0.933) // #7B68EE
-    }
-
-    var regexHelpSheet: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text("Regex Patterns")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(purpleAccent)
-                Spacer()
-                Button {
-                    regexShowingHelp = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 24))
-                        .foregroundColor(Color(.systemGray3))
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 16)
-
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                regexHelpCard("Word Matching", examples: [
-                    ("\\bcat\\b", "Whole word"),
-                    ("cat|dog", "Either word"),
-                    ("\\bthe cat\\b", "Exact phrase"),
-                ])
-
-                regexHelpCard("Position", examples: [
-                    ("^Breaking", "Starts with"),
-                    ("update$", "Ends with"),
-                    ("breaking.*news", "Words in order"),
-                ])
-
-                regexHelpCard("Patterns", examples: [
-                    ("\\d+", "Numbers"),
-                    ("\\$\\d+", "Dollar amounts"),
-                    ("#\\w+", "Hashtags"),
-                ])
-
-                regexHelpCard("Advanced", examples: [
-                    ("^(?!.*sponsor)", "Exclude word"),
-                    ("\\d{4}", "Exactly 4 digits"),
-                    ("[A-Z]{2,}", "Acronyms"),
-                ])
-            }
-            .padding(.horizontal, 20)
-
-            Spacer()
-
-            Text("All patterns are case-insensitive by default")
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-                .padding(.bottom, 16)
-        }
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.visible)
-    }
-
-    @ViewBuilder
-    func regexHelpCard(_ title: String, examples: [(String, String)]) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title.uppercased())
-                .font(.system(size: 9, weight: .bold))
-                .foregroundColor(purpleAccent)
-                .tracking(0.8)
-
-            ForEach(examples, id: \.0) { pattern, description in
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(pattern)
-                        .font(.system(size: 12, design: .monospaced))
-                        .foregroundColor(Color(red: 0.353, green: 0.312, blue: 0.812))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(purpleAccent.opacity(0.1))
-                        .cornerRadius(4)
-
-                    Text(description)
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
-                        .padding(.leading, 2)
-                }
-            }
-        }
-        .padding(12)
-        .background(Color(.systemBackground))
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(purpleAccent.opacity(0.15), lineWidth: 1)
-        )
-    }
 }
 
 //#Preview {
