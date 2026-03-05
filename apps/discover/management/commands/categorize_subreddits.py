@@ -38,7 +38,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
         parser.add_argument("--verbose", action="store_true", help="Show each categorization")
-        parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Feeds per Claude API call")
+        parser.add_argument(
+            "--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Feeds per Claude API call"
+        )
 
     def handle(self, *args, **options):
         self.verbose = options["verbose"]
@@ -52,7 +54,9 @@ class Command(BaseCommand):
         reddit_feeds = [f for f in all_feeds if f.get("feed_type") == "reddit"]
         non_reddit = [f for f in all_feeds if f.get("feed_type") != "reddit"]
 
-        self.stdout.write(f"Total feeds: {len(all_feeds)} ({len(reddit_feeds)} reddit, {len(non_reddit)} other)")
+        self.stdout.write(
+            f"Total feeds: {len(all_feeds)} ({len(reddit_feeds)} reddit, {len(non_reddit)} other)"
+        )
 
         # Find entries needing work
         valid_categories = set(TAXONOMY.keys())
@@ -180,8 +184,7 @@ class Command(BaseCommand):
 
                 if self.verbose:
                     self.stdout.write(
-                        f"    {feed.get('title', url)}: "
-                        f"'{old_cat}/{old_sub}' -> '{final_cat}/{new_sub}'"
+                        f"    {feed.get('title', url)}: " f"'{old_cat}/{old_sub}' -> '{final_cat}/{new_sub}'"
                     )
 
                 if not self.dry_run:

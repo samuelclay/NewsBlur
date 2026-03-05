@@ -163,9 +163,7 @@ class Command(BaseCommand):
 
         total_subcats = sum(len(subs) for subs in gaps.values())
         total_needed = sum(self.min_feeds - cnt for subs in gaps.values() for _, cnt in subs)
-        self.stdout.write(
-            f"Found {total_subcats} underpopulated subcategories across {len(gaps)} categories"
-        )
+        self.stdout.write(f"Found {total_subcats} underpopulated subcategories across {len(gaps)} categories")
         self.stdout.write(f"Need ~{total_needed} new feeds to reach minimum of {self.min_feeds} each")
 
         if self.dry_run:
@@ -264,9 +262,7 @@ class Command(BaseCommand):
 
         api_key = getattr(settings, "ANTHROPIC_API_KEY", None)
         if not api_key:
-            self.stderr.write(
-                self.style.WARNING("No ANTHROPIC_API_KEY, using basic keyword queries")
-            )
+            self.stderr.write(self.style.WARNING("No ANTHROPIC_API_KEY, using basic keyword queries"))
             return self._basic_search_queries(gaps)
 
         client = anthropic.Anthropic(api_key=api_key)
@@ -486,9 +482,7 @@ Examples of BAD queries (too long, too specific):
         completed = set(cache["completed_queries"])
 
         if self.resume and completed:
-            self.stdout.write(
-                f"Resuming: {len(completed)} queries completed, {len(feeds)} feeds cached"
-            )
+            self.stdout.write(f"Resuming: {len(completed)} queries completed, {len(feeds)} feeds cached")
 
         total_queries = len(search_queries)
         query_num = 0
@@ -504,19 +498,13 @@ Examples of BAD queries (too long, too specific):
                 continue
 
             if self.verbose:
-                self.stdout.write(
-                    f"  [{query_num}/{total_queries}] {category} > {subcategory}: \"{query}\""
-                )
+                self.stdout.write(f'  [{query_num}/{total_queries}] {category} > {subcategory}: "{query}"')
             elif query_num % 20 == 0 or query_num == 1:
-                self.stdout.write(
-                    f"  [{query_num}/{total_queries}] {len(feeds)} feeds so far..."
-                )
+                self.stdout.write(f"  [{query_num}/{total_queries}] {len(feeds)} feeds so far...")
             self.stdout.flush()
 
             try:
-                resp = self._feedly_get(
-                    FEEDLY_SEARCH_URL, {"query": query, "count": self.feedly_count}
-                )
+                resp = self._feedly_get(FEEDLY_SEARCH_URL, {"query": query, "count": self.feedly_count})
                 if resp is None:
                     break
 
@@ -524,9 +512,7 @@ Examples of BAD queries (too long, too specific):
                     consecutive_429s += 1
                     wait_time = FEEDLY_RATE_LIMIT_WAIT * consecutive_429s
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  Rate limited ({consecutive_429s}x), waiting {wait_time}s..."
-                        )
+                        self.style.WARNING(f"  Rate limited ({consecutive_429s}x), waiting {wait_time}s...")
                     )
                     cache["feeds"] = feeds
                     cache["completed_queries"] = list(completed)
@@ -542,9 +528,7 @@ Examples of BAD queries (too long, too specific):
                         return self._feeds_dict_to_list(feeds, existing_urls)
 
                     time.sleep(wait_time)
-                    resp = self._feedly_get(
-                        FEEDLY_SEARCH_URL, {"query": query, "count": self.feedly_count}
-                    )
+                    resp = self._feedly_get(FEEDLY_SEARCH_URL, {"query": query, "count": self.feedly_count})
                     if resp is None or resp.status_code == 429:
                         cache["feeds"] = feeds
                         cache["completed_queries"] = list(completed)
@@ -576,19 +560,13 @@ Examples of BAD queries (too long, too specific):
                                 feeds[feed_url] = feed_data
                                 new_in_batch += 1
                             elif feed_url in feeds:
-                                if feed_data["subscriber_count"] > feeds[feed_url].get(
-                                    "subscriber_count", 0
-                                ):
-                                    feeds[feed_url]["subscriber_count"] = feed_data[
-                                        "subscriber_count"
-                                    ]
+                                if feed_data["subscriber_count"] > feeds[feed_url].get("subscriber_count", 0):
+                                    feeds[feed_url]["subscriber_count"] = feed_data["subscriber_count"]
 
                     completed.add(cache_key)
 
                     if self.verbose and new_in_batch > 0:
-                        self.stdout.write(
-                            f"    +{new_in_batch} new feeds ({len(results)} results)"
-                        )
+                        self.stdout.write(f"    +{new_in_batch} new feeds ({len(results)} results)")
                 else:
                     if self.verbose:
                         self.stdout.write(self.style.WARNING(f"    HTTP {resp.status_code}"))
@@ -880,8 +858,7 @@ Do NOT make up URLs. Only suggest feeds from real sites you know exist."""
             content = resp.text[:2000].lower()
             # Check for RSS or Atom markers
             return any(
-                marker in content
-                for marker in ["<rss", "<feed", "<rdf:rdf", "<?xml", "<channel>", "<entry>"]
+                marker in content for marker in ["<rss", "<feed", "<rdf:rdf", "<?xml", "<channel>", "<entry>"]
             )
         except (requests.RequestException, Exception):
             return False
@@ -891,9 +868,7 @@ Do NOT make up URLs. Only suggest feeds from real sites you know exist."""
         api_key = getattr(settings, "ANTHROPIC_API_KEY", None)
         if not api_key:
             self.stderr.write(
-                self.style.ERROR(
-                    "ANTHROPIC_API_KEY not configured, assigning by search target"
-                )
+                self.style.ERROR("ANTHROPIC_API_KEY not configured, assigning by search target")
             )
             return self._assign_by_target(discovered_feeds, gaps)
 
@@ -915,12 +890,8 @@ Do NOT make up URLs. Only suggest feeds from real sites you know exist."""
         for i in range(0, len(discovered_feeds), CATEGORIZE_BATCH_SIZE):
             batch = discovered_feeds[i : i + CATEGORIZE_BATCH_SIZE]
             batch_num = i // CATEGORIZE_BATCH_SIZE + 1
-            total_batches = (
-                len(discovered_feeds) + CATEGORIZE_BATCH_SIZE - 1
-            ) // CATEGORIZE_BATCH_SIZE
-            self.stdout.write(
-                f"  Categorizing batch {batch_num}/{total_batches} ({len(batch)} feeds)..."
-            )
+            total_batches = (len(discovered_feeds) + CATEGORIZE_BATCH_SIZE - 1) // CATEGORIZE_BATCH_SIZE
+            self.stdout.write(f"  Categorizing batch {batch_num}/{total_batches} ({len(batch)} feeds)...")
 
             results = self._categorize_batch(client, batch, taxonomy_str)
             if results:
@@ -934,14 +905,10 @@ Do NOT make up URLs. Only suggest feeds from real sites you know exist."""
 
                     if (cat, sub) not in valid_targets:
                         if self.verbose:
-                            self.stdout.write(
-                                f"    Skipping {feed_url}: {cat} > {sub} not a target"
-                            )
+                            self.stdout.write(f"    Skipping {feed_url}: {cat} > {sub} not a target")
                         continue
 
-                    original = next(
-                        (f for f in discovered_feeds if f["feed_url"] == feed_url), None
-                    )
+                    original = next((f for f in discovered_feeds if f["feed_url"] == feed_url), None)
                     if not original:
                         continue
 
@@ -1056,8 +1023,7 @@ For each feed, return the feed_url, best category (lowercase), and best subcateg
 
             if self.verbose:
                 self.stdout.write(
-                    f"    Tokens: {response.usage.input_tokens} in, "
-                    f"{response.usage.output_tokens} out"
+                    f"    Tokens: {response.usage.input_tokens} in, " f"{response.usage.output_tokens} out"
                 )
 
             for block in response.content:
@@ -1071,20 +1037,14 @@ For each feed, return the feed_url, best category (lowercase), and best subcateg
 
     def _print_post_merge_summary(self, all_feeds):
         """Print summary showing remaining gaps after merge."""
-        type_feeds = [
-            f for f in all_feeds if f.get("feed_type", "rss") == self.feed_type
-        ]
+        type_feeds = [f for f in all_feeds if f.get("feed_type", "rss") == self.feed_type]
         subcat_counts = Counter()
         for feed in type_feeds:
             sub = feed.get("subcategory", "")
             if sub:
                 subcat_counts[(feed["category"], sub)] += 1
 
-        still_under = [
-            (cat, sub, cnt)
-            for (cat, sub), cnt in subcat_counts.items()
-            if cnt < self.min_feeds
-        ]
+        still_under = [(cat, sub, cnt) for (cat, sub), cnt in subcat_counts.items() if cnt < self.min_feeds]
         still_under.sort()
 
         total_subs = len(subcat_counts)
@@ -1098,6 +1058,4 @@ For each feed, return the feed_url, best category (lowercase), and best subcateg
         if still_under:
             self.stdout.write("\nRemaining gaps:")
             for cat, sub, cnt in still_under:
-                self.stdout.write(
-                    f"  {cat} > {sub}: {cnt} (needs {self.min_feeds - cnt} more)"
-                )
+                self.stdout.write(f"  {cat} > {sub}: {cnt} (needs {self.min_feeds - cnt} more)")

@@ -23,21 +23,20 @@ class WebFeedFetcher:
 
     def __init__(self, feed):
         self.feed = feed
-        self.url = feed.feed_address[len("webfeed:"):]
+        self.url = feed.feed_address[len("webfeed:") :]
         self.config = MWebFeedConfig.get_config(feed.pk)
 
     def fetch(self):
         """Main entry point. Returns a feedparser-compatible dict or None on failure."""
         if not self.config:
             logging.debug(
-                "   ***> [%-30s] ~FRWeb Feed: No config found for feed %s" % (self.feed.log_title[:30], self.feed.pk)
+                "   ***> [%-30s] ~FRWeb Feed: No config found for feed %s"
+                % (self.feed.log_title[:30], self.feed.pk)
             )
             return None
 
         start = time.time()
-        logging.debug(
-            "   ---> [%-30s] ~FYWeb Feed: Fetching ~SB%s~SN" % (self.feed.log_title[:30], self.url)
-        )
+        logging.debug("   ---> [%-30s] ~FYWeb Feed: Fetching ~SB%s~SN" % (self.feed.log_title[:30], self.url))
 
         page_html = self._fetch_html()
         if not page_html:

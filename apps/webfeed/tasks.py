@@ -40,6 +40,7 @@ def extract_image_url(raw_value):
     match = _CSS_BG_IMAGE_RE.search(value)
     return match.group(2).strip() if match else None
 
+
 # Class/id substrings that indicate non-content elements
 NAV_INDICATORS = [
     "nav",

@@ -7,13 +7,11 @@ import hashlib
 import random
 import re
 from collections import defaultdict
-from urllib.parse import urlparse, quote_plus
+from urllib.parse import quote_plus, urlparse
 
 import requests
 from django.conf import settings
-from django.db.models import Count
-
-from django.db.models import Q
+from django.db.models import Count, Q
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
@@ -157,9 +155,13 @@ def feed_autocomplete(request):
         from django.db.models import Q
 
         search_query = query.split()[0] if query.split() else query
-        db_feeds = Feed.objects.filter(
-            Q(feed_title__icontains=search_query) | Q(feed_address__icontains=search_query)
-        ).exclude(num_subscribers__lte=0).order_by("-num_subscribers")[:20]
+        db_feeds = (
+            Feed.objects.filter(
+                Q(feed_title__icontains=search_query) | Q(feed_address__icontains=search_query)
+            )
+            .exclude(num_subscribers__lte=0)
+            .order_by("-num_subscribers")[:20]
+        )
         feed_ids = [f.pk for f in db_feeds]
 
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
@@ -318,7 +320,9 @@ def trending_sites(request):
         popular_feeds = Feed.objects.filter(
             num_subscribers__gte=10,
             is_push=False,
-        ).order_by("-num_subscribers")[offset : offset + limit + 1]
+        ).order_by(
+            "-num_subscribers"
+        )[offset : offset + limit + 1]
         trending_feed_ids = [f.pk for f in popular_feeds[:limit]]
         # Create fake trending_data for score lookup
         trending_data = [(fid, 1) for fid in trending_feed_ids]
@@ -351,7 +355,11 @@ def trending_sites(request):
     else:
         has_more = len(trending_data) > offset + limit
 
-    logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds%s" % (page, days, len(trending_feeds), " (fallback)" if use_fallback else ""))
+    logging.user(
+        request,
+        "~FCTrending sites (page %s, %sd): ~SB%s feeds%s"
+        % (page, days, len(trending_feeds), " (fallback)" if use_fallback else ""),
+    )
     return {"trending_feeds": trending_feeds, "has_more": has_more}
 
 
@@ -398,39 +406,47 @@ def youtube_search(request):
     for item in data.get("items", []):
         snippet = item.get("snippet", {})
         thumbnails = snippet.get("thumbnails", {})
-        thumbnail_url = thumbnails.get("medium", {}).get("url") or thumbnails.get("default", {}).get("url", "")
+        thumbnail_url = thumbnails.get("medium", {}).get("url") or thumbnails.get("default", {}).get(
+            "url", ""
+        )
 
         if search_type == "channel":
             channel_id = item.get("id", {}).get("channelId")
             if channel_id:
                 feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
                 channel_url = f"https://www.youtube.com/channel/{channel_id}"
-                results.append({
-                    "id": channel_id,
-                    "type": "channel",
-                    "title": snippet.get("channelTitle") or snippet.get("title", ""),
-                    "description": snippet.get("description", ""),
-                    "thumbnail": thumbnail_url,
-                    "feed_url": feed_url,
-                    "link": channel_url,
-                })
+                results.append(
+                    {
+                        "id": channel_id,
+                        "type": "channel",
+                        "title": snippet.get("channelTitle") or snippet.get("title", ""),
+                        "description": snippet.get("description", ""),
+                        "thumbnail": thumbnail_url,
+                        "feed_url": feed_url,
+                        "link": channel_url,
+                    }
+                )
         elif search_type == "playlist":
             playlist_id = item.get("id", {}).get("playlistId")
             if playlist_id:
                 feed_url = f"https://www.youtube.com/feeds/videos.xml?playlist_id={playlist_id}"
                 playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
-                results.append({
-                    "id": playlist_id,
-                    "type": "playlist",
-                    "title": snippet.get("title", ""),
-                    "description": snippet.get("description", ""),
-                    "thumbnail": thumbnail_url,
-                    "feed_url": feed_url,
-                    "link": playlist_url,
-                    "channel_title": snippet.get("channelTitle", ""),
-                })
+                results.append(
+                    {
+                        "id": playlist_id,
+                        "type": "playlist",
+                        "title": snippet.get("title", ""),
+                        "description": snippet.get("description", ""),
+                        "thumbnail": thumbnail_url,
+                        "feed_url": feed_url,
+                        "link": playlist_url,
+                        "channel_title": snippet.get("channelTitle", ""),
+                    }
+                )
 
-    logging.user(request, "~FBYouTube search for '%s' (%s): ~SB%s results" % (query, search_type, len(results)))
+    logging.user(
+        request, "~FBYouTube search for '%s' (%s): ~SB%s results" % (query, search_type, len(results))
+    )
     return {"code": 1, "results": results}
 
 
@@ -481,17 +497,19 @@ def reddit_search(request):
             if not icon_url:
                 icon_url = subreddit.get("icon_img", "")
 
-            results.append({
-                "id": subreddit.get("id", ""),
-                "name": name,
-                "title": subreddit.get("title", name),
-                "description": subreddit.get("public_description", "")[:200],
-                "subscribers": subreddit.get("subscribers", 0),
-                "icon": icon_url,
-                "feed_url": feed_url,
-                "link": subreddit_url,
-                "over18": subreddit.get("over18", False),
-            })
+            results.append(
+                {
+                    "id": subreddit.get("id", ""),
+                    "name": name,
+                    "title": subreddit.get("title", name),
+                    "description": subreddit.get("public_description", "")[:200],
+                    "subscribers": subreddit.get("subscribers", 0),
+                    "icon": icon_url,
+                    "feed_url": feed_url,
+                    "link": subreddit_url,
+                    "over18": subreddit.get("over18", False),
+                }
+            )
 
     logging.user(request, "~FBReddit search for '%s': ~SB%s results" % (query, len(results)))
     return {"code": 1, "results": results}
@@ -537,16 +555,18 @@ def reddit_popular(request):
             if not icon_url:
                 icon_url = subreddit.get("icon_img", "")
 
-            results.append({
-                "id": subreddit.get("id", ""),
-                "name": name,
-                "title": subreddit.get("title", name),
-                "description": subreddit.get("public_description", "")[:200],
-                "subscribers": subreddit.get("subscribers", 0),
-                "icon": icon_url,
-                "feed_url": feed_url,
-                "link": subreddit_url,
-            })
+            results.append(
+                {
+                    "id": subreddit.get("id", ""),
+                    "name": name,
+                    "title": subreddit.get("title", name),
+                    "description": subreddit.get("public_description", "")[:200],
+                    "subscribers": subreddit.get("subscribers", 0),
+                    "icon": icon_url,
+                    "feed_url": feed_url,
+                    "link": subreddit_url,
+                }
+            )
 
     logging.user(request, "~FBReddit popular: ~SB%s results" % len(results))
     return {"code": 1, "results": results}
@@ -697,15 +717,17 @@ def podcast_search(request):
             if not feed_url:
                 continue
 
-            results.append({
-                "name": podcast.get("collectionName", ""),
-                "artist": podcast.get("artistName", ""),
-                "artwork": podcast.get("artworkUrl100", ""),
-                "feed_url": feed_url,
-                "genre": podcast.get("primaryGenreName", ""),
-                "track_count": podcast.get("trackCount", 0),
-                "itunes_url": podcast.get("collectionViewUrl", ""),
-            })
+            results.append(
+                {
+                    "name": podcast.get("collectionName", ""),
+                    "artist": podcast.get("artistName", ""),
+                    "artwork": podcast.get("artworkUrl100", ""),
+                    "feed_url": feed_url,
+                    "genre": podcast.get("primaryGenreName", ""),
+                    "track_count": podcast.get("trackCount", 0),
+                    "itunes_url": podcast.get("collectionViewUrl", ""),
+                }
+            )
 
         logging.user(request, "~FBPodcast search for '%s': %s results" % (query, len(results)))
         return {"code": 1, "results": results, "query": query}
@@ -895,11 +917,15 @@ def popular_feeds(request):
         if exact.exists():
             qs = exact
         else:
-            normalized = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", category.replace("-", " "))).strip().lower()
+            normalized = (
+                re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", category.replace("-", " "))).strip().lower()
+            )
             matching_cats = [
                 cat_name
                 for cat_name in qs.values_list("category", flat=True).distinct()
-                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", cat_name.replace("-", " "))).strip().lower()
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", cat_name.replace("-", " ")))
+                .strip()
+                .lower()
                 == normalized
             ]
             if matching_cats:
@@ -914,11 +940,17 @@ def popular_feeds(request):
         else:
             # Convert hyphens to spaces before stripping special chars so
             # "School-Age Kids" normalizes to "school age kids" (not "schoolage kids")
-            normalized_sub = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", subcategory.replace("-", " "))).strip().lower()
+            normalized_sub = (
+                re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", subcategory.replace("-", " ")))
+                .strip()
+                .lower()
+            )
             matching_subs = [
                 sub_name
                 for sub_name in qs.values_list("subcategory", flat=True).distinct()
-                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", sub_name.replace("-", " "))).strip().lower()
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", sub_name.replace("-", " ")))
+                .strip()
+                .lower()
                 == normalized_sub
             ]
             if matching_subs:
@@ -933,7 +965,9 @@ def popular_feeds(request):
     extra_semantic_feeds = []  # Feed objects found via embeddings but not in PopularFeed table
     if query:
         # Text search across title, description, and feed_url
-        qs = qs.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(feed_url__icontains=query))
+        qs = qs.filter(
+            Q(title__icontains=query) | Q(description__icontains=query) | Q(feed_url__icontains=query)
+        )
 
         # Semantic search via embeddings to find related feeds
         if len(query) >= 3:
@@ -1022,11 +1056,7 @@ def popular_feeds(request):
         grouped_categories.append(current_entry)
 
     # Flat categories list for backwards compatibility
-    categories = list(
-        cat_qs.values_list("category", flat=True)
-        .distinct()
-        .order_by("category")
-    )
+    categories = list(cat_qs.values_list("category", flat=True).distinct().order_by("category"))
 
     # Platform counts (unfiltered by platform so pills always show totals)
     platform_base_qs = PopularFeed.objects.filter(**base_filter).order_by()

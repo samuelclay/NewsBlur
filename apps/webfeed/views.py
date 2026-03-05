@@ -137,8 +137,8 @@ def subscribe(request):
             user_title=feed.feed_title,
         )
         from apps.reader.models import UserSubscriptionFolders
-        from utils.feed_functions import add_object_to_folder
         from utils import json_functions as json_util
+        from utils.feed_functions import add_object_to_folder
 
         usf, created = UserSubscriptionFolders.objects.get_or_create(
             user=request.user, defaults={"folders": "[]"}
@@ -201,7 +201,7 @@ def reanalyze(request):
     if not feed.feed_address.startswith("webfeed:"):
         return {"code": -1, "message": "Not a web feed"}
 
-    url = feed.feed_address[len("webfeed:"):]
+    url = feed.feed_address[len("webfeed:") :]
 
     logging.user(request.user, f"~BB~FWWeb Feed: Re-analyzing ~SB{url}~SN (feed {feed_id})")
 

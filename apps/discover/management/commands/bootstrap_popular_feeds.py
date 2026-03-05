@@ -128,7 +128,9 @@ class Command(BaseCommand):
         if limit:
             all_feeds = all_feeds[:limit]
 
-        self.stdout.write(f"Processing {len(all_feeds)} feed entries (of {total_before_slice} total, offset={offset}, limit={limit})...")
+        self.stdout.write(
+            f"Processing {len(all_feeds)} feed entries (of {total_before_slice} total, offset={offset}, limit={limit})..."
+        )
 
         created = 0
         updated = 0
@@ -212,10 +214,10 @@ class Command(BaseCommand):
 
         # Phase 2b: Update stale feeds (not fetched within last 30 days)
         if feeds_to_update_stale:
-            self.stdout.write(f"Updating {len(feeds_to_update_stale)} stale feeds (>30 days old) with {workers} workers...")
-            self._force_update_parallel(
-                [pf for pf, _, _ in feeds_to_update_stale], workers, verbose
+            self.stdout.write(
+                f"Updating {len(feeds_to_update_stale)} stale feeds (>30 days old) with {workers} workers..."
             )
+            self._force_update_parallel([pf for pf, _, _ in feeds_to_update_stale], workers, verbose)
 
         # Phase 3: Force-update existing feeds in parallel
         if feeds_to_force_update:
@@ -223,7 +225,9 @@ class Command(BaseCommand):
             self._force_update_parallel(feeds_to_force_update, workers, verbose)
 
         if dry_run:
-            self.stdout.write(self.style.WARNING(f"\nDry run complete - {len(all_feeds)} entries would be processed"))
+            self.stdout.write(
+                self.style.WARNING(f"\nDry run complete - {len(all_feeds)} entries would be processed")
+            )
         else:
             stale_count = len(feeds_to_update_stale)
             self.stdout.write(
@@ -256,10 +260,7 @@ class Command(BaseCommand):
         completed = 0
         max_index = 0
         with ThreadPoolExecutor(max_workers=workers) as executor:
-            futures = {
-                executor.submit(self._fetch_one_feed, pf, url): idx
-                for pf, url, idx in feeds_to_fetch
-            }
+            futures = {executor.submit(self._fetch_one_feed, pf, url): idx for pf, url, idx in feeds_to_fetch}
             for future in as_completed(futures):
                 fixture_index = futures[future]
                 popular_feed, feed, error = future.result()
@@ -268,7 +269,11 @@ class Command(BaseCommand):
                 if error:
                     failed += 1
                     if verbose:
-                        self.stdout.write(self.style.WARNING(f"    Failed to create Feed for {popular_feed.feed_url}: {error}"))
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"    Failed to create Feed for {popular_feed.feed_url}: {error}"
+                            )
+                        )
                 elif feed:
                     popular_feed.feed = feed
                     popular_feed.save(update_fields=["feed"])
@@ -276,7 +281,9 @@ class Command(BaseCommand):
                     if verbose:
                         self.stdout.write(f"    Linked {popular_feed.title} to Feed id={feed.pk}")
                 if completed % 100 == 0 or completed == total:
-                    self.stdout.write(f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed  [restart with --offset {max_index + 1}]")
+                    self.stdout.write(
+                        f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed  [restart with --offset {max_index + 1}]"
+                    )
         return linked, failed
 
     def _retry_unlinked(self, options):
@@ -398,9 +405,7 @@ class Command(BaseCommand):
                     )
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\nDone: {linked} linked ({already_exists} existing), {failed} failed"
-            )
+            self.style.SUCCESS(f"\nDone: {linked} linked ({already_exists} existing), {failed} failed")
         )
 
     def _force_update_parallel(self, popular_feeds, workers, verbose):
@@ -420,7 +425,9 @@ class Command(BaseCommand):
             for future in as_completed(futures):
                 popular_feed, error = future.result()
                 if error and verbose:
-                    self.stdout.write(self.style.WARNING(f"    Failed to update Feed for {popular_feed.title}: {error}"))
+                    self.stdout.write(
+                        self.style.WARNING(f"    Failed to update Feed for {popular_feed.title}: {error}")
+                    )
 
     # bootstrap_popular_feeds.py - _discover_rss_feeds
     def _discover_rss_feeds(self, options):

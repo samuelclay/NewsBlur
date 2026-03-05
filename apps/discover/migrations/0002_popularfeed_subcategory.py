@@ -4,23 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('discover', '0001_popular_feed'),
+        ("discover", "0001_popular_feed"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='popularfeed',
-            name='subcategory',
-            field=models.CharField(blank=True, db_index=True, default='', max_length=50),
+            model_name="popularfeed",
+            name="subcategory",
+            field=models.CharField(blank=True, db_index=True, default="", max_length=50),
         ),
         migrations.AlterModelOptions(
-            name='popularfeed',
-            options={'ordering': ['feed_type', 'category', 'subcategory', 'sort_order', '-subscriber_count']},
+            name="popularfeed",
+            options={"ordering": ["feed_type", "category", "subcategory", "sort_order", "-subscriber_count"]},
         ),
         migrations.AddIndex(
-            model_name='popularfeed',
-            index=models.Index(fields=['feed_type', 'category', 'subcategory'], name='discover_po_feed_ty_subcat_idx'),
+            model_name="popularfeed",
+            index=models.Index(
+                fields=["feed_type", "category", "subcategory"], name="discover_po_feed_ty_subcat_idx"
+            ),
         ),
     ]
