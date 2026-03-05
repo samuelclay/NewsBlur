@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-04T12:33:56-05:00</updated>
+  <updated>2026-03-05T09:49:09-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,48 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">See the news on your Android dashboard with the new home screen widget</title>
+    <link href="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/" rel="alternate" type="text/html" title="See the news on your Android dashboard with the new home screen widget" />
+    <published>2020-06-18T16:06:04-04:00</published>
+    <updated>2020-06-18T16:06:04-04:00</updated>
+    <id>https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/">
+      <![CDATA[<p>Hot on the heels of the <a href="https://blog.newsblur.com/2021/06/21/2020-02-26-catch-the-news-in-a-glimpse-with-the-new-newsblur.html">iOS widget release</a> a few months ago, the Android widget is now ready to go!</p>
+
+<p>Check it out:</p>
+
+<figure class="tmblr-full" data-orig-height="923" data-orig-width="621" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png"><img style="width: 650px; height: 966px; margin: 0 auto;" data-orig-height="923" data-orig-width="621" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png" /></figure>
+
+<p>Ideally both iOS and Android widgets would have been released at the same time. But now that we have a new Android developer, <a href="https://github.com/sictiru">Andrei Dan</a>, we’ve built the widget and are planning many more new features for Android.</p>
+
+<p>Everything I wrote for the iOS release holds for today’s Android widget:</p>
+
+<p>&gt; Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</p>
+
+<p>If you’re like me and you rely on your phone for your news consumption, having stories handy every time you look at your phone changes your relationship to NewsBlur.</p>
+
+<figure class="tmblr-full" data-orig-height="923" data-orig-width="621" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png"><img style="width: 650px; height: 966px; margin: 0 auto;" data-orig-height="923" data-orig-width="621" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png" /></figure>
+
+<p>It’s so incredibly useful to have NewsBlur come to me. I hope you feel the same about this Android widget.</p>
+
+<p>If you have any feedback, ideas, or would like changes, please post them on the <a href="https://forum.newsblur.com">NewsBlur support forum</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Hot on the heels of the iOS widget release a few months ago, the Android widget is now ready to go!
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Catch the news in a glimpse with the new NewsBlur Today View widget on iOS</title>
@@ -1101,74 +1143,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[It’s been too long. Twitter unceremoniously knee-capped their API a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur goes dark ... on iOS</title>
-    <link href="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/" rel="alternate" type="text/html" title="NewsBlur goes dark ... on iOS" />
-    <published>2016-04-12T06:00:18-04:00</published>
-    <updated>2016-04-12T06:00:18-04:00</updated>
-    <id>https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/">
-      <![CDATA[<p>It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.</p>
-
-<p>The biggest addition are the new themes. We have a total of four themes now: white, sepia, grey, and dark.</p>
-
-<p>The dark theme is for when the lights are low (or off) and you want to read without disturbing anybody around you.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-dark.png" alt="" /></p>
-
-<p>The grey theme gives you the best of both worlds. It’s a dark theme that gives you low light, but still bright enough to easily see.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-grey.png" alt="" /></p>
-
-<p>Sepia is the paperback you carry around everywhere so you always have something to read. Preparation pays.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-sepia.png" alt="" /></p>
-
-<p>The iPad Pro gets full support and that means that keyboard shortcuts have been instrumented all over the app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-keyboard.png" alt="" /></p>
-
-<p>Maybe you’re thinking about how much the app just advanced. Maybe you’ve been waiting a long, long time for a dark theme ever since Android got it a year ago. Who knows, maybe you’re 100% on your iphone and that there’s just one or two tasks that you still need the website for.</p>
-
-<p>Get ready for this. The Organizer is now on the iOS app. And this isn’t just any organizer. You can see all of your feeds, sorted in or out of their folders, ordered by number of subscribers, how often you read them, how often they publish, and even how recently they published.</p>
-
-<p>Use these lists to find feeds that no longer publish or the feeds that publish too much. Move and delete whole groups of feeds at once. This organizer is the real deal. Try finding this feature anywhere else.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-organizer.png" alt="" /></p>
-
-<p>And if there’s an organizer, that means there’s a way to mute and unmute sites directly from your iPhone.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-mute.png" alt="" /></p>
-
-<p>There’s plenty of other new features too:</p>
-
-<ul>
-  <li>New icons app-wide</li>
-  <li>New menus for deleting and muting feeds</li>
-  <li>Custom domain support</li>
-  <li>Mark all as read by long pressing</li>
-  <li>Search and Subscribe improvements</li>
-</ul>
-
-<p>And check it out, NewsBlur now has two additional developers working on the iOS app, David Sinclair and Nicholas Riley. They have worked for the last few months on making this update the biggest yet. <a href="http://www.newsblur.com/about">Their mugs are now on the About page</a> and I’m extremely pleased with their work. Nicholas built the keyboard support that iPad Pro owners will appreciate. And David gives us the new themes, new organizer, and all of the other goodies we’ve got.</p>
-
-<p>This is the one to beat.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.
 ]]>
     </summary>
     

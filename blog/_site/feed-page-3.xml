@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-04T12:33:56-05:00</updated>
+  <updated>2026-03-05T09:49:09-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,74 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur goes dark ... on iOS</title>
+    <link href="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/" rel="alternate" type="text/html" title="NewsBlur goes dark ... on iOS" />
+    <published>2016-04-12T06:00:18-04:00</published>
+    <updated>2016-04-12T06:00:18-04:00</updated>
+    <id>https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/">
+      <![CDATA[<p>It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.</p>
+
+<p>The biggest addition are the new themes. We have a total of four themes now: white, sepia, grey, and dark.</p>
+
+<p>The dark theme is for when the lights are low (or off) and you want to read without disturbing anybody around you.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-dark.png" alt="" /></p>
+
+<p>The grey theme gives you the best of both worlds. It’s a dark theme that gives you low light, but still bright enough to easily see.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-grey.png" alt="" /></p>
+
+<p>Sepia is the paperback you carry around everywhere so you always have something to read. Preparation pays.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-sepia.png" alt="" /></p>
+
+<p>The iPad Pro gets full support and that means that keyboard shortcuts have been instrumented all over the app.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-keyboard.png" alt="" /></p>
+
+<p>Maybe you’re thinking about how much the app just advanced. Maybe you’ve been waiting a long, long time for a dark theme ever since Android got it a year ago. Who knows, maybe you’re 100% on your iphone and that there’s just one or two tasks that you still need the website for.</p>
+
+<p>Get ready for this. The Organizer is now on the iOS app. And this isn’t just any organizer. You can see all of your feeds, sorted in or out of their folders, ordered by number of subscribers, how often you read them, how often they publish, and even how recently they published.</p>
+
+<p>Use these lists to find feeds that no longer publish or the feeds that publish too much. Move and delete whole groups of feeds at once. This organizer is the real deal. Try finding this feature anywhere else.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-organizer.png" alt="" /></p>
+
+<p>And if there’s an organizer, that means there’s a way to mute and unmute sites directly from your iPhone.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-mute.png" alt="" /></p>
+
+<p>There’s plenty of other new features too:</p>
+
+<ul>
+  <li>New icons app-wide</li>
+  <li>New menus for deleting and muting feeds</li>
+  <li>Custom domain support</li>
+  <li>Mark all as read by long pressing</li>
+  <li>Search and Subscribe improvements</li>
+</ul>
+
+<p>And check it out, NewsBlur now has two additional developers working on the iOS app, David Sinclair and Nicholas Riley. They have worked for the last few months on making this update the biggest yet. <a href="http://www.newsblur.com/about">Their mugs are now on the About page</a> and I’m extremely pleased with their work. Nicholas built the keyboard support that iPad Pro owners will appreciate. And David gives us the new themes, new organizer, and all of the other goodies we’ve got.</p>
+
+<p>This is the one to beat.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A heavier lifting Android app</title>
@@ -971,34 +1039,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[It was only a few months ago back in April that I launched the new font and style manager. Today I’m coming back to finish the job.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Read what you&apos;ve read recently with the new recently read stories feed</title>
-    <link href="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/" rel="alternate" type="text/html" title="Read what you&apos;ve read recently with the new recently read stories feed" />
-    <published>2014-06-27T07:00:36-04:00</published>
-    <updated>2014-06-27T07:00:36-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/">
-      <![CDATA[<p>Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/read%20stories.png" alt="" /></p>
-
-<p>This feed records all of the stories you’ve read in feeds, shared blurblogs, and even in feeds you’re not subscribed to. It does not record stories that are marked read as part of a mark all/previous as read action.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.
 ]]>
     </summary>
     

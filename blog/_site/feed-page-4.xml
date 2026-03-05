@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-04T12:33:56-05:00</updated>
+  <updated>2026-03-05T09:49:09-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,34 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Read what you&apos;ve read recently with the new recently read stories feed</title>
+    <link href="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/" rel="alternate" type="text/html" title="Read what you&apos;ve read recently with the new recently read stories feed" />
+    <published>2014-06-27T07:00:36-04:00</published>
+    <updated>2014-06-27T07:00:36-04:00</updated>
+    <id>https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/">
+      <![CDATA[<p>Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/read%20stories.png" alt="" /></p>
+
+<p>This feed records all of the stories you’ve read in feeds, shared blurblogs, and even in feeds you’re not subscribed to. It does not record stories that are marked read as part of a mark all/previous as read action.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Temporarily mute sites</title>
@@ -1071,41 +1099,6 @@ color: #606060;
     <summary type="html">
       <![CDATA[At 4:16pm last Wednesday I got a short and to-the-point email from Nilay Patel at The Verge with only a link that started with the host “googlereader.blogspot.com”. The sudden spike in NewsBlur’s visitors immediately confirmed — Google was shutting down Reader.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A blurblog of one&apos;s own: new privacy controls</title>
-    <link href="https://blog.newsblur.com/2013/01/03/privacy-controls/" rel="alternate" type="text/html" title="A blurblog of one&apos;s own: new privacy controls" />
-    <published>2013-01-03T00:00:00-05:00</published>
-    <updated>2013-01-03T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/01/03/privacy-controls</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/01/03/privacy-controls/">
-      <![CDATA[<p>Here at NewsBlur HQ, we love greeting each new day by seeing what everyone posts on their blurblogs, but we understand that not everyone might want to have their reading preferences broadcast to the public (or have the public broadcast its opinions on said preferences). So we’re introducing a special new service for premium account holders that allows you to protect your posts from prying eyes.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2012.17.51%20PM.png" alt="image" /></p>
-
-<p>Just click the little sprocket in the bottom left of your dashboard and select “Profile &amp; Blurblog,” where you’ll be given one of three options:</p>
-
-<ul>
-  <li>Public (default): The good old-fashioned oversharing you’ve come to know and love.</li>
-  <li>Protected: Everyone can see your stories, but only approved NewsBlur followers can reply or comment to your shares. Continue to drop knowledge for a grateful public, minus the peanut gallery.</li>
-  <li>Private: Only your approved followers can see your shares and comment. The outside world will never know about your love of bunny photos and animated GIFs. If you choose one of the latter two options, you’ll receive an e-mail every time someone requests to follow you, allowing you to carefully curate your inner circle. Want to remove any of your existing followers? Just visit their profile to boot them from blurblog access.</li>
-</ul>
-
-<p>Go forth and privatize! It’ll be our little secret, at least until we discover that one of you is having an affair with your biographer.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="blurblogs" />
-    
-    
-    <summary type="html">
-      <![CDATA[Here at NewsBlur HQ, we love greeting each new day by seeing what everyone posts on their blurblogs, but we understand that not everyone might want to have their reading preferences broadcast to the public (or have the public broadcast its opinions on said preferences). So we’re introducing a special...]]>
     </summary>
     
   </entry>
