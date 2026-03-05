@@ -432,6 +432,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         }
 
         this.play();
+        this._update_media_session();
 
         // Save durable state
         this.save_durable_state();
@@ -673,6 +674,49 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         if (e) e.stopPropagation();
         var new_pos = Math.min(this.get_duration(), this.get_current_time() + this.skip_forward_seconds);
         this.seek_to(new_pos);
+    },
+
+    _update_media_session: function () {
+        if (!('mediaSession' in navigator) || !this.current_media) return;
+
+        var feed = NEWSBLUR.assets.get_feed(this.current_media.feed_id);
+        var artwork = [];
+        if (this.current_media.image_url) {
+            artwork.push({ src: this.current_media.image_url });
+        }
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: this.current_media.media_title || '',
+            artist: feed ? feed.get('feed_title') : '',
+            artwork: artwork
+        });
+
+        var self = this;
+        navigator.mediaSession.setActionHandler('play', function () { self.play(); });
+        navigator.mediaSession.setActionHandler('pause', function () { self.pause(); });
+        navigator.mediaSession.setActionHandler('seekbackward', function (details) {
+            var offset = details.seekOffset || self.skip_back_seconds;
+            var new_pos = Math.max(0, self.get_current_time() - offset);
+            self.seek_to(new_pos);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', function (details) {
+            var offset = details.seekOffset || self.skip_forward_seconds;
+            var new_pos = Math.min(self.get_duration(), self.get_current_time() + offset);
+            self.seek_to(new_pos);
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', function () {
+            self.skip_back();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', function () {
+            if (self.queue.length > 0) {
+                self.play_next();
+            } else {
+                self.skip_forward();
+            }
+        });
+        navigator.mediaSession.setActionHandler('stop', function () {
+            self.close_player();
+        });
     },
 
     update_skip_labels: function () {
@@ -1235,6 +1279,14 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.$('.NB-media-player-progress').val(Math.round(progress));
         this.$('.NB-media-player-time-current').text(this.format_time(position));
         this.$('.NB-media-player-time-duration').text(this.format_time(duration));
+
+        if ('mediaSession' in navigator && duration > 0) {
+            navigator.mediaSession.setPositionState({
+                duration: duration,
+                playbackRate: this.playback_rate,
+                position: Math.min(position, duration)
+            });
+        }
     },
 
     // ====================
@@ -1367,6 +1419,16 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.stop_position_sync();
         this.stop_ui_updates();
         this.current_media = null;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = null;
+            navigator.mediaSession.setActionHandler('play', null);
+            navigator.mediaSession.setActionHandler('pause', null);
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+            navigator.mediaSession.setActionHandler('seekforward', null);
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+            navigator.mediaSession.setActionHandler('stop', null);
+        }
         this.hide_player();
 
         NEWSBLUR.assets.clear_playback_state();
