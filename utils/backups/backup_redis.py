@@ -18,13 +18,17 @@ hostname = socket.gethostname().replace("-", "_")
 
 if not dry_run:
     timestamp = time.strftime("%Y-%m-%d-%H-%M")
-    s3_object_name = "backup_%s/backup_%s_%s.rdb.gz" % (hostname, hostname, timestamp)
+    s3_object_name = "backup_%s/backup_%s_%s.rdb" % (hostname, hostname, timestamp)
     path = "/data/dump.rdb"
 
     print("Uploading %s (from %s) to S3..." % (s3_object_name, path))
     upload_to_s3(path, settings.S3_BACKUP_BUCKET, s3_object_name)
 
 print("Rotating Redis backups on S3...")
+# Rotate both .rdb (new) and .rdb.gz (old misnamed extension) backups
+rotate_s3_backups(
+    settings.S3_BACKUP_BUCKET, "backup_%s/backup_%s" % (hostname, hostname), ".rdb", dry_run=dry_run
+)
 rotate_s3_backups(
     settings.S3_BACKUP_BUCKET, "backup_%s/backup_%s" % (hostname, hostname), ".rdb.gz", dry_run=dry_run
 )

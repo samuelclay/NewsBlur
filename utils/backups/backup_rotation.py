@@ -249,7 +249,10 @@ if __name__ == "__main__":
         print("\n=== PostgreSQL backups (.sql.sql - old format) ===")
         rotate_s3_backups(bucket, "backup_%s/backup_postgresql" % hostname, ".sql.sql", dry_run=dry)
 
-        print("\n=== Redis backups ===")
+        print("\n=== Redis backups (.rdb) ===")
+        rotate_s3_backups(bucket, "backup_%s/backup_%s" % (hostname, hostname), ".rdb", dry_run=dry)
+
+        print("\n=== Redis backups (.rdb.gz - old extension) ===")
         rotate_s3_backups(bucket, "backup_%s/backup_%s" % (hostname, hostname), ".rdb.gz", dry_run=dry)
 
         print("\nDone. %s" % ("[DRY RUN - no files deleted]" if dry else "Files deleted."))

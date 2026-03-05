@@ -544,13 +544,17 @@ offsite-backup-install:
 	cat utils/backups/offsite_pull.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_pull.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
 	cat utils/backups/offsite_status.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_status.py"
+	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
 	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
 	@awk -F= '/aws_secret_access_key/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat >> $(HA_SCRIPTS)/aws_s3_credentials"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/aws_s3_credentials"
+	@sed -n 's/^MAILGUN_ACCESS_KEY = "\(.*\)"/\1/p' /srv/secrets-newsblur/settings/common_settings.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mailgun_credentials"
+	@sed -n 's/^MAILGUN_SERVER_NAME = "\(.*\)"/\1/p' /srv/secrets-newsblur/settings/common_settings.py | ssh $(HA_HOST) "cat >> $(HA_SCRIPTS)/mailgun_credentials"
+	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/mailgun_credentials"
 	@$(call log,~FB---> Setting up Python venv with boto3 on HA box~ST)
-	ssh $(HA_HOST) "python3 -m venv $(HA_SCRIPTS)/venv && $(HA_SCRIPTS)/venv/bin/pip install boto3"
+	ssh $(HA_HOST) "python3 -m venv $(HA_SCRIPTS)/venv && $(HA_SCRIPTS)/venv/bin/pip install boto3 requests"
 	@$(call log,~FG---> Off-site backup installed. Add shell_command + automation to HA config.~ST)
 	@$(call log,~FYSee: utils/backups/ha_configuration.yaml~ST)
 

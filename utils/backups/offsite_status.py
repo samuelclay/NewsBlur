@@ -6,6 +6,7 @@ current mongodump progress. Runs on the HA box.
 """
 
 import glob
+import json
 import os
 import re
 import subprocess
@@ -14,6 +15,7 @@ import time
 
 BACKUP_DRIVE = "/media/newsblur-backup"
 SHOW_N = 3
+VERIFY_STATUS_FILE = os.path.join(BACKUP_DRIVE, "verify_status.json")
 
 SERVICES = [
     ("MongoDB", "mongo_full", "mongodump_full_*.gz", r"mongodump_full_(\d{4}-\d{2}-\d{2})\.gz"),
@@ -26,15 +28,15 @@ SERVICES = [
     (
         "Redis Story",
         "redis/backup_hdb_redis_story_2",
-        "*.rdb.gz",
-        r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb\.gz",
+        "*.rdb*",
+        r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb",
     ),
-    ("Redis User", "redis/backup_hdb_redis_user_2", "*.rdb.gz", r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb\.gz"),
+    ("Redis User", "redis/backup_hdb_redis_user_2", "*.rdb*", r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb"),
     (
         "Redis Session",
         "redis/backup_hdb_redis_session_2",
-        "*.rdb.gz",
-        r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb\.gz",
+        "*.rdb*",
+        r"_(\d{4}-\d{2}-\d{2}-\d{2}-\d{2})\.rdb",
     ),
 ]
 
@@ -168,11 +170,47 @@ def get_disk_usage():
     return None
 
 
+def load_verify_status():
+    """Load verification results from JSON status file."""
+    if not os.path.exists(VERIFY_STATUS_FILE):
+        return None
+    try:
+        with open(VERIFY_STATUS_FILE) as f:
+            return json.load(f)
+    except (IOError, json.JSONDecodeError):
+        return None
+
+
+def format_verify_status(verify_data, service_name):
+    """Return colored status string for a service's verification result."""
+    if not verify_data:
+        return "\033[2mnot verified\033[0m"
+
+    results = verify_data.get("results", {})
+    if service_name not in results:
+        return "\033[2mnot verified\033[0m"
+
+    result = results[service_name]
+    if result.get("ok"):
+        return "\033[32m✓ verified\033[0m"
+    else:
+        # Show first failing check
+        checks = result.get("checks", [])
+        fail = next((c for c in checks if c.startswith("FAIL")), "unknown failure")
+        fail_msg = fail.replace("FAIL ", "", 1)[:40]
+        return "\033[31m✗ %s\033[0m" % fail_msg
+
+
 def print_table():
     # Header
     print()
     print("  \033[1mNewsBlur Off-site Backup Status\033[0m")
     print("  \033[2m%s\033[0m" % ("─" * 52))
+
+    verify_data = load_verify_status()
+    if verify_data:
+        ts = verify_data.get("timestamp", "")
+        print("  \033[2mLast verified: %s\033[0m" % ts)
 
     for service_name, directory, pattern, date_regex in SERVICES:
         backups = get_backups(directory, pattern, date_regex)
@@ -227,6 +265,7 @@ def print_table():
             print("  │ %-12s │ %8s │" % (date_display, size_display))
 
         print("  └──────────────┴──────────┘")
+        print("  %s" % format_verify_status(verify_data, service_name))
 
     # Disk usage
     disk = get_disk_usage()

@@ -33,6 +33,7 @@ fi
 # S3 prefixes for each backup type (hostname with underscores)
 # Postgres backs up from the secondary (physical hostname: hdb-redis-secondary)
 S3_POSTGRES_PREFIXES=(
+    "backup_hdb_postgres_secondary/backup_postgresql"
     "backup_hdb_redis_secondary/backup_postgresql"
     "backup_hdb_postgres_1/backup_postgresql"
 )
@@ -189,8 +190,8 @@ fi
 for redis_dir in "${BACKUP_DRIVE}"/redis/backup_hdb_redis_*/; do
     if [[ ! -d "${redis_dir}" ]]; then continue; fi
     cd "${redis_dir}"
-    REDIS_FILES=$(ls -t *.rdb.gz 2>/dev/null || true)
-    REDIS_COUNT=$(echo "${REDIS_FILES}" | grep -c ".rdb.gz" 2>/dev/null || true)
+    REDIS_FILES=$(ls -t *.rdb *.rdb.gz 2>/dev/null || true)
+    REDIS_COUNT=$(echo "${REDIS_FILES}" | grep -c ".rdb" 2>/dev/null || true)
     if [[ ${REDIS_COUNT} -gt ${REDIS_KEEP} ]]; then
         echo "${REDIS_FILES}" | tail -n +$((REDIS_KEEP + 1)) | while read f; do
             log "  Removing old redis backup: $(basename ${redis_dir})/${f}"
@@ -199,7 +200,12 @@ for redis_dir in "${BACKUP_DRIVE}"/redis/backup_hdb_redis_*/; do
     fi
 done
 
-# --- 4. Summary ---
+# --- 4. Verify backup integrity ---
+log "--- Verifying backup integrity ---"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+/config/scripts/venv/bin/python3 "${SCRIPT_DIR}/offsite_verify.py" 2>&1 | while read line; do log "  $line"; done
+
+# --- 5. Summary ---
 log "=== Backup pull complete ==="
 log "Disk usage:"
 du -sh "${BACKUP_DRIVE}/mongo_full" "${BACKUP_DRIVE}/postgres" "${BACKUP_DRIVE}/redis" 2>/dev/null | while read line; do log "  $line"; done
