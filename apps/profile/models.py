@@ -1632,25 +1632,40 @@ class Profile(models.Model):
             return api
 
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
-        payments = PaymentHistory.objects.filter(
-            user=self.user,
-            payment_identifier=transaction_identifier,
-            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-        )
-        if len(payments):
-            # Already paid
-            logging.user(
-                self.user, "~FG~BBAlready paid iOS premium subscription: $%s~FW" % transaction_identifier
-            )
-            return False
+        with transaction.atomic():
+            Profile.objects.select_for_update().filter(user=self.user).first()
 
-        PaymentHistory.objects.create(
-            user=self.user,
-            payment_date=datetime.datetime.now(),
-            payment_amount=amount,
-            payment_provider="ios-subscription",
-            payment_identifier=transaction_identifier,
-        )
+            if transaction_identifier:
+                if PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_identifier=transaction_identifier,
+                    payment_provider="ios-subscription",
+                ).exists():
+                    logging.user(
+                        self.user,
+                        "~FG~BBAlready paid iOS premium subscription (same txn): $%s~FW"
+                        % transaction_identifier,
+                    )
+                    return False
+
+            if PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="ios-subscription",
+                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+            ).exists():
+                logging.user(
+                    self.user,
+                    "~FG~BBAlready paid iOS premium subscription (recent): $%s~FW" % transaction_identifier,
+                )
+                return False
+
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=amount,
+                payment_provider="ios-subscription",
+                payment_identifier=transaction_identifier,
+            )
 
         self.setup_premium_history()
 
@@ -1661,25 +1676,40 @@ class Profile(models.Model):
         return True
 
     def activate_ios_archive(self, transaction_identifier=None, amount=99):
-        payments = PaymentHistory.objects.filter(
-            user=self.user,
-            payment_identifier=transaction_identifier,
-            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-        )
-        if len(payments):
-            logging.user(
-                self.user,
-                "~FG~BBAlready paid iOS archive subscription: $%s~FW" % transaction_identifier,
-            )
-            return False
+        with transaction.atomic():
+            Profile.objects.select_for_update().filter(user=self.user).first()
 
-        PaymentHistory.objects.create(
-            user=self.user,
-            payment_date=datetime.datetime.now(),
-            payment_amount=amount,
-            payment_provider="ios-archive-subscription",
-            payment_identifier=transaction_identifier,
-        )
+            if transaction_identifier:
+                if PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_identifier=transaction_identifier,
+                    payment_provider="ios-archive-subscription",
+                ).exists():
+                    logging.user(
+                        self.user,
+                        "~FG~BBAlready paid iOS archive subscription (same txn): $%s~FW"
+                        % transaction_identifier,
+                    )
+                    return False
+
+            if PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="ios-archive-subscription",
+                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+            ).exists():
+                logging.user(
+                    self.user,
+                    "~FG~BBAlready paid iOS archive subscription (recent): $%s~FW" % transaction_identifier,
+                )
+                return False
+
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=amount,
+                payment_provider="ios-archive-subscription",
+                payment_identifier=transaction_identifier,
+            )
 
         self.setup_premium_history()
         self.activate_archive()
@@ -1688,25 +1718,39 @@ class Profile(models.Model):
         return True
 
     def activate_ios_pro(self, transaction_identifier=None, amount=29):
-        payments = PaymentHistory.objects.filter(
-            user=self.user,
-            payment_identifier=transaction_identifier,
-            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-        )
-        if len(payments):
-            logging.user(
-                self.user,
-                "~FG~BBAlready paid iOS pro subscription: $%s~FW" % transaction_identifier,
-            )
-            return False
+        with transaction.atomic():
+            Profile.objects.select_for_update().filter(user=self.user).first()
 
-        PaymentHistory.objects.create(
-            user=self.user,
-            payment_date=datetime.datetime.now(),
-            payment_amount=amount,
-            payment_provider="ios-pro-subscription",
-            payment_identifier=transaction_identifier,
-        )
+            if transaction_identifier:
+                if PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_identifier=transaction_identifier,
+                    payment_provider="ios-pro-subscription",
+                ).exists():
+                    logging.user(
+                        self.user,
+                        "~FG~BBAlready paid iOS pro subscription (same txn): $%s~FW" % transaction_identifier,
+                    )
+                    return False
+
+            if PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="ios-pro-subscription",
+                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+            ).exists():
+                logging.user(
+                    self.user,
+                    "~FG~BBAlready paid iOS pro subscription (recent): $%s~FW" % transaction_identifier,
+                )
+                return False
+
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=amount,
+                payment_provider="ios-pro-subscription",
+                payment_identifier=transaction_identifier,
+            )
 
         self.setup_premium_history()
         self.activate_pro()
@@ -1715,23 +1759,39 @@ class Profile(models.Model):
         return True
 
     def activate_android_premium(self, order_id=None, amount=36):
-        payments = PaymentHistory.objects.filter(
-            user=self.user,
-            payment_identifier=order_id,
-            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-        )
-        if len(payments):
-            # Already paid
-            logging.user(self.user, "~FG~BBAlready paid Android premium subscription: $%s~FW" % amount)
-            return False
+        with transaction.atomic():
+            Profile.objects.select_for_update().filter(user=self.user).first()
 
-        PaymentHistory.objects.create(
-            user=self.user,
-            payment_date=datetime.datetime.now(),
-            payment_amount=amount,
-            payment_provider="android-subscription",
-            payment_identifier=order_id,
-        )
+            if order_id:
+                if PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_identifier=order_id,
+                    payment_provider="android-subscription",
+                ).exists():
+                    logging.user(
+                        self.user,
+                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % amount,
+                    )
+                    return False
+
+            if PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="android-subscription",
+                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+            ).exists():
+                logging.user(
+                    self.user,
+                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % amount,
+                )
+                return False
+
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=amount,
+                payment_provider="android-subscription",
+                payment_identifier=order_id,
+            )
 
         self.setup_premium_history()
 

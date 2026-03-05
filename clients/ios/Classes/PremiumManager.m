@@ -179,7 +179,7 @@
 - (void)saveReceipt:(SKPaymentTransaction *)transaction isComplete:(BOOL)isComplete {
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
                            self.appDelegate.url];
-    NSString *transactionIdentifier = isComplete ? transaction.originalTransaction.transactionIdentifier : @"in-progress";
+    NSString *transactionIdentifier = isComplete ? (transaction.transactionIdentifier ?: transaction.originalTransaction.transactionIdentifier) : @"in-progress";
     transactionIdentifier = transactionIdentifier ?: @"missing";
     NSString *productIdentifier = transaction.payment.productIdentifier ?: @"missing";
     
