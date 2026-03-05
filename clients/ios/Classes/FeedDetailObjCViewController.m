@@ -1793,8 +1793,38 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     if (!self.isPhoneOrCompact) {
-        [appDelegate.storyPagesViewController resizeScrollView];
-        [appDelegate.storyPagesViewController setStoryFromScroll:YES];
+        NSInteger pageIndex = appDelegate.storyPagesViewController.currentPage.pageIndex;
+        BOOL storyChanged = NO;
+
+        // Check if the story at the current page position has changed after the refresh.
+        // This catches all mismatch cases: story moved, story replaced, story gone.
+        if (pageIndex >= 0 && pageIndex < storiesCollection.storyLocationsCount && appDelegate.activeStory) {
+            NSInteger storyIndex = [storiesCollection indexFromLocation:pageIndex];
+            if (storyIndex >= 0) {
+                NSDictionary *storyAtPage = [storiesCollection.activeFeedStories objectAtIndex:storyIndex];
+                storyChanged = ![[appDelegate.activeStory objectForKey:@"story_hash"]
+                                 isEqualToString:[storyAtPage objectForKey:@"story_hash"]];
+            }
+        } else if (appDelegate.activeStory && storiesCollection.storyLocationsCount > 0) {
+            // Page index out of range after refresh (fewer stories or initial state)
+            storyChanged = YES;
+        }
+
+        if (storyChanged && storiesCollection.storyLocationsCount > 0) {
+            // Server data changed the story list. Select the first story and
+            // reset pages so the detail pane stays in sync.
+            NSInteger firstIndex = [storiesCollection indexFromLocation:0];
+            if (firstIndex >= 0) {
+                appDelegate.activeStory = [storiesCollection.activeFeedStories objectAtIndex:firstIndex];
+            }
+            appDelegate.storyPagesViewController.currentPage.pageIndex = -2;
+            appDelegate.storyPagesViewController.nextPage.pageIndex = -2;
+            appDelegate.storyPagesViewController.previousPage.pageIndex = -2;
+            [appDelegate.storyPagesViewController changePage:0 animated:NO];
+        } else {
+            [appDelegate.storyPagesViewController resizeScrollView];
+            [appDelegate.storyPagesViewController setStoryFromScroll:YES];
+        }
     }
     [appDelegate.storyPagesViewController advanceToNextUnread];
 
