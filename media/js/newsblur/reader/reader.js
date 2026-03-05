@@ -4616,11 +4616,34 @@
                     ]),
                     (muted && $.make('li', { className: 'NB-menu-item NB-menu-manage-unmute NB-menu-manage-feed-unmute', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Un-mute this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, [
+                            'Un-mute this site',
+                            (feed.get('mute_expires_at') && $.make('span', { className: 'NB-mute-time-remaining' },
+                                ' \u00b7 ' + NEWSBLUR.utils.mute_time_remaining(feed.get('mute_expires_at'))
+                            ))
+                        ])
                     ])),
                     (!muted && $.make('li', { className: 'NB-menu-item NB-menu-manage-mute NB-menu-manage-feed-mute', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mute this site')
+                    ])),
+                    (!muted && $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-mute-confirm NB-modal-submit', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
+                            $.make('div', { className: 'NB-mute-slider-container' }, [
+                                $.make('input', {
+                                    type: 'range',
+                                    className: 'NB-mute-slider',
+                                    min: '0',
+                                    max: '15',
+                                    value: '6',
+                                    step: '1'
+                                }),
+                                $.make('div', { className: 'NB-mute-buttons' }, [
+                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-slider-save' }, 'Mute for 1 week'),
+                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-forever-save' }, 'Mute indefinitely')
+                                ])
+                            ])
+                        ])
                     ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -5137,6 +5160,46 @@
             this.blur_to_page({ manage_menu: true });
         },
 
+        // ======================
+        // = Manage menu - Mute =
+        // ======================
+
+        update_mute_slider_value: function ($slider) {
+            var index = parseInt($slider.val(), 10);
+            var days = NEWSBLUR.utils.mute_slider_to_days(index);
+            var label = NEWSBLUR.utils.format_mute_days(days);
+            $slider.closest('.NB-mute-slider-container').find('.NB-mute-slider-save').text('Mute for ' + label);
+        },
+
+        show_confirm_mute_menu_item: function () {
+            var self = this;
+            var $mute = $('.NB-menu-manage-feed-mute');
+            var $confirm = $('.NB-menu-manage-feed-mute-confirm');
+
+            $mute.addClass('NB-menu-manage-feed-mute-cancel');
+            $('.NB-menu-manage-title', $mute).text('Cancel mute');
+            $confirm.slideDown(500);
+
+            var $slider = $('.NB-mute-slider', $confirm);
+            $slider.val(6); // index 6 = 7 days = 1 week
+            this.update_mute_slider_value($slider);
+            $slider.off('input.mute').on('input.mute', function () {
+                self.update_mute_slider_value($(this));
+            });
+            $slider.off('click.mute mousedown.mute').on('click.mute mousedown.mute', function (e) {
+                e.stopPropagation();
+            });
+        },
+
+        hide_confirm_mute_menu_item: function () {
+            var $mute = $('.NB-menu-manage-feed-mute');
+            var $confirm = $('.NB-menu-manage-feed-mute-confirm');
+
+            $mute.removeClass('NB-menu-manage-feed-mute-cancel');
+            $('.NB-menu-manage-title', $mute).text('Mute this site');
+            $confirm.slideUp(500);
+        },
+
         // ========================
         // = Manage menu - Delete =
         // ========================
@@ -5466,12 +5529,12 @@
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
 
-        manage_menu_mute_feed: function (feed_id, unmute) {
+        manage_menu_mute_feed: function (feed_id, unmute, mute_duration_days) {
             var mute = !unmute;
-            console.log(["Muting feed", feed_id, "mute:", mute]);
+            console.log(["Muting feed", feed_id, "mute:", mute, "duration:", mute_duration_days]);
 
             NEWSBLUR.reader.flags['reloading_feeds'] = true;
-            this.model.set_feed_mute(feed_id, mute, _.bind(function () {
+            this.model.set_feed_mute(feed_id, mute, mute_duration_days, _.bind(function () {
                 this.flags['has_saved'] = true;
                 NEWSBLUR.reader.flags['reloading_feeds'] = false;
                 NEWSBLUR.reader.hide_feed_chooser_button();
@@ -7879,7 +7942,26 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-mute' }, function ($t, $p) {
                 e.preventDefault();
                 e.stopPropagation();
-                self.manage_menu_mute_feed($t.parents('.NB-menu-manage').data('feed_id'), false);
+                if ($t.hasClass('NB-menu-manage-feed-mute-cancel')) {
+                    self.hide_confirm_mute_menu_item();
+                } else {
+                    self.show_confirm_mute_menu_item();
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-mute-slider-save' }, function ($t, $p) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $slider = $t.closest('.NB-mute-slider-container').find('.NB-mute-slider');
+                var index = parseInt($slider.val(), 10);
+                var days = NEWSBLUR.utils.mute_slider_to_days(index);
+                var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
+                self.manage_menu_mute_feed(feed_id, false, days);
+            });
+            $.targetIs(e, { tagSelector: '.NB-mute-forever-save' }, function ($t, $p) {
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
+                self.manage_menu_mute_feed(feed_id, false, null);
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-unmute' }, function ($t, $p) {
                 e.preventDefault();

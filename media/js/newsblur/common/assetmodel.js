@@ -2039,12 +2039,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
-    set_feed_mute: function (feed_id, mute, callback) {
+    set_feed_mute: function (feed_id, mute, mute_duration_days, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/set_feed_mute', {
-                'feed_id': feed_id,
-                'mute': mute
-            }, callback);
+            var params = { 'feed_id': feed_id, 'mute': mute };
+            if (mute_duration_days) params['mute_duration_days'] = mute_duration_days;
+            this.make_request('/reader/set_feed_mute', params, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
