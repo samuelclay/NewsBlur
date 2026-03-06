@@ -23,7 +23,8 @@ struct NewslettersTabView: View {
                     isLoading: viewModel.newslettersState.isSearching,
                     onSubmit: {
                         viewModel.searchFeeds(type: "newsletter", query: viewModel.newslettersState.searchQuery)
-                    }
+                    },
+                    viewMode: $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -54,6 +55,11 @@ struct NewslettersTabView: View {
         .onAppear {
             if !viewModel.newslettersState.isCategoriesLoaded {
                 viewModel.loadPopularFeeds(type: "newsletter", category: nil, subcategory: nil, offset: 0)
+            }
+        }
+        .onChange(of: viewModel.feedViewMode) { newMode in
+            if newMode == .list && !viewModel.newslettersState.hasLoadedStories {
+                reloadFeeds()
             }
         }
     }
@@ -123,6 +129,7 @@ struct NewslettersTabView: View {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
+                    showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
                     onAddFeed: onAddFeed
                 )

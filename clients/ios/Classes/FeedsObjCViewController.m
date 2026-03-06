@@ -3499,7 +3499,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-unread"]];
     [self.userInfoView addSubview:yellowIcon];
     yellowIcon.hidden = YES;
     
@@ -3509,7 +3509,7 @@ heightForHeaderInSection:(NSInteger)section {
     neutralCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:neutralCount];
     
-    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
+    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-focus"]];
     [self.userInfoView addSubview:greenIcon];
     greenIcon.hidden = YES;
     
@@ -3571,16 +3571,19 @@ heightForHeaderInSection:(NSInteger)section {
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
     neutralCount.accessibilityLabel = [NSString stringWithFormat:@"%@ unread stories", neutralCount.text];
 
-    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
+    CGFloat countY = CGRectGetMaxY(userLabel.frame) + 2 - yOffset;
+    CGFloat iconY = countY + 3;
+
+    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), iconY, 10, 10);
 
     neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
-                                    CGRectGetMinY(yellowIcon.frame) - 2 - yOffset, 100, 16);
+                                    countY, 100, 16);
     [neutralCount sizeToFit];
-    
+
     greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
-                                 CGRectGetMinY(yellowIcon.frame), 8, 8);
+                                 iconY, 10, 10);
     positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
-                                     CGRectGetMinY(greenIcon.frame) - 2 - yOffset, 100, 16);
+                                     countY, 100, 16);
     [positiveCount sizeToFit];
     
     yellowIcon.hidden = NO;

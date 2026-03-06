@@ -14,6 +14,7 @@ struct DiscoverSearchBarView: View {
     @Binding var text: String
     var isLoading: Bool = false
     var onSubmit: (() -> Void)?
+    var viewMode: Binding<DiscoverSitesFeedViewMode>?
 
     var body: some View {
         HStack(spacing: 8) {
@@ -51,6 +52,17 @@ struct DiscoverSearchBarView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(DiscoverColors.border, lineWidth: 1)
             )
+
+            if let viewMode = viewMode {
+                Picker("View Mode", selection: viewMode) {
+                    Image(systemName: "square.grid.2x2")
+                        .tag(DiscoverSitesFeedViewMode.grid)
+                    Image(systemName: "list.bullet")
+                        .tag(DiscoverSitesFeedViewMode.list)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 80)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

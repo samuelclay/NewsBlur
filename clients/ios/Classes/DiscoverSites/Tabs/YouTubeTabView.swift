@@ -23,7 +23,8 @@ struct YouTubeTabView: View {
                     isLoading: viewModel.youtubeState.isSearching,
                     onSubmit: {
                         viewModel.searchFeeds(type: "youtube", query: viewModel.youtubeState.searchQuery)
-                    }
+                    },
+                    viewMode: $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -51,6 +52,11 @@ struct YouTubeTabView: View {
                 viewModel.loadPopularFeeds(type: "youtube", category: nil, subcategory: nil, offset: 0)
             }
         }
+        .onChange(of: viewModel.feedViewMode) { newMode in
+            if newMode == .list && !viewModel.youtubeState.hasLoadedStories {
+                reloadFeeds()
+            }
+        }
     }
 
     @ViewBuilder
@@ -63,6 +69,7 @@ struct YouTubeTabView: View {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
+                    showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
                     onAddFeed: onAddFeed
                 )
