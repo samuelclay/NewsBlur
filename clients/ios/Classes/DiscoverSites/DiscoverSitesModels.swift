@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum DiscoverSitesFeedViewMode: String {
+    case grid
+    case list
+}
+
 enum DiscoverTab: String, CaseIterable, Identifiable {
     case search
     case webFeed
@@ -206,6 +211,7 @@ struct CategoryTabState {
     var offset: Int = 0
     var hasMore: Bool = true
     var isCategoriesLoaded: Bool = false
+    var hasLoadedStories: Bool = false
     var platformFilter: String?
     var platformCounts: [String: Int] = [:]
 }

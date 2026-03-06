@@ -21,7 +21,8 @@ struct SearchTabView: View {
                     DiscoverSearchBarView(
                         placeholder: "Search feeds...",
                         text: $viewModel.searchState.query,
-                        isLoading: viewModel.searchState.isSearching
+                        isLoading: viewModel.searchState.isSearching,
+                        viewMode: $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.searchState.query) { newValue in
                         viewModel.searchAutocomplete(query: newValue)
@@ -71,7 +72,7 @@ struct SearchTabView: View {
             ForEach(viewModel.searchState.trendingFeeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
-                    showStories: true,
+                    showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
                     onAddFeed: onAddFeed
                 )
