@@ -15,6 +15,7 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
         <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground</item>
         <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground</item>
@@ -80,6 +81,7 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.dark</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
@@ -145,6 +147,7 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.black</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>

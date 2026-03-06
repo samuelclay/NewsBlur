@@ -9,9 +9,9 @@
     android:paddingBottom="8dp">
 
     <LinearLayout
-        style="?layoutRoundedBackground"
         android:layout_width="match_parent"
         android:layout_height="28dp"
+        android:background="@drawable/shape_rounded_corners_6dp_white"
         android:gravity="center_vertical"
         android:paddingStart="10dp"
         android:paddingEnd="10dp">

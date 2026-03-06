@@ -4,6 +4,7 @@
     <attr name="selectorFeedAlmostRedBackground" format="string" />
     <attr name="selectorFeedAlmostGreenBackground" format="string" />
     <attr name="selectorFolderBackground" format="string" />
+    <attr name="selectorTopLevelBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
     <attr name="feedRowNeutCountText" format="string" />
     <attr name="actionbarBackground" format="string" />
