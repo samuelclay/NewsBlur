@@ -3182,7 +3182,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             'hidden_gems': 'Feeds with deeply engaged readers, not yet widely known',
             'new_arrivals': 'Recently added feeds that are gaining subscribers'
         };
-        $pill.closest('.NB-add-site-trending-section').find('.NB-add-site-trending-description').text(descriptions[category]);
+        var $section = $pill.closest('.NB-add-site-trending-section');
+        $section.find('.NB-add-site-trending-description').text(descriptions[category]);
+        $section.find('.NB-add-site-trending-content').html(this.make_loading_indicator());
 
         this.fetch_search_trending_feeds();
     },

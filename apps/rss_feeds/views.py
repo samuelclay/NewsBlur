@@ -744,7 +744,9 @@ def trending_sites(request):
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
-    feeds = Feed.objects.filter(pk__in=trending_feed_ids, last_story_date__gte=one_year_ago)
+    feeds = Feed.objects.filter(
+        pk__in=trending_feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
+    )
     feeds_dict = {feed.pk: feed for feed in feeds}
 
     trending_feeds = {}
