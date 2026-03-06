@@ -126,26 +126,22 @@ class DiscoverSitesViewModel: ObservableObject {
     // MARK: - Network Helper
 
     private func makeRequest(path: String, method: String = "GET", params: [String: String]? = nil, body: [String: String]? = nil) -> URLRequest? {
-        var urlString = "\(baseURL)\(path)"
+        guard var components = URLComponents(string: "\(baseURL)\(path)") else { return nil }
 
         if let params = params, !params.isEmpty {
-            let queryItems = params.map { key, value in
-                "\(key)=\(value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value)"
-            }
-            urlString += "?" + queryItems.joined(separator: "&")
+            components.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
         }
 
-        guard let url = URL(string: urlString) else { return nil }
+        guard let url = components.url else { return nil }
 
         var request = URLRequest(url: url)
         request.httpMethod = method
 
         if let body = body {
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            let bodyParts = body.map { key, value in
-                "\(key)=\(value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value)"
-            }
-            request.httpBody = bodyParts.joined(separator: "&").data(using: .utf8)
+            var bodyComponents = URLComponents()
+            bodyComponents.queryItems = body.map { URLQueryItem(name: $0.key, value: $0.value) }
+            request.httpBody = bodyComponents.query?.data(using: .utf8)
         }
 
         if let cookies = HTTPCookieStorage.shared.cookies(for: url) {
@@ -225,6 +221,8 @@ class DiscoverSitesViewModel: ObservableObject {
             params: ["page": "1", "days": "7", "limit": "20"]
         ) else { return }
 
+        searchState.isTrendingLoading = true
+
         Task {
             do {
                 let json = try await performRequest(request)
@@ -238,9 +236,10 @@ class DiscoverSitesViewModel: ObservableObject {
                     return DiscoverPopularFeed(feedId: feedId, feedDict: feedDict, storiesArray: storiesArray)
                 }.sorted { $0.numSubscribers > $1.numSubscribers }
                 searchState.trendingFeeds = feeds
+                searchState.isTrendingLoading = false
                 searchState.isTrendingLoaded = true
             } catch {
-                // Trending load failed silently
+                searchState.isTrendingLoading = false
             }
         }
     }
@@ -262,7 +261,12 @@ class DiscoverSitesViewModel: ObservableObject {
 
         guard let request = makeRequest(path: "/discover/popular_feeds", params: params) else { return }
 
-        updateCategoryTabLoading(type: type, isLoading: true)
+        updateCategoryTabState(type: type) { state in
+            state.isLoading = true
+            if offset == 0 {
+                state.feeds = []
+            }
+        }
 
         Task {
             do {

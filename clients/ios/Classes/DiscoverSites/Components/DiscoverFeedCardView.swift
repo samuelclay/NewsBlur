@@ -129,7 +129,7 @@ struct DiscoverFeedCardView: View {
 
     @ViewBuilder
     private var faviconView: some View {
-        if let faviconUrl = feed.faviconUrl, let url = URL(string: faviconUrl) {
+        if let faviconUrl = feed.faviconUrl, !faviconUrl.isEmpty, let url = URL(string: faviconUrl) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
@@ -137,13 +137,23 @@ struct DiscoverFeedCardView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
+                case .failure:
+                    defaultFavicon
                 default:
-                    Color.clear
+                    defaultFavicon
+                        .opacity(0.4)
                 }
             }
         } else {
-            Color.clear
+            defaultFavicon
         }
+    }
+
+    private var defaultFavicon: some View {
+        Image(systemName: "globe")
+            .font(.system(size: 14))
+            .foregroundColor(DiscoverColors.textSecondary)
+            .frame(width: 24, height: 24)
     }
 
     // MARK: - Story Row
