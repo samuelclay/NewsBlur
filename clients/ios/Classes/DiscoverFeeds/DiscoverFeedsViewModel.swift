@@ -72,7 +72,7 @@ class DiscoverFeedsViewModel: ObservableObject {
 
         var request: URLRequest
         if let feedIds = feedIds {
-            guard let url = URL(string: "\(baseURL)/rss_feeds/discover/feeds/") else {
+            guard let url = URL(string: "\(baseURL)/discover/similar/feeds/") else {
                 error = "Invalid URL"
                 isLoading = false
                 return
@@ -84,7 +84,7 @@ class DiscoverFeedsViewModel: ObservableObject {
             bodyParts.append("page=\(page)")
             request.httpBody = bodyParts.joined(separator: "&").data(using: .utf8)
         } else if let feedId = feedId {
-            guard let url = URL(string: "\(baseURL)/rss_feeds/discover/\(feedId)/?page=\(page)") else {
+            guard let url = URL(string: "\(baseURL)/discover/similar/\(feedId)/?page=\(page)") else {
                 error = "Invalid URL"
                 isLoading = false
                 return
