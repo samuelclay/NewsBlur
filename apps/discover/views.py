@@ -304,6 +304,7 @@ def _get_trending_popular(days, limit, offset, one_year_ago):
             num_subscribers__gte=10,
             is_push=False,
             last_story_date__gte=one_year_ago,
+            branch_from_feed__isnull=True,
         ).order_by("-num_subscribers")[offset : offset + limit + 1]
         trending_feed_ids = [f.pk for f in popular_feeds[:limit]]
         score_map = {fid: 1 for fid in trending_feed_ids}
@@ -328,6 +329,7 @@ def _get_trending_rising(days, limit, offset, one_year_ago):
         pk__in=feed_ids,
         num_subscribers__gte=5,
         last_story_date__gte=one_year_ago,
+        branch_from_feed__isnull=True,
     ).values("pk", "num_subscribers")
     sub_map = {f["pk"]: max(f["num_subscribers"], 1) for f in feeds}
 
@@ -359,12 +361,13 @@ def _get_trending_hidden_gems(days, limit, offset, one_year_ago):
     if not normalized:
         return [], {}, False, False
 
-    # Filter out stale feeds
+    # Filter out stale and branched feeds
     feed_ids = [r["feed_id"] for r in normalized]
     fresh_ids = set(
         Feed.objects.filter(
             pk__in=feed_ids,
             last_story_date__gte=one_year_ago,
+            branch_from_feed__isnull=True,
         ).values_list("pk", flat=True)
     )
     filtered = [r for r in normalized if r["feed_id"] in fresh_ids]
@@ -389,12 +392,13 @@ def _get_trending_new_arrivals(days, limit, offset, one_year_ago):
         return [], {}, False, False
 
     feed_ids = [int(fid) for fid, _ in trending_data]
-    # Filter to feeds created within the last year and not stale
+    # Filter to feeds created within the last year, not stale, not branched
     recent_ids = set(
         Feed.objects.filter(
             pk__in=feed_ids,
             creation__gte=one_year_ago.date(),
             last_story_date__gte=one_year_ago,
+            branch_from_feed__isnull=True,
         ).values_list("pk", flat=True)
     )
 
@@ -444,8 +448,10 @@ def trending_sites(request):
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
-    # Build response with feed details and stories, excluding stale feeds
-    feeds = Feed.objects.filter(pk__in=trending_feed_ids, last_story_date__gte=one_year_ago)
+    # Build response with feed details and stories, excluding stale and branched feeds
+    feeds = Feed.objects.filter(
+        pk__in=trending_feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
+    )
     feeds_dict = {feed.pk: feed for feed in feeds}
 
     trending_feeds = {}
