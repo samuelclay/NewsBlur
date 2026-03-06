@@ -4919,9 +4919,10 @@ def trending_feeds(request):
 
     trending = RTrendingStory.get_trending_feeds(days=days, limit=limit)
 
-    # Enrich with feed details
+    # Enrich with feed details, excluding stale feeds
+    one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
     feed_ids = [feed_id for feed_id, _ in trending]
-    feeds = Feed.objects.filter(pk__in=feed_ids).values(
+    feeds = Feed.objects.filter(pk__in=feed_ids, last_story_date__gte=one_year_ago).values(
         "pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers"
     )
     feeds_dict = {f["pk"]: f for f in feeds}
