@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -184,6 +185,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
         binding = FragmentFolderfeedlistBinding.bind(v);
         searchHeaderBinding = ViewFeedListSearchHeaderBinding.inflate(inflater, binding.folderfeedList, false);
+        configureSearchInput();
 
         binding.folderfeedList.setGroupIndicator(ContextCompat.getDrawable(requireContext(), R.drawable.transparent));
         binding.folderfeedList.setItemsCanFocus(true);
@@ -238,6 +240,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         syncSearchField(adapter.activeSearchQuery);
 
         return v;
+    }
+
+    private void configureSearchInput() {
+        searchHeaderBinding.getRoot().setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
+        searchHeaderBinding.inputSearchQuery.setAutofillHints((String[]) null);
+        searchHeaderBinding.inputSearchQuery.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+        searchHeaderBinding.inputSearchQuery.setSaveEnabled(false);
+        searchHeaderBinding.inputSearchQuery.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        searchHeaderBinding.inputSearchQuery.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING);
     }
 
     /**
