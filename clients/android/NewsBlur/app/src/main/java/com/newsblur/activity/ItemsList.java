@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,6 +44,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
 import com.newsblur.delegate.ItemListContextMenuDelegate;
 import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
+import com.newsblur.delegate.ItemListMenuPopup;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.EdgeToEdgeUtil;
@@ -105,6 +107,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private SessionDataSource sessionDataSource;
     @Nullable
     private ValueAnimator storyStatusBannerAnimator;
+    @Nullable
+    private PopupWindow itemListMenuPopup;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
     private final Runnable showFetchingBannerRunnable = () -> {
@@ -233,6 +237,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateOptionsPillTitle(menu);
         binding.itemlistSearchPill.setVisibility(searchItem != null && searchItem.isVisible() ? View.VISIBLE : View.GONE);
         binding.itemlistMarkReadContainer.setVisibility(markReadItem != null && markReadItem.isVisible() ? View.VISIBLE : View.GONE);
+        updateStorySearchPillLabel();
 
         if (searchItem != null && !searchItem.isVisible() && isStorySearchVisible()) {
             hideStorySearch(true);
@@ -245,23 +250,29 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onPause() {
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
+        dismissItemListMenuPopup();
         super.onPause();
         syncServiceState.addRecountCandidate(fs);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return contextMenuDelegate.onCreateMenuOptions(menu, getMenuInflater(), fs);
+        getMenuInflater().inflate(R.menu.itemslist_toolbar, menu);
+        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        return prepareItemListMenuModel(menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_story_settings) {
+            showItemListMenuPopup(findViewById(R.id.toolbar));
+            return true;
+        }
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
     }
 
@@ -347,12 +358,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void setupStoryHeader() {
-        binding.itemlistOptionsPill.setOnClickListener(view -> {
-            View toolbar = findViewById(R.id.toolbar);
-            if (toolbar instanceof androidx.appcompat.widget.Toolbar) {
-                ((androidx.appcompat.widget.Toolbar) toolbar).showOverflowMenu();
-            }
-        });
+        binding.itemlistOptionsPill.setOnClickListener(this::showItemListMenuPopup);
         binding.itemlistSearchPill.setOnClickListener(view -> toggleStorySearch());
         binding.itemlistMarkReadButton.setOnClickListener(view ->
                 feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, this)
@@ -414,11 +420,55 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void updateStorySearchPillLabel() {
-        if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
+        if (binding.itemlistStoryHeaderBar.getWidth() <= 0 || binding.itemlistSearchPill.getVisibility() != View.VISIBLE) return;
 
-        int compactThreshold = UIUtils.dp2px(this, 344);
-        boolean useCompactLabel = binding.itemlistStoryHeaderBar.getWidth() < compactThreshold;
+        boolean useCompactLabel = !canFitSearchPillText();
         binding.itemlistSearchPill.setText(useCompactLabel ? "" : getString(R.string.story_header_search));
+    }
+
+    private boolean canFitSearchPillText() {
+        int availableWidth = binding.itemlistStoryHeaderBar.getWidth()
+                - binding.itemlistStoryHeaderBar.getPaddingLeft()
+                - binding.itemlistStoryHeaderBar.getPaddingRight();
+        if (availableWidth <= 0) return true;
+
+        int optionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
+                ? measureDesiredWidth(binding.itemlistOptionsPill)
+                : 0;
+        int searchWidth = measureSearchPillWidth(getString(R.string.story_header_search));
+        int markReadWidth = binding.itemlistMarkReadContainer.getVisibility() == View.VISIBLE
+                ? measureDesiredWidth(binding.itemlistMarkReadContainer)
+                : 0;
+
+        int searchMargin = binding.itemlistSearchPill.getVisibility() == View.VISIBLE
+                ? ((ViewGroup.MarginLayoutParams) binding.itemlistSearchPill.getLayoutParams()).getMarginStart()
+                : 0;
+        int markReadMargin = binding.itemlistMarkReadContainer.getVisibility() == View.VISIBLE
+                ? ((ViewGroup.MarginLayoutParams) binding.itemlistMarkReadContainer.getLayoutParams()).getMarginStart()
+                : 0;
+
+        return optionsWidth + searchWidth + markReadWidth + searchMargin + markReadMargin <= availableWidth;
+    }
+
+    private int measureSearchPillWidth(CharSequence title) {
+        CharSequence previousTitle = binding.itemlistSearchPill.getText();
+        binding.itemlistSearchPill.setText(title);
+        int width = measureDesiredWidth(binding.itemlistSearchPill);
+        binding.itemlistSearchPill.setText(previousTitle);
+        return width;
+    }
+
+    private int measureDesiredWidth(View view) {
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        int heightSpec;
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams != null && layoutParams.height > 0) {
+            heightSpec = View.MeasureSpec.makeMeasureSpec(layoutParams.height, View.MeasureSpec.EXACTLY);
+        } else {
+            heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        }
+        view.measure(widthSpec, heightSpec);
+        return view.getMeasuredWidth();
     }
 
     private void updateOptionsPillTitle(Menu menu) {
@@ -456,6 +506,40 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return true;
         });
         popupMenu.show();
+    }
+
+    private void showItemListMenuPopup(View anchor) {
+        if (itemListMenuPopup != null && itemListMenuPopup.isShowing()) {
+            itemListMenuPopup.dismiss();
+            return;
+        }
+
+        PopupWindow popup =
+                new ItemListMenuPopup(this, new ItemListMenuPopup.Controller() {
+                    @Override
+                    public Menu buildMenuModel() {
+                        return buildItemListMenuModel();
+                    }
+
+                    @Override
+                    public boolean onMenuItemSelected(int itemId) {
+                        MenuItem menuItem = buildItemListMenuModel().findItem(itemId);
+                        return menuItem != null && ItemsList.this.onOptionsItemSelected(menuItem);
+                    }
+                }).show(anchor);
+        popup.setOnDismissListener(() -> {
+            if (itemListMenuPopup == popup) {
+                itemListMenuPopup = null;
+            }
+        });
+        itemListMenuPopup = popup;
+    }
+
+    private void dismissItemListMenuPopup() {
+        if (itemListMenuPopup != null) {
+            itemListMenuPopup.dismiss();
+            itemListMenuPopup = null;
+        }
     }
 
     private Menu buildItemListMenuModel() {
