@@ -102,6 +102,7 @@
     <!--dynamic spacing-->
     <TextView
         android:id="@+id/story_item_title"
+        style="?storyTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/story_item_feedicon"

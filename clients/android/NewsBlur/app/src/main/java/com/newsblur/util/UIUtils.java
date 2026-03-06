@@ -572,7 +572,7 @@ public class UIUtils {
         PrefConstants.ThemeValue value = prefsRepo.getSelectedTheme();
         if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
             return CustomTabsIntent.COLOR_SCHEME_DARK;
-        } else if (value == PrefConstants.ThemeValue.LIGHT) {
+        } else if (value == PrefConstants.ThemeValue.LIGHT || value == PrefConstants.ThemeValue.SEPIA) {
             return CustomTabsIntent.COLOR_SCHEME_LIGHT;
         } else {
             return CustomTabsIntent.COLOR_SCHEME_SYSTEM;

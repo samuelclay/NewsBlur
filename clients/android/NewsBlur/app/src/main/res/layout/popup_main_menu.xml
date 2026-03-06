@@ -157,10 +157,10 @@
                     style="?toggleButton"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:minWidth="0dp"
                     android:text="@string/auto"
-                    android:textSize="11sp" />
+                    android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_light"
@@ -168,9 +168,31 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
+                    android:contentDescription="@string/light"
                     android:minWidth="0dp"
-                    android:text="@string/light"
-                    android:textSize="11sp" />
+                    android:text=""
+                    android:tooltipText="@string/light"
+                    app:icon="@drawable/ic_theme_dot_light"
+                    app:iconGravity="textTop"
+                    app:iconPadding="0dp"
+                    app:iconSize="19dp"
+                    app:iconTint="@null" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_theme_sepia"
+                    style="?toggleButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/sepia"
+                    android:minWidth="0dp"
+                    android:text=""
+                    android:tooltipText="@string/sepia"
+                    app:icon="@drawable/ic_theme_dot_sepia"
+                    app:iconGravity="textTop"
+                    app:iconPadding="0dp"
+                    app:iconSize="19dp"
+                    app:iconTint="@null" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_dark"
@@ -178,9 +200,15 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
+                    android:contentDescription="@string/dark"
                     android:minWidth="0dp"
-                    android:text="@string/dark"
-                    android:textSize="11sp" />
+                    android:text=""
+                    android:tooltipText="@string/dark"
+                    app:icon="@drawable/ic_theme_dot_dark"
+                    app:iconGravity="textTop"
+                    app:iconPadding="0dp"
+                    app:iconSize="19dp"
+                    app:iconTint="@null" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_black"
@@ -188,9 +216,15 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
+                    android:contentDescription="@string/black"
                     android:minWidth="0dp"
-                    android:text="@string/black"
-                    android:textSize="11sp" />
+                    android:text=""
+                    android:tooltipText="@string/black"
+                    app:icon="@drawable/ic_theme_dot_black"
+                    app:iconGravity="textTop"
+                    app:iconPadding="0dp"
+                    app:iconSize="19dp"
+                    app:iconTint="@null" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

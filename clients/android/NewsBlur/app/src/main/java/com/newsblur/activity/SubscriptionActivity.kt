@@ -557,32 +557,57 @@ class SubscriptionActivity : NbActivity() {
         }
 
     private fun buildPalette(): SubscriptionPalette {
-        val isDarkTheme =
-            when (prefsRepo.getSelectedTheme()) {
-                ThemeValue.LIGHT -> false
-                ThemeValue.DARK, ThemeValue.BLACK -> true
-                ThemeValue.AUTO ->
-                    (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-            }
+        return when (prefsRepo.getSelectedTheme()) {
+            ThemeValue.SEPIA ->
+                SubscriptionPalette(
+                    background = ContextCompat.getColor(this, R.color.primary_sepia),
+                    cardBackground = ContextCompat.getColor(this, R.color.item_background_sepia),
+                    secondaryBackground = ContextCompat.getColor(this, R.color.share_bar_background_sepia),
+                    primaryText = ContextCompat.getColor(this, R.color.text_sepia),
+                    secondaryText = ContextCompat.getColor(this, R.color.button_text_sepia),
+                    border = ContextCompat.getColor(this, R.color.row_border_sepia),
+                )
 
-        return if (isDarkTheme) {
-            SubscriptionPalette(
-                background = Color.parseColor("#1C1C1E"),
-                cardBackground = Color.parseColor("#2C2C2E"),
-                secondaryBackground = Color.parseColor("#38383A"),
-                primaryText = ContextCompat.getColor(this, R.color.gray95),
-                secondaryText = Color.parseColor("#98989D"),
-                border = Color.parseColor("#48484A"),
-            )
-        } else {
-            SubscriptionPalette(
-                background = ContextCompat.getColor(this, R.color.feed_list_row_background),
-                cardBackground = ContextCompat.getColor(this, R.color.white),
-                secondaryBackground = Color.parseColor("#F7F7F5"),
-                primaryText = Color.parseColor("#1C1C1E"),
-                secondaryText = Color.parseColor("#6E6E73"),
-                border = ContextCompat.getColor(this, R.color.gray85),
-            )
+            ThemeValue.DARK, ThemeValue.BLACK ->
+                SubscriptionPalette(
+                    background = Color.parseColor("#1C1C1E"),
+                    cardBackground = Color.parseColor("#2C2C2E"),
+                    secondaryBackground = Color.parseColor("#38383A"),
+                    primaryText = ContextCompat.getColor(this, R.color.gray95),
+                    secondaryText = Color.parseColor("#98989D"),
+                    border = Color.parseColor("#48484A"),
+                )
+
+            ThemeValue.AUTO ->
+                if ((resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+                    SubscriptionPalette(
+                        background = Color.parseColor("#1C1C1E"),
+                        cardBackground = Color.parseColor("#2C2C2E"),
+                        secondaryBackground = Color.parseColor("#38383A"),
+                        primaryText = ContextCompat.getColor(this, R.color.gray95),
+                        secondaryText = Color.parseColor("#98989D"),
+                        border = Color.parseColor("#48484A"),
+                    )
+                } else {
+                    SubscriptionPalette(
+                        background = ContextCompat.getColor(this, R.color.feed_list_row_background),
+                        cardBackground = ContextCompat.getColor(this, R.color.white),
+                        secondaryBackground = Color.parseColor("#F7F7F5"),
+                        primaryText = Color.parseColor("#1C1C1E"),
+                        secondaryText = Color.parseColor("#6E6E73"),
+                        border = ContextCompat.getColor(this, R.color.gray85),
+                    )
+                }
+
+            ThemeValue.LIGHT ->
+                SubscriptionPalette(
+                    background = ContextCompat.getColor(this, R.color.feed_list_row_background),
+                    cardBackground = ContextCompat.getColor(this, R.color.white),
+                    secondaryBackground = Color.parseColor("#F7F7F5"),
+                    primaryText = Color.parseColor("#1C1C1E"),
+                    secondaryText = Color.parseColor("#6E6E73"),
+                    border = ContextCompat.getColor(this, R.color.gray85),
+                )
         }
     }
 

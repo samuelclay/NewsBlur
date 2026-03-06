@@ -398,6 +398,7 @@ class ReadingItemFragment :
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
+            ThemeValue.SEPIA -> menu.findItem(R.id.menu_theme_sepia).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
@@ -554,6 +555,12 @@ class ReadingItemFragment :
                 true
             }
 
+            R.id.menu_theme_sepia -> {
+                prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
+                UIUtils.restartActivity(requireActivity())
+                true
+            }
+
             R.id.menu_theme_dark -> {
                 prefsRepo.setSelectedTheme(ThemeValue.DARK)
                 UIUtils.restartActivity(requireActivity())
@@ -671,7 +678,9 @@ class ReadingItemFragment :
         UIUtils.setViewBackground(binding.rowItemFeedHeader, gradient)
 
         if (faviconText == "black") {
-            binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.text))
+            binding.readingFeedTitle.setTextColor(
+                UIUtils.getThemedColor(requireContext(), R.attr.defaultText, android.R.attr.textColor),
+            )
             binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, ContextCompat.getColor(requireContext(), R.color.half_white))
         } else {
             binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -1288,6 +1297,7 @@ private fun MaterialButton.setStoryReadState(
     val styleResId: Int =
         when (selectedTheme) {
             ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons
+            ThemeValue.SEPIA -> if (isRead) R.style.storyButtonsDimmed_sepia else R.style.storyButtons_sepia
             else -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
         }
     val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state

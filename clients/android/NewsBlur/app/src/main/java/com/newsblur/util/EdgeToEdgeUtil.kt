@@ -20,6 +20,7 @@ object EdgeToEdgeUtil {
         val themeRes: Int =
             when (theme) {
                 ThemeValue.LIGHT -> R.style.NewsBlurTheme
+                ThemeValue.SEPIA -> R.style.NewsBlurSepiaTheme
                 ThemeValue.DARK -> R.style.NewsBlurDarkTheme
                 ThemeValue.BLACK -> R.style.NewsBlurBlackTheme
                 ThemeValue.AUTO -> {
@@ -108,7 +109,7 @@ object EdgeToEdgeUtil {
         theme: ThemeValue,
     ): Boolean =
         when (theme) {
-            ThemeValue.LIGHT -> true
+            ThemeValue.LIGHT, ThemeValue.SEPIA -> true
             ThemeValue.DARK, ThemeValue.BLACK -> false
             ThemeValue.AUTO -> {
                 val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK

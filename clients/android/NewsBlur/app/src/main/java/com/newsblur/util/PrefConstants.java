@@ -102,6 +102,7 @@ public class PrefConstants {
     public enum ThemeValue {
         AUTO,
         LIGHT,
+        SEPIA,
         DARK,
         BLACK;
     }

@@ -369,6 +369,7 @@ abstract class Reading :
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
+            ThemeValue.SEPIA -> pager.setPageMarginDrawable(R.drawable.divider_sepia)
             ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
             ThemeValue.AUTO -> {
                 when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
