@@ -382,14 +382,14 @@ class ItemListMenuPopup(
         buttons: List<MaterialButton>,
         palette: ItemListPopupPalette,
     ) {
-        val buttonInset = UIUtils.dp2px(activity, 3)
-        val buttonRadius = UIUtils.dp2px(activity, 10)
+        val buttonInset = UIUtils.dp2px(activity, 4)
+        val buttonRadius = UIUtils.dp2px(activity, 7)
 
         group.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
         group.background =
             GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 15f)
+                cornerRadius = UIUtils.dp2px(activity, 12f)
                 setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
                 setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
             }
@@ -414,6 +414,7 @@ class ItemListMenuPopup(
         buttons.forEach { button ->
             button.backgroundTintList = buttonTint
             button.setTextColor(textColor)
+            button.iconTint = textColor
             button.strokeWidth = 0
             button.cornerRadius = buttonRadius
             button.insetTop = 0
@@ -429,14 +430,14 @@ class ItemListMenuPopup(
         binding: PopupItemlistMenuBinding,
         palette: ItemListPopupPalette,
     ) {
-        val buttonInset = UIUtils.dp2px(activity, 3)
-        val buttonRadius = UIUtils.dp2px(activity, 10)
+        val buttonInset = UIUtils.dp2px(activity, 4)
+        val buttonRadius = UIUtils.dp2px(activity, 7)
 
         binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
         binding.groupTheme.background =
             GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 15f)
+                cornerRadius = UIUtils.dp2px(activity, 12f)
                 setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
                 setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
             }
@@ -610,11 +611,11 @@ class ItemListMenuPopup(
                     dividerColor = R.color.gray85,
                     textColor = R.color.gray20,
                     accessoryColor = R.color.gray55,
-                    themeGroupBackgroundColor = R.color.segmented_control_background_light,
-                    themeGroupSelectedColor = R.color.segmented_control_selected_light,
+                    themeGroupBackgroundColor = R.color.gray90,
+                    themeGroupSelectedColor = R.color.white,
                     themeGroupTextColor = R.color.segmented_control_text_light,
                     themeGroupSelectedTextColor = R.color.segmented_control_selected_text_light,
-                    themeGroupBorderColor = R.color.segmented_control_border_light,
+                    themeGroupBorderColor = R.color.gray80,
                 )
         }
 
