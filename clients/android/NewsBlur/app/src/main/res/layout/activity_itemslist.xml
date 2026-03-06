@@ -60,8 +60,8 @@
                     android:textSize="11sp"
                     app:icon="@drawable/ic_search"
                     app:iconGravity="textStart"
-                    app:iconPadding="3dp"
-                    app:iconSize="14dp"
+                    app:iconPadding="2dp"
+                    app:iconSize="12dp"
                     app:iconTint="@null" />
 
                 <Space
@@ -79,11 +79,12 @@
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/itemlist_mark_read_more_button"
-                        android:layout_width="16dp"
+                        android:layout_width="22dp"
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/menu_mark_all_as_read"
-                        android:padding="1dp"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
                         android:src="@drawable/ic_add"
                         android:tint="@android:color/white" />
 
