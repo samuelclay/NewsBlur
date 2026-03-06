@@ -17,6 +17,19 @@ val LightColors: ColorScheme =
         outline = Gray90,
     )
 
+val SepiaColors: ColorScheme =
+    lightColorScheme(
+        primary = NbSepiaBar,
+        onPrimary = NbSepiaText,
+        secondary = NbSepiaLink,
+        onSecondary = White,
+        background = NbSepiaBar,
+        onBackground = NbSepiaText,
+        surface = NbSepiaSurface,
+        onSurface = NbSepiaText,
+        outline = NbSepiaBorder,
+    )
+
 val DarkColors: ColorScheme =
     darkColorScheme(
         primary = Gray13, // @color/primary.dark

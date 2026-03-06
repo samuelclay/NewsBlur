@@ -2,7 +2,10 @@ package com.newsblur.delegate
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -52,12 +55,12 @@ class MainFeedListMenuPopup(
                 true,
             )
 
-        val darkTheme = isDarkTheme()
-        val popupBackground = ContextCompat.getColor(activity, if (darkTheme) R.color.gray13 else R.color.white)
-        val popupStroke = ContextCompat.getColor(activity, if (darkTheme) R.color.gray30 else R.color.gray90)
-        val dividerColor = ContextCompat.getColor(activity, if (darkTheme) R.color.gray30 else R.color.gray85)
-        val textColor = ContextCompat.getColor(activity, if (darkTheme) R.color.white else R.color.gray20)
-        val accessoryColor = ContextCompat.getColor(activity, if (darkTheme) R.color.gray75 else R.color.gray55)
+        val palette = popupPalette()
+        val popupBackground = ContextCompat.getColor(activity, palette.backgroundColor)
+        val popupStroke = ContextCompat.getColor(activity, palette.strokeColor)
+        val dividerColor = ContextCompat.getColor(activity, palette.dividerColor)
+        val textColor = ContextCompat.getColor(activity, palette.textColor)
+        val accessoryColor = ContextCompat.getColor(activity, palette.accessoryColor)
 
         binding.cardMenu.setCardBackgroundColor(popupBackground)
         binding.cardMenu.strokeColor = popupStroke
@@ -70,7 +73,7 @@ class MainFeedListMenuPopup(
             accessoryColor = accessoryColor,
             popupWindow = popupWindow,
         )
-        configureToggles(binding, popupWindow)
+        configureToggles(binding, popupWindow, palette)
 
         popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         popupWindow.isOutsideTouchable = true
@@ -238,6 +241,7 @@ class MainFeedListMenuPopup(
             rowBinding.textMenuTitle.text = row.title
             rowBinding.textMenuTitle.setTextColor(textColor)
             rowBinding.iconMenu.setImageResource(row.iconRes)
+            rowBinding.iconMenu.setColorFilter(accessoryColor)
             rowBinding.iconAccessory.visibility = if (row.showAccessory) View.VISIBLE else View.GONE
             rowBinding.iconAccessory.setColorFilter(accessoryColor)
             rowBinding.root.setOnClickListener { row.onClick() }
@@ -251,7 +255,10 @@ class MainFeedListMenuPopup(
     private fun configureToggles(
         binding: PopupMainMenuBinding,
         popupWindow: PopupWindow,
+        palette: PopupPalette,
     ) {
+        configureThemeSelector(binding, palette)
+
         when (fromSize(prefsRepo.getListTextSize())) {
             ListTextSize.XS -> binding.groupTextSize.check(binding.btnTextSizeXs.id)
             ListTextSize.S -> binding.groupTextSize.check(binding.btnTextSizeS.id)
@@ -269,6 +276,7 @@ class MainFeedListMenuPopup(
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.AUTO -> binding.groupTheme.check(binding.btnThemeAuto.id)
             ThemeValue.LIGHT -> binding.groupTheme.check(binding.btnThemeLight.id)
+            ThemeValue.SEPIA -> binding.groupTheme.check(binding.btnThemeSepia.id)
             ThemeValue.DARK -> binding.groupTheme.check(binding.btnThemeDark.id)
             ThemeValue.BLACK -> binding.groupTheme.check(binding.btnThemeBlack.id)
         }
@@ -299,6 +307,7 @@ class MainFeedListMenuPopup(
                 when (checkedId) {
                     binding.btnThemeAuto.id -> ThemeValue.AUTO
                     binding.btnThemeLight.id -> ThemeValue.LIGHT
+                    binding.btnThemeSepia.id -> ThemeValue.SEPIA
                     binding.btnThemeDark.id -> ThemeValue.DARK
                     binding.btnThemeBlack.id -> ThemeValue.BLACK
                     else -> return@addOnButtonCheckedListener
@@ -309,6 +318,53 @@ class MainFeedListMenuPopup(
                 UIUtils.restartActivity(activity)
             }
         }
+    }
+
+    private fun configureThemeSelector(
+        binding: PopupMainMenuBinding,
+        palette: PopupPalette,
+    ) {
+        val buttonInset = UIUtils.dp2px(activity, 2)
+        val buttonRadius = UIUtils.dp2px(activity, 14)
+
+        binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
+        binding.groupTheme.background =
+            GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = UIUtils.dp2px(activity, 18f)
+                setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
+                setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
+            }
+
+        val buttonTint =
+            ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                intArrayOf(
+                    ContextCompat.getColor(activity, palette.themeGroupSelectedColor),
+                    Color.TRANSPARENT,
+                ),
+            )
+        val autoTextColors =
+            ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                intArrayOf(
+                    ContextCompat.getColor(activity, palette.themeGroupSelectedTextColor),
+                    ContextCompat.getColor(activity, palette.themeGroupTextColor),
+                ),
+            )
+
+        listOf(
+            binding.btnThemeAuto,
+            binding.btnThemeLight,
+            binding.btnThemeSepia,
+            binding.btnThemeDark,
+            binding.btnThemeBlack,
+        ).forEach { button ->
+            button.backgroundTintList = buttonTint
+            button.strokeWidth = 0
+            button.cornerRadius = buttonRadius
+        }
+        binding.btnThemeAuto.setTextColor(autoTextColors)
     }
 
     private fun getSubscriptionTitle(): String =
@@ -351,16 +407,74 @@ class MainFeedListMenuPopup(
             setBackgroundColor(color)
         }
 
-    private fun isDarkTheme(): Boolean {
-        return when (prefsRepo.getSelectedTheme()) {
-            ThemeValue.LIGHT -> false
-            ThemeValue.DARK, ThemeValue.BLACK -> true
+    private fun popupPalette(): PopupPalette =
+        when (resolvedTheme()) {
+            ThemeValue.SEPIA ->
+                PopupPalette(
+                    backgroundColor = R.color.item_background_sepia,
+                    strokeColor = R.color.row_border_sepia,
+                    dividerColor = R.color.row_border_sepia,
+                    textColor = R.color.text_sepia,
+                    accessoryColor = R.color.button_text_sepia,
+                    themeGroupBackgroundColor = R.color.segmented_control_background_sepia,
+                    themeGroupSelectedColor = R.color.segmented_control_selected_sepia,
+                    themeGroupTextColor = R.color.segmented_control_text_sepia,
+                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_sepia,
+                    themeGroupBorderColor = R.color.segmented_control_border_sepia,
+                )
+
+            ThemeValue.DARK ->
+                PopupPalette(
+                    backgroundColor = R.color.gray13,
+                    strokeColor = R.color.gray30,
+                    dividerColor = R.color.gray30,
+                    textColor = R.color.white,
+                    accessoryColor = R.color.gray75,
+                    themeGroupBackgroundColor = R.color.segmented_control_background_dark,
+                    themeGroupSelectedColor = R.color.segmented_control_selected_dark,
+                    themeGroupTextColor = R.color.segmented_control_text_dark,
+                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_dark,
+                    themeGroupBorderColor = R.color.segmented_control_border_dark,
+                )
+
+            ThemeValue.BLACK ->
+                PopupPalette(
+                    backgroundColor = R.color.gray13,
+                    strokeColor = R.color.gray30,
+                    dividerColor = R.color.gray30,
+                    textColor = R.color.white,
+                    accessoryColor = R.color.gray75,
+                    themeGroupBackgroundColor = R.color.segmented_control_background_black,
+                    themeGroupSelectedColor = R.color.segmented_control_selected_black,
+                    themeGroupTextColor = R.color.segmented_control_text_black,
+                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_black,
+                    themeGroupBorderColor = R.color.segmented_control_border_black,
+                )
+
+            else ->
+                PopupPalette(
+                    backgroundColor = R.color.white,
+                    strokeColor = R.color.gray90,
+                    dividerColor = R.color.gray85,
+                    textColor = R.color.gray20,
+                    accessoryColor = R.color.gray55,
+                    themeGroupBackgroundColor = R.color.segmented_control_background_light,
+                    themeGroupSelectedColor = R.color.segmented_control_selected_light,
+                    themeGroupTextColor = R.color.segmented_control_text_light,
+                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_light,
+                    themeGroupBorderColor = R.color.segmented_control_border_light,
+                )
+        }
+
+    private fun resolvedTheme(): ThemeValue =
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.AUTO -> {
                 val nightModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-                nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) ThemeValue.DARK else ThemeValue.LIGHT
             }
+
+            else -> prefsRepo.getSelectedTheme()
         }
-    }
 }
 
 private data class MainMenuRow(
@@ -368,4 +482,17 @@ private data class MainMenuRow(
     val iconRes: Int,
     val showAccessory: Boolean = false,
     val onClick: () -> Unit,
+)
+
+private data class PopupPalette(
+    val backgroundColor: Int,
+    val strokeColor: Int,
+    val dividerColor: Int,
+    val textColor: Int,
+    val accessoryColor: Int,
+    val themeGroupBackgroundColor: Int,
+    val themeGroupSelectedColor: Int,
+    val themeGroupTextColor: Int,
+    val themeGroupSelectedTextColor: Int,
+    val themeGroupBorderColor: Int,
 )

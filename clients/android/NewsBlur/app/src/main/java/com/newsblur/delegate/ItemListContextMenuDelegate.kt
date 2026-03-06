@@ -146,6 +146,7 @@ open class ItemListContextMenuDelegateImpl(
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
+            ThemeValue.SEPIA -> menu.findItem(R.id.menu_theme_sepia).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
@@ -252,6 +253,9 @@ open class ItemListContextMenuDelegateImpl(
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
+            UIUtils.restartActivity(activity)
+        } else if (item.itemId == R.id.menu_theme_sepia) {
+            prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)

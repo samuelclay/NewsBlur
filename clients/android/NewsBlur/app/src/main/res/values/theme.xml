@@ -28,6 +28,7 @@
         <item name="readingBackground">@style/readingBackground</item>
         <item name="defaultText">@style/defaultText</item>
         <item name="linkText">@style/linkText</item>
+        <item name="storyTitleText">@style/storyTitleText</item>
         <item name="storySnippetText">@style/storySnippetText</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
@@ -66,6 +67,73 @@
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView</item>
     </style>
 
+    <style name="NewsBlurSepiaTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/primary_sepia</item>
+        <item name="android:navigationBarColor">@color/primary_sepia</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="colorPrimary">@color/primary_sepia</item>
+        <item name="colorPrimaryDark">@color/primaryDark_sepia</item>
+        <item name="colorSecondary">@color/secondary_sepia</item>
+        <item name="actionBarTheme">@style/actionbar.sepia</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.sepia</item>
+        <item name="popupMenuBackground">@color/item_background_sepia</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.sepia</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.sepia</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.sepia</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.sepia</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.sepia</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.sepia</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground.sepia</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground.sepia</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground.sepia</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.sepia</item>
+        <item name="actionbarBackground">@style/actionbarBackground.sepia</item>
+        <item name="listBackground">@style/listBackground.sepia</item>
+        <item name="layoutBackground">@style/layoutBackground.sepia</item>
+        <item name="layoutRoundedBackground">@style/layoutRoundedBackground.sepia</item>
+        <item name="readingBackground">@style/readingBackground.sepia</item>
+        <item name="defaultText">@style/defaultText.sepia</item>
+        <item name="linkText">@style/linkText.sepia</item>
+        <item name="storyTitleText">@style/storyTitleText.sepia</item>
+        <item name="storySnippetText">@style/storySnippetText.sepia</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.sepia</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.sepia</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.sepia</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata.sepia</item>
+        <item name="chip">@style/chip.sepia</item>
+        <item name="actionButtons">@style/actionButtons.sepia</item>
+        <item name="storyButtons">@style/storyButtons.sepia</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.sepia</item>
+        <item name="shareBarBackground">@style/shareBarBackground.sepia</item>
+        <item name="shareBarText">@style/shareBarText.sepia</item>
+        <item name="commentsHeader">@style/commentsHeader.sepia</item>
+        <item name="rowBorder">@style/rowBorder.sepia</item>
+        <item name="profileCount">@style/profileCount.sepia</item>
+        <item name="profileActivityList">@style/profileActivityList.sepia</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.sepia</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager.sepia</item>
+        <item name="explainerText">@style/explainerText.sepia</item>
+        <item name="toggleText">@style/toggleText.sepia</item>
+        <item name="delimiter">@style/delimiter.sepia</item>
+        <item name="subscriptionHeader">@style/subscriptionHeader.sepia</item>
+        <item name="subscriptionIcon">@style/subscriptionIcon.sepia</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.sepia</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.sepia</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.sepia</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.sepia</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.sepia</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.sepia</item>
+        <item name="muteicon">@style/muteicon.sepia</item>
+        <item name="android:textColor">@color/text_sepia</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton.sepia</item>
+        <item name="snackbarStyle">@style/materialSnackBarTheme.sepia</item>
+        <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.sepia</item>
+    </style>
+
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:statusBarColor">@color/primary.dark</item>
         <item name="android:navigationBarColor">@color/primary.dark</item>
@@ -94,6 +162,7 @@
         <item name="readingBackground">@style/readingBackground.dark</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
+        <item name="storyTitleText">@style/storyTitleText.dark</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
@@ -160,6 +229,7 @@
         <item name="readingBackground">@style/readingBackground.black</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
+        <item name="storyTitleText">@style/storyTitleText.black</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
@@ -199,6 +269,13 @@
     </style>
 
     <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="NewsBlurSepiaTheme.Translucent" parent="NewsBlurSepiaTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>

@@ -38,7 +38,6 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
-import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
@@ -68,9 +67,6 @@ abstract class Reading :
     @Inject
     @IconLoader
     lateinit var iconLoader: ImageLoader
-
-    @Inject
-    lateinit var readTimeTracker: ReadTimeTracker
 
     @JvmField
     var fs: FeedSet? = null
@@ -109,8 +105,6 @@ abstract class Reading :
     private lateinit var intelState: StateFilter
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
-
-    private lateinit var readingBackCallback: OnBackPressedCallback
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
@@ -256,16 +250,14 @@ abstract class Reading :
      * Overrides on back pressed to use overridden [Reading.finish] method
      */
     private fun setupOnBackPressed() {
-        readingBackCallback =
-            object : OnBackPressedCallback(enabled = false) {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(enabled = true) {
                 override fun handleOnBackPressed() {
-                    val current = readingAdapter?.getExistingItem(pager?.currentItem ?: 0)
-                    if (current?.handleBackPressed() == true) return
-
                     finish()
                 }
-            }
-        onBackPressedDispatcher.addCallback(this, readingBackCallback)
+            },
+        )
     }
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
@@ -376,14 +368,9 @@ abstract class Reading :
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
         when (prefsRepo.getSelectedTheme()) {
-            ThemeValue.LIGHT -> {
-                pager.setPageMarginDrawable(R.drawable.divider_light)
-            }
-
-            ThemeValue.DARK, ThemeValue.BLACK -> {
-                pager.setPageMarginDrawable(R.drawable.divider_dark)
-            }
-
+            ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
+            ThemeValue.SEPIA -> pager.setPageMarginDrawable(R.drawable.divider_sepia)
+            ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
             ThemeValue.AUTO -> {
                 when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                     Configuration.UI_MODE_NIGHT_YES -> pager.setPageMarginDrawable(R.drawable.divider_dark)
@@ -480,12 +467,6 @@ abstract class Reading :
     override fun onPageSelected(position: Int) {
         lifecycleScope.executeAsyncTask(
             doInBackground = {
-                // Harvest read time for previous story
-                readTimeTracker.currentStoryHash?.let { prevHash ->
-                    val seconds = readTimeTracker.getAndResetReadTime(prevHash)
-                    if (seconds > 0) readTimeTracker.queueReadTime(prevHash, seconds)
-                }
-
                 readingAdapter?.let { readingAdapter ->
                     val story = readingAdapter.getStory(position)
                     if (story != null) {
@@ -501,11 +482,6 @@ abstract class Reading :
                     checkStoryCount(position)
                     updateOverlayText()
                     enableOverlays()
-
-                    // Start tracking new story
-                    readingAdapter.getStory(position)?.storyHash?.let {
-                        readTimeTracker.startTracking(it)
-                    }
                 }
             },
         )
@@ -518,8 +494,6 @@ abstract class Reading :
         currentWidth: Int,
         currentHeight: Int,
     ) {
-        readTimeTracker.recordActivity()
-
         // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
         if (abs(lastVScrollPos - vPos) < 2) return
@@ -943,65 +917,24 @@ abstract class Reading :
             if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
         }
 
-    fun setReadingBackCallbackEnabled(enabled: Boolean) {
-        if (::readingBackCallback.isInitialized) {
-            readingBackCallback.isEnabled = enabled
-        }
-    }
-
     override fun onKeyboardEvent(event: KeyboardEvent) {
         when (event) {
-            KeyboardEvent.NextStory -> {
-                nextStory()
-            }
-
-            KeyboardEvent.PreviousStory -> {
-                previousStory()
-            }
-
-            KeyboardEvent.NextUnreadStory -> {
-                nextUnread()
-            }
-
-            KeyboardEvent.OpenInBrowser -> {
-                readingFragment?.openBrowser()
-            }
-
-            KeyboardEvent.OpenStoryTrainer -> {
-                readingFragment?.openStoryTrainer()
-            }
-
-            KeyboardEvent.SaveUnsaveStory -> {
-                readingFragment?.switchStorySavedState(true)
-            }
-
-            KeyboardEvent.ScrollToComments -> {
-                readingFragment?.scrollToComments()
-            }
-
-            KeyboardEvent.ShareStory -> {
-                readingFragment?.openShareDialog()
-            }
-
-            KeyboardEvent.ToggleReadUnread -> {
-                readingFragment?.switchMarkStoryReadState(true)
-            }
-
-            KeyboardEvent.ToggleTextView -> {
-                readingFragment?.switchSelectedViewMode()
-            }
-
-            KeyboardEvent.Tutorial -> {
-                readingFragment?.showStoryShortcuts()
-            }
-
-            KeyboardEvent.PageDown -> {
+            KeyboardEvent.NextStory -> nextStory()
+            KeyboardEvent.PreviousStory -> previousStory()
+            KeyboardEvent.NextUnreadStory -> nextUnread()
+            KeyboardEvent.OpenInBrowser -> readingFragment?.openBrowser()
+            KeyboardEvent.OpenStoryTrainer -> readingFragment?.openStoryTrainer()
+            KeyboardEvent.SaveUnsaveStory -> readingFragment?.switchStorySavedState(true)
+            KeyboardEvent.ScrollToComments -> readingFragment?.scrollToComments()
+            KeyboardEvent.ShareStory -> readingFragment?.openShareDialog()
+            KeyboardEvent.ToggleReadUnread -> readingFragment?.switchMarkStoryReadState(true)
+            KeyboardEvent.ToggleTextView -> readingFragment?.switchSelectedViewMode()
+            KeyboardEvent.Tutorial -> readingFragment?.showStoryShortcuts()
+            KeyboardEvent.PageDown ->
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
-            }
 
-            KeyboardEvent.PageUp -> {
+            KeyboardEvent.PageUp ->
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, -VERTICAL_SCROLL_DISTANCE_DP))
-            }
 
             else -> {}
         }
@@ -1012,7 +945,6 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
-        readTimeTracker.harvestAndFlush()
         setResult(
             RESULT_OK,
             Intent().apply {
