@@ -77,6 +77,18 @@
         <item name="android:background">@drawable/black_selector_folder_background</item>
     </style>
 
+    <style name="selectorTopLevelBackground" parent="selectorFolderParent">
+        <item name="android:background">@drawable/selector_top_level_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground.dark" parent="selectorFolderParent">
+        <item name="android:background">@drawable/dark_selector_top_level_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground.black" parent="selectorFolderParent">
+        <item name="android:background">@drawable/black_selector_top_level_background</item>
+    </style>
+
     <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
         <item name="android:background">@drawable/selector_feed_almost_blue_background</item>
     </style>
