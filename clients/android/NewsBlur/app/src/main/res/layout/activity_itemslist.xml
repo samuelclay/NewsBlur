@@ -44,7 +44,8 @@
                     android:textSize="11sp"
                     app:icon="@drawable/ic_arrow_down"
                     app:iconGravity="textEnd"
-                    app:iconPadding="4dp"
+                    app:iconPadding="2dp"
+                    app:iconSize="10dp"
                     app:iconTint="@null" />
 
                 <com.google.android.material.button.MaterialButton
@@ -53,12 +54,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginStart="6dp"
+                    android:contentDescription="@string/story_header_search"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:textSize="11sp"
                     app:icon="@drawable/ic_search"
                     app:iconGravity="textStart"
-                    app:iconPadding="4dp"
+                    app:iconPadding="3dp"
+                    app:iconSize="14dp"
                     app:iconTint="@null" />
 
                 <Space
@@ -76,11 +79,11 @@
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/itemlist_mark_read_more_button"
-                        android:layout_width="28dp"
+                        android:layout_width="16dp"
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/menu_mark_all_as_read"
-                        android:padding="0dp"
+                        android:padding="1dp"
                         android:src="@drawable/ic_add"
                         android:tint="@android:color/white" />
 
@@ -91,7 +94,7 @@
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/itemlist_mark_read_button"
-                        android:layout_width="40dp"
+                        android:layout_width="72dp"
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/menu_mark_all_as_read"
