@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -18,7 +17,6 @@ import android.widget.AbsListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -51,7 +49,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, KeyboardListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, KeyboardListener {
     private static final long SYNC_STATUS_ANIMATION_DURATION_MS = 1000L;
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
@@ -423,12 +421,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickMenuButton() {
-        contextMenuDelegate.onMenuClick(binding.mainMenuButton, this);
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return contextMenuDelegate.onMenuItemClick(item, folderFeedList);
+        contextMenuDelegate.onMenuClick(binding.mainMenuButton, folderFeedList);
     }
 
     private void onClickAddButton() {

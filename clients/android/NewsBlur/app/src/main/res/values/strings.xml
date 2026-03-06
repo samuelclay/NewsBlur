@@ -292,6 +292,15 @@
     <string name="title_widget_loading">Loading…</string>
     <string name="menu_newsletters">Newsletters…</string>
     <string name="menu_shortcuts">Shortcuts…</string>
+    <string name="main_menu_preferences">Preferences</string>
+    <string name="main_menu_mute_sites">Mute Sites</string>
+    <string name="main_menu_widget_sites">Widget Sites</string>
+    <string name="main_menu_notifications">Notifications</string>
+    <string name="main_menu_interactions">Interactions</string>
+    <string name="main_menu_upgrade_premium">Upgrade to Premium</string>
+    <string name="main_menu_upgrade_archive">Upgrade to Archive</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_support_forum">Support Forum</string>
 
     <string name="newsblur_opml">NewsBlur OPML</string>
     <string name="newsbluropml">NewsBlur-OPML</string>
