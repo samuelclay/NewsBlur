@@ -130,8 +130,8 @@ class FeedItemsList : ItemsList() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        super.onPrepareOptionsMenu(menu)
+    override fun prepareItemListMenuModel(menu: Menu): Boolean {
+        super.prepareItemListMenuModel(menu)
         when {
             feed.isAndroidNotifyUnread() -> {
                 menu.findItem(R.id.menu_notifications_disable).isChecked = false

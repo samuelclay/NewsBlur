@@ -447,6 +447,8 @@
     <string name="newest">Newest</string>
     <string name="menu_story_order">Story order</string>
     <string name="settings_story_order">Story order…</string>
+    <string name="story_header_options">Options</string>
+    <string name="story_header_search">Search</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -497,6 +499,10 @@
         <item>Mark older stories read</item>
         <item>Cancel</item>
     </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="one">Older than %d day</item>
+        <item quantity="other">Older than %d days</item>
+    </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>
         <item>Cancel</item>

@@ -212,15 +212,19 @@ open class ItemListContextMenuDelegateImpl(
             return true
         } else if (item.itemId == R.id.menu_story_order_newest) {
             updateStoryOrder(fragment, fs, StoryOrder.NEWEST)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_story_order_oldest) {
             updateStoryOrder(fragment, fs, StoryOrder.OLDEST)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_read_filter_all_stories) {
             updateReadFilter(fragment, fs, ReadFilter.ALL)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_read_filter_unread_only) {
             updateReadFilter(fragment, fs, ReadFilter.UNREAD)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_text_size_xs) {
             updateTextSizeStyle(fragment, ListTextSize.XS)
@@ -241,13 +245,8 @@ open class ItemListContextMenuDelegateImpl(
             updateTextSizeStyle(fragment, ListTextSize.XXL)
             return true
         } else if (item.itemId == R.id.menu_search_stories) {
-            if (!searchInputView.isVisible) {
-                searchInputView.visibility = View.VISIBLE
-                searchInputView.requestFocus()
-            } else {
-                searchInputView.text.clear()
-                searchInputView.visibility = View.GONE
-            }
+            activity.toggleStorySearch()
+            activity.refreshStoryHeaderControls()
         } else if (item.itemId == R.id.menu_theme_auto) {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
