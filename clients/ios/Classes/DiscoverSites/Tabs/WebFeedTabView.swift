@@ -13,11 +13,45 @@ struct WebFeedTabView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+    private let explainerCards: [WebFeedExplainerCard] = [
+        WebFeedExplainerCard(
+            id: "any-site",
+            assetName: "web-feed-any-site",
+            title: "Works on any website",
+            description: "Paste any URL and NewsBlur creates a feed from the page, even without RSS.",
+            detail: "The page HTML is fetched and parsed to extract content structure."
+        ),
+        WebFeedExplainerCard(
+            id: "ai-analyze",
+            assetName: "web-feed-ai-analyze",
+            title: "AI finds the stories",
+            description: "You're presented with multiple story pattern options to choose from.",
+            detail: "XPath patterns identify story blocks, headlines, links, and images."
+        ),
+        WebFeedExplainerCard(
+            id: "refine",
+            assetName: "web-feed-refine",
+            title: "Refine with a hint",
+            description: "If none of the options match, type a story title you see on the page and we'll re-analyze.",
+            detail: "A second pass uses your hint to find the right pattern on the page."
+        ),
+        WebFeedExplainerCard(
+            id: "updates",
+            assetName: "web-feed-updates",
+            title: "Updates come to you",
+            description: "NewsBlur checks for changes and delivers new stories to your feed.",
+            detail: "Pages are re-checked on a configurable schedule and diffed for new content."
+        )
+    ]
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 urlInputSection
+
+                if viewModel.webFeedState.variants.isEmpty && !viewModel.webFeedState.isAnalyzing {
+                    explainerSection
+                }
 
                 if viewModel.webFeedState.isAnalyzing {
                     analyzingSection
@@ -97,6 +131,58 @@ struct WebFeedTabView: View {
                 .disabled(viewModel.webFeedState.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.webFeedState.isAnalyzing)
             }
         }
+    }
+
+    // MARK: - Explainer
+
+    private var explainerSection: some View {
+        LazyVGrid(
+            columns: [GridItem(.adaptive(minimum: 160), spacing: 12, alignment: .top)],
+            alignment: .center,
+            spacing: 12
+        ) {
+            ForEach(explainerCards) { card in
+                explainerCard(card)
+            }
+        }
+    }
+
+    private func explainerCard(_ card: WebFeedExplainerCard) -> some View {
+        VStack(spacing: 0) {
+            Image(card.assetName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 72, height: 72)
+                .padding(.bottom, 14)
+
+            Text(card.title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(DiscoverColors.textPrimary)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 8)
+
+            Text(card.description)
+                .font(.system(size: 13))
+                .foregroundColor(DiscoverColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, 8)
+
+            Text(card.detail)
+                .font(.system(size: 11))
+                .foregroundColor(DiscoverColors.textSecondary.opacity(0.9))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, minHeight: 240, alignment: .top)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 20)
+        .background(DiscoverColors.cardBackground)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(DiscoverColors.border.opacity(0.8), lineWidth: 1)
+        )
     }
 
     // MARK: - Analyzing
@@ -376,4 +462,12 @@ struct WebFeedTabView: View {
         .buttonStyle(PlainButtonStyle())
         .disabled(viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing)
     }
+}
+
+private struct WebFeedExplainerCard: Identifiable {
+    let id: String
+    let assetName: String
+    let title: String
+    let description: String
+    let detail: String
 }
