@@ -9,9 +9,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Trace;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,16 +24,19 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.PopupMenu;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
@@ -44,10 +51,13 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PendingTransitionUtils;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.ItemListViewModel;
 
@@ -56,6 +66,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import java.util.Locale;
 
 @AndroidEntryPoint
 public abstract class ItemsList extends NbActivity implements ReadingActionListener {
@@ -78,6 +90,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
     private static final long STORY_STATUS_HIDE_DURATION_MS = 250L;
+    private static final long MILLIS_PER_DAY = 24L * 60L * 60L * 1000L;
+    private static final int[] MARK_READ_CUTOFF_DAYS = new int[]{1, 3, 7, 14};
     private static final DecelerateInterpolator STORY_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator STORY_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
 
@@ -156,18 +170,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
-            binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
         } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)) {
-            binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
             binding.itemlistSearchQuery.requestFocus();
         }
 
         binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.itemlistSearchQuery.setVisibility(View.GONE);
-                    binding.itemlistSearchQuery.setText("");
-                    checkSearchQuery();
+                    hideStorySearch(true);
                     return true;
                 }
                 if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -177,6 +189,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 return false;
             }
         });
+        setupStoryHeader();
+        refreshStoryHeaderControls();
         scheduleInitialFetchingBanner();
         Trace.endSection();
     }
@@ -198,6 +212,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onResume() {
         super.onResume();
         if (syncServiceState.isHousekeepingRunning()) finish();
+        applyStoryHeaderTheme();
+        refreshStoryHeaderControls();
         updateStatusIndicators();
         if (itemSetFragment != null) {
             itemSetFragment.refreshLoadingIndicators();
@@ -205,6 +221,24 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemSetFragment.hasUpdated();
+    }
+
+    public void refreshStoryHeaderControls() {
+        if (binding == null) return;
+
+        Menu menu = buildItemListMenuModel();
+        MenuItem searchItem = menu.findItem(R.id.menu_search_stories);
+        MenuItem markReadItem = menu.findItem(R.id.menu_mark_all_as_read);
+
+        updateOptionsPillTitle(menu);
+        binding.itemlistSearchPill.setVisibility(searchItem != null && searchItem.isVisible() ? View.VISIBLE : View.GONE);
+        binding.itemlistMarkReadContainer.setVisibility(markReadItem != null && markReadItem.isVisible() ? View.VISIBLE : View.GONE);
+
+        if (searchItem != null && !searchItem.isVisible() && isStorySearchVisible()) {
+            hideStorySearch(true);
+        } else {
+            updateStorySearchPillState();
+        }
     }
 
     @Override
@@ -223,13 +257,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        boolean showSavedSearch = !TextUtils.isEmpty(binding.itemlistSearchQuery.getText());
-        return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
+        return prepareItemListMenuModel(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
+    }
+
+    protected boolean prepareItemListMenuModel(Menu menu) {
+        boolean showSavedSearch = !TextUtils.isEmpty(binding.itemlistSearchQuery.getText());
+        return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
     }
 
     // infix fun Int.has(flag: Int) = (this and flag) != 0
@@ -269,6 +307,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 itemSetFragment.resetEmptyState();
                 itemSetFragment.hasUpdated();
                 itemSetFragment.scrollToTop();
+                refreshStoryHeaderControls();
             } else finish();
         } else finish();
     }
@@ -299,6 +338,220 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateStatusIndicators();
     }
 
+    public void toggleStorySearch() {
+        if (isStorySearchVisible()) {
+            hideStorySearch(true);
+        } else {
+            showStorySearch(true);
+        }
+    }
+
+    private void setupStoryHeader() {
+        binding.itemlistOptionsPill.setOnClickListener(view -> {
+            View toolbar = findViewById(R.id.toolbar);
+            if (toolbar instanceof androidx.appcompat.widget.Toolbar) {
+                ((androidx.appcompat.widget.Toolbar) toolbar).showOverflowMenu();
+            }
+        });
+        binding.itemlistSearchPill.setOnClickListener(view -> toggleStorySearch());
+        binding.itemlistMarkReadButton.setOnClickListener(view ->
+                feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, this)
+        );
+        binding.itemlistMarkReadMoreButton.setOnClickListener(this::showMarkReadCutoffMenu);
+        binding.itemlistStoryHeaderBar.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                updateStorySearchPillLabel()
+        );
+        binding.itemlistSearchQuery.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                refreshStoryHeaderControls();
+            }
+        });
+        applyStoryHeaderTheme();
+        updateStorySearchPillLabel();
+        updateStorySearchPillState();
+    }
+
+    private void showStorySearch(boolean requestFocus) {
+        binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
+        updateStorySearchPillState();
+        if (requestFocus) {
+            binding.itemlistSearchQuery.requestFocus();
+        }
+    }
+
+    private void hideStorySearch(boolean clearText) {
+        if (clearText) {
+            binding.itemlistSearchQuery.setText("");
+        }
+        binding.itemlistSearchContainer.setVisibility(View.GONE);
+        binding.itemlistSearchQuery.clearFocus();
+        updateStorySearchPillState();
+        checkSearchQuery();
+    }
+
+    private boolean isStorySearchVisible() {
+        return binding.itemlistSearchContainer.getVisibility() == View.VISIBLE;
+    }
+
+    private void updateStorySearchPillState() {
+        StoryHeaderPalette palette = storyHeaderPalette();
+        boolean isActive = isStorySearchVisible();
+        applyPillStyle(
+                binding.itemlistSearchPill,
+                isActive ? palette.selectedBackgroundColor : palette.pillBackgroundColor,
+                isActive ? palette.selectedBorderColor : palette.pillBorderColor,
+                isActive ? palette.selectedTextColor : palette.pillTextColor
+        );
+    }
+
+    private void updateStorySearchPillLabel() {
+        if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
+
+        int compactThreshold = UIUtils.dp2px(this, 344);
+        boolean useCompactLabel = binding.itemlistStoryHeaderBar.getWidth() < compactThreshold;
+        binding.itemlistSearchPill.setText(useCompactLabel ? "" : getString(R.string.story_header_search));
+    }
+
+    private void updateOptionsPillTitle(Menu menu) {
+        StoryOrder storyOrder = prefsRepo.getStoryOrder(fs);
+        ReadFilter readFilter = prefsRepo.getReadFilter(fs);
+        boolean showOrder = menu.findItem(R.id.menu_story_order) != null && menu.findItem(R.id.menu_story_order).isVisible();
+        boolean showReadFilter = menu.findItem(R.id.menu_read_filter) != null && menu.findItem(R.id.menu_read_filter).isVisible();
+
+        String orderText = storyOrder == StoryOrder.OLDEST ? getString(R.string.oldest) : getString(R.string.newest);
+        String filterText = readFilter == ReadFilter.UNREAD ? "Unread" : "All";
+        String title;
+        if (showOrder && showReadFilter) {
+            title = filterText + " \u00B7 " + orderText;
+        } else if (showReadFilter) {
+            title = filterText;
+        } else if (showOrder) {
+            title = orderText;
+        } else {
+            title = getString(R.string.story_header_options);
+        }
+        binding.itemlistOptionsPill.setText(title.toUpperCase(Locale.US));
+        applyPillStyle(binding.itemlistOptionsPill, storyHeaderPalette().pillBackgroundColor, storyHeaderPalette().pillBorderColor, storyHeaderPalette().pillTextColor);
+    }
+
+    private void showMarkReadCutoffMenu(View anchor) {
+        PopupMenu popupMenu = new PopupMenu(this, anchor);
+        for (int i = 0; i < MARK_READ_CUTOFF_DAYS.length; i++) {
+            int days = MARK_READ_CUTOFF_DAYS[i];
+            popupMenu.getMenu().add(Menu.NONE, days, i, getResources().getQuantityString(R.plurals.story_header_mark_read_older_than_days, days, days));
+        }
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int days = item.getItemId();
+            long olderThan = System.currentTimeMillis() - (days * MILLIS_PER_DAY);
+            feedUtils.markRead(this, fs, olderThan, null, R.array.mark_older_read_options, this);
+            return true;
+        });
+        popupMenu.show();
+    }
+
+    private Menu buildItemListMenuModel() {
+        PopupMenu popupMenu = new PopupMenu(this, findViewById(R.id.toolbar));
+        contextMenuDelegate.onCreateMenuOptions(popupMenu.getMenu(), popupMenu.getMenuInflater(), fs);
+        prepareItemListMenuModel(popupMenu.getMenu());
+        return popupMenu.getMenu();
+    }
+
+    private void applyStoryHeaderTheme() {
+        StoryHeaderPalette palette = storyHeaderPalette();
+        binding.itemlistStoryHeader.setBackgroundColor(palette.headerBackgroundColor);
+        binding.itemlistSearchContainer.setBackgroundColor(palette.headerBackgroundColor);
+        binding.itemlistMarkReadDivider.setBackgroundColor(palette.markReadDividerColor);
+
+        applyPillStyle(binding.itemlistOptionsPill, palette.pillBackgroundColor, palette.pillBorderColor, palette.pillTextColor);
+        updateStorySearchPillState();
+
+        GradientDrawable markReadBackground = new GradientDrawable();
+        markReadBackground.setShape(GradientDrawable.RECTANGLE);
+        markReadBackground.setCornerRadius(UIUtils.dp2px(this, 14));
+        markReadBackground.setColor(palette.markReadBackgroundColor);
+        binding.itemlistMarkReadContainer.setBackground(markReadBackground);
+        binding.itemlistMarkReadMoreButton.setColorFilter(ContextCompat.getColor(this, android.R.color.white));
+        binding.itemlistMarkReadButton.setColorFilter(ContextCompat.getColor(this, android.R.color.white));
+    }
+
+    private void applyPillStyle(MaterialButton button, int backgroundColor, int borderColor, int textColor) {
+        button.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+        button.setStrokeColor(ColorStateList.valueOf(borderColor));
+        button.setStrokeWidth(UIUtils.dp2px(this, 1));
+        button.setCornerRadius(UIUtils.dp2px(this, 14));
+        button.setTextColor(textColor);
+        button.setIconTint(ColorStateList.valueOf(textColor));
+        button.setInsetTop(0);
+        button.setInsetBottom(0);
+    }
+
+    private StoryHeaderPalette storyHeaderPalette() {
+        PrefConstants.ThemeValue theme = prefsRepo.getSelectedTheme();
+        if (theme == PrefConstants.ThemeValue.AUTO) {
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            theme = nightModeFlags == Configuration.UI_MODE_NIGHT_YES ? PrefConstants.ThemeValue.DARK : PrefConstants.ThemeValue.LIGHT;
+        }
+
+        if (theme == PrefConstants.ThemeValue.SEPIA) {
+            return new StoryHeaderPalette(
+                    ContextCompat.getColor(this, R.color.bar_background_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_background_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_text_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_text_sepia),
+                    ContextCompat.getColor(this, R.color.premium_feature_red),
+                    ContextCompat.getColor(this, R.color.story_status_offline_border_sepia)
+            );
+        } else if (theme == PrefConstants.ThemeValue.DARK) {
+            return new StoryHeaderPalette(
+                    ContextCompat.getColor(this, R.color.dark_bar_background),
+                    ContextCompat.getColor(this, R.color.segmented_control_background_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_text_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_text_dark),
+                    ContextCompat.getColor(this, R.color.premium_feature_red),
+                    ContextCompat.getColor(this, R.color.story_status_offline_border_dark)
+            );
+        } else if (theme == PrefConstants.ThemeValue.BLACK) {
+            return new StoryHeaderPalette(
+                    ContextCompat.getColor(this, R.color.black),
+                    ContextCompat.getColor(this, R.color.segmented_control_background_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_text_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_selected_text_black),
+                    ContextCompat.getColor(this, R.color.premium_feature_red),
+                    ContextCompat.getColor(this, R.color.story_status_offline_border_black)
+            );
+        }
+
+        return new StoryHeaderPalette(
+                ContextCompat.getColor(this, R.color.bar_background),
+                ContextCompat.getColor(this, R.color.segmented_control_background_light),
+                ContextCompat.getColor(this, R.color.segmented_control_border_light),
+                ContextCompat.getColor(this, R.color.segmented_control_text_light),
+                ContextCompat.getColor(this, R.color.segmented_control_selected_light),
+                ContextCompat.getColor(this, R.color.segmented_control_border_light),
+                ContextCompat.getColor(this, R.color.segmented_control_selected_text_light),
+                ContextCompat.getColor(this, R.color.premium_feature_red),
+                ContextCompat.getColor(this, R.color.story_status_offline_border_light)
+        );
+    }
+
     private void checkSearchQuery() {
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
@@ -319,6 +572,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
         }
+        refreshStoryHeaderControls();
     }
 
     private void updateFleuron(boolean requiresPremium) {
@@ -349,6 +603,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
+        refreshStoryHeaderControls();
     }
 
     public void startReadingActivity(FeedSet feedSet, String storyHash) {
@@ -512,6 +767,40 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistStoryStatusBorder.setBackgroundColor(borderColor);
         binding.itemlistStoryStatusOfflineIcon.setImageTintList(ColorStateList.valueOf(textColor));
         binding.itemlistStoryStatusSpinner.setIndicatorColor(textColor);
+    }
+
+    private static class StoryHeaderPalette {
+        final int headerBackgroundColor;
+        final int pillBackgroundColor;
+        final int pillBorderColor;
+        final int pillTextColor;
+        final int selectedBackgroundColor;
+        final int selectedBorderColor;
+        final int selectedTextColor;
+        final int markReadBackgroundColor;
+        final int markReadDividerColor;
+
+        StoryHeaderPalette(
+                int headerBackgroundColor,
+                int pillBackgroundColor,
+                int pillBorderColor,
+                int pillTextColor,
+                int selectedBackgroundColor,
+                int selectedBorderColor,
+                int selectedTextColor,
+                int markReadBackgroundColor,
+                int markReadDividerColor
+        ) {
+            this.headerBackgroundColor = headerBackgroundColor;
+            this.pillBackgroundColor = pillBackgroundColor;
+            this.pillBorderColor = pillBorderColor;
+            this.pillTextColor = pillTextColor;
+            this.selectedBackgroundColor = selectedBackgroundColor;
+            this.selectedBorderColor = selectedBorderColor;
+            this.selectedTextColor = selectedTextColor;
+            this.markReadBackgroundColor = markReadBackgroundColor;
+            this.markReadDividerColor = markReadDividerColor;
+        }
     }
 
     abstract String getSaveSearchFeedId();
