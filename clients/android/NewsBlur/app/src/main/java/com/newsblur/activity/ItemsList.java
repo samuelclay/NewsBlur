@@ -562,9 +562,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         markReadBackground.setShape(GradientDrawable.RECTANGLE);
         markReadBackground.setCornerRadius(UIUtils.dp2px(this, 14));
         markReadBackground.setColor(palette.markReadBackgroundColor);
+        markReadBackground.setStroke(UIUtils.dp2px(this, 1), palette.markReadDividerColor);
         binding.itemlistMarkReadContainer.setBackground(markReadBackground);
-        binding.itemlistMarkReadMoreButton.setColorFilter(ContextCompat.getColor(this, android.R.color.white));
-        binding.itemlistMarkReadButton.setColorFilter(ContextCompat.getColor(this, android.R.color.white));
+        binding.itemlistMarkReadMoreButton.setColorFilter(palette.pillTextColor);
+        binding.itemlistMarkReadButton.setColorFilter(palette.pillTextColor);
     }
 
     private void applyPillStyle(MaterialButton button, int backgroundColor, int borderColor, int textColor) {
@@ -594,8 +595,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                     ContextCompat.getColor(this, R.color.segmented_control_selected_sepia),
                     ContextCompat.getColor(this, R.color.segmented_control_border_sepia),
                     ContextCompat.getColor(this, R.color.segmented_control_selected_text_sepia),
-                    ContextCompat.getColor(this, R.color.premium_feature_red),
-                    ContextCompat.getColor(this, R.color.story_status_offline_border_sepia)
+                    ContextCompat.getColor(this, R.color.segmented_control_background_sepia),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_sepia)
             );
         } else if (theme == PrefConstants.ThemeValue.DARK) {
             return new StoryHeaderPalette(
@@ -606,8 +607,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                     ContextCompat.getColor(this, R.color.segmented_control_selected_dark),
                     ContextCompat.getColor(this, R.color.segmented_control_border_dark),
                     ContextCompat.getColor(this, R.color.segmented_control_selected_text_dark),
-                    ContextCompat.getColor(this, R.color.premium_feature_red),
-                    ContextCompat.getColor(this, R.color.story_status_offline_border_dark)
+                    ContextCompat.getColor(this, R.color.segmented_control_background_dark),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_dark)
             );
         } else if (theme == PrefConstants.ThemeValue.BLACK) {
             return new StoryHeaderPalette(
@@ -618,8 +619,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                     ContextCompat.getColor(this, R.color.segmented_control_selected_black),
                     ContextCompat.getColor(this, R.color.segmented_control_border_black),
                     ContextCompat.getColor(this, R.color.segmented_control_selected_text_black),
-                    ContextCompat.getColor(this, R.color.premium_feature_red),
-                    ContextCompat.getColor(this, R.color.story_status_offline_border_black)
+                    ContextCompat.getColor(this, R.color.segmented_control_background_black),
+                    ContextCompat.getColor(this, R.color.segmented_control_border_black)
             );
         }
 
@@ -631,8 +632,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 ContextCompat.getColor(this, R.color.segmented_control_selected_light),
                 ContextCompat.getColor(this, R.color.segmented_control_border_light),
                 ContextCompat.getColor(this, R.color.segmented_control_selected_text_light),
-                ContextCompat.getColor(this, R.color.premium_feature_red),
-                ContextCompat.getColor(this, R.color.story_status_offline_border_light)
+                ContextCompat.getColor(this, R.color.segmented_control_background_light),
+                ContextCompat.getColor(this, R.color.segmented_control_border_light)
         );
     }
 
