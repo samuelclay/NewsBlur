@@ -8,13 +8,9 @@ shell_command:
 
 # Then create an automation in the HA UI or in automations.yaml:
 #
-# - alias: "Weekly NewsBlur off-site backup"
+# - alias: "Nightly NewsBlur off-site backup"
 #   trigger:
 #     - platform: time
 #       at: "06:00:00"
-#   condition:
-#     - condition: time
-#       weekday:
-#         - mon
 #   action:
 #     - service: shell_command.offsite_backup
