@@ -714,10 +714,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         // Trending Sites Section
         var trending_categories = [
-            { id: 'popular', label: 'Popular' },
-            { id: 'rising', label: 'Rising' },
-            { id: 'hidden_gems', label: 'Hidden Gems' },
-            { id: 'new_arrivals', label: 'New Arrivals' }
+            { id: 'popular', label: 'Popular', description: 'Most subscribed-to feeds this week' },
+            { id: 'rising', label: 'Rising', description: 'Small feeds with the fastest-growing subscriber base' },
+            { id: 'hidden_gems', label: 'Hidden Gems', description: 'Feeds with deeply engaged readers, not yet widely known' },
+            { id: 'new_arrivals', label: 'New Arrivals', description: 'Recently added feeds that are gaining subscribers' }
         ];
         var $trending_pills = $.make('div', { className: 'NB-add-site-trending-pills' },
             _.map(trending_categories, function (cat) {
@@ -728,6 +728,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 }, cat.label);
             })
         );
+        var active_cat = _.find(trending_categories, function (c) { return c.id === state.trending_category; });
+        var $trending_description = $.make('div', { className: 'NB-add-site-trending-description' }, active_cat.description);
 
         var $trending_section = $.make('div', { className: 'NB-add-site-section NB-add-site-trending-section' }, [
             $.make('div', { className: 'NB-add-site-section-header' }, [
@@ -742,6 +744,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 ])
             ]),
             $trending_pills,
+            $trending_description,
             $.make('div', { className: 'NB-add-site-section-content NB-add-site-trending-content' })
         ]);
 
@@ -3172,6 +3175,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         $pill.siblings().removeClass('NB-active');
         $pill.addClass('NB-active');
+
+        var descriptions = {
+            'popular': 'Most subscribed-to feeds this week',
+            'rising': 'Small feeds with the fastest-growing subscriber base',
+            'hidden_gems': 'Feeds with deeply engaged readers, not yet widely known',
+            'new_arrivals': 'Recently added feeds that are gaining subscribers'
+        };
+        $pill.closest('.NB-add-site-trending-section').find('.NB-add-site-trending-description').text(descriptions[category]);
 
         this.fetch_search_trending_feeds();
     },

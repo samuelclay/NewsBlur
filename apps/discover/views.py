@@ -287,7 +287,7 @@ def discover_stories(request, story_hash):
 
 def _get_trending_popular(days, limit, offset, one_year_ago):
     """Popular: high absolute subscription velocity (mass appeal feeds)."""
-    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    min_subs = 1 if settings.DEBUG else 3
     trending_data = RTrendingSubscription.get_trending_feeds(
         days=days,
         limit=limit + offset + 10,
@@ -314,7 +314,7 @@ def _get_trending_popular(days, limit, offset, one_year_ago):
 
 def _get_trending_rising(days, limit, offset, one_year_ago):
     """Rising: high subscription growth rate relative to existing subscriber base."""
-    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    min_subs = 1 if settings.DEBUG else 2
     trending_data = RTrendingSubscription.get_trending_feeds(
         days=days,
         limit=500,
@@ -353,7 +353,7 @@ def _get_trending_hidden_gems(days, limit, offset, one_year_ago):
     normalized = RTrendingStory.get_trending_feeds_normalized(
         days=days,
         limit=500,
-        min_subscribers=5,
+        min_subscribers=2,
         max_subscribers=5000,
     )
     if not normalized:
@@ -379,7 +379,7 @@ def _get_trending_hidden_gems(days, limit, offset, one_year_ago):
 
 def _get_trending_new_arrivals(days, limit, offset, one_year_ago):
     """New Arrivals: recently created feeds that are gaining subscribers."""
-    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    min_subs = 1 if settings.DEBUG else 2
     trending_data = RTrendingSubscription.get_trending_feeds(
         days=days,
         limit=500,
