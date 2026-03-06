@@ -163,6 +163,9 @@
     <color name="theme_dot_sepia">#F3E2CB</color>
     <color name="theme_dot_dark">#5A5A5C</color>
     <color name="theme_dot_black">#1C1C1E</color>
+    <color name="feed_list_search_background_dark">#444444</color>
+    <color name="feed_list_search_background_black">#333333</color>
+    <color name="feed_list_search_hint">#8F918B</color>
     
     <color name="negative">#CC2A2E</color>
 
@@ -181,6 +184,14 @@
 
     <color name="status_overlay_text">#CCFFFFFF</color>
     <color name="status_overlay_background">#AA777777</color>
+    <color name="sync_status_background_light">#AA777777</color>
+    <color name="sync_status_background_done_light">#AA848484</color>
+    <color name="sync_status_background_sepia">#AA777777</color>
+    <color name="sync_status_background_done_sepia">#AA848484</color>
+    <color name="sync_status_background_dark">#AA777777</color>
+    <color name="sync_status_background_done_dark">#AA848484</color>
+    <color name="sync_status_background_black">#AA777777</color>
+    <color name="sync_status_background_done_black">#AA848484</color>
 
     <color name="bg_midgray">#55898989</color>
 

@@ -65,6 +65,11 @@
         <item name="toggleButton">@style/toggleButton</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_light</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_light</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_white</item>
+        <item name="feedListSearchTextColor">@color/gray20</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
     </style>
 
     <style name="NewsBlurSepiaTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
@@ -132,6 +137,11 @@
         <item name="toggleButton">@style/toggleButton.sepia</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme.sepia</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.sepia</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_sepia</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_sepia</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_sepia</item>
+        <item name="feedListSearchTextColor">@color/gray20</item>
+        <item name="feedListSearchHintColor">@color/button_text_sepia</item>
     </style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
@@ -199,6 +209,11 @@
         <item name="toggleButton">@style/toggleButton.dark</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_dark</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_dark</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_feed_list_search_dark</item>
+        <item name="feedListSearchTextColor">@color/story_title_text_dark</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
@@ -266,6 +281,11 @@
         <item name="toggleButton">@style/toggleButton.dark</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_black</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_black</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_feed_list_search_black</item>
+        <item name="feedListSearchTextColor">@color/story_title_text_dark</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
     </style>
 
     <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">
