@@ -1758,7 +1758,17 @@ class Profile(models.Model):
         logging.user(self.user, "~FG~BBNew iOS pro subscription: $%s~FW" % amount)
         return True
 
-    def activate_android_premium(self, order_id=None, amount=36):
+    def activate_android_premium(self, order_id=None, product_id=None, amount=None):
+        payment_provider = "android-subscription"
+        payment_amount = 36 if amount is None else amount
+
+        if product_id and "premium.archive" in product_id:
+            payment_provider = "android-archive"
+            payment_amount = 99 if amount is None else amount
+        elif product_id and "premium.pro" in product_id:
+            payment_provider = "android-pro"
+            payment_amount = 299 if amount is None else amount
+
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
@@ -1766,41 +1776,43 @@ class Profile(models.Model):
                 if PaymentHistory.objects.filter(
                     user=self.user,
                     payment_identifier=order_id,
-                    payment_provider="android-subscription",
+                    payment_provider=payment_provider,
                 ).exists():
                     logging.user(
                         self.user,
-                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % amount,
+                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % payment_amount,
                     )
                     return False
 
             if PaymentHistory.objects.filter(
                 user=self.user,
-                payment_provider="android-subscription",
+                payment_provider=payment_provider,
                 payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
             ).exists():
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % amount,
+                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % payment_amount,
                 )
                 return False
 
             PaymentHistory.objects.create(
                 user=self.user,
                 payment_date=datetime.datetime.now(),
-                payment_amount=amount,
-                payment_provider="android-subscription",
+                payment_amount=payment_amount,
+                payment_provider=payment_provider,
                 payment_identifier=order_id,
             )
 
         self.setup_premium_history()
 
-        if order_id == "nb.premium.archive.99":
+        if product_id and "premium.pro" in product_id:
+            self.activate_pro()
+        elif product_id and "premium.archive" in product_id:
             self.activate_archive()
         elif not self.is_premium:
             self.activate_premium()
 
-        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % amount)
+        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % payment_amount)
         return True
 
     @classmethod

@@ -300,6 +300,7 @@
     <string name="main_menu_upgrade_premium">Upgrade to Premium</string>
     <string name="main_menu_upgrade_archive">Upgrade to Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Support Forum</string>
 
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -310,22 +311,36 @@
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
-    <string name="subscription_toolbar_title">NewsBlur Subscription</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
     <!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
     <string name="thank_you_for_subscribing">Thank you for subscribing!</string>
-    <string name="premium_subscription_renewal">Your subscription is set to\nrenew on %s</string>
-    <string name="premium_subscription_expiration">Your subscription is set\nto expire on %s</string>
-    <string name="premium_subscription_no_expiration">Your subscription is set\nto never expire. Whoa!</string>
+    <string name="premium_subscription_renewal">Your subscription will renew on %s</string>
+    <string name="premium_subscription_expiration">Your subscription will expire on %s</string>
+    <string name="premium_subscription_no_expiration">Your subscription is set to never expire. Whoa!</string>
     <!--    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>-->
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_header">Premium Subscription</string>
-    <string name="archive_subscription_header">Premium Archive Subscription</string>
+    <string name="archive_subscription_header">Premium Archive</string>
+    <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
     <string name="premium_subscription_active">Your premium subscription is active</string>
+    <string name="archive_subscription_active">Your premium archive subscription is active</string>
+    <string name="pro_subscription_active">Your premium pro subscription is active</string>
+    <string name="subscription_manage">Manage Subscription</string>
     <string name="subscription_details_error">Error retrieving subscription details</string>
     <string name="no_subscription_available">No subscription available</string>
+    <string name="subscription_unavailable">Currently unavailable on Android</string>
+    <string name="subscription_coming_soon">Coming soon</string>
+    <string name="subscription_upgrade_from_premium">Upgrade from Premium</string>
+    <string name="subscription_upgrade_from_archive">Upgrade from Archive</string>
+    <string name="subscription_price_yearly">%1$s/year (%2$s/month)</string>
+    <string name="subscription_price_monthly">%1$s/month</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Your premium archive subscription includes everything above</string>
+    <string name="premium_pro_includes_above">Your premium pro subscription includes everything above</string>
 
     <string name="premium_enable_sites">Follow up to 1,024 sites</string>
     <string name="premium_sync">Sites updated up to 5x more often</string>
@@ -335,15 +350,31 @@
     <string name="premium_privacy_options">Privacy options for your blurblog</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
+    <string name="premium_discover_related">Discover related stories and sites</string>
     <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
 
     <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
+    <string name="archive_enable_sites">Follow up to 4,096 sites</string>
     <string name="archive_marked_as_read">Choose when stories are automatically marked as read</string>
+    <string name="archive_customize_auto_read">Customize auto-read by site or folder</string>
     <string name="archive_story_searchable_forever">Every story from every site is archived and searchable forever</string>
     <string name="archive_back_filled">Feeds that support paging are back-filled in for a complete archive</string>
+    <string name="archive_train_full_text">Train stories on full text content</string>
+    <string name="archive_discover_related">Discover related stories across your archive</string>
     <string name="archive_export_trained_stories">Export trained stories from folders as RSS feeds</string>
     <string name="archive_stories_unread_forever">Stories can stay unread forever</string>
-    <string name="archive_subscription_active">Your archive subscription is active</string>
+    <string name="archive_ask_ai">Ask AI questions about stories</string>
+    <string name="archive_filter_by_date_range">Filter stories by date range</string>
+    <string name="archive_train_folder">Apply training across a folder</string>
+    <string name="archive_train_globally">Apply training globally</string>
+
+    <string name="pro_everything_archive">Everything in the archive subscription, of course</string>
+    <string name="pro_enable_sites">Follow up to 10,000 sites</string>
+    <string name="pro_all_feeds_fetched">All feeds fetched every 5-15 minutes</string>
+    <string name="pro_regex_train">Train stories with regular expressions</string>
+    <string name="pro_priority_support">Priority support</string>
+    <string name="pro_natural_language_filters">Natural language filters</string>
+    <string name="pro_natural_language_search">Natural language search</string>
 
     <string name="settings_cat_offline">Offline reading</string>
     <string name="settings_enable_offline">Download stories</string>

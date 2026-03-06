@@ -861,6 +861,20 @@ class PrefsRepo(
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
+    fun setPro(
+        isPro: Boolean,
+        proExpire: Long?,
+    ) {
+        prefs.edit {
+            putBoolean(PrefConstants.IS_PRO, isPro)
+            if (proExpire != null) {
+                putLong(PrefConstants.SUBSCRIPTION_EXPIRE, proExpire)
+            }
+        }
+    }
+
+    fun getIsPro() = prefs.getBoolean(PrefConstants.IS_PRO, false)
+
     fun setIsStaff(isStaff: Boolean) {
         prefs.edit {
             putBoolean(PrefConstants.IS_STAFF, isStaff)
@@ -885,7 +899,7 @@ class PrefsRepo(
 
     fun getSubscriptionExpire(): Long = prefs.getLong(PrefConstants.SUBSCRIPTION_EXPIRE, -1)
 
-    fun hasSubscription() = getIsPremium() || getIsArchive()
+    fun hasSubscription() = getIsPremium() || getIsArchive() || getIsPro()
 
     fun hasInAppReviewed() = prefs.getBoolean(PrefConstants.IN_APP_REVIEW, false)
 

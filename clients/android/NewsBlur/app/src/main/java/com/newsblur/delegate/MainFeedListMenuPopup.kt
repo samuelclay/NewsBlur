@@ -313,6 +313,7 @@ class MainFeedListMenuPopup(
 
     private fun getSubscriptionTitle(): String =
         when {
+            prefsRepo.getIsPro() -> activity.getString(R.string.main_menu_premium_pro)
             prefsRepo.getIsArchive() -> activity.getString(R.string.main_menu_premium_archive)
             prefsRepo.getIsPremium() -> activity.getString(R.string.main_menu_upgrade_archive)
             else -> activity.getString(R.string.main_menu_upgrade_premium)
