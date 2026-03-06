@@ -86,6 +86,7 @@ class NbApplication :
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         isAppForeground = true
+        foregroundSessionId += 1
     }
 
     override fun onStop(owner: LifecycleOwner) {
@@ -96,6 +97,9 @@ class NbApplication :
     companion object {
         @JvmStatic
         var isAppForeground = false
+
+        @JvmStatic
+        var foregroundSessionId = 0
 
         @JvmStatic
         fun getVersion(context: Context): String? {

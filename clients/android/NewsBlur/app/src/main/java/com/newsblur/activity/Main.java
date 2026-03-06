@@ -22,6 +22,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
@@ -76,6 +77,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
     private boolean isShowingLoadingSyncPlaceholder = true;
+    private boolean shouldTrackActiveSyncStatus = false;
+    private int lastForegroundSessionId = 0;
     private final Runnable hideSyncStatusRunnable = () -> {
         isShowingDoneSyncStatus = false;
         hideSyncStatusIndicator(true);
@@ -153,6 +156,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             folderFeedList.forceShowFeed(forceShowFeedId);
         }
 
+        int foregroundSessionId = NbApplication.getForegroundSessionId();
+        shouldTrackActiveSyncStatus = foregroundSessionId != lastForegroundSessionId;
+        lastForegroundSessionId = foregroundSessionId;
+
         // triggerSync() might not actually do enough to push a UI update if background sync has been
         // behaving itself. because the system will re-use the activity, at least one update on resume
         // will be required, however inefficient
@@ -171,6 +178,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onPause() {
         keyboardManager.removeListener();
+        cancelPendingSyncStatusHide();
+        hasSeenActiveSyncStatus = false;
+        isShowingDoneSyncStatus = false;
+        shouldTrackActiveSyncStatus = false;
+        hideSyncStatusIndicator(false);
         super.onPause();
     }
 
@@ -295,7 +307,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 hasSeenActiveSyncStatus = false;
                 showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.NONE);
             } else {
-                hasSeenActiveSyncStatus = true;
+                if (shouldTrackActiveSyncStatus) {
+                    hasSeenActiveSyncStatus = true;
+                }
                 showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.SPINNER);
             }
             return;
@@ -303,6 +317,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         if (hasSeenActiveSyncStatus) {
             hasSeenActiveSyncStatus = false;
+            shouldTrackActiveSyncStatus = false;
             isShowingLoadingSyncPlaceholder = false;
             showSyncStatusIndicator(getString(R.string.sync_status_done), SyncStatusAccessory.DONE);
             scheduleDoneSyncStatusHide();
@@ -401,6 +416,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void onRefresh() {
+        shouldTrackActiveSyncStatus = true;
         syncServiceState.forceFeedsFolders();
         triggerSync();
         folderFeedList.clearRecents();

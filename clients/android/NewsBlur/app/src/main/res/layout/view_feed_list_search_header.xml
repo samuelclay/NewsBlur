@@ -45,6 +45,18 @@
             android:textColorHint="?attr/colorControlNormal"
             android:textSize="15sp" />
 
+        <ImageButton
+            android:id="@+id/clear_search_query"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/feed_list_clear_search"
+            android:focusable="false"
+            android:padding="0dp"
+            android:src="@drawable/ic_search_clear"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </FrameLayout>
