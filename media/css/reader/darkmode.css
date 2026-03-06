@@ -4781,6 +4781,9 @@ a.mention, a.mention-group {
 .NB-dark .NB-add-site-trending-pill.NB-active:hover {
     background: #4A78B5;
 }
+.NB-dark .NB-add-site-trending-description {
+    color: #666;
+}
 
 /* Newsletter Filter Labels Dark Mode */
 .NB-dark .NB-add-site-filter-label {
