@@ -39,6 +39,9 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
   - **All new iOS files must be written in Swift** (not Objective-C)
 - **Android**: Use the adb/emulator workflow below for emulator testing and screenshots
+  - **Theme coverage is required for Android UI work**: any Android UI change must be checked against all supported NewsBlur themes, not just the current device theme.
+  - Current required Android theme coverage: `light`, `dark`, and `black`.
+  - Upcoming theme requirement: account for `Sapia` in any new Android UI work so theme-specific colors are centralized and easy to extend when that theme lands.
 
 ## Android Emulator Testing
 - Prefer reusing an already running emulator instead of booting a new one
