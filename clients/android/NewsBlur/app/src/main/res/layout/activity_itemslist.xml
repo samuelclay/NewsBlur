@@ -29,10 +29,72 @@
             android:visibility="gone" />
 
         <LinearLayout
+            android:id="@+id/itemlist_story_status_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemlist_search_query"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/itemlist_story_status_banner_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
+
+                <FrameLayout
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:foregroundGravity="center">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/itemlist_story_status_spinner"
+                        style="@style/syncStatusProgressIndicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="true"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/itemlist_story_status_offline_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_offline"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/itemlist_story_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/itemlist_story_status_border"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/activity_itemlist_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/itemlist_search_query"
+            android:layout_below="@id/itemlist_story_status_banner"
             android:orientation="horizontal" />
 
         <include
@@ -40,20 +102,8 @@
             layout="@layout/row_fleuron"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/itemlist_search_query"
+            android:layout_below="@id/itemlist_story_status_banner"
             android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/itemlist_sync_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/status_overlay_background"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="SYNC STATUS"
-            android:textColor="@color/status_overlay_text"
-            android:textSize="14sp" />
 
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
