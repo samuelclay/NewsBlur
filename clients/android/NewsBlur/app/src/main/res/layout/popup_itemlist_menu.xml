@@ -380,10 +380,14 @@
                         android:layout_width="0dp"
                         android:layout_height="18dp"
                         android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_no_image_preview"
                         android:minWidth="0dp"
-                        android:text="Off"
-                        android:textSize="9sp"
-                        android:tooltipText="@string/story_thumbnail_no_image_preview" />
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_no_image_preview"
+                        app:icon="@drawable/ic_story_thumbnail_preview_none"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_thumbnail_preview_left_small"
