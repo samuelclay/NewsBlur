@@ -207,9 +207,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 if (isSyncingSearchField) {
                     return;
                 }
-                if ((s == null) || TextUtils.isEmpty(s.toString().trim())) {
-                    applySearchQuery(null, false);
-                }
+                updateSearchClearButton(s);
+                applySearchQuery((s == null) ? null : s.toString(), false);
             }
 
             @Override
@@ -228,6 +227,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             }
             applySearchQuery((textView.getText() == null) ? null : textView.getText().toString(), false);
             return true;
+        });
+        searchHeaderBinding.clearSearchQuery.setOnClickListener(v1 -> {
+            searchHeaderBinding.inputSearchQuery.setText("");
+            searchHeaderBinding.inputSearchQuery.requestFocus();
         });
         syncSearchField(adapter.activeSearchQuery);
 
@@ -501,6 +504,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
 
         String displayQuery = (query == null) ? "" : query;
+        updateSearchClearButton(displayQuery);
         if (TextUtils.equals(searchHeaderBinding.inputSearchQuery.getText(), displayQuery)) {
             return;
         }
@@ -509,6 +513,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         searchHeaderBinding.inputSearchQuery.setText(displayQuery);
         searchHeaderBinding.inputSearchQuery.setSelection(displayQuery.length());
         isSyncingSearchField = false;
+    }
+
+    private void updateSearchClearButton(@Nullable CharSequence query) {
+        if (searchHeaderBinding == null) {
+            return;
+        }
+
+        boolean hasQuery = !TextUtils.isEmpty(query);
+        searchHeaderBinding.clearSearchQuery.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
     }
 
     private void restoreSearchFieldFocus(@Nullable String query, int selectionEnd) {
