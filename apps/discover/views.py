@@ -301,6 +301,8 @@ def trending_sites(request):
     if days not in [1, 7, 30]:
         days = 7
 
+    one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+
     # Get trending feed IDs from subscription velocity
     # In DEBUG mode, use min_subscribers=1 to show results with limited data
     min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
@@ -320,6 +322,7 @@ def trending_sites(request):
         popular_feeds = Feed.objects.filter(
             num_subscribers__gte=10,
             is_push=False,
+            last_story_date__gte=one_year_ago,
         ).order_by(
             "-num_subscribers"
         )[offset : offset + limit + 1]
@@ -330,8 +333,8 @@ def trending_sites(request):
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
-    # Build response with feed details and stories
-    feeds = Feed.objects.filter(pk__in=trending_feed_ids)
+    # Build response with feed details and stories, excluding stale feeds
+    feeds = Feed.objects.filter(pk__in=trending_feed_ids, last_story_date__gte=one_year_ago)
     feeds_dict = {feed.pk: feed for feed in feeds}
 
     # Build ordered response preserving trending order
