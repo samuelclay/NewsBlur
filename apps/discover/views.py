@@ -17,6 +17,7 @@ from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.search.models import MUserSearch, SearchFeed
+from apps.statistics.rdiscover_usage import RDiscoverUsage
 from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import json_functions as json
@@ -250,6 +251,7 @@ def discover_feeds(request, feed_id=None):
         discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
 
     logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
+    RDiscoverUsage.record("feeds", request.user.pk)
     return {"discover_feeds": discover_feeds}
 
 
@@ -267,6 +269,7 @@ def discover_stories(request, story_hash):
 
     user_search = MUserSearch.get_user(request.user.pk)
     user_search.touch_discover_date()
+    RDiscoverUsage.record("stories", request.user.pk)
 
     similar_stories = story.fetch_similar_stories(feed_ids=feed_ids, offset=offset, limit=limit)
     similar_story_hashes = [result["_id"] for result in similar_stories]
