@@ -192,6 +192,30 @@
     <color name="sync_status_background_done_dark">#AA848484</color>
     <color name="sync_status_background_black">#AA777777</color>
     <color name="sync_status_background_done_black">#AA848484</color>
+    <color name="story_status_fetching_background_light">#E1EBFF</color>
+    <color name="story_status_fetching_text_light">#4A6A8A</color>
+    <color name="story_status_fetching_border_light">#C0D0E8</color>
+    <color name="story_status_fetching_background_sepia">#F0E8D8</color>
+    <color name="story_status_fetching_text_sepia">#6B5A45</color>
+    <color name="story_status_fetching_border_sepia">#D8C8B0</color>
+    <color name="story_status_fetching_background_dark">#2A3340</color>
+    <color name="story_status_fetching_text_dark">#B0C8E0</color>
+    <color name="story_status_fetching_border_dark">#3A4A58</color>
+    <color name="story_status_fetching_background_black">#1E2830</color>
+    <color name="story_status_fetching_text_black">#90B0D0</color>
+    <color name="story_status_fetching_border_black">#2A3A48</color>
+    <color name="story_status_offline_background_light">#FFE0E0</color>
+    <color name="story_status_offline_text_light">#A03030</color>
+    <color name="story_status_offline_border_light">#E0B0B0</color>
+    <color name="story_status_offline_background_sepia">#F0D8C8</color>
+    <color name="story_status_offline_text_sepia">#8B4030</color>
+    <color name="story_status_offline_border_sepia">#D8B8A0</color>
+    <color name="story_status_offline_background_dark">#3A2020</color>
+    <color name="story_status_offline_text_dark">#E0A0A0</color>
+    <color name="story_status_offline_border_dark">#4A3030</color>
+    <color name="story_status_offline_background_black">#2A1818</color>
+    <color name="story_status_offline_text_black">#D08080</color>
+    <color name="story_status_offline_border_black">#3A2828</color>
 
     <color name="bg_midgray">#55898989</color>
 

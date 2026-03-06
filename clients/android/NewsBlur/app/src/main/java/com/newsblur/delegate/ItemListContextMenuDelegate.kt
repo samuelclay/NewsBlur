@@ -359,11 +359,13 @@ open class ItemListContextMenuDelegateImpl(
         fragment: ItemSetFragment,
         fs: FeedSet,
     ) {
-        syncServiceState.resetFetchState(fs)
-        feedUtils.prepareReadingSession(fs, true)
-        triggerSync(activity)
-        fragment.resetEmptyState()
-        fragment.hasUpdated()
-        fragment.scrollToTop()
+        (activity as? ItemsList)?.restartReadingSession() ?: run {
+            syncServiceState.resetFetchState(fs)
+            feedUtils.prepareReadingSession(fs, true)
+            triggerSync(activity)
+            fragment.resetEmptyState()
+            fragment.hasUpdated()
+            fragment.scrollToTop()
+        }
     }
 }

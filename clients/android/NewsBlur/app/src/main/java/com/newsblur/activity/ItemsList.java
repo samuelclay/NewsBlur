@@ -4,7 +4,11 @@ import static com.newsblur.service.NbSyncManager.UPDATE_REBUILD;
 import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
 import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Trace;
 import android.text.TextUtils;
@@ -13,6 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +30,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.color.MaterialColors;
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
@@ -30,11 +38,11 @@ import com.newsblur.delegate.ItemListContextMenuDelegate;
 import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.service.SyncServiceState;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
+import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PendingTransitionUtils;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
@@ -67,6 +75,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     public static final String EXTRA_SESSION_DATA = "session_data";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
+    private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
+    private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
+    private static final long STORY_STATUS_HIDE_DURATION_MS = 250L;
+    private static final DecelerateInterpolator STORY_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
+    private static final AccelerateInterpolator STORY_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
 
     protected ItemListViewModel viewModel;
     protected FeedSet fs;
@@ -76,6 +89,19 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private ItemListContextMenuDelegate contextMenuDelegate;
     @Nullable
     private SessionDataSource sessionDataSource;
+    @Nullable
+    private ValueAnimator storyStatusBannerAnimator;
+    private boolean awaitingInitialFetchingBanner = false;
+    private boolean fetchingBannerDelayElapsed = false;
+    private final Runnable showFetchingBannerRunnable = () -> {
+        fetchingBannerDelayElapsed = true;
+        updateStatusIndicators();
+    };
+
+    private enum StoryStatusBannerStyle {
+        FETCHING,
+        OFFLINE,
+    }
 
     @NonNull
     protected ActivityResultLauncher<Intent> readingActivityLaunch = registerForActivityResult(
@@ -151,6 +177,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 return false;
             }
         });
+        scheduleInitialFetchingBanner();
         Trace.endSection();
     }
 
@@ -172,6 +199,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         super.onResume();
         if (syncServiceState.isHousekeepingRunning()) finish();
         updateStatusIndicators();
+        if (itemSetFragment != null) {
+            itemSetFragment.refreshLoadingIndicators();
+        }
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemSetFragment.hasUpdated();
@@ -179,6 +209,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     protected void onPause() {
+        cancelPendingFetchingBanner();
+        cancelStoryStatusBannerAnimation();
         super.onPause();
         syncServiceState.addRecountCandidate(fs);
     }
@@ -208,6 +240,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
+            if (itemSetFragment != null) {
+                itemSetFragment.refreshLoadingIndicators();
+            }
         }
         if ((updateType & UPDATE_STORY) != 0) {
             if (itemSetFragment != null) {
@@ -225,6 +260,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 fs = session.getFeedSet();
                 feedUtils.prepareReadingSession(fs, false);
                 triggerSync();
+                scheduleInitialFetchingBanner();
 
                 // set the next session on the child activity
                 viewModel.updateSession(session);
@@ -238,18 +274,29 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void updateStatusIndicators() {
-        if (binding.itemlistSyncStatus != null) {
-            String syncStatus = syncServiceState.getSyncStatusMessage(this, true);
-            if (syncStatus != null) {
-                if (AppConstants.VERBOSE_LOG) {
-                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
-                }
-                binding.itemlistSyncStatus.setText(syncStatus);
-                binding.itemlistSyncStatus.setVisibility(View.VISIBLE);
-            } else {
-                binding.itemlistSyncStatus.setVisibility(View.GONE);
-            }
+        if (!NetworkUtils.isOnline(this)) {
+            cancelPendingFetchingBanner();
+            showStoryStatusBanner(getString(R.string.sync_status_offline), StoryStatusBannerStyle.OFFLINE);
+            return;
         }
+
+        boolean isInitialFetchPending = awaitingInitialFetchingBanner && syncServiceState.isFeedSetSyncing(fs);
+        if (isInitialFetchPending && fetchingBannerDelayElapsed && itemSetFragment != null && itemSetFragment.hasStories()) {
+            showStoryStatusBanner("Fetching recent stories...", StoryStatusBannerStyle.FETCHING);
+            return;
+        }
+
+        if (!syncServiceState.isFeedSetSyncing(fs)) {
+            awaitingInitialFetchingBanner = false;
+            fetchingBannerDelayElapsed = false;
+            cancelPendingFetchingBanner();
+        }
+
+        hideStoryStatusBanner(true);
+    }
+
+    public void refreshStoryStatusIndicators() {
+        updateStatusIndicators();
     }
 
     private void checkSearchQuery() {
@@ -267,6 +314,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!TextUtils.equals(q, oldQuery)) {
             feedUtils.prepareReadingSession(fs, true);
             triggerSync();
+            scheduleInitialFetchingBanner();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
@@ -293,10 +341,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 	    transaction.commitNow();
     }
 
-    protected void restartReadingSession() {
+    public void restartReadingSession() {
         syncServiceState.resetFetchState(fs);
         feedUtils.prepareReadingSession(fs, true);
         triggerSync();
+        scheduleInitialFetchingBanner();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
@@ -318,8 +367,151 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     public void finish() {
+        cancelPendingFetchingBanner();
+        cancelStoryStatusBannerAnimation();
         super.finish();
         PendingTransitionUtils.overrideExitTransition(this);
+    }
+
+    private void scheduleInitialFetchingBanner() {
+        awaitingInitialFetchingBanner = true;
+        fetchingBannerDelayElapsed = false;
+        cancelPendingFetchingBanner();
+        hideStoryStatusBanner(false);
+        binding.itemlistStoryStatusBanner.postDelayed(showFetchingBannerRunnable, STORY_STATUS_FETCH_DELAY_MS);
+    }
+
+    private void cancelPendingFetchingBanner() {
+        if (binding != null) {
+            binding.itemlistStoryStatusBanner.removeCallbacks(showFetchingBannerRunnable);
+        }
+    }
+
+    private void showStoryStatusBanner(String title, StoryStatusBannerStyle style) {
+        applyStoryStatusBannerStyle(title, style);
+
+        if (binding.itemlistStoryStatusBanner.getVisibility() == View.VISIBLE) {
+            return;
+        }
+
+        cancelStoryStatusBannerAnimation();
+
+        View banner = binding.itemlistStoryStatusBanner;
+        ViewGroup.LayoutParams layoutParams = banner.getLayoutParams();
+        layoutParams.height = 0;
+        banner.setLayoutParams(layoutParams);
+        banner.setVisibility(View.VISIBLE);
+
+        int expandedHeight = measureStoryStatusBannerHeight();
+        animateStoryStatusBannerHeight(0, expandedHeight, true);
+    }
+
+    private void hideStoryStatusBanner(boolean animated) {
+        View banner = binding.itemlistStoryStatusBanner;
+        if (banner.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
+        cancelStoryStatusBannerAnimation();
+
+        if (!animated) {
+            banner.setVisibility(View.GONE);
+            ViewGroup.LayoutParams layoutParams = banner.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            banner.setLayoutParams(layoutParams);
+            return;
+        }
+
+        int currentHeight = banner.getHeight();
+        if (currentHeight == 0) {
+            currentHeight = measureStoryStatusBannerHeight();
+        }
+        animateStoryStatusBannerHeight(currentHeight, 0, false);
+    }
+
+    private void animateStoryStatusBannerHeight(int startHeight, int endHeight, boolean showing) {
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.setDuration(showing ? STORY_STATUS_SHOW_DURATION_MS : STORY_STATUS_HIDE_DURATION_MS);
+        animator.setInterpolator(showing ? STORY_STATUS_SHOW_INTERPOLATOR : STORY_STATUS_HIDE_INTERPOLATOR);
+        animator.addUpdateListener(valueAnimator -> {
+            ViewGroup.LayoutParams layoutParams = binding.itemlistStoryStatusBanner.getLayoutParams();
+            layoutParams.height = (int) valueAnimator.getAnimatedValue();
+            binding.itemlistStoryStatusBanner.setLayoutParams(layoutParams);
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (storyStatusBannerAnimator != animation) {
+                    return;
+                }
+                ViewGroup.LayoutParams layoutParams = binding.itemlistStoryStatusBanner.getLayoutParams();
+                if (showing) {
+                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    binding.itemlistStoryStatusBanner.setLayoutParams(layoutParams);
+                } else {
+                    binding.itemlistStoryStatusBanner.setVisibility(View.GONE);
+                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    binding.itemlistStoryStatusBanner.setLayoutParams(layoutParams);
+                }
+                storyStatusBannerAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                if (storyStatusBannerAnimator == animation) {
+                    storyStatusBannerAnimator = null;
+                }
+            }
+        });
+        storyStatusBannerAnimator = animator;
+        animator.start();
+    }
+
+    private void cancelStoryStatusBannerAnimation() {
+        if (storyStatusBannerAnimator != null) {
+            storyStatusBannerAnimator.cancel();
+            storyStatusBannerAnimator = null;
+        }
+        binding.itemlistStoryStatusBanner.animate().cancel();
+    }
+
+    private int measureStoryStatusBannerHeight() {
+        View banner = binding.itemlistStoryStatusBanner;
+        int width = binding.content.getWidth();
+        if (width <= 0) {
+            width = getResources().getDisplayMetrics().widthPixels;
+        }
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        banner.measure(widthSpec, heightSpec);
+        return banner.getMeasuredHeight();
+    }
+
+    private void applyStoryStatusBannerStyle(String title, StoryStatusBannerStyle style) {
+        binding.itemlistStoryStatusText.setText(title);
+        binding.itemlistStoryStatusSpinner.setVisibility(style == StoryStatusBannerStyle.FETCHING ? View.VISIBLE : View.GONE);
+        binding.itemlistStoryStatusOfflineIcon.setVisibility(style == StoryStatusBannerStyle.OFFLINE ? View.VISIBLE : View.GONE);
+
+        int backgroundAttr = style == StoryStatusBannerStyle.OFFLINE
+                ? R.attr.storyStatusOfflineBackgroundColor
+                : R.attr.storyStatusFetchingBackgroundColor;
+        int textAttr = style == StoryStatusBannerStyle.OFFLINE
+                ? R.attr.storyStatusOfflineTextColor
+                : R.attr.storyStatusFetchingTextColor;
+        int borderAttr = style == StoryStatusBannerStyle.OFFLINE
+                ? R.attr.storyStatusOfflineBorderColor
+                : R.attr.storyStatusFetchingBorderColor;
+
+        int backgroundColor = MaterialColors.getColor(binding.itemlistStoryStatusBanner, backgroundAttr);
+        int textColor = MaterialColors.getColor(binding.itemlistStoryStatusBanner, textAttr);
+        int borderColor = MaterialColors.getColor(binding.itemlistStoryStatusBanner, borderAttr);
+
+        binding.itemlistStoryStatusBanner.setBackgroundColor(backgroundColor);
+        binding.itemlistStoryStatusBannerContent.setBackgroundColor(backgroundColor);
+        binding.itemlistStoryStatusText.setTextColor(textColor);
+        binding.itemlistStoryStatusBorder.setBackgroundColor(borderColor);
+        binding.itemlistStoryStatusOfflineIcon.setImageTintList(ColorStateList.valueOf(textColor));
+        binding.itemlistStoryStatusSpinner.setIndicatorColor(textColor);
     }
 
     abstract String getSaveSearchFeedId();

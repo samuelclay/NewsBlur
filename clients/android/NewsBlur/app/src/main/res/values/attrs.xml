@@ -48,6 +48,12 @@
     <attr name="toggleButton" format="string" />
     <attr name="syncStatusBackgroundColor" format="reference|color" />
     <attr name="syncStatusDoneBackgroundColor" format="reference|color" />
+    <attr name="storyStatusFetchingBackgroundColor" format="reference|color" />
+    <attr name="storyStatusFetchingTextColor" format="reference|color" />
+    <attr name="storyStatusFetchingBorderColor" format="reference|color" />
+    <attr name="storyStatusOfflineBackgroundColor" format="reference|color" />
+    <attr name="storyStatusOfflineTextColor" format="reference|color" />
+    <attr name="storyStatusOfflineBorderColor" format="reference|color" />
     <attr name="feedListSearchBackground" format="reference|color" />
     <attr name="feedListSearchTextColor" format="reference|color" />
     <attr name="feedListSearchHintColor" format="reference|color" />

@@ -50,7 +50,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, KeyboardListener {
-    private static final long SYNC_STATUS_ANIMATION_DURATION_MS = 1000L;
+    private static final long SYNC_STATUS_ANIMATION_DURATION_MS = 500L;
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
@@ -97,6 +97,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainSyncStatusText.setText(R.string.loading);
         binding.mainSyncStatusSpinner.setVisibility(View.VISIBLE);
         binding.mainSyncStatusDoneIcon.setVisibility(View.GONE);
+        updateSyncStatusIndicatorBackground(SyncStatusAccessory.SPINNER);
         binding.mainSyncStatusContainer.setAlpha(1f);
         binding.mainSyncStatusContainer.setTranslationX(0f);
         binding.mainSyncStatusContainer.setVisibility(View.VISIBLE);
@@ -338,6 +339,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainSyncStatusText.setText(syncStatus);
         binding.mainSyncStatusSpinner.setVisibility(accessory == SyncStatusAccessory.SPINNER ? View.VISIBLE : View.GONE);
         binding.mainSyncStatusDoneIcon.setVisibility(accessory == SyncStatusAccessory.DONE ? View.VISIBLE : View.GONE);
+        updateSyncStatusIndicatorBackground(accessory);
 
         View container = binding.mainSyncStatusContainer;
         container.animate().cancel();
@@ -362,6 +364,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 .setInterpolator(SYNC_STATUS_SHOW_INTERPOLATOR)
                 .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
                 .start();
+    }
+
+    private void updateSyncStatusIndicatorBackground(SyncStatusAccessory accessory) {
+        binding.mainSyncStatusContainer.setBackgroundResource(
+                accessory == SyncStatusAccessory.DONE
+                        ? R.drawable.shape_sync_status_pill_done
+                        : R.drawable.shape_sync_status_pill
+        );
     }
 
     private void hideSyncStatusIndicator(boolean animated) {

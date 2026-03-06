@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
@@ -37,6 +36,7 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.ThumbnailStyle;
+import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.viewModel.StoriesViewModel;
@@ -98,9 +98,6 @@ public class ItemSetFragment extends NbFragment {
 
     // loading indicator for when stories are absent or stale (at top of list)
     // R.id.top_loading_throb
-
-    // loading indicator for when stories are present and fresh (at bottom of list)
-    protected LinearProgressIndicator bottomProgressView;
 
     // the fleuron has padding that can't be calculated until after layout, but only changes
     // rarely thereafter
@@ -168,10 +165,6 @@ public class ItemSetFragment extends NbFragment {
 
         binding.topLoadingIndicator.setEnabled(!isDisableAnimations);
 
-        View footerView = inflater.inflate(R.layout.row_loading_indicator, null);
-        bottomProgressView = footerView.findViewById(R.id.itemlist_loading);
-        bottomProgressView.setEnabled(!isDisableAnimations);
-
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
 
@@ -200,7 +193,6 @@ public class ItemSetFragment extends NbFragment {
         });
 
         adapter = new StoryViewAdapter(((NbActivity) getActivity()), getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefsRepo, getOnStoryClickListener());
-        adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
 
@@ -258,6 +250,10 @@ public class ItemSetFragment extends NbFragment {
             storyThawCompleted(storyBatch.getIndexOfLastUnread());
         }
         updateLoadingIndicators();
+        ItemsList activity = (ItemsList) getActivity();
+        if (activity != null) {
+            activity.refreshStoryStatusIndicators();
+        }
     }
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
@@ -311,6 +307,15 @@ public class ItemSetFragment extends NbFragment {
         }
     }
 
+    public void refreshLoadingIndicators() {
+        if (!isAdded() || binding == null) return;
+        updateLoadingIndicators();
+    }
+
+    public boolean hasStories() {
+        return (adapter != null) && (adapter.getRawStoryCount() > 0);
+    }
+
     private void updateAdapter(@NonNull List<Story> stories, Long loadId) {
         adapter.submitStories(stories, loadId, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
         gridState = null;
@@ -327,12 +332,13 @@ public class ItemSetFragment extends NbFragment {
 
     private void updateLoadingIndicators() {
         calcFleuronPadding();
+        boolean hasStories = hasStories();
+        boolean isOffline = !NetworkUtils.isOnline(requireContext());
 
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            bottomProgressView.setVisibility(View.INVISIBLE);
             fleuronResized = false;
             return;
         }
@@ -342,12 +348,10 @@ public class ItemSetFragment extends NbFragment {
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
-            if (syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
+            if (isOffline || hasStories || syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
                 binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-                bottomProgressView.setVisibility(View.VISIBLE);
             } else {
                 binding.topLoadingIndicator.setVisibility(View.VISIBLE);
-                bottomProgressView.setVisibility(View.GONE);
             }
             fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         } else {
@@ -361,7 +365,6 @@ public class ItemSetFragment extends NbFragment {
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            bottomProgressView.setVisibility(View.INVISIBLE);
             if (dataSeenYet && syncServiceState.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronBinding.containerSubscribe.setVisibility(View.GONE);
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
