@@ -143,21 +143,25 @@
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
+            <LinearLayout
                 android:id="@+id/group_theme"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_auto"
                     style="?toggleButton"
+                    android:checkable="true"
+                    android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:layout_weight="1.5"
+                    android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:text="@string/auto"
                     android:textSize="12sp" />
@@ -165,10 +169,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_light"
                     style="?toggleButton"
+                    android:checkable="true"
+                    android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/light"
+                    android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:text=""
                     android:tooltipText="@string/light"
@@ -181,10 +188,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_sepia"
                     style="?toggleButton"
+                    android:checkable="true"
+                    android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/sepia"
+                    android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:text=""
                     android:tooltipText="@string/sepia"
@@ -197,10 +207,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_dark"
                     style="?toggleButton"
+                    android:checkable="true"
+                    android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/dark"
+                    android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:text=""
                     android:tooltipText="@string/dark"
@@ -213,10 +226,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_theme_black"
                     style="?toggleButton"
+                    android:checkable="true"
+                    android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/black"
+                    android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:text=""
                     android:tooltipText="@string/black"
@@ -226,7 +242,7 @@
                     app:iconSize="19dp"
                     app:iconTint="@null" />
 
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+            </LinearLayout>
 
         </LinearLayout>
 

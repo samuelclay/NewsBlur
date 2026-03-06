@@ -13,8 +13,8 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
-import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.button.MaterialButton
 import com.newsblur.R
 import com.newsblur.activity.ImportExportActivity
 import com.newsblur.activity.Main
@@ -273,13 +273,7 @@ class MainFeedListMenuPopup(
             SpacingStyle.COMPACT -> binding.groupSpacing.check(binding.btnSpacingCompact.id)
         }
 
-        when (prefsRepo.getSelectedTheme()) {
-            ThemeValue.AUTO -> binding.groupTheme.check(binding.btnThemeAuto.id)
-            ThemeValue.LIGHT -> binding.groupTheme.check(binding.btnThemeLight.id)
-            ThemeValue.SEPIA -> binding.groupTheme.check(binding.btnThemeSepia.id)
-            ThemeValue.DARK -> binding.groupTheme.check(binding.btnThemeDark.id)
-            ThemeValue.BLACK -> binding.groupTheme.check(binding.btnThemeBlack.id)
-        }
+        updateThemeSelection(binding, prefsRepo.getSelectedTheme())
 
         binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
@@ -301,18 +295,16 @@ class MainFeedListMenuPopup(
             }
         }
 
-        binding.groupTheme.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            val theme =
-                when (checkedId) {
-                    binding.btnThemeAuto.id -> ThemeValue.AUTO
-                    binding.btnThemeLight.id -> ThemeValue.LIGHT
-                    binding.btnThemeSepia.id -> ThemeValue.SEPIA
-                    binding.btnThemeDark.id -> ThemeValue.DARK
-                    binding.btnThemeBlack.id -> ThemeValue.BLACK
-                    else -> return@addOnButtonCheckedListener
-                }
-            if (theme != prefsRepo.getSelectedTheme()) {
+        listOf(
+            binding.btnThemeAuto to ThemeValue.AUTO,
+            binding.btnThemeLight to ThemeValue.LIGHT,
+            binding.btnThemeSepia to ThemeValue.SEPIA,
+            binding.btnThemeDark to ThemeValue.DARK,
+            binding.btnThemeBlack to ThemeValue.BLACK,
+        ).forEach { (button, theme) ->
+            button.setOnClickListener {
+                if (theme == prefsRepo.getSelectedTheme()) return@setOnClickListener
+                updateThemeSelection(binding, theme)
                 popupWindow.dismiss()
                 prefsRepo.setSelectedTheme(theme)
                 UIUtils.restartActivity(activity)
@@ -324,14 +316,14 @@ class MainFeedListMenuPopup(
         binding: PopupMainMenuBinding,
         palette: PopupPalette,
     ) {
-        val buttonInset = UIUtils.dp2px(activity, 2)
-        val buttonRadius = UIUtils.dp2px(activity, 14)
+        val buttonInset = UIUtils.dp2px(activity, 3)
+        val buttonRadius = UIUtils.dp2px(activity, 12)
 
         binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
         binding.groupTheme.background =
             GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 18f)
+                cornerRadius = UIUtils.dp2px(activity, 17f)
                 setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
                 setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
             }
@@ -360,11 +352,36 @@ class MainFeedListMenuPopup(
             binding.btnThemeDark,
             binding.btnThemeBlack,
         ).forEach { button ->
+            button.isCheckable = true
             button.backgroundTintList = buttonTint
             button.strokeWidth = 0
             button.cornerRadius = buttonRadius
+            button.insetTop = 0
+            button.insetBottom = 0
+            button.minimumHeight = 0
+            button.gravity = Gravity.CENTER
+            button.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            button.setPadding(0, 0, 0, 0)
+        }
+        listOf(binding.btnThemeLight, binding.btnThemeSepia, binding.btnThemeDark, binding.btnThemeBlack).forEach { button ->
+            button.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_TOP
         }
         binding.btnThemeAuto.setTextColor(autoTextColors)
+    }
+
+    private fun updateThemeSelection(
+        binding: PopupMainMenuBinding,
+        selectedTheme: ThemeValue,
+    ) {
+        listOf(
+            binding.btnThemeAuto to ThemeValue.AUTO,
+            binding.btnThemeLight to ThemeValue.LIGHT,
+            binding.btnThemeSepia to ThemeValue.SEPIA,
+            binding.btnThemeDark to ThemeValue.DARK,
+            binding.btnThemeBlack to ThemeValue.BLACK,
+        ).forEach { (button, theme) ->
+            button.isChecked = theme == selectedTheme
+        }
     }
 
     private fun getSubscriptionTitle(): String =
