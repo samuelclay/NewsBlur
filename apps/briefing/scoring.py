@@ -70,6 +70,7 @@ def select_briefing_stories(
 
     feed_ids = [sub.feed_id for sub in user_subs]
     feed_opens_map = {sub.feed_id: sub.feed_opens or 0 for sub in user_subs}
+    feed_frequency_map = {sub.feed_id: sub.feed.average_stories_per_month or 0 for sub in user_subs if sub.feed}
 
     if read_filter == "focus":
         positive_feed_ids = set(
@@ -259,12 +260,23 @@ def select_briefing_stories(
         total_score = (
             trending_score + feed_engagement_score + user_affinity + recency_score + intelligence_score
         )
+
+        # Infrequent feed boost: stories from feeds publishing ≤30/month get up to 2x score.
+        # Smooth linear scale: 2x at 0 stories/month, decaying to 1x at 30/month.
+        avg_stories = feed_frequency_map.get(feed_id, 0)
+        if avg_stories <= 30:
+            infrequent_boost = 2.0 - (avg_stories / 30.0)
+        else:
+            infrequent_boost = 1.0
+        total_score *= infrequent_boost
+
         scored.append(
             {
                 "story_hash": story_hash,
                 "score": total_score,
                 "is_read": read_status_map.get(story_hash, False),
                 "trending_norm": trending_norm,
+                "infrequent_boost": infrequent_boost,
                 "classifier_matches": classifier_matches,
                 "feed_id": feed_id,
             }
