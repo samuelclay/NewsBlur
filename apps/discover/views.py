@@ -285,37 +285,18 @@ def discover_stories(request, story_hash):
     return {"discover_stories": stories, "feeds": feeds}
 
 
-@json.json_view
-def trending_sites(request):
-    """
-    Returns trending feeds with their recent stories for the Trending Sites feature.
-    Uses subscription velocity from RTrendingSubscription to determine trending feeds.
-    Falls back to popular feeds by subscriber count when no trending data exists.
-    """
-    page = int(request.GET.get("page", 1))
-    days = int(request.GET.get("days", 7))
-    limit = 20
-    offset = (page - 1) * limit
-
-    # Validate days parameter
-    if days not in [1, 7, 30]:
-        days = 7
-
-    one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
-
-    # Get trending feed IDs from subscription velocity
-    # In DEBUG mode, use min_subscribers=1 to show results with limited data
+def _get_trending_popular(days, limit, offset, one_year_ago):
+    """Popular: high absolute subscription velocity (mass appeal feeds)."""
     min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
     trending_data = RTrendingSubscription.get_trending_feeds(
         days=days,
-        limit=limit + offset + 10,  # Get extra to account for filtering
+        limit=limit + offset + 10,
         min_subscribers=min_subs,
     )
-
-    # Slice for pagination
     trending_feed_ids = [int(feed_id) for feed_id, score in trending_data[offset : offset + limit]]
+    score_map = {int(fid): s for fid, s in trending_data}
 
-    # Fallback: if no trending data, return popular feeds by subscriber count
+    # Fallback to popular feeds by subscriber count
     use_fallback = False
     if not trending_feed_ids:
         use_fallback = True
@@ -323,12 +304,142 @@ def trending_sites(request):
             num_subscribers__gte=10,
             is_push=False,
             last_story_date__gte=one_year_ago,
-        ).order_by(
-            "-num_subscribers"
-        )[offset : offset + limit + 1]
+        ).order_by("-num_subscribers")[offset : offset + limit + 1]
         trending_feed_ids = [f.pk for f in popular_feeds[:limit]]
-        # Create fake trending_data for score lookup
-        trending_data = [(fid, 1) for fid in trending_feed_ids]
+        score_map = {fid: 1 for fid in trending_feed_ids}
+
+    has_more = len(trending_data) > offset + limit if not use_fallback else len(trending_feed_ids) > limit
+    return trending_feed_ids, score_map, has_more, use_fallback
+
+
+def _get_trending_rising(days, limit, offset, one_year_ago):
+    """Rising: high subscription growth rate relative to existing subscriber base."""
+    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    trending_data = RTrendingSubscription.get_trending_feeds(
+        days=days,
+        limit=500,
+        min_subscribers=min_subs,
+    )
+    if not trending_data:
+        return [], {}, False, False
+
+    feed_ids = [int(fid) for fid, _ in trending_data]
+    feeds = Feed.objects.filter(
+        pk__in=feed_ids,
+        num_subscribers__gte=5,
+        last_story_date__gte=one_year_ago,
+    ).values("pk", "num_subscribers")
+    sub_map = {f["pk"]: max(f["num_subscribers"], 1) for f in feeds}
+
+    # Normalize: growth_rate = weighted_score / num_subscribers
+    scored = []
+    for feed_id, score in trending_data:
+        feed_id = int(feed_id)
+        if feed_id in sub_map:
+            growth_rate = score / sub_map[feed_id]
+            scored.append((feed_id, growth_rate))
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+    page_slice = scored[offset : offset + limit]
+    trending_feed_ids = [fid for fid, _ in page_slice]
+    score_map = {fid: s for fid, s in page_slice}
+    has_more = len(scored) > offset + limit
+
+    return trending_feed_ids, score_map, has_more, False
+
+
+def _get_trending_hidden_gems(days, limit, offset, one_year_ago):
+    """Hidden Gems: high read engagement per subscriber, small-to-mid-size feeds."""
+    normalized = RTrendingStory.get_trending_feeds_normalized(
+        days=days,
+        limit=500,
+        min_subscribers=5,
+        max_subscribers=5000,
+    )
+    if not normalized:
+        return [], {}, False, False
+
+    # Filter out stale feeds
+    feed_ids = [r["feed_id"] for r in normalized]
+    fresh_ids = set(
+        Feed.objects.filter(
+            pk__in=feed_ids,
+            last_story_date__gte=one_year_ago,
+        ).values_list("pk", flat=True)
+    )
+    filtered = [r for r in normalized if r["feed_id"] in fresh_ids]
+
+    page_slice = filtered[offset : offset + limit]
+    trending_feed_ids = [r["feed_id"] for r in page_slice]
+    score_map = {r["feed_id"]: r["seconds_per_subscriber"] for r in page_slice}
+    has_more = len(filtered) > offset + limit
+
+    return trending_feed_ids, score_map, has_more, False
+
+
+def _get_trending_new_arrivals(days, limit, offset, one_year_ago):
+    """New Arrivals: recently created feeds that are gaining subscribers."""
+    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    trending_data = RTrendingSubscription.get_trending_feeds(
+        days=days,
+        limit=500,
+        min_subscribers=min_subs,
+    )
+    if not trending_data:
+        return [], {}, False, False
+
+    feed_ids = [int(fid) for fid, _ in trending_data]
+    # Filter to feeds created within the last year and not stale
+    recent_ids = set(
+        Feed.objects.filter(
+            pk__in=feed_ids,
+            creation__gte=one_year_ago.date(),
+            last_story_date__gte=one_year_ago,
+        ).values_list("pk", flat=True)
+    )
+
+    filtered = [(int(fid), s) for fid, s in trending_data if int(fid) in recent_ids]
+    page_slice = filtered[offset : offset + limit]
+    trending_feed_ids = [fid for fid, _ in page_slice]
+    score_map = {fid: s for fid, s in page_slice}
+    has_more = len(filtered) > offset + limit
+
+    return trending_feed_ids, score_map, has_more, False
+
+
+TRENDING_CATEGORIES = {
+    "popular": _get_trending_popular,
+    "rising": _get_trending_rising,
+    "hidden_gems": _get_trending_hidden_gems,
+    "new_arrivals": _get_trending_new_arrivals,
+}
+
+
+@json.json_view
+def trending_sites(request):
+    """
+    Returns trending feeds with their recent stories for the Trending Sites feature.
+    Supports four categories:
+    - popular: high absolute subscription velocity (default)
+    - rising: high growth rate relative to subscriber base
+    - hidden_gems: high read engagement per subscriber
+    - new_arrivals: recently created feeds gaining subscribers
+    """
+    page = int(request.GET.get("page", 1))
+    days = int(request.GET.get("days", 7))
+    category = request.GET.get("category", "popular")
+    limit = 20
+    offset = (page - 1) * limit
+
+    if days not in [1, 7, 30]:
+        days = 7
+    if category not in TRENDING_CATEGORIES:
+        category = "popular"
+
+    one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+
+    get_trending = TRENDING_CATEGORIES[category]
+    trending_feed_ids, score_map, has_more, use_fallback = get_trending(days, limit, offset, one_year_ago)
 
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
@@ -337,31 +448,21 @@ def trending_sites(request):
     feeds = Feed.objects.filter(pk__in=trending_feed_ids, last_story_date__gte=one_year_ago)
     feeds_dict = {feed.pk: feed for feed in feeds}
 
-    # Build ordered response preserving trending order
     trending_feeds = {}
     for feed_id in trending_feed_ids:
         if feed_id in feeds_dict:
             feed = feeds_dict[feed_id]
-            # Find score for this feed (use subscriber count for fallback)
-            if use_fallback:
-                score = feed.num_subscribers
-            else:
-                score = next((s for fid, s in trending_data if int(fid) == feed_id), 0)
+            score = feed.num_subscribers if use_fallback else score_map.get(feed_id, 0)
             trending_feeds[feed_id] = {
                 "feed": feed.canonical(include_favicon=False, full=True),
                 "stories": feed.get_stories(limit=5),
                 "trending_score": score,
             }
 
-    if use_fallback:
-        has_more = len(trending_feed_ids) > limit
-    else:
-        has_more = len(trending_data) > offset + limit
-
     logging.user(
         request,
-        "~FCTrending sites (page %s, %sd): ~SB%s feeds%s"
-        % (page, days, len(trending_feeds), " (fallback)" if use_fallback else ""),
+        "~FCTrending sites/%s (page %s, %sd): ~SB%s feeds%s"
+        % (category, page, days, len(trending_feeds), " (fallback)" if use_fallback else ""),
     )
     return {"trending_feeds": trending_feeds, "has_more": has_more}
 

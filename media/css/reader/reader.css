@@ -28774,6 +28774,37 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     background: #FFF;
 }
+.NB-add-site-trending-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 0 12px;
+}
+.NB-add-site-trending-pill {
+    padding: 5px 10px;
+    background: #FFF;
+    border: 1px solid #D0D0D0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.NB-add-site-trending-pill:hover {
+    border-color: #5C89C9;
+    background: #F0F5FF;
+    color: #5C89C9;
+}
+.NB-add-site-trending-pill.NB-active {
+    background: #5C89C9;
+    color: #FFF;
+    border-color: #5C89C9;
+}
+.NB-add-site-trending-pill.NB-active:hover {
+    background: #4A78B5;
+}
 
 /* Categories Tab */
 

@@ -4763,6 +4763,24 @@ a.mention, a.mention-group {
     border-color: #444;
     color: #DDD;
 }
+.NB-dark .NB-add-site-trending-pill {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #999;
+}
+.NB-dark .NB-add-site-trending-pill:hover {
+    border-color: #5C89C9;
+    background: #1E2A3A;
+    color: #7AA3D5;
+}
+.NB-dark .NB-add-site-trending-pill.NB-active {
+    background: #5C89C9;
+    color: #FFF;
+    border-color: #5C89C9;
+}
+.NB-dark .NB-add-site-trending-pill.NB-active:hover {
+    background: #4A78B5;
+}
 
 /* Newsletter Filter Labels Dark Mode */
 .NB-dark .NB-add-site-filter-label {
