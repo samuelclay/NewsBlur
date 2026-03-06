@@ -71,6 +71,7 @@ struct DiscoverPopularFeed: Identifiable {
     let numSubscribers: Int
     let averageStoriesPerMonth: Int
     let faviconUrl: String?
+    let faviconData: String?
     let stories: [DiscoverStory]
     let rawFeedDict: [String: Any]
 
@@ -82,6 +83,7 @@ struct DiscoverPopularFeed: Identifiable {
         self.numSubscribers = feedDict["num_subscribers"] as? Int ?? feedDict["subs"] as? Int ?? 0
         self.averageStoriesPerMonth = feedDict["average_stories_per_month"] as? Int ?? 0
         self.faviconUrl = feedDict["favicon_url"] as? String
+        self.faviconData = feedDict["favicon"] as? String
         self.rawFeedDict = feedDict
         self.stories = storiesArray.compactMap { DiscoverStory(dict: $0) }
     }

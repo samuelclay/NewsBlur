@@ -179,21 +179,15 @@ struct SearchTabView: View {
 
     @ViewBuilder
     private func faviconView(for result: AutocompleteResult) -> some View {
-        if let favicon = result.favicon, let url = URL(string: favicon) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                default:
-                    Image(systemName: "globe")
-                        .font(.system(size: 14))
-                        .foregroundColor(DiscoverColors.textSecondary)
-                        .frame(width: 24, height: 24)
-                }
-            }
+        if let favicon = result.favicon,
+           !favicon.isEmpty,
+           let data = Data(base64Encoded: favicon),
+           let uiImage = UIImage(data: data) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
         } else {
             Image(systemName: "globe")
                 .font(.system(size: 14))
