@@ -16,6 +16,7 @@ class DiscoverSitesViewModel: ObservableObject {
 
     @Published var activeTab: DiscoverTab = .search
     @Published var selectedFolder: String = ""
+    @Published var feedViewMode: DiscoverSitesFeedViewMode = .grid
 
     @Published var searchState = SearchTabState()
     @Published var webFeedState = WebFeedTabState()
@@ -252,6 +253,9 @@ class DiscoverSitesViewModel: ObservableObject {
             "offset": String(offset),
             "limit": "20"
         ]
+        if feedViewMode == .list {
+            params["include_stories"] = "true"
+        }
         if let category = category, !category.isEmpty {
             params["category"] = category
         }
@@ -307,6 +311,9 @@ class DiscoverSitesViewModel: ObservableObject {
                     state.hasMore = feeds.count >= 20
                     state.isLoading = false
                     state.isCategoriesLoaded = true
+                    if self.feedViewMode == .list {
+                        state.hasLoadedStories = true
+                    }
                 }
             } catch {
                 updateCategoryTabLoading(type: type, isLoading: false)

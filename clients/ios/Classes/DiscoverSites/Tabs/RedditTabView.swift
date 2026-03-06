@@ -23,7 +23,8 @@ struct RedditTabView: View {
                     isLoading: viewModel.redditState.isSearching,
                     onSubmit: {
                         viewModel.searchFeeds(type: "reddit", query: viewModel.redditState.searchQuery)
-                    }
+                    },
+                    viewMode: $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -52,6 +53,11 @@ struct RedditTabView: View {
                 viewModel.loadPopularFeeds(type: "reddit", category: nil, subcategory: nil, offset: 0)
             }
         }
+        .onChange(of: viewModel.feedViewMode) { newMode in
+            if newMode == .list && !viewModel.redditState.hasLoadedStories {
+                reloadFeeds()
+            }
+        }
     }
 
     @ViewBuilder
@@ -64,6 +70,7 @@ struct RedditTabView: View {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
+                    showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
                     onAddFeed: onAddFeed
                 )

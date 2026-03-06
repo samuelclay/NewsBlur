@@ -23,7 +23,8 @@ struct PodcastsTabView: View {
                     isLoading: viewModel.podcastsState.isSearching,
                     onSubmit: {
                         viewModel.searchFeeds(type: "podcast", query: viewModel.podcastsState.searchQuery)
-                    }
+                    },
+                    viewMode: $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -52,6 +53,11 @@ struct PodcastsTabView: View {
                 viewModel.loadPopularFeeds(type: "podcast", category: nil, subcategory: nil, offset: 0)
             }
         }
+        .onChange(of: viewModel.feedViewMode) { newMode in
+            if newMode == .list && !viewModel.podcastsState.hasLoadedStories {
+                reloadFeeds()
+            }
+        }
     }
 
     @ViewBuilder
@@ -64,6 +70,7 @@ struct PodcastsTabView: View {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
+                    showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
                     onAddFeed: onAddFeed
                 )
