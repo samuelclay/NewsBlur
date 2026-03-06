@@ -207,6 +207,11 @@
         <item name="android:textColor">@color/dark_story_content_text</item>
     </style>
 
+    <style name="ShapeAppearance.NewsBlur.Subscription.Image" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="storyFeedTitleText">
         <item name="android:textColor">@color/story_feed_title_text</item>
     </style>

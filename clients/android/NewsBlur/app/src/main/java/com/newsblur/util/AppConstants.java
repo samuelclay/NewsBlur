@@ -81,6 +81,7 @@ public class AppConstants {
     // Subscription SKU
     public final static String PREMIUM_SUB_ID = "nb.premium.36";
     public final static String PREMIUM_ARCHIVE_SUB_ID = "nb.premium.archive.99";
+    public final static String PREMIUM_PRO_SUB_ID = "nb.premium.pro.299";
 
     // Free standard account sites limit
     public final static int FREE_ACCOUNT_SITE_LIMIT = 64;
