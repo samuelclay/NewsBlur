@@ -113,6 +113,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
         currentState = prefsRepo.getStateFilter();
 		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper, prefsRepo);
+        adapter.setToggleAllFoldersClickListener(this::toggleAllFolders);
         feedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
@@ -154,8 +155,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         });
         allFoldersViewModel.getSavedStoryCounts().observe(getViewLifecycleOwner(), savedStoryCountsResult ->
                 adapter.setStarredCount(savedStoryCountsResult));
-        allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), savedSearches ->
-                adapter.setSavedSearches(savedSearches));
+        allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), savedSearches -> {
+            adapter.setSavedSearches(savedSearches);
+            checkOpenFolderPreferences();
+        });
     }
 
 	public void hasUpdated() {
@@ -261,6 +264,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			}
 		}
 	}
+
+    private void toggleAllFolders() {
+        boolean expandAll = adapter.areAllVisibleFoldersCollapsed();
+        for (String flatFolderName : adapter.getAllFolderFlatNames()) {
+            prefsRepo.putBoolean(AppConstants.FOLDER_PRE + "_" + flatFolderName, expandAll);
+        }
+        adapter.setAllFoldersClosed(!expandAll);
+        checkOpenFolderPreferences();
+    }
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -607,13 +619,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
-        if (adapter.isRowSavedSearches(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the expanded preference, since the widget likes to forget it
         prefsRepo.putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true);
 
-        if (adapter.isRowSavedStories(groupPosition)) return;
+        if (!adapter.isNormalFolder(groupPosition)) return;
 
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, false);
@@ -626,13 +637,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
-        if (adapter.isRowSavedSearches(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the collapsed preference, since the widget likes to forget it
         prefsRepo.putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, false);
 
-        if (adapter.isRowSavedStories(groupPosition)) return;
+        if (!adapter.isNormalFolder(groupPosition)) return;
 
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, true);

@@ -40,13 +40,13 @@ class BaselineProfileGenerator {
                 waitForTextShown("username")
             }
 
-            waitLongForTextShown("All Stories")
+            waitLongForTextShown("All Site Stories")
             // switch to All view
             clickOnText("All")
             // wait for stories to load
             waitLongForTextShown("Android Developers Blog")
             // click on folder
-            clickOnText("All Stories")
+            clickOnText("All Site Stories")
             // wait folder to load stories
             waitForTextShown("Electrek")
 
