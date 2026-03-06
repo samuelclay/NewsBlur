@@ -129,7 +129,16 @@ struct DiscoverFeedCardView: View {
 
     @ViewBuilder
     private var faviconView: some View {
-        if let faviconUrl = feed.faviconUrl, !faviconUrl.isEmpty, let url = URL(string: faviconUrl) {
+        if let faviconData = feed.faviconData,
+           !faviconData.isEmpty,
+           let data = Data(base64Encoded: faviconData),
+           let uiImage = UIImage(data: data) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+        } else if let faviconUrl = feed.faviconUrl, !faviconUrl.isEmpty, let url = URL(string: faviconUrl) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
