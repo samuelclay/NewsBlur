@@ -52,29 +52,32 @@ struct SearchTabView: View {
 
     @ViewBuilder
     private var trendingSection: some View {
-        if !viewModel.searchState.trendingFeeds.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 14))
-                        .foregroundColor(DiscoverColors.accent)
-                    Text("Trending")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(DiscoverColors.textPrimary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(DiscoverColors.accent)
+                Text("Trending")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(DiscoverColors.textPrimary)
 
-                ForEach(viewModel.searchState.trendingFeeds) { feed in
-                    DiscoverFeedCardView(
-                        feed: feed,
-                        showStories: true,
-                        onTryFeed: onTryFeed,
-                        onAddFeed: onAddFeed
-                    )
+                if viewModel.searchState.isTrendingLoading {
+                    ProgressView()
+                        .scaleEffect(0.7)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            ForEach(viewModel.searchState.trendingFeeds) { feed in
+                DiscoverFeedCardView(
+                    feed: feed,
+                    showStories: true,
+                    onTryFeed: onTryFeed,
+                    onAddFeed: onAddFeed
+                )
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Search Results

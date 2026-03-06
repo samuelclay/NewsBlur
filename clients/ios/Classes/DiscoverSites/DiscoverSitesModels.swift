@@ -174,6 +174,7 @@ struct SearchTabState {
     var results: [AutocompleteResult] = []
     var trendingFeeds: [DiscoverPopularFeed] = []
     var isSearching: Bool = false
+    var isTrendingLoading: Bool = false
     var isTrendingLoaded: Bool = false
 }
 
