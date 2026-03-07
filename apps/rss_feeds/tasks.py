@@ -244,6 +244,25 @@ def ScheduleCountTagsForUser(user_id):
 
 @app.task()
 def IndexDiscoverStories(story_ids):
-    from apps.rss_feeds.models import MStory
+    from apps.rss_feeds.models import Feed, MStory
+
+    # Check the feed is discover-indexed with active archive subscribers before doing work
+    if story_ids:
+        feed_id = story_ids[0].split(":")[0]
+        try:
+            feed = Feed.objects.get(pk=feed_id)
+            if not feed.discover_indexed:
+                logging.debug(
+                    f" ---> ~FBSkipping discover indexing for feed {feed_id} ({feed.feed_title[:30]}): not discover-indexed"
+                )
+                return
+            if not feed.archive_subscribers or feed.archive_subscribers <= 0:
+                logging.debug(
+                    f" ---> ~FBSkipping discover indexing for feed {feed_id} ({feed.feed_title[:30]}): no archive subscribers"
+                )
+                return
+        except Feed.DoesNotExist:
+            logging.debug(f" ---> ~FBSkipping discover indexing: feed {feed_id} not found")
+            return
 
     MStory.index_stories_for_discover(story_ids)
