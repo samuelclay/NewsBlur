@@ -24,7 +24,7 @@ def faq(request):
 def api(request):
     filename = settings.TEMPLATES[0]["DIRS"][0] + "/static/api.yml"
     api_yml_file = open(filename).read()
-    data = yaml.load(api_yml_file)
+    data = yaml.safe_load(api_yml_file)
 
     return render(request, "static/api.xhtml", {"data": data})
 

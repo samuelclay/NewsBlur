@@ -32,7 +32,7 @@ urlpatterns = [
     re_path(r"^user/.*?", reader_views.index),
     re_path(r"^null/.*?", reader_views.index),
     re_path(r"^story/.*?", reader_views.index),
-    re_path(r"^feed/?", social_views.shared_stories_rss_feed_noid),
+    re_path(r"^feed/?$", social_views.shared_stories_rss_feed_noid),
     re_path(r"^rss_feeds/", include("apps.rss_feeds.urls")),
     re_path(r"^discover/", include("apps.discover.urls")),
     re_path(r"^analyzer/", include("apps.analyzer.urls")),

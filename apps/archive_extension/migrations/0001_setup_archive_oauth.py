@@ -7,7 +7,7 @@ def setup_archive_oauth(apps, schema_editor):
     Create/update OAuth app for NewsBlur Archive browser extension.
     Runs automatically during 'make' or 'python manage.py migrate'.
     """
-    from oauth2_provider.models import Application
+    Application = apps.get_model("oauth2_provider", "Application")
 
     client_id = "newsblur-archive-extension"
     newsblur_url = getattr(settings, "NEWSBLUR_URL", "https://localhost")
@@ -40,8 +40,8 @@ def setup_archive_oauth(apps, schema_editor):
         client_id=client_id,
         defaults={
             "name": "NewsBlur Archive Extension",
-            "client_type": Application.CLIENT_PUBLIC,
-            "authorization_grant_type": Application.GRANT_AUTHORIZATION_CODE,
+            "client_type": "public",
+            "authorization_grant_type": "authorization-code",
             "redirect_uris": "\n".join(unique_uris),
             "skip_authorization": True,
         },
