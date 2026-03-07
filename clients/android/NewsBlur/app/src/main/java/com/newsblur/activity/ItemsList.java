@@ -109,6 +109,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private ValueAnimator storyStatusBannerAnimator;
     @Nullable
     private PopupWindow itemListMenuPopup;
+    @Nullable
+    private ItemListMenuPopup.Content itemListPopupContent;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
     private final Runnable showFetchingBannerRunnable = () -> {
@@ -238,6 +240,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistSearchPill.setVisibility(searchItem != null && searchItem.isVisible() ? View.VISIBLE : View.GONE);
         binding.itemlistMarkReadContainer.setVisibility(markReadItem != null && markReadItem.isVisible() ? View.VISIBLE : View.GONE);
         updateStorySearchPillLabel();
+        invalidateOptionsMenu();
 
         if (searchItem != null && !searchItem.isVisible() && isStorySearchVisible()) {
             hideStorySearch(true);
@@ -264,13 +267,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        MenuItem settingsItem = menu.findItem(R.id.menu_story_settings);
+        if (settingsItem != null) {
+            settingsItem.setVisible(ItemListMenuPopup.hasVisibleActions(buildItemListMenuModel()));
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_story_settings) {
-            showItemListMenuPopup(findViewById(R.id.toolbar));
+            showItemListSettingsPopup(findViewById(R.id.toolbar));
             return true;
         }
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
@@ -509,9 +516,26 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void showItemListMenuPopup(View anchor) {
-        if (itemListMenuPopup != null && itemListMenuPopup.isShowing()) {
-            itemListMenuPopup.dismiss();
+        showItemListPopup(anchor, ItemListMenuPopup.Content.VISUAL);
+    }
+
+    private void showItemListSettingsPopup(View anchor) {
+        showItemListPopup(anchor, ItemListMenuPopup.Content.ACTIONS);
+    }
+
+    private void showItemListPopup(View anchor, ItemListMenuPopup.Content content) {
+        Menu menuModel = buildItemListMenuModel();
+        if ((content == ItemListMenuPopup.Content.ACTIONS) && !ItemListMenuPopup.hasVisibleActions(menuModel)) {
+            dismissItemListMenuPopup();
             return;
+        }
+
+        if (itemListMenuPopup != null && itemListMenuPopup.isShowing()) {
+            if (content == itemListPopupContent) {
+                dismissItemListMenuPopup();
+                return;
+            }
+            dismissItemListMenuPopup();
         }
 
         PopupWindow popup =
@@ -526,13 +550,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                         MenuItem menuItem = buildItemListMenuModel().findItem(itemId);
                         return menuItem != null && ItemsList.this.onOptionsItemSelected(menuItem);
                     }
-                }).show(anchor);
+                }, content).show(anchor);
         popup.setOnDismissListener(() -> {
             if (itemListMenuPopup == popup) {
                 itemListMenuPopup = null;
+                itemListPopupContent = null;
             }
         });
         itemListMenuPopup = popup;
+        itemListPopupContent = content;
     }
 
     private void dismissItemListMenuPopup() {
@@ -540,6 +566,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             itemListMenuPopup.dismiss();
             itemListMenuPopup = null;
         }
+        itemListPopupContent = null;
     }
 
     private Menu buildItemListMenuModel() {

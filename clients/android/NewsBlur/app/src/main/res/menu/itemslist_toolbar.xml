@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_story_settings"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/ic_settings"
         android:title="@string/settings"
         app:showAsAction="ifRoom" />
 
