@@ -657,6 +657,9 @@ class StoryViewAdapter(
         vh: StoryTileViewHolder,
         story: Story,
     ) {
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -676,6 +679,11 @@ class StoryViewAdapter(
         story: Story,
     ) {
         val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
+        val showRightThumbnail = thumbnailStyle.isRight() && !TextUtils.isEmpty(story.thumbnailUrl)
+
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
@@ -705,7 +713,18 @@ class StoryViewAdapter(
         vh.storyAuthor.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
         vh.storySnippet.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
 
-        val contentRightPadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        val contentRightPadding =
+            spacingStyle.getStoryContentRightPadding(
+                context,
+                if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
+            )
+        val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
+        vh.storyTitleView.setPadding(
+            vh.storyTitleView.paddingLeft,
+            titleVerticalPadding,
+            contentRightPadding,
+            titleVerticalPadding,
+        )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
         vh.storySnippet.setPadding(
             vh.storySnippet.paddingLeft,
@@ -733,10 +752,13 @@ class StoryViewAdapter(
             } else if (thumbnailStyle.isRight()) {
                 val thumbSizeGuess = vh.thumbViewRight.measuredHeight
                 vh.thumbViewRight.setImageBitmap(null)
-                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
                 vh.thumbViewLeft.visibility = View.GONE
-                val hideThumbnail = TextUtils.isEmpty(story.thumbnailUrl) && storyContentPreviewStyle == StoryContentPreviewStyle.NONE
-                vh.thumbViewRight.visibility = if (hideThumbnail) View.GONE else View.VISIBLE
+                if (showRightThumbnail) {
+                    vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
+                    vh.thumbViewRight.visibility = View.VISIBLE
+                } else {
+                    vh.thumbViewRight.visibility = View.GONE
+                }
             }
             vh.lastThumbUrl = story.thumbnailUrl
         } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
@@ -752,26 +774,25 @@ class StoryViewAdapter(
         val sizeDp = context.resources.getDimensionPixelSize(sizeRes)
 
         var params: RelativeLayout.LayoutParams? = null
+        var thumbView: StoryThumbnailView? = null
         if (thumbnailStyle.isLeft() && vh.thumbViewLeft != null) {
             vh.thumbViewLeft.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewLeft
             params = vh.thumbViewLeft.layoutParams as RelativeLayout.LayoutParams
         } else if (thumbnailStyle.isRight() && vh.thumbViewRight != null) {
             vh.thumbViewRight.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewRight
             params = vh.thumbViewRight.layoutParams as RelativeLayout.LayoutParams
-        }
-        if (params != null && params.width != sizeDp) {
-            params.width = sizeDp
         }
         if (params != null && thumbnailStyle.isSmall()) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
             val leftMargin = if (thumbnailStyle.isLeft()) UIUtils.dp2px(context, 8) else 0
             val rightMargin = if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 8) else 0
-            params.setMargins(leftMargin, verticalMargin, rightMargin, verticalMargin)
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.id)
+            thumbView?.setExpandedLayout(sizeDp, sizeDp, leftMargin, verticalMargin, rightMargin, verticalMargin)
         } else if (params != null) {
-            params.setMargins(0, 0, 0, 0)
             params.removeRule(RelativeLayout.ALIGN_BOTTOM)
-            params.height = sizeDp
+            thumbView?.setExpandedLayout(sizeDp, sizeDp, 0, 0, 0, 0)
         }
 
         if (this.ignoreReadStatus || !story.read) {

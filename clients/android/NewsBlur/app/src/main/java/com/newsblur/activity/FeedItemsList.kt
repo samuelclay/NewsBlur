@@ -132,6 +132,8 @@ class FeedItemsList : ItemsList() {
 
     override fun prepareItemListMenuModel(menu: Menu): Boolean {
         super.prepareItemListMenuModel(menu)
+        if (!::feed.isInitialized) return true
+
         when {
             feed.isAndroidNotifyUnread() -> {
                 menu.findItem(R.id.menu_notifications_disable).isChecked = false
@@ -154,7 +156,7 @@ class FeedItemsList : ItemsList() {
         return true
     }
 
-    override fun getSaveSearchFeedId(): String = "feed:${feed.feedId}"
+    override fun getSaveSearchFeedId(): String = if (::feed.isInitialized) "feed:${feed.feedId}" else ""
 
     private fun setupFeedItems(session: Session) {
         val feed = session.feed
