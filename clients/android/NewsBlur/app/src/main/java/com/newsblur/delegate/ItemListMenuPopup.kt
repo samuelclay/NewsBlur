@@ -27,11 +27,34 @@ import kotlin.math.min
 class ItemListMenuPopup(
     private val activity: ItemsList,
     private val controller: Controller,
+    private val content: Content = Content.VISUAL,
 ) {
+    enum class Content {
+        VISUAL,
+        ACTIONS,
+    }
+
     interface Controller {
         fun buildMenuModel(): Menu
 
         fun onMenuItemSelected(itemId: Int): Boolean
+    }
+
+    companion object {
+        private val actionItemIds =
+            intArrayOf(
+                R.id.menu_save_search,
+                R.id.menu_intel,
+                R.id.menu_notifications,
+                R.id.menu_statistics,
+                R.id.menu_rename_feed,
+                R.id.menu_instafetch_feed,
+                R.id.menu_delete_feed,
+                R.id.menu_infrequent_cutoff,
+            )
+
+        @JvmStatic
+        fun hasVisibleActions(menu: Menu): Boolean = actionItemIds.any { menu.findItem(it)?.isVisible == true }
     }
 
     fun show(anchor: View): PopupWindow {
@@ -105,8 +128,21 @@ class ItemListMenuPopup(
         textColor: Int,
         accessoryColor: Int,
     ) {
-        configureActionRows(binding, menu, popupWindow, dividerColor, textColor, accessoryColor)
-        configureSections(binding, menu, popupWindow)
+        binding.dividerActions.visibility = View.GONE
+
+        when (content) {
+            Content.VISUAL -> {
+                binding.containerActions.visibility = View.GONE
+                hideSections(binding, isVisible = true)
+                configureSections(binding, menu, popupWindow)
+            }
+
+            Content.ACTIONS -> {
+                binding.containerActions.visibility = View.VISIBLE
+                hideSections(binding, isVisible = false)
+                configureActionRows(binding, menu, popupWindow, dividerColor, textColor, accessoryColor)
+            }
+        }
     }
 
     private fun configureActionRows(
@@ -118,31 +154,7 @@ class ItemListMenuPopup(
         accessoryColor: Int,
     ) {
         binding.containerActions.removeAllViews()
-        val rows =
-            buildList {
-                maybeAddActionRow(menu, R.id.menu_save_search, R.drawable.ic_search)?.let(::add)
-                maybeAddActionRow(menu, R.id.menu_intel, R.drawable.ic_feed_train)?.let(::add)
-                menu.findItem(R.id.menu_notifications)?.takeIf { it.isVisible }?.let {
-                    add(
-                        ActionRow(
-                            title = it.title.toString(),
-                            iconRes = R.drawable.nb_menu_notifications,
-                            showAccessory = true,
-                            onClick = {
-                                popupWindow.dismiss()
-                                showNotificationsDialog(menu)
-                            },
-                        ),
-                    )
-                }
-                maybeAddActionRow(menu, R.id.menu_statistics, R.drawable.ic_burst)?.let(::add)
-                maybeAddActionRow(menu, R.id.menu_rename_feed, R.drawable.ic_file_edit)?.let(::add)
-                maybeAddActionRow(menu, R.id.menu_instafetch_feed, R.drawable.ic_cloud_download)?.let(::add)
-                maybeAddActionRow(menu, R.id.menu_delete_feed, R.drawable.ic_clear)?.let(::add)
-                maybeAddActionRow(menu, R.id.menu_infrequent_cutoff, R.drawable.ic_calendar)?.let(::add)
-            }
-
-        binding.dividerActions.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
+        val rows = buildActionRows(menu, popupWindow)
         if (rows.isEmpty()) return
 
         rows.forEachIndexed { index, row ->
@@ -179,6 +191,33 @@ class ItemListMenuPopup(
             },
         )
     }
+
+    private fun buildActionRows(
+        menu: Menu,
+        popupWindow: PopupWindow,
+    ): List<ActionRow> =
+        buildList {
+            maybeAddActionRow(menu, R.id.menu_intel, R.drawable.ic_feed_train)?.let(::add)
+            menu.findItem(R.id.menu_notifications)?.takeIf { it.isVisible }?.let {
+                add(
+                    ActionRow(
+                        title = it.title.toString(),
+                        iconRes = R.drawable.nb_menu_notifications,
+                        showAccessory = true,
+                        onClick = {
+                            popupWindow.dismiss()
+                            showNotificationsDialog(menu)
+                        },
+                    ),
+                )
+            }
+            maybeAddActionRow(menu, R.id.menu_statistics, R.drawable.ic_burst)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_rename_feed, R.drawable.ic_file_edit)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_instafetch_feed, R.drawable.ic_cloud_download)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_delete_feed, R.drawable.ic_clear)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_infrequent_cutoff, R.drawable.ic_calendar)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_save_search, R.drawable.ic_search)?.let(::add)
+        }
 
     private fun configureSections(
         binding: PopupItemlistMenuBinding,
@@ -559,6 +598,24 @@ class ItemListMenuPopup(
         menu: Menu,
         itemId: Int,
     ): Int = if (menu.findItem(itemId)?.isVisible == true) View.VISIBLE else View.GONE
+
+    private fun hideSections(
+        binding: PopupItemlistMenuBinding,
+        isVisible: Boolean,
+    ) {
+        val visibility = if (isVisible) View.VISIBLE else View.GONE
+        listOf(
+            binding.sectionOrder,
+            binding.sectionReadFilter,
+            binding.sectionMarkReadOnScroll,
+            binding.sectionContentPreview,
+            binding.sectionThumbnailPreview,
+            binding.sectionListStyle,
+            binding.sectionTextSize,
+            binding.sectionSpacing,
+            binding.sectionTheme,
+        ).forEach { it.visibility = visibility }
+    }
 
     private fun popupPalette(): ItemListPopupPalette =
         when (resolvedTheme()) {
