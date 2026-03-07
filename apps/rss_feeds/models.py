@@ -1839,8 +1839,6 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
-                if existing_story.story_hash:
-                    discover_story_ids.append(existing_story.story_hash)
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -1849,17 +1847,22 @@ class Feed(models.Model):
                         % (story.get("story_hash"), story.get("guid"), story.get("title"))
                     )
 
-        # If there are no premium archive subscribers, don't index stories for discover.
+        # Only index new stories for discover on feeds that have already been bulk-indexed
+        # (i.e., a user has used the Discover feature, triggering index_stories_for_discover).
         if discover_story_ids:
-            if self.archive_subscribers and self.archive_subscribers > 0:
+            if self.discover_indexed and self.archive_subscribers and self.archive_subscribers > 0:
                 IndexDiscoverStories.apply_async(
                     kwargs=dict(story_ids=discover_story_ids),
                     queue="discover_indexer",
                     time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                 )
-            else:
+            elif not self.discover_indexed:
                 logging.debug(
-                    f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
+                    f" ---> ~FBSkipping discover queue for {self}: not discover-indexed"
+                )
+            elif not self.archive_subscribers or self.archive_subscribers <= 0:
+                logging.debug(
+                    f" ---> ~FBSkipping discover queue for {self}: no archive subscribers"
                 )
 
         # Schedule story clustering for feeds with archive subscribers
