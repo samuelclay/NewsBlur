@@ -2372,6 +2372,9 @@ color: #fff;
 
 .NB-dark ul.tagit {
     border-color: #303739;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 /* Tag button and "Add 1 story tag" button */
@@ -2382,12 +2385,17 @@ color: #fff;
     border-color: rgba(255, 255, 255, .1) transparent rgba(0, 0, 0, .1);
 }
 
+.NB-dark ul.tagit li.tagit-new {
+    flex: 1;
+    min-width: 50px;
+}
+
 /* Tag window when saving story. Input box */
 .NB-dark ul.tagit input[type="text"] {
     color: #c0c0c0;
-    background: none;
-    background-color: #505050;
-    border: solid 1px #505050;
+    background: transparent;
+    border: none;
+    width: 100%;
 }
 
 /* Tag window when saving story. Input box suggestions (1 of 3) */
@@ -2395,24 +2403,41 @@ color: #fff;
     width: auto;
     border: 1px solid #90928b;
     border-radius: 4px;
+    background-color: #303739;
+    color: #c0c0c0;
+    overflow-x: hidden;
 }
 
 /* Tag window when saving story. Input box suggestions (2 of 3) */
 .NB-dark .NB-tagging-autocomplete.ui-widget-content a {
     border-radius: 0px;
-    /* 	border: 1px solid #90928b; */
     background-color: #303739;
     background: #303739;
     color: #c0c0c0;
 }
 
+/* Tag window when saving story. Input box suggestions - focused item */
+.NB-dark .NB-tagging-autocomplete.ui-widget-content a.ui-state-focus,
+.NB-dark .NB-tagging-autocomplete.ui-widget-content a.ui-state-active {
+    background-color: #252D30;
+    background: #252D30;
+    color: #e0e0e0;
+    border-color: #505050;
+}
+
 /* Tag window when saving story. Input box suggestions (3 of 3) */
 .NB-dark .NB-tagging-autocomplete.ui-widget-content a:hover {
     border-radius: 0px;
-    /* 	border: 1px solid #90928b; */
-    background-color: #303739;
+    background-color: #252D30;
     background: #252D30;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-sideoption-save .NB-sideoption-save-notes {
     color: #c0c0c0;
+    background: none;
+    background-color: #303739;
+    border: solid 1px #303739;
 }
 
 .NB-dark .NB-sideoption-share-comments {
