@@ -11477,6 +11477,29 @@ form.opml_import_form input {
     font-weight: 600;
 }
 
+.NB-markread-submit-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+}
+
+.NB-markread-shortcut-hint {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+.NB-markread-submit-wrapper .NB-markread-submit {
+    padding-right: 42px;
+}
+
 /* =================== */
 /* = Classifier Tags = */
 /* =================== */
