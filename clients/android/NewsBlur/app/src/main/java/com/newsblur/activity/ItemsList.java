@@ -174,6 +174,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
         EdgeToEdgeUtil.applyView(this, binding);
+        View toolbarSettingsButton = findViewById(R.id.toolbar_settings_button);
+        if (toolbarSettingsButton != null) {
+            toolbarSettingsButton.setOnClickListener(this::showItemListSettingsPopup);
+        }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
@@ -281,17 +285,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.itemslist_toolbar, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        MenuItem settingsItem = menu.findItem(R.id.menu_story_settings);
-        if (settingsItem != null) {
-            settingsItem.setVisible(ItemListMenuPopup.hasVisibleActions(buildItemListMenuModel()));
-        }
+        updateToolbarSettingsButtonVisibility();
         return true;
     }
 
@@ -573,6 +573,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void showItemListSettingsPopup(View anchor) {
         showItemListPopup(anchor, ItemListMenuPopup.Content.ACTIONS);
+    }
+
+    private void updateToolbarSettingsButtonVisibility() {
+        View settingsButton = findViewById(R.id.toolbar_settings_button);
+        if (settingsButton == null) {
+            return;
+        }
+        boolean hasVisibleActions = ItemListMenuPopup.hasVisibleActions(buildItemListMenuModel());
+        settingsButton.setVisibility(hasVisibleActions ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void showItemListPopup(View anchor, ItemListMenuPopup.Content content) {
