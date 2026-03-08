@@ -8,6 +8,7 @@
     <attr name="selectorFeedBackground" format="string" />
     <attr name="feedRowNeutCountText" format="string" />
     <attr name="actionbarBackground" format="string" />
+    <attr name="feedListToolbarBackground" format="string" />
     <attr name="listBackground" format="string" />
     <attr name="layoutBackground" format="string" />
     <attr name="layoutRoundedBackground" format="string" />

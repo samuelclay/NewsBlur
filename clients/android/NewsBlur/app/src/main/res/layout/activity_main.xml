@@ -8,9 +8,9 @@
     <!-- Toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
+        style="?feedListToolbarBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?colorPrimary"
         android:focusable="false"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +141,7 @@
     <!-- Bottom Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_toolbar"
-        style="?actionbarBackground"
+        style="?feedListToolbarBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:focusable="false"
