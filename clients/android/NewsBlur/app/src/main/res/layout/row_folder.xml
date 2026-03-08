@@ -73,7 +73,6 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@+id/row_foldersums"
-        android:textStyle="bold"
         android:shadowDy="1"
         android:shadowRadius="1"
         android:maxLines="1"

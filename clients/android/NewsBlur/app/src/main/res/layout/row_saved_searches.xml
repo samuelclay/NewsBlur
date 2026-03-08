@@ -23,7 +23,6 @@
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@id/row_folder_indicator"
         android:text="@string/saved_searches_title"
-        android:textStyle="bold"
         android:letterSpacing="@dimen/extra_letter_spacing" />
 
     <ImageView

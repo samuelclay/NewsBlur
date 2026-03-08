@@ -162,14 +162,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/main_menu_button"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/ic_more_vertical"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="4dp"
+            android:background="?attr/actionBarItemBackground"
             android:contentDescription="@string/description_menu"
             android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_settings"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
