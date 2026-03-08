@@ -25,8 +25,9 @@ class ReadingTraverseBar(
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
     private val nextChevronSizeDp = 16
-    private val textButtonStartPaddingDp = 28
-    private val textButtonEndPaddingDp = 2
+    private val textButtonStartPaddingDp = 24
+    private val textButtonEndPaddingDp = 8
+    private val textButtonDrawablePaddingDp = 4
     private val nextButtonStartPaddingDp = 6
     private val nextButtonEndPaddingDp = 10
 
@@ -150,7 +151,7 @@ class ReadingTraverseBar(
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             gravity = Gravity.CENTER
-            compoundDrawablePadding = UIUtils.dp2px(context, 6)
+            compoundDrawablePadding = UIUtils.dp2px(context, textButtonDrawablePaddingDp)
             setPaddingRelative(
                 UIUtils.dp2px(context, textButtonStartPaddingDp),
                 0,
