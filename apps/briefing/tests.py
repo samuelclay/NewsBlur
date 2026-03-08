@@ -87,6 +87,7 @@ class BriefingTestCase(TestCase):
             feed_title="Test Feed 1",
             fetched_once=True,
             known_good=True,
+            average_stories_per_month=100,
         )
         self.feed2 = Feed.objects.create(
             feed_address="http://test-feed-2.com/rss",
@@ -94,6 +95,7 @@ class BriefingTestCase(TestCase):
             feed_title="Test Feed 2",
             fetched_once=True,
             known_good=True,
+            average_stories_per_month=100,
         )
         self.sub = UserSubscription.objects.create(user=self.user, feed=self.feed, active=True)
         self.sub2 = UserSubscription.objects.create(user=self.user, feed=self.feed2, active=True)
@@ -1243,8 +1245,8 @@ class Test_Models(BriefingTestCase):
     # --- Constants ---
 
     def test_valid_section_keys_count(self):
-        # 5 built-in sections + 5 custom sections = 10
-        self.assertEqual(len(VALID_SECTION_KEYS), 10)
+        # 6 built-in sections + 5 custom sections = 11
+        self.assertEqual(len(VALID_SECTION_KEYS), 11)
 
     def test_default_sections_values(self):
         self.assertTrue(DEFAULT_SECTIONS["top_stories"])

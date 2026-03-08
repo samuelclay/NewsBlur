@@ -325,12 +325,14 @@ def select_briefing_stories(
         story = stories_by_hash.get(s["story_hash"])
         word_count = _estimate_word_count(story) if story else 0
 
-        # Categorize by priority: widely_covered > follow_up > classifier_match > long_read > top_stories
+        # Categorize by priority: widely_covered > infrequent > follow_up > classifier_match > long_read > top_stories
         category = "top_stories"
 
         cluster_category = clustered.get(s["story_hash"])
         if cluster_category:
             category = cluster_category
+        elif feed_frequency_map.get(s["feed_id"], 999) <= 30:
+            category = "infrequent"
         elif not s["is_read"] and s["feed_id"] in read_feeds_with_dates:
             read_dates = read_feeds_with_dates[s["feed_id"]]
             if story and story.story_date and any(story.story_date > rd for rd in read_dates if rd):

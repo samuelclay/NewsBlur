@@ -1,5 +1,6 @@
 NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
     {key: "top_stories", name: "Top stories", subtitle: "The most important stories from your feeds"},
+    {key: "infrequent", name: "From infrequent sites", subtitle: "Stories from feeds that rarely publish"},
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},

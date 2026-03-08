@@ -112,6 +112,12 @@ BRIEFING_SECTION_DEFINITIONS = [
         "default": True,
     },
     {
+        "key": "infrequent",
+        "name": "From infrequent sites",
+        "subtitle": "Stories from feeds that rarely publish",
+        "default": True,
+    },
+    {
         "key": "long_read",
         "name": "Long reads for later",
         "subtitle": "Longer articles worth setting time aside for",
