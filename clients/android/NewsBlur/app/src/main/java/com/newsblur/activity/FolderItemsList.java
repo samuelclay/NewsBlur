@@ -2,11 +2,13 @@ package com.newsblur.activity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.CustomIcon;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.fragment.DeleteFolderDialogFragment;
 import com.newsblur.fragment.RenameDialogFragment;
@@ -32,6 +34,13 @@ public class FolderItemsList extends ItemsList {
 	String getSaveSearchFeedId() {
 		return "river:" + folderName;
 	}
+
+    @Override
+    protected boolean prepareItemListMenuModel(Menu menu) {
+        super.prepareItemListMenuModel(menu);
+        updateFolderMuteActions(menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -83,6 +92,31 @@ public class FolderItemsList extends ItemsList {
     private String getFolderParentName() {
         Folder folder = dbHelper.getFolder(folderName);
         return folder != null ? folder.getFirstParentName() : null;
+    }
+
+    private void updateFolderMuteActions(Menu menu) {
+        MenuItem muteItem = menu.findItem(R.id.menu_mute_folder);
+        MenuItem unmuteItem = menu.findItem(R.id.menu_unmute_folder);
+        if (muteItem == null || unmuteItem == null) return;
+
+        Set<String> feedIds = fs.getAllFeeds();
+        if (feedIds == null || feedIds.isEmpty()) {
+            muteItem.setVisible(false);
+            unmuteItem.setVisible(false);
+            return;
+        }
+
+        boolean hasActiveFeed = false;
+        for (String feedId : feedIds) {
+            Feed feed = dbHelper.getFeed(feedId);
+            if (feed != null && feed.active) {
+                hasActiveFeed = true;
+                break;
+            }
+        }
+
+        muteItem.setVisible(hasActiveFeed);
+        unmuteItem.setVisible(!hasActiveFeed);
     }
 
 	private void setupFolder(String folderName) {

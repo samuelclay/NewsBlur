@@ -28,9 +28,10 @@ import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.AppConstants
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.GestureAction
@@ -441,16 +442,23 @@ class StoryViewAdapter(
             } else if (item.itemId == R.id.menu_intel) {
                 if (story!!.feedId == "0") return true // cannot train on feedless stories
 
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
                 intelFrag.show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
-                val fs = FeedSet.singleFeed(story!!.feedId)
+                val targetFeedSet = FeedSet.singleFeed(story!!.feedId)
+                val folderName = targetFeedFolderName()
+                feedUtils.currentFolderName =
+                    if (folderName == AppConstants.ROOT_FOLDER) {
+                        null
+                    } else {
+                        folderName
+                    }
                 FeedItemsList.startActivity(
                     context,
-                    fs,
+                    targetFeedSet,
                     feedUtils.getFeed(story!!.feedId),
-                    null,
+                    folderName,
                     null,
                 )
                 return true
@@ -458,6 +466,13 @@ class StoryViewAdapter(
                 return false
             }
         }
+
+        private fun targetFeedFolderName(): String =
+            when {
+                fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+                !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+                else -> AppConstants.ROOT_FOLDER
+            }
 
         override fun onTouch(
             v: View,
@@ -488,28 +503,12 @@ class StoryViewAdapter(
                 gestureR2L = false
             }
             when (action) {
-                GestureAction.GEST_ACTION_MARKREAD -> {
-                    feedUtils.markStoryAsRead(story!!, context)
-                }
-
-                GestureAction.GEST_ACTION_MARKUNREAD -> {
-                    feedUtils.markStoryUnread(story!!, context)
-                }
-
-                GestureAction.GEST_ACTION_SAVE -> {
-                    feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
-                }
-
-                GestureAction.GEST_ACTION_UNSAVE -> {
-                    feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
-                }
-
-                GestureAction.GEST_ACTION_STATISTICS -> {
-                    feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
-                }
-
+                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
+                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
+                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
-
                 else -> {}
             }
         }
