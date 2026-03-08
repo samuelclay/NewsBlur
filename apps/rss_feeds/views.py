@@ -28,12 +28,12 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
 
 from apps.analyzer.models import get_classifiers_for_user
+from apps.discover.views import TRENDING_CATEGORIES
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
 from apps.search.models import MUserSearch
 from apps.statistics.rdiscover_usage import RDiscoverUsage
-from apps.discover.views import TRENDING_CATEGORIES
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json

@@ -70,7 +70,9 @@ def select_briefing_stories(
 
     feed_ids = [sub.feed_id for sub in user_subs]
     feed_opens_map = {sub.feed_id: sub.feed_opens or 0 for sub in user_subs}
-    feed_frequency_map = {sub.feed_id: sub.feed.average_stories_per_month or 0 for sub in user_subs if sub.feed}
+    feed_frequency_map = {
+        sub.feed_id: sub.feed.average_stories_per_month or 0 for sub in user_subs if sub.feed
+    }
 
     if read_filter == "focus":
         positive_feed_ids = set(

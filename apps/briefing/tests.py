@@ -1785,7 +1785,9 @@ class Test_Tasks(BriefingTestCase):
     @patch("apps.briefing.models.MBriefing")
     @patch("apps.briefing.tasks.GenerateUserBriefing")
     @patch("redis.Redis")
-    def test_generate_all_dispatches_for_eligible(self, mock_redis_cls, mock_user_task, mock_mbriefing, mock_dt):
+    def test_generate_all_dispatches_for_eligible(
+        self, mock_redis_cls, mock_user_task, mock_mbriefing, mock_dt
+    ):
         import datetime as real_dt
 
         import pytz

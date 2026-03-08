@@ -42,22 +42,22 @@ class WebFeedUsage(View):
         # Variant choices
         for variant_idx in range(5):
             count = stats["variant_choices"].get(str(variant_idx), 0)
-            formatted_data[f"variant_{variant_idx}"] = (
-                f'{chart_name}{{metric="variant_choice",variant="{variant_idx}"}} {count}'
-            )
+            formatted_data[
+                f"variant_{variant_idx}"
+            ] = f'{chart_name}{{metric="variant_choice",variant="{variant_idx}"}} {count}'
 
         # Daily totals for 7-day chart
         daily_totals = RTrendingWebFeed.get_daily_totals(days=7)
         for date_str, analyses, subscriptions, unique_users in daily_totals:
-            formatted_data[f"daily_analyses_{date_str}"] = (
-                f'{chart_name}{{metric="daily_analyses",date="{date_str}"}} {analyses}'
-            )
-            formatted_data[f"daily_subs_{date_str}"] = (
-                f'{chart_name}{{metric="daily_subscriptions",date="{date_str}"}} {subscriptions}'
-            )
-            formatted_data[f"daily_users_{date_str}"] = (
-                f'{chart_name}{{metric="daily_unique_users",date="{date_str}"}} {unique_users}'
-            )
+            formatted_data[
+                f"daily_analyses_{date_str}"
+            ] = f'{chart_name}{{metric="daily_analyses",date="{date_str}"}} {analyses}'
+            formatted_data[
+                f"daily_subs_{date_str}"
+            ] = f'{chart_name}{{metric="daily_subscriptions",date="{date_str}"}} {subscriptions}'
+            formatted_data[
+                f"daily_users_{date_str}"
+            ] = f'{chart_name}{{metric="daily_unique_users",date="{date_str}"}} {unique_users}'
 
         # MongoDB counts for total active web feeds
         try:
@@ -67,12 +67,12 @@ class WebFeedUsage(View):
             total_active = 0
             needs_reanalysis = 0
 
-        formatted_data["total_active_webfeeds"] = (
-            f'{chart_name}{{metric="total_active_webfeeds"}} {total_active}'
-        )
-        formatted_data["webfeeds_needing_reanalysis"] = (
-            f'{chart_name}{{metric="webfeeds_needing_reanalysis"}} {needs_reanalysis}'
-        )
+        formatted_data[
+            "total_active_webfeeds"
+        ] = f'{chart_name}{{metric="total_active_webfeeds"}} {total_active}'
+        formatted_data[
+            "webfeeds_needing_reanalysis"
+        ] = f'{chart_name}{{metric="webfeeds_needing_reanalysis"}} {needs_reanalysis}'
 
         elapsed_ms = (time.time() - start_time) * 1000
         formatted_data["scrape_duration"] = f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
