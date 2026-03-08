@@ -109,8 +109,7 @@
             android:layout_marginRight="5dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textSize="14sp" />
 
     </FrameLayout>
 
