@@ -6743,6 +6743,7 @@ body {
 .NB-tagging-autocomplete.ui-autocomplete {
     font-size: 11px;
     width: 150px !important;
+    overflow-x: hidden;
 }
 
 /* ====================== */
