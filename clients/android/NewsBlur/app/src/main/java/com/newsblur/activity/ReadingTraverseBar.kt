@@ -31,7 +31,7 @@ class ReadingTraverseBar(
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
     private val nextChevronSizeDp = 16
-    private val textButtonStartPaddingDp = 6
+    private val textButtonStartPaddingDp = 8
     private val textButtonEndPaddingDp = 8
     private val textButtonDrawablePaddingDp = 6
     private val textButtonMarginStartDp = 8
@@ -222,13 +222,12 @@ class ReadingTraverseBar(
 
     private fun activeTextButtonBackground(): Drawable {
         val separatorGap = UIUtils.dp2px(context, 4)
-        val leadingHighlightInset = UIUtils.dp2px(context, -4)
         return InsetDrawable(
             buttonBackground(
                 cornerRadiusDp = 8f,
                 color = palette.activeTextBackgroundColor,
             ),
-            leadingHighlightInset,
+            0,
             0,
             separatorGap,
             0,
