@@ -106,19 +106,19 @@
     </style>
 
     <style name="selectorTopLevelBackground" parent="selectorFolderParent">
-        <item name="android:background">@drawable/selector_top_level_background</item>
+        <item name="android:background">@drawable/selector_folder_background</item>
     </style>
 
     <style name="selectorTopLevelBackground.sepia" parent="selectorFolderParent">
-        <item name="android:background">@drawable/sepia_selector_top_level_background</item>
+        <item name="android:background">@drawable/sepia_selector_folder_background</item>
     </style>
 
     <style name="selectorTopLevelBackground.dark" parent="selectorFolderParent">
-        <item name="android:background">@drawable/dark_selector_top_level_background</item>
+        <item name="android:background">@drawable/dark_selector_folder_background</item>
     </style>
 
     <style name="selectorTopLevelBackground.black" parent="selectorFolderParent">
-        <item name="android:background">@drawable/black_selector_top_level_background</item>
+        <item name="android:background">@drawable/black_selector_folder_background</item>
     </style>
 
     <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
@@ -183,6 +183,22 @@
 
     <style name="actionbarBackground.black">
         <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="feedListToolbarBackground">
+        <item name="android:background">@drawable/folder_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.sepia">
+        <item name="android:background">@drawable/sepia_folder_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.dark">
+        <item name="android:background">@drawable/dark_folder_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.black">
+        <item name="android:background">@drawable/black_folder_background_default</item>
     </style>
 
     <style name="listBackground">

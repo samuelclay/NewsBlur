@@ -103,7 +103,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainSyncStatusContainer.setVisibility(View.VISIBLE);
 
         binding.content.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
-        binding.content.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
+        binding.content.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.feedListToolbarBackground, android.R.attr.background));
         binding.content.setOnRefreshListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();

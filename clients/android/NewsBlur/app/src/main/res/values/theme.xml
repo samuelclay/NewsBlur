@@ -22,6 +22,7 @@
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
         <item name="layoutBackground">@style/layoutBackground</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground</item>
@@ -100,6 +101,7 @@
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground.sepia</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.sepia</item>
         <item name="actionbarBackground">@style/actionbarBackground.sepia</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.sepia</item>
         <item name="listBackground">@style/listBackground.sepia</item>
         <item name="layoutBackground">@style/layoutBackground.sepia</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground.sepia</item>
@@ -178,6 +180,7 @@
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="layoutBackground">@style/layoutBackground.dark</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground.dark</item>
@@ -256,6 +259,7 @@
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.black</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.black</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="layoutBackground">@style/layoutBackground.black</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground.black</item>
