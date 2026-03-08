@@ -351,7 +351,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         this.update_index_button_state();
 
         $.ajax({
-            url: '/rss_feeds/discover/index/',
+            url: '/discover/index/',
             type: 'POST',
             success: _.bind(function (data) {
                 if (data.code < 0) {

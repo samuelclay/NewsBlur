@@ -288,6 +288,15 @@ def discover_stories(request, story_hash):
     return {"discover_stories": stories, "feeds": feeds}
 
 
+@ajax_login_required
+@json.json_view
+def discover_index(request):
+    user_search = MUserSearch.get_user(request.user.pk)
+    user_search.touch_discover_date()
+
+    return {"code": 1, "indexing": True}
+
+
 def _get_trending_popular(days, limit, offset, one_year_ago):
     """Popular: high absolute subscription velocity (mass appeal feeds)."""
     min_subs = 1 if settings.DEBUG else 3
