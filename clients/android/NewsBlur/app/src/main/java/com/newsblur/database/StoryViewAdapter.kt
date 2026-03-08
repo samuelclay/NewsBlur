@@ -4,6 +4,7 @@ package com.newsblur.database
 
 import android.graphics.Color
 import android.os.Parcelable
+import android.os.SystemClock
 import android.text.TextUtils
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.View.OnCreateContextMenuListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -75,6 +77,7 @@ class StoryViewAdapter(
     listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
+    private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
 
@@ -391,6 +394,9 @@ class StoryViewAdapter(
                 return
             }
             if (gestureL2R || gestureR2L) return
+            val now = SystemClock.elapsedRealtime()
+            if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
+            lastStoryOpenElapsedRealtime = now
             listener.onStoryClicked(fs, story?.storyHash)
         }
 
