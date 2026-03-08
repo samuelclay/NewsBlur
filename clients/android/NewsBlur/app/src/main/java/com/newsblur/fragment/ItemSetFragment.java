@@ -279,6 +279,7 @@ public class ItemSetFragment extends NbFragment {
     public void resetEmptyState() {
         updateAdapter(Collections.emptyList(), -1L);
         dataSeenYet = false;
+        updateLoadingIndicators();
     }
 
     /**
@@ -341,6 +342,7 @@ public class ItemSetFragment extends NbFragment {
         calcFleuronPadding();
         boolean hasStories = hasStories();
         boolean isOffline = !NetworkUtils.isOnline(requireContext());
+        boolean waitingForApiResult = !hasStories && !syncServiceState.isFeedSetExhausted(getFeedSet());
 
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
@@ -350,7 +352,7 @@ public class ItemSetFragment extends NbFragment {
             return;
         }
 
-        if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet())) {
+        if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet()) || waitingForApiResult) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
