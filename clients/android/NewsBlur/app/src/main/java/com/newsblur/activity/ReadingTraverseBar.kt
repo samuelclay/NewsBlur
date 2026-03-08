@@ -222,12 +222,13 @@ class ReadingTraverseBar(
 
     private fun activeTextButtonBackground(): Drawable {
         val separatorGap = UIUtils.dp2px(context, 4)
+        val leadingHighlightInset = UIUtils.dp2px(context, -4)
         return InsetDrawable(
             buttonBackground(
                 cornerRadiusDp = 8f,
                 color = palette.activeTextBackgroundColor,
             ),
-            0,
+            leadingHighlightInset,
             0,
             separatorGap,
             0,
