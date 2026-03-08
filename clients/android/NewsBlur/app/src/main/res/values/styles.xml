@@ -667,19 +667,19 @@
 
     <style name="toggleText">
         <item name="android:textColor">@color/gray55</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="toggleText.sepia">
         <item name="android:textColor">@color/button_text_sepia</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="toggleText.dark">
         <item name="android:textColor">@color/gray55</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -22,7 +22,6 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_read_icon"
         android:text="@string/read_stories_title"
-        android:textStyle="bold"
         android:letterSpacing="@dimen/extra_letter_spacing" />
 
 </RelativeLayout>
