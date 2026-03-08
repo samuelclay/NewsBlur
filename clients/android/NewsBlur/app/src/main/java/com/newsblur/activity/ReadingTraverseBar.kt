@@ -31,7 +31,7 @@ class ReadingTraverseBar(
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
     private val nextChevronSizeDp = 16
-    private val textButtonStartPaddingDp = 8
+    private val textButtonStartPaddingDp = 10
     private val textButtonEndPaddingDp = 8
     private val textButtonDrawablePaddingDp = 6
     private val textButtonMarginStartDp = 8
