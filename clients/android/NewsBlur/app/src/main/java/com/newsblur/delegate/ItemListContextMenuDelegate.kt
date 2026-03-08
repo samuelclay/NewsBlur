@@ -111,6 +111,11 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_statistics).isVisible = false
         }
 
+        menu.findItem(R.id.menu_rename_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_mute_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_unmute_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_delete_folder).isVisible = fs.isFolder
+
         if (!fs.isInfrequent) {
             menu.findItem(R.id.menu_infrequent_cutoff).isVisible = false
         }

@@ -36,6 +36,7 @@
     <string name="description_comment_user">Comment user image</string>
     <string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
+    <string name="story_settings">Story settings</string>
 
     <string name="title_choose_folders">Choose folders for feed %s</string>
     <string name="title_rename_feed">Rename feed %s</string>

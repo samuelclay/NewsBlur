@@ -217,6 +217,27 @@
     <color name="story_status_offline_text_black">#D08080</color>
     <color name="story_status_offline_border_black">#3A2828</color>
 
+    <color name="story_action_button_background_light">#0A000000</color>
+    <color name="story_action_button_border_light">#1A000000</color>
+    <color name="story_action_button_text_light">#66000000</color>
+    <color name="story_action_button_text_dimmed_light">#40000000</color>
+    <color name="story_action_button_ripple_light">#14000000</color>
+    <color name="story_action_button_background_sepia">#0D503C1E</color>
+    <color name="story_action_button_border_sepia">#26503C1E</color>
+    <color name="story_action_button_text_sepia">#66503C1E</color>
+    <color name="story_action_button_text_dimmed_sepia">#40503C1E</color>
+    <color name="story_action_button_ripple_sepia">#14503C1E</color>
+    <color name="story_action_button_background_dark">#0FFFFFFF</color>
+    <color name="story_action_button_border_dark">#26FFFFFF</color>
+    <color name="story_action_button_text_dark">#99C8C8C8</color>
+    <color name="story_action_button_text_dimmed_dark">#66C8C8C8</color>
+    <color name="story_action_button_ripple_dark">#1FFFFFFF</color>
+    <color name="story_action_button_background_black">#14FFFFFF</color>
+    <color name="story_action_button_border_black">#24FFFFFF</color>
+    <color name="story_action_button_text_black">#99CCCCCC</color>
+    <color name="story_action_button_text_dimmed_black">#66CCCCCC</color>
+    <color name="story_action_button_ripple_black">#24FFFFFF</color>
+
     <color name="bg_midgray">#55898989</color>
 
     <color name="refresh_1">#c56125</color>

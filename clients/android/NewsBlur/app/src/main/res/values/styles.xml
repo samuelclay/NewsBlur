@@ -403,42 +403,107 @@
     </style>
 
     <style name="storyButtons" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_light</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="iconTint">@color/gray75</item>
-        <item name="iconSize">16dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_light</item>
+        <item name="strokeColor">@color/story_action_button_border_light</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_light</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_light</item>
     </style>
 
     <style name="storyButtons.sepia" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/button_text_sepia</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_sepia</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="iconTint">@color/button_text_sepia</item>
-        <item name="iconSize">16dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_sepia</item>
+        <item name="strokeColor">@color/story_action_button_border_sepia</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_sepia</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_sepia</item>
     </style>
 
     <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_dark</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="iconTint">@color/gray46</item>
-        <item name="iconSize">16dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_dark</item>
+        <item name="strokeColor">@color/story_action_button_border_dark</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_dark</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_dark</item>
+    </style>
+
+    <style name="storyButtons.black" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_black</item>
+        <item name="strokeColor">@color/story_action_button_border_black</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_black</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_black</item>
     </style>
 
     <style name="storyButtonsDimmed" parent="storyButtons">
-        <item name="android:textColor">@color/gray85</item>
+        <item name="android:textColor">@color/story_action_button_text_dimmed_light</item>
     </style>
 
     <style name="storyButtonsDimmed.sepia" parent="storyButtons.sepia">
-        <item name="android:textColor">@color/row_border_sepia</item>
+        <item name="android:textColor">@color/story_action_button_text_dimmed_sepia</item>
     </style>
 
     <style name="storyButtonsDimmed.dark" parent="storyButtons.dark">
-        <item name="android:textColor">@color/gray30</item>
+        <item name="android:textColor">@color/story_action_button_text_dimmed_dark</item>
+    </style>
+
+    <style name="storyButtonsDimmed.black" parent="storyButtons.black">
+        <item name="android:textColor">@color/story_action_button_text_dimmed_black</item>
     </style>
 
     <style name="shareBarBackground">
