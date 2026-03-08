@@ -14,6 +14,7 @@ import android.text.style.ReplacementSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import kotlin.math.ceil
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
@@ -30,9 +31,10 @@ class ReadingTraverseBar(
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
     private val nextChevronSizeDp = 16
-    private val textButtonStartPaddingDp = 10
+    private val textButtonStartPaddingDp = 6
     private val textButtonEndPaddingDp = 8
     private val textButtonDrawablePaddingDp = 6
+    private val textButtonMarginStartDp = 8
     private val nextButtonStartPaddingDp = 6
     private val nextButtonEndPaddingDp = 10
 
@@ -171,6 +173,9 @@ class ReadingTraverseBar(
         binding.readingOverlayText.layoutParams =
             binding.readingOverlayText.layoutParams.apply {
                 width = stableTextButtonWidth()
+                if (this is ViewGroup.MarginLayoutParams) {
+                    marginStart = UIUtils.dp2px(context, textButtonMarginStartDp)
+                }
             }
     }
 
