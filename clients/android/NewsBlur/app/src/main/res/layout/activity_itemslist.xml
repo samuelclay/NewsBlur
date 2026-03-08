@@ -155,6 +155,33 @@
                         android:textColorHint="?attr/feedListSearchHintColor"
                         android:textSize="15sp" />
 
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/itemlist_search_progress"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        app:indicatorColor="?attr/feedListSearchHintColor"
+                        app:indicatorInset="0dp"
+                        app:indicatorSize="16dp"
+                        app:trackColor="@color/transparent"
+                        app:trackThickness="2dp" />
+
+                    <ImageView
+                        android:id="@+id/itemlist_clear_search_query"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:background="@null"
+                        android:contentDescription="@string/feed_list_clear_search"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:padding="0dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_search_clear"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </FrameLayout>

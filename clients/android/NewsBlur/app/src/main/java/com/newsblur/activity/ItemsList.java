@@ -7,11 +7,14 @@ import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Trace;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -24,6 +27,8 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
@@ -92,6 +97,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
     private static final long STORY_STATUS_HIDE_DURATION_MS = 250L;
+    private static final long STORY_SEARCH_DEBOUNCE_MS = 350L;
     private static final long MILLIS_PER_DAY = 24L * 60L * 60L * 1000L;
     private static final int[] MARK_READ_CUTOFF_DAYS = new int[]{1, 3, 7, 14};
     private static final DecelerateInterpolator STORY_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
@@ -116,9 +122,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private ItemListMenuPopup.Content itemListPopupContent;
     @Nullable
     private View interactiveSwipeSurface;
+    @Nullable
+    private Runnable storySearchRunnable;
+    private boolean storySearchRefreshInFlight = false;
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
+    private final Handler storySearchHandler = new Handler(Looper.getMainLooper());
     private final Runnable showFetchingBannerRunnable = () -> {
         fetchingBannerDelayElapsed = true;
         updateStatusIndicators();
@@ -194,10 +204,6 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                     hideStorySearch(true);
                     return true;
                 }
-                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    checkSearchQuery();
-                    return true;
-                }
                 return false;
             }
         });
@@ -256,12 +262,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (searchItem != null && !searchItem.isVisible() && isStorySearchVisible()) {
             hideStorySearch(true);
         } else {
+            updateStorySearchLoadingIndicator();
             updateStorySearchPillState();
         }
     }
 
     @Override
     protected void onPause() {
+        setStorySearchRefreshInFlight(false);
+        cancelPendingStorySearch();
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         dismissItemListMenuPopup();
@@ -344,6 +353,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void updateStatusIndicators() {
         if (!NetworkUtils.isOnline(this)) {
+            setStorySearchRefreshInFlight(false);
             cancelPendingFetchingBanner();
             showStoryStatusBanner(getString(R.string.sync_status_offline), StoryStatusBannerStyle.OFFLINE);
             return;
@@ -356,11 +366,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
 
         if (!syncServiceState.isFeedSetSyncing(fs)) {
+            setStorySearchRefreshInFlight(false);
             awaitingInitialFetchingBanner = false;
             fetchingBannerDelayElapsed = false;
             cancelPendingFetchingBanner();
         }
 
+        updateStorySearchLoadingIndicator();
         hideStoryStatusBanner(true);
     }
 
@@ -383,6 +395,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, this)
         );
         binding.itemlistMarkReadMoreButton.setOnClickListener(this::showMarkReadCutoffMenu);
+        binding.itemlistClearSearchQuery.setOnClickListener(view -> {
+            binding.itemlistSearchQuery.setText("");
+            binding.itemlistSearchQuery.requestFocus();
+        });
         binding.itemlistStoryHeaderBar.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
                 updateStorySearchPillLabel()
         );
@@ -397,16 +413,39 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
             @Override
             public void afterTextChanged(Editable s) {
+                setStorySearchRefreshInFlight(!TextUtils.equals(normalizeStorySearchQuery(s), fs.getSearchQuery()));
+                updateStorySearchClearButton(s);
                 refreshStoryHeaderControls();
+                if (TextUtils.isEmpty(s)) {
+                    runStorySearchNow();
+                } else {
+                    scheduleStorySearch();
+                }
             }
         });
+        binding.itemlistSearchQuery.setOnEditorActionListener((textView, actionId, event) -> {
+            boolean isSearchAction =
+                    actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    ((event != null) &&
+                     (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) &&
+                     (event.getAction() == KeyEvent.ACTION_DOWN));
+            if (!isSearchAction) {
+                return false;
+            }
+            runStorySearchNow();
+            return true;
+        });
         applyStoryHeaderTheme();
+        updateStorySearchClearButton(binding.itemlistSearchQuery.getText());
+        updateStorySearchLoadingIndicator();
         updateStorySearchPillLabel();
         updateStorySearchPillState();
     }
 
     private void showStorySearch(boolean requestFocus) {
         binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
+        updateStorySearchLoadingIndicator();
         updateStorySearchPillState();
         if (requestFocus) {
             binding.itemlistSearchQuery.requestFocus();
@@ -419,8 +458,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         binding.itemlistSearchContainer.setVisibility(View.GONE);
         binding.itemlistSearchQuery.clearFocus();
+        updateStorySearchLoadingIndicator();
         updateStorySearchPillState();
-        checkSearchQuery();
+        runStorySearchNow();
     }
 
     private boolean isStorySearchVisible() {
@@ -676,27 +716,94 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         );
     }
 
+    private void scheduleStorySearch() {
+        cancelPendingStorySearch();
+        storySearchRunnable = this::checkSearchQuery;
+        storySearchHandler.postDelayed(storySearchRunnable, STORY_SEARCH_DEBOUNCE_MS);
+    }
+
+    private void cancelPendingStorySearch() {
+        if (storySearchRunnable != null) {
+            storySearchHandler.removeCallbacks(storySearchRunnable);
+            storySearchRunnable = null;
+        }
+    }
+
+    private void runStorySearchNow() {
+        cancelPendingStorySearch();
+        checkSearchQuery();
+    }
+
+    @Nullable
+    private String normalizeStorySearchQuery(@Nullable CharSequence query) {
+        if (query == null) {
+            return null;
+        }
+        String normalizedQuery = query.toString().trim();
+        return normalizedQuery.isEmpty() ? null : normalizedQuery;
+    }
+
+    private void updateStorySearchClearButton(@Nullable CharSequence query) {
+        binding.itemlistClearSearchQuery.setVisibility(TextUtils.isEmpty(query) ? View.GONE : View.VISIBLE);
+    }
+
+    private void setStorySearchRefreshInFlight(boolean isInFlight) {
+        storySearchRefreshInFlight = isInFlight;
+        updateStorySearchLoadingIndicator();
+    }
+
+    private void updateStorySearchLoadingIndicator() {
+        binding.itemlistSearchProgress.setVisibility(
+                storySearchRefreshInFlight && isStorySearchVisible() ? View.VISIBLE : View.GONE
+        );
+    }
+
+    private void restoreStorySearchFieldFocus(int selectionEnd) {
+        binding.itemlistSearchQuery.post(() -> {
+            if (!isStorySearchVisible()) {
+                return;
+            }
+            binding.itemlistSearchQuery.requestFocus();
+            Editable query = binding.itemlistSearchQuery.getText();
+            int safeSelectionEnd = Math.max(0, Math.min(selectionEnd, query.length()));
+            binding.itemlistSearchQuery.setSelection(safeSelectionEnd);
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.showSoftInput(binding.itemlistSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+    }
+
     private void checkSearchQuery() {
-        String q = binding.itemlistSearchQuery.getText().toString().trim();
-        if (q.length() < 1) {
+        storySearchRunnable = null;
+        boolean shouldRestoreFocus = isStorySearchVisible() && binding.itemlistSearchQuery.hasFocus();
+        int selectionEnd = shouldRestoreFocus ? binding.itemlistSearchQuery.getSelectionEnd() : -1;
+        String q = normalizeStorySearchQuery(binding.itemlistSearchQuery.getText());
+        if (q == null) {
             updateFleuron(false);
-            q = null;
         } else if (!prefsRepo.hasSubscription()) {
+            setStorySearchRefreshInFlight(false);
             updateFleuron(true);
             return;
         }
 
         String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
-        if (!TextUtils.equals(q, oldQuery)) {
+        boolean queryChanged = !TextUtils.equals(q, oldQuery);
+        if (queryChanged) {
             feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             scheduleInitialFetchingBanner();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
+        } else {
+            setStorySearchRefreshInFlight(false);
         }
         refreshStoryHeaderControls();
+        if (shouldRestoreFocus) {
+            restoreStorySearchFieldFocus(selectionEnd);
+        }
     }
 
     private void updateFleuron(boolean requiresPremium) {
