@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
+import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -36,7 +36,6 @@ class FeedItemsList : ItemsList() {
 
     private lateinit var feed: Feed
     private lateinit var folderName: String
-    private lateinit var reviewBackCallback: OnBackPressedCallback
 
     private var reviewManager: ReviewManager? = null
     private var reviewInfo: ReviewInfo? = null
@@ -50,26 +49,19 @@ class FeedItemsList : ItemsList() {
         }
 
         checkInAppReview()
-
-        reviewBackCallback =
-            object : OnBackPressedCallback(false) {
-                override fun handleOnBackPressed() {
-                    if (reviewInfo != null) {
-                        val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
-                        flow.addOnCompleteListener { task ->
-                            prefsRepo.setInAppReviewed()
-                            finish()
-                        }
-                    } else {
-                        isEnabled = false
-                        onBackPressedDispatcher.onBackPressed()
-                        isEnabled = true
-                    }
-                }
-            }
-
-        onBackPressedDispatcher.addCallback(this, reviewBackCallback)
     }
+
+    override fun interceptBackPress(): Boolean {
+        if (reviewInfo == null) return false
+        val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
+        flow.addOnCompleteListener { _: Task<Void?>? ->
+            prefsRepo.setInAppReviewed()
+            finish()
+        }
+        return true
+    }
+
+    override fun shouldHandlePredictiveBack(): Boolean = reviewInfo == null
 
     fun showDeleteFeedDialog() {
         val deleteFeedFragment: DialogFragment = DeleteFeedFragment.newInstance(feed, folderName)
@@ -126,9 +118,7 @@ class FeedItemsList : ItemsList() {
                 true
             }
 
-            else -> {
-                false
-            }
+            else -> false
         }
     }
 
@@ -206,10 +196,6 @@ class FeedItemsList : ItemsList() {
                 ?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         reviewInfo = task.getResult()
-                        // Now that we have reviewInfo, enable the back callback
-                        if (::reviewBackCallback.isInitialized) {
-                            reviewBackCallback.isEnabled = true
-                        }
                     }
                 }
         }
