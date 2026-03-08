@@ -31,8 +31,8 @@ class ReadingTraverseBar(
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
     private val nextChevronSizeDp = 16
-    private val textButtonStartPaddingDp = 10
-    private val textButtonEndPaddingDp = 8
+    private val textButtonStartPaddingDp = 12
+    private val textButtonEndPaddingDp = 12
     private val textButtonDrawablePaddingDp = 6
     private val textButtonMarginStartDp = 8
     private val nextButtonStartPaddingDp = 6
@@ -110,6 +110,14 @@ class ReadingTraverseBar(
             } else {
                 buttonBackground(cornerRadiusDp = 8f, color = Color.TRANSPARENT)
             }
+        // Re-apply padding after setting background; InsetDrawable overrides
+        // the view's padding with its own insets, losing our start padding.
+        binding.readingOverlayText.setPaddingRelative(
+            UIUtils.dp2px(context, textButtonStartPaddingDp),
+            0,
+            UIUtils.dp2px(context, textButtonEndPaddingDp),
+            0,
+        )
         binding.readingOverlayText.isEnabled = enabled
         binding.readingOverlayText.alpha = if (enabled) 1f else 0.4f
         binding.readingOverlayText.setTextColor(palette.tintColor)
