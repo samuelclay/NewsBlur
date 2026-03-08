@@ -23,9 +23,10 @@ class ReadingTraverseBar(
     selectedTheme: ThemeValue,
 ) {
     private val iconSizeDp = 14
-    private val chevronSizeDp = 12
-    private val textButtonStartPaddingDp = 18
-    private val textButtonEndPaddingDp = 10
+    private val previousChevronSizeDp = 12
+    private val nextChevronSizeDp = 14
+    private val textButtonStartPaddingDp = 24
+    private val textButtonEndPaddingDp = 4
 
     private var resolvedTheme = resolveTheme(selectedTheme)
     private var palette = paletteFor(resolvedTheme)
@@ -67,7 +68,7 @@ class ReadingTraverseBar(
             sizedTintedDrawable(
                 if (showDone) R.drawable.ic_checkmark else R.drawable.ic_chevron_right,
                 palette.tintColor,
-                chevronSizeDp,
+                if (showDone) previousChevronSizeDp else nextChevronSizeDp,
             ),
             null,
         )
@@ -133,7 +134,13 @@ class ReadingTraverseBar(
         binding.readingOverlayRight.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
 
         binding.readingOverlaySend.setImageDrawable(sizedTintedDrawable(R.drawable.ic_send_to, palette.tintColor, iconSizeDp))
-        binding.readingOverlayLeft.setImageDrawable(sizedTintedDrawable(R.drawable.ic_chevron_left, palette.tintColor, chevronSizeDp))
+        binding.readingOverlayLeft.setImageDrawable(
+            sizedTintedDrawable(
+                R.drawable.ic_chevron_left,
+                palette.tintColor,
+                previousChevronSizeDp,
+            ),
+        )
     }
 
     private fun configureTextButton() {
