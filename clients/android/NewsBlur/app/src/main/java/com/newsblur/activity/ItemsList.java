@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +33,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -125,6 +128,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Nullable
     private Runnable storySearchRunnable;
     private boolean storySearchRefreshInFlight = false;
+    private boolean predictiveBackInProgress = false;
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
@@ -214,6 +218,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         setupStoryHeader();
         refreshStoryHeaderControls();
         scheduleInitialFetchingBanner();
+        setupOnBackPressed();
         Trace.endSection();
     }
 
@@ -273,6 +278,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     protected void onPause() {
+        predictiveBackInProgress = false;
         setStorySearchRefreshInFlight(false);
         cancelPendingStorySearch();
         cancelPendingFetchingBanner();
@@ -877,6 +883,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         animateInteractiveStoryListSwipe(targetTranslation, true);
     }
 
+    protected boolean interceptBackPress() {
+        return false;
+    }
+
+    protected boolean shouldHandlePredictiveBack() {
+        return true;
+    }
+
     private void handleReadingActivityResult(ActivityResult result) {
         if (result.getData() != null) {
             int lastReadingPosition = result.getData().getIntExtra(Reading.LAST_READING_POS, -1);
@@ -889,6 +903,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     public void finish() {
+        predictiveBackInProgress = false;
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         super.finish();
@@ -1002,6 +1017,49 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistStoryStatusBanner.animate().cancel();
     }
 
+    private void setupOnBackPressed() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+                predictiveBackInProgress = supportsPredictiveStoryListBack()
+                        && isInteractiveStoryListBackEnabled()
+                        && shouldHandlePredictiveBack()
+                        && backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT;
+                if (predictiveBackInProgress) {
+                    beginInteractiveStoryListSwipe();
+                }
+            }
+
+            @Override
+            public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                if (!predictiveBackInProgress) return;
+                updateInteractiveStoryListSwipe(backEvent.getProgress() * getInteractiveSwipeSurface().getWidth());
+            }
+
+            @Override
+            public void handleOnBackCancelled() {
+                if (!predictiveBackInProgress) return;
+                predictiveBackInProgress = false;
+                cancelInteractiveStoryListSwipe();
+            }
+
+            @Override
+            public void handleOnBackPressed() {
+                predictiveBackInProgress = false;
+                if (interceptBackPress()) {
+                    cancelInteractiveStoryListSwipe();
+                    return;
+                }
+                View surface = getInteractiveSwipeSurface();
+                if (surface.getTranslationX() > 0f) {
+                    completeInteractiveStoryListSwipe();
+                } else {
+                    finish();
+                }
+            }
+        });
+    }
+
     private void animateInteractiveStoryListSwipe(float targetTranslationX, boolean finishWhenComplete) {
         View surface = getInteractiveSwipeSurface();
         surface.animate()
@@ -1024,6 +1082,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             interactiveSwipeSurface = findViewById(android.R.id.content);
         }
         return interactiveSwipeSurface;
+    }
+
+    private boolean isInteractiveStoryListBackEnabled() {
+        return binding != null && !isTaskRoot() && !isFinishing();
+    }
+
+    private boolean supportsPredictiveStoryListBack() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     private void resetInteractiveStoryListSwipe(boolean cancelAnimation) {
