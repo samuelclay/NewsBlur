@@ -89,6 +89,11 @@ STYLE_INSTRUCTIONS = {
 
 SECTION_PROMPTS = {
     "top_stories": '"Top stories" — CATEGORY: top_stories. The most important stories from the reader\'s feeds.',
+    "infrequent": (
+        '"From infrequent sites" — CATEGORY: infrequent. '
+        "Stories from feeds that publish rarely (a few times a month or less). "
+        "Highlight that these are noteworthy because the site doesn't post often."
+    ),
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
     "classifier_match": (
         '"Based on your interests" — CATEGORY: classifier_match. '
