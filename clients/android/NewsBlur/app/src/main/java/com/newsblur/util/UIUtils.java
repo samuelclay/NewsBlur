@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -219,6 +221,12 @@ public class UIUtils {
         TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
         ImageView iconView = activity.findViewById(R.id.toolbar_icon);
+        ViewGroup.LayoutParams iconLayoutParams = iconView.getLayoutParams();
+        if (iconLayoutParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) iconLayoutParams;
+            params.horizontalBias = activity instanceof ItemsList ? 0.5f : 0f;
+            iconView.setLayoutParams(params);
+        }
         View settingsButton = activity.findViewById(R.id.toolbar_settings_button);
         if (settingsButton != null) {
             settingsButton.setVisibility(activity instanceof Reading ? View.VISIBLE : View.INVISIBLE);
