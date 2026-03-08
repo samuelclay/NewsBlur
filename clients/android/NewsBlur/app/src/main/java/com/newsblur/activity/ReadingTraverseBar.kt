@@ -2,10 +2,15 @@ package com.newsblur.activity
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ReplacementSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -84,8 +89,9 @@ class ReadingTraverseBar(
         this.inTextView = inTextView
         textModeEnabled = enabled
 
-        binding.readingOverlayText.text = context.getString(if (inTextView) R.string.overlay_story else R.string.overlay_text)
-        binding.readingOverlayText.contentDescription = binding.readingOverlayText.text
+        val label = context.getString(if (inTextView) R.string.overlay_story else R.string.overlay_text)
+        binding.readingOverlayText.text = reservedTextButtonLabel(label)
+        binding.readingOverlayText.contentDescription = label
         binding.readingOverlayText.setCompoundDrawablesRelative(
             sizedTintedDrawable(
                 if (inTextView) R.drawable.ic_story_feed_gray46 else R.drawable.ic_story_text_gray46,
@@ -245,17 +251,36 @@ class ReadingTraverseBar(
     }
 
     private fun stableTextButtonWidth(): Int {
-        val labels =
-            listOf(
-                context.getString(R.string.overlay_text),
-                context.getString(R.string.overlay_story),
-            )
-        val labelWidth = labels.maxOf { ceil(binding.readingOverlayText.paint.measureText(it).toDouble()).toInt() }
+        val labelWidth = maxTextButtonLabelWidth()
         val horizontalPadding = binding.readingOverlayText.paddingStart + binding.readingOverlayText.paddingEnd
         val iconWidth = UIUtils.dp2px(context, iconSizeDp)
         val drawablePadding = binding.readingOverlayText.compoundDrawablePadding
         return labelWidth + horizontalPadding + iconWidth + drawablePadding
     }
+
+    private fun reservedTextButtonLabel(label: String): CharSequence {
+        val reserveWidth = maxTextButtonLabelWidth() - measureTextButtonLabelWidth(label)
+        if (reserveWidth <= 0) return label
+
+        return SpannableStringBuilder(label).apply {
+            append('\u00A0')
+            setSpan(
+                ReservedWidthSpan(reserveWidth),
+                length - 1,
+                length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+        }
+    }
+
+    private fun maxTextButtonLabelWidth(): Int =
+        listOf(
+            context.getString(R.string.overlay_text),
+            context.getString(R.string.overlay_story),
+        ).maxOf(::measureTextButtonLabelWidth)
+
+    private fun measureTextButtonLabelWidth(label: String): Int =
+        ceil(binding.readingOverlayText.paint.measureText(label).toDouble()).toInt()
 
     private fun resolveTheme(selectedTheme: ThemeValue): ThemeValue =
         when (selectedTheme) {
@@ -321,3 +346,28 @@ private data class ReadingTraversePalette(
     val progressColor: Int,
     val progressTrackColor: Int,
 )
+
+private class ReservedWidthSpan(
+    private val widthPx: Int,
+) : ReplacementSpan() {
+    override fun getSize(
+        paint: Paint,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        fm: Paint.FontMetricsInt?,
+    ): Int = widthPx
+
+    override fun draw(
+        canvas: Canvas,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        x: Float,
+        top: Int,
+        y: Int,
+        bottom: Int,
+        paint: Paint,
+    ) {
+    }
+}
