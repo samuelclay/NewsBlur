@@ -24,9 +24,11 @@ class ReadingTraverseBar(
 ) {
     private val iconSizeDp = 14
     private val previousChevronSizeDp = 12
-    private val nextChevronSizeDp = 14
-    private val textButtonStartPaddingDp = 24
-    private val textButtonEndPaddingDp = 4
+    private val nextChevronSizeDp = 16
+    private val textButtonStartPaddingDp = 28
+    private val textButtonEndPaddingDp = 2
+    private val nextButtonStartPaddingDp = 6
+    private val nextButtonEndPaddingDp = 10
 
     private var resolvedTheme = resolveTheme(selectedTheme)
     private var palette = paletteFor(resolvedTheme)
@@ -171,7 +173,12 @@ class ReadingTraverseBar(
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             gravity = Gravity.CENTER
             compoundDrawablePadding = UIUtils.dp2px(context, 4)
-            setPaddingRelative(UIUtils.dp2px(context, 6), 0, UIUtils.dp2px(context, 14), 0)
+            setPaddingRelative(
+                UIUtils.dp2px(context, nextButtonStartPaddingDp),
+                0,
+                UIUtils.dp2px(context, nextButtonEndPaddingDp),
+                0,
+            )
             minimumWidth = 0
             minimumHeight = 0
             includeFontPadding = false
