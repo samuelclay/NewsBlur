@@ -568,8 +568,8 @@ public class ItemSetFragment extends NbFragment {
         private final int minimumFlingVelocityPx = ViewConfiguration.get(requireContext()).getScaledMinimumFlingVelocity();
         @Nullable
         private VelocityTracker velocityTracker;
-        private float downX;
-        private float downY;
+        private float downRawX;
+        private float downRawY;
         private boolean isDragging;
         private boolean gestureEligible;
 
@@ -579,17 +579,17 @@ public class ItemSetFragment extends NbFragment {
                 case MotionEvent.ACTION_DOWN:
                     gestureEligible = isInteractiveStoryListSwipeEnabled();
                     isDragging = false;
-                    downX = event.getX();
-                    downY = event.getY();
+                    downRawX = event.getRawX();
+                    downRawY = event.getRawY();
                     resetVelocityTracker();
                     velocityTracker = VelocityTracker.obtain();
-                    velocityTracker.addMovement(event);
+                    trackMovement(event);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (!gestureEligible) return false;
-                    if (velocityTracker != null) velocityTracker.addMovement(event);
-                    float deltaX = event.getX() - downX;
-                    float deltaY = event.getY() - downY;
+                    trackMovement(event);
+                    float deltaX = event.getRawX() - downRawX;
+                    float deltaY = event.getRawY() - downRawY;
                     if (!isDragging &&
                             deltaX > touchSlopPx &&
                             deltaX > Math.abs(deltaY) * STORY_LIST_BACK_GESTURE_DIRECTION_RATIO) {
@@ -616,7 +616,7 @@ public class ItemSetFragment extends NbFragment {
         @Override
         public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
             if (!isDragging) return;
-            if (velocityTracker != null) velocityTracker.addMovement(event);
+            trackMovement(event);
 
             ItemsList activity = (ItemsList) getActivity();
             if (activity == null) {
@@ -626,10 +626,10 @@ public class ItemSetFragment extends NbFragment {
 
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_MOVE:
-                    activity.updateInteractiveStoryListSwipe(event.getX() - downX);
+                    activity.updateInteractiveStoryListSwipe(event.getRawX() - downRawX);
                     break;
                 case MotionEvent.ACTION_UP:
-                    float totalDeltaX = Math.max(0f, event.getX() - downX);
+                    float totalDeltaX = Math.max(0f, event.getRawX() - downRawX);
                     float xVelocity = getXVelocity();
                     boolean shouldComplete = totalDeltaX >= recyclerView.getWidth() * STORY_LIST_BACK_GESTURE_TRIGGER_RATIO;
                     if (!shouldComplete && xVelocity > minimumFlingVelocityPx * 4f) {
@@ -659,6 +659,14 @@ public class ItemSetFragment extends NbFragment {
             if (velocityTracker == null) return 0f;
             velocityTracker.computeCurrentVelocity(1000);
             return velocityTracker.getXVelocity();
+        }
+
+        private void trackMovement(@NonNull MotionEvent event) {
+            if (velocityTracker == null) return;
+            MotionEvent screenEvent = MotionEvent.obtain(event);
+            screenEvent.offsetLocation(event.getRawX() - event.getX(), event.getRawY() - event.getY());
+            velocityTracker.addMovement(screenEvent);
+            screenEvent.recycle();
         }
 
         private void resetGestureState() {

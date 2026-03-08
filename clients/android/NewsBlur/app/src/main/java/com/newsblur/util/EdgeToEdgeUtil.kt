@@ -16,22 +16,25 @@ import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object EdgeToEdgeUtil {
-    fun Activity.applyTheme(theme: ThemeValue) {
+    fun Activity.applyTheme(
+        theme: ThemeValue,
+        translucent: Boolean = false,
+    ) {
         val themeRes: Int =
             when (theme) {
-                ThemeValue.LIGHT -> R.style.NewsBlurTheme
-                ThemeValue.SEPIA -> R.style.NewsBlurSepiaTheme
-                ThemeValue.DARK -> R.style.NewsBlurDarkTheme
-                ThemeValue.BLACK -> R.style.NewsBlurBlackTheme
+                ThemeValue.LIGHT -> if (translucent) R.style.NewsBlurTheme_Translucent else R.style.NewsBlurTheme
+                ThemeValue.SEPIA -> if (translucent) R.style.NewsBlurSepiaTheme_Translucent else R.style.NewsBlurSepiaTheme
+                ThemeValue.DARK -> if (translucent) R.style.NewsBlurDarkTheme_Translucent else R.style.NewsBlurDarkTheme
+                ThemeValue.BLACK -> if (translucent) R.style.NewsBlurBlackTheme_Translucent else R.style.NewsBlurBlackTheme
                 ThemeValue.AUTO -> {
                     val nightModeFlags = (
                         this.resources.configuration.uiMode
                             and Configuration.UI_MODE_NIGHT_MASK
                     )
                     if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                        R.style.NewsBlurDarkTheme
+                        if (translucent) R.style.NewsBlurDarkTheme_Translucent else R.style.NewsBlurDarkTheme
                     } else {
-                        R.style.NewsBlurTheme
+                        if (translucent) R.style.NewsBlurTheme_Translucent else R.style.NewsBlurTheme
                     }
                 }
             }
