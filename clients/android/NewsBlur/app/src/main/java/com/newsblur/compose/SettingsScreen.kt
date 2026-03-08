@@ -208,9 +208,21 @@ fun SettingsScreen(
         )
     val confirmMarkReadOptions =
         listOf(
-            ChoiceOption(MarkAllReadConfirmation.FEED_AND_FOLDER.name, stringResource(R.string.feed_and_folder)),
-            ChoiceOption(MarkAllReadConfirmation.FOLDER_ONLY.name, stringResource(R.string.folder_only)),
-            ChoiceOption(MarkAllReadConfirmation.NONE.name, stringResource(R.string.none)),
+            ChoiceOption(
+                MarkAllReadConfirmation.FEED_AND_FOLDER.name,
+                stringResource(R.string.feed_and_folder),
+                stringResource(R.string.settings_confirm_mark_all_read_segment_both),
+            ),
+            ChoiceOption(
+                MarkAllReadConfirmation.FOLDER_ONLY.name,
+                stringResource(R.string.folder_only),
+                stringResource(R.string.settings_confirm_mark_all_read_segment_folders),
+            ),
+            ChoiceOption(
+                MarkAllReadConfirmation.NONE.name,
+                stringResource(R.string.none),
+                stringResource(R.string.settings_confirm_mark_all_read_segment_never),
+            ),
         )
     val afterMarkReadOptions =
         listOf(
@@ -274,11 +286,31 @@ fun SettingsScreen(
         )
     val thumbnailOptions =
         listOf(
-            ChoiceOption(ThumbnailStyle.OFF.name, stringResource(R.string.story_thumbnail_no_image_preview)),
-            ChoiceOption(ThumbnailStyle.LEFT_SMALL.name, stringResource(R.string.story_thumbnail_left_hand_small)),
-            ChoiceOption(ThumbnailStyle.LEFT_LARGE.name, stringResource(R.string.story_thumbnail_left_hand_large)),
-            ChoiceOption(ThumbnailStyle.RIGHT_SMALL.name, stringResource(R.string.story_thumbnail_right_hand_small)),
-            ChoiceOption(ThumbnailStyle.RIGHT_LARGE.name, stringResource(R.string.story_thumbnail_right_hand_large)),
+            ChoiceOption(
+                ThumbnailStyle.OFF.name,
+                stringResource(R.string.story_thumbnail_no_image_preview),
+                stringResource(R.string.settings_preview_images_segment_off),
+            ),
+            ChoiceOption(
+                ThumbnailStyle.LEFT_SMALL.name,
+                stringResource(R.string.story_thumbnail_left_hand_small),
+                stringResource(R.string.settings_preview_images_segment_left_small),
+            ),
+            ChoiceOption(
+                ThumbnailStyle.LEFT_LARGE.name,
+                stringResource(R.string.story_thumbnail_left_hand_large),
+                stringResource(R.string.settings_preview_images_segment_left_large),
+            ),
+            ChoiceOption(
+                ThumbnailStyle.RIGHT_SMALL.name,
+                stringResource(R.string.story_thumbnail_right_hand_small),
+                stringResource(R.string.settings_preview_images_segment_right_small),
+            ),
+            ChoiceOption(
+                ThumbnailStyle.RIGHT_LARGE.name,
+                stringResource(R.string.story_thumbnail_right_hand_large),
+                stringResource(R.string.settings_preview_images_segment_right_large),
+            ),
         )
     val browserOptions =
         listOf(
@@ -371,22 +403,15 @@ fun SettingsScreen(
                 onSelected = { onStringChanged(PrefConstants.DEFAULT_READ_FILTER, it) },
             )
             RowDivider(palette)
-            ValueSettingsRow(
+            SegmentedSettingsRow(
                 title = confirmMarkReadTitle,
                 icon = Icons.Rounded.CheckCircle,
                 iconColor = NewsblurGreen,
-                currentValue = confirmMarkReadOptions.labelFor(state.markAllReadConfirmation),
+                selectedValue = state.markAllReadConfirmation,
+                options = confirmMarkReadOptions,
                 palette = palette,
                 footer = stringResource(R.string.settings_confirm_mark_all_read_note),
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = confirmMarkReadTitle,
-                            selectedValue = state.markAllReadConfirmation,
-                            options = confirmMarkReadOptions,
-                            onSelect = { onStringChanged(PrefConstants.MARK_ALL_READ_CONFIRMATION, it) },
-                        )
-                },
+                onSelected = { onStringChanged(PrefConstants.MARK_ALL_READ_CONFIRMATION, it) },
             )
             RowDivider(palette)
             ToggleSettingsRow(
@@ -462,21 +487,14 @@ fun SettingsScreen(
                 onSelected = { onStringChanged(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, it) },
             )
             RowDivider(palette)
-            ValueSettingsRow(
+            SegmentedSettingsRow(
                 title = previewImagesTitle,
                 icon = Icons.Rounded.Photo,
                 iconColor = NewsblurGreen,
-                currentValue = thumbnailOptions.labelFor(state.thumbnailStyle),
+                selectedValue = state.thumbnailStyle,
+                options = thumbnailOptions,
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = previewImagesTitle,
-                            selectedValue = state.thumbnailStyle,
-                            options = thumbnailOptions,
-                            onSelect = { onStringChanged(PrefConstants.STORIES_THUMBNAIL_STYLE, it) },
-                        )
-                },
+                onSelected = { onStringChanged(PrefConstants.STORIES_THUMBNAIL_STYLE, it) },
             )
         }
 
@@ -914,6 +932,7 @@ private fun SegmentedSettingsRow(
     options: List<ChoiceOption>,
     palette: SettingsPalette,
     subtitle: String? = null,
+    footer: String? = null,
     onSelected: (String) -> Unit,
 ) {
     Column(
@@ -980,6 +999,15 @@ private fun SegmentedSettingsRow(
                     )
                 }
             }
+        }
+        footer?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = it,
+                color = palette.textSecondary,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 40.dp, end = 6.dp),
+            )
         }
     }
 }
