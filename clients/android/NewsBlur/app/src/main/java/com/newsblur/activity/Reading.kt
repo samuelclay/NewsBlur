@@ -105,6 +105,7 @@ abstract class Reading :
     private lateinit var intelState: StateFilter
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
+    private lateinit var traverseBar: ReadingTraverseBar
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
@@ -214,13 +215,11 @@ abstract class Reading :
         overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
         overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
 
-        ViewUtils.setViewElevation(binding.readingOverlayLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayRight, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayText, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlaySend, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgress, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressRight, OVERLAY_ELEVATION_DP)
+        traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
+        traverseBar.setup()
+
+        ViewUtils.setViewElevation(binding.readingOverlayLeftGroup, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayRightGroup, OVERLAY_ELEVATION_DP)
 
         // this likes to default to 'on' for some platforms
         enableProgressCircle(binding.readingOverlayProgressLeft, false)
@@ -237,7 +236,7 @@ abstract class Reading :
         binding.readingOverlaySend.setOnClickListener { overlaySendClick() }
         binding.readingOverlayLeft.setOnClickListener { overlayLeftClick() }
         binding.readingOverlayRight.setOnClickListener { overlayRightClick() }
-        binding.readingOverlayProgress.setOnClickListener { overlayProgressCountClick() }
+        binding.readingOverlayProgressTapArea.setOnClickListener { overlayProgressCountClick() }
     }
 
     private fun setupObservers() {
@@ -530,11 +529,11 @@ abstract class Reading :
         }
 
         runOnUiThread {
-            UIUtils.setViewAlpha(binding.readingOverlayLeft, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayRight, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayProgress, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayText, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlaySend, a, !overflowExtras)
+            binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
+            binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
+
+            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, a, true)
+            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, a, true)
         }
     }
 
@@ -557,17 +556,8 @@ abstract class Reading :
         if (currentUnreadCount > startingUnreadCount) {
             startingUnreadCount = currentUnreadCount
         }
-        binding.readingOverlayLeft.isEnabled = getLastReadPosition(false) != -1
-        binding.readingOverlayRight.setText(if (currentUnreadCount > 0) R.string.overlay_next else R.string.overlay_done)
-        if (currentUnreadCount > 0) {
-            binding.readingOverlayRight.setBackgroundResource(
-                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background),
-            )
-        } else {
-            binding.readingOverlayRight.setBackgroundResource(
-                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background),
-            )
-        }
+        traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+        traverseBar.updateNextShowDone(currentUnreadCount <= 0)
 
         if (startingUnreadCount == 0) {
             // sessions with no unreads just show a full progress bar
@@ -587,17 +577,9 @@ abstract class Reading :
         runOnUiThread(
             Runnable {
                 val item = readingFragment ?: return@Runnable
-                if (item.selectedViewMode == DefaultFeedView.STORY) {
-                    binding.readingOverlayText.setBackgroundResource(
-                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundText, android.R.attr.background),
-                    )
-                    binding.readingOverlayText.setText(R.string.overlay_text)
-                } else {
-                    binding.readingOverlayText.setBackgroundResource(
-                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundStory, android.R.attr.background),
-                    )
-                    binding.readingOverlayText.setText(R.string.overlay_story)
-                }
+                val inTextView = item.selectedViewMode != DefaultFeedView.STORY
+                traverseBar.updateTextInTextView(inTextView, enabled = true)
+                traverseBar.updateSendEnabled(true)
             },
         )
     }
