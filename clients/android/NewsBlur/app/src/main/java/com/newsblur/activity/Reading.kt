@@ -130,6 +130,7 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
+        PendingTransitionUtils.overrideEnterTransition(this)
         window.setBackgroundDrawableResource(android.R.color.transparent)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
