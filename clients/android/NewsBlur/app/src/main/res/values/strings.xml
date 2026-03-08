@@ -670,14 +670,18 @@
 
     <string name="settings_confirm_mark_range_read">Confirm mark older/newer read</string>
 
-    <string name="settings_ltr_gesture_action">Rightward swipe on story title…</string>
+    <string name="settings_ltr_gesture_action">Rightward swipe on story list…</string>
     <string name="gest_action_none">No action</string>
+    <string name="gest_action_back">Go back to previous list</string>
+    <string name="gest_action_toggle_read">Toggle story read status</string>
     <string name="gest_action_markread">Mark story as read</string>
     <string name="gest_action_markunread">Mark story as unread</string>
     <string name="gest_action_save">Save story</string>
     <string name="gest_action_unsave">Unsave story</string>
     <string name="gest_action_statistics">Site statistics</string>
     <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
@@ -686,6 +690,8 @@
         <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="ltr_gesture_action_values">
+        <item>GEST_ACTION_BACK</item>
+        <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
@@ -693,10 +699,11 @@
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
+    <string name="ltr_gesture_action_value">GEST_ACTION_BACK</string>
 
     <string name="settings_rtl_gesture_action">Leftward swipe on story title…</string>
     <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
@@ -705,6 +712,7 @@
         <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="rtl_gesture_action_values">
+        <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
@@ -712,7 +720,7 @@
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
+    <string name="rtl_gesture_action_value">GEST_ACTION_TOGGLE_READ</string>
 
     <string name="default_browser">Default browser…</string>
     <string name="font">Font…</string>

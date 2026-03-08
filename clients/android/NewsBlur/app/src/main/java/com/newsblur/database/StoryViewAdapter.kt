@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
+import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
@@ -503,6 +504,8 @@ class StoryViewAdapter(
                 gestureR2L = false
             }
             when (action) {
+                GestureAction.GEST_ACTION_BACK -> (context as? ItemsList)?.completeInteractiveStoryListSwipe()
+                GestureAction.GEST_ACTION_TOGGLE_READ -> toggleStoryReadState()
                 GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
                 GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
@@ -510,6 +513,15 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}
+            }
+        }
+
+        private fun toggleStoryReadState() {
+            val targetStory = story ?: return
+            if (targetStory.read) {
+                feedUtils.markStoryUnread(targetStory, context)
+            } else {
+                feedUtils.markStoryAsRead(targetStory, context)
             }
         }
     }

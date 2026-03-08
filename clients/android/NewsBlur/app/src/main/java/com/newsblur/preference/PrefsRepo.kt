@@ -770,12 +770,12 @@ class PrefsRepo(
 
     fun getLeftToRightGestureAction(): GestureAction =
         GestureAction.valueOf(
-            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!,
+            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK.toString())!!,
         )
 
     fun getRightToLeftGestureAction(): GestureAction =
         GestureAction.valueOf(
-            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!,
+            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ.toString())!!,
         )
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)

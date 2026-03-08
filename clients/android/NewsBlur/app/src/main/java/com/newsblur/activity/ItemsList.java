@@ -96,6 +96,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private static final int[] MARK_READ_CUTOFF_DAYS = new int[]{1, 3, 7, 14};
     private static final DecelerateInterpolator STORY_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator STORY_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
+    private static final DecelerateInterpolator STORY_LIST_SWIPE_INTERPOLATOR = new DecelerateInterpolator();
+    private static final long STORY_LIST_SWIPE_SETTLE_DURATION_MS = 180L;
+    private static final float STORY_LIST_SWIPE_ELEVATION_DP = 12f;
 
     protected ItemListViewModel viewModel;
     protected FeedSet fs;
@@ -111,6 +114,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private PopupWindow itemListMenuPopup;
     @Nullable
     private ItemListMenuPopup.Content itemListPopupContent;
+    @Nullable
+    private View interactiveSwipeSurface;
+    private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
     private final Runnable showFetchingBannerRunnable = () -> {
@@ -254,6 +260,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         dismissItemListMenuPopup();
+        resetInteractiveStoryListSwipe(true);
         super.onPause();
         syncServiceState.addRecountCandidate(fs);
     }
@@ -722,6 +729,33 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch);
     }
 
+    public void beginInteractiveStoryListSwipe() {
+        View surface = getInteractiveSwipeSurface();
+        surface.animate().cancel();
+        surface.setTranslationZ(UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP));
+    }
+
+    public void updateInteractiveStoryListSwipe(float offsetPx) {
+        View surface = getInteractiveSwipeSurface();
+        float clampedOffset = Math.max(0f, offsetPx);
+        int width = surface.getWidth();
+        if (width > 0) {
+            clampedOffset = Math.min(clampedOffset, width);
+        }
+        surface.setTranslationX(clampedOffset);
+        surface.setTranslationZ(clampedOffset > 0f ? UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP) : 0f);
+    }
+
+    public void cancelInteractiveStoryListSwipe() {
+        animateInteractiveStoryListSwipe(0f, false);
+    }
+
+    public void completeInteractiveStoryListSwipe() {
+        View surface = getInteractiveSwipeSurface();
+        float targetTranslation = surface.getWidth() > 0 ? surface.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        animateInteractiveStoryListSwipe(targetTranslation, true);
+    }
+
     private void handleReadingActivityResult(ActivityResult result) {
         if (result.getData() != null) {
             int lastReadingPosition = result.getData().getIntExtra(Reading.LAST_READING_POS, -1);
@@ -737,7 +771,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         super.finish();
-        PendingTransitionUtils.overrideExitTransition(this);
+        if (suppressNextExitTransition) {
+            PendingTransitionUtils.overrideNoExitTransition(this);
+        } else {
+            PendingTransitionUtils.overrideExitTransition(this);
+        }
+        suppressNextExitTransition = false;
     }
 
     private void scheduleInitialFetchingBanner() {
@@ -840,6 +879,39 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             storyStatusBannerAnimator = null;
         }
         binding.itemlistStoryStatusBanner.animate().cancel();
+    }
+
+    private void animateInteractiveStoryListSwipe(float targetTranslationX, boolean finishWhenComplete) {
+        View surface = getInteractiveSwipeSurface();
+        surface.animate()
+                .translationX(targetTranslationX)
+                .setDuration(STORY_LIST_SWIPE_SETTLE_DURATION_MS)
+                .setInterpolator(STORY_LIST_SWIPE_INTERPOLATOR)
+                .withEndAction(() -> {
+                    if (finishWhenComplete) {
+                        suppressNextExitTransition = true;
+                        finish();
+                    } else {
+                        resetInteractiveStoryListSwipe(false);
+                    }
+                })
+                .start();
+    }
+
+    private View getInteractiveSwipeSurface() {
+        if (interactiveSwipeSurface == null) {
+            interactiveSwipeSurface = findViewById(android.R.id.content);
+        }
+        return interactiveSwipeSurface;
+    }
+
+    private void resetInteractiveStoryListSwipe(boolean cancelAnimation) {
+        View surface = getInteractiveSwipeSurface();
+        if (cancelAnimation) {
+            surface.animate().cancel();
+        }
+        surface.setTranslationX(0f);
+        surface.setTranslationZ(0f);
     }
 
     private int measureStoryStatusBannerHeight() {
