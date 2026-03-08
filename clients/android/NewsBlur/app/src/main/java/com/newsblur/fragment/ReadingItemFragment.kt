@@ -52,6 +52,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
+import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
@@ -596,8 +597,15 @@ class ReadingItemFragment :
             R.id.menu_go_to_feed -> {
                 val feed = dbHelper.getFeed(story!!.feedId)
                 feed?.let {
-                    val fs = FeedSet.singleFeed(it.feedId)
-                    FeedItemsList.startActivity(requireContext(), fs, it, null, null)
+                    val targetFeedSet = FeedSet.singleFeed(it.feedId)
+                    val folderName = targetFeedFolderName()
+                    feedUtils.currentFolderName =
+                        if (folderName == AppConstants.ROOT_FOLDER) {
+                            null
+                        } else {
+                            folderName
+                        }
+                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null)
                 }
                 true
             }
@@ -620,6 +628,13 @@ class ReadingItemFragment :
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
         } ?: Log.e(this.javaClass.name, "Error switching null story read state.")
     }
+
+    private fun targetFeedFolderName(): String =
+        when {
+            fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+            !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+            else -> AppConstants.ROOT_FOLDER
+        }
 
     private fun updateMarkStoryReadState() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {

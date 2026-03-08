@@ -28,6 +28,7 @@ import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.AppConstants
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
@@ -445,12 +446,19 @@ class StoryViewAdapter(
                 intelFrag.show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
-                val fs = FeedSet.singleFeed(story!!.feedId)
+                val targetFeedSet = FeedSet.singleFeed(story!!.feedId)
+                val folderName = targetFeedFolderName()
+                feedUtils.currentFolderName =
+                    if (folderName == AppConstants.ROOT_FOLDER) {
+                        null
+                    } else {
+                        folderName
+                    }
                 FeedItemsList.startActivity(
                     context,
-                    fs,
+                    targetFeedSet,
                     feedUtils.getFeed(story!!.feedId),
-                    null,
+                    folderName,
                     null,
                 )
                 return true
@@ -458,6 +466,13 @@ class StoryViewAdapter(
                 return false
             }
         }
+
+        private fun targetFeedFolderName(): String =
+            when {
+                fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+                !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+                else -> AppConstants.ROOT_FOLDER
+            }
 
         override fun onTouch(
             v: View,
