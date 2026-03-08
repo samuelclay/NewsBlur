@@ -29,8 +29,9 @@ class ReadingTraverseBar(
     selectedTheme: ThemeValue,
 ) {
     private val iconSizeDp = 14
+    private val sendIconSizeDp = 12
     private val previousChevronSizeDp = 12
-    private val nextChevronSizeDp = 16
+    private val nextChevronSizeDp = 24
     private val textButtonStartPaddingDp = 12
     private val textButtonEndPaddingDp = 12
     private val textButtonDrawablePaddingDp = 6
@@ -39,7 +40,8 @@ class ReadingTraverseBar(
     private val nextButtonEndPaddingDp = 10
 
     private var resolvedTheme = resolveTheme(selectedTheme)
-    private var palette = paletteFor(resolvedTheme)
+    var palette = paletteFor(resolvedTheme)
+        private set
 
     private var previousEnabled = false
     private var nextShowsDone = false
@@ -152,7 +154,7 @@ class ReadingTraverseBar(
         binding.readingOverlayLeft.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
         binding.readingOverlayRight.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
 
-        binding.readingOverlaySend.setImageDrawable(sizedTintedDrawable(R.drawable.ic_send_to, palette.tintColor, iconSizeDp))
+        binding.readingOverlaySend.setImageDrawable(sizedTintedDrawable(R.drawable.ic_send_to, palette.tintColor, sendIconSizeDp))
         binding.readingOverlayLeft.setImageDrawable(
             sizedTintedDrawable(
                 R.drawable.ic_chevron_left,
@@ -207,7 +209,8 @@ class ReadingTraverseBar(
 
     private fun configureImageButtons() {
         val iconPadding = UIUtils.dp2px(context, 10)
-        binding.readingOverlaySend.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+        val sendPadding = UIUtils.dp2px(context, 12)
+        binding.readingOverlaySend.setPadding(sendPadding, sendPadding, sendPadding, sendPadding)
         binding.readingOverlayLeft.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
     }
 
@@ -351,7 +354,7 @@ class ReadingTraverseBar(
         }
 }
 
-private data class ReadingTraversePalette(
+data class ReadingTraversePalette(
     val groupBackgroundColor: Int,
     val separatorColor: Int,
     val tintColor: Int,
