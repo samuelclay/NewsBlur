@@ -443,6 +443,7 @@
     <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories folder</string>
 
     <string name="settings_cat_story_list">Story List</string>
+    <string name="settings_cat_story_layout">Story Layout</string>
 
     <string name="oldest">Oldest</string>
     <string name="newest">Newest</string>
@@ -481,6 +482,7 @@
     <string name="menu_story_thumbnail_preview">Thumbnail preview</string>
     <string name="menu_mark_read_on_scroll">Mark read on scroll</string>
     <string name="settings_read_filter">Read story filter…</string>
+    <string name="settings_read_filter_title">Stories shown</string>
     <string name="menu_read_filter">Read story filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
@@ -516,6 +518,7 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
+    <string name="settings_mark_story_read_title">Mark stories read</string>
     <string name="mark_story_read_immediately">Immediately</string>
     <string name="mark_story_read_5_seconds">After 5 seconds</string>
     <string name="mark_story_read_10_seconds">After 10 seconds</string>
@@ -553,9 +556,17 @@
     <string name="settings_reading">Reading</string>
     <string name="settings_content_preview">Content preview text…</string>
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>
+    <string name="settings_preview_images_title">Preview images</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
     <string name="settings_enable_notifications_key">enable_notifications</string>
+    <string name="settings_confirm_mark_all_read_note">Mark read options are always available via long press on the mark read button.</string>
+    <string name="settings_after_mark_read_title">After mark read</string>
+    <string name="settings_after_mark_read_next">Open next list</string>
+    <string name="settings_after_mark_read_stay">Stay here</string>
+    <string name="settings_when_opening_site_title">When opening a site</string>
+    <string name="settings_when_opening_site_stories">Show stories</string>
+    <string name="settings_when_opening_site_first_story">Open first story</string>
 
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
