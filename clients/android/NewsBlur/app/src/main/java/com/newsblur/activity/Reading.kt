@@ -86,6 +86,7 @@ abstract class Reading :
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
+    private var activeUnreadSnackbar: com.google.android.material.snackbar.Snackbar? = null
     private var overlayRangeTopPx = 0f
     private var overlayRangeBotPx = 0f
     private var lastVScrollPos = 0
@@ -214,6 +215,8 @@ abstract class Reading :
         // this value is expensive to compute but doesn't change during a single runtime
         overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
         overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
+
+        findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
@@ -570,6 +573,7 @@ abstract class Reading :
         }
         binding.readingOverlayProgress.invalidate()
 
+        updateUnreadSnackbarIfVisible()
         invalidateOptionsMenu()
     }
 
@@ -766,8 +770,54 @@ abstract class Reading :
      * Click handler for the progress indicator on the righthand overlay nav button.
      */
     private fun overlayProgressCountClick() {
-        val unreadText = getString(if (unreadCount == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
-        Toast.makeText(this, String.format(unreadText, unreadCount), Toast.LENGTH_SHORT).show()
+        showUnreadSnackbar()
+    }
+
+    private fun showUnreadSnackbar() {
+        val count = unreadCount
+        val unreadText = getString(if (count == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
+        val message = String.format(unreadText, count)
+
+        val existing = activeUnreadSnackbar
+        if (existing != null && existing.isShown) {
+            existing.setText(message)
+            return
+        }
+
+        val snackbar = com.google.android.material.snackbar.Snackbar.make(
+            binding.root,
+            message,
+            com.google.android.material.snackbar.Snackbar.LENGTH_SHORT,
+        )
+        snackbar.anchorView = binding.contentBottomOverlay
+        val snackView = snackbar.view
+        val params = snackView.layoutParams as android.widget.FrameLayout.LayoutParams
+        params.width = android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        params.gravity = android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.BOTTOM
+        snackView.layoutParams = params
+        snackView.background = android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            cornerRadius = UIUtils.dp2px(this@Reading, 20f)
+            setColor(traverseBar.palette.groupBackgroundColor)
+        }
+        val textView = snackView.findViewById<android.widget.TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.setTextColor(traverseBar.palette.tintColor)
+        textView.textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+        snackbar.addCallback(object : com.google.android.material.snackbar.Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: com.google.android.material.snackbar.Snackbar?, event: Int) {
+                if (activeUnreadSnackbar === transientBottomBar) activeUnreadSnackbar = null
+            }
+        })
+        activeUnreadSnackbar = snackbar
+        snackbar.show()
+    }
+
+    private fun updateUnreadSnackbarIfVisible() {
+        val existing = activeUnreadSnackbar ?: return
+        if (!existing.isShown) return
+        val count = unreadCount
+        val unreadText = getString(if (count == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
+        existing.setText(String.format(unreadText, count))
     }
 
     private fun overlaySendClick() {
@@ -779,6 +829,10 @@ abstract class Reading :
     private fun overlayTextClick() {
         val item = readingFragment ?: return
         item.switchSelectedViewMode()
+    }
+
+    private fun openStorySettingsMenu(anchor: View) {
+        readingFragment?.showStoryContextMenu(anchor)
     }
 
     private val readingFragment: ReadingItemFragment?

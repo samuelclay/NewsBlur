@@ -93,7 +93,7 @@
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:padding="0dp"
-                    android:scaleType="center"
+                    android:scaleType="fitCenter"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/reading_overlay_left_separator"
@@ -164,6 +164,8 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="center"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:indicatorSize="16dp"
                         app:trackThickness="2dp" />
 
@@ -172,6 +174,8 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="center"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:indeterminate="true"
                         android:visibility="gone"
                         app:indicatorSize="16dp"
