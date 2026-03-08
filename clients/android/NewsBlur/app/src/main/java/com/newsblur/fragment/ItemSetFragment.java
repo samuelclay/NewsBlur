@@ -5,9 +5,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.VelocityTracker;
+import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,7 @@ import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.SpacingStyle;
@@ -52,6 +56,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ItemSetFragment extends NbFragment {
+    private static final float STORY_LIST_BACK_GESTURE_TRIGGER_RATIO = 0.33f;
+    private static final float STORY_LIST_BACK_GESTURE_DIRECTION_RATIO = 1.2f;
 
     @Inject
     FeedUtils feedUtils;
@@ -215,6 +221,7 @@ public class ItemSetFragment extends NbFragment {
                 ItemSetFragment.this.onScrolled(dy);
             }
         });
+        binding.itemgridfragmentGrid.addOnItemTouchListener(new StoryListBackTouchListener());
 
         return v;
     }
@@ -547,6 +554,125 @@ public class ItemSetFragment extends NbFragment {
             ItemsList activity = ((ItemsList) getActivity());
             if (activity != null) activity.startReadingActivity(feedSet, storyHash);
         };
+    }
+
+    private boolean isInteractiveStoryListSwipeEnabled() {
+        ItemsList activity = (ItemsList) getActivity();
+        return activity != null &&
+                !activity.isTaskRoot() &&
+                prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK;
+    }
+
+    private final class StoryListBackTouchListener implements RecyclerView.OnItemTouchListener {
+        private final int touchSlopPx = ViewConfiguration.get(requireContext()).getScaledTouchSlop();
+        private final int minimumFlingVelocityPx = ViewConfiguration.get(requireContext()).getScaledMinimumFlingVelocity();
+        @Nullable
+        private VelocityTracker velocityTracker;
+        private float downX;
+        private float downY;
+        private boolean isDragging;
+        private boolean gestureEligible;
+
+        @Override
+        public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    gestureEligible = isInteractiveStoryListSwipeEnabled();
+                    isDragging = false;
+                    downX = event.getX();
+                    downY = event.getY();
+                    resetVelocityTracker();
+                    velocityTracker = VelocityTracker.obtain();
+                    velocityTracker.addMovement(event);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (!gestureEligible) return false;
+                    if (velocityTracker != null) velocityTracker.addMovement(event);
+                    float deltaX = event.getX() - downX;
+                    float deltaY = event.getY() - downY;
+                    if (!isDragging &&
+                            deltaX > touchSlopPx &&
+                            deltaX > Math.abs(deltaY) * STORY_LIST_BACK_GESTURE_DIRECTION_RATIO) {
+                        isDragging = true;
+                        ItemsList activity = (ItemsList) getActivity();
+                        if (activity != null) {
+                            activity.beginInteractiveStoryListSwipe();
+                            activity.updateInteractiveStoryListSwipe(deltaX);
+                        }
+                        recyclerView.requestDisallowInterceptTouchEvent(true);
+                        return true;
+                    }
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    resetGestureState();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
+            if (!isDragging) return;
+            if (velocityTracker != null) velocityTracker.addMovement(event);
+
+            ItemsList activity = (ItemsList) getActivity();
+            if (activity == null) {
+                resetGestureState();
+                return;
+            }
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_MOVE:
+                    activity.updateInteractiveStoryListSwipe(event.getX() - downX);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float totalDeltaX = Math.max(0f, event.getX() - downX);
+                    float xVelocity = getXVelocity();
+                    boolean shouldComplete = totalDeltaX >= recyclerView.getWidth() * STORY_LIST_BACK_GESTURE_TRIGGER_RATIO;
+                    if (!shouldComplete && xVelocity > minimumFlingVelocityPx * 4f) {
+                        shouldComplete = true;
+                    }
+                    if (shouldComplete) {
+                        activity.completeInteractiveStoryListSwipe();
+                    } else {
+                        activity.cancelInteractiveStoryListSwipe();
+                    }
+                    resetGestureState();
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    activity.cancelInteractiveStoryListSwipe();
+                    resetGestureState();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        }
+
+        private float getXVelocity() {
+            if (velocityTracker == null) return 0f;
+            velocityTracker.computeCurrentVelocity(1000);
+            return velocityTracker.getXVelocity();
+        }
+
+        private void resetGestureState() {
+            isDragging = false;
+            gestureEligible = false;
+            resetVelocityTracker();
+        }
+
+        private void resetVelocityTracker() {
+            if (velocityTracker != null) {
+                velocityTracker.recycle();
+                velocityTracker = null;
+            }
+        }
     }
 
     @Override
