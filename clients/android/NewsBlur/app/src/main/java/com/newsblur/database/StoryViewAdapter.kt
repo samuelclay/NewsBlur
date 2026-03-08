@@ -859,6 +859,7 @@ class StoryViewAdapter(
             val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
             val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
             if (e1 != null &&
+                shouldHandleLeftToRightStoryGesture() &&
                 e1.x > edgeWithNavGesturesPaddingPx &&
                 // the gesture should not start too close to the left edge and
                 e2.x - e1.x > 50f &&
@@ -881,6 +882,11 @@ class StoryViewAdapter(
                 return true
             }
             return false
+        }
+
+        private fun shouldHandleLeftToRightStoryGesture(): Boolean {
+            if (context !is ItemsList) return true
+            return prefsRepo.getLeftToRightGestureAction() != GestureAction.GEST_ACTION_BACK
         }
     }
 

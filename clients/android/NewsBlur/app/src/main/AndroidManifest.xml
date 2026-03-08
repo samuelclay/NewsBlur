@@ -65,25 +65,42 @@
             android:label="@string/menu_widget"
             android:launchMode="singleTask" />
 
-        <activity android:name=".activity.FeedItemsList" />
+        <activity
+            android:name=".activity.FeedItemsList"
+            android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllStoriesItemsList"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.InfrequentItemsList" />
+        <activity
+            android:name=".activity.InfrequentItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.ReadStoriesItemsList" />
+        <activity
+            android:name=".activity.ReadStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SavedStoriesItemsList" />
+        <activity
+            android:name=".activity.SavedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllSharedStoriesItemsList" />
+        <activity
+            android:name=".activity.AllSharedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.GlobalSharedStoriesItemsList" />
+        <activity
+            android:name=".activity.GlobalSharedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FolderItemsList" />
+        <activity
+            android:name=".activity.FolderItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SocialFeedItemsList" />
+        <activity
+            android:name=".activity.SocialFeedItemsList"
+            android:theme="@style/Theme.Translucent" />
 
         <activity android:name=".activity.FeedReading" />
 

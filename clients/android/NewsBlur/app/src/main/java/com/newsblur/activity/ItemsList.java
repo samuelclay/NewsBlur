@@ -221,6 +221,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     @Override
+    protected boolean shouldUseTranslucentTheme() {
+        return true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (syncServiceState.isHousekeepingRunning()) finish();
