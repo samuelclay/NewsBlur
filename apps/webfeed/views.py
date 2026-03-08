@@ -4,12 +4,11 @@ import uuid
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
+from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
-
-from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 
 from .models import MWebFeedConfig
 from .tasks import AnalyzeWebFeedPage

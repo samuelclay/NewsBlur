@@ -4298,16 +4298,12 @@ def set_feed_mute(request):
     if mute:
         sub.active = False
         if mute_duration_days and mute_duration_days > 0:
-            sub.mute_expires_at = datetime.datetime.now() + datetime.timedelta(
-                days=mute_duration_days
-            )
+            sub.mute_expires_at = datetime.datetime.now() + datetime.timedelta(days=mute_duration_days)
         else:
             sub.mute_expires_at = None
         sub.save()
         duration_text = (
-            "%s days" % mute_duration_days
-            if mute_duration_days and mute_duration_days > 0
-            else "forever"
+            "%s days" % mute_duration_days if mute_duration_days and mute_duration_days > 0 else "forever"
         )
         logging.user(request, "~BB~FW~SBMuted feed ~FC%s~FB for %s" % (feed_id, duration_text))
     else:
@@ -4924,9 +4920,7 @@ def trending_feeds(request):
     feed_ids = [feed_id for feed_id, _ in trending]
     feeds = Feed.objects.filter(
         pk__in=feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
-    ).values(
-        "pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers"
-    )
+    ).values("pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers")
     feeds_dict = {f["pk"]: f for f in feeds}
 
     result = []
