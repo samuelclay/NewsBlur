@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -21,6 +22,11 @@ class ReadingTraverseBar(
     private val binding: ActivityReadingBinding,
     selectedTheme: ThemeValue,
 ) {
+    private val iconSizeDp = 14
+    private val chevronSizeDp = 12
+    private val textButtonStartPaddingDp = 18
+    private val textButtonEndPaddingDp = 10
+
     private var resolvedTheme = resolveTheme(selectedTheme)
     private var palette = paletteFor(resolvedTheme)
 
@@ -61,7 +67,7 @@ class ReadingTraverseBar(
             sizedTintedDrawable(
                 if (showDone) R.drawable.ic_checkmark else R.drawable.ic_chevron_right,
                 palette.tintColor,
-                12,
+                chevronSizeDp,
             ),
             null,
         )
@@ -87,10 +93,11 @@ class ReadingTraverseBar(
             null,
         )
         binding.readingOverlayText.background =
-            buttonBackground(
-                cornerRadiusDp = 8f,
-                color = if (inTextView) palette.activeTextBackgroundColor else Color.TRANSPARENT,
-            )
+            if (inTextView) {
+                activeTextButtonBackground()
+            } else {
+                buttonBackground(cornerRadiusDp = 8f, color = Color.TRANSPARENT)
+            }
         binding.readingOverlayText.isEnabled = enabled
         binding.readingOverlayText.alpha = if (enabled) 1f else 0.4f
         binding.readingOverlayText.setTextColor(palette.tintColor)
@@ -125,8 +132,8 @@ class ReadingTraverseBar(
         binding.readingOverlayLeft.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
         binding.readingOverlayRight.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
 
-        binding.readingOverlaySend.setImageDrawable(tintedDrawable(R.drawable.ic_send_to, palette.tintColor))
-        binding.readingOverlayLeft.setImageDrawable(tintedDrawable(R.drawable.ic_chevron_left, palette.tintColor))
+        binding.readingOverlaySend.setImageDrawable(sizedTintedDrawable(R.drawable.ic_send_to, palette.tintColor, iconSizeDp))
+        binding.readingOverlayLeft.setImageDrawable(sizedTintedDrawable(R.drawable.ic_chevron_left, palette.tintColor, chevronSizeDp))
     }
 
     private fun configureTextButton() {
@@ -135,7 +142,12 @@ class ReadingTraverseBar(
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             gravity = Gravity.CENTER
             compoundDrawablePadding = UIUtils.dp2px(context, 6)
-            setPaddingRelative(UIUtils.dp2px(context, 14), 0, UIUtils.dp2px(context, 14), 0)
+            setPaddingRelative(
+                UIUtils.dp2px(context, textButtonStartPaddingDp),
+                0,
+                UIUtils.dp2px(context, textButtonEndPaddingDp),
+                0,
+            )
             minimumWidth = 0
             minimumHeight = 0
             includeFontPadding = false
@@ -182,6 +194,20 @@ class ReadingTraverseBar(
             setColor(color)
         }
 
+    private fun activeTextButtonBackground(): Drawable {
+        val separatorGap = UIUtils.dp2px(context, 4)
+        return InsetDrawable(
+            buttonBackground(
+                cornerRadiusDp = 8f,
+                color = palette.activeTextBackgroundColor,
+            ),
+            0,
+            0,
+            separatorGap,
+            0,
+        )
+    }
+
     private fun tintedDrawable(
         drawableRes: Int,
         tintColor: Int,
@@ -211,7 +237,7 @@ class ReadingTraverseBar(
             )
         val labelWidth = labels.maxOf { ceil(binding.readingOverlayText.paint.measureText(it).toDouble()).toInt() }
         val horizontalPadding = binding.readingOverlayText.paddingStart + binding.readingOverlayText.paddingEnd
-        val iconWidth = UIUtils.dp2px(context, 14)
+        val iconWidth = UIUtils.dp2px(context, iconSizeDp)
         val drawablePadding = binding.readingOverlayText.compoundDrawablePadding
         return labelWidth + horizontalPadding + iconWidth + drawablePadding
     }
