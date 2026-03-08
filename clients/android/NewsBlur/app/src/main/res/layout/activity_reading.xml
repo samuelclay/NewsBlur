@@ -58,20 +58,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/reading_overlay_text"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
+                    android:background="@android:color/transparent"
                     android:contentDescription="@string/overlay_text"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:text="@string/overlay_text"
                     android:textAllCaps="false"
                     android:textSize="13sp"
-                    app:iconPadding="6dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -84,13 +84,16 @@
                     app:layout_constraintStart_toEndOf="@id/reading_overlay_text"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/reading_overlay_send"
                     android:layout_width="44dp"
                     android:layout_height="0dp"
+                    android:background="@android:color/transparent"
                     android:contentDescription="@string/short_share_this_story"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:scaleType="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/reading_overlay_left_separator"
@@ -118,18 +121,22 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="16dp"
+                app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/reading_overlay_left_group"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/reading_overlay_left"
                     android:layout_width="44dp"
                     android:layout_height="0dp"
+                    android:background="@android:color/transparent"
                     android:contentDescription="@string/short_previous_story"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:scaleType="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -172,17 +179,17 @@
 
                 </FrameLayout>
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/reading_overlay_right"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:background="@android:color/transparent"
                     android:contentDescription="@string/overlay_next"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:text="@string/overlay_next"
                     android:textAllCaps="false"
                     android:textSize="13sp"
-                    app:iconPadding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/reading_overlay_progress_tap_area"

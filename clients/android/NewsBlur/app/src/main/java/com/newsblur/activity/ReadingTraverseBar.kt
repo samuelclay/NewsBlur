@@ -1,16 +1,16 @@
 package com.newsblur.activity
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
+import kotlin.math.ceil
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
-import com.google.android.material.button.MaterialButton
 import com.newsblur.R
 import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -32,9 +32,8 @@ class ReadingTraverseBar(
 
     fun setup() {
         configureTextButton()
-        configureIconButton(binding.readingOverlaySend)
-        configureIconButton(binding.readingOverlayLeft)
         configureNextButton()
+        configureImageButtons()
         applyPalette()
         syncState()
     }
@@ -56,11 +55,16 @@ class ReadingTraverseBar(
         nextShowsDone = showDone
         binding.readingOverlayRight.text = context.getString(if (showDone) R.string.overlay_done else R.string.overlay_next)
         binding.readingOverlayRight.contentDescription = binding.readingOverlayRight.text
-        binding.readingOverlayRight.icon =
-            tintedDrawable(
+        binding.readingOverlayRight.setCompoundDrawablesRelative(
+            null,
+            null,
+            sizedTintedDrawable(
                 if (showDone) R.drawable.ic_checkmark else R.drawable.ic_chevron_right,
                 palette.tintColor,
-            )
+                12,
+            ),
+            null,
+        )
     }
 
     fun updateTextInTextView(
@@ -72,15 +76,24 @@ class ReadingTraverseBar(
 
         binding.readingOverlayText.text = context.getString(if (inTextView) R.string.overlay_story else R.string.overlay_text)
         binding.readingOverlayText.contentDescription = binding.readingOverlayText.text
-        binding.readingOverlayText.icon =
-            tintedDrawable(
+        binding.readingOverlayText.setCompoundDrawablesRelative(
+            sizedTintedDrawable(
                 if (inTextView) R.drawable.ic_story_feed_gray46 else R.drawable.ic_story_text_gray46,
                 palette.tintColor,
+                14,
+            ),
+            null,
+            null,
+            null,
+        )
+        binding.readingOverlayText.background =
+            buttonBackground(
+                cornerRadiusDp = 8f,
+                color = if (inTextView) palette.activeTextBackgroundColor else Color.TRANSPARENT,
             )
-        binding.readingOverlayText.backgroundTintList =
-            ColorStateList.valueOf(if (inTextView) palette.activeTextBackgroundColor else Color.TRANSPARENT)
         binding.readingOverlayText.isEnabled = enabled
         binding.readingOverlayText.alpha = if (enabled) 1f else 0.4f
+        binding.readingOverlayText.setTextColor(palette.tintColor)
     }
 
     fun updateSendEnabled(enabled: Boolean) {
@@ -108,70 +121,48 @@ class ReadingTraverseBar(
         binding.readingOverlayProgressRight.setIndicatorColor(palette.tintColor)
         binding.readingOverlayProgressLeft.setIndicatorColor(palette.tintColor)
 
-        applyButtonChrome(binding.readingOverlaySend, cornerRadiusDp = 12f, backgroundColor = Color.TRANSPARENT)
-        applyButtonChrome(binding.readingOverlayLeft, cornerRadiusDp = 12f, backgroundColor = Color.TRANSPARENT)
-        applyButtonChrome(binding.readingOverlayRight, cornerRadiusDp = 12f, backgroundColor = Color.TRANSPARENT)
-        applyButtonChrome(
-            binding.readingOverlayText,
-            cornerRadiusDp = 8f,
-            backgroundColor = if (inTextView) palette.activeTextBackgroundColor else Color.TRANSPARENT,
-        )
+        binding.readingOverlaySend.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
+        binding.readingOverlayLeft.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
+        binding.readingOverlayRight.background = buttonBackground(cornerRadiusDp = 12f, color = Color.TRANSPARENT)
 
-        binding.readingOverlaySend.icon = tintedDrawable(R.drawable.ic_send_to, palette.tintColor)
-        binding.readingOverlayLeft.icon = tintedDrawable(R.drawable.ic_chevron_left, palette.tintColor)
+        binding.readingOverlaySend.setImageDrawable(tintedDrawable(R.drawable.ic_send_to, palette.tintColor))
+        binding.readingOverlayLeft.setImageDrawable(tintedDrawable(R.drawable.ic_chevron_left, palette.tintColor))
     }
 
     private fun configureTextButton() {
         binding.readingOverlayText.apply {
-            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-            iconPadding = UIUtils.dp2px(context, 6)
-            iconSize = UIUtils.dp2px(context, 14)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
+            gravity = Gravity.CENTER
+            compoundDrawablePadding = UIUtils.dp2px(context, 6)
             setPaddingRelative(UIUtils.dp2px(context, 14), 0, UIUtils.dp2px(context, 14), 0)
             minimumWidth = 0
             minimumHeight = 0
+            includeFontPadding = false
         }
-    }
-
-    private fun configureIconButton(button: MaterialButton) {
-        button.apply {
-            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-            iconSize = UIUtils.dp2px(context, 15)
-            minimumWidth = 0
-            minimumHeight = 0
-            setPadding(0, 0, 0, 0)
-        }
+        binding.readingOverlayText.layoutParams =
+            binding.readingOverlayText.layoutParams.apply {
+                width = stableTextButtonWidth()
+            }
     }
 
     private fun configureNextButton() {
         binding.readingOverlayRight.apply {
-            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
-            iconPadding = UIUtils.dp2px(context, 4)
-            iconSize = UIUtils.dp2px(context, 12)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
+            gravity = Gravity.CENTER
+            compoundDrawablePadding = UIUtils.dp2px(context, 4)
             setPaddingRelative(UIUtils.dp2px(context, 6), 0, UIUtils.dp2px(context, 14), 0)
             minimumWidth = 0
             minimumHeight = 0
+            includeFontPadding = false
         }
     }
 
-    private fun applyButtonChrome(
-        button: MaterialButton,
-        cornerRadiusDp: Float,
-        backgroundColor: Int,
-    ) {
-        button.apply {
-            strokeWidth = 0
-            insetTop = 0
-            insetBottom = 0
-            iconTint = null
-            backgroundTintList = ColorStateList.valueOf(backgroundColor)
-            rippleColor = ColorStateList.valueOf(palette.pressHighlightColor)
-            cornerRadius = UIUtils.dp2px(context, cornerRadiusDp).toInt()
-            setTextColor(palette.tintColor)
-        }
+    private fun configureImageButtons() {
+        val iconPadding = UIUtils.dp2px(context, 10)
+        binding.readingOverlaySend.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+        binding.readingOverlayLeft.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
     }
 
     private fun groupBackground(): Drawable =
@@ -179,6 +170,16 @@ class ReadingTraverseBar(
             shape = GradientDrawable.RECTANGLE
             cornerRadius = UIUtils.dp2px(context, 12f)
             setColor(palette.groupBackgroundColor)
+        }
+
+    private fun buttonBackground(
+        cornerRadiusDp: Float,
+        color: Int,
+    ): Drawable =
+        GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = UIUtils.dp2px(context, cornerRadiusDp)
+            setColor(color)
         }
 
     private fun tintedDrawable(
@@ -189,6 +190,30 @@ class ReadingTraverseBar(
         val wrapped = DrawableCompat.wrap(drawable.mutate())
         DrawableCompat.setTint(wrapped, tintColor)
         return wrapped
+    }
+
+    private fun sizedTintedDrawable(
+        drawableRes: Int,
+        tintColor: Int,
+        sizeDp: Int,
+    ): Drawable? {
+        val drawable = tintedDrawable(drawableRes, tintColor) ?: return null
+        val sizePx = UIUtils.dp2px(context, sizeDp)
+        drawable.setBounds(0, 0, sizePx, sizePx)
+        return drawable
+    }
+
+    private fun stableTextButtonWidth(): Int {
+        val labels =
+            listOf(
+                context.getString(R.string.overlay_text),
+                context.getString(R.string.overlay_story),
+            )
+        val labelWidth = labels.maxOf { ceil(binding.readingOverlayText.paint.measureText(it).toDouble()).toInt() }
+        val horizontalPadding = binding.readingOverlayText.paddingStart + binding.readingOverlayText.paddingEnd
+        val iconWidth = UIUtils.dp2px(context, 14)
+        val drawablePadding = binding.readingOverlayText.compoundDrawablePadding
+        return labelWidth + horizontalPadding + iconWidth + drawablePadding
     }
 
     private fun resolveTheme(selectedTheme: ThemeValue): ThemeValue =
@@ -211,7 +236,6 @@ class ReadingTraverseBar(
                     separatorColor = 0xFFD4C8B8.toInt(),
                     tintColor = 0xFF6A5A4A.toInt(),
                     activeTextBackgroundColor = 0xFFDDD0C0.toInt(),
-                    pressHighlightColor = 0xFFDDD0C0.toInt(),
                     progressColor = 0x808B7B6B.toInt(),
                     progressTrackColor = 0x4DC0B0A0,
                 )
@@ -222,7 +246,6 @@ class ReadingTraverseBar(
                     separatorColor = 0xFF555555.toInt(),
                     tintColor = 0xFFAAAAAA.toInt(),
                     activeTextBackgroundColor = 0xFF555555.toInt(),
-                    pressHighlightColor = 0xFF555555.toInt(),
                     progressColor = 0x80888888.toInt(),
                     progressTrackColor = 0x4D555555,
                 )
@@ -233,7 +256,6 @@ class ReadingTraverseBar(
                     separatorColor = 0xFF3A3A3A.toInt(),
                     tintColor = 0xFFAAAAAA.toInt(),
                     activeTextBackgroundColor = 0xFF404040.toInt(),
-                    pressHighlightColor = 0xFF3A3A3A.toInt(),
                     progressColor = 0x80888888.toInt(),
                     progressTrackColor = 0x4D444444,
                 )
@@ -244,7 +266,6 @@ class ReadingTraverseBar(
                     separatorColor = 0xFFCED0CC.toInt(),
                     tintColor = 0xFF555555.toInt(),
                     activeTextBackgroundColor = 0xFFD0D5CC.toInt(),
-                    pressHighlightColor = 0xFFCDD2C8.toInt(),
                     progressColor = 0x80808080.toInt(),
                     progressTrackColor = 0x4DC0C0C0,
                 )
@@ -256,7 +277,6 @@ private data class ReadingTraversePalette(
     val separatorColor: Int,
     val tintColor: Int,
     val activeTextBackgroundColor: Int,
-    val pressHighlightColor: Int,
     val progressColor: Int,
     val progressTrackColor: Int,
 )
