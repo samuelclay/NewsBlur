@@ -15,6 +15,7 @@
         android:name=".NbApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backupscheme"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/newsblur"
@@ -102,21 +103,37 @@
             android:name=".activity.SocialFeedItemsList"
             android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FeedReading" />
+        <activity
+            android:name=".activity.FeedReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllStoriesReading" />
+        <activity
+            android:name=".activity.AllStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.InfrequentReading" />
+        <activity
+            android:name=".activity.InfrequentReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.ReadStoriesReading" />
+        <activity
+            android:name=".activity.ReadStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SavedStoriesReading" />
+        <activity
+            android:name=".activity.SavedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllSharedStoriesReading" />
+        <activity
+            android:name=".activity.AllSharedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.GlobalSharedStoriesReading" />
+        <activity
+            android:name=".activity.GlobalSharedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FolderReading" />
+        <activity
+            android:name=".activity.FolderReading"
+            android:theme="@style/Theme.Translucent" />
 
         <activity android:name=".activity.SubscriptionActivity" />
 
@@ -129,7 +146,9 @@
             android:name=".activity.FeedSearchActivity"
             android:launchMode="singleTop" />
 
-        <activity android:name=".activity.SocialFeedReading" />
+        <activity
+            android:name=".activity.SocialFeedReading"
+            android:theme="@style/Theme.Translucent" />
 
         <service
             android:name=".service.SyncService"

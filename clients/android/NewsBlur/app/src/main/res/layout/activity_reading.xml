@@ -34,6 +34,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
+    <View
+        android:id="@+id/reading_back_swipe_edge"
+        android:layout_width="24dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+
     <FrameLayout
         android:id="@+id/content_bottom_overlay"
         android:layout_width="0dp"

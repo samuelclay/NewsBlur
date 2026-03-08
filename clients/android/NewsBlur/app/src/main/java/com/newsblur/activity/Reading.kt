@@ -1,13 +1,20 @@
 package com.newsblur.activity
 
+import android.graphics.Rect
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.VelocityTracker
+import android.view.ViewConfiguration
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -38,6 +45,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
+import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
@@ -110,6 +118,10 @@ abstract class Reading :
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
+    private var interactiveBackSurface: View? = null
+    private var suppressNextExitTransition = false
+    private var allowImmediateFinish = false
+    private var predictiveBackInProgress = false
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -118,6 +130,7 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
+        window.setBackgroundDrawableResource(android.R.color.transparent)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
@@ -191,9 +204,13 @@ abstract class Reading :
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false)
         keyboardManager.addListener(this)
+        updateBackSwipeGestureExclusion()
     }
 
     override fun onPause() {
+        if (!isFinishing) {
+            resetInteractiveReaderBackSwipe(cancelAnimation = true)
+        }
         super.onPause()
         keyboardManager.removeListener()
         if (isMultiWindowModeHack) {
@@ -232,6 +249,11 @@ abstract class Reading :
             ?: supportFragmentManager.commit {
                 add(R.id.content, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
             }
+
+        binding.readingBackSwipeEdge.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            updateBackSwipeGestureExclusion()
+        }
+        updateBackSwipeGestureExclusion()
     }
 
     private fun setupListeners() {
@@ -240,6 +262,7 @@ abstract class Reading :
         binding.readingOverlayLeft.setOnClickListener { overlayLeftClick() }
         binding.readingOverlayRight.setOnClickListener { overlayRightClick() }
         binding.readingOverlayProgressTapArea.setOnClickListener { overlayProgressCountClick() }
+        binding.readingBackSwipeEdge.setOnTouchListener(ReadingBackSwipeTouchListener())
     }
 
     private fun setupObservers() {
@@ -255,12 +278,36 @@ abstract class Reading :
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(enabled = true) {
+                override fun handleOnBackStarted(backEvent: BackEventCompat) {
+                    predictiveBackInProgress =
+                        supportsPredictiveReaderBack() &&
+                            isInteractiveReaderBackEnabled() &&
+                            backEvent.swipeEdge == BackEventCompat.EDGE_LEFT
+                    if (predictiveBackInProgress) {
+                        beginInteractiveReaderBackSwipe()
+                    }
+                }
+
+                override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+                    if (!predictiveBackInProgress) return
+                    updateInteractiveReaderBackSwipe(backEvent.progress * interactiveBackSurface().width)
+                }
+
+                override fun handleOnBackCancelled() {
+                    if (!predictiveBackInProgress) return
+                    predictiveBackInProgress = false
+                    cancelInteractiveReaderBackSwipe()
+                }
+
                 override fun handleOnBackPressed() {
+                    predictiveBackInProgress = false
                     finish()
                 }
             },
         )
     }
+
+    override fun shouldUseTranslucentTheme(): Boolean = true
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
@@ -981,6 +1028,10 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        if (!allowImmediateFinish && shouldAnimateReaderBackFinish()) {
+            completeInteractiveReaderBackSwipe()
+            return
+        }
         setResult(
             RESULT_OK,
             Intent().apply {
@@ -992,6 +1043,195 @@ abstract class Reading :
             },
         )
         super.finish()
+        if (suppressNextExitTransition) {
+            PendingTransitionUtils.overrideNoExitTransition(this)
+        }
+        suppressNextExitTransition = false
+        allowImmediateFinish = false
+    }
+
+    private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
+
+    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
+
+    private fun supportsPredictiveReaderBack(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+    private fun beginInteractiveReaderBackSwipe() {
+        interactiveBackSurface().animate().cancel()
+    }
+
+    private fun updateInteractiveReaderBackSwipe(offsetPx: Float) {
+        val surface = interactiveBackSurface()
+        var clampedOffset = offsetPx.coerceAtLeast(0f)
+        val width = surface.width
+        if (width > 0) {
+            clampedOffset = clampedOffset.coerceAtMost(width.toFloat())
+        }
+        surface.translationX = clampedOffset
+    }
+
+    private fun cancelInteractiveReaderBackSwipe() {
+        animateInteractiveReaderBackSwipe(0f, finishWhenComplete = false)
+    }
+
+    private fun completeInteractiveReaderBackSwipe() {
+        val surface = interactiveBackSurface()
+        val targetTranslation =
+            if (surface.width > 0) {
+                surface.width.toFloat()
+            } else {
+                resources.displayMetrics.widthPixels.toFloat()
+            }
+        animateInteractiveReaderBackSwipe(targetTranslation, finishWhenComplete = true)
+    }
+
+    private fun animateInteractiveReaderBackSwipe(
+        targetTranslationX: Float,
+        finishWhenComplete: Boolean,
+    ) {
+        interactiveBackSurface()
+            .animate()
+            .translationX(targetTranslationX)
+            .setDuration(READING_BACK_SWIPE_SETTLE_DURATION_MS)
+            .setInterpolator(READING_BACK_SWIPE_INTERPOLATOR)
+            .withEndAction {
+                if (finishWhenComplete) {
+                    suppressNextExitTransition = true
+                    allowImmediateFinish = true
+                    finish()
+                } else {
+                    resetInteractiveReaderBackSwipe(cancelAnimation = false)
+                }
+            }.start()
+    }
+
+    private fun resetInteractiveReaderBackSwipe(cancelAnimation: Boolean) {
+        val surface = interactiveBackSurface()
+        if (cancelAnimation) {
+            surface.animate().cancel()
+        }
+        surface.translationX = 0f
+    }
+
+    private fun interactiveBackSurface(): View {
+        if (interactiveBackSurface == null) {
+            interactiveBackSurface = findViewById(android.R.id.content)
+        }
+        return interactiveBackSurface!!
+    }
+
+    private fun updateBackSwipeGestureExclusion() {
+        if (!this::binding.isInitialized) return
+        val edgeView = binding.readingBackSwipeEdge
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        edgeView.systemGestureExclusionRects =
+            if (!supportsPredictiveReaderBack() &&
+                isInteractiveReaderBackEnabled() &&
+                edgeView.width > 0 &&
+                edgeView.height > 0
+            ) {
+                listOf(Rect(0, 0, edgeView.width, edgeView.height))
+            } else {
+                emptyList()
+            }
+    }
+
+    private inner class ReadingBackSwipeTouchListener : View.OnTouchListener {
+        private val touchSlopPx = ViewConfiguration.get(this@Reading).scaledTouchSlop
+        private val minimumFlingVelocityPx = ViewConfiguration.get(this@Reading).scaledMinimumFlingVelocity
+        private var velocityTracker: VelocityTracker? = null
+        private var downRawX = 0f
+        private var downRawY = 0f
+        private var isDragging = false
+
+        override fun onTouch(
+            view: View,
+            event: MotionEvent,
+        ): Boolean {
+            if (supportsPredictiveReaderBack()) return false
+            if (!isInteractiveReaderBackEnabled()) return false
+
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    isDragging = false
+                    downRawX = event.rawX
+                    downRawY = event.rawY
+                    resetVelocityTracker()
+                    velocityTracker = VelocityTracker.obtain()
+                    trackMovement(event)
+                    return true
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    trackMovement(event)
+                    val deltaX = event.rawX - downRawX
+                    val deltaY = event.rawY - downRawY
+                    if (!isDragging &&
+                        deltaX > touchSlopPx &&
+                        deltaX > kotlin.math.abs(deltaY) * READING_BACK_SWIPE_DIRECTION_RATIO
+                    ) {
+                        isDragging = true
+                        beginInteractiveReaderBackSwipe()
+                    }
+                    if (isDragging) {
+                        updateInteractiveReaderBackSwipe(deltaX)
+                    }
+                    return true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    if (isDragging) {
+                        val totalDeltaX = (event.rawX - downRawX).coerceAtLeast(0f)
+                        val shouldComplete =
+                            totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
+                                getXVelocity() > minimumFlingVelocityPx * 4f
+                        if (shouldComplete) {
+                            completeInteractiveReaderBackSwipe()
+                        } else {
+                            cancelInteractiveReaderBackSwipe()
+                        }
+                    } else {
+                        view.performClick()
+                    }
+                    resetGestureState()
+                    return true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    if (isDragging) {
+                        cancelInteractiveReaderBackSwipe()
+                    }
+                    resetGestureState()
+                    return true
+                }
+            }
+
+            return false
+        }
+
+        private fun getXVelocity(): Float {
+            val tracker = velocityTracker ?: return 0f
+            tracker.computeCurrentVelocity(1000)
+            return tracker.xVelocity
+        }
+
+        private fun trackMovement(event: MotionEvent) {
+            val tracker = velocityTracker ?: return
+            val screenEvent = MotionEvent.obtain(event)
+            screenEvent.offsetLocation(event.rawX - event.x, event.rawY - event.y)
+            tracker.addMovement(screenEvent)
+            screenEvent.recycle()
+        }
+
+        private fun resetGestureState() {
+            isDragging = false
+            resetVelocityTracker()
+        }
+
+        private fun resetVelocityTracker() {
+            velocityTracker?.recycle()
+            velocityTracker = null
+        }
     }
 
     companion object {
@@ -1010,5 +1250,9 @@ abstract class Reading :
         private const val OVERLAY_MIN_WIDTH_DP = 355
 
         const val LAST_READING_POS = "last_reading_pos"
+        private const val READING_BACK_SWIPE_TRIGGER_RATIO = 0.33f
+        private const val READING_BACK_SWIPE_DIRECTION_RATIO = 1.2f
+        private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L
+        private val READING_BACK_SWIPE_INTERPOLATOR = DecelerateInterpolator()
     }
 }
