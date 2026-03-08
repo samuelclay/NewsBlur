@@ -4857,6 +4857,24 @@ a.mention, a.mention-group {
     border-color: rgba(99, 102, 241, 0.25);
 }
 
+/* Discover feed badges dark mode */
+.NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-title {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-meta {
+    color: #808080;
+}
+
+.NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-tagline {
+    color: #909090;
+}
+
+.NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions,
+.NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-subscribed-actions {
+    border-top-color: #3a4245;
+}
+
 .NB-dark .NB-staff-only-badge {
     background: #c03800;
 }
