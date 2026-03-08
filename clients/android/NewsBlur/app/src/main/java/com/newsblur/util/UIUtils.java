@@ -214,10 +214,15 @@ public class UIUtils {
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         ImageView arrowView = activity.findViewById(R.id.toolbar_arrow);
-        arrowView.setVisibility(showHomeEnabled ? View.VISIBLE : View.GONE);
+        boolean showBackArrow = showHomeEnabled || (activity instanceof Reading);
+        arrowView.setVisibility(showBackArrow ? View.VISIBLE : View.GONE);
         TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
         ImageView iconView = activity.findViewById(R.id.toolbar_icon);
+        View settingsButton = activity.findViewById(R.id.toolbar_settings_button);
+        if (settingsButton != null) {
+            settingsButton.setVisibility(activity instanceof Reading ? View.VISIBLE : View.GONE);
+        }
         // using a custom view breaks the system-standard ability to tap the icon or title to return
         // to the previous activity. Re-implement that here.
         arrowView.setOnClickListener(v0 -> activity.finish());

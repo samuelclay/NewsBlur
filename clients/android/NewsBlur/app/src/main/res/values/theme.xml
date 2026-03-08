@@ -270,8 +270,8 @@
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
-        <item name="storyButtons">@style/storyButtons.dark</item>
-        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
+        <item name="storyButtons">@style/storyButtons.black</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.black</item>
         <item name="shareBarBackground">@style/shareBarBackground.black</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.black</item>

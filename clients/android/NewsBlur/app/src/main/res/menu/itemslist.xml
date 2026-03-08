@@ -140,6 +140,18 @@
     </item>
     <item android:id="@+id/menu_intel"
           android:title="@string/menu_intel" />
+    <item android:id="@+id/menu_rename_folder"
+          android:title="@string/menu_rename_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_mute_folder"
+          android:title="@string/menu_mute_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_unmute_folder"
+          android:title="@string/menu_unmute_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_delete_folder"
+          android:title="@string/menu_delete_folder"
+          android:visible="false" />
     <item android:id="@+id/menu_notifications"
           android:title="@string/menu_notifications_choose" >
         <menu>

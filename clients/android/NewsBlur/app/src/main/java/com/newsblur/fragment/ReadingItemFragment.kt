@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.delegate.ReadingStoryMenuPopup
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.di.IconLoader
@@ -260,7 +262,6 @@ class ReadingItemFragment :
         super.onViewCreated(view, savedInstanceState)
         view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
 
-        binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
         readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
@@ -379,10 +380,23 @@ class ReadingItemFragment :
         }
     }
 
-    private fun onClickMenuButton() {
-        val pm = PopupMenu(requireActivity(), binding.storyContextMenuButton)
-        val menu = pm.menu
-        pm.menuInflater.inflate(R.menu.story_context, menu)
+    fun showStoryContextMenu(anchor: View) {
+        ReadingStoryMenuPopup(
+            context = requireContext(),
+            prefsRepo = prefsRepo,
+            controller =
+                object : ReadingStoryMenuPopup.Controller {
+                    override fun buildMenuModel(): Menu = buildStoryContextMenu()
+
+                    override fun onMenuItemSelected(itemId: Int): Boolean = onMenuItemClick(buildStoryContextMenu().findItem(itemId))
+                },
+        ).show(anchor)
+    }
+
+    private fun buildStoryContextMenu(): Menu {
+        val popupMenu = PopupMenu(requireActivity(), binding.storyContextMenuButton)
+        val menu = popupMenu.menu
+        popupMenu.menuInflater.inflate(R.menu.story_context, menu)
 
         menu.findItem(R.id.menu_reading_save).setTitle(if (story!!.starred) R.string.menu_unsave_story else R.string.menu_save_story)
         if (fs!!.isFilterSaved ||
@@ -404,8 +418,7 @@ class ReadingItemFragment :
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
         }
 
-        val readingTextSize = prefsRepo.getReadingTextSize()
-        when (ReadingTextSize.fromSize(readingTextSize)) {
+        when (ReadingTextSize.fromSize(prefsRepo.getReadingTextSize())) {
             ReadingTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ReadingTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ReadingTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
@@ -425,8 +438,7 @@ class ReadingItemFragment :
             Font.ROBOTO -> menu.findItem(R.id.menu_font_roboto).isChecked = true
         }
 
-        pm.setOnMenuItemClickListener(this)
-        pm.show()
+        return menu
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean =
@@ -1298,7 +1310,9 @@ private fun MaterialButton.setStoryReadState(
         when (selectedTheme) {
             ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons
             ThemeValue.SEPIA -> if (isRead) R.style.storyButtonsDimmed_sepia else R.style.storyButtons_sepia
-            else -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
+            ThemeValue.DARK -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
+            ThemeValue.BLACK -> if (isRead) R.style.storyButtonsDimmed_black else R.style.storyButtons_black
+            ThemeValue.AUTO -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
         }
     val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state
     this.text = context.getString(stringResId)

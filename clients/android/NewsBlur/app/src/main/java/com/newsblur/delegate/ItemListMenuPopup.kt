@@ -44,6 +44,10 @@ class ItemListMenuPopup(
         private val actionItemIds =
             intArrayOf(
                 R.id.menu_save_search,
+                R.id.menu_rename_folder,
+                R.id.menu_mute_folder,
+                R.id.menu_unmute_folder,
+                R.id.menu_delete_folder,
                 R.id.menu_intel,
                 R.id.menu_notifications,
                 R.id.menu_statistics,
@@ -197,6 +201,10 @@ class ItemListMenuPopup(
         popupWindow: PopupWindow,
     ): List<ActionRow> =
         buildList {
+            maybeAddActionRow(menu, R.id.menu_rename_folder, R.drawable.ic_file_edit)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_mute_folder, R.drawable.mute_black)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_unmute_folder, R.drawable.mute_black)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_delete_folder, R.drawable.ic_clear)?.let(::add)
             maybeAddActionRow(menu, R.id.menu_intel, R.drawable.ic_feed_train)?.let(::add)
             menu.findItem(R.id.menu_notifications)?.takeIf { it.isVisible }?.let {
                 add(
