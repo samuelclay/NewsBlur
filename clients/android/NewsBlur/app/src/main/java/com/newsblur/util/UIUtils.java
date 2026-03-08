@@ -214,7 +214,7 @@ public class UIUtils {
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         ImageView arrowView = activity.findViewById(R.id.toolbar_arrow);
-        boolean showBackArrow = showHomeEnabled || (activity instanceof Reading);
+        boolean showBackArrow = showHomeEnabled || (activity instanceof Reading) || (activity instanceof ItemsList);
         arrowView.setVisibility(showBackArrow ? View.VISIBLE : View.GONE);
         TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
