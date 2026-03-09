@@ -855,9 +855,25 @@
 
     <style name="linearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
         <item name="android:indeterminate">true</item>
-        <item name="indeterminateAnimationType">contiguous</item>
-        <item name="indicatorColor">@array/loading_indicator_colors</item>
-        <item name="trackColor">@color/transparent</item>
+        <item name="indeterminateAnimationType">disjoint</item>
+        <item name="trackThickness">3dp</item>
+        <item name="indicatorColor">@color/loading_indicator_light</item>
+        <item name="trackColor">@color/loading_indicator_track_light</item>
+    </style>
+
+    <style name="linearProgressIndicator.sepia" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_sepia</item>
+        <item name="trackColor">@color/loading_indicator_track_sepia</item>
+    </style>
+
+    <style name="linearProgressIndicator.dark" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_dark</item>
+        <item name="trackColor">@color/loading_indicator_track_dark</item>
+    </style>
+
+    <style name="linearProgressIndicator.black" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_black</item>
+        <item name="trackColor">@color/loading_indicator_track_black</item>
     </style>
 
     <style name="smallRoundImageShapeAppearance">

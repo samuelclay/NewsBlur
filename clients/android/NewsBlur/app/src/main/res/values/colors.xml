@@ -253,6 +253,15 @@
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
 
+    <color name="loading_indicator_light">#7EB5CC</color>
+    <color name="loading_indicator_track_light">#E8EEF2</color>
+    <color name="loading_indicator_sepia">#B8A080</color>
+    <color name="loading_indicator_track_sepia">#E8DDD0</color>
+    <color name="loading_indicator_dark">#4A90A5</color>
+    <color name="loading_indicator_track_dark">#2A3038</color>
+    <color name="loading_indicator_black">#3A7A90</color>
+    <color name="loading_indicator_track_black">#161E24</color>
+
     <color name="widget_background">#C8000000</color>
 
     <color name="almost_green">#D6E3DA</color>
