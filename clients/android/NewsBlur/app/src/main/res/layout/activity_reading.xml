@@ -58,7 +58,9 @@
         android:id="@+id/content_bottom_overlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="@id/content"
         app:layout_constraintEnd_toEndOf="@id/content"
         app:layout_constraintStart_toStartOf="@id/content">
@@ -66,8 +68,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_bottom_overlay_inner"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom">
+            android:layout_height="44dp"
+            android:layout_gravity="bottom"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/reading_overlay_left_group"
