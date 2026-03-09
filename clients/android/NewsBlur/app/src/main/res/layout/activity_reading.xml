@@ -22,18 +22,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
-    <TextView
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/reading_empty_view_text"
-        style="?explainerText"
-        android:layout_width="0dp"
+        style="?circleProgressIndicator"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center_horizontal"
-        android:text="@string/loading"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@id/include_toolbar"
-        app:layout_constraintStart_toStartOf="@id/include_toolbar"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+        android:indeterminate="true"
+        app:indicatorSize="32dp"
+        app:trackThickness="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <FrameLayout
         android:id="@+id/content"

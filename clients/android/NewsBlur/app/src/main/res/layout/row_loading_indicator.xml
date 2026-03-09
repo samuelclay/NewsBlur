@@ -5,9 +5,9 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        style="@style/linearProgressIndicator"
+        style="?linearProgressIndicator"
         android:id="@+id/itemlist_loading"
         android:layout_width="match_parent"
-        android:layout_height="5dp" />
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

@@ -354,7 +354,8 @@ public class ItemSetFragment extends NbFragment {
 
         if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet()) || waitingForApiResult) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
-            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
+            binding.emptyViewText.setAlpha(0.4f);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
             if (isOffline || hasStories || syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
@@ -371,6 +372,7 @@ public class ItemSetFragment extends NbFragment {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories);
             }
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
+            binding.emptyViewText.setAlpha(1.0f);
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);

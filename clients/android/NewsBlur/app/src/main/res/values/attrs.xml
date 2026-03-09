@@ -43,6 +43,7 @@
     <attr name="selectorOverlayBackgroundText" format="string" />
     <attr name="muteicon" format="string" />
     <attr name="circleProgressIndicator" format="string" />
+    <attr name="linearProgressIndicator" format="string" />
     <attr name="delimiter" format="string" />
     <attr name="subscriptionHeader" format="string" />
     <attr name="subscriptionIcon" format="string" />
