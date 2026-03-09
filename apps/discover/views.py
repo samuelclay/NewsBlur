@@ -404,17 +404,43 @@ def _get_trending_new_arrivals(days, limit, offset, one_year_ago):
         return [], {}, False, False
 
     feed_ids = [int(fid) for fid, _ in trending_data]
-    # Filter to feeds created within the last year, not stale, not branched
-    recent_ids = set(
+
+    # Get feeds with actual read activity — ensures someone is reading, not just subscribing
+    read_activity_feeds = set(fid for fid, _ in RTrendingStory.get_trending_feeds(days=days, limit=500))
+
+    # Filter to feeds created within the last year with actual story activity,
+    # multiple subscribers, not stale, and not branched
+    recent_feeds = dict(
         Feed.objects.filter(
             pk__in=feed_ids,
             creation__gte=one_year_ago.date(),
             last_story_date__gte=one_year_ago,
             branch_from_feed__isnull=True,
-        ).values_list("pk", flat=True)
+            average_stories_per_month__gt=0,
+            num_subscribers__gte=2,
+        ).values_list("pk", "feed_address")
     )
 
-    filtered = [(int(fid), s) for fid, s in trending_data if int(fid) in recent_ids]
+    # Apply per-domain cap to prevent any single domain from flooding results
+    max_per_domain = 2
+    domain_counts = defaultdict(int)
+    filtered = []
+    for fid, s in trending_data:
+        fid = int(fid)
+        if fid not in recent_feeds:
+            continue
+        # Require read activity — can't fake people actually reading stories
+        if fid not in read_activity_feeds:
+            continue
+        feed_address = recent_feeds[fid] or ""
+        # Skip newsletter feeds
+        if feed_address.startswith("newsletter:"):
+            continue
+        domain = urlparse(feed_address).netloc
+        domain_counts[domain] += 1
+        if domain_counts[domain] <= max_per_domain:
+            filtered.append((fid, s))
+
     page_slice = filtered[offset : offset + limit]
     trending_feed_ids = [fid for fid, _ in page_slice]
     score_map = {fid: s for fid, s in page_slice}
