@@ -4756,6 +4756,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
         duplicate_stories.delete()
 
+    # Clear Redis story hashes before bulk-deleting stories, since queryset
+    # .delete() bypasses the instance MStory.delete() / remove_from_redis().
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    r.delete("F:%s" % duplicate_feed.pk)
+    r.delete("zF:%s" % duplicate_feed.pk)
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")
