@@ -16,6 +16,7 @@ import time
 BACKUP_DRIVE = "/media/newsblur-backup"
 SHOW_N = 3
 VERIFY_STATUS_FILE = os.path.join(BACKUP_DRIVE, "verify_status.json")
+PROGRESS_FILE = os.path.join(BACKUP_DRIVE, "download_progress.json")
 
 SERVICES = [
     ("MongoDB", "mongo_full", "mongodump_full_*.gz", r"mongodump_full_(\d{4}-\d{2}-\d{2})\.gz"),
@@ -135,24 +136,88 @@ def get_partial():
     return None, None, None
 
 
+def get_s3_partial(directory, date_regex):
+    """Check for in-progress S3 download for this service."""
+    full_dir = os.path.join(BACKUP_DRIVE, directory)
+    if not os.path.isdir(full_dir):
+        return None
+
+    partials = glob.glob(os.path.join(full_dir, "*.partial"))
+    if not partials:
+        return None
+
+    partial_file = partials[0]
+    partial_size = os.path.getsize(partial_file)
+    basename = os.path.basename(partial_file).replace(".partial", "")
+
+    match = re.search(date_regex, basename)
+    date_str = match.group(1) if match else None
+    if not date_str:
+        return None
+
+    # Read progress JSON for total size and start time
+    total_bytes = None
+    start_time = None
+    if os.path.exists(PROGRESS_FILE):
+        try:
+            with open(PROGRESS_FILE) as f:
+                progress = json.load(f)
+            if progress.get("local_dir", "").rstrip("/") == full_dir.rstrip("/"):
+                total_bytes = progress.get("total_bytes")
+                start_time = progress.get("start_time")
+        except (IOError, json.JSONDecodeError):
+            pass
+
+    return date_str, partial_size, total_bytes, start_time
+
+
 def get_mongodump_progress():
     """Returns progress as a float (0-100), 'complete', or None."""
     run_log = os.path.join(BACKUP_DRIVE, "backup_run.log")
     if not os.path.exists(run_log):
         return None
     try:
-        # Read last 20 lines looking for progress
-        result = subprocess.run(["tail", "-20", run_log], capture_output=True, text=True)
+        result = subprocess.run(["tail", "-50", run_log], capture_output=True, text=True)
         lines = result.stdout.strip().split("\n")
         for line in reversed(lines):
             if "newsblur.stories" in line and "%" in line:
                 match = re.search(r"\((\d+\.\d+)%\)", line)
                 if match:
                     return float(match.group(1))
-        # Check for "done dumping"
-        for line in reversed(lines):
+            # These markers mean a new dump started but hasn't reached
+            # newsblur.stories yet — any older progress is stale
             if "done dumping newsblur.stories" in line:
                 return "complete"
+            if "Streaming full mongodump" in line or "--- MongoDB full dump" in line:
+                return None
+    except Exception:
+        pass
+    return None
+
+
+def get_active_phase():
+    """Determine if a backup is currently running and which phase it's in."""
+    log_file = os.path.join(BACKUP_DRIVE, "backup.log")
+    if not os.path.exists(log_file):
+        return None
+    try:
+        result = subprocess.run(["tail", "-50", log_file], capture_output=True, text=True)
+        lines = result.stdout.strip().split("\n")
+        for line in reversed(lines):
+            if "=== Backup pull complete ===" in line:
+                return None
+            if "--- Verifying backup integrity ---" in line:
+                return "verifying"
+            if "--- Running local retention cleanup ---" in line:
+                return "cleanup"
+            if "--- MongoDB full dump" in line:
+                return "MongoDB"
+            if "--- Redis backups from S3 ---" in line:
+                return "Redis"
+            if "--- PostgreSQL backup from S3 ---" in line:
+                return "PostgreSQL"
+            if "=== Starting NewsBlur off-site backup pull ===" in line:
+                return "starting"
     except Exception:
         pass
     return None
@@ -212,6 +277,15 @@ def print_table():
         ts = verify_data.get("timestamp", "")
         print("  \033[2mLast verified: %s\033[0m" % ts)
 
+    active = get_active_phase()
+    if active:
+        if active == "starting":
+            print("  \033[33m◀ Backup starting...\033[0m")
+        elif active in ("cleanup", "verifying"):
+            print("  \033[33m◀ Backup %s...\033[0m" % active)
+        else:
+            print("  \033[33m◀ Backup running (%s phase)\033[0m" % active)
+
     for service_name, directory, pattern, date_regex in SERVICES:
         backups = get_backups(directory, pattern, date_regex)
 
@@ -246,6 +320,26 @@ def print_table():
                     elapsed_str = format_duration(elapsed) if elapsed else ""
                     note = "  \033[33m◀ starting… · %s elapsed\033[0m" % elapsed_str
                 partial_row = (partial_date, partial_size, note)
+        else:
+            s3_info = get_s3_partial(directory, date_regex)
+            if s3_info:
+                p_date, p_bytes, p_total, p_start = s3_info
+                p_size_str = format_size(p_bytes)
+                elapsed = time.time() - p_start if p_start else 0
+                parts = []
+                if p_total and p_total > 0:
+                    pct = (p_bytes / p_total) * 100
+                    parts.append("%.1f%%" % pct)
+                if elapsed > 0:
+                    parts.append(format_duration(elapsed) + " elapsed")
+                    bw = p_bytes / elapsed if elapsed > 0 else 0
+                    if bw > 0:
+                        parts.append(format_size(bw) + "/s")
+                        if p_total and p_total > p_bytes:
+                            remaining = (p_total - p_bytes) / bw
+                            parts.append("~%s left" % format_duration(remaining))
+                note = "  \033[33m◀ %s\033[0m" % " · ".join(parts) if parts else "  \033[33m◀ downloading...\033[0m"
+                partial_row = (p_date, p_size_str, note)
 
         if not backups and not partial_row:
             print("  \033[2m  (no backups found)\033[0m")

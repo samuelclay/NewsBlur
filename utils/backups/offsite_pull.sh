@@ -81,7 +81,7 @@ s3_download_latest() {
     local local_dir="$2"
 
     /config/scripts/venv/bin/python3 -c "
-import boto3, os, sys
+import boto3, os, sys, json, time
 
 s3 = boto3.client('s3',
     aws_access_key_id='${AWS_ACCESS_KEY_ID}',
@@ -90,6 +90,7 @@ s3 = boto3.client('s3',
 prefix = '${prefix}'
 bucket = '${S3_BUCKET}'
 local_dir = '${local_dir}'
+progress_file = '${BACKUP_DRIVE}/download_progress.json'
 
 # List objects with this prefix
 paginator = s3.get_paginator('list_objects_v2')
@@ -113,10 +114,41 @@ if os.path.exists(local_path):
     print('Already downloaded: %s' % filename)
     sys.exit(0)
 
-size_mb = latest['Size'] / 1024 / 1024
+total_size = latest['Size']
+size_mb = total_size / 1024 / 1024
 print('Downloading: %s (%.1f MB)' % (filename, size_mb))
 
-s3.download_file(bucket, key, local_path)
+# Download to .partial with progress tracking
+local_partial = local_path + '.partial'
+start_time = time.time()
+downloaded = [0]
+last_write = [0.0]
+
+def progress_callback(bytes_amount):
+    downloaded[0] += bytes_amount
+    now = time.time()
+    if now - last_write[0] >= 2:
+        last_write[0] = now
+        try:
+            with open(progress_file, 'w') as f:
+                json.dump({
+                    'file': filename,
+                    'local_dir': local_dir,
+                    'total_bytes': total_size,
+                    'downloaded_bytes': downloaded[0],
+                    'start_time': start_time
+                }, f)
+        except Exception:
+            pass
+
+s3.download_file(bucket, key, local_partial, Callback=progress_callback)
+os.rename(local_partial, local_path)
+
+try:
+    os.remove(progress_file)
+except Exception:
+    pass
+
 print('Downloaded: %s' % local_path)
 " 2>&1
 }
