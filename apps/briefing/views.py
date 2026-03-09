@@ -120,7 +120,7 @@ def load_briefing_stories(request):
 
         curated_stories = []
         if curated_hashes:
-            stories_db = MStory.objects(story_hash__in=curated_hashes)
+            stories_db = MStory.objects(story_hash__in=curated_hashes).order_by()
             stories_by_hash = {s.story_hash: s for s in stories_db}
 
             feed_ids = set(s.story_feed_id for s in stories_db)

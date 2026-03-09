@@ -1396,14 +1396,15 @@ class UserSubscription(models.Model):
 
             if not stories:
                 try:
-                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes).order_by()
                     stories = Feed.format_stories(stories_db, self.feed_id)
-                except pymongo.errors.OperationFailure as e:
-                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
-                    stories = Feed.format_stories(stories_db, self.feed_id)
-                except pymongo.errors.OperationFailure as e:
-                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:25]
-                    stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure:
+                    try:
+                        stories_db = MStory.objects(story_hash__in=unread_story_hashes).order_by()[:100]
+                        stories = Feed.format_stories(stories_db, self.feed_id)
+                    except pymongo.errors.OperationFailure:
+                        stories_db = MStory.objects(story_hash__in=unread_story_hashes).order_by()[:25]
+                        stories = Feed.format_stories(stories_db, self.feed_id)
 
             unread_stories = []
             for story in stories:
@@ -2089,7 +2090,7 @@ class RUserStory:
                 return []
 
             # Fetch story dates from MongoDB
-            mstories = MStory.objects(story_hash__in=all_hashes).only("story_hash", "story_date")
+            mstories = MStory.objects(story_hash__in=all_hashes).only("story_hash", "story_date").order_by()
             story_dates = {}
             for story in mstories:
                 if story.story_date:

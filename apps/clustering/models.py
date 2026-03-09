@@ -523,7 +523,7 @@ def merge_clusters(
 
             for batch_start in range(0, len(unknown), 100):
                 batch = unknown[batch_start : batch_start + 100]
-                for s in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id"):
+                for s in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id").order_by():
                     story_feed_map[s.story_hash] = s.story_feed_id
 
         clusters = {}
@@ -715,7 +715,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         off_page_list = list(off_page_hashes)
         for batch_start in range(0, len(off_page_list), 100):
             batch = off_page_list[batch_start : batch_start + 100]
-            for story in MStory.objects(story_hash__in=batch).only(*only_fields):
+            for story in MStory.objects(story_hash__in=batch).only(*only_fields).order_by():
                 feed = Feed.get_by_id(story.story_feed_id)
                 meta = {
                     "story_hash": story.story_hash,
@@ -959,7 +959,7 @@ def attach_cluster_data_to_stories(stories, user):
         ext_list = list(external_hashes)
         for batch_start in range(0, len(ext_list), 100):
             batch = ext_list[batch_start : batch_start + 100]
-            for story in MStory.objects(story_hash__in=batch).only(*only_fields):
+            for story in MStory.objects(story_hash__in=batch).only(*only_fields).order_by():
                 feed = Feed.get_by_id(story.story_feed_id)
                 image_urls = story.image_urls or []
                 external_metadata[story.story_hash] = {
