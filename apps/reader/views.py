@@ -2055,7 +2055,7 @@ def load_read_stories(request):
             date_filter_start=date_filter_start_utc,
             date_filter_end=date_filter_end_utc,
         )
-        mstories = MStory.objects(story_hash__in=story_hashes)
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by()
         stories = Feed.format_stories(mstories)
         stories = sorted(
             stories,
@@ -5129,7 +5129,7 @@ def load_cluster_stories(request):
         return {"code": 1, "stories": []}
 
     stories = []
-    mstories = MStory.objects(story_hash__in=member_hashes)
+    mstories = MStory.objects(story_hash__in=member_hashes).order_by()
     for story in mstories:
         feed = Feed.get_by_id(story.story_feed_id)
         if not feed:

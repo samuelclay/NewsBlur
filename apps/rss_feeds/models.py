@@ -2225,7 +2225,7 @@ class Feed(models.Model):
         # Extract story authors from feeds
         for feed in sorted_popularity:
             story_ids = feed["story_ids"]
-            stories_db = MStory.objects(story_hash__in=story_ids)
+            stories_db = MStory.objects(story_hash__in=story_ids).order_by()
             stories = cls.format_stories(stories_db)
             for story in stories:
                 story["story_permalink"] = story["story_permalink"][:250]

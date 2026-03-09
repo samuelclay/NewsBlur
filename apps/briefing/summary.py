@@ -209,7 +209,7 @@ def generate_briefing_summary(
     story_hashes = [s["story_hash"] for s in scored_stories]
 
     stories_by_hash = {}
-    for story in MStory.objects(story_hash__in=story_hashes):
+    for story in MStory.objects(story_hash__in=story_hashes).order_by():
         stories_by_hash[story.story_hash] = story
 
     feed_ids = set()
@@ -481,7 +481,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     story_hashes = [s["story_hash"] for s in scored_stories]
     stories_by_hash = {}
-    for story in MStory.objects(story_hash__in=story_hashes):
+    for story in MStory.objects(story_hash__in=story_hashes).order_by():
         stories_by_hash[story.story_hash] = story
 
     feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
@@ -910,7 +910,7 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
     member_hash_list = list(all_member_hashes)
     for batch_start in range(0, len(member_hash_list), 100):
         batch = member_hash_list[batch_start : batch_start + 100]
-        for story in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id", "story_title"):
+        for story in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id", "story_title").order_by():
             member_metadata[story.story_hash] = story
 
     # summary.py: Process each story link in reverse order so insertions don't shift offsets

@@ -186,7 +186,7 @@ def select_briefing_stories(
     stories_by_hash = {}
     for batch_start in range(0, len(candidate_hashes), 100):
         batch = candidate_hashes[batch_start : batch_start + 100]
-        for story in MStory.objects(story_hash__in=batch):
+        for story in MStory.objects(story_hash__in=batch).order_by():
             stories_by_hash[story.story_hash] = story
 
     scored = []
