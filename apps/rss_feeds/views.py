@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
 
 from apps.analyzer.models import get_classifiers_for_user
-from apps.discover.views import TRENDING_CATEGORIES
+from apps.discover.views import IGNORE_AUTOCOMPLETE, TRENDING_CATEGORIES
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
@@ -706,7 +706,6 @@ def discover_stories(request, story_hash):
     feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
 
     return {"discover_stories": stories, "feeds": feeds}
-
 
 
 @json.json_view
