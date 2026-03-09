@@ -78,6 +78,7 @@ media/safari/NewsBlur.safariextz
 apps/discover/fixtures/*_cache.json
 
 # IDE files
+.idea/
 /docker/volumes/*
 
 **/node_modules
