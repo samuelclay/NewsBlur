@@ -2395,9 +2395,32 @@
             NEWSBLUR.assets.briefing_admin_data = data;
             NEWSBLUR.assets.briefing_admin_page = data.page;
 
-            if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.render();
+            // reader.js: Convert briefing admin entries into story objects so the
+            // normal story titles + story detail split view renders them.
+            var stories = _.map(data.briefing_admin_entries || [], function (entry) {
+                var username = (entry.user_profile && entry.user_profile.username) || 'Unknown';
+                return {
+                    story_hash: 'briefing-admin:' + entry.briefing_id,
+                    story_title: username + ' — ' + (entry.summary_story_title || 'Briefing'),
+                    story_content: entry.summary_html || '',
+                    story_date: entry.briefing_date || new Date().toISOString(),
+                    story_timestamp: entry.briefing_date ? String(Math.floor(new Date(entry.briefing_date).getTime() / 1000)) : '0',
+                    story_authors: username,
+                    story_permalink: '',
+                    story_feed_id: 0,
+                    story_tags: [entry.frequency || 'daily'],
+                    image_urls: [],
+                    id: 'briefing-admin:' + entry.briefing_id,
+                    read_status: 1,
+                    briefing_admin_user_profile: entry.user_profile,
+                    briefing_admin_curated_count: entry.curated_story_count
+                };
+            });
+
+            if (stories.length) {
+                NEWSBLUR.assets.stories.reset(stories, { added: stories.length });
             }
+            NEWSBLUR.assets.stories.no_more_stories = !data.has_next_page;
 
             this.flags['story_titles_loaded'] = true;
         },
@@ -3727,6 +3750,8 @@
                 feed_title = "Infrequent Site Stories";
             } else if (feed_id == 'river:daily-briefing') {
                 feed_title = "Daily Briefing";
+            } else if (feed_id == 'river:briefing-admin') {
+                feed_title = "Briefing Admin";
             } else if (_.string.startsWith(feed_id, 'river:')) {
                 var feed = NEWSBLUR.assets.get_feed(feed_id);
                 if (!feed) return;

@@ -10,8 +10,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         "click .NB-briefing-generate-btn": function (e) {
             e.preventDefault();
             NEWSBLUR.reader.generate_daily_briefing();
-        },
-        "click .NB-briefing-admin-load-more": "load_more_briefing_admin"
+        }
     },
 
     initialize: function () {
@@ -32,10 +31,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
 
     render: function (options) {
-        if (NEWSBLUR.reader.flags.briefing_admin_view && NEWSBLUR.assets.briefing_admin_data && !this.options.on_dashboard) {
-            if (options && options.models) return;
-            return this.render_briefing_admin(options);
-        }
         if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data && !this.options.on_dashboard) {
             // story_titles_view.js: When triggered by a collection reset event
             // (Backbone passes the collection as first arg), skip re-rendering
@@ -205,108 +200,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
 
         return this;
-    },
-
-    render_briefing_admin: function (options) {
-        this.clear();
-        this.$story_titles.scrollTop(0);
-
-        var data = NEWSBLUR.assets.briefing_admin_data;
-        var entries = data.briefing_admin_entries || [];
-        var $entries = [];
-
-        _.each(entries, function (entry) {
-            var user_model = new NEWSBLUR.Models.User(entry.user_profile);
-            var badge = new NEWSBLUR.Views.SocialProfileBadge({
-                model: user_model
-            });
-
-            var $summary = $.make('div', { className: 'NB-briefing-admin-summary' });
-            $summary[0].innerHTML = entry.summary_html || '<em>No summary content</em>';
-
-            var $entry = $.make('div', { className: 'NB-briefing-admin-entry' }, [
-                badge,
-                $.make('div', { className: 'NB-briefing-admin-date' }, entry.summary_story_title || ''),
-                $.make('div', { className: 'NB-briefing-admin-meta' }, [
-                    Inflector.commas(entry.curated_story_count) + ' curated ' +
-                    Inflector.pluralize('story', entry.curated_story_count) +
-                    ' \u00b7 ' + (entry.frequency || 'daily')
-                ]),
-                $summary
-            ]);
-            $entries.push($entry);
-        });
-
-        if (!entries.length) {
-            $entries.push($.make('div', { className: 'NB-briefing-admin-empty' },
-                'No briefings found.'));
-        }
-
-        if (data.has_next_page) {
-            $entries.push($.make('div', {
-                className: 'NB-briefing-admin-load-more NB-modal-submit-button NB-modal-submit-green'
-            }, 'Load More (' + data.total_count + ' total)'));
-        }
-
-        this.$el.html($entries);
-        this.end_loading();
-        this.collection.no_more_stories = true;
-
-        return this;
-    },
-
-    load_more_briefing_admin: function (e) {
-        if (e) e.preventDefault();
-        var self = this;
-        var next_page = (NEWSBLUR.assets.briefing_admin_page || 1) + 1;
-        var $button = this.$('.NB-briefing-admin-load-more');
-        $button.text('Loading...');
-
-        NEWSBLUR.assets.model.fetch_briefing_admin(next_page, function (data) {
-            NEWSBLUR.assets.briefing_admin_page = data.page;
-
-            var existing_data = NEWSBLUR.assets.briefing_admin_data;
-            existing_data.briefing_admin_entries = existing_data.briefing_admin_entries.concat(
-                data.briefing_admin_entries || []
-            );
-            existing_data.has_next_page = data.has_next_page;
-
-            // story_titles_view.js: Remove old button and append new entries
-            $button.remove();
-
-            var $new_entries = [];
-            _.each(data.briefing_admin_entries || [], function (entry) {
-                var user_model = new NEWSBLUR.Models.User(entry.user_profile);
-                var badge = new NEWSBLUR.Views.SocialProfileBadge({
-                    model: user_model
-                });
-
-                var $summary = $.make('div', { className: 'NB-briefing-admin-summary' });
-                $summary[0].innerHTML = entry.summary_html || '<em>No summary content</em>';
-
-                var $entry = $.make('div', { className: 'NB-briefing-admin-entry' }, [
-                    badge,
-                    $.make('div', { className: 'NB-briefing-admin-date' }, entry.summary_story_title || ''),
-                    $.make('div', { className: 'NB-briefing-admin-meta' }, [
-                        Inflector.commas(entry.curated_story_count) + ' curated ' +
-                        Inflector.pluralize('story', entry.curated_story_count) +
-                        ' \u00b7 ' + (entry.frequency || 'daily')
-                    ]),
-                    $summary
-                ]);
-                $new_entries.push($entry);
-            });
-
-            self.$el.append($new_entries);
-
-            if (data.has_next_page) {
-                self.$el.append($.make('div', {
-                    className: 'NB-briefing-admin-load-more NB-modal-submit-button NB-modal-submit-green'
-                }, 'Load More (' + data.total_count + ' total)'));
-            }
-        }, function () {
-            $button.text('Error loading. Try again.');
-        });
     },
 
     _briefing_target: function () {
