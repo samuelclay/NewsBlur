@@ -175,7 +175,20 @@
       {% block header %}{% endblock %}
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
-          <a href="{% url "index" %}">
+          <div class="NB-splash-top-nav">
+            <span class="NB-splash-top-title">{% block nav_title %}{% endblock %}</span>
+            <ul class="NB-splash-top-links">
+              <li class="NB-splash-top-link NB-splash-top-link-home"><a href="{% url "index" %}">Home</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-features"><a href="{% url "features" %}">Features</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-pricing"><a href="{% url "pricing" %}">Pricing</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-faq"><a href="{% url "faq" %}">FAQ</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-about"><a href="{% url "about" %}">About</a></li>
+            </ul>
+            <a href="{% url "index" %}" class="NB-splash-top-logo">
+              <div class="NB-splash-blurred-logo"></div>
+            </a>
+          </div>
+          <a href="{% url "index" %}" class="NB-splash-top-logo-fallback">
             <div class="NB-splash-title NB-splash-blurred-logo"></div>
           </a>
         </div>

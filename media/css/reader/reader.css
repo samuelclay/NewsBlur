@@ -22310,9 +22310,9 @@ h5.NB-classifier-section-header {
 
 .NB-static {
     overflow: auto;
-    padding: 78px 0 0;
+    padding: 94px 0 0;
     color: rgba(255, 255, 255, 0.85);
-    background: linear-gradient(180deg, #5a7a7b 0%, #334848 30%, #243636 100%);
+    background: linear-gradient(180deg, #3d5a5b 0%, #4a6a6b 30%, #5a7a7b 100%);
     min-height: 100vh;
 }
 

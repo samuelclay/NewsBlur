@@ -5,29 +5,32 @@
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
 {% block title %}The NewsBlur API{% endblock %}
+{% block nav_title %}API{% endblock %}
 
 {% block content %}
 
-  <div class="NB-static-title">
-    The NewsBlur API
+<div class="NB-api-container">
+
+  <div class="NB-api-hero">
+    <h1 class="NB-api-hero-title">The NewsBlur API</h1>
+    <p class="NB-api-hero-subtitle">Retrieve feeds, stories, and stats. Open source, no API key required.</p>
   </div>
 
-
-  <div class="NB-module">
-    <h5 class="NB-module-title">Introduction to the API</h5>
-    <div class="NB-module-content">
-      <p><a href="/">NewsBlur</a> is a personal news reader that brings people together to 
+  <div class="NB-api-section">
+    <h2 class="NB-api-section-title">Introduction to the API</h2>
+    <div class="NB-api-section-content">
+      <p><a href="/">NewsBlur</a> is a personal news reader that brings people together to
       talk about the world. A new sound of an old instrument.</p>
       <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
       statistics, and individual feed stories. No API key is required, but you are required
       to authenticate before using any of the API endpoints. Please be considerate, and don't
       hammer our servers.</p>
       <p>We're quite pleased to point out that this entire API is open-source, including
-      the implementation of the endpoints. You can find the source of the 
+      the implementation of the endpoints. You can find the source of the
       <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">/reader/ views source</a>,
       <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py">/social/ views source</a>,
       <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">/rss_feeds/ views source</a>,
-      as well as 
+      as well as
       <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">the API definitions in YAML</a>.</p>
       <p>We love pull requests. If you want to add an endpoint, modify output, or make
       something better, <a href="http://github.com/samuelclay/NewsBlur">NewsBlur's repo
@@ -35,28 +38,28 @@
     </div>
   </div>
 
-  <div class="NB-module">
-    <h5 class="NB-module-title">A Note about OAuth</h5>
-    <div class="NB-module-content">
-      <p>NewsBlur supports OAuth but to have an OAuth enabled client you must 
+  <div class="NB-api-section">
+    <h2 class="NB-api-section-title">A Note about OAuth</h2>
+    <div class="NB-api-section-content">
+      <p>NewsBlur supports OAuth but to have an OAuth enabled client you must
           <a href="mailto:samuel@newsblur.com">email Samuel</a> to request a client ID and
           secret. You will need to provide your NewsBlur username, redirect URI (often just your
           client app's website), and app name.</p>
-          
+
       <p>To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with
           every request, just as you would on any other OAuth API. Use the <code>/oauth/authorize</code>
-          endpoint to begin the OAuth authentication procedure. Use the <code>/oauth/token</code> 
+          endpoint to begin the OAuth authentication procedure. Use the <code>/oauth/token</code>
           endpoint to receive your authorized token, which you can pass in with every request.</p>
-          
+
       <p>You are not required to use OAuth, in which case you will need to pass the <code>newsblur_sessionid</code>
           cookie with every request. This cookie is set on <a href="#/api/login">login</a>.</p>
     </div>
   </div>
-  
-  <div class="NB-module">
-    <h5 class="NB-module-title">API Table of Contents</h5>
-    
-    <div class="NB-module-content">
+
+  <div class="NB-api-section">
+    <h2 class="NB-api-section-title">API Table of Contents</h2>
+
+    <div class="NB-api-section-content">
       <div class="NB-api-endpoint">
         {% for group in data %}{% for group_name, endpoints in group.items %}
           <div class="NB-api-toc-header">{{ group_name }}</div>
@@ -67,23 +70,23 @@
                 <a href="#{{ endpoint.url }}">{{ endpoint.method }} <code>{{ endpoint.url }}</code></a>
               </li>
             {% endfor %}
-          </ul>          
+          </ul>
         {% endfor %}{% endfor %}
       </div>
     </div>
   </div>
-  
-  
+
+
   {% for group in data %}{% for group_name, endpoints in group.items %}
-    <div class="NB-module">
-      <h5 class="NB-module-title">{{ group_name }}</h5>
-      <div class="NB-module-content">
-      
+    <div class="NB-api-section">
+      <h2 class="NB-api-section-title">{{ group_name }}</h2>
+      <div class="NB-api-section-content">
+
         {% for endpoint in endpoints %}
           <div class="NB-api-endpoint">
-            <h3><tt>{{ endpoint.method }} {{ endpoint.url }}</tt></h3>   
+            <h3><tt>{{ endpoint.method }} {{ endpoint.url }}</tt></h3>
             <a class="NB-anchor" name="{{ endpoint.url }}"></a>
-      
+
             {% if endpoint.long_desc %}
               <ul>
                 {% for desc in endpoint.long_desc %}
@@ -91,7 +94,7 @@
                 {% endfor %}
               </ul>
             {% endif %}
-      
+
             {% if endpoint.params %}
               <table>
                 <tr>
@@ -102,7 +105,7 @@
                 </tr>
                 {% for param in endpoint.params %}
                   <tr>
-                    <td>{{ param.key }}</td> 
+                    <td>{{ param.key }}</td>
                     <td class="NB-api-endpoint-param-desc">
                       {% if param.optional %}
                         <span class="optional">Optional</span>
@@ -111,21 +114,13 @@
                       {% endif %}{% endif %}
                       {{ param.desc|safe }}
                     </td>
-                    <td>{% if param.default %}<code>{{ param.default }}</code>{% endif %}</td> 
+                    <td>{% if param.default %}<code>{{ param.default }}</code>{% endif %}</td>
                     <td>{% if param.example %}<code>{{ param.example|safe }}</code>{% endif %}</td>
                   </tr>
                 {% endfor %}
               </table>
             {% endif %}
-            
-    
-{#             <h4>Example Response</h4> #}
-{#             <pre><code> #}
-{# { #}
-{#   'feeds': [] #}
-{# } #}
-{#             </code></pre> #}
-            
+
             {% if endpoint.tips %}
               <h4>Tips</h4>
               <ul>
@@ -139,33 +134,31 @@
       </div>
     </div>
   {% endfor %}{% endfor %}
-  
-  {# ===================== #}
-  {# = Terms of Services = #}
-  {# ===================== #}
-  
-  
-  <div class="NB-module">
-    <h5 class="NB-module-title">API Guidelines and Terms of Service</h5>
-    <div class="NB-module-content">
+
+
+  <div class="NB-api-section">
+    <h2 class="NB-api-section-title">API Guidelines and Terms of Service</h2>
+    <div class="NB-api-section-content">
       <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
       statistics, and individual feed stories. No API key is required, but you are required
       to authenticate before using any of the API endpoints. Please be considerate, and don't
       hammer our servers.</p>
-      
+
        <p>If your project or application allows users to interact with data from NewsBlur,
       you must cite NewsBlur as the source of your data.</p>
-      
+
        <p>You may use the API commercially, by which we mean you may charge people money to
       use your project which itself uses the API. You may not, however, sell advertising
       against any data retrieved from NewsBlur's API. Essentially, you can charge money for
       your application or service, but not wrap NewsBlur in advertisements.</p>
-      
+
        <p><i>We reserve the right to revise these guidelines. If you violate the spirit of
       these terms, expect to be blocked without advance warning.</i></p>
     </div>
   </div>
-  
+
+</div>
+
 {% endblock content %}
 
 {% block footer %}
