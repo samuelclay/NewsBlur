@@ -158,7 +158,9 @@ def transcribe_audio(request):
         return {"code": -1, "message": limit_message}
 
     # Check OpenAI API key is configured
-    if not settings.OPENAI_API_KEY:
+    from apps.ask_ai.providers import OpenAIProvider
+
+    if not OpenAIProvider().is_configured():
         return {"code": -1, "message": "OpenAI API key not configured"}
 
     try:
