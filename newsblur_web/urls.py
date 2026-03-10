@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+from django.views.generic import RedirectView
 
 from apps.profile import views as profile_views
 from apps.reader import views as reader_views
@@ -99,6 +100,9 @@ urlpatterns = [
     url(r"^android/?", static_views.android, name="android-static"),
     url(r"^firefox/?", static_views.firefox, name="firefox"),
     url(r"zebra/", include("zebra.urls", namespace="zebra")),
+    url(r"^login/?$", RedirectView.as_view(pattern_name="login", permanent=True)),
+    url(r"^signup/?$", RedirectView.as_view(pattern_name="signup", permanent=True)),
+    url(r"^forgot-password/?$", RedirectView.as_view(pattern_name="profile-forgot-password", permanent=True)),
     url(r"^account/redeem_code/?$", profile_views.redeem_code, name="redeem-code"),
     url(r"^account/login/?$", profile_views.login, name="login"),
     url(r"^account/signup/?$", profile_views.signup, name="signup"),
