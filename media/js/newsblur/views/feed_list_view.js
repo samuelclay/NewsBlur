@@ -208,6 +208,19 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
+        // feed_list_view.js: Show Briefing Admin sidebar entry for staff users only
+        if (NEWSBLUR.Globals.is_staff) {
+            $('.NB-feeds-header-river-briefing-admin-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-river-briefing-admin-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
         // Show Archive folder for staff users only
         if (NEWSBLUR.Globals.is_staff) {
             $('.NB-feeds-header-archive-container').css({
