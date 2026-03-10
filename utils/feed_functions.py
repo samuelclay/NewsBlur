@@ -216,7 +216,8 @@ def add_object_to_folder(obj, in_folder, folders, parent="", added=False):
         if isinstance(item, dict):
             child_folder_names.append(list(item.keys())[0])
     if isinstance(obj, dict) and in_folder.lower() == parent.lower():
-        if obj_identifier not in child_folder_names:
+        child_folder_names_lower = [name.lower() for name in child_folder_names]
+        if obj_identifier.lower() not in child_folder_names_lower:
             folders.append(obj)
         return folders
 

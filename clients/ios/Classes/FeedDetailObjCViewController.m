@@ -4082,7 +4082,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     if (storiesCollection.isRiverView) {
         [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"folder_name"];
-        [params setObject:[appDelegate extractParentFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
+        [params setObject:[appDelegate extractFolderName:[appDelegate extractParentFolderName:storiesCollection.activeFolder]] forKey:@"in_folder"];
         [params setObject:newTitle forKey:@"new_folder_name"];
     } else {
         [params setObject:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];

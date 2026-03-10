@@ -2383,7 +2383,7 @@ class UserSubscriptionFolders(models.Model):
                     if (
                         folder == feed_id
                         and in_folder is not None
-                        and ((in_folder not in folder_name) or (in_folder in folder_name and deleted))
+                        and ((in_folder != folder_name) or (in_folder == folder_name and deleted))
                     ):
                         multiples_found = True
                         logging.user(
@@ -2391,7 +2391,7 @@ class UserSubscriptionFolders(models.Model):
                             "~FB~SBDeleting feed, and a multiple has been found in '%s' / '%s' %s"
                             % (folder_name, in_folder, "(deleted)" if deleted else ""),
                         )
-                    if folder == feed_id and (in_folder is None or in_folder in folder_name) and not deleted:
+                    if folder == feed_id and (in_folder is None or in_folder == folder_name) and not deleted:
                         logging.user(
                             self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (k, len(old_folders))
                         )
@@ -2436,7 +2436,7 @@ class UserSubscriptionFolders(models.Model):
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        if f_k == folder_to_delete and (in_folder in folder_name or in_folder is None):
+                        if f_k == folder_to_delete and (in_folder == folder_name or in_folder is None):
                             logging.user(
                                 self.user,
                                 "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder),
@@ -2480,7 +2480,7 @@ class UserSubscriptionFolders(models.Model):
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
                         nf = _find_folder_in_folders(f_v, f_k)
-                        if f_k == folder_to_rename and in_folder in folder_name:
+                        if f_k == folder_to_rename and in_folder == folder_name:
                             logging.user(
                                 self.user,
                                 "~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s"
