@@ -2,6 +2,13 @@
 
 {% load recommendations_tags utils_tags statistics_tags %}
 
+{% block head %}
+    <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. Follow RSS feeds, train stories with intelligence filters, and read smarter with AI.">
+    <meta property="og:title" content="NewsBlur - A Personal News Reader">
+    <meta property="og:description" content="Follow RSS feeds, train stories with intelligence filters, and read smarter. Free on web, iOS, and Android. Open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
 {% block extra_head_js %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
@@ -158,135 +165,201 @@
     </div>
     </div>
 
+    <div class="NB-welcome-features-wrap">
     <div class="NB-welcome-features-header">
         <div class="NB-features-heading">Full-featured news reader</div>
         <div class="NB-features-subheading">Keep the signal, lose the noise.</div>
     </div>
 
-    <div class="NB-welcome-features">
+    <div class="NB-welcome-feature-groups">
         <div class="NB-inner">
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
-                <div class="NB-feature-caption">Real-time RSS</div>
-                <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in</div>
+
+            <div class="NB-feature-group NB-feature-group-read">
+                <div class="NB-feature-group-label">Read Your Way</div>
+                <div class="NB-feature-group-items">
+                    <a href="{% url "features" %}#speed" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Real-time RSS</div>
+                            <div class="NB-fgi-desc">Stories are pushed directly to you, so you can read news as it comes in</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#original" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Original Site</div>
+                            <div class="NB-fgi-desc">Read the content in context, the way it was meant to be seen</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#text-view" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_3.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Read the Full Story</div>
+                            <div class="NB-fgi-desc">The original story from truncated RSS feeds is seamlessly expanded</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#layouts" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_8.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Grid, List, Split, Magazine</div>
+                            <div class="NB-fgi-desc">Every site has its own story layout, so you can mix and match</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#themes" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_9.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Dark Mode</div>
+                            <div class="NB-fgi-desc">Easy on the eyes and built into the web, iOS, and Android</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#river" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_16.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">River of News</div>
+                            <div class="NB-fgi-desc">Read all your feeds by folder in one scrollable stream</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#shortcuts" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_15.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Keyboard Shortcuts</div>
+                            <div class="NB-fgi-desc">Navigate everything without touching the mouse</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
-                <div class="NB-feature-caption">Original Site</div>
-                <div class="NB-feature-text">Read the content in context, the way it was meant to be seen</div>
+
+            <div class="NB-feature-group NB-feature-group-smart">
+                <div class="NB-feature-group-label">Stay Smart</div>
+                <div class="NB-feature-group-items">
+                    <a href="{% url "features" %}#training" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Intelligence Training</div>
+                            <div class="NB-fgi-desc">Hide the stories you don't like and highlight the stories you do</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#search" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_5.jpg">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Full Text Search</div>
+                            <div class="NB-fgi-desc">Quickly find stories across all of your subscriptions</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#search" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_1.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Saved Searches</div>
+                            <div class="NB-fgi-desc">Regularly used searches are conveniently given their own feeds</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#ask-ai" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_12.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Ask AI</div>
+                            <div class="NB-fgi-desc">Ask questions about any story and get answers powered by AI</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#briefing" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_13.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Daily Briefing</div>
+                            <div class="NB-fgi-desc">A summary of your top stories, customizable and delivered every day</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#changes" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_5.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Track Changes</div>
+                            <div class="NB-fgi-desc">See how a story evolved since it was first published</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#notifications" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_14.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Notifications</div>
+                            <div class="NB-fgi-desc">Get alerted the moment a feed publishes, on web, iOS, or Android</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
-                <div class="NB-feature-caption">Shared Stories</div>
-                <div class="NB-feature-text">Reading news is better with friends. Share stories on your public blurblog</div>
+
+            <div class="NB-feature-group NB-feature-group-share">
+                <div class="NB-feature-group-label">Share &amp; Organize</div>
+                <div class="NB-feature-group-items">
+                    <a href="{% url "features" %}#blurblog" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Shared Stories</div>
+                            <div class="NB-fgi-desc">Reading news is better with friends. Share stories on your public blurblog</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#blurblog" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_7.jpg">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Blurblog Privacy</div>
+                            <div class="NB-fgi-desc">Share stories with the world or only with your friends</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#saved" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_6.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Story Tagging</div>
+                            <div class="NB-fgi-desc">Save stories with custom tags for fast references</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#newsletters" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_7.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Email Newsletters</div>
+                            <div class="NB-fgi-desc">Read your email newsletters where they belong, in a news reader</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
-                <div class="NB-feature-caption">Training</div>
-                <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do</div>
+
+            <div class="NB-feature-group NB-feature-group-everywhere">
+                <div class="NB-feature-group-label">Works Everywhere</div>
+                <div class="NB-feature-group-items">
+                    <a href="{% url "features" %}#apps" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Third-party Apps</div>
+                            <div class="NB-fgi-desc">Supports Reeder, ReadKit, Unread, and loads more</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#integrations" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_6.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">IFTTT &amp; Zapier</div>
+                            <div class="NB-fgi-desc">Hook NewsBlur up to nearly every service on the web</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#web-feeds" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_10.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">YouTube</div>
+                            <div class="NB-fgi-desc">Even sites that don't publish RSS feeds can be followed</div>
+                        </div>
+                    </a>
+                    <a href="{% url "features" %}#web-feeds" class="NB-fgi">
+                        <img src="{{ MEDIA_URL }}img/welcome/subfeature_11.png">
+                        <div class="NB-fgi-text">
+                            <div class="NB-fgi-caption">Web Feeds</div>
+                            <div class="NB-fgi-desc">A creative feed for any website, even without RSS</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>    
-    </div>
-    
-    <div class="NB-welcome-features">
-        <div class="NB-inner">
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_5.jpg">
-                <div class="NB-feature-caption">Full Text Search</div>
-                <div class="NB-feature-text">Quickly find stories across all of your subscriptions</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_6.png">
-                <div class="NB-feature-caption">Story Tagging</div>
-                <div class="NB-feature-text">Save stories with custom tags for fast references</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_7.jpg">
-                <div class="NB-feature-caption">Blurblog Privacy</div>
-                <div class="NB-feature-text">Share stories with the world or only with your friends</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">
-                <div class="NB-feature-caption">Third-party Apps</div>
-                <div class="NB-feature-text">Supports <a href="http://reederapp.com" class="NB-splash-link" target="_blank">Reeder</a>, <a href="http://readkitapp.com" class="NB-splash-link" target="_blank">ReadKit</a>, <a href="http://supertop.co/unread/" class="NB-splash-link" target="_blank">Unread</a>, and loads more</div>
-            </div>
+
         </div>
     </div>
-    
-    
-    <div class="NB-welcome-subfeatures">
-        <div class="NB-inner">
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_1.png">
-                <div class="NB-feature-caption">Saved Searches</div>
-                <div class="NB-feature-text">Regularly used searches are conveniently given their own feeds</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_3.png">
-                <div class="NB-feature-caption">Read the Full Story</div>
-                <div class="NB-feature-text">The original story from truncated RSS feeds is seamlessly expanded</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_5.png">
-                <div class="NB-feature-caption">Track Changes</div>
-                <div class="NB-feature-text">See how a story evolved since it was first published</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_6.png">
-                <div class="NB-feature-caption">IFTTT Support</div>
-                <div class="NB-feature-text">Hook NewsBlur up to nearly every service on the web</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_7.png">
-                <div class="NB-feature-caption">Email Newsletters</div>
-                <div class="NB-feature-text">Read your email newsletters where they belong, in a news reader</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_8.png">
-                <div class="NB-feature-caption">Grid, List, Split, Magazine</div>
-                <div class="NB-feature-text">Every site has its own story layout, so you can mix and match</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_10.png">
-                <div class="NB-feature-caption">YouTube</div>
-                <div class="NB-feature-text">Even sites that don't publish RSS feeds can be followed</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_9.png">
-                <div class="NB-feature-caption">Dark Mode</div>
-                <div class="NB-feature-text">Easy on the eyes and built into the web, iOS, and Android</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_11.png">
-                <div class="NB-feature-caption">Web Feeds</div>
-                <div class="NB-feature-text">A creative feed for any website, even without RSS</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_12.png">
-                <div class="NB-feature-caption">Ask AI</div>
-                <div class="NB-feature-text">Ask questions about any story and get answers powered by AI</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_13.png">
-                <div class="NB-feature-caption">Daily Briefing</div>
-                <div class="NB-feature-text">A summary of your top stories, customizable and delivered every day</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_14.png">
-                <div class="NB-feature-caption">Notifications</div>
-                <div class="NB-feature-text">Get alerted the moment a feed publishes, on web, iOS, or Android</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_15.png">
-                <div class="NB-feature-caption">Keyboard Shortcuts</div>
-                <div class="NB-feature-text">Navigate everything without touching the mouse</div>
-            </div>
-            <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/subfeature_16.png">
-                <div class="NB-feature-caption">River of News</div>
-                <div class="NB-feature-text">Read all your feeds by folder in one scrollable stream</div>
-            </div>
-        </div>
+
+    <div class="NB-welcome-banner-button-wrap">
+        <a href="{% url "features" %}" class="NB-welcome-banner-button NB-banner-features">
+            See all 30+ features <span class="NB-banner-arrow">&rarr;</span>
+        </a>
+    </div>
     </div>
 
     <div class="NB-welcome-pricing">
@@ -408,6 +481,59 @@
                     <div class="NB-lyric-title">Feed Lyric, NewsBlur's hungry hound</div>
                     <div class="NB-lyric-description">Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown rice.</div>
                 </div>
+            </div>
+        </div>
+
+        <div class="NB-welcome-banner-button-wrap">
+            <a href="{% url "pricing" %}" class="NB-welcome-banner-button NB-banner-pricing">
+                Compare plans and FAQ <span class="NB-banner-arrow">&rarr;</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="NB-welcome-faq">
+        <div class="NB-inner">
+            <h2>Common Questions</h2>
+            <div class="NB-welcome-faq-grid">
+                <div class="NB-welcome-faq-item">
+                    <h3>Is there a free trial?</h3>
+                    <p>Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your feeds and training on the free tier.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Can I import feeds from another reader?</h3>
+                    <p>Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with Google Reader exports, Feedly, Inoreader, and more.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Is NewsBlur open source?</h3>
+                    <p>Fully open source under the MIT license. Run your own instance with Docker, contribute on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>, or just read the code. No lock-in, ever.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>What happens if I cancel?</h3>
+                    <p>Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No data is deleted. Upgrade again anytime and everything is restored.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Does NewsBlur work with other apps?</h3>
+                    <p>Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, and training sync across every app.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Do I need RSS feeds to follow a site?</h3>
+                    <p>No. <a href="/features#web-feeds">Web Feeds</a> let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new content to you automatically.</p>
+                </div>
+                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
+                    <h3>How does NewsBlur compare to Feedly?</h3>
+                    <p>NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open source. No ads, no tracking, no algorithmic feeds.</p>
+                    <a href="{% url "compare-feedly" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                </div>
+                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
+                    <h3>How does NewsBlur compare to Inoreader?</h3>
+                    <p>NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully open source codebase you can self-host.</p>
+                    <a href="{% url "compare-inoreader" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                </div>
+            </div>
+            <div class="NB-welcome-banner-button-wrap">
+                <a href="{% url "faq" %}" class="NB-welcome-banner-button NB-banner-faq">
+                    See all frequently asked questions <span class="NB-banner-arrow">&rarr;</span>
+                </a>
             </div>
         </div>
     </div>
