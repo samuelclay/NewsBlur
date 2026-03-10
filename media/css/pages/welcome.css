@@ -2229,15 +2229,17 @@ a.NB-fgi img {
 .NB-welcome-activity {
     overflow: hidden;
     clear: both;
-    padding: 36px 0;
+    padding: 48px 0 56px;
 }
 
 .NB-welcome-activity h2 {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: #3a2e1e;
-    margin: 0 0 16px;
+    margin: 0 0 28px;
+    text-align: center;
+    letter-spacing: -0.3px;
 }
 
 .NB-welcome-activity .NB-module {
@@ -2257,37 +2259,161 @@ a.NB-fgi img {
     display: none;
 }
 
+/* Section sub-headers (Past day, New Features, etc.) */
+.NB-welcome-activity .NB-module-content-header {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(58, 46, 30, 0.4);
+    margin: 0 0 12px;
+    padding: 0;
+}
+
+/* Stat boxes */
 .NB-welcome-activity .NB-module .NB-module-stats-counts {
     overflow: hidden;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
 }
 
 .NB-welcome-activity .NB-module-stats .NB-module-content-header-hour {
-    margin-top: 36px;
+    margin-top: 32px;
 }
 
-.NB-welcome-activity .NB-module-stats-count-graph {
-    margin-left: 4px;
+/* Stat numbers -- bigger and bolder */
+.NB-welcome-activity .NB-module-stats-count-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: #3a2e1e;
+    text-shadow: none;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
 }
 
-.NB-welcome-activity .NB-graph-bar {
-    width: 4px;
+.NB-welcome-activity .NB-module-stats-count-number small {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(58, 46, 30, 0.45);
 }
 
-.NB-welcome-activity .NB-graph-value {
-    width: 4px;
+/* Stat labels */
+.NB-welcome-activity .NB-module-stats-count-description {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: rgba(58, 46, 30, 0.4);
+    margin: 6px 0 0;
 }
 
 .NB-welcome-activity .NB-module-stats-count {
     float: left;
     width: 33%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
+    padding: 16px 8px;
+    border-bottom: none;
 }
 
+/* Sparkline charts -- taller, warmer */
 .NB-welcome-activity .NB-module-stats-count-graph {
     width: auto;
-    margin-left: 16px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 40px;
+}
+
+.NB-welcome-activity .NB-graph-value {
+    width: 5px;
+    height: 40px;
+    padding: 0 0.5px;
+    margin: 0;
+    position: relative;
+}
+
+.NB-welcome-activity .NB-graph-bar {
+    width: 5px;
+    border-radius: 2px 2px 0 0;
+    background-color: darkblue;
+    transition: background-color 0.15s ease;
+}
+
+.NB-welcome-activity .NB-graph-value:hover .NB-graph-bar {
+    background-color: #0000d4;
+}
+
+/* Feature tables */
+.NB-welcome-activity .NB-module-features table {
+    margin: 0 0 24px;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature td {
+    padding: 8px 0;
+    vertical-align: top;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-date {
+    font-size: 11px;
+    color: rgba(58, 46, 30, 0.4);
+    line-height: 20px;
+    padding: 8px 12px 8px 0;
+    white-space: nowrap;
+    width: 90px;
+    min-width: 90px;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description {
+    font-size: 13px;
+    line-height: 20px;
+    color: #3a2e1e;
+    padding: 8px 0;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description a {
+    color: #405BA8;
+    transition: color 0.15s ease;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description a:hover {
+    color: #A85B40;
+}
+
+/* Feedback tags -- pill-shaped, more readable */
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag {
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-problem {
+    background-color: #d4863a;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-praise {
+    background-color: #c9a940;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-idea {
+    background-color: #7aaa4a;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
+    background-color: #5a92b8;
+}
+
+.NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-updates {
+    background-color: #0f8a80;
+}
+
+.NB-welcome-activity .NB-module-features .NB-feedback-table {
+    margin-bottom: 0;
 }
 
 /* ========== */
@@ -2558,6 +2684,71 @@ a.NB-fgi img {
 
 .NB-dark .NB-welcome-activity h2 {
     color: white;
+}
+
+.NB-dark .NB-welcome-activity .NB-module .NB-module-stats-counts {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-stats-count-number {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-stats-count-number small {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-stats-count-description {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-content-header {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark .NB-welcome-activity .NB-graph-bar {
+    background-color: #4a4aff;
+}
+
+.NB-dark .NB-welcome-activity .NB-graph-value:hover .NB-graph-bar {
+    background-color: #7a7aff;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-date {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description a {
+    color: #7a9ad4;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-description a:hover {
+    color: #a0bfe8;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-problem {
+    background-color: #b87530;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-praise {
+    background-color: #a89030;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-idea {
+    background-color: #5a8a3a;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
+    background-color: #4a7a9a;
+}
+
+.NB-dark .NB-welcome-activity .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-updates {
+    background-color: #0a706a;
 }
 
 .NB-dark .NB-platform-description {
