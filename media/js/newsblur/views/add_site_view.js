@@ -70,6 +70,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-webfeed-hint-btn": "perform_webfeed_refine",
         "keypress .NB-add-site-webfeed-hint-input": "handle_webfeed_hint_keypress",
         "click .NB-add-site-webfeed-subscribe-btn": "subscribe_webfeed",
+        "click .NB-add-site-webfeed-archive-banner": "open_webfeed_upgrade_modal",
         "input .NB-add-site-webfeed-staleness-slider": "update_webfeed_staleness",
         "change .NB-add-site-webfeed-unread-radio": "toggle_webfeed_unread",
         // Note: scroll events don't bubble, so infinite scroll is bound directly
@@ -2789,7 +2790,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-webfeed-options' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-option' }, [
                     $.make('label', { className: 'NB-add-site-webfeed-option-label' },
-                        'Alert after ' + state.staleness_days + ' days without new stories'),
+                        'Alert after ' + state.staleness_days + (state.staleness_days === 1 ? ' day' : ' days') + ' without new stories'),
                     $.make('input', {
                         type: 'range',
                         className: 'NB-add-site-webfeed-staleness-slider',
@@ -2846,8 +2847,24 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     ])
                 ])
             ]),
+            !NEWSBLUR.Globals.is_archive ? $.make('div', { className: 'NB-add-site-webfeed-archive-banner' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-archive-banner-content' }, [
+                    $.make('div', { className: 'NB-add-site-webfeed-archive-banner-icon' }),
+                    $.make('div', { className: 'NB-add-site-webfeed-archive-banner-text' }, [
+                        $.make('div', { className: 'NB-add-site-webfeed-archive-banner-title' }, [
+                            'Web Feeds',
+                            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        ]),
+                        $.make('div', { className: 'NB-add-site-webfeed-archive-banner-body' },
+                            'Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds.')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-add-site-webfeed-archive-banner-cta' },
+                    'Upgrade to Premium Archive')
+            ]) : null,
             $.make('div', {
-                className: 'NB-add-site-webfeed-subscribe-btn NB-modal-submit-button NB-modal-submit-green'
+                className: 'NB-add-site-webfeed-subscribe-btn NB-modal-submit-button NB-modal-submit-green' +
+                    (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '')
             }, 'Subscribe to ' + page_title)
         ]);
 
@@ -3070,13 +3087,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $subscribe.removeClass('NB-hidden');
         this.$('.NB-add-site-webfeed-feed-badge-pattern').text(
             'Pattern: ' + (variant ? variant.label || '' : ''));
+
+        // Scroll subscribe section into view
+        setTimeout(_.bind(function () {
+            var $scrollable = this.$('.NB-add-site-webfeed-content');
+            if ($scrollable.length && $subscribe.length) {
+                $scrollable.animate({ scrollTop: $scrollable[0].scrollHeight }, 2000, 'swing');
+            }
+        }, this), 50);
     },
 
     update_webfeed_staleness: function (e) {
         var value = parseInt($(e.target).val(), 10);
         this.webfeed_state.staleness_days = value;
         $(e.target).closest('.NB-add-site-webfeed-option').find('.NB-add-site-webfeed-option-label').text(
-            'Alert after ' + value + ' days without new stories'
+            'Alert after ' + value + (value === 1 ? ' day' : ' days') + ' without new stories'
         );
     },
 
@@ -3084,6 +3109,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.webfeed_state.mark_unread_on_change = $(e.target).val() === 'unread';
         this.$('.NB-add-site-webfeed-radio-option').removeClass('NB-selected');
         $(e.target).closest('.NB-add-site-webfeed-radio-option').addClass('NB-selected');
+    },
+
+    open_webfeed_upgrade_modal: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.reader.open_premium_upgrade_modal();
     },
 
     subscribe_webfeed: function () {

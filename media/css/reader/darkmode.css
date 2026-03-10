@@ -4857,6 +4857,31 @@ a.mention, a.mention-group {
     border-color: rgba(99, 102, 241, 0.25);
 }
 
+/* Web Feed archive upgrade banner dark mode */
+.NB-dark .NB-add-site-webfeed-archive-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+.NB-dark .NB-add-site-webfeed-archive-banner:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.18) 100%);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+.NB-dark .NB-add-site-webfeed-archive-banner-title {
+    color: #d0d0d0;
+}
+.NB-dark .NB-add-site-webfeed-archive-banner-body {
+    color: #909090;
+}
+
+/* Paused web feed banner dark mode */
+.NB-dark .NB-webfeed-paused-header {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+.NB-dark .NB-webfeed-paused-message {
+    color: #a5b4fc;
+}
+
 /* Discover feed badges dark mode */
 .NB-dark .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-title {
     color: #e0e0e0;

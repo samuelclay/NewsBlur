@@ -1768,6 +1768,12 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     /* red */
 }
 
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-14 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/web-feed.svg');
+    filter: invert(35%) sepia(80%) saturate(2000%) hue-rotate(220deg) brightness(90%) contrast(100%);
+    /* indigo-purple */
+}
+
 /* Pro tier bullets with vivid colors */
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/stack.svg');
