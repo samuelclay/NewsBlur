@@ -172,6 +172,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-13' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Apply training globally'
+                        ]),
+                        $.make('li', { className: 'NB-14' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Web Feeds from any website, even without RSS'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

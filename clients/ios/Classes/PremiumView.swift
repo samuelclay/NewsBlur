@@ -137,7 +137,8 @@ struct PremiumView: View {
         PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
         PremiumFeature(title: "Filter stories by date range", icon: "calendar", iconColor: .pink),
         PremiumFeature(title: "Apply training across a folder", icon: "folder.fill", iconColor: .mint),
-        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo)
+        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo),
+        PremiumFeature(title: "Web Feeds from any website, even without RSS", icon: "web-feed-100", iconColor: .purple, isCustomImage: true)
     ]
 
     @available(iOS 15.0, *)

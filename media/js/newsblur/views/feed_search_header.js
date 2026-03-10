@@ -7,7 +7,8 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
     events: {
         "click .NB-search-header-save": "save_search",
         "click .NB-search-header-clear": "clear_date_filter",
-        "click .NB-feed-exception-button": "open_feed_exception_modal"
+        "click .NB-feed-exception-button": "open_feed_exception_modal",
+        "click .NB-webfeed-paused-button": "open_premium_upgrade_modal"
     },
 
     unload: function () {
@@ -25,14 +26,16 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var has_date_filter = !!(date_filter_start || date_filter_end);
         var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var has_exception = feed && feed.get('has_exception') && feed.get('exception_type') == 'feed' && !this.showing_fake_folder;
+        this.is_paused_webfeed = feed && feed.get('is_webfeed') && !NEWSBLUR.Globals.is_archive && !this.showing_fake_folder;
 
-        if (searching || has_date_filter || has_exception) {
+        if (searching || has_date_filter || has_exception || this.is_paused_webfeed) {
             this.$el.removeClass("NB-hidden");
 
             // Add appropriate class for styling the icon
             this.$el.toggleClass("NB-exception", has_exception && !searching && !has_date_filter);
             this.$el.toggleClass("NB-searching", searching);
             this.$el.toggleClass("NB-date-filter", has_date_filter && !searching);
+            this.$el.toggleClass("NB-webfeed-paused", this.is_paused_webfeed && !searching && !has_date_filter && !has_exception);
 
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
@@ -47,7 +50,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
                 this.$(".NB-search-header-save").hide();
             }
         } else {
-            this.$el.removeClass("NB-exception NB-searching NB-date-filter");
+            this.$el.removeClass("NB-exception NB-searching NB-date-filter NB-webfeed-paused");
             this.unload();
         }
     },
@@ -60,7 +63,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var has_exception = feed && feed.get('has_exception') && feed.get('exception_type') == 'feed' && !this.showing_fake_folder;
 
-        // Check if we're showing exception, search results, or date filters
+        // Check if we're showing exception, paused webfeed, search results, or date filters
         if (has_exception && !searching && !date_filter_start && !date_filter_end) {
             var $view = $('<div class="NB-feed-exception-header">\
                 <div class="NB-feed-exception-icon-large"></div>\
@@ -69,6 +72,17 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
                 </div>\
                 <div class="NB-feed-exception-button" role="button">\
                     Fix misbehaving site\
+                </div>\
+            </div>');
+            return $view;
+        } else if (this.is_paused_webfeed && !searching && !date_filter_start && !date_filter_end) {
+            var $view = $('<div class="NB-webfeed-paused-header">\
+                <div class="NB-webfeed-paused-icon"></div>\
+                <div class="NB-webfeed-paused-message">\
+                    This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories.\
+                </div>\
+                <div class="NB-webfeed-paused-button" role="button">\
+                    Upgrade to Premium Archive\
                 </div>\
             </div>');
             return $view;
@@ -173,6 +187,13 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         e.stopPropagation();
 
         NEWSBLUR.reader.open_feed_exception_modal(NEWSBLUR.reader.active_feed);
+    },
+
+    open_premium_upgrade_modal: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        NEWSBLUR.reader.open_premium_upgrade_modal();
     }
 
 });
