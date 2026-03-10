@@ -17,6 +17,22 @@ def about(request):
     return render(request, "static/about.xhtml")
 
 
+def pricing(request):
+    return render(request, "static/pricing.xhtml")
+
+
+def features(request):
+    return render(request, "static/features.xhtml")
+
+
+def compare_feedly(request):
+    return render(request, "static/compare_feedly.xhtml")
+
+
+def compare_inoreader(request):
+    return render(request, "static/compare_inoreader.xhtml")
+
+
 def faq(request):
     return render(request, "static/faq.xhtml")
 

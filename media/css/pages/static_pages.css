@@ -1,0 +1,1648 @@
+/* ==========================================================================
+ * static_pages.css - Styles for /pricing, /features, /compare, /about pages
+ * ========================================================================== */
+
+/* Shared static page layout */
+.NB-static-pricing .NB-body-inner,
+.NB-static-features .NB-body-inner,
+.NB-static-compare .NB-body-inner,
+.NB-static-about .NB-body-inner,
+.NB-static-faq .NB-body-inner,
+.NB-static-api .NB-body-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 96px 32px 48px;
+}
+
+/* ---- Top header bar ---- */
+
+/* Full-width background bar */
+.NB-static .NB-splash-info.NB-splash-top {
+    height: 70px;
+    left: 0;
+}
+
+/* Hidden by default on non-static, non-welcome pages */
+.NB-splash-top-nav {
+    display: none;
+}
+
+/* Inner container: matches content width below */
+.NB-static .NB-splash-top-nav {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Left zone: page title */
+.NB-static .NB-splash-top-title {
+    flex: 1;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    text-align: left;
+    min-width: 0;
+}
+
+/* When title is empty, still takes up flex space to keep links centered */
+.NB-splash-top-title:empty {
+    flex: 1;
+}
+
+/* Center zone: nav links */
+.NB-splash-top-links {
+    display: none;
+}
+
+.NB-static .NB-splash-top-links {
+    display: flex;
+    list-style: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Right zone: logo */
+.NB-splash-top-logo {
+    display: none;
+}
+
+.NB-static .NB-splash-top-logo {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.NB-static .NB-splash-top-logo .NB-splash-blurred-logo {
+    height: 28px;
+    width: 146px;
+    margin: 0;
+}
+
+/* Hide fallback logo on static and welcome pages */
+.NB-static .NB-splash-top-logo-fallback,
+.NB-welcome .NB-splash-top-logo-fallback {
+    display: none;
+}
+
+/* Kill squares: force no list markers */
+.NB-splash-top-link {
+    list-style: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.NB-splash-top-link::marker {
+    content: none;
+}
+
+.NB-static .NB-splash-top-link a {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    background: none;
+    display: block;
+    line-height: 1;
+}
+
+.NB-static .NB-splash-top-link a:hover {
+    color: #FBDB9B;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Active page: gold text + rounded border */
+.NB-static-features .NB-splash-top-link-features a,
+.NB-static-pricing .NB-splash-top-link-pricing a,
+.NB-static-about .NB-splash-top-link-about a,
+.NB-static-faq .NB-splash-top-link-faq a,
+.NB-static-compare .NB-splash-top-link-features a {
+    color: #FBDB9B;
+    border-color: rgba(251, 219, 155, 0.3);
+}
+
+/* Hide old .NB-static-title - title is now in the header nav */
+.NB-static .NB-static-title {
+    display: none;
+}
+
+/* Hide old NB-module styling on API page (replaced by NB-api-section) */
+.NB-static-api .NB-module {
+    display: none;
+}
+
+/* Logo: use dark variant on dark backgrounds */
+.NB-static .NB-splash-blurred-logo {
+    background-image: url('/media/embed/logo_newsblur_blur_dark.png');
+}
+
+/* ---- Welcome page header ---- */
+
+.NB-welcome .NB-splash-top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 40px;
+}
+
+.NB-welcome .NB-splash-top-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    align-items: center;
+}
+
+.NB-welcome .NB-splash-top-link a {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: none;
+    display: block;
+    transition: color 0.15s ease;
+}
+
+.NB-welcome .NB-splash-top-link a:hover {
+    color: #FBDB9B;
+}
+
+/* Welcome page: hide the header logo and title (welcome has its own) */
+.NB-welcome .NB-splash-top-logo {
+    display: none;
+}
+
+.NB-welcome .NB-splash-top-title {
+    display: none;
+}
+
+
+
+/* ---- Pricing Page ---- */
+
+.NB-static-pricing-hero {
+    text-align: center;
+    margin: 0 0 40px;
+}
+
+.NB-static-pricing-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-static-pricing-subtitle {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ---- Pricing tier card overrides for dark static page background ---- */
+
+/* Card background: dark semi-transparent instead of white */
+.NB-static-pricing .NB-pricing-tier {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.NB-static-pricing .NB-pricing-tier:hover {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Tier headers: slightly muted gradients so they don't pop so much */
+.NB-static-pricing .NB-pricing-tier-premium .NB-pricing-tier-header {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(22, 163, 74, 0.8) 100%);
+}
+
+.NB-static-pricing .NB-pricing-tier-archive .NB-pricing-tier-header {
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.8) 0%, rgba(13, 148, 136, 0.8) 100%);
+}
+
+.NB-static-pricing .NB-pricing-tier-pro .NB-pricing-tier-header {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.85) 0%, rgba(234, 88, 12, 0.85) 100%);
+}
+
+.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-header {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.7) 0%, rgba(75, 85, 99, 0.7) 100%);
+}
+
+.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-header {
+    background: linear-gradient(135deg, rgba(71, 85, 105, 0.7) 0%, rgba(51, 65, 85, 0.7) 100%);
+}
+
+/* Feature list text: light text on dark cards */
+.NB-static-pricing .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-includes {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Feature list backgrounds: transparent on dark cards */
+.NB-static-pricing .NB-pricing-tier-premium .NB-pricing-tier-features,
+.NB-static-pricing .NB-pricing-tier-archive .NB-pricing-tier-features,
+.NB-static-pricing .NB-pricing-tier-pro .NB-pricing-tier-features {
+    background: transparent;
+}
+
+.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features,
+.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features {
+    background: transparent;
+}
+
+.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li,
+.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li span,
+.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li span {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Bullet icons: lighten for dark background */
+.NB-static-pricing .NB-pricing-tier-free .NB-pricing-bullet,
+.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-bullet {
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(120%) contrast(90%);
+}
+
+/* Actions bar: dark treatment */
+.NB-static-pricing .NB-pricing-tier-actions {
+    background: rgba(0, 0, 0, 0.15);
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* "Coming soon" header on dark cards */
+.NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-upcoming-header {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-static-pricing .NB-pricing-tier-features li.NB-upcoming {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* GitHub button on dark card */
+.NB-static-pricing .NB-pricing-github-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-static-pricing .NB-pricing-github-button:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* CTA buttons */
+.NB-pricing-cta {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-top: 12px;
+}
+
+.NB-pricing-cta-premium {
+    background: rgba(34, 197, 94, 0.7);
+    color: white;
+}
+
+.NB-pricing-cta-premium:hover {
+    background: rgba(34, 197, 94, 0.9);
+}
+
+.NB-pricing-cta-archive {
+    background: rgba(20, 184, 166, 0.7);
+    color: white;
+}
+
+.NB-pricing-cta-archive:hover {
+    background: rgba(20, 184, 166, 0.9);
+}
+
+.NB-pricing-cta-pro {
+    background: rgba(249, 115, 22, 0.8);
+    color: white;
+}
+
+.NB-pricing-cta-pro:hover {
+    background: rgba(249, 115, 22, 1);
+}
+
+.NB-pricing-cta-free {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-pricing-cta-free:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+}
+
+.NB-pricing-cta-features {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 12px 32px;
+    font-size: 16px;
+}
+
+.NB-pricing-cta-features:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Trial callout: dark-friendly version */
+.NB-static-pricing .NB-pricing-trial-callout {
+    margin: 28px auto;
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: rgba(16, 185, 129, 0.8);
+}
+
+.NB-static-pricing .NB-pricing-trial-callout strong {
+    color: rgba(16, 185, 129, 0.95);
+}
+
+/* Features link */
+.NB-pricing-features-link {
+    text-align: center;
+    margin: 24px 0 0;
+}
+
+/* Compare links on pricing page */
+.NB-pricing-compare-links {
+    text-align: center;
+    margin: 20px 0 0;
+    font-size: 14px;
+}
+
+.NB-pricing-compare-label {
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 6px;
+}
+
+.NB-pricing-compare-links a {
+    color: #FBDB9B;
+    text-decoration: none;
+}
+
+.NB-pricing-compare-links a:hover {
+    color: white;
+}
+
+.NB-pricing-compare-sep {
+    color: rgba(255, 255, 255, 0.25);
+    margin: 0 6px;
+}
+
+/* ---- FAQ Section ---- */
+
+.NB-pricing-faq {
+    max-width: 750px;
+    margin: 40px auto 0;
+}
+
+.NB-pricing-faq-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin: 0 0 20px;
+}
+
+.NB-pricing-faq-item {
+    margin: 0 0 8px;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-pricing-faq-question {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 4px;
+    padding: 0;
+}
+
+h3.NB-pricing-faq-question {
+    margin-top: 0;
+}
+
+.NB-pricing-faq-answer {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.NB-pricing-faq-answer a {
+    color: #FBDB9B;
+}
+
+.NB-pricing-faq-answer a:hover {
+    color: white;
+}
+
+/* ---- Features Page ---- */
+
+.NB-static-features-hero {
+    text-align: center;
+    margin: 0 0 56px;
+}
+
+.NB-static-features-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-static-features-subtitle {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Feature section - alternating left-right layout */
+.NB-feature-section {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    margin: 0 0 64px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-feature-section:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.NB-feature-section-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-feature-section-screenshot {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-feature-section-screenshot img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.NB-feature-section-screenshot .NB-feature-screenshot-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+}
+
+.NB-feature-section-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-feature-badge-free {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-feature-badge-premium {
+    background: rgba(64, 107, 108, 0.3);
+    color: #7cc5c6;
+}
+
+.NB-feature-badge-archive {
+    background: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+}
+
+.NB-feature-badge-pro {
+    background: rgba(217, 119, 6, 0.35);
+    color: #fcd34d;
+    border: 1px solid rgba(217, 119, 6, 0.4);
+}
+
+.NB-feature-section-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px;
+    letter-spacing: -0.3px;
+}
+
+.NB-feature-section-description {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.NB-feature-section-cta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.15s ease;
+}
+
+.NB-feature-section-cta:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Blog post link */
+.NB-feature-section-blog {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    background: rgba(251, 219, 155, 0.08);
+    color: #FBDB9B;
+    border: 1px solid rgba(251, 219, 155, 0.15);
+    transition: all 0.15s ease;
+}
+
+.NB-feature-section-blog:hover {
+    background: rgba(251, 219, 155, 0.15);
+    color: #fde9b9;
+    border-color: rgba(251, 219, 155, 0.25);
+}
+
+.NB-feature-blog-favicon {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* Features bottom CTA */
+.NB-features-bottom-cta {
+    text-align: center;
+    margin: 24px 0 0;
+    padding: 40px;
+}
+
+.NB-features-bottom-cta-text {
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 16px;
+}
+
+.NB-features-bottom-cta .NB-pricing-cta {
+    margin: 0 8px;
+}
+
+/* ---- Compare Pages ---- */
+
+.NB-static-compare-hero {
+    text-align: center;
+    margin: 0 0 48px;
+}
+
+.NB-static-compare-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-static-compare-subtitle {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Comparison table */
+.NB-compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0 0 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.NB-compare-table th,
+.NB-compare-table td {
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-compare-table thead th {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.NB-compare-table thead th:first-child {
+    width: 40%;
+}
+
+.NB-compare-table tbody td {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.NB-compare-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-compare-table tbody td:first-child {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-compare-check {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.NB-compare-x {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+/* Compare narrative sections */
+.NB-compare-section {
+    margin: 0 0 40px;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-compare-section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px;
+}
+
+.NB-compare-section-text {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.NB-compare-bottom-cta {
+    text-align: center;
+    margin: 48px 0 0;
+}
+
+/* ---- About Page ---- */
+
+/* Override old .NB-module styles from reader.css */
+.NB-static-about .NB-module {
+    display: none;
+}
+
+/* Hero */
+.NB-about-hero {
+    text-align: center;
+    margin: 0 0 56px;
+    padding: 0 24px;
+}
+
+.NB-about-hero-title {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.35;
+    max-width: 680px;
+    margin: 0 auto;
+    letter-spacing: -0.3px;
+}
+
+/* Sections */
+.NB-about-section {
+    margin: 0 0 56px;
+}
+
+.NB-about-section-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #D9A621;
+    margin: 0 0 24px;
+}
+
+/* Why cards - 2x2 grid */
+.NB-about-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.NB-about-card {
+    padding: 28px 28px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-about-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 10px;
+}
+
+.NB-about-card-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: block;
+    align-self: center;
+}
+
+/* Per-card icon colors via hue-rotate on the base #95968E grey */
+.NB-about-card:nth-child(1) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(75deg); }   /* green */
+.NB-about-card:nth-child(2) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(180deg); }  /* blue */
+.NB-about-card:nth-child(3) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(5deg); }    /* gold */
+.NB-about-card:nth-child(4) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(240deg); }  /* purple */
+.NB-about-card:nth-child(5) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(140deg); }  /* teal */
+.NB-about-card:nth-child(6) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(330deg); }  /* orange */
+.NB-about-card:nth-child(7) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(200deg); }  /* sky blue */
+.NB-about-card:nth-child(8) .NB-about-card-icon { filter: brightness(1.4) sepia(1) saturate(3) hue-rotate(290deg); }  /* pink */
+
+/* Inline SVG icons: override filter with direct color */
+.NB-about-card:nth-child(2) .NB-about-card-icon-inline {
+    filter: none;
+    color: #5b9bd5;
+}
+
+h3.NB-about-card-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.NB-about-card-text {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Team */
+.NB-about-team {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.NB-about-person {
+    flex: 1;
+    min-width: 180px;
+    text-align: center;
+}
+
+.NB-about-person-photo {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0 0 12px;
+}
+
+.NB-about-person-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 2px;
+}
+
+.NB-about-person-role {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 0 8px;
+}
+
+.NB-about-person-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+.NB-about-person-links a {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.NB-about-person-links a:hover {
+    color: #FBDB9B;
+}
+
+/* Timeline */
+.NB-about-timeline {
+    position: relative;
+    padding-left: 80px;
+}
+
+.NB-about-timeline::before {
+    content: '';
+    position: absolute;
+    left: 52px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(180deg, #D9A621 0%, rgba(217, 166, 33, 0.15) 100%);
+}
+
+.NB-about-timeline-item {
+    position: relative;
+    margin: 0 0 32px;
+}
+
+.NB-about-timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.NB-about-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #D9A621;
+    box-shadow: 0 0 0 3px rgba(217, 166, 33, 0.2);
+}
+
+.NB-about-timeline-year {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    position: absolute;
+    left: -76px;
+    top: 2px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.5px;
+    text-align: right;
+    width: 36px;
+}
+
+.NB-about-timeline-content p {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* Tech stack */
+.NB-about-tech {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.NB-about-tech-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.NB-about-tech-group-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.35);
+    margin: 0 0 12px;
+}
+
+.NB-about-tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.NB-about-tech-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.NB-about-tech-pill:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-about-tech-pill-github {
+    background: rgba(251, 219, 155, 0.08);
+    color: #FBDB9B;
+    border-color: rgba(251, 219, 155, 0.15);
+}
+
+.NB-about-tech-pill-github:hover {
+    background: rgba(251, 219, 155, 0.15);
+    color: #fde9b9;
+    border-color: rgba(251, 219, 155, 0.25);
+}
+
+.NB-about-github-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(1);
+    opacity: 0.7;
+}
+
+/* Legal */
+.NB-about-section-legal {
+    text-align: center;
+    margin: 0 0 48px;
+}
+
+.NB-about-legal-link {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.NB-about-legal-link:hover {
+    color: #FBDB9B;
+}
+
+.NB-about-legal-sep {
+    color: rgba(255, 255, 255, 0.2);
+    margin: 0 12px;
+}
+
+/* Tagline */
+.NB-about-tagline {
+    text-align: center;
+    margin: 0 0 24px;
+}
+
+.NB-about-tagline-text {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-size: 20px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 16px;
+}
+
+.NB-about-tagline-img {
+    width: 400px;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+}
+
+.NB-about-tagline-img:hover {
+    opacity: 1;
+}
+
+/* ---- FAQ Page ---- */
+
+/* Hide old .NB-module markup on the FAQ page */
+.NB-static-faq .NB-module {
+    display: none;
+}
+
+.NB-faq-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.NB-faq-hero {
+    text-align: center;
+    margin: 0 0 56px;
+    padding: 0 24px;
+}
+
+.NB-faq-hero-title {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.35;
+    max-width: 680px;
+    margin: 0 auto 12px;
+    letter-spacing: -0.3px;
+}
+
+.NB-faq-hero-subtitle {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.55);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.NB-faq-section {
+    margin: 0 0 48px;
+}
+
+.NB-faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.NB-faq-item {
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+h3.NB-faq-question {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 8px;
+    line-height: 1.35;
+}
+
+.NB-faq-answer {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.NB-faq-answer + .NB-faq-answer {
+    margin-top: 8px;
+}
+
+.NB-faq-answer a {
+    color: #FBDB9B;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.NB-faq-answer a:hover {
+    color: white;
+}
+
+.NB-faq-answer code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-faq-answer ul {
+    margin: 8px 0 0;
+    padding: 0 0 0 20px;
+}
+
+.NB-faq-answer li {
+    margin: 0 0 4px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-faq-bullet-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 4px 0 0;
+}
+
+.NB-faq-bullet-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-faq-bullet-icon img {
+    width: 14px;
+    height: 14px;
+}
+
+.NB-faq-tier-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0 0;
+}
+
+.NB-faq-tier {
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.NB-faq-tier-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 4px;
+}
+
+.NB-faq-tier-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.NB-faq-bottom-cta {
+    text-align: center;
+    margin: 24px 0 0;
+    padding: 40px;
+}
+
+.NB-faq-bottom-cta-text {
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 8px;
+}
+
+.NB-faq-bottom-cta-subtext {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 20px;
+}
+
+.NB-faq-bottom-cta .NB-pricing-cta {
+    margin: 0 8px;
+}
+
+/* ---- API Page ---- */
+
+.NB-api-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.NB-api-hero {
+    text-align: center;
+    margin: 0 0 48px;
+    padding: 0 24px;
+}
+
+.NB-api-hero-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-api-hero-subtitle {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.NB-api-section {
+    margin: 0 0 40px;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-api-section-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 16px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.NB-api-section-content p {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin: 0 0 12px;
+}
+
+.NB-api-section-content p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-api-section-content a {
+    color: #FBDB9B;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.NB-api-section-content a:hover {
+    color: white;
+}
+
+.NB-api-section-content code {
+    font-size: 13px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-api-section-content h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 32px 0 8px;
+    padding: 16px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-api-section-content h3:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.NB-api-section-content h3 tt {
+    font-size: 15px;
+}
+
+.NB-api-section-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 16px 0 8px;
+}
+
+.NB-api-section-content ul {
+    margin: 8px 0 12px 0;
+    padding-left: 20px;
+}
+
+.NB-api-section-content li {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.6;
+    margin: 0 0 6px;
+}
+
+/* TOC */
+.NB-static-api .NB-api-toc-header {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #D9A621;
+    margin: 20px 0 8px;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.NB-static-api .NB-api-toc-header:first-child {
+    margin-top: 0;
+}
+
+.NB-static-api .NB-api-toc {
+    list-style: none;
+    margin: 0 0 0 0;
+    padding: 0;
+}
+
+.NB-static-api .NB-api-toc li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 0 0 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.NB-static-api .NB-api-toc li:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.NB-static-api .NB-api-toc a {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.NB-static-api .NB-api-toc a:hover {
+    color: #FBDB9B;
+}
+
+.NB-static-api .NB-api-toc a code {
+    font-size: 13px;
+    padding: 1px 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+}
+
+.NB-static-api .NB-api-toc .NB-api-link-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: right;
+    flex: 1;
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0;
+}
+
+/* Param tables */
+.NB-static-api .NB-api-section-content table {
+    width: 100%;
+    border-spacing: 0;
+    margin: 16px 0 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.NB-static-api .NB-api-section-content table th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: none;
+}
+
+.NB-static-api .NB-api-section-content table td {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-right: none;
+    white-space: normal;
+    vertical-align: top;
+}
+
+.NB-static-api .NB-api-section-content table td:first-child {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+
+.NB-static-api .NB-api-section-content table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges */
+.NB-static-api .optional,
+.NB-static-api .required {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+}
+
+.NB-static-api .optional {
+    background: rgba(152, 200, 146, 0.2);
+    border: 1px solid rgba(152, 200, 146, 0.3);
+    color: rgba(152, 200, 146, 0.9);
+}
+
+.NB-static-api .required {
+    background: rgba(217, 144, 15, 0.2);
+    border: 1px solid rgba(217, 144, 15, 0.35);
+    color: #FBDB9B;
+}
+
+/* Anchor links */
+.NB-static-api .NB-anchor {
+    position: relative;
+    top: -100px;
+    display: block;
+}
+
+.NB-static-api .NB-api-endpoint-param-desc {
+    width: 100%;
+    white-space: normal;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 900px) {
+    .NB-static-pricing .NB-body-inner,
+    .NB-static-features .NB-body-inner,
+    .NB-static-compare .NB-body-inner,
+    .NB-static-about .NB-body-inner,
+    .NB-static-faq .NB-body-inner,
+    .NB-static-api .NB-body-inner {
+        padding: 70px 16px 32px;
+    }
+
+    .NB-api-hero-title {
+        font-size: 30px;
+    }
+
+    .NB-api-section {
+        padding: 20px;
+    }
+
+    .NB-static-pricing-title,
+    .NB-static-features-title,
+    .NB-static-compare-title {
+        font-size: 30px;
+    }
+
+    .NB-about-hero-title,
+    .NB-faq-hero-title {
+        font-size: 26px;
+    }
+
+    .NB-static .NB-splash-info.NB-splash-top {
+        height: 55px;
+        padding: 0 12px;
+    }
+
+    .NB-splash-top-title {
+        font-size: 16px;
+    }
+
+    .NB-static .NB-splash-top-link a {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .NB-feature-section {
+        flex-direction: column !important;
+        gap: 24px;
+        padding: 24px;
+    }
+
+    .NB-about-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .NB-about-team {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .NB-about-person {
+        min-width: 140px;
+        flex: 0 1 auto;
+    }
+
+    .NB-about-timeline {
+        padding-left: 64px;
+    }
+
+    .NB-about-timeline::before {
+        left: 40px;
+    }
+
+    .NB-about-timeline-year {
+        left: -60px;
+    }
+
+    .NB-about-tech {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .NB-compare-table {
+        font-size: 13px;
+    }
+
+    .NB-compare-table th,
+    .NB-compare-table td {
+        padding: 10px 12px;
+    }
+
+    .NB-faq-item {
+        padding: 16px 18px;
+    }
+
+    .NB-faq-tier-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---- Dark mode overrides ---- */
+/* Static pages are already dark-themed, so these are mainly for
+   the features/compare pages which also appear on dark backgrounds */
+
+.NB-dark .NB-feature-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+}
