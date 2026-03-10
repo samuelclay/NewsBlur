@@ -5060,26 +5060,14 @@ a.mention, a.mention-group {
 /* = Daily Briefing - Group View (Dark) = */
 /* ====================================== */
 
-/* darkmode.css: Briefing Admin entries */
-.NB-dark .NB-briefing-admin-entry {
-    border-bottom-color: #303030;
-}
-
-.NB-dark .NB-briefing-admin-date {
-    color: #9A9B9C;
-}
-
+/* darkmode.css: Briefing Admin */
 .NB-dark .NB-briefing-admin-meta {
     color: #707070;
 }
 
-.NB-dark .NB-briefing-admin-summary {
-    border-color: #303030;
+.NB-dark .NB-briefing-admin-badge {
+    border-bottom-color: #303030;
     background: #1e1f21;
-}
-
-.NB-dark .NB-briefing-admin-empty {
-    color: #707070;
 }
 
 /* darkmode.css: Briefing group container */

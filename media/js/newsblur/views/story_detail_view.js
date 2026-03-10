@@ -111,6 +111,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.generate_gradients();
         this.render_comments();
         this.render_cluster_stories();
+        this.render_briefing_admin_badge();
         this.attach_handlers();
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
@@ -641,6 +642,27 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.comments_view) this.comments_view.destroy();
         delete this.model.inline_story_detail_view;
         this.remove();
+    },
+
+    render_briefing_admin_badge: function () {
+        if (!NEWSBLUR.reader.flags.briefing_admin_view) return;
+        var user_profile = this.model.get('briefing_admin_user_profile');
+        if (!user_profile) return;
+
+        var user_model = new NEWSBLUR.Models.User(user_profile);
+        var badge = new NEWSBLUR.Views.SocialProfileBadge({
+            model: user_model
+        });
+        var curated_count = this.model.get('briefing_admin_curated_count') || 0;
+
+        var $badge_container = $.make('div', { className: 'NB-briefing-admin-badge' }, [
+            badge,
+            $.make('div', { className: 'NB-briefing-admin-meta' }, [
+                Inflector.commas(curated_count) + ' curated ' +
+                Inflector.pluralize('story', curated_count)
+            ])
+        ]);
+        this.$('.NB-feed-story-content').before($badge_container);
     },
 
     render_intelligence: function (options) {
