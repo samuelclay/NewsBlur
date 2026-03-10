@@ -444,27 +444,17 @@ def select_briefing_stories(
     return result
 
 
-def _normalize_title(title):
-    """Normalize a story title for duplicate detection.
-
-    Delegates to apps.clustering.models.normalize_title for shared logic.
-    """
-    from apps.clustering.models import normalize_title
-
-    return normalize_title(title)
-
-
 def _find_clustered_stories(candidates, stories_by_hash):
-    """Find stories in clusters with 3+ feeds and categorize as widely_covered.
+    """Find stories in pre-computed clusters and categorize as widely_covered.
 
     Checks pre-computed clusters in Redis. A story qualifies as widely_covered
-    if its cluster has 3+ unique feeds (total cluster members, not just the
-    user's candidates). Also falls back to title-based matching.
+    if its cluster has 2+ unique feeds (total cluster members, not just the
+    user's candidates). Only uses pre-computed Redis clusters — no title-based
+    fallback, which would create a mismatch with inject_widely_covered_clusters.
     """
     from apps.clustering.models import (
         get_cluster_for_story,
         get_cluster_members,
-        normalize_title,
     )
 
     categorized = {}
@@ -481,7 +471,7 @@ def _find_clustered_stories(candidates, stories_by_hash):
         # scoring.py: Get ALL members of this cluster (not just the user's candidates)
         # to determine total coverage breadth across feeds.
         all_members = get_cluster_members(cluster_id)
-        if len(all_members) < 3:
+        if len(all_members) < 2:
             continue
 
         # Count unique feed IDs from all cluster members
@@ -492,36 +482,11 @@ def _find_clustered_stories(candidates, stories_by_hash):
             if feed_id_str:
                 feed_ids.add(feed_id_str)
 
-        if len(feed_ids) >= 3:
+        if len(feed_ids) >= 2:
             # Mark any of this user's candidates that are in this cluster
             for member_hash in all_members:
                 if member_hash in candidate_hashes:
                     categorized[member_hash] = "widely_covered"
-
-    clustered_hashes = set(categorized.keys())
-
-    # Also do title-based matching for stories not yet in clusters
-    title_groups = {}
-    for s in candidates:
-        if s["story_hash"] in clustered_hashes:
-            continue
-        story = stories_by_hash.get(s["story_hash"])
-        if not story or not story.story_title:
-            continue
-        norm_title = normalize_title(story.story_title)
-        if not norm_title or len(norm_title) < 10:
-            continue
-        title_groups.setdefault(norm_title, []).append(s["story_hash"])
-
-    for norm_title, hashes in title_groups.items():
-        feed_ids = set()
-        for h in hashes:
-            story = stories_by_hash.get(h)
-            if story:
-                feed_ids.add(story.story_feed_id)
-        if len(feed_ids) >= 2:
-            for h in hashes:
-                categorized[h] = "widely_covered"
 
     return categorized
 

@@ -261,22 +261,35 @@ def generate_briefing_summary(
         if scored.get("classifier_matches"):
             line += "\n  MATCHES: %s" % ", ".join(scored["classifier_matches"])
 
-        # Add cluster info if this story is part of a pre-computed cluster
+        # summary.py: Add cluster info if this story is part of a pre-computed cluster.
+        # Look up cluster members from Redis and fetch feed titles from the DB,
+        # not just from stories_by_hash (which only contains curated stories and
+        # almost never includes cluster members from other feeds).
         from apps.clustering.models import get_cluster_for_story, get_cluster_members
 
         cluster_id = get_cluster_for_story(story_hash)
         if cluster_id:
             cluster_members = get_cluster_members(cluster_id)
-            other_feeds = []
+            other_feed_ids = set()
             for member_hash in cluster_members:
                 if member_hash != story_hash:
-                    member_story = stories_by_hash.get(member_hash)
-                    if member_story:
-                        member_feed = feeds_by_id.get(member_story.story_feed_id, "")
-                        if member_feed:
-                            other_feeds.append(member_feed)
-            if other_feeds:
-                line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
+                    member_feed_id_str = member_hash.split(":")[0] if ":" in member_hash else None
+                    if member_feed_id_str:
+                        try:
+                            other_feed_ids.add(int(member_feed_id_str))
+                        except ValueError:
+                            pass
+            # Remove this story's own feed
+            other_feed_ids.discard(story.story_feed_id)
+            if other_feed_ids:
+                # Fetch feed titles for cluster members not already in feeds_by_id
+                missing_ids = other_feed_ids - set(feeds_by_id.keys())
+                if missing_ids:
+                    for f in Feed.objects.filter(pk__in=missing_ids).only("pk", "feed_title"):
+                        feeds_by_id[f.pk] = f.feed_title
+                other_feeds = [feeds_by_id[fid] for fid in other_feed_ids if fid in feeds_by_id and feeds_by_id[fid]]
+                if other_feeds:
+                    line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
 
         story_lines.append(line)
 
@@ -920,13 +933,23 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
     for match in reversed(story_links):
         story_hash = match.group(1)
         link_title = match.group(2)
-        members = story_cluster_map.get(story_hash)
-        if not members:
-            continue
-
-        # Convert the <a> tag to <strong> — headline becomes bold, not a link
         full_link = match.group(0)
         bold_title = "<strong>%s</strong>" % link_title
+        members = story_cluster_map.get(story_hash)
+
+        if not members:
+            # summary.py: Orphan widely_covered story — no cluster members found.
+            # Still convert to bold so it looks like a separate topic headline,
+            # not a cluster member link of the previous story.
+            p_close = section_html.find("</p>", match.end())
+            if p_close == -1:
+                continue
+            p_close += len("</p>")
+            modified_paragraph = section_html[: match.start()] + section_html[match.start() : p_close].replace(
+                full_link, bold_title, 1
+            )
+            section_html = modified_paragraph + section_html[p_close:]
+            continue
 
         # Build cluster member list HTML
         member_lines = []
@@ -943,6 +966,15 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
                 extra_story_dicts.append({"story_hash": m_hash})
 
         if not member_lines:
+            # No member metadata found — still convert to bold for visual separation
+            p_close = section_html.find("</p>", match.end())
+            if p_close == -1:
+                continue
+            p_close += len("</p>")
+            modified_paragraph = section_html[: match.start()] + section_html[match.start() : p_close].replace(
+                full_link, bold_title, 1
+            )
+            section_html = modified_paragraph + section_html[p_close:]
             continue
 
         cluster_list_html = "\n".join(member_lines)
