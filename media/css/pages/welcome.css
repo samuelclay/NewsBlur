@@ -9,7 +9,17 @@
     display: none;
 }
 
-.NB-welcome .NB-splash-info.NB-splash-top,
+.NB-welcome .NB-splash-info.NB-splash-top {
+    height: 40px;
+    position: absolute;
+    top: 0;
+    border-top: none;
+    border-bottom: none;
+    background: none;
+    background-color: rgba(0, 0, 0, .3);
+    z-index: 10;
+}
+
 .NB-welcome .NB-splash-info.NB-splash-bottom {
     height: 6px;
     position: absolute;
@@ -1191,6 +1201,13 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 /* = Features = */
 /* ============ */
 
+.NB-welcome-features-wrap {
+    background: linear-gradient(180deg, #f5f3f0 0%, #eee9e2 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 0;
+}
+
 .NB-welcome-features-header {
     text-align: center;
     padding: 64px 24px 0;
@@ -1213,81 +1230,92 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     line-height: 1.5;
 }
 
-.NB-welcome-features {
-    margin: 64px 0;
-    overflow: hidden;
+/* Feature groups — 2x2 mosaic */
+.NB-welcome-feature-groups {
+    margin: 48px 0 24px;
 }
 
-.NB-welcome-features .NB-feature {
-    float: left;
-    width: 204px;
-    margin: 0 36px 0 0;
-    text-align: center;
+.NB-welcome-feature-groups > .NB-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px 48px;
 }
 
-.NB-welcome-features img {
-    width: 200px;
-    height: 175px;
-    object-fit: cover;
-    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+.NB-feature-group {
+    border-left: 3px solid transparent;
+    padding-left: 20px;
 }
 
-.NB-welcome-features .NB-feature-caption {
-    font-weight: bold;
-    font-size: 22px;
-    margin: 24px 0 0;
+.NB-feature-group-read  { border-left-color: #c0a06a; }
+.NB-feature-group-smart { border-left-color: #7a9a5a; }
+.NB-feature-group-share { border-left-color: #8a6a9a; }
+.NB-feature-group-everywhere { border-left-color: #5a8aaa; }
+
+.NB-feature-group-label {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 10px;
+    padding: 0;
 }
 
-.NB-welcome-features .NB-feature-text {
-    color: #808080;
-    margin: 8px 0 0;
-    font-size: 15px;
-    line-height: 22px;
-}
+.NB-feature-group-read  .NB-feature-group-label { color: #b0903a; }
+.NB-feature-group-smart .NB-feature-group-label { color: #5a7a3a; }
+.NB-feature-group-share .NB-feature-group-label { color: #7a5a8a; }
+.NB-feature-group-everywhere .NB-feature-group-label { color: #4a7a9a; }
 
-.NB-welcome-subfeatures {
-    margin: 48px 0;
-    overflow: hidden;
-}
-
-.NB-welcome-subfeatures .NB-inner {
+.NB-feature-group-items {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0;
 }
 
-.NB-welcome-subfeatures .NB-feature {
-    width: 46%;
-    margin: 0 4% 48px 0;
-    text-align: left;
+/* Individual feature item */
+a.NB-fgi {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px 10px 0;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+    transition: background-color 0.15s ease;
 }
 
-.NB-welcome-subfeatures img {
-    float: left;
-    flex-shrink: 0;
-    width: 120px;
-    height: 100px;
-    margin: 0 24px 0 0;
+a.NB-fgi:hover {
+    background-color: rgba(0, 0, 0, 0.035);
+    text-decoration: none;
+}
+
+a.NB-fgi img {
+    width: 128px;
+    height: 128px;
+    border-radius: 6px;
     object-fit: cover;
     object-position: left top;
-    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-/* Remove shadows from right column images (screenshots) */
-.NB-welcome-subfeatures .NB-feature:nth-child(even) img {
-    box-shadow: none;
+.NB-fgi-text {
+    min-width: 0;
 }
 
-.NB-welcome-subfeatures .NB-feature-caption {
-    font-weight: bold;
-    font-size: 22px;
-    margin: 0px 0 0;
+.NB-fgi-caption {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: #3a2e1e;
+    line-height: 1.2;
 }
 
-.NB-welcome-subfeatures .NB-feature-text {
-    color: #808080;
-    margin: 8px 0 0;
-    font-size: 15px;
-    line-height: 22px;
+.NB-fgi-desc {
+    color: #8a7a6a;
+    font-size: 14px;
+    line-height: 1.45;
+    margin-top: 3px;
 }
 
 /* =========== */
@@ -1297,10 +1325,9 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 .NB-welcome-pricing {
     overflow: hidden;
     clear: both;
-    margin: 48px 0 0;
+    margin: 0;
     padding: 48px 0;
     background: linear-gradient(180deg, #f5f3f0 0%, #eee9e2 100%);
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -1833,6 +1860,89 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     filter: grayscale(100%) opacity(50%);
 }
 
+/* Pricing compare link */
+.NB-pricing-compare-link {
+    text-align: center;
+    margin: 24px 0 0;
+    font-size: 15px;
+}
+
+.NB-pricing-compare-link a {
+    color: #FBDB9B;
+}
+
+.NB-pricing-compare-link a:hover {
+    color: white;
+}
+
+/* See all features link (legacy) */
+.NB-features-seeall {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Banner buttons — shared */
+.NB-welcome-banner-button-wrap {
+    text-align: center;
+    padding: 0 24px 48px;
+}
+
+.NB-welcome-banner-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.NB-welcome-banner-button:hover {
+    text-decoration: none;
+}
+
+.NB-banner-arrow {
+    transition: transform 0.2s ease;
+}
+
+.NB-welcome-banner-button:hover .NB-banner-arrow {
+    transform: translateX(3px);
+}
+
+/* Features banner */
+.NB-banner-features {
+    color: #6b5a3a;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.NB-banner-features:hover {
+    color: #3a2e1e;
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.18);
+}
+
+/* Pricing banner — on warm beige bg */
+.NB-welcome-pricing .NB-welcome-banner-button-wrap {
+    padding: 32px 24px 0;
+}
+
+.NB-banner-pricing {
+    color: #6b5a3a;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.NB-banner-pricing:hover {
+    color: #3a2e1e;
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.18);
+}
+
 /* Lyric section */
 .NB-pricing-lyric {
     display: flex;
@@ -2003,6 +2113,116 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
 
 /* ============ */
+/* = Welcome FAQ = */
+/* =============== */
+
+.NB-welcome-faq {
+    overflow: hidden;
+    clear: both;
+    padding: 48px 0;
+    background: linear-gradient(180deg, #f5f3f0 0%, #eee9e2 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-welcome-faq h2 {
+    text-align: center;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 28px;
+    color: #3a2e1e;
+    letter-spacing: -0.3px;
+}
+
+.NB-welcome-faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.NB-welcome-faq-item {
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-welcome-faq-item h3 {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #3a2e1e;
+    margin: 0 0 6px;
+    line-height: 1.3;
+}
+
+.NB-welcome-faq-item p {
+    font-size: 14px;
+    color: rgba(58, 46, 30, 0.6);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.NB-welcome-faq-item p a {
+    color: #8a6d3b;
+    text-decoration: none;
+}
+
+.NB-welcome-faq-item p a:hover {
+    color: #3a2e1e;
+}
+
+.NB-welcome-faq-compare-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8a6d3b;
+    text-decoration: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.15s ease;
+}
+
+.NB-welcome-faq-compare-link:hover {
+    color: #3a2e1e;
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.NB-welcome-faq-compare-link .NB-banner-arrow {
+    transition: transform 0.15s ease;
+}
+
+.NB-welcome-faq-compare-link:hover .NB-banner-arrow {
+    transform: translateX(3px);
+}
+
+.NB-welcome-faq .NB-welcome-banner-button-wrap {
+    margin: 20px 0 0;
+    padding-bottom: 0;
+}
+
+.NB-banner-faq {
+    color: #6b5a3a;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.NB-banner-faq:hover {
+    color: #3a2e1e;
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.18);
+}
+
 /* = Activity = */
 /* ============ */
 
@@ -2160,48 +2380,10 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
 
 @media (max-width: 768px) {
-    /* Features: 4-across → 2 columns */
-    .NB-welcome-features {
-        margin: 48px 0;
-    }
-    .NB-welcome-features .NB-inner {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 32px 0;
-    }
-    .NB-welcome-features .NB-feature {
-        float: none;
-        width: 50%;
-        margin: 0;
-        box-sizing: border-box;
-        padding: 0 16px;
-    }
-    .NB-welcome-features img {
-        width: 100%;
-        height: auto;
-        max-width: 200px;
-    }
-
-    /* Subfeatures: keep 2-col, stack image above text in each card */
-    .NB-welcome-subfeatures .NB-inner {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .NB-welcome-subfeatures .NB-feature {
-        float: none;
-        width: 50%;
-        margin: 0 0 36px 0;
-        box-sizing: border-box;
-        padding: 0 12px;
-        text-align: center;
-    }
-    .NB-welcome-subfeatures img {
-        float: none;
-        width: 100%;
-        height: auto;
-        max-width: 120px;
-        margin: 0 auto 12px;
-        display: block;
+    /* Feature groups: 2-col → 1-col */
+    .NB-welcome-feature-groups > .NB-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
     }
 
     /* Pricing: reduce heading and padding */
@@ -2214,6 +2396,17 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     .NB-welcome-pricing > .NB-inner > p {
         font-size: 15px;
         padding: 0 12px;
+    }
+
+    /* FAQ: single column on mobile */
+    .NB-welcome-faq {
+        padding: 36px 0;
+    }
+    .NB-welcome-faq h2 {
+        font-size: 24px;
+    }
+    .NB-welcome-faq-grid {
+        grid-template-columns: 1fr;
     }
 
     /* Bottom actions: reduce vertical padding */
@@ -2271,9 +2464,13 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
 
 @media (max-width: 500px) {
-    /* Features: keep 2 columns, tighten padding */
-    .NB-welcome-features .NB-feature {
-        padding: 0 8px;
+    /* Feature groups: tighten on small screens */
+    .NB-feature-group {
+        padding-left: 14px;
+    }
+    a.NB-fgi img {
+        width: 72px;
+        height: 72px;
     }
 
     /* Pricing: Lyric section stacks */
@@ -2327,6 +2524,12 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     color: white;
 }
 
+.NB-dark .NB-welcome-features-wrap {
+    background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 .NB-dark .NB-features-heading {
     color: white;
 }
@@ -2334,6 +2537,24 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 .NB-dark .NB-features-subheading {
     color: rgba(255, 255, 255, 0.55);
 }
+
+/* Feature groups — dark mode */
+.NB-dark .NB-fgi-caption {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-fgi-desc {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark a.NB-fgi:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-feature-group-read  .NB-feature-group-label { color: #d4b87a; }
+.NB-dark .NB-feature-group-smart .NB-feature-group-label { color: #8ab06a; }
+.NB-dark .NB-feature-group-share .NB-feature-group-label { color: #a07ab0; }
+.NB-dark .NB-feature-group-everywhere .NB-feature-group-label { color: #6a9aba; }
 
 .NB-dark .NB-welcome-activity h2 {
     color: white;
@@ -2346,7 +2567,6 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 /* Pricing */
 .NB-dark .NB-welcome-pricing {
     background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -2422,6 +2642,87 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 
 .NB-dark .NB-pricing-lyric .NB-lyric-description {
     color: rgba(255, 255, 255, 0.55);
+}
+
+/* Banner buttons */
+.NB-dark .NB-banner-features {
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-banner-features:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.NB-dark .NB-banner-pricing {
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-banner-pricing:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Welcome FAQ */
+.NB-dark .NB-welcome-faq {
+    background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-welcome-faq h2 {
+    color: #ffffff;
+}
+
+.NB-dark .NB-welcome-faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-welcome-faq-item h3 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-welcome-faq-item p {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-welcome-faq-item p a {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-welcome-faq-item p a:hover {
+    color: white;
+}
+
+.NB-dark .NB-welcome-faq-compare-link {
+    color: #FBDB9B;
+    background: rgba(251, 219, 155, 0.08);
+    border-color: rgba(251, 219, 155, 0.15);
+}
+
+.NB-dark .NB-welcome-faq-compare-link:hover {
+    color: #fde9b9;
+    background: rgba(251, 219, 155, 0.15);
+    border-color: rgba(251, 219, 155, 0.25);
+}
+
+.NB-dark .NB-banner-faq {
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-banner-faq:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* Bottom Actions */
