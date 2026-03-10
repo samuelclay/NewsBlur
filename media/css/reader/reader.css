@@ -36631,6 +36631,69 @@ span.NB-briefing-inline-favicon {
     margin-bottom: 6px;
 }
 
+/* reader.css: Briefing Admin — staff-only view for auditing all users' briefings */
+.NB-feeds-header-river-briefing-admin-container {
+    display: none;
+}
+
+.NB-briefing-admin-entry {
+    border-bottom: 1px solid #E0E0E0;
+    padding: 16px 12px;
+}
+
+.NB-briefing-admin-entry .NB-profile-badge {
+    margin-bottom: 4px;
+}
+
+.NB-briefing-admin-date {
+    font-size: 12px;
+    font-weight: bold;
+    color: #606060;
+    margin: 4px 0 2px 0;
+}
+
+.NB-briefing-admin-meta {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+.NB-briefing-admin-summary {
+    font-size: 13px;
+    line-height: 1.5;
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid #E8E8E8;
+    border-radius: 4px;
+    padding: 12px;
+    background: #FAFAFA;
+}
+
+.NB-briefing-admin-summary h3 {
+    font-size: 14px;
+    margin: 12px 0 6px 0;
+}
+
+.NB-briefing-admin-summary h3:first-child {
+    margin-top: 0;
+}
+
+.NB-briefing-admin-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #8A8B8D;
+    font-size: 13px;
+}
+
+.NB-briefing-admin-load-more {
+    display: block;
+    text-align: center;
+    margin: 16px auto;
+    width: auto;
+    max-width: 200px;
+    cursor: pointer;
+}
+
 /* reader.css: Briefing onboarding — full-pane setup screen for first-time users */
 .NB-briefing-onboarding-view {
     position: absolute;

@@ -16,6 +16,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "saved/:tag": "starred",
         "folder/saved": "starred",
         "folder/saved/:tag": "starred",
+        "briefing-admin": "briefing_admin",
         "briefing": "briefing",
         "briefing/:section": "briefing_section",
         "folder/:folder_name": "folder",
@@ -98,6 +99,10 @@ NEWSBLUR.Router = Backbone.Router.extend({
         };
         console.log(["archive", options]);
         NEWSBLUR.reader.open_archive(options);
+    },
+
+    briefing_admin: function () {
+        NEWSBLUR.reader.open_briefing_admin({ router: true });
     },
 
     briefing: function () {
