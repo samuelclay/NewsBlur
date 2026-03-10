@@ -13,6 +13,8 @@ set -euo pipefail
 BACKUP_DRIVE="/media/newsblur-backup"
 SSH_KEY="/config/scripts/docker.key"
 SSH_USER="nb"
+MONGO_DUMP_TIMEOUT="24h"  # Kill mongodump if it takes longer than this
+MAILGUN_CREDS_FILE="/config/scripts/mailgun_credentials"
 
 # Hetzner server IPs (from ansible/inventories/hetzner.ini)
 MONGO_SECONDARY="37.27.129.218"  # hdb-mongo-secondary-1
@@ -56,6 +58,44 @@ SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLeve
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "${LOG_FILE}"
+}
+
+send_failure_alert() {
+    local subject="$1"
+    local body="$2"
+    log "Sending failure alert: ${subject}"
+    /config/scripts/venv/bin/python3 -c "
+import sys
+try:
+    import requests
+except ImportError:
+    print('WARNING: requests not available, cannot send alert')
+    sys.exit(0)
+
+try:
+    with open('${MAILGUN_CREDS_FILE}') as f:
+        lines = f.read().strip().split('\n')
+        api_key = lines[0].strip()
+        domain = lines[1].strip()
+except (IOError, IndexError) as e:
+    print('WARNING: Could not read Mailgun credentials: %s' % e)
+    sys.exit(0)
+
+try:
+    requests.post(
+        'https://api.mailgun.net/v3/%s/messages' % domain,
+        auth=('api', api_key),
+        data={
+            'from': 'NewsBlur Backup <admin@%s>' % domain,
+            'to': ['samuel@newsblur.com'],
+            'subject': 'NewsBlur Backup FAILED: %s' % sys.argv[1],
+            'text': sys.argv[2],
+        },
+    )
+    print('Alert email sent to samuel@newsblur.com')
+except Exception as e:
+    print('WARNING: Failed to send alert email: %s' % e)
+" "${subject}" "${body}" 2>&1 | while read line; do log "  $line"; done
 }
 
 # Check that backup drive is mounted
@@ -180,15 +220,40 @@ if [[ -f "${DUMP_FILE}" ]]; then
 elif [[ -f "${DUMP_TMP}" ]]; then
     log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
 else
-    log "Streaming full mongodump from ${MONGO_SECONDARY}..."
+    log "Streaming full mongodump from ${MONGO_SECONDARY} (timeout: ${MONGO_DUMP_TIMEOUT})..."
     # Write to .partial first, rename on success to avoid keeping truncated dumps
     # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via nohup)
-    ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
-        "docker exec mongo mongodump -d newsblur --gzip --archive" \
-        > "${DUMP_TMP}"
-    mv "${DUMP_TMP}" "${DUMP_FILE}"
-    DUMP_SIZE=$(du -sh "${DUMP_FILE}" | cut -f1)
-    log "MongoDB dump complete: $(basename ${DUMP_FILE}) (${DUMP_SIZE})"
+    #
+    # The `if` construct prevents `set -e` from triggering on non-zero exit.
+    # timeout returns 124 on timeout, or the command's exit code on other failures.
+    if timeout "${MONGO_DUMP_TIMEOUT}" \
+        ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
+            "docker exec mongo mongodump -d newsblur --gzip --archive" \
+            > "${DUMP_TMP}"; then
+        mv "${DUMP_TMP}" "${DUMP_FILE}"
+        DUMP_SIZE=$(du -sh "${DUMP_FILE}" | cut -f1)
+        log "MongoDB dump complete: $(basename ${DUMP_FILE}) (${DUMP_SIZE})"
+    else
+        EXIT_CODE=$?
+        rm -f "${DUMP_TMP}"
+        if [[ ${EXIT_CODE} -eq 124 ]]; then
+            log "ERROR: MongoDB dump TIMED OUT after ${MONGO_DUMP_TIMEOUT}"
+            send_failure_alert \
+                "MongoDB dump timed out" \
+                "MongoDB dump timed out after ${MONGO_DUMP_TIMEOUT} on $(date '+%Y-%m-%d %H:%M').
+
+The mongodump stream from ${MONGO_SECONDARY} did not complete within the allowed time.
+The partial file has been removed. The next nightly run will retry automatically."
+        else
+            log "ERROR: MongoDB dump FAILED with exit code ${EXIT_CODE}"
+            send_failure_alert \
+                "MongoDB dump failed (exit ${EXIT_CODE})" \
+                "MongoDB dump failed with exit code ${EXIT_CODE} on $(date '+%Y-%m-%d %H:%M').
+
+The SSH stream from ${MONGO_SECONDARY} exited unexpectedly.
+The partial file has been removed. The next nightly run will retry automatically."
+        fi
+    fi
 fi
 
 # --- 3. Local Retention Cleanup ---
