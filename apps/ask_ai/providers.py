@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from typing import Generator, Optional
 
@@ -9,6 +10,11 @@ from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 
 from utils import log as logging
+
+
+def _is_placeholder(key):
+    """Check if a key is a placeholder (e.g. 'sk-ant-XXXXXXXX...' from settings template)."""
+    return bool(re.match(r"^[\w-]*X{8,}$", key))
 
 
 class LLMProvider(ABC):
@@ -65,7 +71,8 @@ class AnthropicProvider(LLMProvider):
     """Anthropic/Claude provider implementation."""
 
     def is_configured(self) -> bool:
-        return bool(getattr(settings, "ANTHROPIC_API_KEY", None))
+        key = getattr(settings, "ANTHROPIC_API_KEY", None)
+        return bool(key) and key.startswith("sk-ant-") and not _is_placeholder(key)
 
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
@@ -135,7 +142,8 @@ class OpenAIProvider(LLMProvider):
     """OpenAI provider implementation."""
 
     def is_configured(self) -> bool:
-        return bool(getattr(settings, "OPENAI_API_KEY", None))
+        key = getattr(settings, "OPENAI_API_KEY", None)
+        return bool(key) and key.startswith("sk-") and not _is_placeholder(key)
 
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
@@ -199,7 +207,8 @@ class XAIProvider(LLMProvider):
     """xAI/Grok provider implementation (OpenAI-compatible API)."""
 
     def is_configured(self) -> bool:
-        return bool(getattr(settings, "XAI_GROK_API_KEY", None))
+        key = getattr(settings, "XAI_GROK_API_KEY", None)
+        return bool(key) and key.startswith("xai-") and not _is_placeholder(key)
 
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
@@ -263,7 +272,8 @@ class GeminiProvider(LLMProvider):
     """Google Gemini provider implementation."""
 
     def is_configured(self) -> bool:
-        return bool(getattr(settings, "GOOGLE_GEMINI_API_KEY", None))
+        key = getattr(settings, "GOOGLE_GEMINI_API_KEY", None)
+        return bool(key) and len(key) > 20 and not _is_placeholder(key)
 
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None

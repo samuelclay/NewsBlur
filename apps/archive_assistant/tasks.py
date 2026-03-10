@@ -84,6 +84,13 @@ def process_archive_query(
         # Publish start event
         publish_event("start")
 
+        # Check if Anthropic API key is configured
+        from apps.ask_ai.providers import AnthropicProvider
+
+        if not AnthropicProvider().is_configured():
+            publish_event("error", {"error": "Anthropic API key not configured"})
+            return
+
         # Get the query object
         try:
             query = MArchiveQuery.objects.get(id=query_id)

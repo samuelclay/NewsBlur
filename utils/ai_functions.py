@@ -40,7 +40,9 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
     Returns:
         Dictionary mapping story_ids to classifications: 1 (focus), 0 (neutral), -1 (hidden)
     """
-    if not settings.ANTHROPIC_API_KEY:
+    from apps.ask_ai.providers import AnthropicProvider
+
+    if not AnthropicProvider().is_configured():
         logging.error("Anthropic API key not configured")
         return {story["story_id"]: 0 for story in stories}
 

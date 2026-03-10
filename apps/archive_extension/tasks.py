@@ -198,11 +198,13 @@ def _categorize_single_archive(archive, user_categories=None):
         import anthropic
         from django.conf import settings
 
-        api_key = getattr(settings, "ANTHROPIC_API_KEY", None)
-        if not api_key:
+        from apps.ask_ai.providers import AnthropicProvider
+
+        if not AnthropicProvider().is_configured():
             logging.warning("ANTHROPIC_API_KEY not configured, falling back to domain-based categorization")
             return _fallback_categorize(archive)
 
+        api_key = settings.ANTHROPIC_API_KEY
         client = anthropic.Anthropic(api_key=api_key)
 
         prompt = _build_categorization_prompt(
