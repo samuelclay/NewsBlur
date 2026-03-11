@@ -472,13 +472,16 @@ class UserSubscription(models.Model):
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached:
             story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
-            if read_filter == "unread":
-                unread_story_hashes = story_hashes
-            elif unreads_cached:
-                unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset + limit)
-            else:
-                unread_story_hashes = []
-            return story_hashes, unread_story_hashes
+            if story_hashes:
+                if read_filter == "unread":
+                    unread_story_hashes = story_hashes
+                elif unreads_cached:
+                    unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset + limit)
+                else:
+                    unread_story_hashes = []
+                return story_hashes, unread_story_hashes
+            # Cache exists but doesn't cover this offset — fall through to
+            # extend via lazy merge (don't delete, it has valid earlier pages)
         else:
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
@@ -568,10 +571,11 @@ class UserSubscription(models.Model):
                 total_seen += 1
                 push_next_from_feed(feed_id)
 
-            # Cache merged results in Redis so page 2+ can reuse them
+            # Cache merged results in Redis so page 2+ can reuse them.
+            # Use ZADD without DELETE so pagination extends the cache
+            # incrementally (page 1 caches 12, page 2 adds 12 more, etc.)
             if cache_key and merged_with_scores:
                 pipe = rt.pipeline()
-                pipe.delete(cache_key)
                 pipe.zadd(cache_key, {h: s for h, s in merged_with_scores})
                 pipe.expire(cache_key, 60 * 60)
                 pipe.execute()
