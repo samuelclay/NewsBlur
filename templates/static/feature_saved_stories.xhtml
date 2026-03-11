@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-saved{% endblock %}
+{% block title %}Saved Stories & Tags - NewsBlur{% endblock %}
+{% block nav_title %}Saved Stories & Tags{% endblock %}
+{% block head %}
+    <meta name="description" content="Save stories for later and organize them with custom tags. Each tag gets its own RSS feed, so you can pipe curated collections into other tools or share them.">
+    <meta property="og:title" content="Saved Stories & Tags - NewsBlur">
+    <meta property="og:description" content="Save stories for later and organize them with custom tags. Each tag gets its own RSS feed.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Saved Stories & Tags - NewsBlur">
+    <meta name="twitter:description" content="Save stories for later and organize them with custom tags. Each tag gets its own RSS feed.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-premium">Premium</div>
+        <h1 class="NB-feature-detail-title">Saved Stories &amp; Tags</h1>
+        <p class="NB-feature-detail-subtitle">Save stories for later and organize them with custom tags. Your personal clipping library, searchable and shareable.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/saved.png" alt="Saved stories organized with custom tags">
+            <div class="NB-feature-detail-caption">Saved stories organized with custom tags</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Save any story with one click or a keyboard shortcut</li>
+            <li class="NB-feature-detail-step">Add custom tags to organize saved stories by topic</li>
+            <li class="NB-feature-detail-step">Browse saved stories by tag in the sidebar</li>
+            <li class="NB-feature-detail-step">Search across all saved stories and tags</li>
+            <li class="NB-feature-detail-step">Each tag gets its own RSS feed for sharing or piping into other tools</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How many stories can I save?</h3>
+            <p class="NB-feature-detail-faq-a">There's no limit. Save as many stories as you want and they're kept forever.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I share tagged collections?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader, share the link, or pipe it into IFTTT or Zapier.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Are saved stories searchable?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, saved stories and their tags are fully indexed by search.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">Saving stories is available on all plans. Tags and tag RSS feeds require Premium ($36/year) or higher.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

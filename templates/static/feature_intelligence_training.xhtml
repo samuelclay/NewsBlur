@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-training{% endblock %}
+{% block title %}Intelligence Training - NewsBlur{% endblock %}
+{% block nav_title %}Intelligence Training{% endblock %}
+{% block head %}
+    <meta name="description" content="Train NewsBlur to show you what you want and hide what you don't. Thumbs up authors, tags, and keywords you like. Thumbs down what you don't. You're in control, not an algorithm.">
+    <meta property="og:title" content="Intelligence Training - NewsBlur">
+    <meta property="og:description" content="Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Intelligence Training - NewsBlur">
+    <meta name="twitter:description" content="Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-free">Free</div>
+        <h1 class="NB-feature-detail-title">Intelligence Training</h1>
+        <p class="NB-feature-detail-subtitle">Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/training.png" alt="Training dialog with thumbs up and thumbs down on authors, tags, and titles">
+            <div class="NB-feature-detail-caption">Training dialog with thumbs up/down</div>
+        </div>
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/text-training.png" alt="Full-text training on Archive tier">
+            <div class="NB-feature-detail-caption">Full-text training on Archive tier</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Open the trainer for any feed</li>
+            <li class="NB-feature-detail-step">Thumbs up authors, tags, or title keywords you like</li>
+            <li class="NB-feature-detail-step">Thumbs down what you don't want to see</li>
+            <li class="NB-feature-detail-step">Stories are highlighted green (like) or faded (dislike)</li>
+            <li class="NB-feature-detail-step">Train across folders or globally on Archive</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Is training available on the free plan?</h3>
+            <p class="NB-feature-detail-faq-a">Yes! Basic intelligence training on authors, tags, and title keywords is free. Full-text training on story content requires Premium Archive.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I undo training?</h3>
+            <p class="NB-feature-detail-faq-a">Absolutely. Open the trainer and remove any thumbs up or down to reset.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Does training work across all my feeds?</h3>
+            <p class="NB-feature-detail-faq-a">You can train per-feed, per-folder (Archive), or globally (Archive). Per-feed training is free.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}
