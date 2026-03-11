@@ -22311,24 +22311,24 @@ h5.NB-classifier-section-header {
 .NB-static {
     overflow: auto;
     padding: 94px 0 0;
-    color: rgba(255, 255, 255, 0.85);
-    background: linear-gradient(180deg, #3d5a5b 0%, #4a6a6b 30%, #5a7a7b 100%);
+    color: #3a3122;
+    background: linear-gradient(180deg, #f5eedd 0%, #f0e7cf 20%, #ebe0c2 40%, #e5d9b6 60%, #e0d2ab 80%, #dbcca2 100%);
     min-height: 100vh;
 }
 
 .NB-static h3 {
     line-height: 1.4em;
-    color: white;
+    color: #2d261a;
 }
 
 .NB-static a {
-    color: #FBDB9B;
+    color: #8a6d1b;
     text-decoration: none;
     font-weight: bold;
 }
 
 .NB-static a:hover {
-    color: #fff;
+    color: #5a4710;
     cursor: pointer;
 }
 
@@ -22394,27 +22394,27 @@ h5.NB-classifier-section-header {
     margin: 44px 0 0 44px;
     padding: 24px 0 24px 64px;
     text-align: left;
-    border-left: 3px solid rgba(217, 166, 33, 0.5);
-    color: white;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-    background: rgba(255, 255, 255, 0.04);
+    border-left: 3px solid rgba(138, 109, 27, 0.4);
+    color: #2d261a;
+    text-shadow: none;
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 0 8px 8px 0;
 }
 
 .NB-static .NB-module .NB-module-content {
     width: 620px;
     margin: 24px 14px 24px 88px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.7);
     background: transparent;
 }
 
 .NB-static .NB-module .NB-module-content b,
 .NB-static .NB-module .NB-module-content strong {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.9);
 }
 
 .NB-static .NB-module .NB-module-content p {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.7);
 }
 
 .NB-static ul {
@@ -22425,15 +22425,15 @@ h5.NB-classifier-section-header {
 .NB-static li {
     margin-bottom: 6px;
     list-style: square;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.7);
 }
 
 .NB-static pre,
 .NB-static code {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.06);
     padding: 0px 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(45, 38, 26, 0.85);
     font: normal normal normal 13px/normal Menlo, Consolas, Monaco, Courier, monospace;
     white-space: pre;
 }
@@ -22454,20 +22454,20 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static .NB-module-title-prefix {
-    color: #FBDB9B;
+    color: #8a6d1b;
     padding: 0 2px 0 0;
 }
 
 .NB-static h3 {
     margin-top: 36px;
     font-size: 24px;
-    color: white;
+    color: #2d261a;
 }
 
 .NB-static h4 {
     font-size: 16px;
     margin: 24px 0 12px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.85);
 }
 
 /* ============== */
@@ -22500,7 +22500,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static-press-reviews .NB-press-date {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
 }
 
 .NB-static-press .NB-press-screenshots {
@@ -22590,19 +22590,19 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static-about .NB-about-who-name {
-    color: white;
+    color: #2d261a;
     font-weight: 600;
 }
 
 .NB-static-about .NB-about-who img {
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     margin: 12px 0;
     width: 170px;
     border-radius: 8px;
 }
 
 .NB-static-about .NB-about-tagline img {
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     width: 500px;
     border-radius: 4px;
 }
@@ -22622,11 +22622,11 @@ h5.NB-classifier-section-header {
     display: block;
     font-weight: bold;
     margin: 0 0 10px 0;
-    color: white;
+    color: #2d261a;
 }
 
 .NB-static-faq ul li.NB-faq-answer {
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(45, 38, 26, 0.65);
     margin: 0 0 36px 0;
     background: none;
 }
@@ -22644,7 +22644,7 @@ h5.NB-classifier-section-header {
 
 .NB-static-faq .NB-faq-image {
     float: right;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px;
 }
 
@@ -22683,19 +22683,19 @@ h5.NB-classifier-section-header {
 .NB-static-api .required {
     padding: 2px 6px;
     margin: 0 4px 0 0;
-    background-color: rgba(152, 200, 146, 0.3);
-    border: 1px solid rgba(152, 200, 146, 0.4);
+    background-color: rgba(152, 200, 146, 0.2);
+    border: 1px solid rgba(152, 200, 146, 0.35);
     border-radius: 3px;
     font-size: 8px;
-    color: rgba(255, 255, 255, 0.8);
+    color: #3a7a34;
     font-weight: bold;
     text-transform: uppercase;
 }
 
 .NB-static-api .required {
-    background-color: rgba(217, 144, 15, 0.3);
-    border-color: rgba(217, 144, 15, 0.5);
-    color: #FBDB9B;
+    background-color: rgba(217, 144, 15, 0.15);
+    border-color: rgba(217, 144, 15, 0.35);
+    color: #996b0a;
 }
 
 .NB-static-api p {
@@ -22705,8 +22705,8 @@ h5.NB-classifier-section-header {
 .NB-static-api table {
     border-spacing: 0 0;
     margin: 24px 0 12px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
 }
 
@@ -22719,9 +22719,9 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static-api table td {
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.75);
 }
 
 .NB-static-api table td:last-child {
@@ -22730,11 +22730,11 @@ h5.NB-classifier-section-header {
 
 .NB-static-api table th,
 .NB-static-api .NB-api-toc-header {
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding: 2px 8px;
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.05);
+    color: rgba(45, 38, 26, 0.9);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .NB-static-api .NB-api-toc-header {
@@ -22778,7 +22778,7 @@ h5.NB-classifier-section-header {
     float: right;
     margin-bottom: 12px;
     padding-top: 4px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(45, 38, 26, 0.55);
 }
 
 .NB-static-api .NB-api-endpoint-param-desc {
@@ -25271,7 +25271,7 @@ h5.NB-classifier-section-header {
     line-height: 28px;
     text-align: center;
     text-shadow: none;
-    color: white;
+    color: #2d261a;
 }
 
 .NB-static-form.NB-delete-form {
@@ -25310,7 +25310,7 @@ h5.NB-classifier-section-header {
 .NB-static-oauth h3 {
     margin-top: 0;
     text-align: center;
-    color: white;
+    color: #2d261a;
 }
 
 /* Hide old form elements on card-based pages */
@@ -25336,16 +25336,17 @@ h5.NB-classifier-section-header {
     max-width: 380px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.12);
-    border: 0.5px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.5);
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     padding: 36px 32px;
     text-align: center;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 @supports not (backdrop-filter: blur(20px)) {
     .NB-static-card {
-        background: rgba(50, 70, 70, 0.85);
+        background: rgba(255, 255, 255, 0.7);
     }
 }
 
@@ -25369,16 +25370,16 @@ h5.NB-classifier-section-header {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 26px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 12px 0 8px;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+    text-shadow: none;
 }
 
 .NB-static-card-tagline {
     font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
     font-style: italic;
     font-size: 14px;
-    color: #FBDB9B;
+    color: #8a6d1b;
     margin: 0 0 28px;
     line-height: 1.5;
 }
@@ -25400,25 +25401,25 @@ h5.NB-classifier-section-header {
 .NB-static-card-field input[type=password],
 .NB-static-card-field input[type=email] {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 14px 16px;
     font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
     font-size: 15px;
-    color: white;
+    color: #2d261a;
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .NB-static-card-field input::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(45, 38, 26, 0.35);
 }
 
 .NB-static-card-field input:focus {
-    border-color: rgba(217, 166, 33, 0.5);
-    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(138, 109, 27, 0.5);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .NB-static-card .g-recaptcha {
@@ -25455,7 +25456,7 @@ h5.NB-classifier-section-header {
     display: block;
     text-align: center;
     margin: 18px 0 0;
-    color: #FBDB9B;
+    color: #8a6d1b;
     font-size: 13px;
     text-decoration: none;
     font-weight: normal;
@@ -25463,7 +25464,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static-card-altlink:hover {
-    color: #fff;
+    color: #5a4710;
 }
 
 /* Legacy form styles (delete account, etc.) */
@@ -25478,7 +25479,7 @@ h5.NB-classifier-section-header {
     text-transform: none;
     font-size: 18px;
     padding: 8px 0 0 0;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
     display: block;
 }
 
@@ -25487,10 +25488,10 @@ h5.NB-classifier-section-header {
     margin-right: 0;
     height: 34px;
     font-size: 22px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    color: white;
+    color: #2d261a;
 }
 
 .NB-static-oauth .NB-static-form-username-label label {
@@ -25516,11 +25517,11 @@ h5.NB-classifier-section-header {
 .NB-static-form-alttext {
     margin: 24px 0 0 120px;
     padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .NB-static-form-alttext a {
-    color: #FBDB9B;
+    color: #8a6d1b;
     font-weight: normal;
 }
 
