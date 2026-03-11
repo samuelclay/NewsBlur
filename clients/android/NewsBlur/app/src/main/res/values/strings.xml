@@ -217,6 +217,20 @@
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_list_clear_search">Clear search</string>
     <string name="story_search_hint">Search for stories</string>
+    <string name="discover_related_sites_title">Related Sites</string>
+    <string name="discover_loading">Finding related sites…</string>
+    <string name="discover_no_related_sites">No related sites found</string>
+    <string name="discover_view_mode_grid">Grid</string>
+    <string name="discover_view_mode_list">List</string>
+    <string name="discover_try">Try</string>
+    <string name="discover_add">Add</string>
+    <string name="discover_subscribed">Subscribed</string>
+    <string name="discover_updated_today">Updated today</string>
+    <string name="discover_updated_relative">Updated %s</string>
+    <string name="discover_stale_date">Stale. Last story %s</string>
+    <string name="discover_last_fetched_relative">Fetched %s</string>
+    <string name="try_feed_banner_subtitle">Preview. Not yet subscribed.</string>
+    <string name="try_feed_subscribe_button">Subscribe</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="adding_feed_progress">Adding feed…</string>
@@ -451,6 +465,7 @@
     <string name="settings_story_order">Story order…</string>
     <string name="story_header_options">Options</string>
     <string name="story_header_search">Search</string>
+    <string name="story_header_related_sites">Related Sites</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -505,6 +520,14 @@
     <plurals name="story_header_mark_read_older_than_days">
         <item quantity="one">Older than %d day</item>
         <item quantity="other">Older than %d days</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="one">%s subscriber</item>
+        <item quantity="other">%s subscribers</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="one">%s story/mo</item>
+        <item quantity="other">%s stories/mo</item>
     </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>

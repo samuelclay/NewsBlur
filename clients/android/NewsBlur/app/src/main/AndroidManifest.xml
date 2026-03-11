@@ -147,6 +147,10 @@
             android:launchMode="singleTop" />
 
         <activity
+            android:name=".activity.DiscoverFeedsActivity"
+            android:launchMode="singleTop" />
+
+        <activity
             android:name=".activity.SocialFeedReading"
             android:theme="@style/Theme.Translucent" />
 

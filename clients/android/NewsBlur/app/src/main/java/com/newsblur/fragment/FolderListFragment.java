@@ -69,6 +69,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.TryFeedStore;
 import com.newsblur.util.ListTextSize;
 import com.newsblur.viewModel.AllFoldersViewModel;
 
@@ -95,6 +96,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Inject
     PrefsRepo prefsRepo;
+
+    @Inject
+    TryFeedStore tryFeedStore;
 
     private AllFoldersViewModel allFoldersViewModel;
 	private FolderListAdapter adapter;
@@ -134,6 +138,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             SpacingStyle spacingStyle = prefsRepo.getSpacingStyle();
             adapter.setTextSize(textSize);
             adapter.setSpacingStyle(spacingStyle);
+            adapter.setTryFeed(tryFeedStore.get());
             adapter.notifyDataSetChanged();
         }
     }
@@ -149,6 +154,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         });
         allFoldersViewModel.getFeeds().observe(getViewLifecycleOwner(), feedQueryResult -> {
             adapter.setFeeds(feedQueryResult);
+            adapter.setTryFeed(tryFeedStore.get());
             checkOpenFolderPreferences();
             firstCursorSeenYet = true;
             pushUnreadCounts();
@@ -688,7 +694,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 feedUtils.currentFolderName = folderName;
             }
             SessionDataSource sessionDataSource = getSessionData(fs, folderName, feed);
-			FeedItemsList.startActivity(getActivity(), fs, feed, folderName, sessionDataSource);
+            if (adapter.isTryFeed(groupPosition, childPosition)) {
+                FeedItemsList.startTryFeedActivity(getActivity(), feed);
+            } else {
+			    FeedItemsList.startActivity(getActivity(), fs, feed, folderName, sessionDataSource);
+            }
             adapter.lastFeedViewedId = feed.feedId;
             adapter.lastFolderViewed = null;
 		}

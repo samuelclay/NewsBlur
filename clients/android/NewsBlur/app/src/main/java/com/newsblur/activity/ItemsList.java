@@ -55,6 +55,7 @@ import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
 import com.newsblur.delegate.ItemListMenuPopup;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.service.SyncServiceState;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -116,7 +117,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected FeedSet fs;
 
     private ItemSetFragment itemSetFragment;
-    private ActivityItemslistBinding binding;
+    protected ActivityItemslistBinding binding;
     private ItemListContextMenuDelegate contextMenuDelegate;
     @Nullable
     private SessionDataSource sessionDataSource;
@@ -262,13 +263,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (binding == null) return;
 
         Menu menu = buildItemListMenuModel();
+        boolean showDiscover = shouldShowDiscoverAction();
         MenuItem searchItem = menu.findItem(R.id.menu_search_stories);
         MenuItem markReadItem = menu.findItem(R.id.menu_mark_all_as_read);
 
         updateOptionsPillTitle(menu);
+        binding.itemlistDiscoverPill.setVisibility(showDiscover ? View.VISIBLE : View.GONE);
         binding.itemlistSearchPill.setVisibility(searchItem != null && searchItem.isVisible() ? View.VISIBLE : View.GONE);
         binding.itemlistMarkReadContainer.setVisibility(markReadItem != null && markReadItem.isVisible() ? View.VISIBLE : View.GONE);
-        updateStorySearchPillLabel();
+        updateStoryHeaderPillLabels();
         invalidateOptionsMenu();
 
         if (searchItem != null && !searchItem.isVisible() && isStorySearchVisible()) {
@@ -398,6 +401,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void setupStoryHeader() {
+        binding.itemlistDiscoverPill.setOnClickListener(view -> openDiscoverFeeds());
         binding.itemlistOptionsPill.setOnClickListener(this::showItemListMenuPopup);
         binding.itemlistSearchPill.setOnClickListener(view -> toggleStorySearch());
         binding.itemlistMarkReadButton.setOnClickListener(view ->
@@ -409,7 +413,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             binding.itemlistSearchQuery.requestFocus();
         });
         binding.itemlistStoryHeaderBar.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                updateStorySearchPillLabel()
+                updateStoryHeaderPillLabels()
         );
         binding.itemlistSearchQuery.addTextChangedListener(new TextWatcher() {
             @Override
@@ -448,7 +452,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         applyStoryHeaderTheme();
         updateStorySearchClearButton(binding.itemlistSearchQuery.getText());
         updateStorySearchLoadingIndicator();
-        updateStorySearchPillLabel();
+        updateStoryHeaderPillLabels();
         updateStorySearchPillState();
     }
 
@@ -487,27 +491,36 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         );
     }
 
-    private void updateStorySearchPillLabel() {
-        if (binding.itemlistStoryHeaderBar.getWidth() <= 0 || binding.itemlistSearchPill.getVisibility() != View.VISIBLE) return;
+    private void updateStoryHeaderPillLabels() {
+        if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
 
-        boolean useCompactLabel = !canFitSearchPillText();
-        binding.itemlistSearchPill.setText(useCompactLabel ? "" : getString(R.string.story_header_search));
-    }
-
-    private boolean canFitSearchPillText() {
         int availableWidth = binding.itemlistStoryHeaderBar.getWidth()
                 - binding.itemlistStoryHeaderBar.getPaddingLeft()
                 - binding.itemlistStoryHeaderBar.getPaddingRight();
-        if (availableWidth <= 0) return true;
+        if (availableWidth <= 0) return;
 
         int optionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
                 ? measureDesiredWidth(binding.itemlistOptionsPill)
                 : 0;
-        int searchWidth = measureSearchPillWidth(getString(R.string.story_header_search));
         int markReadWidth = binding.itemlistMarkReadContainer.getVisibility() == View.VISIBLE
                 ? measureDesiredWidth(binding.itemlistMarkReadContainer)
                 : 0;
+        int discoverFullWidth = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE
+                ? measureDiscoverPillWidth(getString(R.string.story_header_related_sites))
+                : 0;
+        int discoverCompactWidth = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE
+                ? measureDiscoverPillWidth("")
+                : 0;
+        int searchFullWidth = binding.itemlistSearchPill.getVisibility() == View.VISIBLE
+                ? measureSearchPillWidth(getString(R.string.story_header_search))
+                : 0;
+        int searchCompactWidth = binding.itemlistSearchPill.getVisibility() == View.VISIBLE
+                ? measureSearchPillWidth("")
+                : 0;
 
+        int discoverMargin = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE
+                ? ((ViewGroup.MarginLayoutParams) binding.itemlistDiscoverPill.getLayoutParams()).getMarginEnd()
+                : 0;
         int searchMargin = binding.itemlistSearchPill.getVisibility() == View.VISIBLE
                 ? ((ViewGroup.MarginLayoutParams) binding.itemlistSearchPill.getLayoutParams()).getMarginStart()
                 : 0;
@@ -515,7 +528,30 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 ? ((ViewGroup.MarginLayoutParams) binding.itemlistMarkReadContainer.getLayoutParams()).getMarginStart()
                 : 0;
 
-        return optionsWidth + searchWidth + markReadWidth + searchMargin + markReadMargin <= availableWidth;
+        boolean showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
+        boolean showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
+        int baseWidth = optionsWidth + markReadWidth + discoverMargin + searchMargin + markReadMargin;
+
+        if (baseWidth + discoverFullWidth + searchFullWidth <= availableWidth) {
+            showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
+            showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
+        } else if (baseWidth + discoverFullWidth + searchCompactWidth <= availableWidth) {
+            showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
+            showSearchText = false;
+        } else if (baseWidth + discoverCompactWidth + searchFullWidth <= availableWidth) {
+            showDiscoverText = false;
+            showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
+        } else {
+            showDiscoverText = false;
+            showSearchText = false;
+        }
+
+        if (binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE) {
+            binding.itemlistDiscoverPill.setText(showDiscoverText ? getString(R.string.story_header_related_sites) : "");
+        }
+        if (binding.itemlistSearchPill.getVisibility() == View.VISIBLE) {
+            binding.itemlistSearchPill.setText(showSearchText ? getString(R.string.story_header_search) : "");
+        }
     }
 
     private int measureSearchPillWidth(CharSequence title) {
@@ -523,6 +559,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistSearchPill.setText(title);
         int width = measureDesiredWidth(binding.itemlistSearchPill);
         binding.itemlistSearchPill.setText(previousTitle);
+        return width;
+    }
+
+    private int measureDiscoverPillWidth(CharSequence title) {
+        CharSequence previousTitle = binding.itemlistDiscoverPill.getText();
+        binding.itemlistDiscoverPill.setText(title);
+        int width = measureDesiredWidth(binding.itemlistDiscoverPill);
+        binding.itemlistDiscoverPill.setText(previousTitle);
         return width;
     }
 
@@ -652,6 +696,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistSearchContainer.setBackgroundColor(palette.headerBackgroundColor);
         binding.itemlistMarkReadDivider.setBackgroundColor(palette.markReadDividerColor);
 
+        applyPillStyle(binding.itemlistDiscoverPill, palette.pillBackgroundColor, palette.pillBorderColor, palette.pillTextColor);
         applyPillStyle(binding.itemlistOptionsPill, palette.pillBackgroundColor, palette.pillBorderColor, palette.pillTextColor);
         updateStorySearchPillState();
 
@@ -663,6 +708,24 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistMarkReadContainer.setBackground(markReadBackground);
         binding.itemlistMarkReadMoreButton.setColorFilter(palette.pillTextColor);
         binding.itemlistMarkReadButton.setColorFilter(palette.pillTextColor);
+    }
+
+    public boolean shouldShowDiscoverAction() {
+        if (fs == null) return false;
+        if (fs.getSearchQuery() != null) return false;
+        if (fs.isFilterSaved()) return false;
+        if (fs.isSingleNormal()) return true;
+        return fs.isFolder() && !AppConstants.ROOT_FOLDER.equals(fs.getFolderName());
+    }
+
+    public void openDiscoverFeeds() {
+        if (!shouldShowDiscoverAction()) return;
+
+        if (fs.isSingleNormal()) {
+            DiscoverFeedsActivity.startForFeed(this, fs.getSingleFeed());
+        } else if (fs.isFolder()) {
+            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
+        }
     }
 
     private void applyPillStyle(MaterialButton button, int backgroundColor, int borderColor, int textColor) {

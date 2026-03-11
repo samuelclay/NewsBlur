@@ -7,6 +7,10 @@
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           app:showAsAction="ifRoom" android:icon="@drawable/ic_search" />
+    <item android:id="@+id/menu_discover_related_sites"
+          android:title="@string/discover_related_sites_title"
+          app:showAsAction="never"
+          android:icon="@drawable/ic_discover" />
     <item android:id="@+id/menu_story_order"
           android:title="@string/menu_story_order">
         <menu>

@@ -145,6 +145,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     // the last feed or folder viewed and force the DB to include it in the selection
     public String lastFeedViewedId;
     public String lastFolderViewed;
+    @Nullable
+    private Feed tryFeed;
 
     public String activeSearchQuery;
 
@@ -773,6 +775,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             Collections.sort(folderChildren, feedComparator);
         }
 
+        if ((tryFeed != null) && (getRootFolderIndex() >= 0)) {
+            List<Feed> rootFolderChildren = activeFolderChildren.get(getRootFolderIndex());
+            rootFolderChildren.remove(tryFeed);
+            if ((activeSearchQuery == null) || (tryFeed.title.toLowerCase().contains(activeSearchQuery.toLowerCase()))) {
+                rootFolderChildren.add(0, tryFeed);
+            }
+        }
+
         addSpecialRow(READ_STORIES_GROUP_KEY);
         if (prefsRepo.isEnableRowGlobalShared() && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
         if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
@@ -862,6 +872,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
+    public synchronized void setTryFeed(@Nullable Feed tryFeed) {
+        this.tryFeed = tryFeed;
+        forceRecount();
+    }
+
     public void reset() {
         notifyDataSetInvalidated();
 
@@ -897,6 +912,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (groupPosition > activeFolderChildren.size()) return null;
         if (childPosition > activeFolderChildren.get(groupPosition).size()) return null;
         return activeFolderChildren.get(groupPosition).get(childPosition);
+    }
+
+    public synchronized boolean isTryFeed(int groupPosition, int childPosition) {
+        Feed feed = getFeed(groupPosition, childPosition);
+        return (tryFeed != null) && (feed != null) && feed.equals(tryFeed);
     }
 
     public Set<String> getAllFeedsForFolder(int groupPosition) {

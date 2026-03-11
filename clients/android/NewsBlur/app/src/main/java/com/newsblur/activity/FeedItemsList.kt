@@ -17,6 +17,7 @@ import com.newsblur.domain.Feed
 import com.newsblur.fragment.DeleteFeedFragment
 import com.newsblur.fragment.FeedIntelTrainerFragment
 import com.newsblur.fragment.RenameDialogFragment
+import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.FeedExt.isAndroidNotifyFocus
 import com.newsblur.util.FeedExt.isAndroidNotifyUnread
@@ -37,6 +38,8 @@ class FeedItemsList : ItemsList() {
 
     private lateinit var feed: Feed
     private lateinit var folderName: String
+    private var isTryFeed = false
+    private var tryFeedUrl: String? = null
 
     private var reviewManager: ReviewManager? = null
     private var reviewInfo: ReviewInfo? = null
@@ -49,6 +52,7 @@ class FeedItemsList : ItemsList() {
             setupFeedItems(session)
         }
 
+        updateTryFeedBanner()
         checkInAppReview()
     }
 
@@ -170,6 +174,8 @@ class FeedItemsList : ItemsList() {
     private fun setupFeedItems(intent: Intent) {
         val feed = intent.getSerializableExtra(EXTRA_FEED) as Feed?
         val folderName = intent.getStringExtra(EXTRA_FOLDER_NAME)
+        isTryFeed = intent.getBooleanExtra(EXTRA_IS_TRY_FEED, false)
+        tryFeedUrl = intent.getStringExtra(EXTRA_TRY_FEED_URL)
         if (feed != null && folderName != null) {
             setupFeedItems(feed, folderName)
         } else {
@@ -193,6 +199,7 @@ class FeedItemsList : ItemsList() {
             }
         }
         UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false)
+        updateTryFeedBanner()
     }
 
     private fun refreshFeedHeader() {
@@ -200,6 +207,38 @@ class FeedItemsList : ItemsList() {
         dbHelper.getFeed(feed.feedId)?.let { updatedFeed ->
             setupFeedItems(updatedFeed, folderName)
         }
+        updateTryFeedBanner()
+    }
+
+    private fun updateTryFeedBanner() {
+        if (!isTryFeed || !::feed.isInitialized) {
+            binding.itemlistTryFeedBanner.visibility = android.view.View.GONE
+            return
+        }
+
+        val palette = com.newsblur.util.discoverThemePalette(this, prefsRepo)
+        binding.itemlistTryFeedBanner.visibility = android.view.View.VISIBLE
+        val background = android.graphics.drawable.GradientDrawable()
+        background.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        background.cornerRadius = 0f
+        background.setColor(palette.tryFeedBannerBackgroundColor)
+        background.setStroke(UIUtils.dp2px(this, 1), palette.tryFeedBannerBorderColor)
+        binding.itemlistTryFeedBanner.background = background
+        binding.itemlistTryFeedTitle.text = feed.title
+        binding.itemlistTryFeedSubtitle.setText(R.string.try_feed_banner_subtitle)
+        binding.itemlistTryFeedTitle.setTextColor(palette.tryFeedBannerTitleColor)
+        binding.itemlistTryFeedSubtitle.setTextColor(palette.tryFeedBannerSubtitleColor)
+        binding.itemlistTryFeedSubscribeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(palette.tryFeedButtonBackgroundColor)
+        binding.itemlistTryFeedSubscribeButton.setTextColor(palette.tryFeedButtonTextColor)
+        binding.itemlistTryFeedSubscribeButton.setOnClickListener {
+            val feedUrl = tryFeedUrl?.takeIf { it.isNotBlank() } ?: feed.address.takeIf { it.isNotBlank() } ?: feed.feedLink
+            if (!feedUrl.isNullOrBlank()) {
+                AddFeedFragment
+                    .newInstance(feedUrl, feed.title, clearTryFeedOnSuccess = true)
+                    .show(supportFragmentManager, AddFeedFragment::class.java.name)
+            }
+        }
+        iconLoader.displayImage(feed.faviconUrl, binding.itemlistTryFeedIcon)
     }
 
     private fun checkInAppReview() {
@@ -218,6 +257,8 @@ class FeedItemsList : ItemsList() {
     companion object {
         const val EXTRA_FEED: String = "feed"
         const val EXTRA_FOLDER_NAME: String = "folderName"
+        const val EXTRA_IS_TRY_FEED: String = "is_try_feed"
+        const val EXTRA_TRY_FEED_URL: String = "try_feed_url"
 
         @JvmStatic
         fun startActivity(
@@ -233,6 +274,23 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FOLDER_NAME, folderName)
                     putExtra(EXTRA_FEED_SET, feedSet)
                     putExtra(EXTRA_SESSION_DATA, sessionDataSource)
+                }.also { intent ->
+                    context.startActivity(intent)
+                }
+        }
+
+        @JvmStatic
+        fun startTryFeedActivity(
+            context: Context,
+            feed: Feed,
+        ) {
+            Intent(context, FeedItemsList::class.java)
+                .apply {
+                    putExtra(EXTRA_FEED, feed)
+                    putExtra(EXTRA_FOLDER_NAME, com.newsblur.util.AppConstants.ROOT_FOLDER)
+                    putExtra(EXTRA_FEED_SET, FeedSet.singleFeed(feed.feedId))
+                    putExtra(EXTRA_IS_TRY_FEED, true)
+                    putExtra(EXTRA_TRY_FEED_URL, feed.address)
                 }.also { intent ->
                     context.startActivity(intent)
                 }
