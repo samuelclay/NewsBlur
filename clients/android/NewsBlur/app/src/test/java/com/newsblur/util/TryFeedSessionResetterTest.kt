@@ -3,6 +3,7 @@ package com.newsblur.util
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.service.DefaultSyncServiceState
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -20,9 +21,12 @@ class TryFeedSessionResetterTest {
         syncServiceState.addFeedStoriesSeen(tryFeedSet, 108)
         syncServiceState.addFeedSetExhausted(tryFeedSet)
 
-        TryFeedSessionResetter.reset(syncServiceState, mockk<BlurDatabaseHelper>(relaxed = true), tryFeedSet)
+        val dbHelper = mockk<BlurDatabaseHelper>(relaxed = true)
+
+        TryFeedSessionResetter.reset(syncServiceState, dbHelper, tryFeedSet)
 
         assertNull(syncServiceState.pendingFeed)
         assertEquals(tryFeedSet, syncServiceState.resetFeed)
+        verify(exactly = 1) { dbHelper.clearStorySession() }
     }
 }

@@ -9,6 +9,7 @@ object TryFeedSessionResetter {
         dbHelper: BlurDatabaseHelper,
         feedSet: FeedSet?,
     ) {
+        dbHelper.clearStorySession()
         syncServiceState.resetReadingSession(dbHelper)
         feedSet?.let(syncServiceState::resetFetchState)
     }

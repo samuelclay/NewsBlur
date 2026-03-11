@@ -253,13 +253,10 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/itemlist_try_feed_subscribe_button"
-                style="?toggleButton"
+                style="@style/tryFeedBannerSubscribeButton"
                 android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:minWidth="0dp"
                 android:text="@string/try_feed_subscribe_button"
-                android:textAllCaps="false"
-                android:textSize="13sp" />
+                android:textAllCaps="false" />
 
         </LinearLayout>
 
