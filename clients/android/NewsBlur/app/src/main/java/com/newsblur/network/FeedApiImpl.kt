@@ -7,6 +7,7 @@ import com.newsblur.domain.Classifier
 import com.newsblur.domain.FeedResult
 import com.newsblur.domain.ValueMultimap
 import com.newsblur.network.domain.AddFeedResponse
+import com.newsblur.network.domain.DiscoverFeedsResponse
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.UnreadCountResponse
@@ -145,6 +146,35 @@ class FeedApiImpl(
         } else {
             null
         }
+    }
+
+    override suspend fun getDiscoverFeeds(
+        feedId: String,
+        pageNumber: Int,
+    ): DiscoverFeedsResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber)
+            }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_DISCOVER_SIMILAR + feedId + "/")
+        val response: APIResponse = networkClient.get(urlString, values)
+        return response.getResponse(gson, DiscoverFeedsResponse::class.java)
+    }
+
+    override suspend fun getDiscoverFeeds(
+        feedIds: Collection<String>,
+        pageNumber: Int,
+    ): DiscoverFeedsResponse? {
+        val values =
+            ValueMultimap().apply {
+                for (feedId in feedIds) {
+                    put(APIConstants.PARAMETER_FEED_IDS, feedId)
+                }
+                put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
+            }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_DISCOVER_SIMILAR_FEEDS)
+        val response: APIResponse = networkClient.post(urlString, values)
+        return response.getResponse(gson, DiscoverFeedsResponse::class.java)
     }
 
     override suspend fun deleteFeed(

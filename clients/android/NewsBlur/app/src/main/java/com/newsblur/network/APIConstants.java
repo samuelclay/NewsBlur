@@ -80,6 +80,8 @@ public class APIConstants {
     public static final String PATH_ADD_FOLDER = "/reader/add_folder";
     public static final String PATH_DELETE_FOLDER = "/reader/delete_folder";
     public static final String PATH_RENAME_FOLDER = "/reader/rename_folder";
+    public static final String PATH_DISCOVER_SIMILAR = "/discover/similar/";
+    public static final String PATH_DISCOVER_SIMILAR_FEEDS = "/discover/similar/feeds/";
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
@@ -146,6 +148,7 @@ public class APIConstants {
     public static final String PARAMETER_ORDER_ID = "order_id";
     public static final String PARAMETER_PRODUCT_ID = "product_id";
     public static final String PARAMETER_SHOW_CHANGES = "show_changes";
+    public static final String PARAMETER_FEED_IDS = "feed_ids";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
