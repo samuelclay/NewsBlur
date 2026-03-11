@@ -59,8 +59,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #if targetEnvironment(macCatalyst)
     func sceneDidDisconnect(_ scene: UIScene) {
         appDelegate.window = nil
-        
-        exit(0)
+
+        // Scene churn can briefly disconnect one scene while another main scene is activating.
+        // Only terminate when there are truly no remaining application window scenes.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            let appWindowSceneCount = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .filter { $0.session.role == .windowApplication }
+                .count
+
+            guard appWindowSceneCount == 0 else {
+                return
+            }
+
+            exit(0)
+        }
     }
 #endif
     
