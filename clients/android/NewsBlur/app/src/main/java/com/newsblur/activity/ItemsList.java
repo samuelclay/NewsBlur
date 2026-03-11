@@ -69,6 +69,7 @@ import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.TryFeedSessionResetter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.ItemListViewModel;
 
@@ -164,6 +165,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
         sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
 
+        if (shouldResetReadingSessionOnCreate()) {
+            TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
+        }
+
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
@@ -242,6 +247,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected boolean shouldUseTranslucentTheme() {
         return true;
+    }
+
+    protected boolean shouldResetReadingSessionOnCreate() {
+        return false;
     }
 
     @Override
