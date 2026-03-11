@@ -189,12 +189,7 @@
         <a href="{% url "features" %}" class="NB-pricing-cta NB-pricing-cta-features">See all features</a>
     </div>
 
-    <div class="NB-pricing-compare-links">
-        <span class="NB-pricing-compare-label">See how NewsBlur compares:</span>
-        <a href="{% url "compare-feedly" %}">NewsBlur vs Feedly</a>
-        <span class="NB-pricing-compare-sep">&middot;</span>
-        <a href="{% url "compare-inoreader" %}">NewsBlur vs Inoreader</a>
-    </div>
+    {% include "static/_compare_links.xhtml" %}
 
 </div>
 
