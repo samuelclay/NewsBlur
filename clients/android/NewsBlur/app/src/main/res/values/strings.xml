@@ -227,6 +227,7 @@
     <string name="discover_subscribed">Subscribed</string>
     <string name="discover_updated_today">Updated today</string>
     <string name="discover_updated_relative">Updated %s</string>
+    <string name="discover_stale_updated_relative">Stale — updated %s</string>
     <string name="discover_stale_date">Stale. Last story %s</string>
     <string name="discover_last_fetched_relative">Fetched %s</string>
     <string name="try_feed_banner_subtitle">Preview. Not yet subscribed.</string>
@@ -526,8 +527,8 @@
         <item quantity="other">%s subscribers</item>
     </plurals>
     <plurals name="discover_stories_per_month">
-        <item quantity="one">%s story/mo</item>
-        <item quantity="other">%s stories/mo</item>
+        <item quantity="one">%s story per month</item>
+        <item quantity="other">%s stories per month</item>
     </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/discover_toolbar_view_mode_toggle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:selectionRequired="true"
+    app:singleSelection="true">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/discover_toolbar_grid_button"
+        style="?toggleButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/discover_view_mode_grid"
+        android:minWidth="0dp"
+        android:text=""
+        app:icon="@drawable/ic_discover_view_grid"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconTint="@null" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/discover_toolbar_list_button"
+        style="?toggleButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/discover_view_mode_list"
+        android:minWidth="0dp"
+        android:text=""
+        app:icon="@drawable/ic_discover_view_list"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconTint="@null" />
+
+</com.google.android.material.button.MaterialButtonToggleGroup>
