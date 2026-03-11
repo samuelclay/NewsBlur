@@ -32,6 +32,7 @@ class FeedUtils(
     private val folderApi: FolderApi,
     private val prefsRepo: PrefsRepo,
     private val syncServiceState: SyncServiceState,
+    private val tryFeedStore: TryFeedStore,
 ) {
     // this is gross, but the feedset can't hold a folder title
     // without being mistaken for a folder feed.
@@ -492,9 +493,9 @@ class FeedUtils(
      * where standalone stories are missing this info and it must be re-fetched.  This is costly
      * and should be avoided where possible.
      */
-    fun getFeedTitle(feedId: String?): String? = dbHelper.getFeed(feedId)?.title
+    fun getFeedTitle(feedId: String?): String? = dbHelper.getFeed(feedId)?.title ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }?.title
 
-    fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId)
+    fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId) ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }
 
     fun openStatistics(
         context: Context?,

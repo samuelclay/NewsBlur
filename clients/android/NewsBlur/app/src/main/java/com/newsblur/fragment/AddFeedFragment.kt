@@ -24,6 +24,7 @@ import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
+import com.newsblur.util.TryFeedStore
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Collections
@@ -42,6 +43,9 @@ class AddFeedFragment : DialogFragment() {
 
     @Inject
     lateinit var syncServiceState: SyncServiceState
+
+    @Inject
+    lateinit var tryFeedStore: TryFeedStore
 
     private lateinit var binding: DialogAddFeedBinding
 
@@ -114,6 +118,9 @@ class AddFeedFragment : DialogFragment() {
                 val intent = Intent(activity, Main::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 if (it != null && !it.isError) {
+                    if (requireArguments().getBoolean(CLEAR_TRY_FEED_ON_SUCCESS, false)) {
+                        tryFeedStore.clear()
+                    }
                     // trigger a sync when we return to Main so that the new feed will show up
                     syncServiceState.forceFeedsFolders()
                     intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
@@ -179,16 +186,20 @@ class AddFeedFragment : DialogFragment() {
     companion object {
         private const val FEED_URI = "feed_url"
         private const val FEED_NAME = "feed_name"
+        private const val CLEAR_TRY_FEED_ON_SUCCESS = "clear_try_feed_on_success"
 
         @JvmStatic
+        @JvmOverloads
         fun newInstance(
             feedUri: String,
             feedName: String,
+            clearTryFeedOnSuccess: Boolean = false,
         ): AddFeedFragment {
             val frag = AddFeedFragment()
             val args = Bundle()
             args.putString(FEED_URI, feedUri)
             args.putString(FEED_NAME, feedName)
+            args.putBoolean(CLEAR_TRY_FEED_ON_SUCCESS, clearTryFeedOnSuccess)
             frag.arguments = args
             return frag
         }

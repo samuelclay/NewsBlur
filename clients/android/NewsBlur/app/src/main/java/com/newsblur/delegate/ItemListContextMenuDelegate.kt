@@ -102,6 +102,8 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_search_stories).isVisible = false
         }
 
+        menu.findItem(R.id.menu_discover_related_sites).isVisible = activity.shouldShowDiscoverAction();
+
         if (!fs.isSingleNormal || fs.isFilterSaved) {
             menu.findItem(R.id.menu_notifications).isVisible = false
             menu.findItem(R.id.menu_delete_feed).isVisible = false
@@ -252,6 +254,9 @@ open class ItemListContextMenuDelegateImpl(
         } else if (item.itemId == R.id.menu_search_stories) {
             activity.toggleStorySearch()
             activity.refreshStoryHeaderControls()
+        } else if (item.itemId == R.id.menu_discover_related_sites) {
+            activity.openDiscoverFeeds();
+            return true;
         } else if (item.itemId == R.id.menu_theme_auto) {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
