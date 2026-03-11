@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" width="88" height="88">
+  <circle cx="44" cy="44" r="44" fill="#FF4500"/>
+  <!-- Antenna stick -->
+  <line x1="44" y1="18" x2="54" y2="10" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
+  <!-- Antenna dot -->
+  <circle cx="55" cy="9" r="3.5" fill="#FFF"/>
+  <!-- Head -->
+  <ellipse cx="44" cy="42" rx="24" ry="20" fill="#FFF"/>
+  <!-- Eyes -->
+  <circle cx="35" cy="39" r="5" fill="#FF4500"/>
+  <circle cx="53" cy="39" r="5" fill="#FF4500"/>
+  <!-- Eye glints -->
+  <circle cx="33.5" cy="37.5" r="1.5" fill="#FFF"/>
+  <circle cx="51.5" cy="37.5" r="1.5" fill="#FFF"/>
+  <!-- Mouth -->
+  <path d="M33 50 Q44 57 55 50" fill="none" stroke="#FF4500" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Ears -->
+  <ellipse cx="18" cy="34" rx="7" ry="8" fill="#FFF"/>
+  <ellipse cx="70" cy="34" rx="7" ry="8" fill="#FFF"/>
+</svg>

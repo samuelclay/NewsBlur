@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" width="88" height="88">
+  <circle cx="44" cy="44" r="44" fill="#1a1a2e"/>
+  <text x="44" y="39" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#e94560" letter-spacing="0.5">Popular</text>
+  <text x="44" y="55" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">Science</text>
+</svg>
