@@ -915,6 +915,19 @@
         <item name="android:layout_height">40dp</item>
     </style>
 
+    <style name="tryFeedBannerSubscribeButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:layout_height">34dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
     <style name="materialSnackBarTextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
