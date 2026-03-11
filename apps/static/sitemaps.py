@@ -23,6 +23,8 @@ class StaticSitemap(Sitemap):
             "alt-self-hosted",
             "alt-google-reader",
             "alt-feedly",
+            "alt-inoreader",
+            "compare-feedbin",
             "press",
             "privacy",
             "tos",

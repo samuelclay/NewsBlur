@@ -76,6 +76,8 @@ urlpatterns = [
     url(r"^alternative/self-hosted-rss-reader/?", static_views.alt_self_hosted, name="alt-self-hosted"),
     url(r"^alternative/google-reader/?", static_views.alt_google_reader, name="alt-google-reader"),
     url(r"^alternative/feedly/?", static_views.alt_feedly, name="alt-feedly"),
+    url(r"^alternative/inoreader/?", static_views.alt_inoreader, name="alt-inoreader"),
+    url(r"^compare/feedbin/?", static_views.compare_feedbin, name="compare-feedbin"),
     url(
         r"^sitemap\.xml$",
         sitemap,

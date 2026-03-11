@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}Inoreader Alternative — Switch to NewsBlur{% endblock %}
+{% block nav_title %}Inoreader Alternative{% endblock %}
+{% block head %}
+    <meta name="description" content="Looking for an Inoreader alternative? NewsBlur offers intelligence training, AI features, open source transparency, and native mobile apps. Import your feeds in seconds.">
+    <meta property="og:title" content="Inoreader Alternative — Switch to NewsBlur">
+    <meta property="og:description" content="NewsBlur: intelligence training, AI features, open source, and a free tier. A powerful Inoreader alternative with native apps.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Inoreader Alternative — Switch to NewsBlur">
+    <meta name="twitter:description" content="Intelligence training, AI features, open source, and native apps. A powerful Inoreader alternative.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">Looking for an Inoreader alternative?</h1>
+        <p class="NB-static-compare-subtitle">NewsBlur gives you intelligence training to control your reading, AI-powered summaries, native mobile apps, and full open source transparency. Switching takes less than a minute.</p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Switch in under a minute</h2>
+        <p class="NB-compare-section-text">
+            Export your OPML file from Inoreader (Preferences &rarr; Import/Export &rarr; Export Subscriptions), then import it into NewsBlur. All your feeds and folder structure come over instantly. Every new account starts with a free 30-day premium trial so you can evaluate the full experience before deciding.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Intelligence training puts you in charge</h2>
+        <p class="NB-compare-section-text">
+            Inoreader offers rules and filters to manage your feeds, but NewsBlur takes a fundamentally different approach with intelligence training. Thumbs up on an author, tag, or keyword to highlight stories you want to see. Thumbs down to hide what you don't. Stories are color-coded green (focus), yellow (neutral), and red (hidden), so you always know why you're seeing something. No algorithmic curation, no opaque AI decisions. You build your own filter, and it gets smarter as you train it.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">AI built into every story</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur's Ask AI feature lets you query any story using Claude, GPT, Gemini, or Grok. Summarize articles, ask follow-up questions, extract key points, or get context on topics you're unfamiliar with. Daily AI briefings give you an overview of what matters across all your feeds. These features are included in the Archive plan at $99/year, which is less than Inoreader's Pro plan at $99.99/year.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Fully open source, no lock-in</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is fully open source under the MIT license. The entire codebase, web, iOS, Android, and all backend services, is on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>. You can self-host your own instance with Docker, contribute features, or audit the code. Inoreader is proprietary and closed-source. If you ever want to leave NewsBlur, OPML export takes your feeds anywhere. Your reading data is never held hostage.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Native apps on every platform</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur has native iOS and Android apps built and maintained alongside the web app. Every feature, including intelligence training, blurblog sharing, text view, and dark mode, works on mobile. NewsBlur also works with third-party apps like Reeder, ReadKit, Unread, and NetNewsWire. You get the best of both worlds: first-party apps with full features and third-party app compatibility through a standard API.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "compare-inoreader" %}" class="NB-pricing-cta NB-pricing-cta-pro">See the full comparison</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}
