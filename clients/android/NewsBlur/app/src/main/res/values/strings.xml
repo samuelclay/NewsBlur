@@ -527,8 +527,8 @@
         <item quantity="other">%s subscribers</item>
     </plurals>
     <plurals name="discover_stories_per_month">
-        <item quantity="one">%s story per month</item>
-        <item quantity="other">%s stories per month</item>
+        <item quantity="one">%s story/mo</item>
+        <item quantity="other">%s stories/mo</item>
     </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>

@@ -68,6 +68,9 @@ class FeedItemsList : ItemsList() {
 
     override fun shouldHandlePredictiveBack(): Boolean = reviewInfo == null
 
+    override fun shouldResetReadingSessionOnCreate(): Boolean =
+        intent?.getBooleanExtra(EXTRA_IS_TRY_FEED, false) == true
+
     override fun handleUpdate(updateType: Int) {
         super.handleUpdate(updateType)
         if ((updateType and UPDATE_METADATA) != 0) {

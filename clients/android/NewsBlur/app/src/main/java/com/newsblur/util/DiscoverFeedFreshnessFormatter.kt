@@ -2,6 +2,11 @@ package com.newsblur.util
 
 import com.newsblur.domain.Feed
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.TimeZone
 
@@ -36,6 +41,18 @@ object DiscoverFeedFreshnessFormatter {
 
     fun parseApiDateMillis(rawDate: String?): Long? {
         if (rawDate.isNullOrBlank()) return null
-        return runCatching { apiDateFormat.parse(rawDate)?.time }.getOrNull()
+        return parseIsoDateMillis(rawDate) ?: runCatching { apiDateFormat.parse(rawDate)?.time }.getOrNull()
+    }
+
+    private fun parseIsoDateMillis(rawDate: String): Long? {
+        return runCatching { Instant.parse(rawDate).toEpochMilli() }.getOrNull()
+            ?: runCatching { OffsetDateTime.parse(rawDate).toInstant().toEpochMilli() }.getOrNull()
+            ?: runCatching {
+                LocalDateTime
+                    .parse(rawDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    .atOffset(ZoneOffset.UTC)
+                    .toInstant()
+                    .toEpochMilli()
+            }.getOrNull()
     }
 }
