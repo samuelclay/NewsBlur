@@ -22,29 +22,29 @@ NEWSBLUR.WelcomeBackground = (function () {
         '    vec2 uv = gl_FragCoord.xy / u_resolution;',
         '    float t = u_time;',
 
-        // Dark palette
+        // Dark palette (teal)
         '    vec3 d_darkBase  = vec3(0.106, 0.141, 0.141);',
-        '    vec3 d_teal      = vec3(0.247, 0.326, 0.329);',
-        '    vec3 d_lightTeal = vec3(0.35, 0.54, 0.55);',
+        '    vec3 d_warm      = vec3(0.247, 0.326, 0.329);',
+        '    vec3 d_lightWarm = vec3(0.35, 0.54, 0.55);',
         '    vec3 d_gold      = vec3(0.85, 0.65, 0.13);',
         '    vec3 d_softGold  = vec3(0.98, 0.86, 0.61);',
 
-        // Light palette
-        '    vec3 l_darkBase  = vec3(0.20, 0.28, 0.28);',
-        '    vec3 l_teal      = vec3(0.35, 0.46, 0.47);',
-        '    vec3 l_lightTeal = vec3(0.48, 0.66, 0.67);',
-        '    vec3 l_gold      = vec3(0.85, 0.65, 0.13);',
-        '    vec3 l_softGold  = vec3(0.98, 0.86, 0.61);',
+        // Light palette (sunny beige)
+        '    vec3 l_darkBase  = vec3(0.52, 0.42, 0.28);',
+        '    vec3 l_warm      = vec3(0.72, 0.62, 0.44);',
+        '    vec3 l_lightWarm = vec3(0.88, 0.80, 0.64);',
+        '    vec3 l_gold      = vec3(0.90, 0.72, 0.22);',
+        '    vec3 l_softGold  = vec3(0.98, 0.90, 0.70);',
 
         // Interpolate palettes based on theme
         '    vec3 darkBase  = mix(l_darkBase,  d_darkBase,  u_theme);',
-        '    vec3 teal      = mix(l_teal,      d_teal,      u_theme);',
-        '    vec3 lightTeal = mix(l_lightTeal, d_lightTeal, u_theme);',
+        '    vec3 warm      = mix(l_warm,      d_warm,      u_theme);',
+        '    vec3 lightWarm = mix(l_lightWarm, d_lightWarm, u_theme);',
         '    vec3 gold      = mix(l_gold,      d_gold,      u_theme);',
         '    vec3 softGold  = mix(l_softGold,  d_softGold,  u_theme);',
 
-        // Base gradient: teal at bottom fading to dark at top
-        '    vec3 base = mix(teal, darkBase, smoothstep(0.0, 1.0, uv.y));',
+        // Base gradient: warm at bottom fading to dark at top
+        '    vec3 base = mix(warm, darkBase, smoothstep(0.0, 1.0, uv.y));',
 
         // Three diagonal coordinates for independent wave directions
         '    float d1 = uv.x * 0.6 + uv.y * 0.4;',
@@ -61,16 +61,16 @@ NEWSBLUR.WelcomeBackground = (function () {
         '    float w3 = sin(d3 * 14.0 - t * 0.9 + sin(d1 * 5.0 + t * 0.4) * 0.4);',
         '    float ridge3 = exp(-w3 * w3 * 4.0) * 0.12;',
 
-        // Subtle teal glow
+        // Subtle warm glow
         '    float w4 = sin(d1 * 3.0 + t * 0.25);',
         '    float glow = w4 * w4 * 0.15;',
 
         // Additive color blending
         '    vec3 color = base;',
-        '    color += lightTeal * ridge1;',
+        '    color += lightWarm * ridge1;',
         '    color += gold * 0.7 * ridge2;',
         '    color += softGold * 0.4 * ridge3;',
-        '    color += teal * glow;',
+        '    color += warm * glow;',
 
         '    gl_FragColor = vec4(color, 1.0);',
         '}'
