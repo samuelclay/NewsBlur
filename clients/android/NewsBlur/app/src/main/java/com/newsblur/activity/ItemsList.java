@@ -77,10 +77,13 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 @AndroidEntryPoint
 public abstract class ItemsList extends NbActivity implements ReadingActionListener {
+
+    private static WeakReference<ItemsList> readingLaunchParentRef = new WeakReference<>(null);
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -166,11 +169,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         feedUtils.prepareReadingSession(fs, false);
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-            UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
+            launchReadingActivity(fs, hash);
         } else if (prefsRepo.isAutoOpenFirstUnread()) {
             StateFilter intelState = prefsRepo.getStateFilter();
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(this, fs, Reading.FIND_FIRST_UNREAD, readingActivityLaunch);
+                launchReadingActivity(fs, Reading.FIND_FIRST_UNREAD);
             }
         }
 
@@ -853,6 +856,21 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void startReadingActivity(FeedSet feedSet, String storyHash) {
+        launchReadingActivity(feedSet, storyHash);
+    }
+
+    public void animateBackToFeedListFromReading() {
+        beginInteractiveStoryListSwipe();
+        completeInteractiveStoryListSwipe();
+    }
+
+    @Nullable
+    public static ItemsList peekReadingLaunchParent() {
+        return readingLaunchParentRef.get();
+    }
+
+    private void launchReadingActivity(FeedSet feedSet, String storyHash) {
+        readingLaunchParentRef = new WeakReference<>(this);
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch);
     }
 
@@ -1086,6 +1104,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private boolean isInteractiveStoryListBackEnabled() {
         return binding != null && !isTaskRoot() && !isFinishing();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (readingLaunchParentRef.get() == this) {
+            readingLaunchParentRef.clear();
+        }
+        super.onDestroy();
     }
 
     private boolean supportsPredictiveStoryListBack() {

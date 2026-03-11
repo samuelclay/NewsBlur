@@ -63,6 +63,28 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
 
+internal enum class OverlayRightAction {
+    NEXT_UNREAD,
+    ANIMATE_TO_FEED_LIST,
+    RETURN_TO_MAIN,
+    FINISH_READING,
+}
+
+internal fun resolveOverlayRightAction(
+    unreadCount: Int,
+    isTaskRoot: Boolean,
+    hasReadingLaunchParent: Boolean,
+): OverlayRightAction =
+    if (unreadCount > 0) {
+        OverlayRightAction.NEXT_UNREAD
+    } else if (hasReadingLaunchParent) {
+        OverlayRightAction.ANIMATE_TO_FEED_LIST
+    } else if (isTaskRoot) {
+        OverlayRightAction.RETURN_TO_MAIN
+    } else {
+        OverlayRightAction.FINISH_READING
+    }
+
 @AndroidEntryPoint
 abstract class Reading :
     NbActivity(),
@@ -696,17 +718,33 @@ abstract class Reading :
      * Click handler for the righthand overlay nav button.
      */
     private fun overlayRightClick() {
-        if (unreadCount <= 0) {
-            // if there are no unread stories, go back to the feed list
-            val i = Intent(this, Main::class.java)
-            i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(i)
-            finish()
-        } else {
-            // if there are unreads, go to the next one
-            lifecycleScope.executeAsyncTask(
-                doInBackground = { nextUnread() },
+        val readingLaunchParent = ItemsList.peekReadingLaunchParent()
+        when (
+            resolveOverlayRightAction(
+                unreadCount = unreadCount,
+                isTaskRoot = isTaskRoot,
+                hasReadingLaunchParent = readingLaunchParent != null,
             )
+        ) {
+            OverlayRightAction.ANIMATE_TO_FEED_LIST -> {
+                readingLaunchParent?.animateBackToFeedListFromReading()
+                finish()
+            }
+
+            OverlayRightAction.RETURN_TO_MAIN -> {
+                // Direct launches need a real list activity underneath before we exit.
+                val i = Intent(this, Main::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(i)
+                finish()
+            }
+
+            OverlayRightAction.FINISH_READING -> finish()
+
+            OverlayRightAction.NEXT_UNREAD ->
+                lifecycleScope.executeAsyncTask(
+                    doInBackground = { nextUnread() },
+                )
         }
     }
 
