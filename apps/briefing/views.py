@@ -433,7 +433,9 @@ def load_all_briefings_admin(request):
     offset = (page - 1) * per_page
 
     total_count = MBriefing.objects.filter(status="complete").count()
-    briefings = list(MBriefing.objects.filter(status="complete").order_by("-briefing_date")[offset : offset + per_page])
+    briefings = list(
+        MBriefing.objects.filter(status="complete").order_by("-briefing_date")[offset : offset + per_page]
+    )
 
     user_ids = list(set(b.user_id for b in briefings))
     story_hashes = [b.summary_story_hash for b in briefings if b.summary_story_hash]

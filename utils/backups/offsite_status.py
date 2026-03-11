@@ -338,7 +338,11 @@ def print_table():
                         if p_total and p_total > p_bytes:
                             remaining = (p_total - p_bytes) / bw
                             parts.append("~%s left" % format_duration(remaining))
-                note = "  \033[33m◀ %s\033[0m" % " · ".join(parts) if parts else "  \033[33m◀ downloading...\033[0m"
+                note = (
+                    "  \033[33m◀ %s\033[0m" % " · ".join(parts)
+                    if parts
+                    else "  \033[33m◀ downloading...\033[0m"
+                )
                 partial_row = (p_date, p_size_str, note)
 
         if not backups and not partial_row:
