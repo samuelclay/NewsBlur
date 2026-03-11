@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
+import com.newsblur.util.FeedUtils
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class RenameDialogViewModel
     @Inject
     constructor(
-        private val feedApi: FeedApi,
+        private val feedUtils: FeedUtils,
         private val folderApi: FolderApi,
         private val syncServiceState: SyncServiceState,
         @param:ApplicationContext private val context: Context,
@@ -67,13 +67,7 @@ class RenameDialogViewModel
             viewModelScope.launch(Dispatchers.IO) {
                 _uiState.emit(UiState.Loading)
                 try {
-                    val response = feedApi.renameFeed(feedId, newName)
-                    if (response != null && !response.isError) {
-                        withContext(Dispatchers.Main) {
-                            syncServiceState.forceFeedsFolders()
-                            triggerSync(context)
-                        }
-                    }
+                    feedUtils.renameFeed(context, feedId, newName)
                 } catch (_: Throwable) {
                 } finally {
                     _uiState.emit(UiState.Done)
