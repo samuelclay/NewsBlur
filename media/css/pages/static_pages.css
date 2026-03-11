@@ -650,7 +650,111 @@ h3.NB-pricing-faq-question {
     flex-shrink: 0;
 }
 
-/* Features bottom CTA */
+/* Compare NewsBlur cross-link section */
+.NB-features-compare {
+    margin: 56px auto 0;
+    max-width: 700px;
+}
+
+.NB-features-compare-inner {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 32px 36px 28px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.NB-features-compare-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 24px;
+}
+
+.NB-features-compare-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+}
+
+.NB-features-compare-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    margin: 0;
+}
+
+.NB-features-compare-links {
+    display: flex;
+    gap: 32px;
+}
+
+.NB-features-compare-group {
+    flex: 1;
+}
+
+.NB-features-compare-group-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 10px;
+    padding: 0 0 0 12px;
+}
+
+.NB-features-compare-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.NB-compare-link-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+    transition: all 0.15s ease;
+}
+
+.NB-compare-link-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-left-color: rgba(249, 115, 22, 0.6);
+    color: white;
+}
+
+.NB-compare-link-arrow {
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: all 0.15s ease;
+    font-size: 13px;
+    color: rgba(249, 115, 22, 0.7);
+}
+
+.NB-compare-link-item:hover .NB-compare-link-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 600px) {
+    .NB-features-compare-inner {
+        padding: 24px 20px 20px;
+    }
+    .NB-features-compare-links {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
 .NB-features-bottom-cta {
     text-align: center;
     margin: 24px 0 0;

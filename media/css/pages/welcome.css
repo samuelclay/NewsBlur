@@ -2426,6 +2426,114 @@ a.NB-fgi img {
     background: linear-gradient(to left, #faf9f7 0%, rgba(250, 249, 247, 0) 100%);
 }
 
+/* = Compare = */
+/* =========== */
+
+.NB-welcome-compare {
+    padding: 48px 0 56px;
+    text-align: center;
+}
+
+.NB-welcome-compare h2 {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #3a2e1e;
+    margin: 0 0 24px;
+    letter-spacing: -0.3px;
+}
+
+.NB-welcome-compare-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.NB-welcome-compare-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #3a2e1e;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.15s ease;
+}
+
+.NB-welcome-compare-pill:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #1a1408;
+    text-decoration: none;
+}
+
+.NB-compare-pill-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(58, 46, 30, 0.4);
+}
+
+.NB-compare-pill-alt {
+    background: transparent;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(58, 46, 30, 0.7);
+}
+
+.NB-compare-pill-alt:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: #3a2e1e;
+}
+
+.NB-dark .NB-welcome-compare h2 {
+    color: white;
+}
+
+.NB-dark .NB-welcome-compare-pill {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-welcome-compare-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: white;
+}
+
+.NB-dark .NB-compare-pill-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-compare-pill-alt {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-compare-pill-alt:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+    .NB-welcome-compare-pills {
+        gap: 8px;
+    }
+    .NB-welcome-compare-pill {
+        padding: 7px 14px;
+        font-size: 13px;
+    }
+}
+
 /* = Activity = */
 /* ============ */
 
