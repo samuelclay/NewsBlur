@@ -17,6 +17,7 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityDiscoverFeedsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.DiscoverFeedPayload
+import com.newsblur.domain.Feed
 import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.util.DiscoverThemePalette
 import com.newsblur.util.ImageLoader
@@ -132,8 +133,11 @@ class DiscoverFeedsActivity :
 
     private fun loadDiscoverFeeds() {
         val singleFeedId = intent.getStringExtra(EXTRA_FEED_ID)
+        val sourceFeed = intent.getSerializableExtra(EXTRA_SOURCE_FEED) as? Feed
         val feedIds = intent.getStringArrayListExtra(EXTRA_FEED_IDS)
-        if (singleFeedId != null) {
+        if (sourceFeed != null) {
+            viewModel.load(sourceFeed)
+        } else if (singleFeedId != null) {
             viewModel.load(singleFeedId)
         } else if (!feedIds.isNullOrEmpty()) {
             viewModel.load(feedIds)
@@ -179,7 +183,21 @@ class DiscoverFeedsActivity :
     companion object {
         private const val EXTRA_FEED_ID = "discover_feed_id"
         private const val EXTRA_FEED_IDS = "discover_feed_ids"
+        private const val EXTRA_SOURCE_FEED = "discover_source_feed"
         private const val LOAD_MORE_THRESHOLD = 4
+
+        @JvmStatic
+        fun startForFeed(
+            context: Context,
+            feed: Feed,
+        ) {
+            context.startActivity(
+                Intent(context, DiscoverFeedsActivity::class.java).apply {
+                    putExtra(EXTRA_FEED_ID, feed.feedId)
+                    putExtra(EXTRA_SOURCE_FEED, feed)
+                },
+            )
+        }
 
         @JvmStatic
         fun startForFeed(
