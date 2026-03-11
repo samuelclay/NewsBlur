@@ -278,7 +278,9 @@ class Test_Reader(TransactionTestCase):
         response = self.client.get(reverse("load-feeds"))
         feeds = json.decode(response.content)
         # Should still only have one Tech folder (case-insensitive dedup)
-        tech_folders = [f for f in feeds["folders"] if isinstance(f, dict) and any(k.lower() == "tech" for k in f)]
+        tech_folders = [
+            f for f in feeds["folders"] if isinstance(f, dict) and any(k.lower() == "tech" for k in f)
+        ]
         self.assertEqual(len(tech_folders), 1)
 
     def test_delete_feed_substring_folder(self):

@@ -28,7 +28,6 @@ from apps.briefing.scoring import (
     _find_clustered_stories,
     _get_classifier_matches,
 )
-from apps.clustering.models import normalize_title as _normalize_title
 from apps.briefing.summary import (
     _build_system_prompt,
     _strip_duplicate_story_links,
@@ -39,6 +38,7 @@ from apps.briefing.summary import (
     normalize_section_key,
     rebuild_summary_from_sections,
 )
+from apps.clustering.models import normalize_title as _normalize_title
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
