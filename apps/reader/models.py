@@ -447,7 +447,7 @@ class UserSubscription(models.Model):
         cache_prefix="",
         date_filter_start=None,
         date_filter_end=None,
-        use_lazy_merge=False,
+        use_lazy_merge=False,  # Deprecated: lazy merge is now auto-enabled for >50 feeds
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -483,7 +483,12 @@ class UserSubscription(models.Model):
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
 
-        def lazy_merge_story_hashes(target_read_filter, target_offset, target_limit):
+        def lazy_merge_story_hashes(target_read_filter, target_offset, target_limit, cache_key=None):
+            """K-way merge of per-feed story streams using a heap, avoiding ZUNIONSTORE.
+
+            When cache_key is provided, writes merged results to Redis so that
+            page 2+ can reuse the cache instead of re-merging from scratch.
+            """
             per_feed_chunk = 25
             per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
             per_feed_indices = {feed_id: 0 for feed_id in feed_ids}
@@ -551,20 +556,39 @@ class UserSubscription(models.Model):
                 push_next_from_feed(feed_id)
 
             merged_story_hashes = []
+            merged_with_scores = []
             total_seen = 0
             while heap and len(merged_story_hashes) < target_offset + target_limit:
-                _score, feed_id, story_hash = heapq.heappop(heap)
+                transformed_score, feed_id, story_hash = heapq.heappop(heap)
+                original_score = -transformed_score if order == "newest" else transformed_score
                 if total_seen >= target_offset:
                     merged_story_hashes.append(story_hash)
+                if cache_key:
+                    merged_with_scores.append((story_hash, original_score))
                 total_seen += 1
                 push_next_from_feed(feed_id)
 
+            # Cache merged results in Redis so page 2+ can reuse them
+            if cache_key and merged_with_scores:
+                pipe = rt.pipeline()
+                pipe.delete(cache_key)
+                pipe.zadd(cache_key, {h: s for h, s in merged_with_scores})
+                pipe.expire(cache_key, 60 * 60)
+                pipe.execute()
+
             return merged_story_hashes
 
-        # Avoid large ZUNIONSTORE operations by lazily merging per-feed chunks in Python
-        skip_cache = use_lazy_merge and len(feed_ids) > 50
-        if skip_cache:
-            story_hashes = lazy_merge_story_hashes(read_filter, offset, limit)
+        # Auto-enable lazy merge for users with many feeds to avoid blocking
+        # Redis with large ZUNIONSTORE operations
+        LAZY_MERGE_FEED_THRESHOLD = 50
+        use_lazy = len(feed_ids) > LAZY_MERGE_FEED_THRESHOLD
+        if use_lazy:
+            story_hashes = lazy_merge_story_hashes(
+                read_filter,
+                offset,
+                limit,
+                cache_key=ranked_stories_keys,
+            )
         else:
             cls.story_hashes(
                 user_id,
@@ -583,11 +607,23 @@ class UserSubscription(models.Model):
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
-            if not skip_cache:
+            if not use_lazy:
                 rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+            else:
+                # For lazy merge with unread filter, the ranked key IS the unread key
+                pipe = rt.pipeline()
+                pipe.delete(unread_ranked_stories_keys)
+                pipe.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+                pipe.expire(unread_ranked_stories_keys, 60 * 60)
+                pipe.execute()
         else:
-            if skip_cache:
-                unread_feed_story_hashes = lazy_merge_story_hashes("unread", offset, limit)
+            if use_lazy:
+                unread_feed_story_hashes = lazy_merge_story_hashes(
+                    "unread",
+                    offset,
+                    limit,
+                    cache_key=unread_ranked_stories_keys,
+                )
             else:
                 cls.story_hashes(
                     user_id,
