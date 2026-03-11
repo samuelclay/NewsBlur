@@ -168,7 +168,7 @@
     left: 0;
     right: 0;
     top: 0;
-    height: 40px;
+    height: 70px;
 }
 
 .NB-welcome .NB-splash-top-links {
@@ -182,15 +182,17 @@
 
 .NB-welcome .NB-splash-top-link a {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
+    letter-spacing: 0.3px;
     color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
-    padding: 5px 10px;
+    padding: 6px 14px;
     border-radius: 6px;
+    border: 1px solid transparent;
     background: none;
     display: block;
-    transition: color 0.15s ease;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-welcome .NB-splash-top-link a:hover {
@@ -204,7 +206,7 @@
     position: absolute;
     right: 8px;
     top: 0;
-    height: 40px;
+    height: 70px;
 }
 
 .NB-welcome .NB-splash-top-logo > a {
