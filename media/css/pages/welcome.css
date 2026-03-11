@@ -2430,107 +2430,179 @@ a.NB-fgi img {
 /* =========== */
 
 .NB-welcome-compare {
-    padding: 48px 0 56px;
+    padding: 36px 0 44px;
     text-align: center;
 }
 
-.NB-welcome-compare h2 {
-    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: #3a2e1e;
-    margin: 0 0 24px;
-    letter-spacing: -0.3px;
+.NB-welcome-compare-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 300px;
+    margin: 0 auto 22px;
 }
 
-.NB-welcome-compare-pills {
+.NB-welcome-compare-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(58, 46, 30, 0.15), transparent);
+}
+
+.NB-welcome-compare-label {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(58, 46, 30, 0.32);
+    white-space: nowrap;
+}
+
+/* Versus row */
+.NB-welcome-compare-versus {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 0 auto 14px;
+    max-width: 800px;
+}
+
+.NB-compare-vs-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    text-decoration: none;
+    padding: 4px 0;
+}
+
+.NB-compare-vs-link:hover {
+    text-decoration: none;
+}
+
+.NB-compare-vs-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(58, 46, 30, 0.25);
+    transition: color 0.15s ease;
+}
+
+.NB-compare-vs-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #3a2e1e;
+    border-bottom: 1.5px solid transparent;
+    padding-bottom: 1px;
+    transition: all 0.15s ease;
+}
+
+.NB-compare-vs-link:hover .NB-compare-vs-name {
+    color: #b5590a;
+    border-bottom-color: rgba(181, 89, 10, 0.3);
+}
+
+.NB-compare-vs-link:hover .NB-compare-vs-tag {
+    color: rgba(181, 89, 10, 0.45);
+}
+
+/* Alternatives row */
+.NB-welcome-compare-alts {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px 0;
     max-width: 700px;
     margin: 0 auto;
 }
 
-.NB-welcome-compare-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+.NB-welcome-compare-alts a {
+    font-size: 13px;
+    color: rgba(58, 46, 30, 0.45);
     text-decoration: none;
-    color: #3a2e1e;
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: all 0.15s ease;
+    padding: 2px 0;
+    transition: color 0.15s ease;
 }
 
-.NB-welcome-compare-pill:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.15);
-    color: #1a1408;
+.NB-welcome-compare-alts a:hover {
+    color: #3a2e1e;
     text-decoration: none;
 }
 
-.NB-compare-pill-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(58, 46, 30, 0.4);
+.NB-welcome-compare-alts a + a::before {
+    content: '\00b7';
+    margin: 0 10px;
+    color: rgba(58, 46, 30, 0.18);
+    pointer-events: none;
 }
 
-.NB-compare-pill-alt {
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.1);
-    color: rgba(58, 46, 30, 0.7);
+/* Dark mode */
+.NB-dark .NB-welcome-compare-rule {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
 }
 
-.NB-compare-pill-alt:hover {
-    background: rgba(0, 0, 0, 0.04);
-    color: #3a2e1e;
+.NB-dark .NB-welcome-compare-label {
+    color: rgba(255, 255, 255, 0.3);
 }
 
-.NB-dark .NB-welcome-compare h2 {
-    color: white;
+.NB-dark .NB-compare-vs-tag {
+    color: rgba(255, 255, 255, 0.25);
 }
 
-.NB-dark .NB-welcome-compare-pill {
+.NB-dark .NB-compare-vs-name {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-compare-vs-link:hover .NB-compare-vs-name {
+    color: #f0a050;
+    border-bottom-color: rgba(240, 160, 80, 0.3);
+}
+
+.NB-dark .NB-compare-vs-link:hover .NB-compare-vs-tag {
+    color: rgba(240, 160, 80, 0.45);
+}
+
+.NB-dark .NB-welcome-compare-alts a {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark .NB-welcome-compare-alts a:hover {
     color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
 }
 
-.NB-dark .NB-welcome-compare-pill:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.18);
-    color: white;
-}
-
-.NB-dark .NB-compare-pill-label {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.NB-dark .NB-compare-pill-alt {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.55);
-}
-
-.NB-dark .NB-compare-pill-alt:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
+.NB-dark .NB-welcome-compare-alts a + a::before {
+    color: rgba(255, 255, 255, 0.12);
 }
 
 @media (max-width: 768px) {
-    .NB-welcome-compare-pills {
-        gap: 8px;
+    .NB-welcome-compare-versus {
+        gap: 2px 16px;
     }
-    .NB-welcome-compare-pill {
-        padding: 7px 14px;
-        font-size: 13px;
+    .NB-compare-vs-name {
+        font-size: 15px;
+    }
+    .NB-welcome-compare-alts a {
+        font-size: 12px;
+    }
+    .NB-welcome-compare-alts a + a::before {
+        margin: 0 7px;
+    }
+}
+
+@media (max-width: 480px) {
+    .NB-welcome-compare-versus {
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+    }
+    .NB-welcome-compare-alts {
+        flex-direction: column;
+        align-items: center;
+    }
+    .NB-welcome-compare-alts a + a::before {
+        content: none;
     }
 }
 

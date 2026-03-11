@@ -57,6 +57,14 @@ def alt_feedly(request):
     return render(request, "static/alt_feedly.xhtml")
 
 
+def alt_inoreader(request):
+    return render(request, "static/alt_inoreader.xhtml")
+
+
+def compare_feedbin(request):
+    return render(request, "static/compare_feedbin.xhtml")
+
+
 def faq(request):
     return render(request, "static/faq.xhtml")
 

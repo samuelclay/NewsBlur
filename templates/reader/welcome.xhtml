@@ -1174,33 +1174,38 @@
     <div class="NB-welcome-compare">
         <div class="NB-inner">
             <div class="NB-welcome-compare-header">
-                <h2>See how NewsBlur compares</h2>
+                <div class="NB-welcome-compare-rule"></div>
+                <span class="NB-welcome-compare-label">Compare</span>
+                <div class="NB-welcome-compare-rule"></div>
             </div>
-            <div class="NB-welcome-compare-pills">
-                <a href="{% url "compare-feedly" %}" class="NB-welcome-compare-pill">
-                    <span class="NB-compare-pill-label">vs</span> Feedly
+            <div class="NB-welcome-compare-versus">
+                <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedly</span>
                 </a>
-                <a href="{% url "compare-inoreader" %}" class="NB-welcome-compare-pill">
-                    <span class="NB-compare-pill-label">vs</span> Inoreader
+                <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Inoreader</span>
                 </a>
-                <a href="{% url "compare-readwise" %}" class="NB-welcome-compare-pill">
-                    <span class="NB-compare-pill-label">vs</span> Readwise Reader
+                <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Readwise Reader</span>
                 </a>
-                <a href="{% url "compare-the-old-reader" %}" class="NB-welcome-compare-pill">
-                    <span class="NB-compare-pill-label">vs</span> The Old Reader
+                <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">The Old Reader</span>
                 </a>
-                <a href="{% url "alt-feedly" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
-                    Feedly Alternative
+                <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedbin</span>
                 </a>
-                <a href="{% url "alt-google-reader" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
-                    Google Reader Alternative
-                </a>
-                <a href="{% url "alt-open-source" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
-                    Open Source RSS
-                </a>
-                <a href="{% url "alt-self-hosted" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
-                    Self-Hosted RSS
-                </a>
+            </div>
+            <div class="NB-welcome-compare-alts">
+                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
+                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
+                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
+                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
+                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
             </div>
         </div>
     </div>
