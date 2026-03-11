@@ -84,6 +84,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 16px;
 }
 
 .NB-static .NB-splash-top-logo .NB-splash-blurred-logo {
@@ -131,12 +132,12 @@
     background: rgba(255, 255, 255, 0.06);
 }
 
-/* Active page: gold text + rounded border */
-.NB-static-features .NB-splash-top-link-features a,
-.NB-static-pricing .NB-splash-top-link-pricing a,
-.NB-static-about .NB-splash-top-link-about a,
-.NB-static-faq .NB-splash-top-link-faq a,
-.NB-static-compare .NB-splash-top-link-features a {
+/* Active page: gold text + rounded border (direct child only, not dropdown links) */
+.NB-static-features .NB-splash-top-link-features > a,
+.NB-static-pricing .NB-splash-top-link-pricing > a,
+.NB-static-about .NB-splash-top-link-about > a,
+.NB-static-faq .NB-splash-top-link-faq > a,
+.NB-static-compare .NB-splash-top-link-features > a {
     color: #FBDB9B;
     border-color: rgba(251, 219, 155, 0.3);
 }
@@ -151,7 +152,7 @@
     display: none;
 }
 
-/* Logo: use dark variant on dark backgrounds */
+/* Logo: keep dark variant for the dark header bar */
 .NB-static .NB-splash-blurred-logo {
     background-image: url('/media/embed/logo_newsblur_blur_dark.png');
 }
@@ -196,8 +197,17 @@
     color: #FBDB9B;
 }
 
-/* Welcome page: hide the header logo and title (welcome has its own) */
+/* Welcome page: show toggle in top-right but hide logo and title */
 .NB-welcome .NB-splash-top-logo {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 8px;
+    top: 0;
+    height: 40px;
+}
+
+.NB-welcome .NB-splash-top-logo > a {
     display: none;
 }
 
@@ -205,6 +215,949 @@
     display: none;
 }
 
+
+/* ---- Navigation Dropdown Menus ---- */
+
+.NB-splash-nav-has-dropdown {
+    position: relative;
+}
+
+/* Dropdown arrow indicator next to trigger text */
+.NB-splash-nav-has-dropdown > a::after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 4px solid currentColor;
+    margin-left: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: -0.5px;
+    opacity: 0.6;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NB-splash-nav-has-dropdown > a:hover::after,
+.NB-splash-nav-dropdown-open > a::after {
+    opacity: 1;
+}
+
+.NB-splash-nav-dropdown-open > a::after {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel - hidden by default */
+.NB-splash-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+    padding-top: 8px;
+}
+
+/* Open state */
+.NB-splash-nav-dropdown-open > .NB-splash-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Grace area - invisible bridge between trigger and panel */
+.NB-splash-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 20px;
+}
+
+/* Inner container - the visible panel */
+.NB-splash-dropdown-inner {
+    background: rgba(16, 16, 20, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    min-width: 280px;
+}
+
+/* Features dropdown: two columns */
+.NB-splash-dropdown-features .NB-splash-dropdown-inner {
+    display: flex;
+    gap: 0;
+    min-width: 620px;
+    padding: 16px;
+}
+
+/* Left column: hero features */
+.NB-splash-dropdown-col-hero {
+    flex: 0 0 290px;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Right column: more features + compare + alternatives */
+.NB-splash-dropdown-col-more {
+    flex: 1;
+    padding-left: 16px;
+    min-width: 240px;
+}
+
+/* Section headings */
+.NB-splash-dropdown-heading {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 4px 10px 8px;
+    margin: 0;
+}
+
+.NB-splash-dropdown-heading-link {
+    color: rgba(251, 219, 155, 0.6);
+    text-decoration: none;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.15s ease;
+}
+
+.NB-splash-dropdown-heading-link:hover {
+    color: #FBDB9B;
+}
+
+/* Hero dropdown items (name + description) */
+.NB-splash-dropdown-item {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+
+/* Dropdown icons - inline with title text */
+.NB-splash-dropdown-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: -2px;
+    margin-right: 6px;
+}
+
+/* iOS-inspired icon colors via CSS filters */
+.NB-splash-dropdown-icon-blue {
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-coral {
+    filter: invert(50%) sepia(80%) saturate(1200%) hue-rotate(340deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-purple {
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-pink {
+    filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(310deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-teal {
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-orange {
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-green {
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(90deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-icon-gold {
+    filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1);
+}
+
+.NB-splash-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-splash-dropdown-item-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.NB-splash-dropdown-item:hover .NB-splash-dropdown-item-name {
+    color: white;
+}
+
+.NB-splash-dropdown-item-desc {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.3;
+}
+
+/* Price badge in pricing dropdown */
+.NB-splash-dropdown-price {
+    font-size: 11px;
+    font-weight: 400;
+    color: #FBDB9B;
+    margin-left: 4px;
+}
+
+/* Tier accent bars - rounded pill on the left */
+.NB-splash-dropdown-tier {
+    position: relative;
+    padding-left: 18px;
+}
+
+.NB-splash-dropdown-tier::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    border-radius: 3px;
+    background: transparent;
+    transition: background 0.15s ease;
+}
+
+.NB-splash-dropdown-tier-premium:hover::before {
+    background: rgba(34, 197, 94, 0.6);
+}
+
+.NB-splash-dropdown-tier-archive:hover::before {
+    background: rgba(20, 184, 166, 0.6);
+}
+
+.NB-splash-dropdown-tier-pro:hover::before {
+    background: rgba(249, 115, 22, 0.6);
+}
+
+/* Divider line */
+.NB-splash-dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 6px 10px;
+}
+
+/* Compact grid items (more features, compare, alternatives) */
+.NB-splash-dropdown-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+.NB-splash-dropdown-grid-item {
+    display: block;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
+    flex: 0 0 50%;
+    box-sizing: border-box;
+}
+
+.NB-splash-dropdown-grid-item:hover {
+    color: #FBDB9B;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Current page highlight in dropdown - dim background */
+/* Feature hero items - active page highlight */
+.NB-static-feature-training .NB-splash-dropdown-item-training,
+.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
+.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
+.NB-static-feature-search .NB-splash-dropdown-item-search,
+.NB-static-feature-archive .NB-splash-dropdown-item-archive,
+.NB-static-feature-saved .NB-splash-dropdown-item-saved,
+.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
+.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
+.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
+.NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
+.NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
+.NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
+.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
+    color: #FBDB9B;
+}
+
+/* Compare & alternative grid items - active page highlight */
+body.NB-static-compare-feedly .NB-splash-dropdown-grid-item-compare-feedly,
+body.NB-static-compare-inoreader .NB-splash-dropdown-grid-item-compare-inoreader,
+body.NB-static-compare-readwise .NB-splash-dropdown-grid-item-compare-readwise,
+body.NB-static-compare-old-reader .NB-splash-dropdown-grid-item-compare-old-reader,
+body.NB-static-compare-feedbin .NB-splash-dropdown-grid-item-compare-feedbin,
+body.NB-static-alt-feedly .NB-splash-dropdown-grid-item-alt-feedly,
+body.NB-static-alt-google-reader .NB-splash-dropdown-grid-item-alt-google-reader,
+body.NB-static-alt-open-source .NB-splash-dropdown-grid-item-alt-open-source,
+body.NB-static-alt-inoreader .NB-splash-dropdown-grid-item-alt-inoreader,
+body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
+    color: #FBDB9B !important;
+    background: rgba(251, 219, 155, 0.1);
+}
+
+/* Welcome page adjustments */
+.NB-welcome .NB-splash-dropdown {
+    padding-top: 6px;
+}
+
+/* Prevent Features dropdown from overflowing viewport */
+.NB-splash-dropdown {
+    max-width: calc(100vw - 32px);
+}
+
+/* Responsive: hide dropdowns on mobile */
+@media (max-width: 900px) {
+    .NB-splash-dropdown {
+        display: none !important;
+    }
+}
+
+
+/* ---- Feature Detail Pages ---- */
+
+.NB-feature-detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.NB-feature-detail-hero {
+    text-align: center;
+    margin: 0 0 48px;
+}
+
+.NB-feature-detail-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 12px 0 16px;
+    line-height: 1.1;
+}
+
+.NB-feature-detail-subtitle {
+    font-size: 18px;
+    color: rgba(45, 38, 26, 0.6);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Screenshot gallery */
+.NB-feature-detail-screenshots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 0 0 48px;
+}
+
+/* Ask AI: two-column layout with stacked left, tall right */
+.NB-feature-detail-screenshots-askai {
+    display: flex;
+    gap: 24px;
+    grid-template-columns: none;
+}
+
+.NB-feature-detail-screenshots-askai .NB-feature-detail-screenshots-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.NB-feature-detail-screenshots-askai .NB-feature-detail-screenshot-tall {
+    flex: 1;
+}
+
+.NB-feature-detail-screenshots-askai .NB-feature-detail-screenshot-tall img {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+.NB-feature-detail-screenshots.NB-feature-detail-screenshots-single {
+    grid-template-columns: 1fr;
+    max-width: 700px;
+    margin: 0 auto 48px;
+}
+
+.NB-feature-detail-screenshot {
+    text-align: center;
+}
+
+.NB-feature-detail-screenshot img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.NB-feature-detail-caption {
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.5);
+    margin: 10px 0 0;
+    line-height: 1.4;
+}
+
+/* How it works section */
+.NB-feature-detail-how {
+    margin: 0 0 48px;
+}
+
+.NB-feature-detail-how h2,
+.NB-feature-detail-faq h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 20px;
+}
+
+.NB-feature-detail-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.NB-static .NB-feature-detail-step {
+    counter-increment: step-counter;
+    padding: 16px 0 16px 48px;
+    position: relative;
+    list-style: none;
+    color: rgba(45, 38, 26, 0.75);
+    font-size: 18px;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-feature-detail-step:last-child {
+    border-bottom: none;
+}
+
+.NB-feature-detail-step::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(138, 109, 27, 0.15);
+    color: #8a6d1b;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FAQ section */
+.NB-feature-detail-faq {
+    margin: 0 0 48px;
+}
+
+.NB-feature-detail-faq-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 16px 0;
+}
+
+.NB-feature-detail-faq-item:last-child {
+    border-bottom: none;
+}
+
+.NB-feature-detail-faq-q {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.85);
+    margin: 0 0 8px;
+}
+
+.NB-feature-detail-faq-a {
+    font-size: 16px;
+    color: rgba(45, 38, 26, 0.55);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Bottom CTA */
+.NB-feature-detail-cta {
+    text-align: center;
+    padding: 40px 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.NB-feature-detail-cta a {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 10px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-feature-detail-cta a:hover {
+    transform: translateY(-1px);
+}
+
+.NB-static .NB-feature-detail-cta-primary {
+    background: linear-gradient(135deg, #FBDB9B 0%, #f0c96e 100%);
+    color: #2a2a1e;
+    box-shadow: 0 2px 8px rgba(251, 219, 155, 0.3);
+}
+
+.NB-static .NB-feature-detail-cta-primary:hover {
+    background: linear-gradient(135deg, #fce5b5 0%, #f5d580 100%);
+    color: #2a2a1e;
+    box-shadow: 0 4px 16px rgba(251, 219, 155, 0.4);
+}
+
+.NB-static .NB-feature-detail-cta-secondary {
+    background: rgba(255, 255, 255, 0.4);
+    color: #3a3122;
+}
+
+.NB-static .NB-feature-detail-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: #2d261a;
+}
+
+/* Cross-links to other feature pages */
+.NB-feature-detail-crosslinks {
+    margin: 0 0 32px;
+}
+
+.NB-feature-detail-crosslinks h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 20px;
+}
+
+.NB-feature-detail-crosslinks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.NB-feature-detail-crosslink {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.NB-feature-detail-crosslink:hover {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.NB-feature-detail-crosslink-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.85);
+    margin: 0 0 4px;
+}
+
+.NB-feature-detail-crosslink-desc {
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.5);
+    line-height: 1.4;
+}
+
+/* Current page in crosslinks - highlighted */
+.NB-static-feature-training .NB-feature-detail-crosslink-training,
+.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
+.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
+.NB-static-feature-search .NB-feature-detail-crosslink-search,
+.NB-static-feature-archive .NB-feature-detail-crosslink-archive,
+.NB-static-feature-saved .NB-feature-detail-crosslink-saved,
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
+.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
+.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
+.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
+.NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
+.NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+    color: #8a6d1b;
+}
+
+/* Feature crosslinks on comparison pages - add spacing */
+.NB-static-compare .NB-feature-detail-crosslinks {
+    margin-top: 48px;
+}
+
+/* Responsive feature detail */
+@media (max-width: 900px) {
+    .NB-feature-detail-title {
+        font-size: 28px;
+    }
+    .NB-feature-detail-screenshots {
+        grid-template-columns: 1fr;
+    }
+    .NB-feature-detail-screenshots-askai {
+        flex-direction: column;
+    }
+    .NB-feature-detail-crosslinks-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .NB-feature-detail-crosslinks-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---- Pricing Tier Detail Pages ---- */
+
+.NB-pricing-tier-detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.NB-pricing-tier-detail-hero {
+    text-align: center;
+    margin: 0 0 48px;
+}
+
+.NB-pricing-tier-detail-name {
+    font-size: 42px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 8px;
+    line-height: 1.1;
+}
+
+.NB-pricing-tier-detail-price {
+    font-size: 24px;
+    color: #8a6d1b;
+    margin: 0 0 16px;
+}
+
+.NB-pricing-tier-detail-subtitle {
+    font-size: 18px;
+    color: rgba(45, 38, 26, 0.6);
+    max-width: 600px;
+    margin: 0 auto 24px;
+    line-height: 1.5;
+}
+
+.NB-pricing-tier-detail-cta-button {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 8px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.NB-pricing-tier-detail-cta-premium {
+    background: rgba(34, 160, 80, 0.15);
+    color: #1a8a42;
+    border: 1px solid rgba(34, 160, 80, 0.3);
+}
+
+.NB-pricing-tier-detail-cta-premium:hover {
+    background: rgba(34, 160, 80, 0.25);
+}
+
+.NB-pricing-tier-detail-cta-archive {
+    background: rgba(15, 145, 130, 0.15);
+    color: #0d8a7c;
+    border: 1px solid rgba(15, 145, 130, 0.3);
+}
+
+.NB-pricing-tier-detail-cta-archive:hover {
+    background: rgba(15, 145, 130, 0.25);
+}
+
+.NB-pricing-tier-detail-cta-pro {
+    background: rgba(210, 95, 15, 0.15);
+    color: #c05a0e;
+    border: 1px solid rgba(210, 95, 15, 0.3);
+}
+
+.NB-pricing-tier-detail-cta-pro:hover {
+    background: rgba(210, 95, 15, 0.25);
+}
+
+/* Feature list on tier pages */
+.NB-pricing-tier-detail-features {
+    margin: 0 0 48px;
+}
+
+.NB-pricing-tier-detail-features h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 24px;
+}
+
+.NB-pricing-tier-detail-feature {
+    display: flex;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    align-items: flex-start;
+}
+
+.NB-pricing-tier-detail-feature:last-child {
+    border-bottom: none;
+}
+
+.NB-pricing-tier-detail-feature-text {
+    flex: 1;
+}
+
+.NB-pricing-tier-detail-feature-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.9);
+    margin: 0 0 6px;
+}
+
+.NB-pricing-tier-detail-feature-desc {
+    font-size: 16px;
+    color: rgba(45, 38, 26, 0.55);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.NB-pricing-tier-detail-feature-img {
+    flex: 0 0 280px;
+}
+
+.NB-pricing-tier-detail-feature-img img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Tier page FAQ */
+.NB-pricing-tier-detail-faq {
+    margin: 0 0 48px;
+}
+
+.NB-pricing-tier-detail-faq h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 20px;
+}
+
+/* Reuse feature detail FAQ item styles */
+.NB-pricing-tier-detail-faq .NB-feature-detail-faq-item,
+.NB-pricing-tier-detail-faq .NB-feature-detail-faq-q,
+.NB-pricing-tier-detail-faq .NB-feature-detail-faq-a {
+    /* Inherits from feature detail FAQ styles above */
+}
+
+/* Other tiers callout */
+.NB-pricing-tier-detail-others {
+    text-align: center;
+    padding: 24px 0 32px;
+}
+
+.NB-pricing-tier-detail-others-label {
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.45);
+    margin: 0 0 12px;
+}
+
+.NB-pricing-tier-detail-others-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.NB-pricing-tier-detail-others-links a {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.55);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.NB-pricing-tier-detail-others-links a:hover {
+    color: #8a6d1b;
+    border-color: rgba(138, 109, 27, 0.3);
+}
+
+/* Pricing plan crosslinks - card grid at bottom of individual tier pages */
+.NB-pricing-crosslinks {
+    margin: 0 0 32px;
+}
+
+.NB-pricing-crosslinks h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d261a;
+    margin: 0 0 20px;
+}
+
+.NB-pricing-crosslinks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.NB-pricing-crosslink {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.35);
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-pricing-crosslink:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.NB-pricing-crosslink-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 8px;
+}
+
+.NB-pricing-crosslink-name {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d261a;
+}
+
+.NB-pricing-crosslink-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #8a6d1b;
+}
+
+.NB-pricing-crosslink-desc {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.6);
+    line-height: 1.5;
+    flex: 1;
+}
+
+.NB-pricing-crosslink-arrow {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+    transition: color 0.15s ease;
+}
+
+/* Tier-specific accent colors on crosslink cards */
+.NB-pricing-crosslink-premium .NB-pricing-crosslink-arrow {
+    color: #1a8a42;
+}
+
+.NB-pricing-crosslink-archive .NB-pricing-crosslink-arrow {
+    color: #0d8a7c;
+}
+
+.NB-pricing-crosslink-pro .NB-pricing-crosslink-arrow {
+    color: #c05a0e;
+}
+
+/* Arrow animation on pricing CTA buttons and crosslink cards */
+.NB-pricing-cta-arrow {
+    display: inline-block;
+    transition: transform 0.15s ease;
+    margin-left: 2px;
+}
+
+.NB-pricing-cta:hover .NB-pricing-cta-arrow {
+    transform: translateX(3px);
+}
+
+.NB-pricing-crosslink:hover .NB-pricing-crosslink-arrow {
+    letter-spacing: 0.3px;
+}
+
+/* Center CTA buttons in pricing tier cards on static page */
+.NB-static-pricing .NB-pricing-tier-actions {
+    text-align: center;
+}
+
+/* Responsive pricing crosslinks */
+@media (max-width: 900px) {
+    .NB-pricing-crosslinks-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive tier detail */
+@media (max-width: 900px) {
+    .NB-pricing-tier-detail-name {
+        font-size: 28px;
+    }
+    .NB-pricing-tier-detail-feature {
+        flex-direction: column;
+    }
+    .NB-pricing-tier-detail-feature-img {
+        flex: none;
+        width: 100%;
+    }
+}
 
 
 /* ---- Pricing Page ---- */
@@ -217,14 +1170,14 @@
 .NB-static-pricing-title {
     font-size: 42px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     letter-spacing: -0.5px;
     margin: 0 0 12px;
 }
 
 .NB-static-pricing-subtitle {
     font-size: 17px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.65);
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
@@ -232,16 +1185,16 @@
 
 /* ---- Pricing tier card overrides for dark static page background ---- */
 
-/* Card background: dark semi-transparent instead of white */
+/* Card background: light translucent on beige page */
 .NB-static-pricing .NB-pricing-tier {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.45);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .NB-static-pricing .NB-pricing-tier:hover {
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Tier headers: slightly muted gradients so they don't pop so much */
@@ -265,13 +1218,13 @@
     background: linear-gradient(135deg, rgba(71, 85, 105, 0.7) 0%, rgba(51, 65, 85, 0.7) 100%);
 }
 
-/* Feature list text: light text on dark cards */
+/* Feature list text: dark text on light cards */
 .NB-static-pricing .NB-pricing-tier-features li {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.75);
 }
 
 .NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-includes {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
 }
 
 /* Feature list backgrounds: transparent on dark cards */
@@ -288,12 +1241,12 @@
 
 .NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li,
 .NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
 }
 
 .NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li span,
 .NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li span {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
 }
 
 /* Bullet icons: lighten for dark background */
@@ -302,29 +1255,29 @@
     filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(120%) contrast(90%);
 }
 
-/* Actions bar: dark treatment */
+/* Actions bar: light treatment */
 .NB-static-pricing .NB-pricing-tier-actions {
-    background: rgba(0, 0, 0, 0.15);
-    border-top-color: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.03);
+    border-top-color: rgba(0, 0, 0, 0.06);
 }
 
-/* "Coming soon" header on dark cards */
+/* "Coming soon" header on light cards */
 .NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-upcoming-header {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.4);
 }
 
 .NB-static-pricing .NB-pricing-tier-features li.NB-upcoming {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.4);
 }
 
-/* GitHub button on dark card */
+/* GitHub button on light card */
 .NB-static-pricing .NB-pricing-github-button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .NB-static-pricing .NB-pricing-github-button:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 /* CTA buttons */
@@ -369,39 +1322,39 @@
 }
 
 .NB-pricing-cta-free {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .NB-pricing-cta-free:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: white;
+    background: rgba(255, 255, 255, 0.6);
+    color: #2d261a;
 }
 
 .NB-pricing-cta-features {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.35);
+    color: rgba(45, 38, 26, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     padding: 12px 32px;
     font-size: 16px;
 }
 
 .NB-pricing-cta-features:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.55);
+    color: #2d261a;
 }
 
-/* Trial callout: dark-friendly version */
+/* Trial callout: light-friendly version */
 .NB-static-pricing .NB-pricing-trial-callout {
     margin: 28px auto;
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.2);
-    color: rgba(16, 185, 129, 0.8);
+    background: rgba(16, 135, 90, 0.08);
+    border-color: rgba(16, 135, 90, 0.2);
+    color: rgba(16, 110, 75, 0.8);
 }
 
 .NB-static-pricing .NB-pricing-trial-callout strong {
-    color: rgba(16, 185, 129, 0.95);
+    color: #0d7a50;
 }
 
 /* Features link */
@@ -418,21 +1371,21 @@
 }
 
 .NB-pricing-compare-label {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.45);
     margin-right: 6px;
 }
 
 .NB-pricing-compare-links a {
-    color: #FBDB9B;
+    color: #8a6d1b;
     text-decoration: none;
 }
 
 .NB-pricing-compare-links a:hover {
-    color: white;
+    color: #5a4710;
 }
 
 .NB-pricing-compare-sep {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(45, 38, 26, 0.25);
     margin: 0 6px;
 }
 
@@ -446,7 +1399,7 @@
 .NB-pricing-faq-title {
     font-size: 24px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: #2d261a;
     text-align: center;
     margin: 0 0 20px;
 }
@@ -454,15 +1407,15 @@
 .NB-pricing-faq-item {
     margin: 0 0 8px;
     padding: 14px 20px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-pricing-faq-question {
     font-size: 15px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.9);
     margin: 0 0 4px;
     padding: 0;
 }
@@ -473,17 +1426,17 @@ h3.NB-pricing-faq-question {
 
 .NB-pricing-faq-answer {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
     line-height: 1.55;
     margin: 0;
 }
 
 .NB-pricing-faq-answer a {
-    color: #FBDB9B;
+    color: #8a6d1b;
 }
 
 .NB-pricing-faq-answer a:hover {
-    color: white;
+    color: #5a4710;
 }
 
 /* ---- Features Page ---- */
@@ -496,14 +1449,14 @@ h3.NB-pricing-faq-question {
 .NB-static-features-title {
     font-size: 42px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     letter-spacing: -0.5px;
     margin: 0 0 12px;
 }
 
 .NB-static-features-subtitle {
     font-size: 17px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.65);
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
@@ -516,9 +1469,9 @@ h3.NB-pricing-faq-question {
     gap: 48px;
     margin: 0 0 64px;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-feature-section:nth-child(even) {
@@ -538,19 +1491,19 @@ h3.NB-pricing-faq-question {
 .NB-feature-section-screenshot img {
     width: 100%;
     border-radius: 8px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
 
 .NB-feature-section-screenshot .NB-feature-screenshot-placeholder {
     width: 100%;
     aspect-ratio: 16 / 10;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.04);
     border-radius: 8px;
-    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border: 2px dashed rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(45, 38, 26, 0.3);
     font-size: 14px;
 }
 
@@ -566,37 +1519,37 @@ h3.NB-pricing-faq-question {
 }
 
 .NB-feature-badge-free {
-    background: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(45, 38, 26, 0.6);
 }
 
 .NB-feature-badge-premium {
-    background: rgba(64, 107, 108, 0.3);
-    color: #7cc5c6;
+    background: rgba(26, 138, 66, 0.12);
+    color: #1a7a3a;
 }
 
 .NB-feature-badge-archive {
-    background: rgba(217, 119, 6, 0.2);
-    color: #fbbf24;
+    background: rgba(13, 138, 124, 0.12);
+    color: #0d7a6e;
 }
 
 .NB-feature-badge-pro {
-    background: rgba(217, 119, 6, 0.35);
-    color: #fcd34d;
-    border: 1px solid rgba(217, 119, 6, 0.4);
+    background: rgba(192, 90, 14, 0.12);
+    color: #a85010;
+    border: 1px solid rgba(192, 90, 14, 0.2);
 }
 
 .NB-feature-section-name {
     font-size: 26px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 0 0 12px;
     letter-spacing: -0.3px;
 }
 
 .NB-feature-section-description {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     line-height: 1.7;
     margin: 0;
 }
@@ -609,15 +1562,15 @@ h3.NB-pricing-faq-question {
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     transition: all 0.15s ease;
 }
 
 .NB-feature-section-cta:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.6);
+    color: #2d261a;
 }
 
 /* Blog post link */
@@ -631,16 +1584,16 @@ h3.NB-pricing-faq-question {
     font-size: 13px;
     font-weight: 500;
     text-decoration: none;
-    background: rgba(251, 219, 155, 0.08);
-    color: #FBDB9B;
-    border: 1px solid rgba(251, 219, 155, 0.15);
+    background: rgba(138, 109, 27, 0.08);
+    color: #8a6d1b;
+    border: 1px solid rgba(138, 109, 27, 0.18);
     transition: all 0.15s ease;
 }
 
 .NB-feature-section-blog:hover {
-    background: rgba(251, 219, 155, 0.15);
-    color: #fde9b9;
-    border-color: rgba(251, 219, 155, 0.25);
+    background: rgba(138, 109, 27, 0.14);
+    color: #6b5515;
+    border-color: rgba(138, 109, 27, 0.28);
 }
 
 .NB-feature-blog-favicon {
@@ -657,8 +1610,8 @@ h3.NB-pricing-faq-question {
 }
 
 .NB-features-compare-inner {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 14px;
     padding: 32px 36px 28px;
     backdrop-filter: blur(8px);
@@ -675,7 +1628,7 @@ h3.NB-pricing-faq-question {
 .NB-features-compare-rule {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.12), transparent);
 }
 
 .NB-features-compare-title {
@@ -683,7 +1636,7 @@ h3.NB-pricing-faq-question {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
     white-space: nowrap;
     margin: 0;
 }
@@ -702,7 +1655,7 @@ h3.NB-pricing-faq-question {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(45, 38, 26, 0.45);
     margin: 0 0 10px;
     padding: 0 0 0 12px;
 }
@@ -718,18 +1671,16 @@ h3.NB-pricing-faq-question {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    border-radius: 8px;
-    border-left: 2px solid transparent;
+    border-radius: 6px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.7);
     font-size: 14px;
     transition: all 0.15s ease;
 }
 
 .NB-compare-link-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-left-color: rgba(249, 115, 22, 0.6);
-    color: white;
+    background: rgba(255, 255, 255, 0.35);
+    color: #2d261a;
 }
 
 .NB-compare-link-arrow {
@@ -737,7 +1688,7 @@ h3.NB-pricing-faq-question {
     transform: translateX(-6px);
     transition: all 0.15s ease;
     font-size: 13px;
-    color: rgba(249, 115, 22, 0.7);
+    color: rgba(192, 90, 14, 0.7);
 }
 
 .NB-compare-link-item:hover .NB-compare-link-arrow {
@@ -764,7 +1715,7 @@ h3.NB-pricing-faq-question {
 .NB-features-bottom-cta-text {
     font-size: 22px;
     font-weight: 600;
-    color: white;
+    color: #2d261a;
     margin: 0 0 16px;
 }
 
@@ -782,14 +1733,14 @@ h3.NB-pricing-faq-question {
 .NB-static-compare-title {
     font-size: 38px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     letter-spacing: -0.5px;
     margin: 0 0 12px;
 }
 
 .NB-static-compare-subtitle {
     font-size: 17px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.65);
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
@@ -803,19 +1754,19 @@ h3.NB-pricing-faq-question {
     margin: 0 0 48px;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .NB-compare-table th,
 .NB-compare-table td {
     padding: 14px 20px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-compare-table thead th {
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
+    background: rgba(255, 255, 255, 0.4);
+    color: #2d261a;
     font-size: 15px;
     font-weight: 700;
 }
@@ -825,18 +1776,18 @@ h3.NB-pricing-faq-question {
 }
 
 .NB-compare-table tbody td {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(45, 38, 26, 0.75);
     font-size: 14px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .NB-compare-table tbody tr:hover td {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .NB-compare-table tbody td:first-child {
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.9);
 }
 
 .NB-compare-check {
@@ -845,28 +1796,28 @@ h3.NB-pricing-faq-question {
 }
 
 .NB-compare-x {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(45, 38, 26, 0.2);
 }
 
 /* Compare narrative sections */
 .NB-compare-section {
     margin: 0 0 40px;
     padding: 32px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-compare-section-title {
     font-size: 22px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 0 0 12px;
 }
 
 .NB-compare-section-text {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     line-height: 1.7;
     margin: 0;
 }
@@ -895,7 +1846,7 @@ h3.NB-pricing-faq-question {
     font-size: 36px;
     font-weight: 400;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(45, 38, 26, 0.88);
     line-height: 1.35;
     max-width: 680px;
     margin: 0 auto;
@@ -926,9 +1877,9 @@ h3.NB-pricing-faq-question {
 
 .NB-about-card {
     padding: 28px 28px 24px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-about-card-header {
@@ -966,7 +1917,7 @@ h3.NB-about-card-title {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 18px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 0;
     padding: 0;
     line-height: 1;
@@ -974,7 +1925,7 @@ h3.NB-about-card-title {
 
 .NB-about-card-text {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(45, 38, 26, 0.65);
     line-height: 1.6;
     margin: 0;
 }
@@ -997,7 +1948,7 @@ h3.NB-about-card-title {
     height: 140px;
     object-fit: cover;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     margin: 0 0 12px;
 }
 
@@ -1005,13 +1956,13 @@ h3.NB-about-card-title {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 16px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 0 0 2px;
 }
 
 .NB-about-person-role {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.45);
     margin: 0 0 8px;
 }
 
@@ -1024,13 +1975,13 @@ h3.NB-about-card-title {
 
 .NB-about-person-links a {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .NB-about-person-links a:hover {
-    color: #FBDB9B;
+    color: #8a6d1b;
 }
 
 /* Timeline */
@@ -1077,7 +2028,7 @@ h3.NB-about-card-title {
     top: 2px;
     font-size: 14px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(45, 38, 26, 0.4);
     letter-spacing: 0.5px;
     text-align: right;
     width: 36px;
@@ -1085,7 +2036,7 @@ h3.NB-about-card-title {
 
 .NB-about-timeline-content p {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(45, 38, 26, 0.65);
     line-height: 1.65;
     margin: 0;
 }
@@ -1108,7 +2059,7 @@ h3.NB-about-card-title {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(45, 38, 26, 0.4);
     margin: 0 0 12px;
 }
 
@@ -1126,36 +2077,35 @@ h3.NB-about-card-title {
     border-radius: 6px;
     font-size: 13px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.65);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(45, 38, 26, 0.65);
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     text-decoration: none;
     transition: all 0.15s ease;
 }
 
 .NB-about-tech-pill:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #2d261a;
+    border-color: rgba(0, 0, 0, 0.12);
 }
 
 .NB-about-tech-pill-github {
-    background: rgba(251, 219, 155, 0.08);
-    color: #FBDB9B;
-    border-color: rgba(251, 219, 155, 0.15);
+    background: rgba(138, 109, 27, 0.1);
+    color: #8a6d1b;
+    border-color: rgba(138, 109, 27, 0.2);
 }
 
 .NB-about-tech-pill-github:hover {
-    background: rgba(251, 219, 155, 0.15);
-    color: #fde9b9;
-    border-color: rgba(251, 219, 155, 0.25);
+    background: rgba(138, 109, 27, 0.12);
+    color: #6b5515;
+    border-color: rgba(138, 109, 27, 0.25);
 }
 
 .NB-about-github-icon {
     width: 14px;
     height: 14px;
-    filter: invert(1);
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 /* Legal */
@@ -1166,17 +2116,17 @@ h3.NB-about-card-title {
 
 .NB-about-legal-link {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .NB-about-legal-link:hover {
-    color: #FBDB9B;
+    color: #8a6d1b;
 }
 
 .NB-about-legal-sep {
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(45, 38, 26, 0.2);
     margin: 0 12px;
 }
 
@@ -1190,7 +2140,7 @@ h3.NB-about-card-title {
     font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
     font-size: 20px;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
     margin: 0 0 16px;
 }
 
@@ -1198,7 +2148,7 @@ h3.NB-about-card-title {
     width: 400px;
     max-width: 100%;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     opacity: 0.85;
     transition: opacity 0.2s ease;
 }
@@ -1230,7 +2180,7 @@ h3.NB-about-card-title {
     font-size: 36px;
     font-weight: 400;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(45, 38, 26, 0.88);
     line-height: 1.35;
     max-width: 680px;
     margin: 0 auto 12px;
@@ -1239,7 +2189,7 @@ h3.NB-about-card-title {
 
 .NB-faq-hero-subtitle {
     font-size: 17px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(45, 38, 26, 0.55);
     max-width: 540px;
     margin: 0 auto;
     line-height: 1.6;
@@ -1257,23 +2207,23 @@ h3.NB-about-card-title {
 
 .NB-faq-item {
     padding: 20px 24px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 h3.NB-faq-question {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.9);
     margin: 0 0 8px;
     line-height: 1.35;
 }
 
 .NB-faq-answer {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
     line-height: 1.65;
     margin: 0;
 }
@@ -1283,21 +2233,21 @@ h3.NB-faq-question {
 }
 
 .NB-faq-answer a {
-    color: #FBDB9B;
+    color: #8a6d1b;
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .NB-faq-answer a:hover {
-    color: white;
+    color: #5a4710;
 }
 
 .NB-faq-answer code {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.06);
     padding: 1px 6px;
     border-radius: 3px;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(45, 38, 26, 0.75);
 }
 
 .NB-faq-answer ul {
@@ -1307,7 +2257,7 @@ h3.NB-faq-question {
 
 .NB-faq-answer li {
     margin: 0 0 4px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
 }
 
 .NB-faq-bullet-icons {
@@ -1322,7 +2272,7 @@ h3.NB-faq-question {
     align-items: center;
     gap: 8px;
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
 }
 
 .NB-faq-bullet-icon img {
@@ -1337,24 +2287,59 @@ h3.NB-faq-question {
     margin: 12px 0 0;
 }
 
-.NB-faq-tier {
+a.NB-faq-tier {
+    display: block;
     padding: 14px 18px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+}
+
+a.NB-faq-tier:hover {
+    background: rgba(255, 255, 255, 0.45);
 }
 
 .NB-faq-tier-name {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 13px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.8);
     margin: 0 0 4px;
+    transition: color 0.2s;
+}
+
+/* Distinct tier title colors - light mode */
+.NB-faq-tier-free .NB-faq-tier-name {
+    color: rgba(75, 85, 99, 0.9);
+}
+.NB-faq-tier-premium .NB-faq-tier-name {
+    color: rgba(22, 163, 74, 0.9);
+}
+.NB-faq-tier-archive .NB-faq-tier-name {
+    color: rgba(13, 148, 136, 0.9);
+}
+.NB-faq-tier-pro .NB-faq-tier-name {
+    color: rgba(234, 88, 12, 0.9);
+}
+
+/* Tier title hover colors - light mode */
+a.NB-faq-tier-free:hover .NB-faq-tier-name {
+    color: rgba(55, 65, 81, 1);
+}
+a.NB-faq-tier-premium:hover .NB-faq-tier-name {
+    color: rgba(22, 163, 74, 1);
+}
+a.NB-faq-tier-archive:hover .NB-faq-tier-name {
+    color: rgba(13, 148, 136, 1);
+}
+a.NB-faq-tier-pro:hover .NB-faq-tier-name {
+    color: rgba(234, 88, 12, 1);
 }
 
 .NB-faq-tier-desc {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(45, 38, 26, 0.5);
     line-height: 1.5;
     margin: 0;
 }
@@ -1368,13 +2353,13 @@ h3.NB-faq-question {
 .NB-faq-bottom-cta-text {
     font-size: 22px;
     font-weight: 600;
-    color: white;
+    color: #2d261a;
     margin: 0 0 8px;
 }
 
 .NB-faq-bottom-cta-subtext {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.5);
     margin: 0 0 20px;
 }
 
@@ -1398,14 +2383,14 @@ h3.NB-faq-question {
 .NB-api-hero-title {
     font-size: 42px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     letter-spacing: -0.5px;
     margin: 0 0 12px;
 }
 
 .NB-api-hero-subtitle {
     font-size: 17px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
     line-height: 1.6;
     margin: 0;
 }
@@ -1413,24 +2398,24 @@ h3.NB-faq-question {
 .NB-api-section {
     margin: 0 0 40px;
     padding: 32px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-api-section-title {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     margin: 0 0 16px;
     padding: 0 0 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .NB-api-section-content p {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     line-height: 1.7;
     margin: 0 0 12px;
 }
@@ -1440,30 +2425,30 @@ h3.NB-faq-question {
 }
 
 .NB-api-section-content a {
-    color: #FBDB9B;
+    color: #8a6d1b;
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .NB-api-section-content a:hover {
-    color: white;
+    color: #5a4710;
 }
 
 .NB-api-section-content code {
     font-size: 13px;
     padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.06);
     border-radius: 4px;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(45, 38, 26, 0.85);
 }
 
 .NB-api-section-content h3 {
     font-size: 16px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(45, 38, 26, 0.9);
     margin: 32px 0 8px;
     padding: 16px 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-api-section-content h3:first-child {
@@ -1479,7 +2464,7 @@ h3.NB-faq-question {
 .NB-api-section-content h4 {
     font-size: 14px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     margin: 16px 0 8px;
 }
 
@@ -1490,7 +2475,7 @@ h3.NB-faq-question {
 
 .NB-api-section-content li {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(45, 38, 26, 0.65);
     line-height: 1.6;
     margin: 0 0 6px;
 }
@@ -1530,31 +2515,31 @@ h3.NB-faq-question {
 }
 
 .NB-static-api .NB-api-toc li:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .NB-static-api .NB-api-toc a {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(45, 38, 26, 0.8);
     text-decoration: none;
     width: auto;
     flex-shrink: 0;
 }
 
 .NB-static-api .NB-api-toc a:hover {
-    color: #FBDB9B;
+    color: #8a6d1b;
 }
 
 .NB-static-api .NB-api-toc a code {
     font-size: 13px;
     padding: 1px 5px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.06);
     border-radius: 3px;
 }
 
 .NB-static-api .NB-api-toc .NB-api-link-desc {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.4);
     text-align: right;
     flex: 1;
     float: none;
@@ -1570,8 +2555,8 @@ h3.NB-faq-question {
     margin: 16px 0 12px;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .NB-static-api .NB-api-section-content table th {
@@ -1579,19 +2564,19 @@ h3.NB-faq-question {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.06);
+    color: rgba(45, 38, 26, 0.6);
+    background: rgba(255, 255, 255, 0.3);
     padding: 8px 12px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     border-right: none;
 }
 
 .NB-static-api .NB-api-section-content table td {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     padding: 8px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     border-right: none;
     white-space: normal;
     vertical-align: top;
@@ -1599,7 +2584,7 @@ h3.NB-faq-question {
 
 .NB-static-api .NB-api-section-content table td:first-child {
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(45, 38, 26, 0.85);
     white-space: nowrap;
 }
 
@@ -1626,9 +2611,9 @@ h3.NB-faq-question {
 }
 
 .NB-static-api .required {
-    background: rgba(217, 144, 15, 0.2);
+    background: rgba(217, 144, 15, 0.15);
     border: 1px solid rgba(217, 144, 15, 0.35);
-    color: #FBDB9B;
+    color: #996b0a;
 }
 
 /* Anchor links */
@@ -1658,24 +2643,24 @@ h3.NB-faq-question {
 .NB-forgot-password-title {
     font-size: 36px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     letter-spacing: -0.5px;
     margin: 0 0 12px;
 }
 
 .NB-forgot-password-subtitle {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 38, 26, 0.6);
     line-height: 1.6;
     margin: 0;
 }
 
 .NB-forgot-password-card {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
     padding: 36px 40px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .NB-forgot-password-field {
@@ -1687,7 +2672,7 @@ h3.NB-faq-question {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(45, 38, 26, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 8px;
@@ -1699,9 +2684,9 @@ h3.NB-faq-question {
     width: 100%;
     padding: 12px 16px;
     font-size: 16px;
-    color: white;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #2d261a;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 8px;
     outline: none;
     box-sizing: border-box;
@@ -1709,12 +2694,12 @@ h3.NB-faq-question {
 }
 
 .NB-forgot-password-field input:focus {
-    border-color: rgba(251, 219, 155, 0.5);
-    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(138, 109, 27, 0.5);
+    background: rgba(255, 255, 255, 0.7);
 }
 
 .NB-forgot-password-field input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(45, 38, 26, 0.3);
 }
 
 .NB-forgot-password-errors {
@@ -1762,13 +2747,13 @@ h3.NB-faq-question {
 
 .NB-forgot-password-back a {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.4);
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .NB-forgot-password-back a:hover {
-    color: #FBDB9B;
+    color: #8a6d1b;
 }
 
 /* ---- Responsive ---- */
@@ -1880,11 +2865,1142 @@ h3.NB-faq-question {
     }
 }
 
+/* ---- Theme Toggle ---- */
+
+.NB-theme-toggle {
+    display: none;
+}
+
+.NB-static .NB-theme-toggle,
+.NB-welcome .NB-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.NB-theme-toggle-sun,
+.NB-theme-toggle-moon {
+    color: rgba(255, 255, 255, 0.25);
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+    display: block;
+}
+
+/* Active sun icon in light mode */
+body:not(.NB-dark) .NB-theme-toggle-sun {
+    color: #FBDB9B;
+}
+
+/* Active moon icon in dark mode */
+body.NB-dark .NB-theme-toggle-moon {
+    color: #8bb8d8;
+}
+
+.NB-theme-toggle-track {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.NB-theme-toggle-track:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.NB-theme-toggle-track:focus-visible {
+    border-color: #FBDB9B;
+    box-shadow: 0 0 0 2px rgba(251, 219, 155, 0.3);
+}
+
+.NB-theme-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #f5eedd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.3s ease;
+    display: block;
+}
+
+/* Dark mode: slide thumb right, shift color cool */
+body.NB-dark .NB-theme-toggle-thumb {
+    transform: translateX(16px);
+    background: #8bb8d8;
+}
+
 /* ---- Dark mode overrides ---- */
-/* Static pages are already dark-themed, so these are mainly for
-   the features/compare pages which also appear on dark backgrounds */
+
+/* Transitions on base selectors so they animate in BOTH directions.
+   Gradients can't be transitioned, so we split into:
+   - background-color: solid base color that transitions smoothly
+   - background-image: subtle semi-transparent gradient overlay (snaps but unnoticeable) */
+body.NB-static {
+    background-color: #ebe0c2;
+    background-image: linear-gradient(180deg,
+        rgba(255,255,255,0.07) 0%,
+        rgba(255,255,255,0.03) 20%,
+        transparent 40%,
+        rgba(0,0,0,0.02) 60%,
+        rgba(0,0,0,0.04) 80%,
+        rgba(0,0,0,0.06) 100%);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+body.NB-static h1,
+body.NB-static h2,
+body.NB-static h3,
+body.NB-static h4 {
+    transition: color 0.4s ease;
+}
+
+body.NB-static a {
+    transition: color 0.3s ease;
+}
+
+/* Light mode: light teal header/footer */
+body.NB-static:not(.NB-dark) .NB-splash-info {
+    background-color: rgba(72, 132, 128, 0.88);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+body.NB-static:not(.NB-dark) .NB-splash-info.NB-splash-bottom {
+    background: rgba(72, 132, 128, 0.9);
+    border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Dark mode: deep amber header/footer */
+body.NB-dark.NB-static .NB-splash-info {
+    background-color: rgba(110, 65, 28, 0.88);
+    border-bottom-color: rgba(255, 200, 120, 0.1);
+}
+
+body.NB-dark.NB-static .NB-splash-info.NB-splash-bottom {
+    background: rgba(110, 65, 28, 0.9);
+    border-top-color: rgba(255, 200, 120, 0.1);
+}
+
+/* Dark mode: teal background for static and welcome pages */
+body.NB-dark.NB-static,
+body.NB-dark.NB-welcome,
+body.NB-dark.NB-welcome #NB-splash {
+    background-color: #2a524e;
+    background-image: linear-gradient(180deg,
+        rgba(255,255,255,0.04) 0%,
+        rgba(255,255,255,0.02) 20%,
+        transparent 40%,
+        rgba(0,0,0,0.02) 60%,
+        rgba(0,0,0,0.04) 80%,
+        rgba(0,0,0,0.06) 100%);
+    color: #c0c0c0;
+}
+
+body.NB-dark.NB-static h1,
+body.NB-dark.NB-static h2,
+body.NB-dark.NB-static h3,
+body.NB-dark.NB-static h4 {
+    color: #e0e0e0;
+}
+
+body.NB-dark.NB-static a {
+    color: #FBDB9B;
+}
+
+body.NB-dark.NB-static a:hover {
+    color: #fce8b8;
+}
 
 .NB-dark .NB-feature-section {
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-static-features-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-static-features-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-feature-section-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-feature-section-description {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-feature-section-blog {
+    color: #FBDB9B;
+    background: rgba(251, 219, 155, 0.08);
+    border-color: rgba(251, 219, 155, 0.15);
+}
+
+.NB-dark .NB-feature-section-blog:hover {
+    color: #fce8b8;
+    background: rgba(251, 219, 155, 0.14);
+    border-color: rgba(251, 219, 155, 0.25);
+}
+
+.NB-dark .NB-feature-badge-free {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-feature-badge-premium {
+    background: rgba(64, 107, 108, 0.3);
+    color: #7cc5c6;
+}
+
+.NB-dark .NB-feature-badge-archive {
+    background: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+}
+
+.NB-dark .NB-feature-badge-pro {
+    background: rgba(217, 119, 6, 0.35);
+    color: #fcd34d;
+    border-color: rgba(217, 119, 6, 0.4);
+}
+
+.NB-dark .NB-features-compare-inner {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-features-compare-title {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-features-compare-rule {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.NB-dark .NB-features-compare-group-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Feature detail pages - dark mode */
+.NB-dark .NB-feature-detail-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-feature-detail-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-feature-detail-caption {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-feature-detail-how h2,
+.NB-dark .NB-feature-detail-faq h2 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-feature-detail-step {
+    color: rgba(255, 255, 255, 0.7);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-feature-detail-step::before {
+    background: rgba(251, 219, 155, 0.15);
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-feature-detail-faq-item {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-feature-detail-faq-q {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-feature-detail-faq-a {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-feature-detail-cta-primary {
+    background: linear-gradient(135deg, #FBDB9B 0%, #f0c96e 100%);
+    color: #2a2a1e !important;
+}
+
+.NB-dark .NB-feature-detail-cta-primary:hover {
+    background: linear-gradient(135deg, #fce5b5 0%, #f5d580 100%);
+    color: #2a2a1e !important;
+}
+
+.NB-dark .NB-feature-detail-cta-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-feature-detail-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Crosslinks - dark mode */
+.NB-dark .NB-feature-detail-crosslinks h2 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-feature-detail-crosslink {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-feature-detail-crosslink:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-feature-detail-crosslink-name {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-feature-detail-crosslink-desc {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Active crosslink in dark mode - classes are on body so use compound selector */
+.NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training,
+.NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
+.NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
+.NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search,
+.NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive,
+.NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved,
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+    background: rgba(251, 219, 155, 0.12);
+}
+
+.NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+    color: #FBDB9B;
+}
+
+/* Features bottom CTA - dark mode */
+.NB-dark .NB-features-bottom-cta-text {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pricing CTA buttons - dark mode */
+.NB-dark .NB-pricing-cta-free {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-cta-free:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Compare links - dark mode */
+.NB-dark .NB-compare-link-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-compare-link-arrow {
+    color: #FBDB9B;
+}
+
+/* ======================================= */
+/* = Dark mode overrides for all sections = */
+/* ======================================= */
+
+/* Compare / Alternative pages - dark mode */
+.NB-dark .NB-static-compare-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-static-compare-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-compare-table {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-compare-table th,
+.NB-dark .NB-compare-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-compare-table thead th {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-compare-table tbody td {
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-compare-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-compare-table tbody td:first-child {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-compare-x {
+    color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-compare-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-compare-section-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-compare-section-text {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Compare links section - dark mode */
+.NB-dark .NB-compare-links-section {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-compare-links-title {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-compare-link-group-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-compare-link-item a {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-compare-link-item a:hover {
+    color: #fce8b8;
+}
+
+/* Pricing tier detail pages - dark mode */
+.NB-dark .NB-pricing-tier-detail-name {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-pricing-tier-detail-price {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-pricing-tier-detail-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier-detail-features h2 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-tier-detail-feature {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-pricing-tier-detail-feature-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-tier-detail-feature-desc {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier-detail-faq h2 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pricing crosslinks - dark mode */
+.NB-dark .NB-pricing-crosslinks h2 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-crosslink {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-pricing-crosslink:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-pricing-crosslink-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-crosslink-price {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-pricing-crosslink-desc {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-pricing-crosslink-premium .NB-pricing-crosslink-arrow {
+    color: #7cc5c6;
+}
+
+.NB-dark .NB-pricing-crosslink-archive .NB-pricing-crosslink-arrow {
+    color: #fbbf24;
+}
+
+.NB-dark .NB-pricing-crosslink-pro .NB-pricing-crosslink-arrow {
+    color: #fcd34d;
+}
+
+/* Main pricing page - dark mode */
+.NB-dark .NB-pricing-title,
+.NB-dark .NB-static-pricing-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-pricing-subtitle,
+.NB-dark .NB-static-pricing-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-pricing-tier:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.NB-dark .NB-pricing-tier-name {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-pricing-tier-price {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-pricing-tier-period {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-pricing-tier-desc {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.65);
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.NB-dark .NB-pricing-tier-features li::before {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.NB-dark .NB-pricing-free-note {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-pricing-faq-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-faq-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-pricing-faq-question {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-pricing-faq-answer {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-faq-answer a {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-pricing-faq-answer a:hover {
+    color: #fce8b8;
+}
+
+/* Pricing page cards in dark mode */
+.NB-dark.NB-static-pricing .NB-pricing-tier {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-includes {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li,
+.NB-dark.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-free .NB-pricing-tier-features li span,
+.NB-dark.NB-static-pricing .NB-pricing-tier-selfhosted .NB-pricing-tier-features li span {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-features li.NB-pricing-tier-upcoming-header {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-features li.NB-upcoming {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-tier-actions {
+    background: rgba(255, 255, 255, 0.03);
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-github-button {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark.NB-static-pricing .NB-pricing-github-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* About page - dark mode */
+.NB-dark .NB-about-hero-title {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.NB-dark .NB-about-section-title {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-about-section-text {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.NB-dark .NB-about-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-about-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-about-card-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-about-card-text {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-about-stat-value {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-about-stat-label {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-about-tech-pill {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.65);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-about-tech-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-about-tech-pill-github {
+    background: rgba(251, 219, 155, 0.08);
+    color: #FBDB9B;
+    border-color: rgba(251, 219, 155, 0.15);
+}
+
+.NB-dark .NB-about-tech-pill-github:hover {
+    background: rgba(251, 219, 155, 0.14);
+    color: #fce8b8;
+    border-color: rgba(251, 219, 155, 0.25);
+}
+
+.NB-dark .NB-about-timeline-item {
+    border-left-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-about-timeline-text,
+.NB-dark .NB-about-timeline-content p {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-about-timeline-dot,
+.NB-dark .NB-about-timeline-item::before {
+    background: #FBDB9B;
+}
+
+.NB-dark .NB-about-timeline-year {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-about-person-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-about-person-role {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-about-person-photo {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-about-person-links a {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-about-person-links a:hover {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-about-cta-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-about-cta-text {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* About tech stack - dark mode */
+.NB-dark .NB-about-tech-group-title {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* About tagline - dark mode */
+.NB-dark .NB-about-tagline-text {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-about-tagline-img {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* FAQ page - dark mode */
+.NB-dark .NB-faq-hero-title {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.NB-dark .NB-faq-hero-subtitle {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark h3.NB-faq-question {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-faq-answer {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-faq-answer a {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-faq-answer a:hover {
+    color: #fce8b8;
+}
+
+.NB-dark .NB-faq-answer code {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-dark .NB-faq-answer li {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-faq-bullet-icon {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* FAQ tier cards - dark mode */
+.NB-dark .NB-faq-tier-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark a.NB-faq-tier {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark a.NB-faq-tier:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Distinct tier title colors - dark mode */
+.NB-dark .NB-faq-tier-free .NB-faq-tier-name {
+    color: rgba(255, 255, 255, 0.85);
+}
+.NB-dark .NB-faq-tier-premium .NB-faq-tier-name {
+    color: #86efac;
+}
+.NB-dark .NB-faq-tier-archive .NB-faq-tier-name {
+    color: #99f6e4;
+}
+.NB-dark .NB-faq-tier-pro .NB-faq-tier-name {
+    color: #fdba74;
+}
+
+/* Tier title hover colors - dark mode */
+.NB-dark a.NB-faq-tier-free:hover .NB-faq-tier-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+.NB-dark a.NB-faq-tier-premium:hover .NB-faq-tier-name {
+    color: rgba(74, 222, 128, 1);
+}
+.NB-dark a.NB-faq-tier-archive:hover .NB-faq-tier-name {
+    color: rgba(94, 234, 212, 1);
+}
+.NB-dark a.NB-faq-tier-pro:hover .NB-faq-tier-name {
+    color: rgba(253, 186, 116, 1);
+}
+
+.NB-dark .NB-faq-tier-desc {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* FAQ bottom CTA - dark mode */
+.NB-dark .NB-faq-bottom-cta-text {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-faq-bottom-cta-subtext {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Forgot password - dark mode */
+.NB-dark .NB-forgot-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-forgot-subtitle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-forgot-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-forgot-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-forgot-input {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-forgot-input:focus {
+    border-color: rgba(251, 219, 155, 0.4);
+}
+
+.NB-dark .NB-forgot-hint {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-forgot-hint a {
+    color: #FBDB9B;
+}
+
+/* API page - dark mode */
+.NB-dark .NB-static-api-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-static-api-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-static-api-section-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-static-api-endpoint-title {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-static-api-endpoint-desc {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-static-api-method {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-static-api-path {
+    color: #FBDB9B;
+}
+
+/* Testimonials - dark mode */
+.NB-dark .NB-testimonial-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-testimonial-text {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-testimonial-author {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-testimonial-author a {
+    color: #FBDB9B;
+}
+
+/* Feature detail screenshots - dark mode */
+.NB-dark .NB-feature-detail-screenshot {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-feature-detail-screenshot img {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Features bottom CTA - dark mode */
+.NB-dark .NB-features-bottom-cta-text {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pricing CTA arrows - dark mode */
+.NB-dark .NB-pricing-cta-premium {
+    color: #7cc5c6;
+}
+
+.NB-dark .NB-pricing-cta-archive {
+    color: #fbbf24;
+}
+
+.NB-dark .NB-pricing-cta-pro {
+    color: #fcd34d;
+}
+
+/* reader.css overrides - dark mode */
+body.NB-dark.NB-static .NB-module .NB-module-title {
+    border-left-color: rgba(217, 166, 33, 0.5);
+    color: white;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+body.NB-dark.NB-static .NB-module .NB-module-content,
+body.NB-dark.NB-static .NB-module .NB-module-content p {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+body.NB-dark.NB-static .NB-module .NB-module-content b,
+body.NB-dark.NB-static .NB-module .NB-module-content strong {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+body.NB-dark.NB-static li {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+body.NB-dark.NB-static pre,
+body.NB-dark.NB-static code {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+body.NB-dark.NB-static .NB-module-title-prefix {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-static-press-reviews .NB-press-date {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark.NB-static-about .NB-about-who-name {
+    color: white;
+}
+
+.NB-dark.NB-static-about .NB-about-who img {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark.NB-static-about .NB-about-tagline img {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-static-faq .NB-faq-image {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-static-faq ul li.NB-faq-question {
+    color: white;
+}
+
+.NB-dark .NB-static-faq ul li.NB-faq-answer {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* API page - dark mode */
+.NB-dark .NB-static-api .optional,
+.NB-dark .NB-static-api .required {
+    background-color: rgba(152, 200, 146, 0.3);
+    border-color: rgba(152, 200, 146, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-static-api .required {
+    background-color: rgba(217, 144, 15, 0.3);
+    border-color: rgba(217, 144, 15, 0.5);
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-static-api table {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.NB-dark .NB-static-api table td {
+    border-right-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-dark .NB-static-api table th,
+.NB-dark .NB-static-api .NB-api-toc-header {
+    border-right-color: rgba(255, 255, 255, 0.15);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-static-api .NB-api-toc .NB-api-link-desc {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Login card - dark mode */
+.NB-dark .NB-static-card {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: none;
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+    .NB-dark .NB-static-card {
+        background: rgba(50, 70, 70, 0.85);
+    }
+}
+
+.NB-dark .NB-static-card-title {
+    color: white;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+}
+
+.NB-dark .NB-static-card-tagline {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-static-card-field input[type=text],
+.NB-dark .NB-static-card-field input[type=password],
+.NB-dark .NB-static-card-field input[type=email] {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.NB-dark .NB-static-card-field input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark .NB-static-card-field input:focus {
+    border-color: rgba(217, 166, 33, 0.5);
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.NB-dark .NB-static-card-altlink {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-static-card-altlink:hover {
+    color: #fff;
+}
+
+.NB-dark .NB-delete-form h2 {
+    color: white;
+}
+
+.NB-dark .NB-static-oauth h3 {
+    color: white;
+}
+
+.NB-dark .NB-static-oauth .NB-static-form-label label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-static-oauth .NB-static-form-input input {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.NB-dark .NB-static-form-alttext {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-static-form-alttext a {
+    color: #FBDB9B;
 }
