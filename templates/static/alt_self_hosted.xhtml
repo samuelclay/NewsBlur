@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}Self-Hosted RSS Readers - Run Your Own News Reader with Docker{% endblock %}
+{% block nav_title %}Self-Hosted RSS Readers{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare self-hosted RSS readers: NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. Docker setup, resource requirements, mobile apps, and features side by side. NewsBlur is the only one with a hosted service and self-hosting.">
+    <meta property="og:title" content="Self-Hosted RSS Readers - Run Your Own News Reader with Docker">
+    <meta property="og:description" content="Compare self-hosted RSS readers you can run with Docker. NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS compared on setup, features, and resource requirements.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Self-Hosted RSS Readers - Run Your Own News Reader with Docker">
+    <meta name="twitter:description" content="Compare self-hosted RSS readers you can run with Docker. NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS side by side.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">Self-Hosted RSS Readers</h1>
+        <p class="NB-static-compare-subtitle">Run your own RSS reader with Docker. Compare NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS for self-hosting. Only NewsBlur lets you start hosted and switch to self-hosted whenever you want.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>FreshRSS</th>
+                <th>Miniflux</th>
+                <th>Tiny Tiny RSS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Docker Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker Compose</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or manual</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or binary</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or manual</td>
+            </tr>
+            <tr>
+                <td>One-Command Install</td>
+                <td><span class="NB-compare-check">&#10003;</span> <code>make nb</code></td>
+                <td><span class="NB-compare-check">&#10003;</span> Single container</td>
+                <td><span class="NB-compare-check">&#10003;</span> Single binary or container</td>
+                <td><span class="NB-compare-x">&#10007;</span> Manual config required</td>
+            </tr>
+            <tr>
+                <td>Official Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> newsblur.com</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+            </tr>
+            <tr>
+                <td>Mobile Apps (Native)</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS &amp; Android</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+            </tr>
+            <tr>
+                <td>Intelligence / Filtering</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-check">&#10003;</span> Basic filters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Category-based rules</td>
+                <td><span class="NB-compare-check">&#10003;</span> Label-based filters</td>
+            </tr>
+            <tr>
+                <td>AI Features</td>
+                <td><span class="NB-compare-check">&#10003;</span> Ask AI with Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Resource Requirements</td>
+                <td>Higher (full-stack: 2+ GB RAM)</td>
+                <td>Low (PHP + SQLite: 256 MB)</td>
+                <td>Minimal (Go binary: 128 MB)</td>
+                <td>Moderate (PHP + PostgreSQL: 512 MB)</td>
+            </tr>
+            <tr>
+                <td>Database</td>
+                <td>PostgreSQL + MongoDB + Redis + Elasticsearch</td>
+                <td>SQLite or MySQL/PostgreSQL</td>
+                <td>PostgreSQL</td>
+                <td>PostgreSQL</td>
+            </tr>
+            <tr>
+                <td>Third-Party App Sync</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td><span class="NB-compare-check">&#10003;</span> Google Reader API, Fever API</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fever API, Google Reader API</td>
+                <td><span class="NB-compare-check">&#10003;</span> Own API, Fever plugin</td>
+            </tr>
+            <tr>
+                <td>Active GitHub Community</td>
+                <td><span class="NB-compare-check">&#10003;</span> Active since 2009</td>
+                <td><span class="NB-compare-check">&#10003;</span> Active community</td>
+                <td><span class="NB-compare-check">&#10003;</span> Solo maintainer</td>
+                <td><span class="NB-compare-check">&#10003;</span> Solo maintainer</td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span> Database search</td>
+                <td><span class="NB-compare-check">&#10003;</span> PostgreSQL search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Database search</td>
+            </tr>
+            <tr>
+                <td>Social Features</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog, comments, sharing</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span> Shared articles</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to NewsBlur</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>License</td>
+                <td>MIT</td>
+                <td>AGPL-3.0</td>
+                <td>Apache 2.0</td>
+                <td>GPL-3.0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Docker setup: from simple to full-stack</h2>
+        <p class="NB-compare-section-text">
+            All four readers support Docker, but the complexity varies. Miniflux is the lightest: a single Go binary plus PostgreSQL, consuming minimal resources. FreshRSS runs on PHP and can use SQLite for a zero-config database, making it easy to deploy on even the smallest VPS. Tiny Tiny RSS requires PHP and PostgreSQL with some manual configuration. NewsBlur is the most full-featured self-hosted option. It uses Docker Compose to orchestrate multiple services: a Django web app, Celery task workers, Node.js services, PostgreSQL, MongoDB, Redis, Elasticsearch, HAProxy, and Nginx. You run <code>make nb</code> and the entire stack comes up, but you will need a server with at least 2 GB of RAM. The tradeoff is clear: more resources in exchange for a dramatically richer feature set.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">The best of both worlds: hosted and self-hosted</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is the only self-hosted RSS reader that also offers a fully managed hosted service at newsblur.com. This gives you a unique migration path that no other reader can match. You can start with the hosted version, read your feeds without managing any infrastructure, and export your data via OPML whenever you are ready to self-host. Or go the other direction: run your own instance first, and if you decide you would rather not maintain a server, move to the hosted service and bring all your feeds and training with you. FreshRSS, Miniflux, and Tiny Tiny RSS are self-host-only. If you want to stop running a server, you have to switch to a completely different product.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Data portability and OPML</h2>
+        <p class="NB-compare-section-text">
+            All four readers support OPML import and export, so you can move your feed list between them freely. NewsBlur goes further by giving you access to the full application source code under the MIT license. Your stories, intelligence training data, saved searches, and blurblog posts all live in databases you control when self-hosting. There is no vendor lock-in at any layer. If you use the hosted service, you can export your OPML at any time and stand up your own instance with the same open source code that powers newsblur.com.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Features that justify the footprint</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur uses more server resources than the alternatives, and that is because it does more. Intelligence training lets you highlight and hide stories by author, tag, title keyword, full text, URL, or regex pattern. Ask AI lets you query any story with Claude, GPT, Gemini, or Grok. Native iOS and Android apps connect to your self-hosted instance just as they do to the hosted service. You get email newsletter ingestion, web feeds for sites without RSS, full-text Elasticsearch, story change tracking, social sharing with blurblogs, and third-party app sync with Reeder, ReadKit, Unread, and more. If you want a minimal, lightweight reader, Miniflux or FreshRSS are great choices. If you want the most capable self-hosted RSS reader available, NewsBlur is it.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

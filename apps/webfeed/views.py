@@ -4,12 +4,11 @@ import uuid
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
+from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
-
-from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 
 from .models import MWebFeedConfig
 from .tasks import AnalyzeWebFeedPage
@@ -67,6 +66,12 @@ def analyze(request):
 @json.json_view
 def subscribe(request):
     """Create a web feed subscription from a selected variant."""
+    from apps.profile.models import Profile
+
+    profile = Profile.objects.get(user=request.user)
+    if not profile.is_archive:
+        return {"code": -1, "message": "Web Feed requires a Premium Archive subscription."}
+
     url = request.POST.get("url", "").strip()
     variant_index = int(request.POST.get("variant_index", 0))
     folder = request.POST.get("folder", "")
@@ -166,9 +171,6 @@ def subscribe(request):
     logging.user(request.user, f"~BB~FWWeb Feed: Subscribed to ~SB{url}~SN (feed {feed.pk})")
 
     # Trigger background fetch for archive subscribers
-    from apps.profile.models import Profile
-
-    profile = Profile.objects.get(user=request.user)
     if profile.is_archive:
         from apps.webfeed.tasks import FetchWebFeed
 

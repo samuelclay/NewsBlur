@@ -20,60 +20,57 @@ NEWSBLUR.WelcomeBackground = (function () {
 
         'void main() {',
         '    vec2 uv = gl_FragCoord.xy / u_resolution;',
+        '    float t = u_time;',
 
-        // Dark palette (original)
-        '    vec3 d_base     = vec3(0.106, 0.141, 0.141);',
-        '    vec3 d_mid      = vec3(0.247, 0.326, 0.329);',
-        '    vec3 d_light    = vec3(0.35, 0.54, 0.55);',
-        '    vec3 d_gold     = vec3(0.85, 0.65, 0.13);',
-        '    vec3 d_softGold = vec3(0.98, 0.86, 0.61);',
+        // Dark palette
+        '    vec3 d_darkBase  = vec3(0.106, 0.141, 0.141);',
+        '    vec3 d_teal      = vec3(0.247, 0.326, 0.329);',
+        '    vec3 d_lightTeal = vec3(0.35, 0.54, 0.55);',
+        '    vec3 d_gold      = vec3(0.85, 0.65, 0.13);',
+        '    vec3 d_softGold  = vec3(0.98, 0.86, 0.61);',
 
-        // Light palette — lighter teal/green, still recognizable
-        '    vec3 l_base     = vec3(0.20, 0.28, 0.28);',
-        '    vec3 l_mid      = vec3(0.35, 0.46, 0.47);',
-        '    vec3 l_light    = vec3(0.48, 0.66, 0.67);',
-        '    vec3 l_gold     = vec3(0.85, 0.65, 0.13);',
-        '    vec3 l_softGold = vec3(0.98, 0.86, 0.61);',
+        // Light palette
+        '    vec3 l_darkBase  = vec3(0.20, 0.28, 0.28);',
+        '    vec3 l_teal      = vec3(0.35, 0.46, 0.47);',
+        '    vec3 l_lightTeal = vec3(0.48, 0.66, 0.67);',
+        '    vec3 l_gold      = vec3(0.85, 0.65, 0.13);',
+        '    vec3 l_softGold  = vec3(0.98, 0.86, 0.61);',
 
         // Interpolate palettes based on theme
-        '    vec3 base     = mix(l_base,     d_base,     u_theme);',
-        '    vec3 mid      = mix(l_mid,      d_mid,      u_theme);',
-        '    vec3 light    = mix(l_light,    d_light,    u_theme);',
-        '    vec3 gold     = mix(l_gold,     d_gold,     u_theme);',
-        '    vec3 softGold = mix(l_softGold, d_softGold, u_theme);',
+        '    vec3 darkBase  = mix(l_darkBase,  d_darkBase,  u_theme);',
+        '    vec3 teal      = mix(l_teal,      d_teal,      u_theme);',
+        '    vec3 lightTeal = mix(l_lightTeal, d_lightTeal, u_theme);',
+        '    vec3 gold      = mix(l_gold,      d_gold,      u_theme);',
+        '    vec3 softGold  = mix(l_softGold,  d_softGold,  u_theme);',
 
-        // Base gradient: mid at top fading to base at bottom
-        '    vec3 bg = mix(mid, base, smoothstep(0.0, 1.0, uv.y));',
+        // Base gradient: teal at bottom fading to dark at top
+        '    vec3 base = mix(teal, darkBase, smoothstep(0.0, 1.0, uv.y));',
 
-        // Diagonal coordinate for wave ridges
-        '    float diag = uv.x * 0.6 + uv.y * 0.4;',
+        // Three diagonal coordinates for independent wave directions
+        '    float d1 = uv.x * 0.6 + uv.y * 0.4;',
+        '    float d2 = uv.x * 0.4 - uv.y * 0.6;',
+        '    float d3 = uv.x * 0.8 + uv.y * 0.2;',
 
-        // Wave ridge 1 - slow, broad
-        '    float wave1 = sin(diag * 8.0 + u_time * 0.7) * 0.5 + 0.5;',
-        '    wave1 = pow(wave1, 3.0);',
+        // Gaussian wave ridges with cross-modulation
+        '    float w1 = sin(d1 * 8.0 + t * 0.5 + sin(uv.y * 4.0 + t * 0.3) * 0.8);',
+        '    float ridge1 = exp(-w1 * w1 * 2.5) * 0.35;',
 
-        // Wave ridge 2 - medium frequency
-        '    float wave2 = sin(diag * 14.0 - u_time * 0.5 + 1.5) * 0.5 + 0.5;',
-        '    wave2 = pow(wave2, 4.0);',
+        '    float w2 = sin(d2 * 6.0 + t * 0.7 + cos(uv.x * 3.0 - t * 0.5) * 0.6);',
+        '    float ridge2 = exp(-w2 * w2 * 3.0) * 0.2;',
 
-        // Wave ridge 3 - higher frequency, subtle
-        '    float wave3 = sin(diag * 22.0 + u_time * 0.3 + 3.0) * 0.5 + 0.5;',
-        '    wave3 = pow(wave3, 5.0);',
+        '    float w3 = sin(d3 * 14.0 - t * 0.9 + sin(d1 * 5.0 + t * 0.4) * 0.4);',
+        '    float ridge3 = exp(-w3 * w3 * 4.0) * 0.12;',
 
-        // Combine ridges with light tinting
-        '    vec3 ridge1 = mix(bg, light, wave1 * 0.4);',
-        '    vec3 ridge2 = mix(ridge1, light, wave2 * 0.25);',
-        '    vec3 color  = mix(ridge2, light, wave3 * 0.15);',
+        // Subtle teal glow
+        '    float w4 = sin(d1 * 3.0 + t * 0.25);',
+        '    float glow = w4 * w4 * 0.15;',
 
-        // Slow gold glow that drifts across
-        '    float glow = sin(uv.x * 3.0 + u_time * 0.2) * sin(uv.y * 2.0 - u_time * 0.15);',
-        '    glow = max(glow, 0.0);',
-        '    glow = pow(glow, 2.0) * 0.3;',
-        '    color = mix(color, softGold, glow * 0.25);',
-
-        // Subtle gold highlight on wave peaks
-        '    float goldHighlight = wave1 * wave2;',
-        '    color = mix(color, gold, goldHighlight * 0.08);',
+        // Additive color blending
+        '    vec3 color = base;',
+        '    color += lightTeal * ridge1;',
+        '    color += gold * 0.7 * ridge2;',
+        '    color += softGold * 0.4 * ridge3;',
+        '    color += teal * glow;',
 
         '    gl_FragColor = vec4(color, 1.0);',
         '}'

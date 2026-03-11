@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}NewsBlur vs Feedly - RSS Reader Comparison{% endblock %}
+{% block nav_title %}NewsBlur vs Feedly{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare NewsBlur and Feedly. See how they differ on intelligence training, AI features, pricing, open source, privacy, and more. Find the right RSS reader for you.">
+    <meta property="og:title" content="NewsBlur vs Feedly - Which RSS Reader Is Right for You?">
+    <meta property="og:description" content="A detailed comparison of NewsBlur and Feedly. Intelligence training, AI features, pricing, privacy, and open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur vs Feedly - Which RSS Reader Is Right for You?">
+    <meta name="twitter:description" content="Compare NewsBlur and Feedly. Intelligence training, AI features, pricing, privacy, and open source.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">NewsBlur vs Feedly</h1>
+        <p class="NB-static-compare-subtitle">Two of the most popular RSS readers, compared feature by feature. Here's how they differ.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>Feedly</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-check">&#10003;</span> AI-based topic prioritization</td>
+            </tr>
+            <tr>
+                <td>User-Controlled Filtering</td>
+                <td><span class="NB-compare-check">&#10003;</span> You decide what to focus and hide</td>
+                <td><span class="NB-compare-x">&#10007;</span> Algorithm decides for you</td>
+            </tr>
+            <tr>
+                <td>Regex Classifiers</td>
+                <td><span class="NB-compare-check">&#10003;</span> Title, text, and URL patterns (Pro)</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Ask AI (Query Stories)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-check">&#10003;</span> AI Assistant (Feedly AI)</td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span> Pro+ plans</td>
+            </tr>
+            <tr>
+                <td>Story Archive (Forever)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Archive plan ($99/yr)</td>
+                <td><span class="NB-compare-x">&#10007;</span> Stories expire</td>
+            </tr>
+            <tr>
+                <td>Track Changes / Diffs</td>
+                <td><span class="NB-compare-check">&#10003;</span> See how stories evolve</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS only</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to NewsBlur</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to Feedly</td>
+            </tr>
+            <tr>
+                <td>Social / Blurblog</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog with comments</td>
+                <td><span class="NB-compare-check">&#10003;</span> Team boards (paid)</td>
+            </tr>
+            <tr>
+                <td>Open Source</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fully open source on GitHub</td>
+                <td><span class="NB-compare-x">&#10007;</span> Proprietary</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker one-command install</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, etc.</td>
+            </tr>
+            <tr>
+                <td>Free Plan</td>
+                <td>64 sites</td>
+                <td>100 sources, 3 feeds</td>
+            </tr>
+            <tr>
+                <td>Cheapest Paid Plan</td>
+                <td>$36/year (1,024 sites)</td>
+                <td>$72/year (Pro)</td>
+            </tr>
+            <tr>
+                <td>Power User Plan</td>
+                <td>$29/month (Pro: 10K sites, 5-min fetching)</td>
+                <td>$144/year (Pro+) / $18/month (Enterprise)</td>
+            </tr>
+            <tr>
+                <td>OPML Import/Export</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Keyboard Shortcuts</td>
+                <td><span class="NB-compare-check">&#10003;</span> Comprehensive</td>
+                <td><span class="NB-compare-check">&#10003;</span> Basic</td>
+            </tr>
+            <tr>
+                <td>Dark Mode</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>iOS &amp; Android Apps</td>
+                <td><span class="NB-compare-check">&#10003;</span> Native</td>
+                <td><span class="NB-compare-check">&#10003;</span> Native</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">You're in control, not an algorithm</h2>
+        <p class="NB-compare-section-text">
+            The biggest difference between NewsBlur and Feedly is philosophy. Feedly uses AI to decide what's important for you. NewsBlur puts you in control with its intelligence training system. You explicitly tell NewsBlur what to highlight and what to hide, by author, tag, title keyword, full text, URL, or regex pattern. There's no black box &mdash; you always know why a story is highlighted or hidden.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Open source and self-hostable</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is fully open source under the MIT license. You can inspect the code, contribute features, or run your own instance with Docker. Your data is truly yours. Feedly is a proprietary, closed-source service with no self-hosted option. If Feedly shuts down or changes pricing, you have no alternative but to export and leave.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">More affordable for serious readers</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and doesn't offer regex filtering or self-hosting.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

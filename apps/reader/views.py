@@ -2055,7 +2055,7 @@ def load_read_stories(request):
             date_filter_start=date_filter_start_utc,
             date_filter_end=date_filter_end_utc,
         )
-        mstories = MStory.objects(story_hash__in=story_hashes)
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by()
         stories = Feed.format_stories(mstories)
         stories = sorted(
             stories,
@@ -4298,16 +4298,12 @@ def set_feed_mute(request):
     if mute:
         sub.active = False
         if mute_duration_days and mute_duration_days > 0:
-            sub.mute_expires_at = datetime.datetime.now() + datetime.timedelta(
-                days=mute_duration_days
-            )
+            sub.mute_expires_at = datetime.datetime.now() + datetime.timedelta(days=mute_duration_days)
         else:
             sub.mute_expires_at = None
         sub.save()
         duration_text = (
-            "%s days" % mute_duration_days
-            if mute_duration_days and mute_duration_days > 0
-            else "forever"
+            "%s days" % mute_duration_days if mute_duration_days and mute_duration_days > 0 else "forever"
         )
         logging.user(request, "~BB~FW~SBMuted feed ~FC%s~FB for %s" % (feed_id, duration_text))
     else:
@@ -4919,11 +4915,12 @@ def trending_feeds(request):
 
     trending = RTrendingStory.get_trending_feeds(days=days, limit=limit)
 
-    # Enrich with feed details
+    # Enrich with feed details, excluding stale feeds
+    one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
     feed_ids = [feed_id for feed_id, _ in trending]
-    feeds = Feed.objects.filter(pk__in=feed_ids).values(
-        "pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers"
-    )
+    feeds = Feed.objects.filter(
+        pk__in=feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
+    ).values("pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers")
     feeds_dict = {f["pk"]: f for f in feeds}
 
     result = []
@@ -5132,7 +5129,7 @@ def load_cluster_stories(request):
         return {"code": 1, "stories": []}
 
     stories = []
-    mstories = MStory.objects(story_hash__in=member_hashes)
+    mstories = MStory.objects(story_hash__in=member_hashes).order_by()
     for story in mstories:
         feed = Feed.get_by_id(story.story_feed_id)
         if not feed:

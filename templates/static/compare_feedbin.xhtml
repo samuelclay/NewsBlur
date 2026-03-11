@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}NewsBlur vs Feedbin - RSS Reader Comparison{% endblock %}
+{% block nav_title %}NewsBlur vs Feedbin{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare NewsBlur and Feedbin. Two independent RSS readers with different approaches to reading. Intelligence training, AI features, pricing, open source, and more.">
+    <meta property="og:title" content="NewsBlur vs Feedbin - Which RSS Reader Is Right for You?">
+    <meta property="og:description" content="Compare NewsBlur and Feedbin. Intelligence training, AI features, pricing, open source, and self-hosting compared.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur vs Feedbin - Which RSS Reader Is Right for You?">
+    <meta name="twitter:description" content="Compare NewsBlur and Feedbin. Intelligence training, AI features, pricing, open source, and self-hosting.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">NewsBlur vs Feedbin</h1>
+        <p class="NB-static-compare-subtitle">Two independent, privacy-focused RSS readers. Both are built by small teams, but they take different approaches to features, filtering, and pricing.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>Feedbin</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-x">&#10007;</span> No training system</td>
+            </tr>
+            <tr>
+                <td>Ask AI</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Track Changes / Diffs</td>
+                <td><span class="NB-compare-check">&#10003;</span> See how stories evolve</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS/Atom only</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to NewsBlur</td>
+                <td><span class="NB-compare-check">&#10003;</span> Unique email address</td>
+            </tr>
+            <tr>
+                <td>Podcast Playback</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span> Built-in player</td>
+            </tr>
+            <tr>
+                <td>Social / Sharing</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog with comments</td>
+                <td><span class="NB-compare-x">&#10007;</span> No social features</td>
+            </tr>
+            <tr>
+                <td>Open Source</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fully open source (MIT)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Open source (MIT)</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker one-command install</td>
+                <td>Possible but unsupported</td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, NetNewsWire, etc.</td>
+            </tr>
+            <tr>
+                <td>Native Mobile Apps</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS and Android</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party apps only</td>
+            </tr>
+            <tr>
+                <td>Free Plan</td>
+                <td><span class="NB-compare-check">&#10003;</span> 64 sites</td>
+                <td><span class="NB-compare-x">&#10007;</span> No free plan</td>
+            </tr>
+            <tr>
+                <td>Pricing</td>
+                <td>$36/year (Premium), $99/year (Archive)</td>
+                <td>$50/year (single plan)</td>
+            </tr>
+            <tr>
+                <td>Story Archive</td>
+                <td><span class="NB-compare-check">&#10003;</span> Permanent with Archive plan</td>
+                <td>Retained while subscribed</td>
+            </tr>
+            <tr>
+                <td>Dark Mode</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>OPML Import/Export</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Two indie readers, different philosophies</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur and Feedbin are both independent, privacy-respecting RSS readers built by small teams. They share a commitment to open source and a belief that RSS should be simple and user-controlled. The key difference is depth: Feedbin focuses on a clean, minimal reading experience. NewsBlur adds intelligence training, AI features, social sharing, and native mobile apps on top of a similarly clean interface. If you want the simplest possible reader, Feedbin is excellent. If you want more power without sacrificing usability, NewsBlur delivers.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Intelligence training: the biggest differentiator</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur's intelligence training lets you highlight or hide stories based on author, tag, title keywords, full text content, URLs, and regex patterns. Over time, your feeds become personalized. Stories are color-coded green (focus), yellow (neutral), and red (hidden). Feedbin has no equivalent filtering system. You manage reading through folders, tags, and manual triage. For high-volume reading across hundreds of feeds, NewsBlur's training is a major advantage.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Native apps vs. third-party ecosystem</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including intelligence training, blurblog sharing, and text view. Feedbin relies entirely on third-party apps like Reeder and NetNewsWire. Both approaches work, but NewsBlur's native apps mean every feature is available on mobile from day one, without waiting for a third-party developer to add support.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Free tier and pricing</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur offers a free plan with up to 64 sites and a 30-day premium trial for every new account. Feedbin has no free tier and charges $50/year for a single plan. NewsBlur Premium at $36/year is more affordable and includes up to 1,024 sites. The Archive plan at $99/year adds permanent story storage, Ask AI, daily briefings, web feeds, and regex classifiers. Both readers let you export via OPML at any time.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

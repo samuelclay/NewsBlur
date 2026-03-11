@@ -253,6 +253,10 @@
   padding: 12px 0 6px 0;
   margin: 0 0 20px 0;
   border-bottom: 1px solid $grey-color-light;
+
+  @include media-query($on-palm) {
+    position: static;
+  }
 }
 
 .post-meta {

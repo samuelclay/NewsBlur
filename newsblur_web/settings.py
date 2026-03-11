@@ -344,6 +344,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
     "django_extensions",
     "django_prometheus",
     "paypal.standard.ipn",
@@ -723,6 +724,7 @@ if not DEBUG:
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
+        ignore_errors=[SystemExit],
     )
     sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 

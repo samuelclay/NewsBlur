@@ -85,6 +85,14 @@ Visit `https://localhost` (type `thisisunsafe` to bypass the self-signed certifi
 - `make lint` - Format code (isort, black, flake8)
 - `make down` - Stop containers
 
+**Bootstrap discover feeds (without fetching):**
+
+```bash
+docker exec -t newsblur_web python manage.py bootstrap_popular_feeds --skip-fetch
+```
+
+This creates `PopularFeed` records from the curated fixtures file without fetching any feed content. You can filter by type with `--type youtube`, `--type reddit`, `--type podcast`, `--type newsletter`, or `--type rss`.
+
 **Database access:**
 - `make mongo` - MongoDB shell
 - `make redis` - Redis CLI

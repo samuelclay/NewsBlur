@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}Feedly Alternative — Switch to NewsBlur for Less{% endblock %}
+{% block nav_title %}Feedly Alternative{% endblock %}
+{% block head %}
+    <meta name="description" content="Looking for a Feedly alternative? NewsBlur offers intelligence training, AI features, and open source transparency at half the price. Import your feeds in seconds.">
+    <meta property="og:title" content="Feedly Alternative — Switch to NewsBlur">
+    <meta property="og:description" content="NewsBlur: intelligence training, AI features, open source, and half the price of Feedly. Import your OPML and switch in seconds.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Feedly Alternative — Switch to NewsBlur">
+    <meta name="twitter:description" content="Intelligence training, AI features, open source, and half the price of Feedly. Import your feeds in seconds.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">Looking for a Feedly alternative?</h1>
+        <p class="NB-static-compare-subtitle">NewsBlur gives you more control over your reading, costs less, and is fully open source. Switching takes less than a minute.</p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Switch in under a minute</h2>
+        <p class="NB-compare-section-text">
+            Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it into NewsBlur. All your feeds, folders, and organization come over instantly. Every new account starts with a free 30-day premium trial, so you can evaluate the full experience before committing.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">You train the reader, not the other way around</h2>
+        <p class="NB-compare-section-text">
+            Feedly uses AI to decide what's important for you. NewsBlur's intelligence training puts you in control. Thumbs up on an author, tag, or keyword to highlight stories you care about. Thumbs down to hide what you don't. Stories are color-coded green (focus), yellow (neutral), and red (hidden) so you always know why you're seeing something. No black box, no algorithmic surprises.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Half the price, more features</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur Premium costs $36/year for up to 1,024 sites. Feedly Pro starts at $72/year. For that lower price, NewsBlur includes full-text search, river of news, saved story tags, privacy options, text view, and all the intelligence training features. The Archive plan at $99/year adds permanent story archiving, Ask AI with Claude/GPT/Gemini/Grok, daily AI briefings, web feeds, and date-range filtering.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Open source means no lock-in</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is fully open source under the MIT license. The entire codebase, including web, iOS, Android, and all backend services, is on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>. You can self-host your own instance with Docker, contribute features, or simply audit the code. If you ever want to leave, OPML export takes your feeds anywhere. Your reading data is never held hostage.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Features Feedly doesn't have</h2>
+        <p class="NB-compare-section-text">
+            Beyond intelligence training, NewsBlur offers several features you won't find in Feedly: Track Changes shows how stories evolve after publication. Web Feeds let you follow any website, even without RSS. Story clustering groups related stories across your feeds. The original site view renders stories exactly as they appear on the publisher's website. And the entire platform works with third-party apps like Reeder, ReadKit, Unread, and NetNewsWire.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "compare-feedly" %}" class="NB-pricing-cta NB-pricing-cta-pro">See the full comparison</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

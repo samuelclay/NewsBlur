@@ -35,6 +35,9 @@ Don't assume - ask. Multiple rounds of questions are better than one large batch
 
 For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
 
+## Bug Fixing Workflow
+When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
   - **All new iOS files must be written in Swift** (not Objective-C)

@@ -185,6 +185,18 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL,
                 show_settings: show_settings
             }));
+        } else if (NEWSBLUR.reader.flags['briefing_admin_view']) {
+            $view = $(_.template('\
+                <div class="NB-folder NB-no-hover NB-briefing-folder">\
+                    <div class="NB-folder-icon">\
+                        <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
+                    </div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                </div>\
+            ', {
+                folder_title: 'Briefing Admin',
+                MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL
+            }));
         } else {
             this.view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id),

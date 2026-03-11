@@ -1,5 +1,7 @@
 <div class="NB-splash-info NB-splash-bottom">
     <ul class="NB-splash-links NB-inner">
+        <li class="NB-splash-link NB-splash-link-features {% if page == "features" %}NB-active{% endif %}"><a href="{% url "features" %}">Features</a></li>
+        <li class="NB-splash-link NB-splash-link-pricing {% if page == "pricing" %}NB-active{% endif %}"><a href="{% url "pricing" %}">Pricing</a></li>
         <li class="NB-splash-link NB-splash-link-about {% if page == "about" %}NB-active{% endif %}"><a href="{% url "about" %}">About</a></li>
         <li class="NB-splash-link NB-splash-link-faq {% if page == "faq" %}NB-active{% endif %}"><a href="{% url "faq" %}">FAQ</a></li>
         <li class="NB-splash-link NB-splash-link-api {% if page == "api" %}NB-active{% endif %}"><a href="{% url "api" %}">API</a></li>
@@ -8,8 +10,6 @@
         <li class="NB-splash-link NB-splash-link-github"><a href="https://github.com/samuelclay">GitHub</a></li>
         <li class="NB-splash-link NB-splash-link-discourse"><a href="https://forum.newsblur.com">Support</a></li>
         <li class="NB-splash-link NB-splash-link-blog"><a href="https://blog.newsblur.com">The Blog</a></li>
-        <li class="NB-splash-link NB-first NB-splash-link-facebook"><a href="https://facebook.com/newsblur">Facebook</a></li>
-        <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="https://x.com/newsblur">@newsblur</a></li>
     </ul>
 
     <div class="NB-splash-link NB-splash-link-logo">

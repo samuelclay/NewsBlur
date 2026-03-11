@@ -6,6 +6,8 @@ import zlib
 
 import redis
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 
 from apps.briefing.models import (
@@ -120,7 +122,7 @@ def load_briefing_stories(request):
 
         curated_stories = []
         if curated_hashes:
-            stories_db = MStory.objects(story_hash__in=curated_hashes)
+            stories_db = MStory.objects(story_hash__in=curated_hashes).order_by()
             stories_by_hash = {s.story_hash: s for s in stories_db}
 
             feed_ids = set(s.story_feed_id for s in stories_db)
@@ -414,6 +416,93 @@ def generate_briefing(request):
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 
     return {"status": "generating", "briefing_feed_id": feed.pk}
+
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def load_all_briefings_admin(request):
+    """
+    GET /briefing/admin/all
+
+    Staff-only endpoint that returns all users' completed briefings for quality auditing.
+    Includes user profile data for each briefing so staff can review and manage accounts.
+    """
+    page = max(1, int(request.GET.get("page", 1)))
+    per_page = min(50, max(1, int(request.GET.get("per_page", 20))))
+    offset = (page - 1) * per_page
+
+    total_count = MBriefing.objects.filter(status="complete").count()
+    briefings = list(
+        MBriefing.objects.filter(status="complete").order_by("-briefing_date")[offset : offset + per_page]
+    )
+
+    user_ids = list(set(b.user_id for b in briefings))
+    story_hashes = [b.summary_story_hash for b in briefings if b.summary_story_hash]
+
+    # views.py: Batch-fetch user profiles from MSocialProfile for the profile badge
+    from apps.social.models import MSocialProfile
+
+    profiles_by_id = {}
+    for p in MSocialProfile.objects.filter(user_id__in=user_ids):
+        profiles_by_id[p.user_id] = {
+            "user_id": p.user_id,
+            "username": p.user.username if p.user else "[deleted]",
+            "photo_url": p.email_photo_url,
+            "location": p.location or "",
+            "website": p.website or "",
+            "bio": p.bio or "",
+            "shared_stories_count": p.shared_stories_count or 0,
+        }
+
+    # views.py: Fallback to Django User for users without social profiles
+    missing_ids = [uid for uid in user_ids if uid not in profiles_by_id]
+    if missing_ids:
+        for u in User.objects.filter(pk__in=missing_ids):
+            profiles_by_id[u.pk] = {
+                "user_id": u.pk,
+                "username": u.username,
+                "photo_url": "",
+                "location": "",
+                "website": "",
+                "bio": "",
+                "shared_stories_count": 0,
+            }
+
+    # views.py: Batch-fetch summary stories to extract the briefing HTML content
+    stories_by_hash = {}
+    if story_hashes:
+        for s in MStory.objects(story_hash__in=story_hashes):
+            stories_by_hash[s.story_hash] = s
+
+    entries = []
+    for b in briefings:
+        story = stories_by_hash.get(b.summary_story_hash)
+        summary_html = ""
+        summary_title = ""
+        if story:
+            d = _story_to_dict(story)
+            summary_html = d["story_content"]
+            summary_title = d["story_title"]
+
+        entries.append(
+            {
+                "briefing_id": str(b.id),
+                "briefing_date": (b.briefing_date.isoformat() + "Z") if b.briefing_date else None,
+                "frequency": b.frequency,
+                "user_profile": profiles_by_id.get(b.user_id, {"user_id": b.user_id, "username": "Unknown"}),
+                "summary_html": summary_html,
+                "summary_story_title": summary_title,
+                "curated_story_count": len(b.curated_story_hashes or []),
+            }
+        )
+
+    return {
+        "briefing_admin_entries": entries,
+        "has_next_page": (offset + per_page) < total_count,
+        "page": page,
+        "total_count": total_count,
+    }
 
 
 def _story_to_dict(story):

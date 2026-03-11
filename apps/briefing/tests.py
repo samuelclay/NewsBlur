@@ -27,7 +27,6 @@ from apps.briefing.scoring import (
     _estimate_word_count,
     _find_clustered_stories,
     _get_classifier_matches,
-    _normalize_title,
 )
 from apps.briefing.summary import (
     _build_system_prompt,
@@ -39,6 +38,7 @@ from apps.briefing.summary import (
     normalize_section_key,
     rebuild_summary_from_sections,
 )
+from apps.clustering.models import normalize_title as _normalize_title
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
@@ -87,6 +87,7 @@ class BriefingTestCase(TestCase):
             feed_title="Test Feed 1",
             fetched_once=True,
             known_good=True,
+            average_stories_per_month=100,
         )
         self.feed2 = Feed.objects.create(
             feed_address="http://test-feed-2.com/rss",
@@ -94,6 +95,7 @@ class BriefingTestCase(TestCase):
             feed_title="Test Feed 2",
             fetched_once=True,
             known_good=True,
+            average_stories_per_month=100,
         )
         self.sub = UserSubscription.objects.create(user=self.user, feed=self.feed, active=True)
         self.sub2 = UserSubscription.objects.create(user=self.user, feed=self.feed2, active=True)
@@ -764,43 +766,54 @@ class Test_Scoring(BriefingTestCase):
         self.assertEqual(_normalize_title(None), "")
 
     def test_find_clustered_basic(self):
-        """Same title across 2 feeds should mark both as widely_covered."""
+        """Pre-computed Redis cluster with 2+ feeds should mark candidates as widely_covered."""
+        from apps.clustering.models import store_clusters_to_redis
+
+        h0 = self.stories[0].story_hash
+        h3 = self.stories[3].story_hash
+        # Store a pre-computed cluster in Redis
+        store_clusters_to_redis({h0: [h0, h3]})
+        candidates = [
+            {"story_hash": h0, "feed_id": self.feed.pk},
+            {"story_hash": h3, "feed_id": self.feed2.pk},
+        ]
+        stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3]]}
+        clustered = _find_clustered_stories(candidates, stories_by_hash)
+        self.assertIn(h0, clustered)
+        self.assertIn(h3, clustered)
+        self.assertEqual(clustered[h0], "widely_covered")
+        self.assertEqual(clustered[h3], "widely_covered")
+
+    def test_find_clustered_no_redis_cluster(self):
+        """Stories with same title but no pre-computed cluster should NOT be widely_covered."""
         candidates = [
             {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
             {"story_hash": self.stories[3].story_hash, "feed_id": self.feed2.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3]]}
         clustered = _find_clustered_stories(candidates, stories_by_hash)
-        self.assertIn(self.stories[0].story_hash, clustered)
-        self.assertIn(self.stories[3].story_hash, clustered)
-        self.assertEqual(clustered[self.stories[0].story_hash], "widely_covered")
-        self.assertEqual(clustered[self.stories[3].story_hash], "widely_covered")
+        self.assertEqual(len(clustered), 0)
 
     def test_find_clustered_same_feed(self):
-        """Same title in same feed should NOT be clustered."""
+        """Cluster with only 1 unique feed should NOT be widely_covered."""
+        from apps.clustering.models import store_clusters_to_redis
+
         dup_story = self.make_story(self.feed, "Breaking News About Tech", content="Other content")
+        h0 = self.stories[0].story_hash
+        hd = dup_story.story_hash
+        store_clusters_to_redis({h0: [h0, hd]})
         candidates = [
-            {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
-            {"story_hash": dup_story.story_hash, "feed_id": self.feed.pk},
+            {"story_hash": h0, "feed_id": self.feed.pk},
+            {"story_hash": hd, "feed_id": self.feed.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], dup_story]}
         clustered = _find_clustered_stories(candidates, stories_by_hash)
         self.assertEqual(len(clustered), 0)
 
-    def test_find_clustered_short_title(self):
-        """Titles shorter than 10 chars after normalization should be ignored."""
-        short1 = self.make_story(self.feed, "Hi")
-        short2 = self.make_story(self.feed2, "Hi")
-        candidates = [
-            {"story_hash": short1.story_hash, "feed_id": self.feed.pk},
-            {"story_hash": short2.story_hash, "feed_id": self.feed2.pk},
-        ]
-        stories_by_hash = {s.story_hash: s for s in [short1, short2]}
-        clustered = _find_clustered_stories(candidates, stories_by_hash)
-        self.assertEqual(len(clustered), 0)
-
     def test_find_clustered_widely_covered(self):
-        """4+ unique feeds covering same title should be widely_covered."""
+        """Pre-computed cluster with 4 feeds should mark all as widely_covered."""
+        from apps.clustering.models import store_clusters_to_redis
+
         feed3 = Feed.objects.create(
             feed_address="http://test-feed-3.com/rss",
             feed_link="http://test-feed-3.com",
@@ -817,11 +830,16 @@ class Test_Scoring(BriefingTestCase):
         )
         story3 = self.make_story(feed3, "Breaking News About Tech", content="Feed 3 content")
         story4 = self.make_story(feed4, "Breaking News About Tech", content="Feed 4 content")
+        h0 = self.stories[0].story_hash
+        h3 = self.stories[3].story_hash
+        h_3 = story3.story_hash
+        h_4 = story4.story_hash
+        store_clusters_to_redis({h0: [h0, h3, h_3, h_4]})
         candidates = [
-            {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
-            {"story_hash": self.stories[3].story_hash, "feed_id": self.feed2.pk},
-            {"story_hash": story3.story_hash, "feed_id": feed3.pk},
-            {"story_hash": story4.story_hash, "feed_id": feed4.pk},
+            {"story_hash": h0, "feed_id": self.feed.pk},
+            {"story_hash": h3, "feed_id": self.feed2.pk},
+            {"story_hash": h_3, "feed_id": feed3.pk},
+            {"story_hash": h_4, "feed_id": feed4.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3], story3, story4]}
         clustered = _find_clustered_stories(candidates, stories_by_hash)
@@ -1243,8 +1261,8 @@ class Test_Models(BriefingTestCase):
     # --- Constants ---
 
     def test_valid_section_keys_count(self):
-        # 5 built-in sections + 5 custom sections = 10
-        self.assertEqual(len(VALID_SECTION_KEYS), 10)
+        # 6 built-in sections + 5 custom sections = 11
+        self.assertEqual(len(VALID_SECTION_KEYS), 11)
 
     def test_default_sections_values(self):
         self.assertTrue(DEFAULT_SECTIONS["top_stories"])
@@ -1783,7 +1801,9 @@ class Test_Tasks(BriefingTestCase):
     @patch("apps.briefing.models.MBriefing")
     @patch("apps.briefing.tasks.GenerateUserBriefing")
     @patch("redis.Redis")
-    def test_generate_all_dispatches_for_eligible(self, mock_redis_cls, mock_user_task, mock_mbriefing, mock_dt):
+    def test_generate_all_dispatches_for_eligible(
+        self, mock_redis_cls, mock_user_task, mock_mbriefing, mock_dt
+    ):
         import datetime as real_dt
 
         import pytz

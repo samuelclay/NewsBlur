@@ -190,6 +190,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         extract_section_summaries,
         filter_disabled_sections,
         generate_briefing_summary,
+        inject_widely_covered_clusters,
         rebuild_summary_from_sections,
     )
 
@@ -332,9 +333,13 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     if active_sections:
         summary_html = filter_disabled_sections(summary_html, active_sections)
 
+    # tasks.py: Inject cluster member story lists into the widely_covered section
+    # before embedding icons, so cluster member stories get favicons too.
+    summary_html, cluster_extras = inject_widely_covered_clusters(summary_html, scored_stories, user.pk)
+
     # tasks.py: Embed feed favicons and section icons directly in the HTML so they
     # appear in email notifications and don't pop in on the web.
-    summary_html = embed_briefing_icons(summary_html, scored_stories)
+    summary_html = embed_briefing_icons(summary_html, scored_stories + cluster_extras)
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
     curated_sections = {}

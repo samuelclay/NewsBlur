@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}NewsBlur vs Inoreader - RSS Reader Comparison{% endblock %}
+{% block nav_title %}NewsBlur vs Inoreader{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare NewsBlur and Inoreader. See how they differ on intelligence training, AI features, pricing, open source, and more. Find the right RSS reader for you.">
+    <meta property="og:title" content="NewsBlur vs Inoreader - Which RSS Reader Is Right for You?">
+    <meta property="og:description" content="A detailed comparison of NewsBlur and Inoreader. Intelligence training, AI features, web feeds, pricing, and open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur vs Inoreader - Which RSS Reader Is Right for You?">
+    <meta name="twitter:description" content="Compare NewsBlur and Inoreader. Intelligence training, AI features, web feeds, pricing, and open source.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">NewsBlur vs Inoreader</h1>
+        <p class="NB-static-compare-subtitle">Both are feature-rich RSS readers for power users. Here's how they compare.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>Inoreader</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-check">&#10003;</span> Rules &amp; filters</td>
+            </tr>
+            <tr>
+                <td>Regex Classifiers</td>
+                <td><span class="NB-compare-check">&#10003;</span> Title, text, and URL patterns (Pro)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Rules with regex (Pro)</td>
+            </tr>
+            <tr>
+                <td>Visual Training (Thumbs Up/Down)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Focus/hide with color indicators</td>
+                <td><span class="NB-compare-x">&#10007;</span> Rules only, no visual training</td>
+            </tr>
+            <tr>
+                <td>Ask AI (Query Stories)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Daily AI Briefing</td>
+                <td><span class="NB-compare-check">&#10003;</span> Customizable AI summaries</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span> Available on paid plans</td>
+            </tr>
+            <tr>
+                <td>Story Archive (Forever)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Archive plan ($99/yr)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Available on paid plans</td>
+            </tr>
+            <tr>
+                <td>Track Changes / Diffs</td>
+                <td><span class="NB-compare-check">&#10003;</span> See how stories evolve</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-check">&#10003;</span> Web page monitoring (Pro)</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to NewsBlur</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to Inoreader</td>
+            </tr>
+            <tr>
+                <td>Social / Sharing</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog with comments</td>
+                <td><span class="NB-compare-check">&#10003;</span> Bundles &amp; broadcasting</td>
+            </tr>
+            <tr>
+                <td>Open Source</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fully open source on GitHub</td>
+                <td><span class="NB-compare-x">&#10007;</span> Proprietary</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker one-command install</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>All Feeds Fetched Every 5 Min</td>
+                <td><span class="NB-compare-check">&#10003;</span> Pro plan</td>
+                <td><span class="NB-compare-x">&#10007;</span> Priority only on select feeds</td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, etc.</td>
+            </tr>
+            <tr>
+                <td>Free Plan</td>
+                <td>64 sites</td>
+                <td>150 sources</td>
+            </tr>
+            <tr>
+                <td>Cheapest Paid Plan</td>
+                <td>$36/year (1,024 sites)</td>
+                <td>$30/year (Supporter: 500 sources)</td>
+            </tr>
+            <tr>
+                <td>Power User Plan</td>
+                <td>$29/month (Pro: 10K sites, 5-min fetching)</td>
+                <td>$100/year (Pro: unlimited sources)</td>
+            </tr>
+            <tr>
+                <td>OPML Import/Export</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Keyboard Shortcuts</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Dark Mode</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">AI-powered reading</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using Claude, GPT, Gemini, or Grok &mdash; get summaries, extract key points, or ask follow-up questions. The Daily Briefing generates a personalized AI summary of your top stories with customizable sections. These features turn passive reading into active intelligence gathering.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Visual training vs. rule-based filtering</h2>
+        <p class="NB-compare-section-text">
+            Both readers offer powerful filtering, but the approach differs. Inoreader uses rule-based filtering that requires you to set up conditions manually. NewsBlur's intelligence training is visual and intuitive: see an author you like? Thumbs up. A tag you don't care about? Thumbs down. Stories are color-coded green (focus), red (hidden), or neutral, so you can see at a glance how your training is working. Both support regex for power users.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Open source and community-driven</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is fully open source under the MIT license. You can run your own instance, contribute features, or audit the code. The entire application &mdash; web, iOS, Android, and all backend services &mdash; is on GitHub. Inoreader is a closed-source proprietary service with no self-hosted option.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Professional-grade feed monitoring</h2>
+        <p class="NB-compare-section-text">
+            For professionals who need real-time awareness, NewsBlur Pro fetches every feed in your account every 5-15 minutes. Not just priority feeds &mdash; every single one of your 10,000 sites. This makes NewsBlur a monitoring-grade tool for journalists, analysts, security researchers, and anyone whose work depends on being the first to know.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

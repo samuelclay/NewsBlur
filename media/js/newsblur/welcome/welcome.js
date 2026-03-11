@@ -6,13 +6,143 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     events: {
         "click .NB-button-tryout": "show_tryout",
         "click .NB-button-login": "scroll_to_login",
-        "click .NB-segment-option": "toggle_form_mode"
+        "click .NB-segment-option": "toggle_form_mode",
+        "click .NB-testimonials-nav-prev": "testimonials_prev",
+        "click .NB-testimonials-nav-next": "testimonials_next"
     },
 
     initialize: function () {
         this.init_webgl_background();
+        this.init_testimonials();
         this.watch_theme_changes();
         NEWSBLUR.reader.$s.$layout.hide();
+    },
+
+    // ================
+    // = Testimonials =
+    // ================
+
+    init_testimonials: function () {
+        var self = this;
+        this._track_data = [];
+
+        $('.NB-testimonials-track').each(function (i) {
+            var $track = $(this);
+            var isRightScroll = $track.hasClass('NB-testimonials-row-2') || $track.hasClass('NB-testimonials-row-4');
+
+            // Clone all cards and append them for seamless infinite loop.
+            // CSS animation uses translateX(-50%) which requires exactly 2 copies.
+            var $cards = $track.children('.NB-testimonial-card');
+            $cards.each(function () {
+                var $clone = $(this).clone();
+                $clone.attr('aria-hidden', 'true');
+                $track.append($clone);
+            });
+
+            var duration = parseFloat($track.css('animation-duration')) || 180;
+            var name = $track.css('animation-name') || 'nb-scroll-left';
+
+            self._track_data.push({
+                el: this,
+                $track: $track,
+                duration: duration,
+                animationName: name,
+                isRow2: isRightScroll
+            });
+
+            // Randomize start position so different cards show on each visit
+            var offset = -(Math.random() * duration);
+            $track.css('animation-delay', offset + 's');
+        });
+    },
+
+    testimonials_prev: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        this.advance_testimonials(-1);
+    },
+
+    testimonials_next: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        this.advance_testimonials(1);
+    },
+
+    advance_testimonials: function (direction) {
+        if (this.flags.testimonials_animating) return;
+        this.flags.testimonials_animating = true;
+
+        var self = this;
+        var pageWidth = window.innerWidth * 0.75;
+
+        // Phase 1: Freeze each track at its current position and transition to target
+        _.each(this._track_data, function (data) {
+            var el = data.el;
+            var effectiveDir = data.isRow2 ? -direction : direction;
+
+            // Read current animated position from the transform matrix
+            var matrix = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+            var currentX = matrix.m41;
+            var halfWidth = el.scrollWidth / 2;
+
+            // Target: advance by one page in the effective direction
+            var targetX = currentX - (effectiveDir * pageWidth);
+
+            // Never wrap — use the duplicate content for seamless transitions.
+            // If target goes past 0 (backward past start), shift both positions
+            // into the duplicate zone so the transition animates through real content.
+            if (targetX > 0) {
+                currentX -= halfWidth;
+                targetX -= halfWidth;
+            }
+            // If target goes past -halfWidth (forward past end), that's fine —
+            // duplicate content exists there. Phase 2 will normalize back.
+
+            // Store for phase 2
+            data._targetX = targetX;
+            data._halfWidth = halfWidth;
+
+            // Freeze: kill animation, pin at (possibly shifted) current spot
+            el.style.animation = 'none';
+            el.style.transform = 'translateX(' + currentX + 'px)';
+        });
+
+        // Force reflow so browsers register the frozen state
+        void document.body.offsetHeight;
+
+        // Apply transitions to slide to target
+        _.each(this._track_data, function (data) {
+            data.el.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            data.el.style.transform = 'translateX(' + data._targetX + 'px)';
+        });
+
+        // Phase 2: After transition, resume CSS animation from the new position
+        setTimeout(function () {
+            _.each(self._track_data, function (data) {
+                var el = data.el;
+
+                // Read where the transition left us
+                var matrix = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+                var finalX = matrix.m41;
+
+                // Normalize back into the -halfWidth..0 range for CSS animation
+                while (finalX < -data._halfWidth) finalX += data._halfWidth;
+                while (finalX > 0) finalX -= data._halfWidth;
+
+                // Calculate animation progress (0..1) from position
+                var progress = Math.abs(finalX) / data._halfWidth;
+                if (data.isRow2) progress = 1 - progress;
+
+                // Use the stored original duration (not the CSS value, which is 0 while animation:none)
+                var newDelay = -(progress * data.duration);
+
+                // Clear inline overrides and restore animation at the calculated offset
+                el.style.transition = '';
+                el.style.transform = '';
+                el.style.animation = '';
+                data.$track.css('animation-delay', newDelay + 's');
+            });
+
+            self.flags.testimonials_animating = false;
+        }, 650);
     },
 
     // ==========

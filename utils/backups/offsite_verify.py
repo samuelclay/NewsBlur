@@ -169,10 +169,7 @@ def check_integrity(service_name, backups, integrity_cmd):
 
     if integrity_cmd == "gunzip":
         try:
-            result = subprocess.run(
-                ["gunzip", "-t", filepath],
-                capture_output=True, text=True, timeout=3600
-            )
+            result = subprocess.run(["gunzip", "-t", filepath], capture_output=True, text=True, timeout=3600)
             if result.returncode == 0:
                 return True, "gunzip -t: passed"
             else:
@@ -199,8 +196,7 @@ def check_integrity(service_name, backups, integrity_cmd):
             return True, "pg_restore not available, skipped"
         try:
             result = subprocess.run(
-                ["pg_restore", "--list", filepath],
-                capture_output=True, text=True, timeout=60
+                ["pg_restore", "--list", filepath], capture_output=True, text=True, timeout=60
             )
             if result.returncode == 0:
                 lines = result.stdout.strip().split("\n")
@@ -243,6 +239,7 @@ def send_alert(failures):
 
     try:
         import requests
+
         requests.post(
             "https://api.mailgun.net/v3/%s/messages" % domain,
             auth=("api", api_key),

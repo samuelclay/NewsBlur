@@ -28,6 +28,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     SVG_HEADPHONES: '<svg viewBox="0 0 24 24"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/></svg>',
     SVG_DRAG_HANDLE: '<svg viewBox="0 0 24 24"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>',
     SVG_CLEAR: '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>',
+    SVG_FULLSCREEN: '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>',
+    SVG_FULLSCREEN_EXIT: '<svg viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>',
 
     events: {
         'click .NB-media-player-play-pause': 'toggle_play_pause',
@@ -47,7 +49,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         'click .NB-media-player-tab-queue': 'show_queue_tab',
         'click .NB-media-player-tab-history': 'show_history_tab',
         'click .NB-media-player-history-item': 'play_history_item',
-        'click .NB-media-player-history-remove': 'remove_history_item'
+        'click .NB-media-player-history-remove': 'remove_history_item',
+        'click .NB-media-player-fullscreen': 'toggle_fullscreen'
     },
 
     SVG_SETTINGS: '<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.61 3.61 0 0112 15.6z"/></svg>',
@@ -198,6 +201,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '<input type="range" class="NB-media-player-volume" min="0" max="100" value="' + Math.round(this.volume * 100) + '" />';
         html += '</div>';
         html += '</div>';
+        if (is_video) {
+            html += '<div class="NB-media-player-fullscreen" title="Fullscreen">' + this.SVG_FULLSCREEN + '</div>';
+        }
         html += '</div>';
         html += '</div>'; // end row-controls
 
@@ -210,6 +216,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
         this.$el.html(html);
         this.update_progress_display();
+        if (is_video) {
+            this._bind_fullscreen_change();
+        }
 
         return this;
     },
@@ -423,6 +432,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         }
 
         this.play();
+        this._update_media_session();
 
         // Save durable state
         this.save_durable_state();
@@ -456,6 +466,10 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     destroy_media_element: function () {
         this.stop_ui_updates();
+        if (this._fullscreen_handler) {
+            document.removeEventListener('fullscreenchange', this._fullscreen_handler);
+            this._fullscreen_handler = null;
+        }
         if (this.media_element) {
             try {
                 this.media_element.pause();
@@ -561,6 +575,11 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             },
             events: {
                 onReady: function (event) {
+                    var iframe = event.target.getIframe();
+                    if (iframe) {
+                        iframe.setAttribute('allowfullscreen', '');
+                        iframe.setAttribute('allow', 'fullscreen');
+                    }
                     event.target.setPlaybackRate(self.playback_rate);
                     event.target.setVolume(self.is_muted ? 0 : self.volume * 100);
                     if (self.current_position > 0) {
@@ -657,6 +676,49 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.seek_to(new_pos);
     },
 
+    _update_media_session: function () {
+        if (!('mediaSession' in navigator) || !this.current_media) return;
+
+        var feed = NEWSBLUR.assets.get_feed(this.current_media.feed_id);
+        var artwork = [];
+        if (this.current_media.image_url) {
+            artwork.push({ src: this.current_media.image_url });
+        }
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: this.current_media.media_title || '',
+            artist: feed ? feed.get('feed_title') : '',
+            artwork: artwork
+        });
+
+        var self = this;
+        navigator.mediaSession.setActionHandler('play', function () { self.play(); });
+        navigator.mediaSession.setActionHandler('pause', function () { self.pause(); });
+        navigator.mediaSession.setActionHandler('seekbackward', function (details) {
+            var offset = details.seekOffset || self.skip_back_seconds;
+            var new_pos = Math.max(0, self.get_current_time() - offset);
+            self.seek_to(new_pos);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', function (details) {
+            var offset = details.seekOffset || self.skip_forward_seconds;
+            var new_pos = Math.min(self.get_duration(), self.get_current_time() + offset);
+            self.seek_to(new_pos);
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', function () {
+            self.skip_back();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', function () {
+            if (self.queue.length > 0) {
+                self.play_next();
+            } else {
+                self.skip_forward();
+            }
+        });
+        navigator.mediaSession.setActionHandler('stop', function () {
+            self.close_player();
+        });
+    },
+
     update_skip_labels: function () {
         this.$('.NB-media-player-skip-back').attr('title', 'Back ' + this.skip_back_seconds + ' seconds');
         this.$('.NB-media-player-skip-forward').attr('title', 'Forward ' + this.skip_forward_seconds + ' seconds');
@@ -741,6 +803,43 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
         this.$('.NB-media-player-volume-icon').html(this.get_volume_svg());
         this.$('.NB-media-player-volume').val(this.is_muted ? 0 : Math.round(this.volume * 100));
+    },
+
+    // ==============
+    // = Fullscreen =
+    // ==============
+
+    toggle_fullscreen: function (e) {
+        if (e) e.stopPropagation();
+        var target = null;
+
+        if (this.youtube_player) {
+            target = this.$('.NB-media-player-video-container iframe')[0];
+        } else if (this.media_element && this.media_element.tagName === 'VIDEO') {
+            target = this.media_element;
+        }
+
+        if (!target) return;
+
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            target.requestFullscreen().catch(function () { });
+        }
+    },
+
+    _bind_fullscreen_change: function () {
+        if (this._fullscreen_handler) return;
+        var self = this;
+        this._fullscreen_handler = function () {
+            var $btn = self.$('.NB-media-player-fullscreen');
+            if (document.fullscreenElement) {
+                $btn.html(self.SVG_FULLSCREEN_EXIT).attr('title', 'Exit fullscreen');
+            } else {
+                $btn.html(self.SVG_FULLSCREEN).attr('title', 'Fullscreen');
+            }
+        };
+        document.addEventListener('fullscreenchange', this._fullscreen_handler);
     },
 
     // ==============
@@ -1180,6 +1279,14 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.$('.NB-media-player-progress').val(Math.round(progress));
         this.$('.NB-media-player-time-current').text(this.format_time(position));
         this.$('.NB-media-player-time-duration').text(this.format_time(duration));
+
+        if ('mediaSession' in navigator && duration > 0) {
+            navigator.mediaSession.setPositionState({
+                duration: duration,
+                playbackRate: this.playback_rate,
+                position: Math.min(position, duration)
+            });
+        }
     },
 
     // ====================
@@ -1312,6 +1419,16 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.stop_position_sync();
         this.stop_ui_updates();
         this.current_media = null;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = null;
+            navigator.mediaSession.setActionHandler('play', null);
+            navigator.mediaSession.setActionHandler('pause', null);
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+            navigator.mediaSession.setActionHandler('seekforward', null);
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+            navigator.mediaSession.setActionHandler('stop', null);
+        }
         this.hide_player();
 
         NEWSBLUR.assets.clear_playback_state();

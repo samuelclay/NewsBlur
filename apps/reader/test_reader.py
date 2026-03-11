@@ -260,3 +260,79 @@ class Test_Reader(TransactionTestCase):
         content = json.decode(response.content)
         self.assertIn("activated", content)
         self.assertIn("muted", content)
+
+    def test_add_folder_case_insensitive(self):
+        """Creating a folder with different case should not create a duplicate."""
+        self.client.login(username="conesus", password="test")
+
+        response = self.client.get(reverse("load-feeds"))
+        feeds = json.decode(response.content)
+        # Initial state has a "Tech" folder
+        tech_count = sum(1 for f in feeds["folders"] if isinstance(f, dict) and "Tech" in f)
+        self.assertEqual(tech_count, 1)
+
+        # Try to create "tech" (lowercase) via model - should not create a duplicate
+        usf = UserSubscriptionFolders.objects.get(user__username="conesus")
+        usf.add_folder("", "tech")
+
+        response = self.client.get(reverse("load-feeds"))
+        feeds = json.decode(response.content)
+        # Should still only have one Tech folder (case-insensitive dedup)
+        tech_folders = [
+            f for f in feeds["folders"] if isinstance(f, dict) and any(k.lower() == "tech" for k in f)
+        ]
+        self.assertEqual(len(tech_folders), 1)
+
+    def test_delete_feed_substring_folder(self):
+        """Deleting a feed from 'Tech' should not affect 'Deep Tech'."""
+        self.client.login(username="conesus", password="test")
+
+        response = self.client.get(reverse("load-feeds"))
+        feeds = json.decode(response.content)
+        # Initial: Tech has [1, 4, 5, {Deep Tech: [6, 7]}], feed 1 is also top-level
+        self.assertEqual(
+            feeds["folders"], [{"Tech": [1, 4, 5, {"Deep Tech": [6, 7]}]}, 2, 3, 8, 9, {"Blogs": [8, 9]}, 1]
+        )
+
+        # Manually set up folders with a feed in both "Tech" and "Deep Tech"
+        usf = UserSubscriptionFolders.objects.get(user__username="conesus")
+        usf.folders = json.encode([{"Tech": [1, 4, {"Deep Tech": [1, 6, 7]}]}, 2, 3, {"Blogs": [8, 9]}])
+        usf.save()
+
+        # Delete feed 1 from "Tech" - should NOT affect "Deep Tech"
+        response = self.client.post(reverse("delete-feed"), {"feed_id": 1, "in_folder": "Tech"})
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        response = self.client.get(reverse("load-feeds"))
+        feeds = json.decode(response.content)
+        # Feed 1 should be removed from Tech but remain in Deep Tech
+        tech_folder = [f for f in feeds["folders"] if isinstance(f, dict) and "Tech" in f][0]
+        self.assertNotIn(1, tech_folder["Tech"])
+        deep_tech = [f for f in tech_folder["Tech"] if isinstance(f, dict) and "Deep Tech" in f][0]
+        self.assertIn(1, deep_tech["Deep Tech"])
+
+    def test_rename_folder_no_substring_match(self):
+        """Renaming 'Tech' should not affect 'Deep Tech'."""
+        self.client.login(username="conesus", password="test")
+
+        # Set up folders with "Tech" containing "Deep Tech"
+        usf = UserSubscriptionFolders.objects.get(user__username="conesus")
+        usf.folders = json.encode([{"Tech": [1, {"Deep Tech": [6, 7]}]}, 2, 3])
+        usf.save()
+
+        # Rename "Tech" to "Technology" at top level
+        response = self.client.post(
+            reverse("rename-folder"),
+            {"folder_name": "Tech", "new_folder_name": "Technology", "in_folder": ""},
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        response = self.client.get(reverse("load-feeds"))
+        feeds = json.decode(response.content)
+        folder_names = [list(f.keys())[0] for f in feeds["folders"] if isinstance(f, dict)]
+        self.assertIn("Technology", folder_names)
+        self.assertNotIn("Tech", folder_names)
+        # Deep Tech should be unchanged
+        tech_folder = [f for f in feeds["folders"] if isinstance(f, dict) and "Technology" in f][0]
+        nested_names = [list(f.keys())[0] for f in tech_folder["Technology"] if isinstance(f, dict)]
+        self.assertIn("Deep Tech", nested_names)

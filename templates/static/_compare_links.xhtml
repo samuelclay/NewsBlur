@@ -1,0 +1,62 @@
+{% load utils_tags %}
+<div class="NB-features-compare">
+    <div class="NB-features-compare-inner">
+        <div class="NB-features-compare-header">
+            <div class="NB-features-compare-rule"></div>
+            <h2 class="NB-features-compare-title">Compare NewsBlur</h2>
+            <div class="NB-features-compare-rule"></div>
+        </div>
+        <div class="NB-features-compare-links">
+            <div class="NB-features-compare-group">
+                <div class="NB-features-compare-group-label">vs. Other Readers</div>
+                <div class="NB-features-compare-group-items">
+                    <a href="{% url "compare-feedly" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">NewsBlur vs Feedly</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "compare-inoreader" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">NewsBlur vs Inoreader</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "compare-readwise" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">NewsBlur vs Readwise Reader</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "compare-the-old-reader" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">NewsBlur vs The Old Reader</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "compare-feedbin" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">NewsBlur vs Feedbin</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                </div>
+            </div>
+            <div class="NB-features-compare-group">
+                <div class="NB-features-compare-group-label">Alternatives</div>
+                <div class="NB-features-compare-group-items">
+                    <a href="{% url "alt-feedly" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">Feedly Alternative</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "alt-google-reader" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">Google Reader Alternative</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "alt-open-source" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">Open Source RSS Readers</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "alt-inoreader" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">Inoreader Alternative</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                    <a href="{% url "alt-self-hosted" %}" class="NB-compare-link-item">
+                        <span class="NB-compare-link-text">Self-Hosted RSS Readers</span>
+                        <span class="NB-compare-link-arrow">&rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

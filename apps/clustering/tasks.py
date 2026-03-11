@@ -111,8 +111,10 @@ def ComputeStoryClusters(feed_id):
     stories = []
     for batch_start in range(0, len(all_hashes_list), 100):
         batch = all_hashes_list[batch_start : batch_start + 100]
-        for story in MStory.objects(story_hash__in=batch).only(
-            "story_hash", "story_feed_id", "story_title", "story_date"
+        for story in (
+            MStory.objects(story_hash__in=batch)
+            .only("story_hash", "story_feed_id", "story_title", "story_date")
+            .order_by()
         ):
             stories.append(
                 {
