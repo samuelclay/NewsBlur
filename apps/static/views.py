@@ -17,6 +17,54 @@ def about(request):
     return render(request, "static/about.xhtml")
 
 
+def pricing(request):
+    return render(request, "static/pricing.xhtml")
+
+
+def features(request):
+    return render(request, "static/features.xhtml")
+
+
+def compare_feedly(request):
+    return render(request, "static/compare_feedly.xhtml")
+
+
+def compare_inoreader(request):
+    return render(request, "static/compare_inoreader.xhtml")
+
+
+def compare_readwise(request):
+    return render(request, "static/compare_readwise.xhtml")
+
+
+def compare_the_old_reader(request):
+    return render(request, "static/compare_the_old_reader.xhtml")
+
+
+def alt_open_source(request):
+    return render(request, "static/alt_open_source.xhtml")
+
+
+def alt_self_hosted(request):
+    return render(request, "static/alt_self_hosted.xhtml")
+
+
+def alt_google_reader(request):
+    return render(request, "static/alt_google_reader.xhtml")
+
+
+def alt_feedly(request):
+    return render(request, "static/alt_feedly.xhtml")
+
+
+def alt_inoreader(request):
+    return render(request, "static/alt_inoreader.xhtml")
+
+
+def compare_feedbin(request):
+    return render(request, "static/compare_feedbin.xhtml")
+
+
 def faq(request):
     return render(request, "static/faq.xhtml")
 

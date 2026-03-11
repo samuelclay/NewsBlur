@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-pricing{% endblock %}
+{% block title %}NewsBlur Pricing - Plans for Every Reader{% endblock %}
+{% block nav_title %}Pricing{% endblock %}
+{% block head %}
+    <meta name="description" content="NewsBlur pricing and plans. Free, Premium ($36/year), Premium Archive ($99/year), and Premium Pro ($29/month). Start with a free 30-day premium trial.">
+    <meta property="og:title" content="NewsBlur Pricing - Plans for Every Reader">
+    <meta property="og:description" content="Choose your plan. From free RSS reading to AI-powered professional news intelligence. 30-day free trial, no credit card required.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur Pricing - Plans for Every Reader">
+    <meta name="twitter:description" content="From free RSS reading to professional news intelligence. Premium from $36/year. 30-day free trial, no credit card required.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-pricing-container">
+
+    <div class="NB-static-pricing-hero">
+        <h1 class="NB-static-pricing-title">Plans for every reader</h1>
+        <p class="NB-static-pricing-subtitle">From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial.</p>
+    </div>
+
+    <div class="NB-pricing-tiers">
+        <div class="NB-pricing-tier NB-pricing-tier-premium">
+            <div class="NB-pricing-tier-header">
+                <div class="NB-pricing-tier-name">Premium</div>
+                <div class="NB-pricing-tier-price">
+                    <span class="NB-pricing-tier-price-amount">$36</span>
+                    <span class="NB-pricing-tier-price-period">/year</span>
+                </div>
+            </div>
+            <ul class="NB-pricing-tier-features">
+                <li class="NB-pricing-tier-includes">Everything in Free, plus:</li>
+                <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 1,024 sites</li>
+                <li class="NB-2"><div class="NB-pricing-bullet"></div>Sites updated up to 5x more often</li>
+                <li class="NB-3"><div class="NB-pricing-bullet"></div>River of News (reading by folder)</li>
+                <li class="NB-4"><div class="NB-pricing-bullet"></div>Search sites and folders</li>
+                <li class="NB-5"><div class="NB-pricing-bullet"></div>Save stories with searchable tags</li>
+                <li class="NB-6"><div class="NB-pricing-bullet"></div>Privacy options for your blurblog</li>
+                <li class="NB-7"><div class="NB-pricing-bullet"></div>Custom RSS feeds for saved stories</li>
+                <li class="NB-8"><div class="NB-pricing-bullet"></div>Text view extracts the story</li>
+                <li class="NB-9"><div class="NB-pricing-bullet"></div>Discover related stories and sites</li>
+            </ul>
+            <div class="NB-pricing-tier-actions">
+                <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-premium">Get Premium</a>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier NB-pricing-tier-archive">
+            <div class="NB-pricing-tier-header">
+                <div class="NB-pricing-tier-name">Premium Archive</div>
+                <div class="NB-pricing-tier-price">
+                    <span class="NB-pricing-tier-price-amount">$99</span>
+                    <span class="NB-pricing-tier-price-period">/year</span>
+                </div>
+            </div>
+            <ul class="NB-pricing-tier-features">
+                <li class="NB-pricing-tier-includes">Everything in Premium, plus:</li>
+                <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 4,096 sites</li>
+                <li class="NB-2"><div class="NB-pricing-bullet"></div>Choose when stories are marked as read</li>
+                <li class="NB-3"><div class="NB-pricing-bullet"></div>Customize auto-read by site or folder</li>
+                <li class="NB-4"><div class="NB-pricing-bullet"></div>Every story archived and searchable forever</li>
+                <li class="NB-5"><div class="NB-pricing-bullet"></div>Feeds back-filled for complete archive</li>
+                <li class="NB-6"><div class="NB-pricing-bullet"></div>Train stories on full text content</li>
+                <li class="NB-7"><div class="NB-pricing-bullet"></div>Discover related stories across your archive</li>
+                <li class="NB-8"><div class="NB-pricing-bullet"></div>Export trained stories from folders</li>
+                <li class="NB-9"><div class="NB-pricing-bullet"></div>Stories can stay unread forever</li>
+                <li class="NB-10"><div class="NB-pricing-bullet"></div>Ask AI questions about stories</li>
+                <li class="NB-11"><div class="NB-pricing-bullet"></div>Filter stories by date range</li>
+                <li class="NB-12"><div class="NB-pricing-bullet"></div>Apply training across a folder</li>
+                <li class="NB-13"><div class="NB-pricing-bullet"></div>Apply training globally</li>
+            </ul>
+            <div class="NB-pricing-tier-actions">
+                <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-archive">Get Archive</a>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier NB-pricing-tier-pro">
+            <div class="NB-pricing-tier-header">
+                <div class="NB-pricing-tier-name">Premium Pro</div>
+                <div class="NB-pricing-tier-price">
+                    <span class="NB-pricing-tier-price-amount">$29</span>
+                    <span class="NB-pricing-tier-price-period">/month</span>
+                </div>
+            </div>
+            <ul class="NB-pricing-tier-features">
+                <li class="NB-pricing-tier-includes">Everything in Archive, plus:</li>
+                <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 10,000 sites</li>
+                <li class="NB-2"><div class="NB-pricing-bullet"></div>All feeds fetched every 5-15 minutes</li>
+                <li class="NB-3"><div class="NB-pricing-bullet"></div>Train stories with regular expressions</li>
+                <li class="NB-4"><div class="NB-pricing-bullet"></div>Priority support</li>
+                <li class="NB-pricing-tier-upcoming-header">Coming soon:</li>
+                <li class="NB-upcoming NB-5"><div class="NB-pricing-bullet"></div>Natural language filters</li>
+                <li class="NB-upcoming NB-6"><div class="NB-pricing-bullet"></div>Natural language search</li>
+            </ul>
+            <div class="NB-pricing-tier-actions">
+                <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-pro">Get Pro</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-pricing-tiers-bottom">
+        <div class="NB-pricing-tier NB-pricing-tier-free">
+            <div class="NB-pricing-tier-header">
+                <div class="NB-pricing-tier-name">Free</div>
+            </div>
+            <ul class="NB-pricing-tier-features">
+                <li><div class="NB-pricing-bullet"></div><span>Follow up to 64 sites</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Real-time RSS updates</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Train stories by author, tag, title</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Public blurblog sharing</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Save stories for later</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>iOS &amp; Android apps</span></li>
+            </ul>
+            <div class="NB-pricing-tier-actions">
+                <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Get Started Free</a>
+            </div>
+        </div>
+        <div class="NB-pricing-tier NB-pricing-tier-selfhosted">
+            <div class="NB-pricing-tier-header">
+                <div class="NB-pricing-tier-label">DIY</div>
+                <div class="NB-pricing-tier-name">Self-Hosted</div>
+            </div>
+            <ul class="NB-pricing-tier-features">
+                <li><div class="NB-pricing-bullet"></div><span>Run your own NewsBlur</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Complete data ownership</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Single command install on Docker</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>Customize with Claude Code</span></li>
+            </ul>
+            <div class="NB-pricing-tier-actions">
+                <a href="https://github.com/samuelclay/NewsBlur" target="_blank" class="NB-pricing-github-button">
+                    <img src="{{ MEDIA_URL }}img/reader/github-mark.svg" class="NB-github-icon">
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-pricing-trial-callout">
+        New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card required.
+    </div>
+
+    <div class="NB-pricing-faq">
+        <h2 class="NB-pricing-faq-title">Frequently Asked Questions</h2>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">Can I try premium features before paying?</h3>
+            <p class="NB-pricing-faq-answer">Yes. Every new account starts with a free 30-day premium trial. No credit card required. You get full access to all premium features during the trial.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">Can I switch between plans?</h3>
+            <p class="NB-pricing-faq-answer">Absolutely. You can upgrade or downgrade at any time. When upgrading, your subscription is prorated so you only pay the difference.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">What happens to my data if I downgrade?</h3>
+            <p class="NB-pricing-faq-answer">Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer appear in search results but will be available again if you re-upgrade. If you exceed the feed limit of a lower tier, you'll be asked to mute some feeds.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">What payment methods do you accept?</h3>
+            <p class="NB-pricing-faq-answer">We accept all major credit cards via Stripe (Visa, Mastercard, American Express, Discover) and PayPal.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">Can I import my feeds from another reader?</h3>
+            <p class="NB-pricing-faq-answer">Yes. NewsBlur supports OPML import, so you can bring your feeds from Google Reader, Feedly, Inoreader, or any other RSS reader.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">Is there a self-hosted option?</h3>
+            <p class="NB-pricing-faq-answer">Yes. NewsBlur is fully open source and can be self-hosted with a single Docker command. Visit the <a href="https://github.com/samuelclay/NewsBlur" class="NB-splash-link">GitHub repository</a> for instructions.</p>
+        </div>
+
+        <div class="NB-pricing-faq-item">
+            <h3 class="NB-pricing-faq-question">What makes Premium Pro worth $29/month?</h3>
+            <p class="NB-pricing-faq-answer">Pro is built for professionals who depend on staying informed. Every feed in your account is fetched every 5-15 minutes, meaning you see breaking news and updates as they happen. Regex classifiers let you build precise filters that match patterns across titles, story text, and URLs. If your work depends on being the first to know, Pro pays for itself.</p>
+        </div>
+    </div>
+
+    <div class="NB-pricing-features-link">
+        <a href="{% url "features" %}" class="NB-pricing-cta NB-pricing-cta-features">See all features</a>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "pricing" %}
+{% endblock footer %}

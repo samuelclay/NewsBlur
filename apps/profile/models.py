@@ -958,6 +958,48 @@ class Profile(models.Model):
         logging.user(self.user, f"~FBPaypal sub ~SBadded~SN: ~SB{paypal_sub_id}")
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
+        # Deduplicate payments: keep only one per provider per identifier, then per day
+        for provider in [
+            "paypal",
+            "stripe",
+            "ios-subscription",
+            "ios-archive-subscription",
+            "ios-pro-subscription",
+            "android-subscription",
+        ]:
+            deleted_count = 0
+            # First pass: dedup by payment_identifier (same receipt sent on different days)
+            seen_identifiers = set()
+            for payment in list(
+                PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
+                .exclude(payment_identifier__isnull=True)
+                .exclude(payment_identifier__in=["missing", "in-progress"])
+                .order_by("payment_date")
+            ):
+                if payment.payment_identifier in seen_identifiers:
+                    payment.delete()
+                    deleted_count += 1
+                else:
+                    seen_identifiers.add(payment.payment_identifier)
+            # Second pass: dedup by date (race condition duplicates on same day)
+            seen_dates = set()
+            for payment in list(
+                PaymentHistory.objects.filter(user=self.user, payment_provider=provider).order_by(
+                    "payment_date"
+                )
+            ):
+                payment_day = payment.payment_date.date()
+                if payment_day in seen_dates:
+                    payment.delete()
+                    deleted_count += 1
+                else:
+                    seen_dates.add(payment_day)
+            if deleted_count > 0:
+                logging.user(
+                    self.user,
+                    f"~BY~SN~FRDeleting~FW duplicate {provider} history: ~SB{deleted_count} payments",
+                )
+
         stripe_payments = []
         total_stripe_payments = 0
         total_paypal_payments = 0

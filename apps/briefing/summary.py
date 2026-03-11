@@ -89,6 +89,11 @@ STYLE_INSTRUCTIONS = {
 
 SECTION_PROMPTS = {
     "top_stories": '"Top stories" — CATEGORY: top_stories. The most important stories from the reader\'s feeds.',
+    "infrequent": (
+        '"From infrequent sites" — CATEGORY: infrequent. '
+        "Stories from feeds that publish rarely (a few times a month or less). "
+        "Highlight that these are noteworthy because the site doesn't post often."
+    ),
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
     "classifier_match": (
         '"Based on your interests" — CATEGORY: classifier_match. '
@@ -108,7 +113,8 @@ SECTION_PROMPTS = {
         '"Widely covered" — CATEGORY: widely_covered. '
         "Stories covered by multiple feeds and sources. "
         "Check the CLUSTER annotation for pre-identified groupings. "
-        "For each story, show the shared headline then list each source's unique angle or perspective."
+        "Write a brief editorial description of each story's significance. "
+        "Do NOT list individual sources or feed names — source links will be added automatically."
     ),
 }
 
@@ -203,7 +209,7 @@ def generate_briefing_summary(
     story_hashes = [s["story_hash"] for s in scored_stories]
 
     stories_by_hash = {}
-    for story in MStory.objects(story_hash__in=story_hashes):
+    for story in MStory.objects(story_hash__in=story_hashes).order_by():
         stories_by_hash[story.story_hash] = story
 
     feed_ids = set()
@@ -255,22 +261,37 @@ def generate_briefing_summary(
         if scored.get("classifier_matches"):
             line += "\n  MATCHES: %s" % ", ".join(scored["classifier_matches"])
 
-        # Add cluster info if this story is part of a pre-computed cluster
+        # summary.py: Add cluster info if this story is part of a pre-computed cluster.
+        # Look up cluster members from Redis and fetch feed titles from the DB,
+        # not just from stories_by_hash (which only contains curated stories and
+        # almost never includes cluster members from other feeds).
         from apps.clustering.models import get_cluster_for_story, get_cluster_members
 
         cluster_id = get_cluster_for_story(story_hash)
         if cluster_id:
             cluster_members = get_cluster_members(cluster_id)
-            other_feeds = []
+            other_feed_ids = set()
             for member_hash in cluster_members:
                 if member_hash != story_hash:
-                    member_story = stories_by_hash.get(member_hash)
-                    if member_story:
-                        member_feed = feeds_by_id.get(member_story.story_feed_id, "")
-                        if member_feed:
-                            other_feeds.append(member_feed)
-            if other_feeds:
-                line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
+                    member_feed_id_str = member_hash.split(":")[0] if ":" in member_hash else None
+                    if member_feed_id_str:
+                        try:
+                            other_feed_ids.add(int(member_feed_id_str))
+                        except ValueError:
+                            pass
+            # Remove this story's own feed
+            other_feed_ids.discard(story.story_feed_id)
+            if other_feed_ids:
+                # Fetch feed titles for cluster members not already in feeds_by_id
+                missing_ids = other_feed_ids - set(feeds_by_id.keys())
+                if missing_ids:
+                    for f in Feed.objects.filter(pk__in=missing_ids).only("pk", "feed_title"):
+                        feeds_by_id[f.pk] = f.feed_title
+                other_feeds = [
+                    feeds_by_id[fid] for fid in other_feed_ids if fid in feeds_by_id and feeds_by_id[fid]
+                ]
+                if other_feeds:
+                    line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
 
         story_lines.append(line)
 
@@ -475,7 +496,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     story_hashes = [s["story_hash"] for s in scored_stories]
     stories_by_hash = {}
-    for story in MStory.objects(story_hash__in=story_hashes):
+    for story in MStory.objects(story_hash__in=story_hashes).order_by():
         stories_by_hash[story.story_hash] = story
 
     feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
@@ -821,6 +842,164 @@ def rebuild_summary_from_sections(section_summaries):
         inner = re.sub(r"</div>$", "", inner)
         parts.append(inner)
     return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
+
+
+def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
+    """Post-process widely_covered section to inject cluster member story lists.
+
+    For each story link in the widely_covered section:
+    1. Converts the <a> tag to <strong> (headline becomes bold topic name, not a link)
+    2. Looks up the story's cluster in Redis
+    3. Fetches all cluster member stories from the user's subscribed feeds
+    4. Injects <p> tags with story links for each member after the editorial paragraph
+
+    Must be called BEFORE embed_briefing_icons() so favicons get embedded for
+    cluster member stories.
+
+    Returns:
+        (modified_html, extra_story_dicts) where extra_story_dicts contains
+        dicts with 'story_hash' key for embed_briefing_icons() favicon lookup.
+    """
+    from apps.clustering.models import get_cluster_for_story, get_cluster_members
+    from apps.reader.models import UserSubscription
+
+    if not summary_html:
+        return summary_html, []
+
+    # summary.py: Find the widely_covered section boundaries
+    section_start_match = re.search(r'<h3[^>]*data-section="widely_covered"', summary_html)
+    if not section_start_match:
+        return summary_html, []
+
+    section_content_start = section_start_match.start()
+    # Section ends at the next <h3 data-section= or end of content
+    next_section = re.search(r"<h3[^>]*data-section=", summary_html[section_start_match.end() :])
+    if next_section:
+        section_end = section_start_match.end() + next_section.start()
+    else:
+        # Last section — find the closing </div> of the outer wrapper
+        section_end = len(summary_html)
+
+    section_html = summary_html[section_content_start:section_end]
+
+    # Find all story links in the section
+    story_link_pattern = r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>(.*?)</a>'
+    story_links = list(re.finditer(story_link_pattern, section_html, re.DOTALL))
+    if not story_links:
+        return summary_html, []
+
+    # Get user's subscribed feeds
+    user_feed_ids = set(
+        UserSubscription.objects.filter(user_id=user_id, active=True).values_list("feed_id", flat=True)
+    )
+
+    # summary.py: Collect all cluster members across all widely_covered stories
+    processed_clusters = set()
+    story_cluster_map = {}  # story_hash -> list of member hashes
+    all_member_hashes = set()
+
+    for match in story_links:
+        story_hash = match.group(1)
+        cluster_id = get_cluster_for_story(story_hash)
+        if not cluster_id or cluster_id in processed_clusters:
+            continue
+        processed_clusters.add(cluster_id)
+
+        members = get_cluster_members(cluster_id)
+        # Filter to user's subscribed feeds
+        user_members = []
+        for m in members:
+            member_feed_id = int(m.split(":", 1)[0]) if ":" in m else None
+            if member_feed_id and member_feed_id in user_feed_ids:
+                user_members.append(m)
+
+        if len(user_members) >= 2:
+            story_cluster_map[story_hash] = user_members
+            all_member_hashes.update(user_members)
+
+    if not story_cluster_map:
+        return summary_html, []
+
+    # Batch-fetch story metadata for all cluster members
+    member_metadata = {}
+    member_hash_list = list(all_member_hashes)
+    for batch_start in range(0, len(member_hash_list), 100):
+        batch = member_hash_list[batch_start : batch_start + 100]
+        for story in (
+            MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id", "story_title").order_by()
+        ):
+            member_metadata[story.story_hash] = story
+
+    # summary.py: Process each story link in reverse order so insertions don't shift offsets
+    extra_story_dicts = []
+    scored_hashes = {s["story_hash"] for s in scored_stories}
+
+    for match in reversed(story_links):
+        story_hash = match.group(1)
+        link_title = match.group(2)
+        full_link = match.group(0)
+        bold_title = "<strong>%s</strong>" % link_title
+        members = story_cluster_map.get(story_hash)
+
+        if not members:
+            # summary.py: Orphan widely_covered story — no cluster members found.
+            # Still convert to bold so it looks like a separate topic headline,
+            # not a cluster member link of the previous story.
+            p_close = section_html.find("</p>", match.end())
+            if p_close == -1:
+                continue
+            p_close += len("</p>")
+            modified_paragraph = section_html[: match.start()] + section_html[
+                match.start() : p_close
+            ].replace(full_link, bold_title, 1)
+            section_html = modified_paragraph + section_html[p_close:]
+            continue
+
+        # Build cluster member list HTML
+        member_lines = []
+        for m_hash in members:
+            m_story = member_metadata.get(m_hash)
+            if not m_story:
+                continue
+            m_title = m_story.story_title or "Untitled"
+            member_lines.append(
+                '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+                % (m_hash, html_mod.escape(m_title))
+            )
+            if m_hash not in scored_hashes:
+                extra_story_dicts.append({"story_hash": m_hash})
+
+        if not member_lines:
+            # No member metadata found — still convert to bold for visual separation
+            p_close = section_html.find("</p>", match.end())
+            if p_close == -1:
+                continue
+            p_close += len("</p>")
+            modified_paragraph = section_html[: match.start()] + section_html[
+                match.start() : p_close
+            ].replace(full_link, bold_title, 1)
+            section_html = modified_paragraph + section_html[p_close:]
+            continue
+
+        cluster_list_html = "\n".join(member_lines)
+
+        # Find the enclosing </p> after this story link and insert cluster list after it
+        # Match offsets are relative to section_html
+        p_close = section_html.find("</p>", match.end())
+        if p_close == -1:
+            continue
+        p_close += len("</p>")
+
+        # Replace the <a> with <strong> inside the paragraph, then insert cluster list
+        modified_paragraph = section_html[: match.start()] + section_html[match.start() : p_close].replace(
+            full_link, bold_title, 1
+        )
+        section_html = modified_paragraph + "\n" + cluster_list_html + section_html[p_close:]
+
+    # Reconstruct the full HTML
+    modified_html = summary_html[:section_content_start] + section_html + summary_html[section_end:]
+
+    return modified_html, extra_story_dicts
 
 
 def _get_content_excerpt(story, max_chars=300):

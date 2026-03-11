@@ -972,6 +972,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
 
+    fetch_briefing_admin: function (page, callback, error_callback) {
+        this.make_request('/briefing/admin/all', { page: page }, callback, error_callback, {
+            'ajax_group': 'feed',
+            'request_type': 'GET'
+        });
+    },
+
     complete_river: function (feed_id, feeds, page, callback) {
         this.make_request('/reader/complete_river', {
             feeds: feeds,

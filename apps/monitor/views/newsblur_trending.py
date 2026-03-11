@@ -95,8 +95,10 @@ class TrendingFeeds(View):
 
                 # Bulk fetch stories from MongoDB
                 stories_by_hash = {}
-                for story in MStory.objects(story_hash__in=story_hashes).only(
-                    "story_hash", "story_title", "story_date", "story_feed_id"
+                for story in (
+                    MStory.objects(story_hash__in=story_hashes)
+                    .only("story_hash", "story_title", "story_date", "story_feed_id")
+                    .order_by()
                 ):
                     stories_by_hash[story.story_hash] = story
 
@@ -171,8 +173,10 @@ class TrendingFeeds(View):
 
                 # Bulk fetch stories from MongoDB
                 stories_by_hash = {}
-                for story in MStory.objects(story_hash__in=story_hashes).only(
-                    "story_hash", "story_title", "story_date", "story_feed_id"
+                for story in (
+                    MStory.objects(story_hash__in=story_hashes)
+                    .only("story_hash", "story_title", "story_date", "story_feed_id")
+                    .order_by()
                 ):
                     stories_by_hash[story.story_hash] = story
 

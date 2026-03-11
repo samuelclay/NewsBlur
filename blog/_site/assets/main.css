@@ -457,6 +457,11 @@ table td {
   margin: 0 0 20px 0;
   border-bottom: 1px solid rgb(228.8188976378, 231.5748031496, 228.4251968504);
 }
+@media screen and (max-width: 600px) {
+  .post-header-sticky {
+    position: static;
+  }
+}
 
 .post-meta {
   font-size: 14px;

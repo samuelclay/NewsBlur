@@ -684,7 +684,11 @@ class Feed(models.Model):
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     try:
                         feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update(max_stories=max_stories)
+                        if not feed.pk:
+                            feed = by_url(feed_finder_url)
+                            feed = feed[offset] if feed and len(feed) > offset else None
+                        else:
+                            feed = feed.update(max_stories=max_stories)
                     except IntegrityError:
                         feed = by_url(feed_finder_url)
                         feed = feed[offset] if feed and len(feed) > offset else None
@@ -692,7 +696,13 @@ class Feed(models.Model):
                 logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
                 try:
                     feed = cls.objects.create(feed_address=url, feed_link=original_url)
-                    feed = feed.update(requesting_user_id=user.pk if user else None, max_stories=max_stories)
+                    if not feed.pk:
+                        feed = by_url(url)
+                        feed = feed[offset] if feed and len(feed) > offset else None
+                    else:
+                        feed = feed.update(
+                            requesting_user_id=user.pk if user else None, max_stories=max_stories
+                        )
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -706,7 +716,11 @@ class Feed(models.Model):
             if r and "application/json" in r.headers.get("Content-Type"):
                 try:
                     feed = cls.objects.create(feed_address=url)
-                    feed = feed.update(max_stories=max_stories)
+                    if not feed.pk:
+                        feed = by_url(url)
+                        feed = feed[offset] if feed and len(feed) > offset else None
+                    else:
+                        feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -726,10 +740,14 @@ class Feed(models.Model):
                         logging.debug(" ---> ScrapingBee found valid feed: %s" % url)
                         try:
                             feed = cls.objects.create(feed_address=url)
-                            feed.is_forbidden = True
-                            feed.date_forbidden = datetime.datetime.now()
-                            feed = feed.save()
-                            feed = feed.update(fpf=parsed)
+                            if not feed.pk:
+                                feed = by_url(url)
+                                feed = feed[offset] if feed and len(feed) > offset else None
+                            else:
+                                feed.is_forbidden = True
+                                feed.date_forbidden = datetime.datetime.now()
+                                feed.save(update_fields=["is_forbidden", "date_forbidden"])
+                                feed = feed.update(fpf=parsed)
                         except IntegrityError:
                             feed = by_url(url)
                             feed = feed[offset] if feed and len(feed) > offset else None
@@ -743,7 +761,11 @@ class Feed(models.Model):
             if not feed and create:
                 try:
                     feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update(max_stories=max_stories)
+                    if not feed.pk:
+                        feed = by_url(feed_finder_url)
+                        feed = feed[offset] if feed and len(feed) > offset else None
+                    else:
+                        feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(feed_finder_url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -1554,6 +1576,9 @@ class Feed(models.Model):
         return headers
 
     def update(self, **kwargs):
+        if self.pk is None:
+            logging.info(" ---> ~FRFeed.update() called with pk=None, skipping")
+            return None
         try:
             from utils import feed_fetcher
         except ImportError as e:
@@ -1839,8 +1864,6 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
-                if existing_story.story_hash:
-                    discover_story_ids.append(existing_story.story_hash)
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -1849,18 +1872,19 @@ class Feed(models.Model):
                         % (story.get("story_hash"), story.get("guid"), story.get("title"))
                     )
 
-        # If there are no premium archive subscribers, don't index stories for discover.
+        # Only index new stories for discover on feeds that have already been bulk-indexed
+        # (i.e., a user has used the Discover feature, triggering index_stories_for_discover).
         if discover_story_ids:
-            if self.archive_subscribers and self.archive_subscribers > 0:
+            if self.discover_indexed and self.archive_subscribers and self.archive_subscribers > 0:
                 IndexDiscoverStories.apply_async(
                     kwargs=dict(story_ids=discover_story_ids),
                     queue="discover_indexer",
                     time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                 )
-            else:
-                logging.debug(
-                    f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
-                )
+            elif not self.discover_indexed:
+                logging.debug(f" ---> ~FBSkipping discover queue for {self}: not discover-indexed")
+            elif not self.archive_subscribers or self.archive_subscribers <= 0:
+                logging.debug(f" ---> ~FBSkipping discover queue for {self}: no archive subscribers")
 
         # Schedule story clustering for feeds with archive subscribers
         if discover_story_ids and self.archive_subscribers and self.archive_subscribers > 0:
@@ -2201,7 +2225,7 @@ class Feed(models.Model):
         # Extract story authors from feeds
         for feed in sorted_popularity:
             story_ids = feed["story_ids"]
-            stories_db = MStory.objects(story_hash__in=story_ids)
+            stories_db = MStory.objects(story_hash__in=story_ids).order_by()
             stories = cls.format_stories(stories_db)
             for story in stories:
                 story["story_permalink"] = story["story_permalink"][:250]
@@ -4732,6 +4756,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
         duplicate_stories.delete()
 
+    # Clear Redis story hashes before bulk-deleting stories, since queryset
+    # .delete() bypasses the instance MStory.delete() / remove_from_redis().
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    r.delete("F:%s" % duplicate_feed.pk)
+    r.delete("zF:%s" % duplicate_feed.pk)
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")

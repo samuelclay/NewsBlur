@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}NewsBlur vs Readwise Reader - RSS Reader Comparison{% endblock %}
+{% block nav_title %}NewsBlur vs Readwise Reader{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare NewsBlur and Readwise Reader. Two different approaches to reading: NewsBlur focuses on RSS intelligence training, Readwise Reader combines RSS with read-later and annotations.">
+    <meta property="og:title" content="NewsBlur vs Readwise Reader - Which Reader Is Right for You?">
+    <meta property="og:description" content="Compare NewsBlur and Readwise Reader. RSS intelligence training vs all-in-one reading. Pricing, features, and philosophy compared.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur vs Readwise Reader - Which Reader Is Right for You?">
+    <meta name="twitter:description" content="RSS intelligence training vs all-in-one reading. Pricing, features, and philosophy compared.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">NewsBlur vs Readwise Reader</h1>
+        <p class="NB-static-compare-subtitle">Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader combines RSS, read-later, and highlights in one app.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>Readwise Reader</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Primary Focus</td>
+                <td>RSS reader with intelligence training</td>
+                <td>All-in-one reader (RSS + read-later + highlights)</td>
+            </tr>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-x">&#10007;</span> No training system</td>
+            </tr>
+            <tr>
+                <td>Read-Later / Highlights</td>
+                <td><span class="NB-compare-check">&#10003;</span> Save stories, highlight text, tag and organize</td>
+                <td><span class="NB-compare-check">&#10003;</span> Deep highlighting and annotation</td>
+            </tr>
+            <tr>
+                <td>Ask AI</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-check">&#10003;</span> Ghostreader AI</td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Track Changes / Diffs</td>
+                <td><span class="NB-compare-check">&#10003;</span> See how stories evolve</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-check">&#10003;</span> Can add any URL</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Social / Sharing</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog with comments</td>
+                <td><span class="NB-compare-x">&#10007;</span> No social features</td>
+            </tr>
+            <tr>
+                <td>Open Source</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fully open source (MIT)</td>
+                <td><span class="NB-compare-x">&#10007;</span> Proprietary</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker install</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td>Limited (own apps only)</td>
+            </tr>
+            <tr>
+                <td>Native Mobile Apps</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS and Android</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS and Android</td>
+            </tr>
+            <tr>
+                <td>Free Plan</td>
+                <td><span class="NB-compare-check">&#10003;</span> 64 sites</td>
+                <td><span class="NB-compare-x">&#10007;</span> No free plan</td>
+            </tr>
+            <tr>
+                <td>Pricing</td>
+                <td>$36/year (Premium), $99/year (Archive)</td>
+                <td>$96/year (full access)</td>
+            </tr>
+            <tr>
+                <td>PDF / EPUB Support</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Different tools for different needs</h2>
+        <p class="NB-compare-section-text">
+            Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and email newsletters with deep highlighting and annotation. It's built for people who want everything in one place and care deeply about taking notes on what they read. NewsBlur is a dedicated RSS reader built for people who follow many feeds and want intelligent filtering to surface what matters. If your primary need is RSS with powerful training and filtering, NewsBlur is the sharper tool for the job.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Intelligence training vs. manual curation</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur's intelligence training system lets you highlight or hide stories based on author, tag, title keywords, full text content, URLs, and regex patterns. Over time, your feeds become personalized without any algorithmic black box. Readwise Reader has no equivalent system. You manage your reading through manual triage, filters, and folder organization. For high-volume reading across hundreds of feeds, NewsBlur's training is a significant advantage.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Free tier and open source</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur offers a free plan with up to 64 sites, and every new account gets a 30-day premium trial. Readwise Reader requires a paid subscription ($96/year) with no free tier. NewsBlur is also fully open source under the MIT license, so you can self-host your own instance, contribute to development, or audit the code. Readwise Reader is a closed-source service.
+        </p>
+    </div>
+
+    {% include "static/_compare_links.xhtml" %}
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

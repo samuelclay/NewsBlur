@@ -1074,6 +1074,7 @@
 		A9ADD6D438D022A948E0108F /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
 		AF998E32037213DB8DA29473 /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
 		B1CC4CA96C214E4BA724EBD5 /* icons8-prompt-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */; };
+		B1CC4CA96C214E4BA724EBD6 /* web-feed-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CF /* web-feed-100.png */; };
 		BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
 		C0C15ADF4471C3F68691B131 /* AskAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408612AC60C1A227BEA502A6 /* AskAIViewModel.swift */; };
 		CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
@@ -1085,6 +1086,7 @@
 		EE5F6A7B8C9D0E1F2A3B4C5D /* AddSiteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E1F /* AddSiteViewModel.swift */; };
 		EEAAFD95739A8B97EB0B94A7 /* StoryTraverseBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */; };
 		EFF0DC3C3415458F84CD3BC0 /* icons8-prompt-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */; };
+		EFF0DC3C3415458F84CD3BC1 /* web-feed-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CF /* web-feed-100.png */; };
 		FE95F705A4438AE3BCF91760 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
 		FED20A379D2BC5FBF9BF711C /* CustomIconRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */; };
 		FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE219F87A770063002A /* g_icn_folder_read.png */; };
@@ -1978,6 +1980,7 @@
 		BB2C3D4E5F6A7B8C9D0E1F2A /* AddSiteView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSiteView.swift; sourceTree = "<group>"; };
 		CC3D4E5F6A7B8C9D0E1F2A3B /* AddSiteSheetViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSiteSheetViewController.swift; sourceTree = "<group>"; };
 		DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-prompt-100.png"; sourceTree = "<group>"; };
+		DA5B929B2C1F40819E9A88CF /* web-feed-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "web-feed-100.png"; sourceTree = "<group>"; };
 		E160F0551C9DAC2C00CB96DF /* UIViewController+HidePopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+HidePopover.h"; path = "Other Sources/UIViewController+HidePopover.h"; sourceTree = "<group>"; };
 		E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+HidePopover.m"; path = "Other Sources/UIViewController+HidePopover.m"; sourceTree = "<group>"; };
 		E1C44B09200147ED002128AD /* StoryTitleAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StoryTitleAttributedString.h; sourceTree = "<group>"; };
@@ -3345,6 +3348,7 @@
 				17E2AEBD286556CB000FAB5B /* icons8-bursts-100.png */,
 				17E2AEBE286556CB000FAB5B /* icons8-calendar-100.png */,
 				DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */,
+				DA5B929B2C1F40819E9A88CF /* web-feed-100.png */,
 				17E2AEBB286556CB000FAB5B /* icons8-cellular-network-100.png */,
 				17E2AEC7286556CC000FAB5B /* icons8-comics-magazine-100.png */,
 				17E2AEC5286556CC000FAB5B /* icons8-filing-cabinet-100.png */,
@@ -4446,6 +4450,7 @@
 				175791662930605500490924 /* story_share_facebook@2x.png in Resources */,
 				175791672930605500490924 /* icons8-calendar-100.png in Resources */,
 				EFF0DC3C3415458F84CD3BC0 /* icons8-prompt-100.png in Resources */,
+				EFF0DC3C3415458F84CD3BC1 /* web-feed-100.png in Resources */,
 				175791682930605500490924 /* g_icn_folder_read@2x.png in Resources */,
 				175791692930605500490924 /* traverse_previous_off_vert@2x.png in Resources */,
 				1757916A2930605500490924 /* all@3x.png in Resources */,
@@ -4935,6 +4940,7 @@
 				FFC5F31216E2D2C2007AC72C /* story_share_facebook@2x.png in Resources */,
 				17E2AED0286556CC000FAB5B /* icons8-calendar-100.png in Resources */,
 				B1CC4CA96C214E4BA724EBD5 /* icons8-prompt-100.png in Resources */,
+				B1CC4CA96C214E4BA724EBD6 /* web-feed-100.png in Resources */,
 				FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */,
 				17C67D9E2138B2D20027CCAE /* traverse_previous_off_vert@2x.png in Resources */,
 				FF6281FA1A09614C00271FDB /* all@3x.png in Resources */,

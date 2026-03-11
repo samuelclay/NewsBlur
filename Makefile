@@ -524,7 +524,7 @@ grafana-dashboards:
 #   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, auto-mounted on boot via HA automation
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
 # Python venv at /config/scripts/venv (boto3 for S3 downloads)
-# HA automation: weekly Monday 6am, mounts drive then runs shell_command.offsite_backup
+# HA automation: nightly 6am, mounts drive then runs shell_command.offsite_backup
 # HAOS gotchas:
 #   - SSH add-on runs in a container, not on the host
 #   - For host-level ops (mount, fdisk): docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -- <cmd>
@@ -545,6 +545,8 @@ offsite-backup-install:
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
 	cat utils/backups/offsite_status.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_status.py"
 	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
+	cat utils/backups/mount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mount_backup_drive.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/mount_backup_drive.sh"
 	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"

@@ -129,15 +129,15 @@ class RTrendingWebFeed:
         today = cls._today()
 
         pipe = r.pipeline()
-        pipe.zrange(f"wfAna:{today}", 0, -1, withscores=True)        # 0: analyses
-        pipe.zrange(f"wfSub:{today}", 0, -1, withscores=True)        # 1: subscriptions
-        pipe.scard(f"wfAnaUsers:{today}")                              # 2: unique analyzing users
-        pipe.scard(f"wfSubUsers:{today}")                              # 3: unique subscribing users
-        pipe.get(f"wfHints:{today}")                                   # 4: hints
-        pipe.get(f"wfReanalyze:{today}")                               # 5: re-analyses
-        pipe.zrange(f"wfVariant:{today}", 0, -1, withscores=True)     # 6: variant choices
-        pipe.get(f"wfAnaSuccess:{today}")                              # 7: successes
-        pipe.get(f"wfAnaFail:{today}")                                 # 8: failures
+        pipe.zrange(f"wfAna:{today}", 0, -1, withscores=True)  # 0: analyses
+        pipe.zrange(f"wfSub:{today}", 0, -1, withscores=True)  # 1: subscriptions
+        pipe.scard(f"wfAnaUsers:{today}")  # 2: unique analyzing users
+        pipe.scard(f"wfSubUsers:{today}")  # 3: unique subscribing users
+        pipe.get(f"wfHints:{today}")  # 4: hints
+        pipe.get(f"wfReanalyze:{today}")  # 5: re-analyses
+        pipe.zrange(f"wfVariant:{today}", 0, -1, withscores=True)  # 6: variant choices
+        pipe.get(f"wfAnaSuccess:{today}")  # 7: successes
+        pipe.get(f"wfAnaFail:{today}")  # 8: failures
         vals = pipe.execute()
 
         analyses_total = sum(int(s) for _, s in vals[0])
@@ -148,9 +148,7 @@ class RTrendingWebFeed:
         unique_users_subscribing = vals[3]
         hints = int(vals[4] or 0)
         reanalyses = int(vals[5] or 0)
-        variant_choices = {
-            (v.decode() if isinstance(v, bytes) else v): int(s) for v, s in vals[6]
-        }
+        variant_choices = {(v.decode() if isinstance(v, bytes) else v): int(s) for v, s in vals[6]}
         successes = int(vals[7] or 0)
         failures = int(vals[8] or 0)
 

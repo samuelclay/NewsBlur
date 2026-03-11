@@ -7,6 +7,7 @@ NEWSBLUR.ReaderMarkRead = function (options) {
     this.flags = {};
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
+    this.is_mac = navigator.platform.indexOf('Mac') !== -1;
     this.runner();
 };
 
@@ -30,6 +31,9 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
 
     make_modal: function () {
         var self = this;
+        var saved_read_days = this.model.preference('mark_read_days');
+        var saved_unread_days = this.model.preference('mark_unread_days');
+        var shortcut_key = this.is_mac ? '⌘↵' : 'Ctrl+↵';
 
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
@@ -47,12 +51,15 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                                 className: 'NB-markread-slider',
                                 min: '0',
                                 max: NEWSBLUR.Globals.is_archive ? '365' : '30',
-                                value: String(this.options['days'] || 1)
+                                value: String(saved_read_days != null ? saved_read_days : 1)
                             }),
                             $.make('div', { className: 'NB-markread-slider-value' })
                         ]),
                         $.make('div', { className: 'NB-modal-submit' }, [
-                            $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markread-submit', value: 'Mark as read' })
+                            $.make('div', { className: 'NB-markread-submit-wrapper' }, [
+                                $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markread-submit', value: 'Mark as read' }),
+                                $.make('span', { className: 'NB-markread-shortcut-hint' }, shortcut_key)
+                            ])
                         ])
                     ]).bind('submit', function (e) {
                         e.preventDefault();
@@ -71,7 +78,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                                 className: 'NB-mark-unread-slider',
                                 min: '1',
                                 max: '365',
-                                value: '14'
+                                value: String(saved_unread_days != null ? saved_unread_days : 14)
                             }),
                             $.make('div', { className: 'NB-mark-unread-slider-value' })
                         ]),
@@ -128,6 +135,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         var $slider = $('.NB-markread-slider', this.$modal);
         var days = parseInt($slider.val(), 10);
 
+        this.model.preference('mark_read_days', days);
         this.flags.saving = true;
         $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
         if (NEWSBLUR.Globals.is_authenticated) {
@@ -159,8 +167,9 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         var self = this;
         var $slider = $('.NB-mark-unread-slider', this.$modal);
         var max_days = this.get_max_unread_days();
+        var saved_days = this.model.preference('mark_unread_days') || 14;
 
-        $slider.val(Math.min(14, max_days));
+        $slider.val(Math.min(saved_days, max_days));
         this.update_unread_slider(parseInt($slider.val(), 10));
 
         $slider.on('input', function () {
@@ -216,6 +225,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
 
         if (days > max_days) return;
 
+        this.model.preference('mark_unread_days', days);
         this.flags.saving_unread = true;
         $button.attr('value', 'Marking as unread...').addClass('NB-disabled').attr('disabled', true);
 
