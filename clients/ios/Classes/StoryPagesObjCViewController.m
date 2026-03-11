@@ -457,6 +457,10 @@
         self.doneInitialDisplay = YES;
     });
 
+    if (self.isPhoneOrCompact) {
+        [self configureFullScreenPopGesture];
+    }
+
     [self becomeFirstResponder];
 }
 
@@ -948,11 +952,21 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == self.fullScreenPopGesture) {
+        UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint velocity = [pan velocityInView:self.view];
+        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+            return NO;
+        }
+        UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+        return navController.viewControllers.count > 1;
+    }
+
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
     if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
         return navController.viewControllers.count > 1;
     }
-    
+
     return YES;
 }
 
@@ -961,11 +975,15 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == self.fullScreenPopGesture) {
+        return NO;
+    }
+
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
     if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
         return YES;
     }
-    
+
     return NO;
 }
 
@@ -2208,6 +2226,45 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     [self reorientPages];
+    [self updatePopGestureForScrollOrientation];
+}
+
+- (void)configureFullScreenPopGesture {
+    if (self.fullScreenPopGesture != nil) {
+        return;
+    }
+
+    UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+    if (!navController || !navController.interactivePopGestureRecognizer) {
+        return;
+    }
+
+    NSArray *targets = [navController.interactivePopGestureRecognizer valueForKey:@"_targets"];
+    id internalTarget = [targets firstObject];
+    id target = [internalTarget valueForKey:@"target"];
+    SEL action = NSSelectorFromString(@"handleNavigationTransition:");
+    if (!target || ![target respondsToSelector:action]) {
+        return;
+    }
+
+    self.fullScreenPopGesture = [[UIPanGestureRecognizer alloc] initWithTarget:target action:action];
+    self.fullScreenPopGesture.delegate = self;
+    [self.view addGestureRecognizer:self.fullScreenPopGesture];
+
+    [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.fullScreenPopGesture];
+
+    [self updatePopGestureForScrollOrientation];
+}
+
+- (void)updatePopGestureForScrollOrientation {
+    UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+    if (self.isHorizontal) {
+        self.fullScreenPopGesture.enabled = NO;
+        navController.interactivePopGestureRecognizer.enabled = YES;
+    } else {
+        self.fullScreenPopGesture.enabled = YES;
+        navController.interactivePopGestureRecognizer.enabled = NO;
+    }
 }
 
 - (void)updateStoriesTheme {
