@@ -46,10 +46,14 @@
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 24px;
     font-weight: 700;
-    color: white;
+    color: #2d261a;
     white-space: nowrap;
     text-align: left;
     min-width: 0;
+}
+
+body.NB-dark.NB-static .NB-splash-top-title {
+    color: white;
 }
 
 /* When title is empty, still takes up flex space to keep links centered */
@@ -103,8 +107,12 @@
 .NB-splash-top-link {
     list-style: none;
     list-style-type: none;
-    margin: 0;
     padding: 0;
+}
+
+.NB-static .NB-splash-top-link,
+.NB-welcome .NB-splash-top-link {
+    margin: 0;
 }
 
 .NB-splash-top-link::marker {
@@ -116,7 +124,7 @@
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.3px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.6);
     text-decoration: none;
     padding: 6px 14px;
     border-radius: 6px;
@@ -128,18 +136,18 @@
 }
 
 .NB-static .NB-splash-top-link a:hover {
-    color: #FBDB9B;
-    background: rgba(255, 255, 255, 0.06);
+    color: #2d261a;
+    background: rgba(0, 0, 0, 0.06);
 }
 
-/* Active page: gold text + rounded border (direct child only, not dropdown links) */
+/* Active page: dark text + rounded border (direct child only, not dropdown links) */
 .NB-static-features .NB-splash-top-link-features > a,
 .NB-static-pricing .NB-splash-top-link-pricing > a,
 .NB-static-about .NB-splash-top-link-about > a,
 .NB-static-faq .NB-splash-top-link-faq > a,
 .NB-static-compare .NB-splash-top-link-features > a {
-    color: #FBDB9B;
-    border-color: rgba(251, 219, 155, 0.3);
+    color: #2d261a;
+    border-color: rgba(45, 38, 26, 0.2);
 }
 
 /* Hide old .NB-static-title - title is now in the header nav */
@@ -152,8 +160,12 @@
     display: none;
 }
 
-/* Logo: keep dark variant for the dark header bar */
+/* Logo: light variant for frosted glass, dark variant for dark mode */
 .NB-static .NB-splash-blurred-logo {
+    background-image: url('/media/embed/logo_newsblur_blur.png');
+}
+
+body.NB-dark.NB-static .NB-splash-blurred-logo {
     background-image: url('/media/embed/logo_newsblur_blur_dark.png');
 }
 
@@ -164,10 +176,11 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 48px;
+    box-sizing: border-box;
     height: 70px;
 }
 
@@ -185,7 +198,7 @@
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.3px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(45, 38, 26, 0.6);
     text-decoration: none;
     padding: 6px 14px;
     border-radius: 6px;
@@ -196,7 +209,7 @@
 }
 
 .NB-welcome .NB-splash-top-link a:hover {
-    color: #FBDB9B;
+    color: #2d261a;
 }
 
 /* Welcome page: show toggle in top-right but hide logo and title */
@@ -204,7 +217,7 @@
     display: flex;
     align-items: center;
     position: absolute;
-    right: 8px;
+    right: 0;
     top: 0;
     height: 70px;
 }
@@ -213,9 +226,9 @@
     display: none;
 }
 
-/* Welcome page: warm beige splash background (scoped so reader keeps #F6F8F0) */
+/* Welcome page: warm gold splash background (scoped so reader keeps #F6F8F0) */
 .NB-welcome #NB-splash {
-    background-color: #f0e7cf;
+    background-color: #c4a870;
 }
 
 .NB-welcome .NB-splash-top-title {
@@ -255,26 +268,31 @@
     transform: rotate(180deg);
 }
 
-/* Dropdown panel - hidden by default */
+/* Dropdown panel - lives in <body> (moved via JS) so backdrop-filter
+   works without being blocked by the header's own backdrop-filter. */
 .NB-splash-dropdown {
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(6px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-    z-index: 100;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     padding-top: 8px;
 }
 
-/* Open state */
-.NB-splash-nav-dropdown-open > .NB-splash-dropdown {
+/* Constrain dropdown widths */
+.NB-splash-dropdown-features {
+    width: 652px;
+}
+
+.NB-splash-dropdown:not(.NB-splash-dropdown-features) {
+    width: 312px;
+}
+
+/* Open state - applied directly to the dropdown element */
+.NB-splash-dropdown.NB-splash-nav-dropdown-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
 }
 
 /* Grace area - invisible bridge between trigger and panel */
@@ -287,14 +305,14 @@
     height: 20px;
 }
 
-/* Inner container - the visible panel */
+/* Inner container - the visible panel (light mode: frosted glass) */
 .NB-splash-dropdown-inner {
-    background: rgba(16, 16, 20, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(40px) saturate(1.4);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 12px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03);
     padding: 12px;
     min-width: 280px;
 }
@@ -311,7 +329,7 @@
 .NB-splash-dropdown-col-hero {
     flex: 0 0 290px;
     padding-right: 16px;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Right column: more features + compare + alternatives */
@@ -328,13 +346,16 @@
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(26, 21, 8, 0.5);
     padding: 4px 10px 8px;
     margin: 0;
 }
 
+a.NB-splash-dropdown-heading-link,
+a.NB-splash-dropdown-heading-link:link,
+a.NB-splash-dropdown-heading-link:visited,
 .NB-splash-dropdown-heading-link {
-    color: rgba(251, 219, 155, 0.6);
+    color: #1a1508;
     text-decoration: none;
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 10px;
@@ -344,8 +365,9 @@
     transition: color 0.15s ease;
 }
 
+a.NB-splash-dropdown-heading-link:hover,
 .NB-splash-dropdown-heading-link:hover {
-    color: #FBDB9B;
+    color: #000;
 }
 
 /* Hero dropdown items (name + description) */
@@ -399,36 +421,46 @@
     filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1);
 }
 
+a.NB-splash-dropdown-item,
+a.NB-splash-dropdown-item:link,
+a.NB-splash-dropdown-item:visited,
+.NB-splash-dropdown-item {
+    color: #2d261a;
+    text-decoration: none;
+}
+
+a.NB-splash-dropdown-item:hover,
 .NB-splash-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.04);
+    color: #1a1508;
 }
 
 .NB-splash-dropdown-item-name {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: #2d261a;
     line-height: 1.2;
     margin-bottom: 2px;
 }
 
 .NB-splash-dropdown-item:hover .NB-splash-dropdown-item-name {
-    color: white;
+    color: #1a1508;
 }
 
 .NB-splash-dropdown-item-desc {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 11px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(45, 38, 26, 0.65);
     line-height: 1.3;
 }
 
 /* Price badge in pricing dropdown */
 .NB-splash-dropdown-price {
     font-size: 11px;
-    font-weight: 400;
-    color: #FBDB9B;
+    font-weight: 600;
+    color: #5a4510;
     margin-left: 4px;
 }
 
@@ -466,7 +498,7 @@
 /* Divider line */
 .NB-splash-dropdown-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.08);
     margin: 6px 10px;
 }
 
@@ -477,12 +509,15 @@
     gap: 0;
 }
 
+a.NB-splash-dropdown-grid-item,
+a.NB-splash-dropdown-grid-item:link,
+a.NB-splash-dropdown-grid-item:visited,
 .NB-splash-dropdown-grid-item {
     display: block;
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 12px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.55);
+    font-weight: 600;
+    color: #1a1508;
     text-decoration: none;
     padding: 4px 10px;
     border-radius: 6px;
@@ -491,9 +526,10 @@
     box-sizing: border-box;
 }
 
+a.NB-splash-dropdown-grid-item:hover,
 .NB-splash-dropdown-grid-item:hover {
-    color: #FBDB9B;
-    background: rgba(255, 255, 255, 0.04);
+    color: #000;
+    background: rgba(0, 0, 0, 0.06);
 }
 
 /* Current page highlight in dropdown - dim background */
@@ -506,7 +542,7 @@
 .NB-static-feature-archive .NB-splash-dropdown-item-archive,
 .NB-static-feature-saved .NB-splash-dropdown-item-saved,
 .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
@@ -517,7 +553,7 @@
 .NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
 .NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
 .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
-    color: #FBDB9B;
+    color: #1a1508;
 }
 
 /* Compare & alternative grid items - active page highlight */
@@ -531,8 +567,8 @@ body.NB-static-alt-google-reader .NB-splash-dropdown-grid-item-alt-google-reader
 body.NB-static-alt-open-source .NB-splash-dropdown-grid-item-alt-open-source,
 body.NB-static-alt-inoreader .NB-splash-dropdown-grid-item-alt-inoreader,
 body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
-    color: #FBDB9B !important;
-    background: rgba(251, 219, 155, 0.1);
+    color: #000 !important;
+    background: rgba(0, 0, 0, 0.06);
 }
 
 /* Welcome page adjustments */
@@ -2795,18 +2831,92 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
         font-size: 26px;
     }
 
-    .NB-static .NB-splash-info.NB-splash-top {
-        height: 55px;
-        padding: 0 12px;
+    .NB-static .NB-splash-info.NB-splash-top,
+    .NB-welcome .NB-splash-info.NB-splash-top {
+        height: auto;
+        padding: 0;
     }
 
+    /* Hide page title on mobile to save space */
     .NB-splash-top-title {
-        font-size: 16px;
+        display: none;
     }
 
-    .NB-static .NB-splash-top-link a {
+    /* Nav: links left, toggle right */
+    .NB-static .NB-splash-top-nav,
+    .NB-welcome .NB-splash-top-nav {
+        gap: 4px;
+        padding: 6px 10px;
+        height: auto;
+        justify-content: flex-start;
+    }
+
+    .NB-static .NB-splash-top-links,
+    .NB-welcome .NB-splash-top-links {
+        gap: 2px;
+    }
+
+    .NB-static .NB-splash-top-link a,
+    .NB-welcome .NB-splash-top-link a {
+        font-size: 12px;
+        padding: 4px 6px;
+        letter-spacing: 0;
+        line-height: 16px;
+    }
+
+    /* Hide dropdown arrows on mobile since dropdowns are hidden */
+    .NB-splash-nav-has-dropdown > a::after {
+        display: none;
+    }
+
+    /* Push toggle to the right */
+    .NB-static .NB-splash-top-logo,
+    .NB-welcome .NB-splash-top-logo {
+        position: static;
+        flex: 1;
+        gap: 8px;
+        height: auto;
+        align-items: center;
+    }
+
+    .NB-static .NB-splash-top-links,
+    .NB-welcome .NB-splash-top-links,
+    .NB-static .NB-splash-top-logo,
+    .NB-welcome .NB-splash-top-logo,
+    .NB-theme-toggle {
+        align-self: center;
+    }
+
+    /* Hide the NewsBlur text logo on mobile */
+    .NB-static .NB-splash-top-logo .NB-splash-blurred-logo {
+        display: none;
+    }
+
+    /* Shrink theme toggle */
+    .NB-theme-toggle {
+        gap: 4px;
+        margin-top: -1px;
+    }
+
+    .NB-theme-toggle-sun,
+    .NB-theme-toggle-moon {
         font-size: 11px;
-        padding: 5px 8px;
+    }
+
+    .NB-theme-toggle-track {
+        width: 28px;
+        height: 16px;
+    }
+
+    .NB-theme-toggle-thumb {
+        width: 11px;
+        height: 11px;
+        top: 1.5px;
+        left: 1.5px;
+    }
+
+    body.NB-dark .NB-theme-toggle-thumb {
+        transform: translateX(12px);
     }
 
     .NB-feature-section {
@@ -2889,7 +2999,7 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
 
 .NB-theme-toggle-sun,
 .NB-theme-toggle-moon {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(0, 0, 0, 0.2);
     transition: color 0.3s ease;
     flex-shrink: 0;
     display: block;
@@ -2897,7 +3007,13 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
 
 /* Active sun icon in light mode */
 body:not(.NB-dark) .NB-theme-toggle-sun {
-    color: #FBDB9B;
+    color: #b8960a;
+}
+
+/* Dark mode: dim icons use white */
+body.NB-dark .NB-theme-toggle-sun,
+body.NB-dark .NB-theme-toggle-moon {
+    color: rgba(255, 255, 255, 0.25);
 }
 
 /* Active moon icon in dark mode */
@@ -2910,8 +3026,8 @@ body.NB-dark .NB-theme-toggle-moon {
     width: 36px;
     height: 20px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.08);
     cursor: pointer;
     padding: 0;
     outline: none;
@@ -2922,6 +3038,17 @@ body.NB-dark .NB-theme-toggle-moon {
 }
 
 .NB-theme-toggle-track:hover {
+    background: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Dark mode: revert toggle track to white-based */
+body.NB-dark .NB-theme-toggle-track {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.NB-dark .NB-theme-toggle-track:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
 }
@@ -2938,8 +3065,8 @@ body.NB-dark .NB-theme-toggle-moon {
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #f5eedd;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background: #555;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 background-color 0.3s ease;
     display: block;
@@ -2980,26 +3107,66 @@ body.NB-static a {
     transition: color 0.3s ease;
 }
 
-/* Light mode: light teal header/footer */
+/* Light mode: frosted glass header/footer */
 body.NB-static:not(.NB-dark) .NB-splash-info {
+    background-color: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.NB-static:not(.NB-dark) .NB-splash-info.NB-splash-bottom {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode: dark footer link text on frosted glass */
+body.NB-static:not(.NB-dark) .NB-splash-info .NB-splash-links .NB-splash-link a {
+    color: rgba(45, 38, 26, 0.55);
+}
+
+body.NB-static:not(.NB-dark) .NB-splash-info .NB-splash-links .NB-splash-link a:hover {
+    color: #2d261a;
+}
+
+body.NB-static:not(.NB-dark) .NB-splash-info .NB-splash-links .NB-splash-link.NB-active a {
+    color: #2d261a;
+}
+
+body.NB-static:not(.NB-dark) .NB-splash-info .NB-splash-links .NB-splash-link.NB-active a:hover {
+    color: #000;
+}
+
+/* Dark mode: teal header/footer */
+body.NB-dark.NB-static .NB-splash-info {
     background-color: rgba(72, 132, 128, 0.88);
     border-bottom-color: rgba(255, 255, 255, 0.15);
 }
 
-body.NB-static:not(.NB-dark) .NB-splash-info.NB-splash-bottom {
-    background: rgba(72, 132, 128, 0.9);
-    border-top-color: rgba(255, 255, 255, 0.15);
+/* Dark mode: restore light nav links on teal header */
+body.NB-dark .NB-splash-top-link a {
+    color: rgba(255, 255, 255, 0.5);
 }
 
-/* Dark mode: deep amber header/footer */
-body.NB-dark.NB-static .NB-splash-info {
-    background-color: rgba(110, 65, 28, 0.88);
-    border-bottom-color: rgba(255, 200, 120, 0.1);
+body.NB-dark .NB-splash-top-link a:hover {
+    color: #FBDB9B;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+body.NB-dark.NB-static-features .NB-splash-top-link-features > a,
+body.NB-dark.NB-static-pricing .NB-splash-top-link-pricing > a,
+body.NB-dark.NB-static-about .NB-splash-top-link-about > a,
+body.NB-dark.NB-static-faq .NB-splash-top-link-faq > a,
+body.NB-dark.NB-static-compare .NB-splash-top-link-features > a {
+    color: #FBDB9B;
+    border-color: rgba(251, 219, 155, 0.3);
 }
 
 body.NB-dark.NB-static .NB-splash-info.NB-splash-bottom {
-    background: rgba(110, 65, 28, 0.9);
-    border-top-color: rgba(255, 200, 120, 0.1);
+    background: rgba(72, 132, 128, 0.9);
+    border-top-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Dark mode: teal background for static and welcome pages */
@@ -3030,6 +3197,94 @@ body.NB-dark.NB-static a {
 
 body.NB-dark.NB-static a:hover {
     color: #fce8b8;
+}
+
+/* Dark mode: dark frosted glass dropdowns */
+.NB-dark .NB-splash-dropdown-inner {
+    background: rgba(16, 20, 28, 0.7);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-splash-dropdown-heading {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-dark .NB-splash-dropdown-heading-link {
+    color: rgba(251, 219, 155, 0.6);
+}
+
+.NB-dark .NB-splash-dropdown-heading-link:hover {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-splash-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-splash-dropdown-item-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-splash-dropdown-item:hover .NB-splash-dropdown-item-name {
+    color: white;
+}
+
+.NB-dark .NB-splash-dropdown-item-desc {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-splash-dropdown-price {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-splash-dropdown-divider {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-splash-dropdown-grid-item {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-splash-dropdown-grid-item:hover {
+    color: #FBDB9B;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training,
+.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
+.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
+.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search,
+.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive,
+.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved,
+.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
+.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
+    color: #FBDB9B;
+}
+
+body.NB-dark.NB-static-compare-feedly .NB-splash-dropdown-grid-item-compare-feedly,
+body.NB-dark.NB-static-compare-inoreader .NB-splash-dropdown-grid-item-compare-inoreader,
+body.NB-dark.NB-static-compare-readwise .NB-splash-dropdown-grid-item-compare-readwise,
+body.NB-dark.NB-static-compare-old-reader .NB-splash-dropdown-grid-item-compare-old-reader,
+body.NB-dark.NB-static-compare-feedbin .NB-splash-dropdown-grid-item-compare-feedbin,
+body.NB-dark.NB-static-alt-feedly .NB-splash-dropdown-grid-item-alt-feedly,
+body.NB-dark.NB-static-alt-google-reader .NB-splash-dropdown-grid-item-alt-google-reader,
+body.NB-dark.NB-static-alt-open-source .NB-splash-dropdown-grid-item-alt-open-source,
+body.NB-dark.NB-static-alt-inoreader .NB-splash-dropdown-grid-item-alt-inoreader,
+body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
+    color: #FBDB9B !important;
+    background: rgba(251, 219, 155, 0.1);
 }
 
 .NB-dark .NB-feature-section {

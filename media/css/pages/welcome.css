@@ -5,6 +5,11 @@
     position: absolute;
 }
 
+.NB-welcome.NB-show-reader .NB-splash-info.NB-splash-top,
+.NB-welcome-tryout-active .NB-splash-info.NB-splash-top {
+    display: none;
+}
+
 .NB-welcome .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
 }
@@ -16,7 +21,9 @@
     border-top: none;
     border-bottom: none;
     background: none;
-    background-color: rgba(72, 132, 128, 0.88);
+    background-color: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 10;
 }
 
@@ -579,7 +586,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 
 .NB-welcome-hero-wrap {
     position: relative;
-    background: linear-gradient(180deg, #c4a870 0%, #8a7048 50%, #6a5535 100%);
+    background: linear-gradient(180deg, #dcc8a0 0%, #c4a870 50%, #8a7048 100%);
     overflow: hidden;
 }
 
@@ -590,6 +597,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     width: 100%;
     height: 100%;
     z-index: 0;
+    background: transparent;
 }
 
 .NB-welcome-header {
@@ -626,7 +634,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 .NB-welcome-header .NB-welcome-header-logo img {
     height: 88px;
     width: 88px;
-    filter: drop-shadow(0 2px 16px rgba(217, 166, 33, 0.4));
+    filter: drop-shadow(0 2px 16px rgba(0, 0, 0, 0.15));
     transition: opacity .15s ease-in-out;
     opacity: .9;
 }
@@ -2797,9 +2805,8 @@ a.NB-fgi img {
     color: #363C53;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
     line-height: 24px;
-    background-color: #FAFAFA;
-    background: #F1E0D0 url(/media/img/welcome/footer_background.jpg) repeat center top;
-    background-size: 1438px 150px;
+    background-color: #d0ccc5;
+    background: linear-gradient(180deg, #d0ccc5 0%, #c4bfb7 100%);
 
     border-top: 2px solid rgba(0, 0, 0, .1);
 }
@@ -3015,6 +3022,10 @@ a.NB-fgi img {
 /* Hero / Header — teal in dark mode */
 .NB-dark .NB-welcome-hero-wrap {
     background: linear-gradient(180deg, #4a6866 0%, #2c4a48 50%, #243e3c 100%);
+}
+
+.NB-dark.NB-welcome .NB-splash-info.NB-splash-top {
+    background-color: rgba(72, 132, 128, 0.88);
 }
 
 .NB-dark .NB-welcome-header {
