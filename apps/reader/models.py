@@ -207,7 +207,9 @@ class UserSubscription(models.Model):
             # Calculate effective cutoff for this feed based on auto_mark_read settings
             effective_cutoff = cutoff_date
             if is_archive:
-                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings, feed_folder_mapping)
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(
+                    folder_settings, feed_folder_mapping, user_profile=user.profile
+                )
                 if auto_mark_read_cutoff:
                     effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
             read_dates[us.feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
@@ -1264,7 +1266,9 @@ class UserSubscription(models.Model):
 
         return data
 
-    def get_effective_auto_mark_read_days(self, folder_settings=None, feed_folder_mapping=None):
+    def get_effective_auto_mark_read_days(
+        self, folder_settings=None, feed_folder_mapping=None, user_profile=None
+    ):
         """
         Returns the effective auto_mark_read_days setting following inheritance:
         feed -> folder (walking up nested hierarchy) -> site-wide
@@ -1275,6 +1279,7 @@ class UserSubscription(models.Model):
             folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
             feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
                                  (use UserSubscriptionFolders.get_feed_folder_mapping() to generate)
+            user_profile: Pre-fetched Profile to avoid N+1 queries on self.user.profile
         """
         # First check if feed has explicit setting
         if self.auto_mark_read_days is not None:
@@ -1305,8 +1310,9 @@ class UserSubscription(models.Model):
                 return (days, source)
 
         # Fall back to site-wide setting (only for archive users)
-        if self.user.profile.is_archive and self.user.profile.days_of_unread:
-            return (self.user.profile.days_of_unread, "site-wide")
+        profile = user_profile or self.user.profile
+        if profile.is_archive and profile.days_of_unread:
+            return (profile.days_of_unread, "site-wide")
 
         return (None, "default")
 
@@ -1333,7 +1339,7 @@ class UserSubscription(models.Model):
 
         return (None, "default")
 
-    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None):
+    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None, user_profile=None):
         """
         Returns the unread cutoff date based on auto_mark_read_days setting.
         Takes into account feed, folder, and site-wide settings.
@@ -1342,8 +1348,11 @@ class UserSubscription(models.Model):
         Args:
             folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
             feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
+            user_profile: Pre-fetched Profile to avoid N+1 queries on self.user.profile
         """
-        days, source = self.get_effective_auto_mark_read_days(folder_settings, feed_folder_mapping)
+        days, source = self.get_effective_auto_mark_read_days(
+            folder_settings, feed_folder_mapping, user_profile=user_profile
+        )
         if days is None:
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
