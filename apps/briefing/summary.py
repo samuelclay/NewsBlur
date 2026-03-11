@@ -287,7 +287,9 @@ def generate_briefing_summary(
                 if missing_ids:
                     for f in Feed.objects.filter(pk__in=missing_ids).only("pk", "feed_title"):
                         feeds_by_id[f.pk] = f.feed_title
-                other_feeds = [feeds_by_id[fid] for fid in other_feed_ids if fid in feeds_by_id and feeds_by_id[fid]]
+                other_feeds = [
+                    feeds_by_id[fid] for fid in other_feed_ids if fid in feeds_by_id and feeds_by_id[fid]
+                ]
                 if other_feeds:
                     line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
 
@@ -923,7 +925,9 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
     member_hash_list = list(all_member_hashes)
     for batch_start in range(0, len(member_hash_list), 100):
         batch = member_hash_list[batch_start : batch_start + 100]
-        for story in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id", "story_title").order_by():
+        for story in (
+            MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id", "story_title").order_by()
+        ):
             member_metadata[story.story_hash] = story
 
     # summary.py: Process each story link in reverse order so insertions don't shift offsets
@@ -945,9 +949,9 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
             if p_close == -1:
                 continue
             p_close += len("</p>")
-            modified_paragraph = section_html[: match.start()] + section_html[match.start() : p_close].replace(
-                full_link, bold_title, 1
-            )
+            modified_paragraph = section_html[: match.start()] + section_html[
+                match.start() : p_close
+            ].replace(full_link, bold_title, 1)
             section_html = modified_paragraph + section_html[p_close:]
             continue
 
@@ -971,9 +975,9 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
             if p_close == -1:
                 continue
             p_close += len("</p>")
-            modified_paragraph = section_html[: match.start()] + section_html[match.start() : p_close].replace(
-                full_link, bold_title, 1
-            )
+            modified_paragraph = section_html[: match.start()] + section_html[
+                match.start() : p_close
+            ].replace(full_link, bold_title, 1)
             section_html = modified_paragraph + section_html[p_close:]
             continue
 
