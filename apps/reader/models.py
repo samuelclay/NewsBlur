@@ -447,7 +447,7 @@ class UserSubscription(models.Model):
         cache_prefix="",
         date_filter_start=None,
         date_filter_end=None,
-        use_lazy_merge=False,  # Deprecated: lazy merge is now auto-enabled for >50 feeds
+        use_lazy_merge=False,  # Deprecated: lazy merge is now always used
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -582,65 +582,31 @@ class UserSubscription(models.Model):
 
             return merged_story_hashes
 
-        # Auto-enable lazy merge for users with many feeds to avoid blocking
-        # Redis with large ZUNIONSTORE operations
-        LAZY_MERGE_FEED_THRESHOLD = 50
-        use_lazy = len(feed_ids) > LAZY_MERGE_FEED_THRESHOLD
-        if use_lazy:
-            story_hashes = lazy_merge_story_hashes(
-                read_filter,
-                offset,
-                limit,
-                cache_key=ranked_stories_keys,
-            )
-        else:
-            cls.story_hashes(
-                user_id,
-                feed_ids=feed_ids,
-                read_filter=read_filter,
-                order=order,
-                include_timestamps=False,
-                usersubs=usersubs,
-                cutoff_date=cutoff_date,
-                across_all_feeds=across_all_feeds,
-                store_stories_key=ranked_stories_keys,
-                date_filter_start=date_filter_start,
-                date_filter_end=date_filter_end,
-            )
-            story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
+        # Always use lazy merge (k-way heap) instead of ZUNIONSTORE to avoid
+        # blocking Redis. Works for any feed count — overhead is negligible for
+        # small feed lists and eliminates slowlog entries for large ones.
+        story_hashes = lazy_merge_story_hashes(
+            read_filter,
+            offset,
+            limit,
+            cache_key=ranked_stories_keys,
+        )
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
-            if not use_lazy:
-                rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
-            else:
-                # For lazy merge with unread filter, the ranked key IS the unread key
-                pipe = rt.pipeline()
-                pipe.delete(unread_ranked_stories_keys)
-                pipe.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
-                pipe.expire(unread_ranked_stories_keys, 60 * 60)
-                pipe.execute()
+            # Copy ranked key to unread key (small ZUNIONSTORE on cached results only)
+            pipe = rt.pipeline()
+            pipe.delete(unread_ranked_stories_keys)
+            pipe.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+            pipe.expire(unread_ranked_stories_keys, 60 * 60)
+            pipe.execute()
         else:
-            if use_lazy:
-                unread_feed_story_hashes = lazy_merge_story_hashes(
-                    "unread",
-                    offset,
-                    limit,
-                    cache_key=unread_ranked_stories_keys,
-                )
-            else:
-                cls.story_hashes(
-                    user_id,
-                    feed_ids=feed_ids,
-                    read_filter="unread",
-                    order=order,
-                    include_timestamps=True,
-                    cutoff_date=cutoff_date,
-                    store_stories_key=unread_ranked_stories_keys,
-                    date_filter_start=date_filter_start,
-                    date_filter_end=date_filter_end,
-                )
-                unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
+            unread_feed_story_hashes = lazy_merge_story_hashes(
+                "unread",
+                offset,
+                limit,
+                cache_key=unread_ranked_stories_keys,
+            )
 
         rt.expire(ranked_stories_keys, 60 * 60)
         rt.expire(unread_ranked_stories_keys, 60 * 60)

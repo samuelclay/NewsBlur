@@ -152,7 +152,7 @@ ALLOWED_SUBDOMAINS = [
     "staging3",
     "nb",
 ]
-# Deprecated: lazy merge is now auto-enabled for users with >50 feeds in reader/models.py
+# Deprecated: lazy merge is now always used for all river loads (no ZUNIONSTORE)
 RIVER_SLOWDOWN_USERS = []
 
 
