@@ -33,11 +33,17 @@
     return [userPreferences boolForKey:@"show_ask_ai"];
 }
 
+- (BOOL)isGoToFeedEnabled {
+    return self.appDelegate.storiesCollection.isRiverView ||
+           self.appDelegate.storiesCollection.isSocialRiverView;
+}
+
 - (NSInteger)adjustedRow:(NSInteger)row {
-    // If Ask AI is disabled, rows 5+ need to be shifted down by 1
-    // Row 5 is Ask AI, so rows >= 5 when Ask AI is hidden become the previous row's content
     if (![self isAskAIEnabled] && row >= 5) {
-        return row + 1;
+        row += 1;
+    }
+    if (![self isGoToFeedEnabled] && row >= 6) {
+        row += 1;
     }
     return row;
 }
@@ -315,8 +321,11 @@
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger baseCount = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 13 : 12;
+    NSInteger baseCount = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 14 : 13;
     if (![self isAskAIEnabled]) {
+        baseCount -= 1;
+    }
+    if (![self isGoToFeedEnabled]) {
         baseCount -= 1;
     }
     return baseCount;
@@ -329,17 +338,17 @@
     NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
     NSInteger adjustedRow = [self adjustedRow:indexPath.row];
 
-    if (adjustedRow == 7) {
+    if (adjustedRow == 8) {
         return [self makeFontSizeTableCell];
-    } else if (adjustedRow == 8) {
+    } else if (adjustedRow == 9) {
         return [self makeLineSpacingTableCell];
-    } else if (adjustedRow == 9 && iPadOffset == 0) {
+    } else if (adjustedRow == 10 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (adjustedRow == 10 - iPadOffset) {
-        return [self makeAutoscrollTableCell];
     } else if (adjustedRow == 11 - iPadOffset) {
-        return [self makeScrollOrientationTableCell];
+        return [self makeAutoscrollTableCell];
     } else if (adjustedRow == 12 - iPadOffset) {
+        return [self makeScrollOrientationTableCell];
+    } else if (adjustedRow == 13 - iPadOffset) {
         return [self makeThemeTableCell];
     }
 
@@ -393,6 +402,10 @@
         }
         cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
     } else if (adjustedRow == 6) {
+        cell.textLabel.text = @"Go to feed";
+        cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        cell.imageView.tintColor = UIColorFromRGB(0x95968F);
+    } else if (adjustedRow == 7) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -419,7 +432,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger adjustedRow = [self adjustedRow:indexPath.row];
-    if (adjustedRow >= 7) {
+    if (adjustedRow >= 8) {
         return nil;
     }
     return indexPath;
@@ -427,7 +440,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger adjustedRow = [self adjustedRow:indexPath.row];
-    if (adjustedRow != 6 && adjustedRow != 3) {
+    if (adjustedRow != 7 && adjustedRow != 3) {
         [self dismissViewControllerAnimated:adjustedRow != 4 && adjustedRow != 5 completion:nil];
     }
 
@@ -448,7 +461,42 @@
     } else if (adjustedRow == 5) {
         [self.appDelegate openAskAIDialog:self.appDelegate.activeStory];
     } else if (adjustedRow == 6) {
+        [self goToFeed];
+    } else if (adjustedRow == 7) {
         [self showFontList];
+    }
+}
+
+- (void)goToFeed {
+    NewsBlurAppDelegate *appDelegate = self.appDelegate;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    NSString *targetFolder = nil;
+
+    for (NSString *folderName in appDelegate.dictFoldersArray) {
+        NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
+        for (id fId in feeds) {
+            if ([[NSString stringWithFormat:@"%@", fId] isEqualToString:feedIdStr]) {
+                targetFolder = folderName;
+                break;
+            }
+        }
+        if (targetFolder) break;
+    }
+
+    if (targetFolder) {
+        NSString *folder = targetFolder;
+        // Clear story state so isStoryShown returns NO,
+        // preventing showColumn:Secondary from pushing storyPagesVC
+        appDelegate.activeStory = nil;
+        appDelegate.storyPagesViewController.currentPage.activeStoryId = nil;
+        appDelegate.storyPagesViewController.currentPage.view.hidden = YES;
+        // Reset river view so it loads as a single feed, not a folder
+        appDelegate.storiesCollection.isRiverView = NO;
+        appDelegate.storiesCollection.isSocialRiverView = NO;
+
+        [appDelegate.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [appDelegate loadFolder:folder feedID:feedIdStr];
     }
 }
 
@@ -595,12 +643,12 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.scrollOrientationSegment setTitle:@"⏩ Horizontal" forSegmentAtIndex:0];
-    [self.scrollOrientationSegment setTitle:@"⏬ Vertical" forSegmentAtIndex:1];
+    UIImageSymbolConfiguration *scrollIconConfig = [UIImageSymbolConfiguration configurationWithPointSize:14 weight:UIImageSymbolWeightMedium];
+    [self.scrollOrientationSegment setImage:[[UIImage systemImageNamed:@"arrow.left.and.right" withConfiguration:scrollIconConfig] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setImage:[[UIImage systemImageNamed:@"arrow.up.and.down" withConfiguration:scrollIconConfig] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forSegmentAtIndex:1];
 #if !TARGET_OS_MACCATALYST
     self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
