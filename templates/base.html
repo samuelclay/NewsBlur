@@ -178,6 +178,7 @@
       {% endif %}
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
+      <script>(function(){var t;try{t=localStorage.getItem('newsblur:theme')}catch(e){}if(!t)t='auto';if(t==='auto')t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
       {% block header %}{% endblock %}
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
@@ -185,14 +186,130 @@
             <span class="NB-splash-top-title">{% block nav_title %}{% endblock %}</span>
             <ul class="NB-splash-top-links">
               <li class="NB-splash-top-link NB-splash-top-link-home"><a href="{% url "index" %}">Home</a></li>
-              <li class="NB-splash-top-link NB-splash-top-link-features"><a href="{% url "features" %}">Features</a></li>
-              <li class="NB-splash-top-link NB-splash-top-link-pricing"><a href="{% url "pricing" %}">Pricing</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-features NB-splash-nav-has-dropdown">
+                <a href="{% url "features" %}">Features</a>
+                <div class="NB-splash-dropdown NB-splash-dropdown-features">
+                  <div class="NB-splash-dropdown-inner">
+                    <div class="NB-splash-dropdown-col NB-splash-dropdown-col-hero">
+                      <div class="NB-splash-dropdown-heading">
+                        <a href="{% url "features" %}" class="NB-splash-dropdown-heading-link">All Features &rarr;</a>
+                      </div>
+                      <a href="{% url "feature-intelligence-training" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-training">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">Intelligence Training</div>
+                        <div class="NB-splash-dropdown-item-desc">Train by author, tag, title, and full text</div>
+                      </a>
+                      <a href="{% url "feature-ask-ai" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-ask-ai">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">Ask AI &amp; Daily Briefing</div>
+                        <div class="NB-splash-dropdown-item-desc">AI-powered story analysis and daily summaries</div>
+                      </a>
+                      <a href="{% url "feature-web-feeds" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-web-feeds">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">Web Feeds</div>
+                        <div class="NB-splash-dropdown-item-desc">Follow any website, even without RSS</div>
+                      </a>
+                      <a href="{% url "feature-newsletters" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-newsletters">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">Email Newsletters</div>
+                        <div class="NB-splash-dropdown-item-desc">Read newsletters in your news reader</div>
+                      </a>
+                      <a href="{% url "feature-search" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-search">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">Full-Text Search</div>
+                        <div class="NB-splash-dropdown-item-desc">Search across all your subscriptions</div>
+                      </a>
+                      <a href="{% url "feature-archive" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-archive">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">Story Archive</div>
+                        <div class="NB-splash-dropdown-item-desc">Every story kept and searchable forever</div>
+                      </a>
+                      <a href="{% url "feature-saved-stories" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-saved">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">Saved Stories &amp; Tags</div>
+                        <div class="NB-splash-dropdown-item-desc">Save stories and organize with custom tags</div>
+                      </a>
+                      <a href="{% url "feature-native-apps" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-native-apps">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">Native Apps</div>
+                        <div class="NB-splash-dropdown-item-desc">First-class iOS &amp; Android apps, not wrappers</div>
+                      </a>
+                    </div>
+                    <div class="NB-splash-dropdown-col NB-splash-dropdown-col-more">
+                      <div class="NB-splash-dropdown-heading">More Features</div>
+                      <div class="NB-splash-dropdown-grid">
+                        <a href="{% url "features" %}#river" class="NB-splash-dropdown-grid-item">River of News</a>
+                        <a href="{% url "features" %}#notifications" class="NB-splash-dropdown-grid-item">Notifications</a>
+                        <a href="{% url "features" %}#text-view" class="NB-splash-dropdown-grid-item">Text View</a>
+                        <a href="{% url "features" %}#changes" class="NB-splash-dropdown-grid-item">Track Changes</a>
+                        <a href="{% url "features" %}#themes" class="NB-splash-dropdown-grid-item">Themes</a>
+                        <a href="{% url "features" %}#shortcuts" class="NB-splash-dropdown-grid-item">Keyboard Shortcuts</a>
+                        <a href="{% url "features" %}#integrations" class="NB-splash-dropdown-grid-item">IFTTT &amp; Zapier</a>
+                        <a href="{% url "features" %}#blurblog" class="NB-splash-dropdown-grid-item">Shared Stories</a>
+                      </div>
+                      <div class="NB-splash-dropdown-divider"></div>
+                      <div class="NB-splash-dropdown-heading">Compare</div>
+                      <div class="NB-splash-dropdown-grid">
+                        <a href="{% url "compare-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedly">vs Feedly</a>
+                        <a href="{% url "compare-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-inoreader">vs Inoreader</a>
+                        <a href="{% url "compare-readwise" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-readwise">vs Readwise</a>
+                        <a href="{% url "compare-the-old-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-old-reader">vs Old Reader</a>
+                        <a href="{% url "compare-feedbin" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedbin">vs Feedbin</a>
+                      </div>
+                      <div class="NB-splash-dropdown-divider"></div>
+                      <div class="NB-splash-dropdown-heading">Alternatives</div>
+                      <div class="NB-splash-dropdown-grid">
+                        <a href="{% url "alt-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-feedly">Feedly Alternative</a>
+                        <a href="{% url "alt-google-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-google-reader">Google Reader Alt</a>
+                        <a href="{% url "alt-open-source" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-open-source">Open Source</a>
+                        <a href="{% url "alt-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-inoreader">Inoreader Alternative</a>
+                        <a href="{% url "alt-self-hosted" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-self-hosted">Self-Hosted</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="NB-splash-top-link NB-splash-top-link-pricing NB-splash-nav-has-dropdown">
+                <a href="{% url "pricing" %}">Pricing</a>
+                <div class="NB-splash-dropdown NB-splash-dropdown-pricing">
+                  <div class="NB-splash-dropdown-inner">
+                    <a href="{% url "pricing" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-allplans">
+                      <div class="NB-splash-dropdown-item-name">All Plans</div>
+                      <div class="NB-splash-dropdown-item-desc">Compare every tier side by side</div>
+                    </a>
+                    <div class="NB-splash-dropdown-divider"></div>
+                    <a href="{% url "pricing-premium" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-premium">
+                      <div class="NB-splash-dropdown-item-name">Premium <span class="NB-splash-dropdown-price">$36/yr</span></div>
+                      <div class="NB-splash-dropdown-item-desc">1,024 sites, search, text view, river of news</div>
+                    </a>
+                    <a href="{% url "pricing-archive" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-archive">
+                      <div class="NB-splash-dropdown-item-name">Premium Archive <span class="NB-splash-dropdown-price">$99/yr</span></div>
+                      <div class="NB-splash-dropdown-item-desc">Full archive, Ask AI, daily briefing, 4,096 sites</div>
+                    </a>
+                    <a href="{% url "pricing-pro" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-pro">
+                      <div class="NB-splash-dropdown-item-name">Premium Pro <span class="NB-splash-dropdown-price">$29/mo</span></div>
+                      <div class="NB-splash-dropdown-item-desc">5-min fetching, regex training, 10,000 sites</div>
+                    </a>
+                    <div class="NB-splash-dropdown-divider"></div>
+                    <a href="{% url "faq" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-faq">
+                      <div class="NB-splash-dropdown-item-name">FAQ</div>
+                      <div class="NB-splash-dropdown-item-desc">Common questions about plans and billing</div>
+                    </a>
+                  </div>
+                </div>
+              </li>
               <li class="NB-splash-top-link NB-splash-top-link-faq"><a href="{% url "faq" %}">FAQ</a></li>
               <li class="NB-splash-top-link NB-splash-top-link-about"><a href="{% url "about" %}">About</a></li>
             </ul>
-            <a href="{% url "index" %}" class="NB-splash-top-logo">
-              <div class="NB-splash-blurred-logo"></div>
-            </a>
+            <div class="NB-splash-top-logo">
+              <div class="NB-theme-toggle" title="Toggle theme">
+                <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+                  <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                  <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+                  <span class="NB-theme-toggle-thumb"></span>
+                </button>
+                <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+                </svg>
+              </div>
+              <a href="{% url "index" %}">
+                <div class="NB-splash-blurred-logo"></div>
+              </a>
+            </div>
           </div>
           <a href="{% url "index" %}" class="NB-splash-top-logo-fallback">
             <div class="NB-splash-title NB-splash-blurred-logo"></div>
