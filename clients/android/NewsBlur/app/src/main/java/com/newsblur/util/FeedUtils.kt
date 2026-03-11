@@ -325,6 +325,19 @@ class FeedUtils(
         doAction(ra, context)
     }
 
+    fun renameFeed(
+        context: Context,
+        feedId: String,
+        newFeedName: String,
+    ) {
+        val ra = ReadingAction.RenameFeed(feedId, newFeedName)
+        dbHelper.enqueueAction(ra)
+        val impact = ra.doLocal(dbHelper, prefsRepo)
+        syncUpdateStatus(impact)
+        syncServiceState.forceFeedsFolders()
+        triggerSync(context)
+    }
+
     fun sendStoryUrl(
         story: Story?,
         context: Context,
