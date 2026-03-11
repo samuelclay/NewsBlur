@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-pricing{% endblock %}
+{% block title %}Premium Pro - NewsBlur Pricing{% endblock %}
+{% block nav_title %}Premium Pro{% endblock %}
+{% block head %}
+    <meta name="description" content="NewsBlur Premium Pro: $29/month. Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 sites.">
+    <meta property="og:title" content="Premium Pro - NewsBlur Pricing">
+    <meta property="og:description" content="Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 sites. $29/month.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Premium Pro - NewsBlur Pricing">
+    <meta name="twitter:description" content="Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 sites. $29/month.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-pricing-tier-detail-container">
+
+    <div class="NB-pricing-tier-detail-hero">
+        <h1 class="NB-pricing-tier-detail-name">Premium Pro</h1>
+        <div class="NB-pricing-tier-detail-price">$29/month</div>
+        <p class="NB-pricing-tier-detail-subtitle">Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 sites.</p>
+        <a href="{% url "index" %}" class="NB-pricing-tier-detail-cta-button NB-pricing-tier-detail-cta-pro">Get Premium Pro</a>
+    </div>
+
+    <div class="NB-pricing-tier-detail-features">
+        <h2>Everything in Archive, plus</h2>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Follow up to 10,000 sites</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">The highest limit available. Monitor everything.</p>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">All feeds fetched every 5-15 minutes</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Every single feed in your account is checked at least every 15 minutes, most every 5 minutes. Monitoring-grade frequency.</p>
+            </div>
+            <div class="NB-pricing-tier-detail-feature-img">
+                <img src="{{ MEDIA_URL }}img/features/speed.png" alt="All feeds fetched every 5-15 minutes">
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Train stories with regular expressions</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for professionals.</p>
+            </div>
+            <div class="NB-pricing-tier-detail-feature-img">
+                <img src="{{ MEDIA_URL }}img/features/regex.png" alt="Train stories with regular expressions">
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Priority support</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Get faster responses from the NewsBlur team when you need help.</p>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Natural language filters (coming soon)</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Filter stories using plain English descriptions instead of keywords.</p>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Natural language search (coming soon)</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Search your feeds using natural language queries instead of exact keyword matches.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-pricing-tier-detail-faq">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Does Pro include everything in Archive?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority support.</p>
+        </div>
+
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Why is Pro monthly instead of yearly?</h3>
+            <p class="NB-feature-detail-faq-a">Pro's real-time fetching infrastructure costs more to operate, so it's priced monthly. You're paying for dedicated, high-frequency polling of up to 10,000 feeds.</p>
+        </div>
+
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What does 5-15 minute fetching mean?</h3>
+            <p class="NB-feature-detail-faq-a">Every feed in your account is checked at minimum every 15 minutes, with most feeds checked every 5 minutes. This is independent of how often the feed actually publishes.</p>
+        </div>
+
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I downgrade from Pro?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, you can switch to Premium Archive or Premium at any time.</p>
+        </div>
+    </div>
+
+    {% include "static/_pricing_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "pricing" %}
+{% endblock footer %}

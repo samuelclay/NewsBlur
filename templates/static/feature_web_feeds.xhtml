@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-web-feeds{% endblock %}
+{% block title %}Web Feeds - NewsBlur{% endblock %}
+{% block nav_title %}Web Feeds{% endblock %}
+{% block head %}
+    <meta name="description" content="Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes.">
+    <meta property="og:title" content="Web Feeds - NewsBlur">
+    <meta property="og:description" content="Follow any website, even ones that don't publish an RSS feed.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Web Feeds - NewsBlur">
+    <meta name="twitter:description" content="Follow any website, even ones that don't publish an RSS feed.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-free">Free</div>
+        <h1 class="NB-feature-detail-title">Web Feeds</h1>
+        <p class="NB-feature-detail-subtitle">Follow any website, even ones that don't publish an RSS feed.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/web-feeds.png" alt="Web feed creation showing a page being converted to a feed">
+            <div class="NB-feature-detail-caption">Web feed creation showing page conversion</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Paste any URL into the "Add Site" dialog</li>
+            <li class="NB-feature-detail-step">If no RSS feed is found, NewsBlur offers to create a Web Feed</li>
+            <li class="NB-feature-detail-step">NewsBlur monitors the page for changes automatically</li>
+            <li class="NB-feature-detail-step">New content appears in your feed just like regular RSS</li>
+            <li class="NB-feature-detail-step">Works with social media profiles, job boards, product pages, and more</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What sites can I follow with Web Feeds?</h3>
+            <p class="NB-feature-detail-faq-a">Any public web page. Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government sites, and more.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How often are Web Feeds checked?</h3>
+            <p class="NB-feature-detail-faq-a">The same as regular feeds. Premium and Pro users get faster update frequencies.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Is this different from RSS?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work even when sites don't offer RSS.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}
