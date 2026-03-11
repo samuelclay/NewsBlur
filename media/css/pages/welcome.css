@@ -2306,15 +2306,19 @@ a.NB-fgi img {
 }
 
 .NB-testimonials-row-1 {
-    animation: nb-scroll-left 380s linear infinite;
+    animation: nb-scroll-left 560s linear infinite;
 }
 
 .NB-testimonials-row-2 {
-    animation: nb-scroll-right 440s linear infinite;
+    animation: nb-scroll-right 540s linear infinite;
 }
 
 .NB-testimonials-row-3 {
-    animation: nb-scroll-left 420s linear infinite;
+    animation: nb-scroll-left 540s linear infinite;
+}
+
+.NB-testimonials-row-4 {
+    animation: nb-scroll-right 520s linear infinite;
 }
 
 @keyframes nb-scroll-left {

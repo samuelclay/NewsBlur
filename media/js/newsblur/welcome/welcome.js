@@ -28,7 +28,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
 
         $('.NB-testimonials-track').each(function (i) {
             var $track = $(this);
-            var isRow2 = $track.hasClass('NB-testimonials-row-2');
+            var isRightScroll = $track.hasClass('NB-testimonials-row-2') || $track.hasClass('NB-testimonials-row-4');
 
             // Clone all cards and append them for seamless infinite loop.
             // CSS animation uses translateX(-50%) which requires exactly 2 copies.
@@ -47,7 +47,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
                 $track: $track,
                 duration: duration,
                 animationName: name,
-                isRow2: isRow2
+                isRow2: isRightScroll
             });
 
             // Randomize start position so different cards show on each visit
