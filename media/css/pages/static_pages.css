@@ -211,6 +211,11 @@
     display: none;
 }
 
+/* Welcome page: warm beige splash background (scoped so reader keeps #F6F8F0) */
+.NB-welcome #NB-splash {
+    background-color: #f0e7cf;
+}
+
 .NB-welcome .NB-splash-top-title {
     display: none;
 }
