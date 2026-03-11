@@ -2,12 +2,35 @@
 
 {% load recommendations_tags utils_tags statistics_tags %}
 
+{% block title %}NewsBlur — Personal News Reader with Intelligence Training{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. Follow RSS feeds, train stories with intelligence filters, and read smarter with AI.">
     <meta property="og:title" content="NewsBlur - A Personal News Reader">
     <meta property="og:description" content="Follow RSS feeds, train stories with intelligence filters, and read smarter. Free on web, iOS, and Android. Open source.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
     <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur - A Personal News Reader">
+    <meta name="twitter:description" content="Follow RSS feeds, train stories with intelligence filters, and read smarter. Free on web, iOS, and Android. Open source.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "NewsBlur",
+        "applicationCategory": "NewsApplication",
+        "operatingSystem": "Web, iOS, Android",
+        "offers": [
+            {"@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Free"},
+            {"@type": "Offer", "price": "36", "priceCurrency": "USD", "name": "Premium"},
+            {"@type": "Offer", "price": "99", "priceCurrency": "USD", "name": "Premium Archive"}
+        ],
+        "description": "Personal news reader with intelligence training, AI summaries, and social sharing. Open source.",
+        "url": "https://www.newsblur.com"
+    }
+    </script>
 {% endblock %}
 {% block extra_head_js %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -120,8 +143,8 @@
 
     <div class="NB-welcome-platforms">
         <div class="NB-welcome-platforms-header">
-            <div class="NB-platforms-heading">A new sound of an old instrument</div>
-            <div class="NB-platforms-subheading">RSS and web feeds, synced on every platform you use.</div>
+            <h2 class="NB-platforms-heading">A new sound of an old instrument</h2>
+            <p class="NB-platforms-subheading">RSS and web feeds, synced on every platform you use.</p>
         </div>
 
         <div class="NB-welcome-platform NB-platform-web">
@@ -167,15 +190,15 @@
 
     <div class="NB-welcome-features-wrap">
     <div class="NB-welcome-features-header">
-        <div class="NB-features-heading">Full-featured news reader</div>
-        <div class="NB-features-subheading">Keep the signal, lose the noise.</div>
+        <h2 class="NB-features-heading">Full-featured news reader</h2>
+        <p class="NB-features-subheading">Keep the signal, lose the noise.</p>
     </div>
 
     <div class="NB-welcome-feature-groups">
         <div class="NB-inner">
 
             <div class="NB-feature-group NB-feature-group-read">
-                <div class="NB-feature-group-label">Read Your Way</div>
+                <h3 class="NB-feature-group-label">Read Your Way</h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#speed" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
@@ -230,7 +253,7 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-smart">
-                <div class="NB-feature-group-label">Stay Smart</div>
+                <h3 class="NB-feature-group-label">Stay Smart</h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#training" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
@@ -285,7 +308,7 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-share">
-                <div class="NB-feature-group-label">Share &amp; Organize</div>
+                <h3 class="NB-feature-group-label">Share &amp; Organize</h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#blurblog" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
@@ -319,7 +342,7 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-everywhere">
-                <div class="NB-feature-group-label">Works Everywhere</div>
+                <h3 class="NB-feature-group-label">Works Everywhere</h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#apps" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">

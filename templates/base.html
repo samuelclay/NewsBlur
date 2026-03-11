@@ -21,6 +21,12 @@
       <meta name="msapplication-TileColor" content="#F7E5A8" />
       <meta name="apple-itunes-app" content="app-id=463981119">
       <link rel="manifest" href="/manifest.webmanifest">
+      <link rel="canonical" href="https://www.newsblur.com{{ request.path }}">
+      {% block head %}{% endblock %}
+      {% if not user.is_authenticated %}
+      <script async src="https://plausible.io/js/pa-AGTOvjd1KjVNLnRT2aQ7m.js"></script>
+      <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+      {% endif %}
       <!-- <link rel="mask-icon"
        href="{{ MEDIA_URL }}img/favicon_monochrome.svg"
        color="orange"> -->

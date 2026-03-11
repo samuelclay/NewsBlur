@@ -6,3 +6,5 @@ Disallow: /analyzer
 Disallow: /profile
 Disallow: /import
 Disallow: /media
+
+Sitemap: https://www.newsblur.com/sitemap.xml

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}Google Reader Alternative - NewsBlur Has Been the Answer Since 2009{% endblock %}
+{% block nav_title %}Google Reader Alternative{% endblock %}
+{% block head %}
+    <meta name="description" content="Looking for a Google Reader alternative? NewsBlur has been the top Google Reader replacement since 2009. Open source, with folder organization, keyboard shortcuts, intelligence training, and OPML import.">
+    <meta property="og:title" content="Google Reader Alternative - NewsBlur Has Been the Answer Since 2009">
+    <meta property="og:description" content="NewsBlur launched in 2009, years before Google Reader shut down. It kept everything readers loved and added intelligence training, AI features, and open source transparency.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Google Reader Alternative - NewsBlur Has Been the Answer Since 2009">
+    <meta name="twitter:description" content="NewsBlur launched in 2009, years before Google Reader shut down. The best Google Reader replacement with folders, keyboard shortcuts, and intelligence training.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">The Google Reader Alternative That's Been Here All Along</h1>
+        <p class="NB-static-compare-subtitle">NewsBlur launched in 2009 as an independent RSS reader. When Google Reader shut down in 2013, hundreds of thousands of readers found their new home. Over a decade later, NewsBlur is still going strong.</p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Built before Google Reader died, built to last after it</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur was founded in 2009 as an independent, one-person project with a simple goal: build a better RSS reader. At the time, Google Reader dominated the market. But NewsBlur offered something Google never did. It let you train your feeds with intelligence classifiers so you could focus on the stories that matter and hide the ones that don't.
+        </p>
+        <p class="NB-compare-section-text">
+            When Google announced the shutdown of Google Reader in March 2013, millions of people scrambled for an alternative. NewsBlur was one of the top destinations for that migration. The servers were overwhelmed for weeks as new users flooded in. That moment proved something important: people care deeply about RSS, and they need a reader they can count on.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Everything you loved about Google Reader, and more</h2>
+        <p class="NB-compare-section-text">
+            If you used Google Reader, you'll feel at home in NewsBlur. Folder-based organization, keyboard shortcuts for navigating and managing stories, a clean reading interface, and full OPML import and export are all here. NewsBlur preserved the core reading experience that made Google Reader great.
+        </p>
+        <p class="NB-compare-section-text">
+            But NewsBlur goes further. Intelligence training lets you highlight stories by author, tag, title keyword, or full text. You can filter by URL patterns and even use regex classifiers on the Pro plan. Stories are color-coded green for focus and red for hidden, so you always know why a story is surfaced or suppressed. Ask AI lets you query your stories using Claude, GPT, Gemini, or Grok. Web Feeds let you follow any website, even ones without RSS. And email newsletters can be forwarded directly into your reading queue.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Open source means it can never be killed by a corporate decision</h2>
+        <p class="NB-compare-section-text">
+            The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value it, it can disappear overnight. Google shut down Reader not because it was unpopular, but because it didn't align with their business priorities.
+        </p>
+        <p class="NB-compare-section-text">
+            NewsBlur is fully open source under the MIT license. The entire codebase, including the web app, iOS app, Android app, and all backend services, is available on GitHub. You can inspect it, contribute to it, or run your own self-hosted instance with Docker. Even if NewsBlur the service were to stop operating, the software would live on. Your reading workflow is never at the mercy of a single company's quarterly earnings call.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Migrating is easy with OPML import</h2>
+        <p class="NB-compare-section-text">
+            Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. NewsBlur also supports exporting your subscriptions at any time, so you're never locked in.
+        </p>
+        <p class="NB-compare-section-text">
+            NewsBlur works with popular third-party apps like Reeder, ReadKit, and Unread through its open API. You can read on the web, on the native iOS and Android apps, or through the client of your choice. There's also a free plan with up to 64 sites, so you can try it without commitment.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">An RSS reader built for the long haul</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur has been running continuously since 2009. That's over fifteen years of uptime, development, and community trust. It survived the Google Reader shutdown, the rise and fall of social media as a news source, and the ongoing consolidation of the web. Through all of it, NewsBlur has stayed independent, open source, and focused on one thing: giving you the best way to read the news.
+        </p>
+        <p class="NB-compare-section-text">
+            If you've been searching for a Google Reader replacement, you've found it. NewsBlur isn't just an alternative. It's the reader that Google Reader users chose, and the one that's still here.
+        </p>
+    </div>
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

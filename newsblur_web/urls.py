@@ -3,12 +3,14 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+from django.contrib.sitemaps.views import sitemap
 from django.views.generic import RedirectView
 
 from apps.profile import views as profile_views
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
+from apps.static.sitemaps import StaticSitemap
 
 admin.autodiscover()
 
@@ -68,6 +70,18 @@ urlpatterns = [
     url(r"^features/?", static_views.features, name="features"),
     url(r"^compare/feedly/?", static_views.compare_feedly, name="compare-feedly"),
     url(r"^compare/inoreader/?", static_views.compare_inoreader, name="compare-inoreader"),
+    url(r"^compare/readwise-reader/?", static_views.compare_readwise, name="compare-readwise"),
+    url(r"^compare/the-old-reader/?", static_views.compare_the_old_reader, name="compare-the-old-reader"),
+    url(r"^alternative/open-source-rss-reader/?", static_views.alt_open_source, name="alt-open-source"),
+    url(r"^alternative/self-hosted-rss-reader/?", static_views.alt_self_hosted, name="alt-self-hosted"),
+    url(r"^alternative/google-reader/?", static_views.alt_google_reader, name="alt-google-reader"),
+    url(r"^alternative/feedly/?", static_views.alt_feedly, name="alt-feedly"),
+    url(
+        r"^sitemap\.xml$",
+        sitemap,
+        {"sitemaps": {"static": StaticSitemap}},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
     url(r"^about/?", static_views.about, name="about"),
     url(r"^faq/?", static_views.faq, name="faq"),
     url(r"^api/?$", static_views.api, name="api"),

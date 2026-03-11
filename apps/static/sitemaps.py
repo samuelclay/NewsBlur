@@ -1,0 +1,34 @@
+"""Sitemap definitions for public-facing pages."""
+
+from django.contrib.sitemaps import Sitemap
+from django.urls import reverse
+
+
+class StaticSitemap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        return [
+            "index",
+            "features",
+            "pricing",
+            "about",
+            "faq",
+            "compare-feedly",
+            "compare-inoreader",
+            "compare-readwise",
+            "compare-the-old-reader",
+            "alt-open-source",
+            "alt-self-hosted",
+            "alt-google-reader",
+            "alt-feedly",
+            "press",
+            "privacy",
+            "tos",
+            "ios-static",
+            "android-static",
+        ]
+
+    def location(self, item):
+        return reverse(item)

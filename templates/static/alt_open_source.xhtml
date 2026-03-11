@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux &amp; More{% endblock %}
+{% block nav_title %}Open Source RSS Readers{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare the best open source RSS readers: NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. See features, hosting options, mobile apps, and licenses side by side.">
+    <meta property="og:title" content="Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux & More">
+    <meta property="og:description" content="Compare the best open source RSS readers. NewsBlur is the only one with a fully hosted service plus self-hosting. See the full feature comparison.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux & More">
+    <meta name="twitter:description" content="Compare the best open source RSS readers. NewsBlur is the only one with a fully hosted service plus self-hosting.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">Best Open Source RSS Readers</h1>
+        <p class="NB-static-compare-subtitle">A feature-by-feature comparison of NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. All are open source, but only one offers a fully hosted service alongside self-hosting.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>FreshRSS</th>
+                <th>Miniflux</th>
+                <th>Tiny Tiny RSS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Hosted Service</td>
+                <td><span class="NB-compare-check">&#10003;</span> newsblur.com</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Self-host only</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted Option</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker one-command install</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or manual</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or binary</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker or manual</td>
+            </tr>
+            <tr>
+                <td>Native Mobile Apps</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS &amp; Android</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+                <td><span class="NB-compare-x">&#10007;</span> Third-party only</td>
+            </tr>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span> Label-based filters</td>
+            </tr>
+            <tr>
+                <td>Ask AI (Query Stories)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span> Database search</td>
+                <td><span class="NB-compare-check">&#10003;</span> PostgreSQL search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Database search</td>
+            </tr>
+            <tr>
+                <td>Social Features</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog, comments, sharing</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span> Shared articles</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span> Forward to NewsBlur</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS only</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS only</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS only</td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td><span class="NB-compare-check">&#10003;</span> Google Reader API, Fever API</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fever API, Google Reader API</td>
+                <td><span class="NB-compare-check">&#10003;</span> Own API, Fever plugin</td>
+            </tr>
+            <tr>
+                <td>Active Development</td>
+                <td><span class="NB-compare-check">&#10003;</span> Frequent updates since 2009</td>
+                <td><span class="NB-compare-check">&#10003;</span> Active community</td>
+                <td><span class="NB-compare-check">&#10003;</span> Solo maintainer</td>
+                <td><span class="NB-compare-check">&#10003;</span> Solo maintainer</td>
+            </tr>
+            <tr>
+                <td>License</td>
+                <td>MIT</td>
+                <td>AGPL-3.0</td>
+                <td>Apache 2.0</td>
+                <td>GPL-3.0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">The only open source RSS reader you don't have to host yourself</h2>
+        <p class="NB-compare-section-text">
+            FreshRSS, Miniflux, and Tiny Tiny RSS are all excellent projects, but they require you to set up and maintain your own server. That means provisioning a VPS, configuring a database, managing updates, and handling backups. NewsBlur gives you a choice. You can sign up at newsblur.com and start reading in seconds, or you can self-host the entire stack with Docker. No other open source RSS reader offers both options.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Intelligence training and AI features</h2>
+        <p class="NB-compare-section-text">
+            Most open source readers give you a reverse-chronological list of stories and leave it at that. NewsBlur goes further with its intelligence training system. You can train on authors, tags, title keywords, full text, URLs, and regex patterns to highlight stories you care about and hide the rest. Stories are color-coded green, red, or neutral so you can see your training at work. On top of that, Ask AI lets you query any story with Claude, GPT, Gemini, or Grok to get summaries, extract key points, or ask follow-up questions.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Native apps, newsletters, and web feeds</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur includes native iOS and Android apps built in-house. The other open source readers rely on third-party clients via API compatibility layers. NewsBlur also lets you forward email newsletters into your feed reader and follow websites that don't have RSS at all using web feeds. These features are built into the hosted service and the self-hosted version alike.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">MIT licensed, fully transparent</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur is released under the MIT license, the most permissive of the four readers compared here. The entire codebase, including the web app, iOS app, Android app, and all backend services, is available on GitHub. You can inspect how your data is handled, contribute features, or fork the project. Whether you use the hosted service or run your own instance, you always have full visibility into the software.
+        </p>
+    </div>
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}

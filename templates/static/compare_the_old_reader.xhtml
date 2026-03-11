@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block title %}NewsBlur vs The Old Reader - RSS Reader Comparison{% endblock %}
+{% block nav_title %}NewsBlur vs The Old Reader{% endblock %}
+{% block head %}
+    <meta name="description" content="Compare NewsBlur and The Old Reader. Both rose from Google Reader's ashes, but NewsBlur has kept evolving with AI, intelligence training, and a full-featured open source platform.">
+    <meta property="og:title" content="NewsBlur vs The Old Reader - Which RSS Reader Is Right for You?">
+    <meta property="og:description" content="Compare NewsBlur and The Old Reader. Intelligence training, AI features, search, pricing, and open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur vs The Old Reader - Which RSS Reader Is Right for You?">
+    <meta name="twitter:description" content="Both rose from Google Reader's ashes. Compare intelligence training, AI, search, pricing, and open source.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-compare-container">
+
+    <div class="NB-static-compare-hero">
+        <h1 class="NB-static-compare-title">NewsBlur vs The Old Reader</h1>
+        <p class="NB-static-compare-subtitle">Both readers emerged from the post-Google Reader era. NewsBlur has continued evolving with intelligence training, AI, and a full open source platform.</p>
+    </div>
+
+    <table class="NB-compare-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>NewsBlur</th>
+                <th>The Old Reader</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Intelligence Training</td>
+                <td><span class="NB-compare-check">&#10003;</span> Train by author, tag, title, text, URL, regex</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Ask AI</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Full-Text Search</td>
+                <td><span class="NB-compare-check">&#10003;</span> Elasticsearch-powered</td>
+                <td><span class="NB-compare-check">&#10003;</span> Premium only</td>
+            </tr>
+            <tr>
+                <td>Track Changes / Diffs</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Web Feeds (Any Website)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow sites without RSS</td>
+                <td><span class="NB-compare-x">&#10007;</span> RSS only</td>
+            </tr>
+            <tr>
+                <td>Email Newsletters</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Story Archive (Forever)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Archive plan</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Social / Sharing</td>
+                <td><span class="NB-compare-check">&#10003;</span> Public blurblog with comments</td>
+                <td><span class="NB-compare-check">&#10003;</span> Follow friends, shared items</td>
+            </tr>
+            <tr>
+                <td>Original Site View</td>
+                <td><span class="NB-compare-check">&#10003;</span> Renders original website</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Text View (Full Story)</td>
+                <td><span class="NB-compare-check">&#10003;</span> Extracts full text from truncated feeds</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Native Mobile Apps</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS and Android</td>
+                <td><span class="NB-compare-x">&#10007;</span> Web only</td>
+            </tr>
+            <tr>
+                <td>Third-Party App Support</td>
+                <td><span class="NB-compare-check">&#10003;</span> Reeder, ReadKit, Unread, etc.</td>
+                <td>Limited</td>
+            </tr>
+            <tr>
+                <td>Open Source</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fully open source (MIT)</td>
+                <td><span class="NB-compare-x">&#10007;</span> Proprietary</td>
+            </tr>
+            <tr>
+                <td>Self-Hosted</td>
+                <td><span class="NB-compare-check">&#10003;</span> Docker install</td>
+                <td><span class="NB-compare-x">&#10007;</span></td>
+            </tr>
+            <tr>
+                <td>Dark Mode</td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+                <td><span class="NB-compare-check">&#10003;</span></td>
+            </tr>
+            <tr>
+                <td>Free Plan</td>
+                <td>64 sites</td>
+                <td>100 feeds</td>
+            </tr>
+            <tr>
+                <td>Paid Plan</td>
+                <td>$36/year (Premium), $99/year (Archive)</td>
+                <td>$30/year (Premium)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Familiar roots, different trajectory</h2>
+        <p class="NB-compare-section-text">
+            The Old Reader was created to recreate the Google Reader experience, and it does that well. The interface is intentionally simple and familiar. NewsBlur also started before Google Reader shut down (founded in 2009), but has evolved continuously since then. Intelligence training, AI-powered reading, web feeds, story clustering, and a full API ecosystem have been added over the years. If you want a simple, no-frills Google Reader clone, The Old Reader delivers. If you want a reader that has kept pace with how the web has changed, NewsBlur is the more complete choice.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Intelligence training changes how you read</h2>
+        <p class="NB-compare-section-text">
+            The biggest feature difference is NewsBlur's intelligence training. Instead of reading every story in every feed, you can train NewsBlur to highlight authors and topics you care about and hide the rest. Stories are color-coded so you can scan your feeds at a glance. Over time, the reader adapts to your interests. The Old Reader has no filtering or training system, so managing a large number of feeds means more manual work.
+        </p>
+    </div>
+
+    <div class="NB-compare-section">
+        <h2 class="NB-compare-section-title">Native apps and third-party support</h2>
+        <p class="NB-compare-section-text">
+            NewsBlur has native iOS and Android apps, plus full sync with popular third-party readers like Reeder, ReadKit, Unread, and NetNewsWire. The Old Reader is primarily a web application with limited third-party integration. For mobile reading, NewsBlur provides a significantly better experience with native apps built specifically for each platform.
+        </p>
+    </div>
+
+    <div class="NB-compare-bottom-cta">
+        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
+    </div>
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "compare" %}
+{% endblock footer %}
