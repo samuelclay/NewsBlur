@@ -50,6 +50,7 @@
 {% block bodyclass %}NB-welcome{% endblock %}
 
 {% block header %}
+    <script>document.body.style.backgroundColor='#c4a870';if(document.body.classList.contains('NB-dark'))document.body.style.backgroundColor='#1a2525';</script>
     {% render_feeds_skeleton %}
 {% endblock header %}
 
@@ -597,7 +598,7 @@
 
     <div class="NB-welcome-testimonials">
         <div class="NB-testimonials-heading">
-            <h2>People &#10084;&#65039; NewsBlur</h2>
+            <h2>Kind words people say about NewsBlur</h2>
             <div class="NB-testimonials-nav">
                 <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-prev" aria-label="Previous page">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
