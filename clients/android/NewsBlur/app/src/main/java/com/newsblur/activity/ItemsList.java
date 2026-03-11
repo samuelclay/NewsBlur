@@ -722,7 +722,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!shouldShowDiscoverAction()) return;
 
         if (fs.isSingleNormal()) {
-            DiscoverFeedsActivity.startForFeed(this, fs.getSingleFeed());
+            String feedId = fs.getSingleFeed();
+            com.newsblur.domain.Feed sourceFeed = dbHelper.getFeed(feedId);
+            if (sourceFeed != null) {
+                DiscoverFeedsActivity.startForFeed(this, sourceFeed);
+            } else {
+                DiscoverFeedsActivity.startForFeed(this, feedId);
+            }
         } else if (fs.isFolder()) {
             DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
         }

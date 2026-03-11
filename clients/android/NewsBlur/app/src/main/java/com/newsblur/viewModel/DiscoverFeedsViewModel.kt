@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.domain.DiscoverFeedPayload
+import com.newsblur.domain.Feed
 import com.newsblur.network.FeedApi
 import com.newsblur.network.domain.DiscoverFeedsResponse
+import com.newsblur.util.DiscoverFeedSanitizer
 import com.newsblur.util.PrefConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,14 +32,26 @@ class DiscoverFeedsViewModel
 
         private var similarFeedId: String? = null
         private var similarFeedIds: List<String>? = null
+        private var sourceFeed: Feed? = null
         private var currentPage = 0
         private var hasMorePages = true
         private val shownFeedIds = LinkedHashSet<String>()
+
+        fun load(feed: Feed) {
+            if (similarFeedId == feed.feedId && similarFeedIds == null && (_uiState.value.feeds.isNotEmpty() || _uiState.value.isLoadingInitial)) {
+                return
+            }
+            sourceFeed = feed
+            similarFeedId = feed.feedId
+            similarFeedIds = null
+            resetAndLoad()
+        }
 
         fun load(feedId: String) {
             if (similarFeedId == feedId && similarFeedIds == null && (_uiState.value.feeds.isNotEmpty() || _uiState.value.isLoadingInitial)) {
                 return
             }
+            sourceFeed = null
             similarFeedId = feedId
             similarFeedIds = null
             resetAndLoad()
@@ -59,6 +73,7 @@ class DiscoverFeedsViewModel
             if (similarFeedIds == normalizedFeedIds && similarFeedId == null && (_uiState.value.feeds.isNotEmpty() || _uiState.value.isLoadingInitial)) {
                 return
             }
+            sourceFeed = null
             similarFeedId = null
             similarFeedIds = normalizedFeedIds
             resetAndLoad()
@@ -97,7 +112,7 @@ class DiscoverFeedsViewModel
         private fun loadPage(pageNumber: Int) {
             viewModelScope.launch(Dispatchers.IO) {
                 _uiState.update { state ->
-                    if (pageNumber == 1) {
+                    if (state.feeds.isEmpty()) {
                         state.copy(isLoadingInitial = true, isLoadingMore = false, errorMessage = null)
                     } else {
                         state.copy(isLoadingInitial = false, isLoadingMore = true, errorMessage = null)
@@ -127,6 +142,10 @@ class DiscoverFeedsViewModel
                 val rawCount = response?.discoverFeeds?.size ?: 0
 
                 if (pageFeeds.isEmpty()) {
+                    if (DiscoverFeedSanitizer.shouldLoadNextPage(pageFeeds, rawCount, pageNumber, MAX_PAGE)) {
+                        loadPage(pageNumber + 1)
+                        return@launch
+                    }
                     hasMorePages = false
                     _uiState.update { state ->
                         state.copy(
@@ -163,6 +182,7 @@ class DiscoverFeedsViewModel
                 .orEmpty()
                 .onEach { it.feed.active = true }
                 .sortedByDescending { it.feed.subscribers?.toIntOrNull() ?: 0 }
+                .let { DiscoverFeedSanitizer.filterSourceDuplicates(sourceFeed, it) }
                 .filter { shownFeedIds.add(it.feed.feedId) }
 
         private fun loadStoredViewMode(): DiscoverFeedViewMode {
