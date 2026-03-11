@@ -1171,6 +1171,40 @@
         <div class="NB-testimonials-fade NB-testimonials-fade-right"></div>
     </div>
 
+    <div class="NB-welcome-compare">
+        <div class="NB-inner">
+            <div class="NB-welcome-compare-header">
+                <h2>See how NewsBlur compares</h2>
+            </div>
+            <div class="NB-welcome-compare-pills">
+                <a href="{% url "compare-feedly" %}" class="NB-welcome-compare-pill">
+                    <span class="NB-compare-pill-label">vs</span> Feedly
+                </a>
+                <a href="{% url "compare-inoreader" %}" class="NB-welcome-compare-pill">
+                    <span class="NB-compare-pill-label">vs</span> Inoreader
+                </a>
+                <a href="{% url "compare-readwise" %}" class="NB-welcome-compare-pill">
+                    <span class="NB-compare-pill-label">vs</span> Readwise Reader
+                </a>
+                <a href="{% url "compare-the-old-reader" %}" class="NB-welcome-compare-pill">
+                    <span class="NB-compare-pill-label">vs</span> The Old Reader
+                </a>
+                <a href="{% url "alt-feedly" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
+                    Feedly Alternative
+                </a>
+                <a href="{% url "alt-google-reader" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
+                    Google Reader Alternative
+                </a>
+                <a href="{% url "alt-open-source" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
+                    Open Source RSS
+                </a>
+                <a href="{% url "alt-self-hosted" %}" class="NB-welcome-compare-pill NB-compare-pill-alt">
+                    Self-Hosted RSS
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}
