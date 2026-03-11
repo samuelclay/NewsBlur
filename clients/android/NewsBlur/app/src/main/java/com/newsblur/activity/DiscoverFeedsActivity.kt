@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.newsblur.R
 import com.newsblur.databinding.ActivityDiscoverFeedsBinding
+import com.newsblur.databinding.ViewDiscoverToolbarToggleBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.DiscoverFeedPayload
 import com.newsblur.domain.Feed
@@ -47,6 +50,9 @@ class DiscoverFeedsActivity :
     private val viewModel: DiscoverFeedsViewModel by viewModels()
 
     private lateinit var binding: ActivityDiscoverFeedsBinding
+    private lateinit var toolbarToggleBinding: ViewDiscoverToolbarToggleBinding
+    private lateinit var toolbarActionContainer: FrameLayout
+    private lateinit var toolbarIconView: ImageView
     private lateinit var adapter: DiscoverFeedAdapter
     private lateinit var palette: DiscoverThemePalette
 
@@ -55,6 +61,12 @@ class DiscoverFeedsActivity :
         binding = ActivityDiscoverFeedsBinding.inflate(layoutInflater)
         applyView(binding)
         UIUtils.setupToolbar(this, R.drawable.ic_discover, getString(R.string.discover_related_sites_title), true)
+        toolbarActionContainer = findViewById(R.id.toolbar_action_container)
+        toolbarIconView = findViewById(R.id.toolbar_icon)
+        toolbarToggleBinding =
+            ViewDiscoverToolbarToggleBinding.inflate(layoutInflater, toolbarActionContainer, true)
+        toolbarActionContainer.isVisible = true
+        findViewById<View>(R.id.toolbar_settings_button).isVisible = false
 
         palette = discoverThemePalette(this, prefsRepo)
         adapter = DiscoverFeedAdapter(layoutInflater, iconLoader, palette, dbHelper.allFeeds, this)
@@ -78,8 +90,12 @@ class DiscoverFeedsActivity :
             },
         )
 
-        binding.discoverGridButton.setOnClickListener { viewModel.setViewMode(DiscoverFeedViewMode.GRID) }
-        binding.discoverListButton.setOnClickListener { viewModel.setViewMode(DiscoverFeedViewMode.LIST) }
+        toolbarToggleBinding.discoverToolbarGridButton.setOnClickListener {
+            viewModel.setViewMode(DiscoverFeedViewMode.GRID)
+        }
+        toolbarToggleBinding.discoverToolbarListButton.setOnClickListener {
+            viewModel.setViewMode(DiscoverFeedViewMode.LIST)
+        }
 
         applyPalette()
         observeState()
@@ -117,8 +133,14 @@ class DiscoverFeedsActivity :
     private fun render(state: DiscoverFeedsUiState) {
         palette = discoverThemePalette(this, prefsRepo)
         applyPalette()
-        styleToggleButton(binding.discoverGridButton, state.viewMode == DiscoverFeedViewMode.GRID)
-        styleToggleButton(binding.discoverListButton, state.viewMode == DiscoverFeedViewMode.LIST)
+        styleToggleButton(
+            toolbarToggleBinding.discoverToolbarGridButton,
+            state.viewMode == DiscoverFeedViewMode.GRID,
+        )
+        styleToggleButton(
+            toolbarToggleBinding.discoverToolbarListButton,
+            state.viewMode == DiscoverFeedViewMode.LIST,
+        )
         adapter.submit(state.feeds, state.viewMode, palette, dbHelper.allFeeds)
 
         binding.discoverRecycler.isVisible = state.feeds.isNotEmpty()
@@ -150,7 +172,7 @@ class DiscoverFeedsActivity :
 
     private fun applyPalette() {
         binding.discoverContent.setBackgroundColor(palette.backgroundColor)
-        binding.discoverHeader.setBackgroundColor(palette.surfaceColor)
+        toolbarIconView.imageTintList = ColorStateList.valueOf(palette.textSecondaryColor)
         binding.discoverLoadingView.setIndicatorColor(palette.accentColor)
         binding.discoverLoadingText.setTextColor(palette.textSecondaryColor)
         binding.discoverEmptyState.setTextColor(palette.textSecondaryColor)

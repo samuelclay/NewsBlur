@@ -57,9 +57,19 @@
                 android:textSize="18sp"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@id/toolbar_icon"
-                app:layout_constraintEnd_toStartOf="@id/toolbar_settings_button"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_action_container"
                 app:layout_constraintStart_toEndOf="@id/toolbar_icon"
                 app:layout_constraintTop_toTopOf="@id/toolbar_icon" />
+
+            <FrameLayout
+                android:id="@+id/toolbar_action_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_settings_button"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/toolbar_settings_button"

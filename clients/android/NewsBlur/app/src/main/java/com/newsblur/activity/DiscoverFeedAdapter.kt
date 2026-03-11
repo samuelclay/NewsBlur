@@ -1,11 +1,11 @@
 package com.newsblur.activity
 
 import android.content.res.ColorStateList
-import android.text.format.DateFormat
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.newsblur.R
@@ -13,14 +13,12 @@ import com.newsblur.databinding.ViewDiscoverFeedRowBinding
 import com.newsblur.databinding.ViewDiscoverStoryRowBinding
 import com.newsblur.domain.DiscoverFeedPayload
 import com.newsblur.domain.DiscoverStory
+import com.newsblur.util.DiscoverFeedFreshnessFormatter
+import com.newsblur.util.DiscoverStoryTextFormatter
 import com.newsblur.util.DiscoverThemePalette
 import com.newsblur.util.ImageLoader
 import com.newsblur.viewModel.DiscoverFeedViewMode
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 class DiscoverFeedAdapter(
     private val layoutInflater: LayoutInflater,
@@ -72,16 +70,31 @@ class DiscoverFeedAdapter(
             binding.discoverFeedCard.setCardBackgroundColor(palette.surfaceColor)
             binding.discoverFeedCard.strokeColor = palette.borderColor
             binding.discoverFeedTitle.setTextColor(palette.textPrimaryColor)
-            binding.discoverFeedMeta.setTextColor(palette.textSecondaryColor)
-            binding.discoverFeedFreshness.setTextColor(palette.textSecondaryColor)
             binding.discoverFeedDivider.setBackgroundColor(palette.borderColor)
 
             binding.discoverFeedTitle.text = feed.title
-            binding.discoverFeedMeta.text = buildMetaLine(feed)
 
-            val freshnessLine = buildFreshnessLine(feed)
-            binding.discoverFeedFreshness.visibility = if (freshnessLine.isNullOrBlank()) View.GONE else View.VISIBLE
-            binding.discoverFeedFreshness.text = freshnessLine
+            val subscribersText = buildSubscriberLine(feed)
+            binding.discoverFeedSubscribersGroup.isVisible = !subscribersText.isNullOrBlank()
+            binding.discoverFeedSubscribersText.text = subscribersText
+            binding.discoverFeedSubscribersText.setTextColor(palette.textSecondaryColor)
+            binding.discoverFeedSubscribersIcon.imageTintList = ColorStateList.valueOf(palette.textSecondaryColor)
+
+            val storiesText = buildStoriesPerMonthLine(feed)
+            binding.discoverFeedStoriesGroup.isVisible = !storiesText.isNullOrBlank()
+            binding.discoverFeedStoriesText.text = storiesText
+            binding.discoverFeedStoriesText.setTextColor(palette.textSecondaryColor)
+            binding.discoverFeedStoriesIcon.imageTintList = ColorStateList.valueOf(palette.textSecondaryColor)
+            binding.discoverFeedMetaRow.isVisible = binding.discoverFeedSubscribersGroup.isVisible || binding.discoverFeedStoriesGroup.isVisible
+
+            val freshnessInfo = buildFreshnessInfo(feed)
+            binding.discoverFeedFreshnessRow.isVisible = freshnessInfo != null
+            if (freshnessInfo != null) {
+                val freshnessColor = if (freshnessInfo.isStale) palette.freshnessStaleColor else palette.freshnessActiveColor
+                binding.discoverFeedFreshnessDot.backgroundTintList = ColorStateList.valueOf(freshnessColor)
+                binding.discoverFeedFreshnessText.text = freshnessInfo.text
+                binding.discoverFeedFreshnessText.setTextColor(freshnessColor)
+            }
 
             binding.discoverFeedIcon.setImageDrawable(null)
             if (!feed.faviconUrl.isNullOrBlank()) {
@@ -127,60 +140,44 @@ class DiscoverFeedAdapter(
             story: DiscoverStory,
         ) {
             storyBinding.discoverStoryDot.backgroundTintList = ColorStateList.valueOf(palette.accentColor)
-            storyBinding.discoverStoryTitle.text = story.storyTitle
+            storyBinding.discoverStoryTitle.text = DiscoverStoryTextFormatter.formatTitle(story.storyTitle)
             storyBinding.discoverStoryTitle.setTextColor(palette.textPrimaryColor)
             storyBinding.discoverStoryMeta.setTextColor(palette.textSecondaryColor)
             storyBinding.discoverStoryMeta.text = buildStoryMeta(story)
         }
 
-        private fun buildMetaLine(feed: com.newsblur.domain.Feed): String {
-            val parts = mutableListOf<String>()
+        private fun buildSubscriberLine(feed: com.newsblur.domain.Feed): String? {
             val subscribers = feed.subscribers?.toIntOrNull() ?: 0
-            if (subscribers > 0) {
-                val formatted = NumberFormat.getIntegerInstance().format(subscribers)
-                val label =
-                    binding.root.resources.getQuantityString(
-                        R.plurals.discover_subscribers,
-                        subscribers,
-                        formatted,
-                    )
-                parts.add(label)
-            }
-            if (feed.storiesPerMonth > 0) {
-                val formatted = NumberFormat.getIntegerInstance().format(feed.storiesPerMonth)
-                val label =
-                    binding.root.resources.getQuantityString(
-                        R.plurals.discover_stories_per_month,
-                        feed.storiesPerMonth,
-                        formatted,
-                    )
-                parts.add(label)
-            }
-            return parts.joinToString(separator = " \u2022 ")
+            if (subscribers <= 0) return null
+            val formatted = NumberFormat.getIntegerInstance().format(subscribers)
+            return binding.root.resources.getQuantityString(R.plurals.discover_subscribers, subscribers, formatted)
         }
 
-        private fun buildFreshnessLine(feed: com.newsblur.domain.Feed): String? {
-            val parts = mutableListOf<String>()
-            parseApiDate(feed.lastStoryDate)?.let { lastStoryDate ->
-                val daysAgo = ((System.currentTimeMillis() - lastStoryDate.time) / DateUtils.DAY_IN_MILLIS).toInt()
-                val freshness =
-                    if (daysAgo < 1) {
-                        binding.root.context.getString(R.string.discover_updated_today)
-                    } else if (daysAgo < 365) {
-                        val relative = DateUtils.getRelativeTimeSpanString(lastStoryDate.time, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS)
-                        binding.root.context.getString(R.string.discover_updated_relative, relative)
-                    } else {
-                        val formattedDate = DateFormat.getMediumDateFormat(binding.root.context).format(lastStoryDate)
-                        binding.root.context.getString(R.string.discover_stale_date, formattedDate)
-                    }
-                parts.add(freshness)
-            }
-            if (feed.lastUpdated > 0) {
-                val fetchedAt = System.currentTimeMillis() - (feed.lastUpdated * DateUtils.SECOND_IN_MILLIS)
-                val relative = DateUtils.getRelativeTimeSpanString(fetchedAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
-                parts.add(binding.root.context.getString(R.string.discover_last_fetched_relative, relative))
-            }
-            return parts.takeIf { it.isNotEmpty() }?.joinToString(separator = " \u2022 ")
+        private fun buildStoriesPerMonthLine(feed: com.newsblur.domain.Feed): String? {
+            if (feed.storiesPerMonth <= 0) return null
+            val formatted = NumberFormat.getIntegerInstance().format(feed.storiesPerMonth)
+            return binding.root.resources.getQuantityString(
+                R.plurals.discover_stories_per_month,
+                feed.storiesPerMonth,
+                formatted,
+            )
+        }
+
+        private fun buildFreshnessInfo(feed: com.newsblur.domain.Feed): FreshnessInfo? {
+            val freshness = DiscoverFeedFreshnessFormatter.build(feed) ?: return null
+            val relative =
+                DateUtils.getRelativeTimeSpanString(
+                    freshness.updatedAtMillis,
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS,
+                ).toString()
+            val freshnessText =
+                if (freshness.isStale) {
+                    binding.root.context.getString(R.string.discover_stale_updated_relative, relative)
+                } else {
+                    binding.root.context.getString(R.string.discover_updated_relative, relative)
+                }
+            return FreshnessInfo(freshnessText, freshness.isStale)
         }
 
         private fun buildStoryMeta(story: DiscoverStory): String {
@@ -188,8 +185,14 @@ class DiscoverFeedAdapter(
             if (story.storyAuthors.isNotBlank()) {
                 parts.add(story.storyAuthors)
             }
-            parseApiDate(story.storyDate)?.let { storyDate ->
-                parts.add(DateUtils.getRelativeTimeSpanString(storyDate.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString())
+            DiscoverFeedFreshnessFormatter.parseApiDateMillis(story.storyDate)?.let { storyDateMillis ->
+                parts.add(
+                    DateUtils.getRelativeTimeSpanString(
+                        storyDateMillis,
+                        System.currentTimeMillis(),
+                        DateUtils.MINUTE_IN_MILLIS,
+                    ).toString(),
+                )
             }
             return parts.joinToString(separator = " \u2022 ")
         }
@@ -213,15 +216,10 @@ class DiscoverFeedAdapter(
 
     companion object {
         private const val MAX_STORIES = 3
-        private val apiDateFormat by lazy {
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }
-        }
 
-        private fun parseApiDate(rawDate: String?): Date? {
-            if (rawDate.isNullOrBlank()) return null
-            return runCatching { apiDateFormat.parse(rawDate) }.getOrNull()
-        }
+        private data class FreshnessInfo(
+            val text: String,
+            val isStale: Boolean,
+        )
     }
 }
