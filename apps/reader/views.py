@@ -152,8 +152,8 @@ ALLOWED_SUBDOMAINS = [
     "staging3",
     "nb",
 ]
-# Users with expensive river queries that should use lazy per-feed merge to avoid Redis blocking
-RIVER_SLOWDOWN_USERS = [510812, 37596, 22845]
+# Deprecated: lazy merge is now always used for all river loads (no ZUNIONSTORE)
+RIVER_SLOWDOWN_USERS = []
 
 
 def get_subdomain(request):

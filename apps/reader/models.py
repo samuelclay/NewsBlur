@@ -207,7 +207,9 @@ class UserSubscription(models.Model):
             # Calculate effective cutoff for this feed based on auto_mark_read settings
             effective_cutoff = cutoff_date
             if is_archive:
-                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings, feed_folder_mapping)
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(
+                    folder_settings, feed_folder_mapping, user_profile=user.profile
+                )
                 if auto_mark_read_cutoff:
                     effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
             read_dates[us.feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
@@ -447,7 +449,7 @@ class UserSubscription(models.Model):
         cache_prefix="",
         date_filter_start=None,
         date_filter_end=None,
-        use_lazy_merge=False,
+        use_lazy_merge=False,  # Deprecated: lazy merge is now always used
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -472,18 +474,26 @@ class UserSubscription(models.Model):
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached:
             story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
-            if read_filter == "unread":
-                unread_story_hashes = story_hashes
-            elif unreads_cached:
-                unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset + limit)
-            else:
-                unread_story_hashes = []
-            return story_hashes, unread_story_hashes
+            if story_hashes:
+                if read_filter == "unread":
+                    unread_story_hashes = story_hashes
+                elif unreads_cached:
+                    unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset + limit)
+                else:
+                    unread_story_hashes = []
+                return story_hashes, unread_story_hashes
+            # Cache exists but doesn't cover this offset — fall through to
+            # extend via lazy merge (don't delete, it has valid earlier pages)
         else:
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
 
-        def lazy_merge_story_hashes(target_read_filter, target_offset, target_limit):
+        def lazy_merge_story_hashes(target_read_filter, target_offset, target_limit, cache_key=None):
+            """K-way merge of per-feed story streams using a heap, avoiding ZUNIONSTORE.
+
+            When cache_key is provided, writes merged results to Redis so that
+            page 2+ can reuse the cache instead of re-merging from scratch.
+            """
             per_feed_chunk = 25
             per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
             per_feed_indices = {feed_id: 0 for feed_id in feed_ids}
@@ -551,56 +561,54 @@ class UserSubscription(models.Model):
                 push_next_from_feed(feed_id)
 
             merged_story_hashes = []
+            merged_with_scores = []
             total_seen = 0
             while heap and len(merged_story_hashes) < target_offset + target_limit:
-                _score, feed_id, story_hash = heapq.heappop(heap)
+                transformed_score, feed_id, story_hash = heapq.heappop(heap)
+                original_score = -transformed_score if order == "newest" else transformed_score
                 if total_seen >= target_offset:
                     merged_story_hashes.append(story_hash)
+                if cache_key:
+                    merged_with_scores.append((story_hash, original_score))
                 total_seen += 1
                 push_next_from_feed(feed_id)
 
+            # Cache merged results in Redis so page 2+ can reuse them.
+            # Use ZADD without DELETE so pagination extends the cache
+            # incrementally (page 1 caches 12, page 2 adds 12 more, etc.)
+            if cache_key and merged_with_scores:
+                pipe = rt.pipeline()
+                pipe.zadd(cache_key, {h: s for h, s in merged_with_scores})
+                pipe.expire(cache_key, 60 * 60)
+                pipe.execute()
+
             return merged_story_hashes
 
-        # Avoid large ZUNIONSTORE operations by lazily merging per-feed chunks in Python
-        skip_cache = use_lazy_merge and len(feed_ids) > 50
-        if skip_cache:
-            story_hashes = lazy_merge_story_hashes(read_filter, offset, limit)
-        else:
-            cls.story_hashes(
-                user_id,
-                feed_ids=feed_ids,
-                read_filter=read_filter,
-                order=order,
-                include_timestamps=False,
-                usersubs=usersubs,
-                cutoff_date=cutoff_date,
-                across_all_feeds=across_all_feeds,
-                store_stories_key=ranked_stories_keys,
-                date_filter_start=date_filter_start,
-                date_filter_end=date_filter_end,
-            )
-            story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
+        # Always use lazy merge (k-way heap) instead of ZUNIONSTORE to avoid
+        # blocking Redis. Works for any feed count — overhead is negligible for
+        # small feed lists and eliminates slowlog entries for large ones.
+        story_hashes = lazy_merge_story_hashes(
+            read_filter,
+            offset,
+            limit,
+            cache_key=ranked_stories_keys,
+        )
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
-            if not skip_cache:
-                rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+            # Copy ranked key to unread key (small ZUNIONSTORE on cached results only)
+            pipe = rt.pipeline()
+            pipe.delete(unread_ranked_stories_keys)
+            pipe.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+            pipe.expire(unread_ranked_stories_keys, 60 * 60)
+            pipe.execute()
         else:
-            if skip_cache:
-                unread_feed_story_hashes = lazy_merge_story_hashes("unread", offset, limit)
-            else:
-                cls.story_hashes(
-                    user_id,
-                    feed_ids=feed_ids,
-                    read_filter="unread",
-                    order=order,
-                    include_timestamps=True,
-                    cutoff_date=cutoff_date,
-                    store_stories_key=unread_ranked_stories_keys,
-                    date_filter_start=date_filter_start,
-                    date_filter_end=date_filter_end,
-                )
-                unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
+            unread_feed_story_hashes = lazy_merge_story_hashes(
+                "unread",
+                offset,
+                limit,
+                cache_key=unread_ranked_stories_keys,
+            )
 
         rt.expire(ranked_stories_keys, 60 * 60)
         rt.expire(unread_ranked_stories_keys, 60 * 60)
@@ -1258,7 +1266,9 @@ class UserSubscription(models.Model):
 
         return data
 
-    def get_effective_auto_mark_read_days(self, folder_settings=None, feed_folder_mapping=None):
+    def get_effective_auto_mark_read_days(
+        self, folder_settings=None, feed_folder_mapping=None, user_profile=None
+    ):
         """
         Returns the effective auto_mark_read_days setting following inheritance:
         feed -> folder (walking up nested hierarchy) -> site-wide
@@ -1269,6 +1279,7 @@ class UserSubscription(models.Model):
             folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
             feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
                                  (use UserSubscriptionFolders.get_feed_folder_mapping() to generate)
+            user_profile: Pre-fetched Profile to avoid N+1 queries on self.user.profile
         """
         # First check if feed has explicit setting
         if self.auto_mark_read_days is not None:
@@ -1299,8 +1310,9 @@ class UserSubscription(models.Model):
                 return (days, source)
 
         # Fall back to site-wide setting (only for archive users)
-        if self.user.profile.is_archive and self.user.profile.days_of_unread:
-            return (self.user.profile.days_of_unread, "site-wide")
+        profile = user_profile or self.user.profile
+        if profile.is_archive and profile.days_of_unread:
+            return (profile.days_of_unread, "site-wide")
 
         return (None, "default")
 
@@ -1327,7 +1339,7 @@ class UserSubscription(models.Model):
 
         return (None, "default")
 
-    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None):
+    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None, user_profile=None):
         """
         Returns the unread cutoff date based on auto_mark_read_days setting.
         Takes into account feed, folder, and site-wide settings.
@@ -1336,8 +1348,11 @@ class UserSubscription(models.Model):
         Args:
             folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
             feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
+            user_profile: Pre-fetched Profile to avoid N+1 queries on self.user.profile
         """
-        days, source = self.get_effective_auto_mark_read_days(folder_settings, feed_folder_mapping)
+        days, source = self.get_effective_auto_mark_read_days(
+            folder_settings, feed_folder_mapping, user_profile=user_profile
+        )
         if days is None:
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
