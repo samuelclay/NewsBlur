@@ -25,6 +25,7 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.Session
 import com.newsblur.util.SessionDataSource
 import com.newsblur.util.UIUtils
+import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -62,6 +63,13 @@ class FeedItemsList : ItemsList() {
     }
 
     override fun shouldHandlePredictiveBack(): Boolean = reviewInfo == null
+
+    override fun handleUpdate(updateType: Int) {
+        super.handleUpdate(updateType)
+        if ((updateType and UPDATE_METADATA) != 0) {
+            refreshFeedHeader()
+        }
+    }
 
     fun showDeleteFeedDialog() {
         val deleteFeedFragment: DialogFragment = DeleteFeedFragment.newInstance(feed, folderName)
@@ -109,7 +117,6 @@ class FeedItemsList : ItemsList() {
             R.id.menu_rename_feed -> {
                 val frag = RenameDialogFragment.newFeedInstance(feed.feedId, feed.title)
                 frag.show(supportFragmentManager, RenameDialogFragment::class.java.name)
-                // NOTE: This activity uses a Feed passed via extras; name changes won’t reflect until finish().
                 true
             }
 
@@ -186,6 +193,13 @@ class FeedItemsList : ItemsList() {
             }
         }
         UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false)
+    }
+
+    private fun refreshFeedHeader() {
+        if (!::feed.isInitialized || !::folderName.isInitialized) return
+        dbHelper.getFeed(feed.feedId)?.let { updatedFeed ->
+            setupFeedItems(updatedFeed, folderName)
+        }
     }
 
     private fun checkInAppReview() {
