@@ -1,6 +1,7 @@
 package com.newsblur.viewModel
 
 import com.newsblur.MainDispatcherRule
+import com.newsblur.askai.AskAiMessage
 import com.newsblur.askai.AskAiProvider
 import com.newsblur.askai.AskAiQuestionType
 import com.newsblur.askai.AskAiResponseBlock
@@ -223,8 +224,65 @@ class AskAiViewModelTest {
             assertEquals(2, requests.size)
             assertEquals("What changed in the leadership team?", requests[0].customQuestion)
             assertEquals("What changed in the leadership team?", requests[1].customQuestion)
+            assertTrue(requests[0].conversationHistory.isEmpty())
+            assertTrue(requests[1].conversationHistory.isEmpty())
             assertEquals(AskAiProvider.GEMINI.rawValue, requests[1].model)
             coVerify(exactly = 2) { askAiApi.sendQuestion(any()) }
+        }
+
+    @Test
+    fun sendFollowUpAppendsLatestUserMessageToConversationHistory() =
+        runTest {
+            val completeHandler = slot<(Any?) -> Unit>()
+            val chunkHandler = slot<(Any?) -> Unit>()
+            val requests = mutableListOf<AskAiQuestionRequest>()
+
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.isShowAskAi() } returns true
+            every { prefsRepo.getIsArchive() } returns false
+            every { prefsRepo.getIsPro() } returns false
+            every { prefsRepo.getUserName() } returns "sclay"
+            every { prefsRepo.setAskAiModel(any()) } just runs
+            every { socketClient.subscribe("ask_ai:start", any()) } just runs
+            every { socketClient.subscribe("ask_ai:chunk", capture(chunkHandler)) } just runs
+            every { socketClient.subscribe("ask_ai:complete", capture(completeHandler)) } just runs
+            every { socketClient.subscribe("ask_ai:usage", any()) } just runs
+            every { socketClient.subscribe("ask_ai:error", any()) } just runs
+            coEvery { askAiApi.sendQuestion(capture(requests)) } returns AskAiQuestionResponse(code = 1, message = "Processing question")
+
+            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
+            viewModel.sendQuestion(AskAiQuestionType.SENTENCE)
+            advanceUntilIdle()
+
+            chunkHandler.captured(
+                mapOf(
+                    "story_hash" to "story-hash",
+                    "request_id" to viewModel.uiState.value.currentRequestId,
+                    "chunk" to "Initial answer.",
+                ),
+            )
+            completeHandler.captured(
+                mapOf(
+                    "story_hash" to "story-hash",
+                    "request_id" to viewModel.uiState.value.currentRequestId,
+                ),
+            )
+            advanceUntilIdle()
+
+            viewModel.updateCustomQuestion("What else matters here?")
+            viewModel.sendFollowUp()
+            advanceUntilIdle()
+
+            assertEquals(2, requests.size)
+            assertEquals(emptyList<AskAiMessage>(), requests[0].conversationHistory)
+            assertEquals(
+                listOf(
+                    AskAiMessage(role = "assistant", content = "Initial answer."),
+                    AskAiMessage(role = "user", content = "What else matters here?"),
+                ),
+                requests[1].conversationHistory,
+            )
         }
 
     @Test
