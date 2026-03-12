@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# unmount_backup_drive.sh - Unmount and spin down the NewsBlur backup drive
+# unmount_backup_drive.sh - Unmount and power off the NewsBlur backup drive
 #
-# Runs via nsenter/docker on the host so it works from any container.
-# Uses SCSI stop (sg_start) to spin down the USB drive — hdparm doesn't work
-# with USB-SATA bridges like the Sabrent adapter.
+# Runs via nsenter on the host so it works from any container.
+# Unbinds the USB device to fully power off the drive — neither hdparm
+# nor sg_start work through the Sabrent USB-SATA bridge.
 
-DRIVE_DEVICE="/dev/sda"
+USB_DEVICE="2-1"  # USB port the drive is on (see: readlink /sys/block/sda)
 HOST_MOUNT_POINT="/mnt/data/supervisor/media/newsblur-backup"
 
 nsenter_run() {
@@ -21,8 +21,11 @@ else
     echo "Not mounted"
 fi
 
-# Spin down the drive via SCSI stop command
-docker run --rm --privileged --device="${DRIVE_DEVICE}" alpine \
-    sh -c "apk add -q sg3_utils && sg_start --stop ${DRIVE_DEVICE}" 2>/dev/null \
-    && echo "Drive spun down" \
-    || echo "WARNING: could not spin down drive"
+# Unbind the USB device to power off the drive completely
+if nsenter_run test -d "/sys/bus/usb/devices/${USB_DEVICE}"; then
+    nsenter_run sh -c "echo ${USB_DEVICE} > /sys/bus/usb/drivers/usb/unbind" \
+        && echo "USB device unbound (drive powered off)" \
+        || echo "WARNING: could not unbind USB device"
+else
+    echo "USB device already unbound"
+fi
