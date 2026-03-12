@@ -2861,6 +2861,31 @@ def mark_story_hashes_as_read(request):
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
 
+    # Filter out story hashes already marked as read to avoid redundant work.
+    # Some clients (e.g. NetNewsWire) re-send all read hashes on every sync cycle.
+    if story_hashes:
+        rsh = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        all_read_key = "RS:%s" % request.user.pk
+        p = rsh.pipeline()
+        for story_hash in story_hashes:
+            p.sismember(all_read_key, story_hash)
+        already_read = p.execute()
+        original_count = len(story_hashes)
+        story_hashes = [sh for sh, is_read in zip(story_hashes, already_read) if not is_read]
+        skipped_count = original_count - len(story_hashes)
+        if skipped_count > 0 and not story_hashes:
+            logging.user(
+                request,
+                "~FYRead ~SB%s~SN already read stories, skipping" % skipped_count,
+            )
+            return dict(code=1, story_hashes=[], feed_ids=[], friend_user_ids=[])
+        elif skipped_count > 0:
+            logging.user(
+                request,
+                "~FYSkipped ~SB%s~SN/%s already read, processing %s new"
+                % (skipped_count, original_count, len(story_hashes)),
+            )
+
     # Handle read times for trending feeds feature
     read_times_raw = request.POST.get("read_times", "{}")
     try:
