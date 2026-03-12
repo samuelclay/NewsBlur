@@ -1241,6 +1241,8 @@ private fun askAiPalette(theme: ThemeValue): AskAiPalette =
             )
     }
 
+internal fun askAiSheetBackgroundColor(theme: ThemeValue): Color = askAiPalette(theme).background
+
 private fun isUpgradeMessage(message: String): Boolean {
     val lowered = message.lowercase()
     return lowered.contains("limit") || lowered.contains("used all") || lowered.contains("reached")

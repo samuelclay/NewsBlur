@@ -2,6 +2,8 @@ package com.newsblur.askai
 
 import android.Manifest
 import android.app.Dialog
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -13,6 +15,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
@@ -61,6 +64,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
             behavior.skipCollapsed = true
             behavior.isFitToContents = true
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
 
     override fun onStart() {
@@ -69,7 +73,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
         val bottomSheet =
             dialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet) ?: return
 
-        bottomSheet.setBackgroundColor(Color.TRANSPARENT)
+        bottomSheet.background = createBottomSheetBackground()
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
@@ -79,6 +83,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
+            setBackgroundColor(Color.TRANSPARENT)
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 NewsBlurTheme(
@@ -161,6 +166,25 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
             viewModel.transcribeAudio(audioFile)
         } else {
             viewModel.setVoiceError(getString(R.string.ask_ai_microphone_error))
+        }
+    }
+
+    private fun createBottomSheetBackground(): GradientDrawable {
+        val cornerRadius = 24f * resources.displayMetrics.density
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(askAiSheetBackgroundColor(prefsRepo.getSelectedTheme()).toArgb())
+            cornerRadii =
+                floatArrayOf(
+                    cornerRadius,
+                    cornerRadius,
+                    cornerRadius,
+                    cornerRadius,
+                    0f,
+                    0f,
+                    0f,
+                    0f,
+                )
         }
     }
 
