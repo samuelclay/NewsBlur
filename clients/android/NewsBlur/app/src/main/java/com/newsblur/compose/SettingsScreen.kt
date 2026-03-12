@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Article
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Download
@@ -122,6 +123,7 @@ data class SettingsUiState(
     val ltrGestureAction: String = GestureAction.GEST_ACTION_BACK.name,
     val rtlGestureAction: String = GestureAction.GEST_ACTION_TOGGLE_READ.name,
     val enableNotifications: Boolean = false,
+    val showAskAi: Boolean = true,
 )
 
 fun buildSettingsUiState(
@@ -167,6 +169,7 @@ fun buildSettingsUiState(
         ltrGestureAction = prefsRepo.getLeftToRightGestureAction().name,
         rtlGestureAction = prefsRepo.getRightToLeftGestureAction().name,
         enableNotifications = prefsRepo.isEnableNotifications(),
+        showAskAi = prefsRepo.isShowAskAi(),
     )
 
 @Composable
@@ -584,6 +587,15 @@ fun SettingsScreen(
                 options = volumeKeyOptions,
                 palette = palette,
                 onSelected = { onStringChanged(PrefConstants.VOLUME_KEY_NAVIGATION, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_ask_ai),
+                icon = Icons.Rounded.AutoAwesome,
+                iconColor = NewsblurOrange,
+                checked = state.showAskAi,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.SHOW_ASK_AI, it) },
             )
         }
 
