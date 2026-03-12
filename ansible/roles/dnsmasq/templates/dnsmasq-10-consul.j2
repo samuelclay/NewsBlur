@@ -8,6 +8,11 @@ server=/consul/127.0.0.1#8600
 {# dnsmasq should not needlessly read /etc/resolv.conf #}
 no-resolv
 
+{# Cache size: default 150 is too small and causes evictions before TTL expires,
+   leading to unnecessary Consul DNS lookups that fail during brief gRPC blips.
+   10000 entries is plenty for all service discovery names. #}
+cache-size=10000
+
 {% for interface in network_interfaces %}
 {% if not interface.startswith('veth') and not interface.startswith('docker') and not interface.startswith('br') %}
 # interface={{ interface }}
