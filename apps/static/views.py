@@ -98,15 +98,15 @@ def feature_native_apps(request):
 
 
 def pricing_premium(request):
-    return render(request, "static/pricing_premium.xhtml")
+    return render(request, "static/pricing_premium.xhtml", {"current_plan": "premium"})
 
 
 def pricing_archive(request):
-    return render(request, "static/pricing_archive.xhtml")
+    return render(request, "static/pricing_archive.xhtml", {"current_plan": "archive"})
 
 
 def pricing_pro(request):
-    return render(request, "static/pricing_pro.xhtml")
+    return render(request, "static/pricing_pro.xhtml", {"current_plan": "pro"})
 
 
 def faq(request):
