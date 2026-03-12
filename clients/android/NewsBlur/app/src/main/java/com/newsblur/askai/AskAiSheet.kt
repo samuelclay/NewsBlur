@@ -86,6 +86,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newsblur.R
+import com.newsblur.design.Black
+import com.newsblur.design.Gray10
+import com.newsblur.design.Gray96
+import com.newsblur.design.NbSepiaSurface
 import com.newsblur.util.PrefConstants.ThemeValue
 
 @Composable
@@ -1202,7 +1206,7 @@ private fun askAiPalette(theme: ThemeValue): AskAiPalette =
     when (theme) {
         ThemeValue.SEPIA ->
             AskAiPalette(
-                background = Color(0xFFF3E2CB),
+                background = NbSepiaSurface,
                 cardBackground = Color(0xFFFAF5ED),
                 border = Color(0xFFD4C8B8),
                 textPrimary = Color(0xFF5C4A3D),
@@ -1212,7 +1216,7 @@ private fun askAiPalette(theme: ThemeValue): AskAiPalette =
 
         ThemeValue.DARK ->
             AskAiPalette(
-                background = Color(0xFF3D3D3D),
+                background = Gray10,
                 cardBackground = Color(0xFF4A4A4A),
                 border = Color(0xFF5A5A5A),
                 textPrimary = Color(0xFFE0E0E0),
@@ -1222,7 +1226,7 @@ private fun askAiPalette(theme: ThemeValue): AskAiPalette =
 
         ThemeValue.BLACK ->
             AskAiPalette(
-                background = Color(0xFF1A1A1A),
+                background = Black,
                 cardBackground = Color(0xFF2A2A2A),
                 border = Color(0xFF404040),
                 textPrimary = Color(0xFFE8E8E8),
@@ -1232,7 +1236,7 @@ private fun askAiPalette(theme: ThemeValue): AskAiPalette =
 
         else ->
             AskAiPalette(
-                background = Color(0xFFEAECE6),
+                background = Gray96,
                 cardBackground = Color.White,
                 border = Color(0xFFD0D2CC),
                 textPrimary = Color(0xFF5E6267),
