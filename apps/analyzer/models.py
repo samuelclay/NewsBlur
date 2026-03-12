@@ -21,7 +21,7 @@ from django.template.loader import render_to_string
 from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
-from utils.ai_functions import classify_stories_with_ai
+from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 
 # Regex timeout in seconds to prevent ReDoS attacks
 REGEX_TIMEOUT = 0.1  # 100ms
@@ -708,6 +708,7 @@ class MClassifierPrompt(mongo.Document):
     folder_id = mongo.StringField(default="")  # Empty string means applies to feed level
     prompt = mongo.StringField()
     classifier_type = mongo.StringField(choices=["focus", "hidden"])
+    include_images = mongo.BooleanField(default=False)  # When True, send story images to VLM
     creation_date = mongo.DateTimeField(default=datetime.datetime.now)
 
     meta = {
@@ -797,13 +798,13 @@ class MClassifierPrompt(mongo.Document):
             # Apply global prompts (feed_id=0)
             if 0 in feed_prompts:
                 for prompt in feed_prompts[0]:
-                    results = classify_stories_with_ai(prompt, feed_stories)
+                    results = cls._run_classifier(prompt, feed_stories)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
             # Apply feed-specific prompts
             if feed_id in feed_prompts:
                 for prompt in feed_prompts[feed_id]:
-                    results = classify_stories_with_ai(prompt, feed_stories)
+                    results = cls._run_classifier(prompt, feed_stories)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
         # Apply folder-specific prompts if we have folder_ids
@@ -820,10 +821,17 @@ class MClassifierPrompt(mongo.Document):
 
                     # Apply folder prompts to eligible stories
                     for prompt in folder_prompts[folder_id]:
-                        results = classify_stories_with_ai(prompt, folder_stories)
+                        results = cls._run_classifier(prompt, folder_stories)
                         cls._update_classifications(classifications, results, prompt.classifier_type)
 
         return classifications
+
+    @classmethod
+    def _run_classifier(cls, prompt, stories):
+        """Route to text-only or vision classifier based on prompt's include_images flag."""
+        if prompt.include_images:
+            return classify_stories_with_vision(prompt, stories)
+        return classify_stories_with_ai(prompt, stories)
 
     @classmethod
     def _update_classifications(cls, classifications, results, classifier_type):
