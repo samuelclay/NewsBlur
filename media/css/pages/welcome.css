@@ -3199,6 +3199,11 @@ a.NB-fgi img {
 .NB-dark .NB-feature-group-share .NB-feature-group-label { color: #a07ab0; }
 .NB-dark .NB-feature-group-everywhere .NB-feature-group-label { color: #6a9aba; }
 
+.NB-dark .NB-welcome-activity {
+    background: linear-gradient(180deg, #2a524e 0%, #284442 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 .NB-dark .NB-welcome-activity h2 {
     color: white;
 }
