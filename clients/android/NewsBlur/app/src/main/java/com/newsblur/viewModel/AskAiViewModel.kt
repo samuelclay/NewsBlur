@@ -13,12 +13,14 @@ import com.newsblur.network.AskAiQuestionRequest
 import com.newsblur.network.NewsBlurSocketClient
 import com.newsblur.preference.PrefsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
@@ -133,7 +135,10 @@ class AskAiViewModel
             }
 
             viewModelScope.launch {
-                val response = askAiApi.transcribeAudio(file)
+                val response =
+                    withContext(Dispatchers.IO) {
+                        askAiApi.transcribeAudio(file)
+                    }
                 file.delete()
 
                 if (response.code == 1 && !response.text.isNullOrBlank()) {
@@ -333,16 +338,18 @@ class AskAiViewModel
 
             viewModelScope.launch {
                 val response =
-                    askAiApi.sendQuestion(
-                        AskAiQuestionRequest(
-                            storyHash = story.storyHash,
-                            questionId = questionId,
-                            requestId = requestId,
-                            model = selectedModel.rawValue,
-                            customQuestion = questionText.takeIf { questionId == AskAiQuestionType.CUSTOM.rawValue },
-                            conversationHistory = conversationHistory.toList(),
-                        ),
-                    )
+                    withContext(Dispatchers.IO) {
+                        askAiApi.sendQuestion(
+                            AskAiQuestionRequest(
+                                storyHash = story.storyHash,
+                                questionId = questionId,
+                                requestId = requestId,
+                                model = selectedModel.rawValue,
+                                customQuestion = questionText.takeIf { questionId == AskAiQuestionType.CUSTOM.rawValue },
+                                conversationHistory = conversationHistory.toList(),
+                            ),
+                        )
+                    }
 
                 if (response.code != 1) {
                     timeoutJob?.cancel()

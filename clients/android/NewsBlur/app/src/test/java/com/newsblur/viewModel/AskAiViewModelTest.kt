@@ -19,10 +19,12 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -223,5 +225,38 @@ class AskAiViewModelTest {
             assertEquals("What changed in the leadership team?", requests[1].customQuestion)
             assertEquals(AskAiProvider.GEMINI.rawValue, requests[1].model)
             coVerify(exactly = 2) { askAiApi.sendQuestion(any()) }
+        }
+
+    @Test
+    fun sendQuestionCallsApiOffMainThread() =
+        runTest {
+            val apiThread = CompletableDeferred<Thread>()
+
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.isShowAskAi() } returns true
+            every { prefsRepo.getIsArchive() } returns false
+            every { prefsRepo.getIsPro() } returns false
+            every { prefsRepo.getUserName() } returns "sclay"
+            every { prefsRepo.setAskAiModel(any()) } just runs
+            every { socketClient.subscribe(any(), any()) } just runs
+
+            val dispatchCheckingApi =
+                object : AskAiApi {
+                    override suspend fun sendQuestion(request: AskAiQuestionRequest): AskAiQuestionResponse {
+                        apiThread.complete(Thread.currentThread())
+                        return AskAiQuestionResponse(code = 1, message = "Processing question")
+                    }
+
+                    override suspend fun transcribeAudio(file: File): AskAiTranscriptionResponse =
+                        AskAiTranscriptionResponse(code = 1, text = "transcribed")
+                }
+
+            val testThread = Thread.currentThread()
+            val viewModel = AskAiViewModel(dispatchCheckingApi, prefsRepo, socketClient)
+            viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
+            viewModel.sendQuestion(AskAiQuestionType.BULLETS)
+            advanceUntilIdle()
+
+            assertNotSame(testThread, apiThread.await())
         }
 }
