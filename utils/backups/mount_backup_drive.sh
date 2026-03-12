@@ -20,10 +20,17 @@ if nsenter_run mountpoint -q "${HOST_MOUNT_POINT}" 2>/dev/null; then
     exit 0
 fi
 
-# Re-bind USB device if it was unbound (by unmount_backup_drive.sh)
-if ! nsenter_run test -d "/sys/bus/usb/devices/${USB_DEVICE}"; then
-    echo "Re-binding USB device..."
-    nsenter_run sh -c "echo ${USB_DEVICE} > /sys/bus/usb/drivers/usb/bind"
+# Wake up USB device if it was deauthorized (by unmount_backup_drive.sh).
+# Re-authorizing alone doesn't trigger storage enumeration, so we unbind+bind
+# to force a full USB reset after authorizing.
+AUTH=$(nsenter_run cat "/sys/bus/usb/devices/${USB_DEVICE}/authorized" 2>/dev/null)
+if [ "$AUTH" = "0" ]; then
+    echo "Waking USB device..."
+    nsenter_run sh -c "echo 1 > /sys/bus/usb/devices/${USB_DEVICE}/authorized"
+    sleep 1
+    nsenter_run sh -c "echo ${USB_DEVICE} > /sys/bus/usb/drivers/usb/unbind" 2>/dev/null
+    sleep 1
+    nsenter_run sh -c "echo ${USB_DEVICE} > /sys/bus/usb/drivers/usb/bind" 2>/dev/null
     # Wait for the block device to appear (drive needs to spin up)
     for i in $(seq 1 30); do
         if nsenter_run test -e "/dev/disk/by-uuid/${DRIVE_UUID}"; then
@@ -32,7 +39,7 @@ if ! nsenter_run test -d "/sys/bus/usb/devices/${USB_DEVICE}"; then
         sleep 1
     done
     if ! nsenter_run test -e "/dev/disk/by-uuid/${DRIVE_UUID}"; then
-        echo "ERROR: drive did not appear after USB bind (waited 30s)"
+        echo "ERROR: drive did not appear after USB wake (waited 30s)"
         exit 1
     fi
 fi
