@@ -481,9 +481,12 @@ def _find_clustered_stories(candidates, stories_by_hash, user_feed_ids=None):
                 user_cluster_feed_ids.add(feed_id_str)
 
         if len(user_cluster_feed_ids) >= 2:
-            for member_hash in all_members:
-                if member_hash in candidate_hashes:
-                    categorized[member_hash] = "widely_covered"
+            # scoring.py: Only mark ONE candidate per cluster as widely_covered.
+            # candidates is score-ordered, so the current candidate (s) is the
+            # highest-scored one in this cluster. checked_clusters prevents
+            # re-processing, so other candidates in the same cluster fall through
+            # to their normal category (infrequent, top_stories, etc.).
+            categorized[s["story_hash"]] = "widely_covered"
 
     return categorized
 

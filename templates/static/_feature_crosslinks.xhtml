@@ -1,0 +1,43 @@
+{% load utils_tags %}
+<div class="NB-feature-detail-crosslinks">
+    <h2>Explore more features</h2>
+    <div class="NB-feature-detail-crosslinks-grid">
+        <a href="{% url "feature-intelligence-training" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-training">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">Intelligence Training</div>
+            <div class="NB-feature-detail-crosslink-desc">Train by author, tag, title, and full text</div>
+        </a>
+        <a href="{% url "feature-ask-ai" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-ask-ai">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">Ask AI &amp; Daily Briefing</div>
+            <div class="NB-feature-detail-crosslink-desc">AI-powered story analysis and daily summaries</div>
+        </a>
+        <a href="{% url "feature-web-feeds" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-web-feeds">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">Web Feeds</div>
+            <div class="NB-feature-detail-crosslink-desc">Follow any website, even without RSS</div>
+        </a>
+        <a href="{% url "feature-newsletters" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-newsletters">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">Email Newsletters</div>
+            <div class="NB-feature-detail-crosslink-desc">Read newsletters in your news reader</div>
+        </a>
+        <a href="{% url "feature-search" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-search">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">Full-Text Search</div>
+            <div class="NB-feature-detail-crosslink-desc">Search across all your subscriptions</div>
+        </a>
+        <a href="{% url "feature-archive" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-archive">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">Story Archive</div>
+            <div class="NB-feature-detail-crosslink-desc">Every story kept and searchable forever</div>
+        </a>
+        <a href="{% url "feature-saved-stories" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-saved">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">Saved Stories &amp; Tags</div>
+            <div class="NB-feature-detail-crosslink-desc">Save stories and organize with custom tags</div>
+        </a>
+        <a href="{% url "feature-native-apps" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-native-apps">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">Native Apps</div>
+            <div class="NB-feature-detail-crosslink-desc">First-class iOS &amp; Android apps, not wrappers</div>
+        </a>
+    </div>
+</div>
+
+<div class="NB-feature-detail-cta">
+    <a href="{% url "features" %}" class="NB-feature-detail-cta-primary">See all features</a>
+    <a href="{% url "index" %}" class="NB-feature-detail-cta-secondary">Try NewsBlur free</a>
+</div>

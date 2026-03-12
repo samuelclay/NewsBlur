@@ -1,0 +1,68 @@
+{% load utils_tags %}
+<div class="NB-pricing-crosslinks">
+    <h2>Compare all plans</h2>
+    <div class="NB-pricing-crosslinks-grid">
+        {% if current_plan == "premium" %}
+        <div class="NB-pricing-crosslink NB-pricing-crosslink-premium NB-pricing-crosslink-current">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium</div>
+                <div class="NB-pricing-crosslink-price">$36/year</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">1,024 sites, full-text search, River of News, saved story tags, and text view</div>
+            <div class="NB-pricing-crosslink-current-label">Currently viewing</div>
+        </div>
+        {% else %}
+        <a href="{% url "pricing-premium" %}" class="NB-pricing-crosslink NB-pricing-crosslink-premium">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium</div>
+                <div class="NB-pricing-crosslink-price">$36/year</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">1,024 sites, full-text search, River of News, saved story tags, and text view</div>
+            <div class="NB-pricing-crosslink-arrow">Explore Premium &rarr;</div>
+        </a>
+        {% endif %}
+        {% if current_plan == "archive" %}
+        <div class="NB-pricing-crosslink NB-pricing-crosslink-archive NB-pricing-crosslink-current">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium Archive</div>
+                <div class="NB-pricing-crosslink-price">$99/year</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">Full story archive, Ask AI, daily briefing, story clustering, and advanced training</div>
+            <div class="NB-pricing-crosslink-current-label">Currently viewing</div>
+        </div>
+        {% else %}
+        <a href="{% url "pricing-archive" %}" class="NB-pricing-crosslink NB-pricing-crosslink-archive">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium Archive</div>
+                <div class="NB-pricing-crosslink-price">$99/year</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">Full story archive, Ask AI, daily briefing, story clustering, and advanced training</div>
+            <div class="NB-pricing-crosslink-arrow">Explore Archive &rarr;</div>
+        </a>
+        {% endif %}
+        {% if current_plan == "pro" %}
+        <div class="NB-pricing-crosslink NB-pricing-crosslink-pro NB-pricing-crosslink-current">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium Pro</div>
+                <div class="NB-pricing-crosslink-price">$29/month</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">Every feed fetched every 5-15 minutes, regex training, and up to 10,000 sites</div>
+            <div class="NB-pricing-crosslink-current-label">Currently viewing</div>
+        </div>
+        {% else %}
+        <a href="{% url "pricing-pro" %}" class="NB-pricing-crosslink NB-pricing-crosslink-pro">
+            <div class="NB-pricing-crosslink-header">
+                <div class="NB-pricing-crosslink-name">Premium Pro</div>
+                <div class="NB-pricing-crosslink-price">$29/month</div>
+            </div>
+            <div class="NB-pricing-crosslink-desc">Every feed fetched every 5-15 minutes, regex training, and up to 10,000 sites</div>
+            <div class="NB-pricing-crosslink-arrow">Explore Pro &rarr;</div>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="NB-feature-detail-cta">
+    <a href="{% url "pricing" %}" class="NB-feature-detail-cta-primary">See all plans</a>
+    <a href="{% url "index" %}" class="NB-feature-detail-cta-secondary">Try NewsBlur free</a>
+</div>

@@ -599,7 +599,29 @@
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
             [self popToRootWithCompletion:^{
-                [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+                // Check if user has any feeds with notifications enabled
+                NSMutableArray *notificationFeeds = [NSMutableArray array];
+                for (NSString *fid in self.dictActiveFeeds) {
+                    NSDictionary *feed = [self.dictActiveFeeds objectForKey:fid];
+                    if (![feed isKindOfClass:[NSDictionary class]]) continue;
+                    NSArray *types = [feed objectForKey:@"notification_types"];
+                    if (types && [types count] > 0) {
+                        [notificationFeeds addObject:fid];
+                    }
+                }
+
+                if (notificationFeeds.count > 0) {
+                    // Open notification river with story finding mode
+                    self.inFindingStoryMode = YES;
+                    self.findingStoryStartDate = [NSDate date];
+                    self.findingStoryDictionary = nil;
+                    self.tryFeedStoryId = storyHash;
+                    self.tryFeedFeedId = feedIdStr;
+                    [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
+                } else {
+                    // Fallback: no notification feeds, open individual feed
+                    [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+                }
                 if (completionHandler) completionHandler();
             }];
         } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
@@ -2502,12 +2524,24 @@
             feedDetailView.storiesCollection.isWidgetView = YES;
             feedDetailView.storiesCollection.isRiverView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"widget_stories"];
-            
+
             NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
             NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
-            
+
             for (NSDictionary *info in feedInfo) {
                 [feeds addObject:info[@"id"]];
+            }
+        } else if ([folder isEqualToString:@"notifications"] || [folderName isEqualToString:@"notifications"]) {
+            feedDetailView.storiesCollection.isRiverView = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"notifications"];
+
+            for (NSString *feedId in self.dictActiveFeeds) {
+                NSDictionary *feed = [self.dictActiveFeeds objectForKey:feedId];
+                if (![feed isKindOfClass:[NSDictionary class]]) continue;
+                NSArray *types = [feed objectForKey:@"notification_types"];
+                if (types && [types count] > 0) {
+                    [feeds addObject:[feed objectForKey:@"id"]];
+                }
             }
         } else {
             [feedDetailView.storiesCollection setActiveFolder:folderName];

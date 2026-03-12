@@ -545,8 +545,13 @@ def merge_clusters(
     return {root: members[:CLUSTER_MAX_SIZE] for root, members in groups.items() if len(members) >= 2}
 
 
-def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
+def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None):
     """Write cluster memberships to Redis.
+
+    When candidate_cluster_map is provided, detects when a newly computed cluster
+    contains stories that already belong to an existing cluster. In that case,
+    new stories are merged into the existing cluster (ZADD without DELETE) rather
+    than creating a duplicate cluster.
 
     Keys:
         sCL:{story_hash} -> cluster_id (STRING with TTL)
@@ -557,21 +562,48 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     pipe = r.pipeline()
+    merged_count = 0
+    new_count = 0
 
     for cluster_id, members in clusters.items():
-        for story_hash in members:
-            pipe.set("sCL:%s" % story_hash, cluster_id, ex=ttl)
-        # Clear stale members then store current cluster members
-        pipe.delete("zCL:%s" % cluster_id)
-        for story_hash in members:
-            pipe.zadd("zCL:%s" % cluster_id, {story_hash: 0})
-        pipe.expire("zCL:%s" % cluster_id, ttl)
+        # Check if any member already belongs to an existing cluster
+        existing_cluster_id = None
+        if candidate_cluster_map:
+            for story_hash in members:
+                if story_hash in candidate_cluster_map:
+                    existing_cluster_id = candidate_cluster_map[story_hash]
+                    break
+
+        if existing_cluster_id:
+            # Merge new stories into the existing cluster. Don't delete the
+            # existing zCL: — just add new members and update sCL: pointers.
+            merged_count += 1
+            target_cluster_id = existing_cluster_id
+            for story_hash in members:
+                if story_hash not in candidate_cluster_map:
+                    # New story joining existing cluster
+                    pipe.set("sCL:%s" % story_hash, target_cluster_id, ex=ttl)
+                    pipe.zadd("zCL:%s" % target_cluster_id, {story_hash: 0})
+                else:
+                    # Already in a cluster — refresh TTL on its sCL: key
+                    pipe.expire("sCL:%s" % story_hash, ttl)
+            pipe.expire("zCL:%s" % target_cluster_id, ttl)
+        else:
+            # Brand new cluster — replace any stale data
+            new_count += 1
+            for story_hash in members:
+                pipe.set("sCL:%s" % story_hash, cluster_id, ex=ttl)
+            pipe.delete("zCL:%s" % cluster_id)
+            for story_hash in members:
+                pipe.zadd("zCL:%s" % cluster_id, {story_hash: 0})
+            pipe.expire("zCL:%s" % cluster_id, ttl)
 
     pipe.execute()
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
-        " ---> ~FBClustering: stored %s clusters with %s total stories" % (len(clusters), total_stories)
+        " ---> ~FBClustering: stored %s clusters (%s new, %s merged) with %s total stories"
+        % (len(clusters), new_count, merged_count, total_stories)
     )
 
     # clustering/models.py: Record unique cluster IDs and story hashes for Grafana

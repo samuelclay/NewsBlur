@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-search{% endblock %}
+{% block title %}Full-Text Search - NewsBlur{% endblock %}
+{% block nav_title %}Full-Text Search{% endblock %}
+{% block head %}
+    <meta name="description" content="Search across all your subscriptions with Elasticsearch-powered full-text search. Find stories by keyword, phrase, or combination. Save searches as feeds for ongoing monitoring.">
+    <meta property="og:title" content="Full-Text Search - NewsBlur">
+    <meta property="og:description" content="Search across all your subscriptions with Elasticsearch-powered full-text search.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Full-Text Search - NewsBlur">
+    <meta name="twitter:description" content="Search across all your subscriptions with Elasticsearch-powered full-text search.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-premium">Premium</div>
+        <h1 class="NB-feature-detail-title">Full-Text Search</h1>
+        <p class="NB-feature-detail-subtitle">Search across all your subscriptions with Elasticsearch-powered full-text search.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/search.jpg" alt="Search results across subscriptions with highlighted terms">
+            <div class="NB-feature-detail-caption">Search results across subscriptions</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Press the search icon or use the keyboard shortcut</li>
+            <li class="NB-feature-detail-step">Type keywords, phrases, or combinations</li>
+            <li class="NB-feature-detail-step">Search within a single feed, a folder, or across everything</li>
+            <li class="NB-feature-detail-step">Results show matching stories with highlighted terms</li>
+            <li class="NB-feature-detail-step">Save searches as feeds for ongoing monitoring</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need for search?</h3>
+            <p class="NB-feature-detail-faq-a">Full-text search requires Premium ($36/year) or higher.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I search saved stories?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, saved stories and their tags are fully searchable.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How far back does search go?</h3>
+            <p class="NB-feature-detail-faq-a">On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I save a search as a feed?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, save any search as a feed to get ongoing results.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}
