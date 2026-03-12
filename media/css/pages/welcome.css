@@ -2805,8 +2805,9 @@ a.NB-fgi img {
     color: #363C53;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
     line-height: 24px;
-    background-color: #d0ccc5;
-    background: linear-gradient(180deg, #d0ccc5 0%, #c4bfb7 100%);
+    background-color: #FAFAFA;
+    background: #F1E0D0 url(/media/img/welcome/footer_background.jpg) repeat center top;
+    background-size: 1438px 150px;
 
     border-top: 2px solid rgba(0, 0, 0, .1);
 }
