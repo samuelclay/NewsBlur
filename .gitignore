@@ -79,6 +79,7 @@ apps/discover/fixtures/*_cache.json
 # IDE files
 .idea/
 /docker/volumes/*
+clients/android/NewsBlur/.kotlin/
 
 **/node_modules
 *.tfstate*
