@@ -68,6 +68,7 @@ import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.TryFeedSessionResetter;
 import com.newsblur.util.UIUtils;
@@ -80,8 +81,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
-
 @AndroidEntryPoint
 public abstract class ItemsList extends NbActivity implements ReadingActionListener {
 
@@ -599,18 +598,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         boolean showReadFilter = menu.findItem(R.id.menu_read_filter) != null && menu.findItem(R.id.menu_read_filter).isVisible();
 
         String orderText = storyOrder == StoryOrder.OLDEST ? getString(R.string.oldest) : getString(R.string.newest);
-        String filterText = readFilter == ReadFilter.UNREAD ? "Unread" : "All";
-        String title;
-        if (showOrder && showReadFilter) {
-            title = filterText + " \u00B7 " + orderText;
-        } else if (showReadFilter) {
-            title = filterText;
-        } else if (showOrder) {
-            title = orderText;
-        } else {
-            title = getString(R.string.story_header_options);
-        }
-        binding.itemlistOptionsPill.setText(title.toUpperCase(Locale.US));
+        String filterText = readFilter == ReadFilter.UNREAD ? getString(R.string.state_unread) : getString(R.string.state_all);
+        String title = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder);
+        binding.itemlistOptionsPill.setText(title);
         applyPillStyle(binding.itemlistOptionsPill, storyHeaderPalette().pillBackgroundColor, storyHeaderPalette().pillBorderColor, storyHeaderPalette().pillTextColor);
     }
 
