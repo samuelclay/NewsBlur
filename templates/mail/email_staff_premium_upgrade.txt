@@ -27,5 +27,5 @@ Auto-renewal:  {% if premium_renewal %}Yes{% else %}No{% endif %}{% if premium_e
 Expires:       {{ premium_expire|date:"M j, Y" }}{% endif %}
 {% if latest_payments %}
 Recent Payments:
-{% for payment in latest_payments %}  {{ payment.payment_date|date:"M j, Y" }}  ${{ payment.payment_amount }}  {{ payment.payment_provider }}  {% if payment.refunded %}REFUNDED{% else %}Paid{% endif %}
+{% for payment in latest_payments %}  {{ payment.payment_date|date:"M j, Y" }}  ${{ payment.payment_amount }}  {{ payment.payment_provider }}  {% if payment.is_trial %}Trial ended {{ payment.trial_end|date:"M j, Y" }}{% elif payment.refunded %}REFUNDED{% else %}Paid{% endif %}
 {% endfor %}{% endif %}
