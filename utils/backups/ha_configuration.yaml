@@ -4,7 +4,7 @@
 
 shell_command:
   mount_backup_drive: "/config/scripts/mount_backup_drive.sh"
-  offsite_backup: "/config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1"
+  offsite_backup: "/config/scripts/mount_backup_drive.sh && /config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1; /config/scripts/unmount_backup_drive.sh"
 
 # Then create an automation in the HA UI or in automations.yaml:
 #
@@ -14,3 +14,6 @@ shell_command:
 #       at: "06:00:00"
 #   action:
 #     - service: shell_command.offsite_backup
+#
+# NOTE: offsite_pull.sh unmounts the drive when it finishes, so the drive
+# spins down between backups. Do NOT add a boot-time mount automation.
