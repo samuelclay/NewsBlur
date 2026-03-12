@@ -37,6 +37,7 @@ class AskAiViewModel
         val uiState: StateFlow<AskAiUiState> = _uiState.asStateFlow()
 
         private val conversationHistory = mutableListOf<AskAiMessage>()
+        private var pendingHistoryQuestion: AskAiMessage? = null
         private var socketSubscribed = false
         private var timeoutJob: Job? = null
         private var streamingTimeoutJob: Job? = null
@@ -49,6 +50,7 @@ class AskAiViewModel
             if (currentStory?.storyHash == storyHash) return
 
             conversationHistory.clear()
+            pendingHistoryQuestion = null
             _uiState.value =
                 AskAiUiState(
                     story = AskAiStory(storyHash = storyHash, storyTitle = storyTitle),
@@ -92,6 +94,8 @@ class AskAiViewModel
         fun reaskWithModel(model: AskAiProvider) {
             selectModel(model)
             val state = _uiState.value
+            conversationHistory.clear()
+            pendingHistoryQuestion = null
             sendQuestion(
                 questionId = state.currentQuestionId,
                 questionText = state.currentQuestionText,
@@ -102,6 +106,7 @@ class AskAiViewModel
         fun cancelRequest() {
             timeoutJob?.cancel()
             streamingTimeoutJob?.cancel()
+            pendingHistoryQuestion = null
             _uiState.update { it.copy(isStreaming = false) }
         }
 
@@ -163,6 +168,7 @@ class AskAiViewModel
         override fun onCleared() {
             timeoutJob?.cancel()
             streamingTimeoutJob?.cancel()
+            pendingHistoryQuestion = null
             socketClient.unsubscribe(EVENT_START)
             socketClient.unsubscribe(EVENT_CHUNK)
             socketClient.unsubscribe(EVENT_COMPLETE)
@@ -224,6 +230,7 @@ class AskAiViewModel
 
             timeoutJob?.cancel()
             streamingTimeoutJob?.cancel()
+            pendingHistoryQuestion = null
             _uiState.update {
                 it.copy(
                     isStreaming = false,
@@ -247,12 +254,11 @@ class AskAiViewModel
                     isFollowUp = state.completedBlocks.isNotEmpty(),
                 )
 
-            if (state.currentQuestionText.isNotBlank()) {
-                conversationHistory += AskAiMessage(role = "user", content = state.currentQuestionText)
-            }
+            pendingHistoryQuestion?.let { conversationHistory += it }
             if (state.currentResponseText.isNotBlank()) {
                 conversationHistory += AskAiMessage(role = "assistant", content = state.currentResponseText)
             }
+            pendingHistoryQuestion = null
 
             _uiState.update {
                 it.copy(
@@ -271,6 +277,7 @@ class AskAiViewModel
                     kotlinx.coroutines.delay(REQUEST_TIMEOUT_MS)
                     val state = _uiState.value
                     if (state.isStreaming && state.currentResponseText.isBlank()) {
+                        pendingHistoryQuestion = null
                         _uiState.update {
                             it.copy(
                                 isStreaming = false,
@@ -292,6 +299,7 @@ class AskAiViewModel
                     if (state.currentResponseText.isNotBlank()) {
                         completeCurrentResponse()
                     } else {
+                        pendingHistoryQuestion = null
                         _uiState.update {
                             it.copy(
                                 isStreaming = false,
@@ -319,6 +327,15 @@ class AskAiViewModel
 
             val requestId = UUID.randomUUID().toString()
             val selectedModel = _uiState.value.selectedModel
+            val requestConversationHistory =
+                if (conversationHistory.isNotEmpty()) {
+                    val userMessage = AskAiMessage(role = "user", content = questionText)
+                    pendingHistoryQuestion = userMessage
+                    conversationHistory.toList() + userMessage
+                } else {
+                    pendingHistoryQuestion = null
+                    emptyList()
+                }
 
             _uiState.update {
                 it.copy(
@@ -346,13 +363,14 @@ class AskAiViewModel
                                 requestId = requestId,
                                 model = selectedModel.rawValue,
                                 customQuestion = questionText.takeIf { questionId == AskAiQuestionType.CUSTOM.rawValue },
-                                conversationHistory = conversationHistory.toList(),
+                                conversationHistory = requestConversationHistory,
                             ),
                         )
                     }
 
                 if (response.code != 1) {
                     timeoutJob?.cancel()
+                    pendingHistoryQuestion = null
                     _uiState.update {
                         it.copy(
                             isStreaming = false,
