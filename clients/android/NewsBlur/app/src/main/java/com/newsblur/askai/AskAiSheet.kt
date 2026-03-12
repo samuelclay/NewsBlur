@@ -113,7 +113,7 @@ fun AskAiSheet(
             Modifier
                 .fillMaxWidth()
                 .heightIn(max = maxHeight),
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        shape = RoundedCornerShape(0.dp),
         color = palette.background,
     ) {
         Column(

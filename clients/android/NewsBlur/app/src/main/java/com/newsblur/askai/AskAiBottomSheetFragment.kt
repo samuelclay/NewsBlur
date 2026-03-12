@@ -170,21 +170,9 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun createBottomSheetBackground(): GradientDrawable {
-        val cornerRadius = 24f * resources.displayMetrics.density
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             setColor(askAiSheetBackgroundColor(prefsRepo.getSelectedTheme()).toArgb())
-            cornerRadii =
-                floatArrayOf(
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                )
         }
     }
 
