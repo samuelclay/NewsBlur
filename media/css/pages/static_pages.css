@@ -1176,6 +1176,29 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     letter-spacing: 0.3px;
 }
 
+/* Current plan state - shown when viewing that plan's detail page */
+.NB-pricing-crosslink-current {
+    opacity: 0.5;
+    cursor: default;
+    border: 2px dashed rgba(45, 38, 26, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.NB-pricing-crosslink-current:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: none;
+    box-shadow: none;
+}
+
+.NB-pricing-crosslink-current-label {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+    color: rgba(45, 38, 26, 0.4);
+    font-style: italic;
+}
+
 /* Center CTA buttons in pricing tier cards on static page */
 .NB-static-pricing .NB-pricing-tier-actions {
     text-align: center;
@@ -3636,6 +3659,19 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark .NB-pricing-crosslink-pro .NB-pricing-crosslink-arrow {
     color: #fcd34d;
+}
+
+.NB-dark .NB-pricing-crosslink-current {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-crosslink-current:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-pricing-crosslink-current-label {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 /* Main pricing page - dark mode */
