@@ -474,12 +474,21 @@ class MUserFeedNotification(mongo.Document):
         feed = usersub.feed
         story_content = self.sanitize_story(story["story_content"])
 
+        # models.py: Use briefing.svg icon for daily briefing feeds (no MFeedIcon data)
+        if feed.is_daily_briefing:
+            favicon_url = "https://%s/media/img/icons/nouns/briefing.svg" % (
+                Site.objects.get_current().domain,
+            )
+        else:
+            favicon_url = feed.favicon_url_fqdn
+
         params = {
             "story": story,
             "story_content": story_content,
             "feed": feed,
             "feed_title": usersub.user_title or feed.feed_title,
             "favicon_border": feed.favicon_color,
+            "favicon_url": favicon_url,
         }
         from_address = "notifications@newsblur.com"
         to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
@@ -543,6 +552,7 @@ class MUserFeedNotification(mongo.Document):
             classifier_tags=classifiers.get("tags", []),
             classifier_texts=classifiers.get("texts", []),
             classifier_feeds=classifiers.get("feeds", []),
+            classifier_urls=classifiers.get("urls", []),
         )
 
         return score

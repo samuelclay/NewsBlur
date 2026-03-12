@@ -32,6 +32,7 @@ from utils import log as logging
 # - xAI: https://docs.x.ai/docs/models
 MODEL_PRICING = {
     # Anthropic Claude models (full IDs and short aliases)
+    "claude-opus-4-6": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5-20251101": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5": {"input": 5.00, "output": 25.00},
     "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
@@ -43,6 +44,7 @@ MODEL_PRICING = {
     # OpenAI GPT models
     "gpt-5.2": {"input": 2.00, "output": 8.00},
     "gpt-5-mini": {"input": 0.30, "output": 1.20},
+    "gpt-5-nano": {"input": 0.05, "output": 0.40},
     "gpt-5.1": {"input": 1.25, "output": 10.00},
     "gpt-5": {"input": 1.25, "output": 10.00},
     "gpt-4.1": {"input": 2.00, "output": 8.00},
@@ -59,6 +61,7 @@ MODEL_PRICING = {
     "gemini-3-pro-preview": {"input": 2.00, "output": 12.00},
     "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
     "gemini-2.5-flash": {"input": 0.10, "output": 0.40},
+    "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40},
     # xAI Grok models
     "grok-4-1-fast-non-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4": {"input": 3.00, "output": 15.00},
@@ -67,6 +70,7 @@ MODEL_PRICING = {
 
 # Provider mapping for models (full IDs and short aliases)
 MODEL_PROVIDERS = {
+    "claude-opus-4-6": "anthropic",
     "claude-opus-4-5-20251101": "anthropic",
     "claude-opus-4-5": "anthropic",
     "claude-sonnet-4-20250514": "anthropic",
@@ -77,6 +81,7 @@ MODEL_PROVIDERS = {
     "claude-haiku-4-5": "anthropic",
     "gpt-5.2": "openai",
     "gpt-5-mini": "openai",
+    "gpt-5-nano": "openai",
     "gpt-5.1": "openai",
     "gpt-5": "openai",
     "gpt-4.1": "openai",
@@ -90,6 +95,7 @@ MODEL_PROVIDERS = {
     "gemini-3-pro-preview": "google",
     "gemini-2.5-pro": "google",
     "gemini-2.5-flash": "google",
+    "gemini-2.5-flash-lite": "google",
     "grok-4-1-fast-non-reasoning": "xai",
     "grok-4": "xai",
     "grok-3-beta": "xai",

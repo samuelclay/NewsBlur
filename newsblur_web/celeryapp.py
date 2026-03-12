@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import functools
 import os
 
 from celery import Celery
@@ -18,6 +19,37 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
+
+# Worktree queue isolation: automatically prefix queue names on all apply_async
+# calls so tasks are routed to the worktree-specific queues. This avoids needing
+# to change every apply_async(queue="...") call site in the codebase.
+_worktree_name = os.environ.get("NEWSBLUR_WORKTREE", "")
+if _worktree_name:
+    _worktree_prefix = f"{_worktree_name}_"
+    _original_apply_async = app.Task.apply_async
+
+    @functools.wraps(_original_apply_async)
+    def _prefixed_apply_async(self, *args, **kwargs):
+        queue = kwargs.get("queue")
+        if queue and not queue.startswith(_worktree_prefix):
+            kwargs["queue"] = _worktree_prefix + queue
+        return _original_apply_async(self, *args, **kwargs)
+
+    app.Task.apply_async = _prefixed_apply_async
+
+    # Also patch send_task, which is the path Celery Beat uses to dispatch
+    # periodic tasks. Without this, beat-scheduled tasks would go to unprefixed
+    # queues (consumed by main, not the worktree).
+    _original_send_task = app.send_task
+
+    @functools.wraps(_original_send_task)
+    def _prefixed_send_task(*args, **kwargs):
+        queue = kwargs.get("queue")
+        if queue and not queue.startswith(_worktree_prefix):
+            kwargs["queue"] = _worktree_prefix + queue
+        return _original_send_task(*args, **kwargs)
+
+    app.send_task = _prefixed_send_task
 
 
 @app.on_after_finalize.connect

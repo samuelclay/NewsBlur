@@ -33,6 +33,7 @@ def AskAIQuestion(
     conversation_history=None,
     request_id=None,
     model=None,
+    thinking=False,
 ):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
@@ -77,13 +78,16 @@ def AskAIQuestion(
         if model_name not in MODELS:
             model_name = DEFAULT_MODEL
 
+        # Cache key differentiates thinking mode from fast mode
+        cache_model_key = f"{model_name}:thinking" if thinking else model_name
+
         if not conversation_history and not custom_question:
             cached = MAskAIResponse.get_cached_response(
                 user_id=user_id,
                 story_hash=story_hash,
                 question_id=question_id,
                 custom_question=custom_question,
-                model=model_name,
+                model=cache_model_key,
             )
             if cached:
                 response_text = cached.response_text
@@ -155,7 +159,7 @@ def AskAIQuestion(
             ]
 
         # Get provider and model ID
-        provider, model_id = get_provider(model_name)
+        provider, model_id, thinking_config = get_provider(model_name, thinking=thinking)
 
         # Check for required API key
         if not provider.is_configured():
@@ -164,15 +168,16 @@ def AskAIQuestion(
             logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg}")
             return {"code": -1, "message": error_msg}
 
+        thinking_label = " (thinking)" if thinking else ""
         logging.user(
             user,
-            f"~BB~FGAsk AI: Starting stream for story ~SB{story_hash}~SN, question ~SB{question_id}~SN, model ~SB{model_name}~SN",
+            f"~BB~FGAsk AI: Starting stream for story ~SB{story_hash}~SN, question ~SB{question_id}~SN, model ~SB{model_name}{thinking_label}~SN",
         )
 
         full_response = []
         chunk_count = 0
 
-        for text in provider.stream_response(messages, model_id):
+        for text in provider.stream_response(messages, model_id, thinking_config=thinking_config):
             full_response.append(text)
             publish_event("chunk", {"chunk": text})
             chunk_count += 1
@@ -217,6 +222,7 @@ def AskAIQuestion(
         if not conversation_history and not custom_question:
             metadata = {
                 "model": model_name,
+                "thinking": thinking,
                 "question_id": question_id,
                 "duration_seconds": time.time() - start_time,
                 "response_length": len(full_response_text),
@@ -229,7 +235,7 @@ def AskAIQuestion(
                 question_id=question_id,
                 response_text=full_response_text,
                 custom_question=custom_question,
-                model=model_name,
+                model=cache_model_key,
                 metadata=metadata,
             )
 

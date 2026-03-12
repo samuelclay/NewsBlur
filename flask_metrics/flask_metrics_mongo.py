@@ -32,7 +32,7 @@ def objects():
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
+    except pymongo.errors.NotPrimaryError as e:
         return Response(f"NotMaster error: {e}", 500)
     data = dict(objects=stats["objects"])
     formatted_data = {}
@@ -50,55 +50,111 @@ def objects():
 
 @app.route("/mongo-replset-lag/")
 def repl_set_lag():
-    def _get_oplog_length():
-        oplog = connection.rs.command("printReplicationInfo")
-        last_op = oplog.find({}, {"ts": 1}).sort([("$natural", -1)]).limit(1)[0]["ts"].time
-        first_op = oplog.find({}, {"ts": 1}).sort([("$natural", 1)]).limit(1)[0]["ts"].time
-        oplog_length = last_op - first_op
-        return oplog_length
+    """
+    Get MongoDB replica set replication lag for each secondary.
+    Returns per-secondary lag values for better monitoring.
+    """
+    PRIMARY_STATE = 1
+    SECONDARY_STATE = 2
 
-    def _get_max_replication_lag():
-        PRIMARY_STATE = 1
-        SECONDARY_STATE = 2
-        status = connection.admin.command("replSetGetStatus")
-        members = status["members"]
-        primary_optime = None
-        oldest_secondary_optime = None
-        for member in members:
-            member_state = member["state"]
-            optime = member["optime"]
-            if member_state == PRIMARY_STATE:
-                primary_optime = optime["ts"].time
-            elif member_state == SECONDARY_STATE:
-                if not oldest_secondary_optime or optime["ts"].time < oldest_secondary_optime:
-                    oldest_secondary_optime = optime["ts"].time
-
-        if not primary_optime or not oldest_secondary_optime:
-            raise Exception("Replica set is not healthy")
-
-        return primary_optime - oldest_secondary_optime
+    formatted_data = {}
+    metric_index = 0
 
     try:
-        # no such item for Cursor instance
-        oplog_length = _get_oplog_length()
-        # not running with --replSet
-        replication_lag = _get_max_replication_lag()
+        status = connection.admin.command("replSetGetStatus")
+        members = status["members"]
+
+        primary_optime = None
+        primary_name = None
+        secondaries = []
+
+        for member in members:
+            member_state = member["state"]
+            member_name = member.get("name", "unknown")
+            optime = member.get("optime", {})
+
+            if member_state == PRIMARY_STATE:
+                primary_optime = optime.get("ts")
+                if primary_optime:
+                    primary_optime = primary_optime.time
+                primary_name = member_name
+            elif member_state == SECONDARY_STATE:
+                secondary_optime = optime.get("ts")
+                if secondary_optime:
+                    secondaries.append(
+                        {
+                            "name": member_name,
+                            "optime": secondary_optime.time,
+                            "state": member.get("stateStr", "SECONDARY"),
+                            "health": member.get("health", 0),
+                        }
+                    )
+
+        if primary_optime is None:
+            formatted_data[
+                f"error_{metric_index}"
+            ] = f'mongo_replication_error{{db="{MONGO_HOST}", error="no_primary"}} 1'
+            metric_index += 1
+        else:
+            # Add primary info
+            formatted_data[
+                f"primary_{metric_index}"
+            ] = f'mongo_replication_primary{{db="{MONGO_HOST}", primary="{primary_name}"}} 1'
+            metric_index += 1
+
+            # Connected secondaries count
+            formatted_data[
+                f"secondaries_{metric_index}"
+            ] = f'mongo_connected_secondaries{{db="{MONGO_HOST}"}} {len(secondaries)}'
+            metric_index += 1
+
+            # Per-secondary metrics
+            for secondary in secondaries:
+                lag_seconds = primary_optime - secondary["optime"]
+                health = secondary["health"]
+                name = secondary["name"]
+
+                # Lag in seconds
+                formatted_data[
+                    f"lag_{metric_index}"
+                ] = f'mongo_replication_lag_seconds{{db="{MONGO_HOST}", secondary="{name}"}} {lag_seconds}'
+                metric_index += 1
+
+                # Health status (1=healthy, 0=unhealthy)
+                formatted_data[
+                    f"health_{metric_index}"
+                ] = f'mongo_secondary_health{{db="{MONGO_HOST}", secondary="{name}"}} {int(health)}'
+                metric_index += 1
+
+            # Max lag across all secondaries (for alerting)
+            if secondaries:
+                max_lag = max(primary_optime - s["optime"] for s in secondaries)
+                formatted_data[
+                    f"max_lag_{metric_index}"
+                ] = f'mongo_replication_max_lag_seconds{{db="{MONGO_HOST}"}} {max_lag}'
+                metric_index += 1
+
     except pymongo.errors.ServerSelectionTimeoutError as e:
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
-        return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
-        return Response(f"NotMaster error: {e}", 500)
-
-    formatted_data = {}
-    for k, v in oplog_length.items():
-        formatted_data[k] = f'mongo_oplog{{type="length", db="{MONGO_HOST}"}} {v}'
-    for k, v in replication_lag.items():
-        formatted_data[k] = f'mongo_oplog{{type="lag", db="{MONGO_HOST}"}} {v}'
+        formatted_data[
+            f"error_{metric_index}"
+        ] = f'mongo_replication_error{{db="{MONGO_HOST}", error="operation_failure"}} 1'
+        metric_index += 1
+    except pymongo.errors.NotPrimaryError as e:
+        formatted_data[
+            f"error_{metric_index}"
+        ] = f'mongo_replication_error{{db="{MONGO_HOST}", error="not_primary"}} 1'
+        metric_index += 1
+    except Exception as e:
+        formatted_data[
+            f"error_{metric_index}"
+        ] = f'mongo_replication_error{{db="{MONGO_HOST}", error="unknown"}} 1'
+        metric_index += 1
 
     context = {
         "data": formatted_data,
-        "chart_name": "oplog_metrics",
+        "chart_name": "mongo_replication",
         "chart_type": "gauge",
     }
     html_body = render_template("prometheus_data.html", **context)
@@ -113,7 +169,7 @@ def size():
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
+    except pymongo.errors.NotPrimaryError as e:
         return Response(f"NotMaster error: {e}", 500)
     data = dict(size=stats["fsUsedSize"])
     formatted_data = {}
@@ -137,7 +193,7 @@ def ops():
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
+    except pymongo.errors.NotPrimaryError as e:
         return Response(f"NotMaster error: {e}", 500)
     data = dict((q, status["opcounters"][q]) for q in status["opcounters"].keys())
 
@@ -162,7 +218,7 @@ def page_faults():
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
+    except pymongo.errors.NotPrimaryError as e:
         return Response(f"NotMaster error: {e}", 500)
     try:
         value = status["extra_info"]["page_faults"]
@@ -190,7 +246,7 @@ def page_queues():
         return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
-    except pymongo.errors.NotMasterError as e:
+    except pymongo.errors.NotPrimaryError as e:
         return Response(f"NotMaster error: {e}", 500)
     data = dict((q, status["globalLock"]["currentQueue"][q]) for q in ("readers", "writers"))
     formatted_data = {}

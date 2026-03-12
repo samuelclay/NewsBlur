@@ -122,7 +122,31 @@ class TextImporter:
         @timelimit(5)
         def extract_text(resp):
             try:
-                text = resp.text
+                # When servers don't specify charset in Content-Type header, requests
+                # defaults to ISO-8859-1 per RFC 2616, but most modern sites use UTF-8.
+                # Check if we should try UTF-8 first.
+                encoding = resp.encoding
+                content = resp.content
+
+                # If requests detected ISO-8859-1 (the default when no charset is specified),
+                # check if the HTML declares UTF-8 charset and use that instead
+                if encoding and encoding.lower() in ("iso-8859-1", "latin-1", "latin1"):
+                    # Check for UTF-8 BOM or HTML charset declaration
+                    content_start = content[:1024].lower()
+                    if (
+                        content.startswith(b"\xef\xbb\xbf")  # UTF-8 BOM
+                        or b'charset="utf-8"' in content_start
+                        or b"charset='utf-8'" in content_start
+                        or b"charset=utf-8" in content_start
+                    ):
+                        encoding = "utf-8"
+
+                # Try decoding with the determined encoding
+                try:
+                    text = content.decode(encoding or "utf-8")
+                except (UnicodeDecodeError, LookupError):
+                    # Fall back to UTF-8 with error replacement
+                    text = content.decode("utf-8", errors="replace")
             except (LookupError, TypeError):
                 text = resp.content
             return text

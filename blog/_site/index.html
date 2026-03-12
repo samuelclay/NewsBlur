@@ -65,6 +65,262 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Feb 2, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/02/02/global-and-folder-scoped-intelligence-training/">
+              Global and folder-scoped intelligence training: Train once, apply everywhere
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
+
+<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
+
+<h3 id="three-scope-levels">Three scope levels</h3>
+
+<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
+
+<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
+<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
+  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
+  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
+</ul>
+
+<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
+
+<h3 id="real-world-examples">Real-world examples</h3>
+
+<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
+
+<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
+
+<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
+
+<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
+
+<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
+
+<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
+<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
+
+<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
+
+<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
+
+<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Per-site classifiers (default)</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Global and folder-scoped classifiers</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Manage Training scope filter</td>
+      <td>Premium Archive</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Jan 23, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/01/23/per-feed-auto-mark-read/">
+              Premium Archive: Per-feed and per-folder auto-mark-as-read settings
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
+
+<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
+<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
+
+<h3 id="folder-inheritance">Folder inheritance</h3>
+
+<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
+
+<ul>
+  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
+  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
+  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
+  <li>Individual feeds can still override their folder’s setting</li>
+</ul>
+
+<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
+<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
+
+<h3 id="site-settings-dialog">Site settings dialog</h3>
+
+<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
+
+<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
+<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Jan 22, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/01/22/intelligence-trainer-overhaul/">
+              Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.</p>
+
+<p>Today I’m launching three major improvements: URL classifiers, regex mode for power users, and a completely redesigned Manage Training tab.</p>
+
+<h3 id="train-on-urls">Train on URLs</h3>
+
+<p>You can now train on story permalink URLs, not just titles and content. This opens up new filtering possibilities based on URL patterns.</p>
+
+<p><img src="/assets/url-classifier-section.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The URL classifier matches against the full story permalink. Some use cases:</p>
+
+<ul>
+  <li><strong>Filter by URL path</strong>: Like or dislike stories that contain <code class="language-plaintext highlighter-rouge">/sponsored/</code> or <code class="language-plaintext highlighter-rouge">/opinion/</code> in their URL</li>
+  <li><strong>Domain sections</strong>: Match specific subdomains or URL segments that indicate content types</li>
+  <li><strong>Landing pages vs articles</strong>: Some feeds include both—filter by URL structure to show only what you want</li>
+</ul>
+
+<p>URL classifiers support both exact phrase matching and regex mode. The exact phrase match is available to Premium subscribers, while regex mode requires <a href="https://newsblur.com/?next=premium">Premium Pro</a>.</p>
+
+<p>When a URL classifier matches, you’ll see the matched portion highlighted directly in the story header, so you always know why a story was filtered.</p>
+
+<h3 id="regex-matching-for-power-users">Regex matching for power users</h3>
+
+<p>For years, the text classifier only supported exact phrase matching. If you wanted to match “iPhone” and “iPad” you needed two separate classifiers. Now you can use regex patterns in the Title, Text, and URL classifiers.</p>
+
+<p><img src="/assets/regex-mode-toggle.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A segmented control lets you switch between “Exact phrase” and “Regex” mode. In regex mode, you get access to the full power of regular expressions:</p>
+
+<ul>
+  <li><strong>Word boundaries</strong> (<code class="language-plaintext highlighter-rouge">\b</code>): Match <code class="language-plaintext highlighter-rouge">\bapple\b</code> to find “apple” but not “pineapple”</li>
+  <li><strong>Alternation</strong> (<code class="language-plaintext highlighter-rouge">|</code>): Match <code class="language-plaintext highlighter-rouge">iPhone|iPad|Mac</code> in a single classifier</li>
+  <li><strong>Optional characters</strong> (<code class="language-plaintext highlighter-rouge">?</code>): Match <code class="language-plaintext highlighter-rouge">colou?r</code> to find both “color” and “colour”</li>
+  <li><strong>Anchors</strong> (<code class="language-plaintext highlighter-rouge">^</code> and <code class="language-plaintext highlighter-rouge">$</code>): Match patterns at the start or end of text</li>
+  <li><strong>Character classes</strong>: Match <code class="language-plaintext highlighter-rouge">[0-9]+</code> for any number sequence</li>
+</ul>
+
+<p><img src="/assets/regex-help-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A built-in help popover explains regex syntax with practical examples. The trainer validates your regex in real-time and shows helpful error messages if the pattern is invalid.</p>
+
+<p>Regex matching is case-insensitive, so <code class="language-plaintext highlighter-rouge">apple</code> matches “Apple”, “APPLE”, and “apple”. This mode is available to Premium Pro subscribers.</p>
+
+<h3 id="manage-all-your-training-in-one-place">Manage all your training in one place</h3>
+
+<p>Over the years you may have trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when you wanted to review what you’d trained, you had to open each feed’s trainer individually and click through them one by one.</p>
+
+<p>The new Manage Training tab provides a consolidated view of every classifier you’ve ever trained, organized by folder. You can see everything at a glance, edit inline, and save changes across multiple feeds in a single click.</p>
+
+<p><img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Open the Intelligence Trainer from the sidebar menu (or press the <code class="language-plaintext highlighter-rouge">t</code> key). You’ll now see two tabs at the top: “Site by Site” and “Manage Training”. The Manage Training tab is available everywhere you train—from the story trainer, feed trainer, or the main Intelligence Trainer dialog.</p>
+
+<p>The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That’s still the best way to train new feeds with lots of suggestions.</p>
+
+<p>The Manage Training tab shows only what you’ve already trained. Every thumbs up and thumbs down you’ve ever given, organized by folder just like your feed list. Each feed shows its trained classifiers as pills you can click to toggle.</p>
+
+<h4 id="filtering-made-easy">Filtering made easy</h4>
+
+<p>The real power comes from the filtering options. At the top of the tab you’ll find several ways to narrow down your training:</p>
+
+<p><strong>Folder/Site dropdown</strong> — Only folders and sites with training appear in this dropdown. Select a folder to see all training within it, or select a specific site to focus on just that feed’s classifiers. This is especially useful when you have hundreds of trained items and want to review just one area.</p>
+
+<p><img src="/assets/manage-training-site-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Instant search</strong> — Type in the search box and results filter as you type. Search matches against classifier names, feed titles, and folder names. Looking for everything you’ve trained about “apple”? Just type it and see all matches instantly.</p>
+
+<p><img src="/assets/manage-training-search.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Likes and Dislikes</strong> — Toggle between All, Likes only, or Dislikes only. Want to see everything you’ve marked as disliked? One click shows you all the red thumbs-down items across your entire training history.</p>
+
+<p><img src="/assets/manage-training-dislikes.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Type filters</strong> — Filter by classifier type: Title, Author, Tag, Text, URL, or Site. These are multi-select, so you can show just Authors and Tags while hiding everything else. Perfect for when you want to audit just the authors you’ve trained across all your feeds.</p>
+
+<h4 id="edit-inline-and-save-in-bulk">Edit inline and save in bulk</h4>
+
+<p>Click any classifier pill to toggle it between like, dislike, and neutral. The Save button shows exactly how many changes you’ve made, so you always know what’s pending. Made a mistake? Just click again to undo—the count updates automatically.</p>
+
+<p>When you click Save, all your changes across all feeds are saved in a single request. No more clicking through feeds one at a time to clean up old training.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Title/Author/Tag/Feed classifiers</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Manage Training tab</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>URL classifiers (exact phrase)</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <td>Text classifiers (exact phrase)</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Regex mode (Title, Text, URL)</td>
+      <td>Premium Pro</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All three features are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Jan 16, 2026</span>
           <h3>
             <a class="post-link" href="/2026/01/16/ask-ai/">
@@ -340,116 +596,6 @@
 <p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
 
 <p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Oct 22, 2024</span>
-          <h3>
-            <a class="post-link" href="/2024/10/22/newsblur-macos-app/">
-              NewsBlur&#39;s native macOS App offers news notifications directly on your desktop
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.</p>
-
-<p>Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.</p>
-
-<p><img src="/assets/macos-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.</p>
-
-<p><img src="/assets/macos-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s configurable and supports ay=utomatic hiding and showing of the feed list so you can focus on the stories you want to read. Use your mouse to swipe left and right on both stories and to swap which pane is visible.</p>
-
-<p><img src="/assets/macos-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>In the Grid view, you can swipe right with your mouse to temporarily show the feed list, giving you a compact view of your news stories without having to give up screen real estate.</p>
-
-<p><img src="/assets/macos-4.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Training is supported natively, so you can hide those stories you don’t want to see while highlighting those thast you do.</p>
-
-<p><img src="/assets/macos-5.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s important to be able to train, because you can set notifications to be sent from either your Unread list or your Focus list, ensuring you only see the notifications from sites you want to see. And clicking on those native macOS notifications takes you directly to the story in the new macOS app.</p>
-
-<p><img src="/assets/macos-6.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Dec 6, 2023</span>
-          <h3>
-            <a class="post-link" href="/2023/12/06/ios-grid-view/">
-              Introducing the Grid view on iOS
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
-<img src="/assets/ipad-grid-1.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>Just like on the web, you can customize how many stories you see and how large each story is, giving you the freedom to read stories with large thumbnails or small image previews.</p>
-
-<p><img src="/assets/ipad-grid-2.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>It even works on iPhone!</p>
-
-<p><img src="/assets/iphone-grid.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any other ideas you’d like to see on iPad and iPhone, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>This is a huge release and has been a year in the making. Coming up soon: a new Mac app and intelligent feed discovery.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jul 1, 2022</span>
-          <h3>
-            <a class="post-link" href="/2022/07/01/premium-archive-subscription/">
-              NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.</p>
-
-<p>The NewsBlur Premium Archive subscription offers you the following:</p>
-
-<ul>
-  <li><img src="/assets/icons8/icons8-bursts-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Everything in the premium subscription, of course</li>
-  <li><img src="/assets/icons8/icons8-relax-with-book-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Choose when stories are automatically marked as read</li>
-  <li><img src="/assets/icons8/icons8-filing-cabinet-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Every story from every site is archived and searchable forever</li>
-  <li><img src="/assets/icons8/icons8-quadcopter-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Feeds that support paging are back-filled in for a complete archive</li>
-  <li><img src="/assets/icons8/icons8-rss-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Export trained stories from folders as RSS feeds</li>
-  <li><img src="/assets/icons8/icons8-calendar-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Stories can stay unread forever</li>
-</ul>
-
-<p>You can now enjoy a new preference for exactly when stories are marked as read:</p>
-
-<p><img src="/assets/premium-archive-mark-read-date.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>A technical note about the backfilling of your archive:</p>
-
-<blockquote>
-<p>NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. </p>
-
-<p>A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.</p>
-</blockquote>
-
-<p>NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.</p>
-
-<p>The launch of the new Premium Archive subscription tier also contains the <a href="/2022/07/01/dashboard-redesign-2022/">2022 redesign</a>, which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.</p>
-
-<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
-
-<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>How’s that for an archive?</p>
 
         </div>
       </li></ul>

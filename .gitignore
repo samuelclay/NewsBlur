@@ -2,6 +2,7 @@ logs/*.log
 logs/*.log.*
 logs/*.pid
 logs/celerybeat-schedule.db
+logs/celerybeat-schedule-*.db
 *.pyc
 backup.db
 __pycache__/

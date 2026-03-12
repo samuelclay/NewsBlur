@@ -28,6 +28,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
 )
 from apps.profile.forms import (
     PLANS,
@@ -379,6 +380,63 @@ def paypal_ipn(request):
         return paypal_webhooks(request)
 
 
+def find_paypal_user(data, custom_field="custom_id"):
+    """Find user from PayPal webhook data with fallbacks.
+
+    Tries multiple methods to find the user:
+    1. custom_id or custom field (set during subscription creation)
+    2. PaypalIds lookup by subscription ID
+    3. User lookup by subscriber email
+
+    Returns None silently for non-NewsBlur webhooks (e.g., Crabigator).
+    """
+    resource = data.get("resource", {})
+
+    # Try custom field first (custom_id or custom)
+    custom_value = resource.get(custom_field)
+    if custom_value:
+        try:
+            return User.objects.get(pk=int(custom_value))
+        except (User.DoesNotExist, ValueError):
+            pass
+
+    # Fallback 1: Look up by subscription ID in PaypalIds
+    sub_id = resource.get("id") or resource.get("billing_agreement_id")
+    if sub_id:
+        try:
+            paypal_id = PaypalIds.objects.get(paypal_sub_id=sub_id)
+            return paypal_id.user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Fallback 2: Look up by subscriber email
+    subscriber = resource.get("subscriber", {})
+    email = subscriber.get("email_address")
+    if email:
+        try:
+            return User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            pass
+
+    # Only log error if there was a custom field (indicating an intended NewsBlur webhook)
+    # If no custom field, this is likely a non-NewsBlur webhook (e.g., Crabigator) - ignore silently
+    if custom_value:
+        logging.user(
+            None,
+            f" ~FR~SBPayPal webhook user not found - "
+            f"event_type={data.get('event_type')} "
+            f"resource_id={resource.get('id')} "
+            f"billing_agreement_id={resource.get('billing_agreement_id')} "
+            f"subscriber_email={email} "
+            f"payer_id={subscriber.get('payer_id')} "
+            f"custom_field={custom_field}={custom_value}",
+        )
+    else:
+        logging.debug(f" ---> PayPal webhook for non-NewsBlur product, ignoring: {data.get('event_type')}")
+
+    return None
+
+
 def paypal_webhooks(request):
     try:
         data = json.decode(request.body)
@@ -390,36 +448,36 @@ def paypal_webhooks(request):
 
     if data["event_type"] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=True)
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=True)
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.store_paypal_sub_id(data["resource"]["id"])
-        # plan_id = data['resource']['plan_id']
-        # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
-        #     user.profile.activate_premium()
-        # elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
-        #     user.profile.activate_archive()
-        # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
-        #     user.profile.activate_pro()
-        user.profile.cancel_premium_stripe()
-        user.profile.setup_premium_history()
-        if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
-            user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.store_paypal_sub_id(data["resource"]["id"])
+            # plan_id = data['resource']['plan_id']
+            # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
+            #     user.profile.activate_premium()
+            # elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
+            #     user.profile.activate_archive()
+            # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
+            #     user.profile.activate_pro()
+            user.profile.cancel_premium_stripe()
+            user.profile.setup_premium_history()
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
+                user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
-        user = User.objects.get(pk=int(data["resource"]["custom"]))
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom")
+        if user:
+            user.profile.setup_premium_history()
     elif data["event_type"] == "PAYMENT.CAPTURE.REFUNDED":
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
-        custom_id = data["resource"].get("custom_id", None)
-        if custom_id:
-            user = User.objects.get(pk=int(custom_id))
-        else:
-            paypal_id = PaypalIds.objects.get(paypal_sub_id=data["resource"]["id"])
-            user = paypal_id.user
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
 
     return HttpResponse("OK")
 
@@ -1190,6 +1248,63 @@ def delete_shared_stories(request):
     )
 
     return dict(code=1, stories_deleted=stories_deleted, shared_stories_count=shared_stories_count)
+
+
+@ajax_login_required
+@json.json_view
+def count_classifiers(request):
+    user_id = request.user.pk
+    counts = {
+        "title": MClassifierTitle.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "title_regex": MClassifierTitle.objects.filter(user_id=user_id, is_regex=True).count(),
+        "author": MClassifierAuthor.objects.filter(user_id=user_id).count(),
+        "tag": MClassifierTag.objects.filter(user_id=user_id).count(),
+        "text": MClassifierText.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "text_regex": MClassifierText.objects.filter(user_id=user_id, is_regex=True).count(),
+        "feed": MClassifierFeed.objects.filter(user_id=user_id).count(),
+        "url": MClassifierUrl.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "url_regex": MClassifierUrl.objects.filter(user_id=user_id, is_regex=True).count(),
+    }
+    total = sum(counts.values())
+    return dict(code=1, counts=counts, total=total)
+
+
+@ajax_login_required
+@json.json_view
+def delete_classifiers(request):
+    user_id = request.user.pk
+    categories = request.POST.getlist("categories")
+
+    classifier_map = {
+        "title": (MClassifierTitle, {"is_regex__ne": True}),
+        "title_regex": (MClassifierTitle, {"is_regex": True}),
+        "author": (MClassifierAuthor, {}),
+        "tag": (MClassifierTag, {}),
+        "text": (MClassifierText, {"is_regex__ne": True}),
+        "text_regex": (MClassifierText, {"is_regex": True}),
+        "feed": (MClassifierFeed, {}),
+        "url": (MClassifierUrl, {"is_regex__ne": True}),
+        "url_regex": (MClassifierUrl, {"is_regex": True}),
+    }
+
+    total_deleted = 0
+    deleted_counts = {}
+    for category in categories:
+        if category in classifier_map:
+            model, extra_filters = classifier_map[category]
+            qs = model.objects.filter(user_id=user_id, **extra_filters)
+            count = qs.count()
+            qs.delete()
+            deleted_counts[category] = count
+            total_deleted += count
+
+    logging.user(
+        request.user,
+        "~BC~FRDeleting %s classifiers (%s)"
+        % (total_deleted, ", ".join("%s: %s" % (k, v) for k, v in deleted_counts.items())),
+    )
+
+    return dict(code=1, total_deleted=total_deleted, deleted_counts=deleted_counts)
 
 
 @ajax_login_required

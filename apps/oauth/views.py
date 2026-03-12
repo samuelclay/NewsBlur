@@ -21,6 +21,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     compute_story_score,
 )
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
@@ -418,6 +419,7 @@ def api_unread_story(request, trigger_slug=None):
             )
         else:
             classifier_texts = []
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     feeds = dict(
         [
             (
@@ -446,6 +448,7 @@ def api_unread_story(request, trigger_slug=None):
                 classifier_tags=classifier_tags,
                 classifier_texts=classifier_texts,
                 classifier_feeds=classifier_feeds,
+                classifier_urls=classifier_urls,
             )
             if score < 0:
                 continue
@@ -597,6 +600,7 @@ def api_shared_story(request):
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     else:
         classifier_texts = []
+    classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids)
@@ -616,6 +620,9 @@ def api_shared_story(request):
         )
     else:
         classifier_texts = []
+    classifier_urls = classifier_urls + list(
+        MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_feed_ids)
+    )
 
     for story in stories:
         if before and int(story["shared_date"].strftime("%s")) > before:
@@ -629,6 +636,7 @@ def api_shared_story(request):
             classifier_tags=classifier_tags,
             classifier_texts=classifier_texts,
             classifier_feeds=classifier_feeds,
+            classifier_urls=classifier_urls,
         )
         if score < 0:
             continue
@@ -903,7 +911,8 @@ class ExtensionAuthorizationView(BaseAuthorizationView):
 
         # Log the redirect for debugging
         logging.info(
-            "~FBArchive OAuth redirect: app=%s, redirect_to=%s" % (application.name if application else "none", redirect_to[:100])
+            "~FBArchive OAuth redirect: app=%s, redirect_to=%s"
+            % (application.name if application else "none", redirect_to[:100])
         )
 
         # Check if this is a browser extension redirect

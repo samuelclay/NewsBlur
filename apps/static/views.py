@@ -47,11 +47,15 @@ def webmanifest(request):
 
 
 def apple_app_site_assoc(request):
-    return render(request, "static/apple_app_site_assoc.xhtml")
+    return render(request, "static/apple_app_site_assoc.xhtml", content_type="application/json")
 
 
 def apple_developer_merchantid(request):
     return render(request, "static/apple_developer_merchantid.xhtml")
+
+
+def assetlinks(request):
+    return render(request, "static/assetlinks.json", content_type="application/json")
 
 
 def feedback(request):

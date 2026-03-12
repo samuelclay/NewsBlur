@@ -1,6 +1,8 @@
 <script type="text/javascript" charset="utf-8">
 // Ask AI prompt templates
 NEWSBLUR.Globals.ask_ai_prompts = {{ ask_ai_prompts_json|safe }};
+// Ask AI model list (single source of truth from providers.py)
+NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
 </script>
 
 <div class="NB-layout">
@@ -70,6 +72,22 @@ NEWSBLUR.Globals.ask_ai_prompts = {{ ask_ai_prompts_json|safe }};
                             </div>
                             <span class="NB-staff-badge">Staff Only</span>
                         </div>
+                    </div>
+
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-briefing-container">
+                        <div class="NB-feeds-header NB-feeds-header-river-briefing NB-empty" role="link">
+                            <div class="NB-feeds-header-count unread_count"></div>
+                            <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/briefing.svg" />
+                            <div class="NB-feedlist-collapse-icon"></div>
+                            <div class="NB-feeds-header-title">
+                                Daily Briefing
+                            </div>
+                            <span class="NB-staff-badge">Staff Only</span>
+                        </div>
+                    </div>
+
+                    <div class="NB-briefing-sections-folder">
+                        <ul class="NB-briefing-section-feeds NB-feedlist"></ul>
                     </div>
 
                     <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
@@ -287,12 +305,6 @@ NEWSBLUR.Globals.ask_ai_prompts = {{ ask_ai_prompts_json|safe }};
                         <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
                     </li>
                 </ul>
-
-                <div class="NB-modal-submit">
-                    <div class="NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button">Subscribe</div>
-                    <div class="NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button">Follow</div>
-                    <div class="NB-tryfeed-signup NB-modal-submit-green NB-modal-submit-button">Sign up</div>
-                </div>
 
                 <div class="NB-taskbar-options-container">
                     <span class="NB-taskbar-options" role="button">

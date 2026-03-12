@@ -85,6 +85,27 @@
         ignore_errors: yes
     tags: never, restore_redis_story
 
+  - name: Create replication slot on primary for secondary
+    block:
+      - name: Check if replication slot exists
+        become: yes
+        shell: |
+          docker exec postgres psql -U newsblur -tAc "SELECT 1 FROM pg_replication_slots WHERE slot_name = 'secondary_slot';"
+        register: slot_exists
+        changed_when: false
+        failed_when: false
+
+      - name: Create replication slot if not exists
+        become: yes
+        command: |
+          docker exec postgres psql -U newsblur -c "SELECT pg_create_physical_replication_slot('secondary_slot');"
+        when: slot_exists.stdout != "1"
+    when: inventory_hostname in ['hdb-postgres-1', 'db-postgres-primary-1']
+    tags:
+      - never
+      - pg_create_slot
+      - pg_basebackup
+
   - name: Start postgres basebackup on secondary
     block:
       - name: Stop existing postgres
@@ -93,17 +114,22 @@
           docker stop postgres
         ignore_errors: yes
 
-      - name: Move old data dir
+      - name: Remove previous prebasebackup if exists
         become: yes
-        command:
-          mv -f /srv/newsblur/docker/volumes/postgres/data /srv/newsblur/docker/volumes/postgres/data.prebasebackup
-        ignore_errors: yes
+        file:
+          path: /srv/newsblur/docker/volumes/postgres/data.prebasebackup
+          state: absent
 
-      - name: pg_basebackup
+      - name: Move old data dir to prebasebackup
         become: yes
         command:
-          docker run --rm --name=pg_basebackup --network=host -e POSTGRES_PASSWORD=newsblur -v /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data postgres:13 pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
-      
+          mv /srv/newsblur/docker/volumes/postgres/data /srv/newsblur/docker/volumes/postgres/data.prebasebackup
+
+      - name: pg_basebackup with replication slot
+        become: yes
+        command:
+          docker run --rm --name=pg_basebackup --network=host -e POSTGRES_PASSWORD=newsblur -v /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data postgres:13 pg_basebackup -h db-postgres.service.consul -p 5432 -U postgres -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast -S secondary_slot
+
       - name: Create Postgres docker volumes with correct permissions
         become: yes
         file:
@@ -116,11 +142,20 @@
           - /srv/newsblur/docker/volumes/postgres/archive
           - /srv/newsblur/docker/volumes/postgres/backups
           - /srv/newsblur/docker/volumes/postgres/data
+
+      - name: Create standby.signal file
+        become: yes
+        file:
+          path: /srv/newsblur/docker/volumes/postgres/data/standby.signal
+          state: touch
+          owner: 999
+          group: 999
+
       - name: start postgresql
         become: yes
         command:
           docker start postgres
-    # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    when: inventory_hostname in ['hdb-postgres-secondary', 'db-postgres-secondary']
     tags:
       - never
       - pg_basebackup

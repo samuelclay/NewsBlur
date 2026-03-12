@@ -7,25 +7,19 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
     },
 
     render: function () {
-        NEWSBLUR.reader.$s.$story_taskbar.append(this.$el);
+        NEWSBLUR.reader.$s.$story_taskbar.find('.NB-taskbar-view').after(this.$el);
         return this;
     },
 
     center: function (force) {
-        var count_width = this.$el.width();
-        var left_buttons_offset = $('.NB-taskbar-view').outerWidth(true);
-        var right_buttons_offset = $(".NB-taskbar-options-container").position().left;
-        var usable_space = right_buttons_offset - left_buttons_offset;
-        var left = (usable_space / 2) - (count_width / 2) + left_buttons_offset;
-        // console.log(["Taskbar info center", count_width, left, left_buttons_offset, right_buttons_offset, usable_space]);
+        var count_width = this.$el.children().outerWidth(true) || 0;
+        var available_width = this.$el.width();
 
-        if (!force && count_width + 12 > usable_space) {
-            this.$el.hide();
+        if (!force && count_width > 0 && count_width + 12 > available_width) {
+            this.$el.children().hide();
         } else {
-            this.$el.show();
+            this.$el.children().show();
         }
-
-        this.$el.css({ 'left': left });
     },
 
     // =================

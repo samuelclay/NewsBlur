@@ -10,22 +10,17 @@ class LLMCosts(View):
         Prometheus metrics endpoint for LLM cost tracking.
 
         Reads from Redis for fast aggregation (no MongoDB queries).
-
-        Exports metrics for:
-        - Token usage by provider, model, and feature
-        - Cost in USD by provider, model, and feature
-        - Request counts by provider, model, and feature
-        - All metrics available for daily, weekly, monthly periods
+        Uses get_all_periods_stats() to fetch all periods in 2 Redis
+        round-trips instead of 6+ (which caused Prometheus scrape timeouts
+        due to scan_iter on 150K+ keys in db=3).
         """
-        # Get stats from Redis for each period
-        daily_stats = RLLMCosts.get_period_stats(days=1)
-        weekly_stats = RLLMCosts.get_period_stats(days=7)
-        monthly_stats = RLLMCosts.get_period_stats(days=30)
-
-        # Get accurate unique user counts
-        daily_users = RLLMCosts.get_unique_users_for_period(days=1)
-        weekly_users = RLLMCosts.get_unique_users_for_period(days=7)
-        monthly_users = RLLMCosts.get_unique_users_for_period(days=30)
+        all_stats = RLLMCosts.get_all_periods_stats()
+        daily_stats = all_stats["daily"]
+        weekly_stats = all_stats["weekly"]
+        monthly_stats = all_stats["monthly"]
+        daily_users = all_stats["daily_users"]
+        weekly_users = all_stats["weekly_users"]
+        monthly_users = all_stats["monthly_users"]
 
         # Define the dimensions we track (use centralized lists from RLLMCosts)
         providers = RLLMCosts.PROVIDERS

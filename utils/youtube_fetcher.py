@@ -32,7 +32,16 @@ class YoutubeFetcher:
         video_ids = None
 
         # For archive pages, we want to fetch all pages up to the target page
-        target_page = self.options.get("archive_page", 1)
+        archive_page = self.options.get("archive_page", 1)
+        if archive_page == "rfc5005":
+            # Archive mode via RFC 5005 signal - fetch more YouTube content
+            target_page = 150
+        elif isinstance(archive_page, int):
+            target_page = archive_page
+        elif isinstance(archive_page, str) and archive_page.isdigit():
+            target_page = int(archive_page)
+        else:
+            target_page = 1
 
         if channel_id:
             video_ids, title, description = self.fetch_channel_videos(channel_id, target_page=target_page)

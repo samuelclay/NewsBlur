@@ -1,4 +1,6 @@
 import datetime
+import re
+import threading
 from collections import defaultdict
 
 import mongoengine as mongo
@@ -12,6 +14,54 @@ from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
 from utils.ai_functions import classify_stories_with_ai
+
+# Regex timeout in seconds to prevent ReDoS attacks
+REGEX_TIMEOUT = 0.1  # 100ms
+
+
+def validate_regex_pattern(pattern):
+    """
+    Validate a regex pattern.
+    Returns (is_valid, error_message).
+    """
+    try:
+        re.compile(pattern)
+        return True, None
+    except re.error as e:
+        return False, str(e)
+
+
+def safe_regex_match(pattern, text, timeout=REGEX_TIMEOUT):
+    """
+    Safely perform regex matching with timeout protection.
+    Returns True if pattern matches, False otherwise.
+    Uses threading-based timeout (works on all platforms).
+    """
+    result = [False]
+    exception = [None]
+
+    def do_match():
+        try:
+            compiled = re.compile(pattern, re.IGNORECASE)
+            if compiled.search(text):
+                result[0] = True
+        except Exception as e:
+            exception[0] = e
+
+    thread = threading.Thread(target=do_match)
+    thread.daemon = True
+    thread.start()
+    thread.join(timeout)
+
+    if thread.is_alive():
+        # Thread is still running, regex timed out
+        return False
+
+    if exception[0]:
+        # Regex raised an exception
+        return False
+
+    return result[0]
 
 
 class FeatureCategory(models.Model):
@@ -94,17 +144,74 @@ class MClassifierTitle(mongo.Document):
     social_user_id = mongo.IntField()
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
+    scope = mongo.StringField(default="feed", choices=("feed", "folder", "global"))
+    folder_name = mongo.StringField(default="")
     creation_date = mongo.DateTimeField()
 
     meta = {
         "collection": "classifier_title",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+            ("user_id", "scope", "folder_name"),
+        ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30])
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.title[:30],
+            regex_indicator,
+        )
+
+
+class MClassifierUrl(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
+    url = mongo.StringField(max_length=2048)  # URLs can be long
+    score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
+    scope = mongo.StringField(default="feed", choices=("feed", "folder", "global"))
+    folder_name = mongo.StringField(default="")
+    creation_date = mongo.DateTimeField()
+
+    meta = {
+        "collection": "classifier_url",
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+            ("user_id", "scope", "folder_name"),
+        ],
+        "allow_inheritance": False,
+        "strict": False,
+    }
+
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.url[:50],
+            regex_indicator,
+        )
 
 
 class MClassifierText(mongo.Document):
@@ -113,17 +220,36 @@ class MClassifierText(mongo.Document):
     social_user_id = mongo.IntField()
     text = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
+    scope = mongo.StringField(default="feed", choices=("feed", "folder", "global"))
+    folder_name = mongo.StringField(default="")
     creation_date = mongo.DateTimeField()
 
     meta = {
         "collection": "classifier_text",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+            ("user_id", "scope", "folder_name"),
+        ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.text[:30])
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.text[:30],
+            regex_indicator,
+        )
 
 
 class MClassifierAuthor(mongo.Document):
@@ -132,12 +258,21 @@ class MClassifierAuthor(mongo.Document):
     social_user_id = mongo.IntField()
     author = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    scope = mongo.StringField(default="feed", choices=("feed", "folder", "global"))
+    folder_name = mongo.StringField(default="")
     creation_date = mongo.DateTimeField()
 
     meta = {
         "collection": "classifier_author",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            ("user_id", "scope", "folder_name"),
+        ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -151,12 +286,21 @@ class MClassifierTag(mongo.Document):
     social_user_id = mongo.IntField()
     tag = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    scope = mongo.StringField(default="feed", choices=("feed", "folder", "global"))
+    folder_name = mongo.StringField(default="")
     creation_date = mongo.DateTimeField()
 
     meta = {
         "collection": "classifier_tag",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            ("user_id", "scope", "folder_name"),
+        ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -175,6 +319,7 @@ class MClassifierFeed(mongo.Document):
         "collection": "classifier_feed",
         "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -186,6 +331,30 @@ class MClassifierFeed(mongo.Document):
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
 
 
+def classifier_matches_story_feed(classifier, story_feed_id, folder_feed_ids=None):
+    """Check if a classifier applies to a story based on its scope.
+
+    Args:
+        classifier: A classifier object with feed_id and optional scope/folder_name
+        story_feed_id: The feed_id of the story being scored
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        True if the classifier applies to this story's feed
+    """
+    scope = getattr(classifier, "scope", "feed")
+    if scope == "global":
+        return True
+    if scope == "folder":
+        if folder_feed_ids is None:
+            return False
+        folder = getattr(classifier, "folder_name", "")
+        feeds_in_folder = folder_feed_ids.get(folder, set())
+        return story_feed_id in feeds_in_folder
+    # scope == 'feed' (default)
+    return classifier.feed_id == story_feed_id
+
+
 def compute_story_score(
     story,
     classifier_titles,
@@ -193,17 +362,41 @@ def compute_story_score(
     classifier_tags,
     classifier_feeds,
     classifier_texts=None,
+    classifier_urls=None,
     prompt_score=None,
+    user_is_premium=False,
+    user_is_pro=False,
+    folder_feed_ids=None,
 ):
     if classifier_texts is None:
         classifier_texts = []
+    if classifier_urls is None:
+        classifier_urls = []
 
     intelligence = {
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
-        "author": apply_classifier_authors(classifier_authors, story),
-        "tags": apply_classifier_tags(classifier_tags, story),
-        "title": apply_classifier_titles(classifier_titles, story),
-        "text": apply_classifier_texts(classifier_texts, story),
+        "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+        "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
+        "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+        "title_regex": (
+            apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
+        ),
+        "text": apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids),
+        "text_regex": (
+            apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
+        ),
+        "url": apply_classifier_urls(
+            classifier_urls, story, user_is_premium=user_is_premium, folder_feed_ids=folder_feed_ids
+        ),
+        "url_regex": (
+            apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
+        ),
     }
 
     # Include AI prompt classifier score if provided
@@ -217,8 +410,26 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
-    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
+    score_max = max(
+        intelligence["title"],
+        intelligence["title_regex"],
+        intelligence["author"],
+        intelligence["tags"],
+        intelligence["text"],
+        intelligence["text_regex"],
+        intelligence["url"],
+        intelligence["url_regex"],
+    )
+    score_min = min(
+        intelligence["title"],
+        intelligence["title_regex"],
+        intelligence["author"],
+        intelligence["tags"],
+        intelligence["text"],
+        intelligence["text_regex"],
+        intelligence["url"],
+        intelligence["url_regex"],
+    )
     if score_max > 0:
         score = score_max
     elif score_min < 0:
@@ -230,39 +441,218 @@ def compute_story_score(
     return score
 
 
-def apply_classifier_titles(classifiers, story):
+def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
+    """
+    Apply title classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierTitle objects
+        story: Story dict with 'story_feed_id' and 'story_title'
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
     score = 0
+    story_title = story.get("story_title", "")
+    if not story_title:
+        return score
+
+    story_title_lower = story_title.lower()
+
     for classifier in classifiers:
-        if classifier.feed_id != story["story_feed_id"]:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
             continue
-        if classifier.title.lower() in story["story_title"].lower():
-            # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
+
+        # Skip regex classifiers - they're handled by apply_classifier_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
+        if classifier.title.lower() in story_title_lower:
             score = classifier.score
             if score > 0:
                 return score
+
     return score
 
 
-def apply_classifier_texts(classifiers, story):
+def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
+    """
+    Apply text classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierText objects
+        story: Story dict with 'story_feed_id' and 'story_content'
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
     score = 0
     story_content = story.get("story_content", "")
     if not story_content:
         return score
+
     story_content_lower = story_content.lower()
+
     for classifier in classifiers:
-        if classifier.feed_id != story["story_feed_id"]:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
             continue
+
+        # Skip regex classifiers - they're handled by apply_classifier_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
         if classifier.text.lower() in story_content_lower:
             score = classifier.score
             if score > 0:
                 return score
+
     return score
 
 
-def apply_classifier_authors(classifiers, story):
+def apply_classifier_title_regex(classifiers, story, folder_feed_ids=None):
+    """
+    Apply title regex classifiers to a story. Matches title only.
+
+    Args:
+        classifiers: List of MClassifierTitle objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_title'
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    score = 0
+    story_title = story.get("story_title", "")
+    if not story_title:
+        return score
+
+    for classifier in classifiers:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
+            continue
+
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        if safe_regex_match(classifier.title, story_title):
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
+    """
+    Apply text regex classifiers to a story. Matches content only.
+
+    Args:
+        classifiers: List of MClassifierText objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_content'
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    score = 0
+    story_content = story.get("story_content", "")
+    if not story_content:
+        return score
+
+    for classifier in classifiers:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
+            continue
+
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        if safe_regex_match(classifier.text, story_content):
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed_ids=None):
+    """
+    Apply URL classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierUrl objects
+        story: Story dict with 'story_feed_id' and 'story_permalink'
+        user_is_premium: Whether the user has Premium subscription (required for URL filters)
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    if not user_is_premium:
+        return 0
+
+    score = 0
+    story_url = story.get("story_permalink", "")
+    if not story_url:
+        return score
+
+    story_url_lower = story_url.lower()
+
+    for classifier in classifiers:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
+            continue
+
+        # Skip regex classifiers - they're handled by apply_classifier_url_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
+        if classifier.url.lower() in story_url_lower:
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
+    """
+    Apply URL regex classifiers to a story. Matches permalink URL only.
+
+    Args:
+        classifiers: List of MClassifierUrl objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_permalink'
+        folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    score = 0
+    story_url = story.get("story_permalink", "")
+    if not story_url:
+        return score
+
+    for classifier in classifiers:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
+            continue
+
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        if safe_regex_match(classifier.url, story_url):
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_authors(classifiers, story, folder_feed_ids=None):
     score = 0
     for classifier in classifiers:
-        if classifier.feed_id != story["story_feed_id"]:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
             continue
         if story.get("story_authors") and classifier.author == story.get("story_authors"):
             # print 'Authors: %s -- %s' % (classifier.author, story['story_authors'])
@@ -272,10 +662,10 @@ def apply_classifier_authors(classifiers, story):
     return score
 
 
-def apply_classifier_tags(classifiers, story):
+def apply_classifier_tags(classifiers, story, folder_feed_ids=None):
     score = 0
     for classifier in classifiers:
-        if classifier.feed_id != story["story_feed_id"]:
+        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
             continue
         if story["story_tags"] and classifier.tag in story["story_tags"]:
             # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
@@ -453,6 +843,41 @@ class MClassifierPrompt(mongo.Document):
         return classifications
 
 
+SCOPED_CLASSIFIER_CLASSES = [
+    MClassifierTitle,
+    MClassifierText,
+    MClassifierUrl,
+    MClassifierAuthor,
+    MClassifierTag,
+]
+
+
+def load_scoped_classifiers(user_id):
+    """Load all global and folder-scoped classifiers for a user.
+
+    Returns a dict with keys: 'titles', 'texts', 'urls', 'authors', 'tags'
+    each containing a list of classifier objects with scope != 'feed'.
+    """
+    result = {
+        "titles": [],
+        "texts": [],
+        "urls": [],
+        "authors": [],
+        "tags": [],
+    }
+    key_map = {
+        MClassifierTitle: "titles",
+        MClassifierText: "texts",
+        MClassifierUrl: "urls",
+        MClassifierAuthor: "authors",
+        MClassifierTag: "tags",
+    }
+    for Cls in SCOPED_CLASSIFIER_CLASSES:
+        classifiers = list(Cls.objects(user_id=user_id, scope__in=["folder", "global"]))
+        result[key_map[Cls]] = classifiers
+    return result
+
+
 def get_classifiers_for_user(
     user,
     feed_id=None,
@@ -462,6 +887,7 @@ def get_classifiers_for_user(
     classifier_titles=None,
     classifier_tags=None,
     classifier_texts=None,
+    classifier_urls=None,
 ):
     params = dict(user_id=user.pk)
     if isinstance(feed_id, list):
@@ -481,6 +907,8 @@ def get_classifiers_for_user(
         classifier_tags = list(MClassifierTag.objects(**params))
     if classifier_texts is None:
         classifier_texts = list(MClassifierText.objects(**params))
+    if classifier_urls is None:
+        classifier_urls = list(MClassifierUrl.objects(**params))
     if classifier_feeds is None:
         if not social_user_id and feed_id:
             params["social_user_id"] = 0
@@ -493,12 +921,81 @@ def get_classifiers_for_user(
         else:
             feeds.append((f.feed_id, f.score))
 
+    # Build titles dict - only non-regex patterns
+    titles_dict = {}
+    title_regex_dict = {}
+    for t in classifier_titles:
+        if getattr(t, "is_regex", False):
+            title_regex_dict[t.title] = t.score
+        else:
+            titles_dict[t.title] = t.score
+
+    # Build texts dict - only non-regex patterns
+    texts_dict = {}
+    text_regex_dict = {}
+    for t in classifier_texts:
+        if getattr(t, "is_regex", False):
+            text_regex_dict[t.text] = t.score
+        else:
+            texts_dict[t.text] = t.score
+
+    # Build urls dict - only non-regex patterns
+    urls_dict = {}
+    url_regex_dict = {}
+    for u in classifier_urls:
+        if getattr(u, "is_regex", False):
+            url_regex_dict[u.url] = u.score
+        else:
+            urls_dict[u.url] = u.score
+
+    # Build scope metadata for UI display
+    def _scope_info(classifier):
+        scope = getattr(classifier, "scope", "feed")
+        if scope == "feed":
+            return None
+        return {"scope": scope, "folder_name": getattr(classifier, "folder_name", "")}
+
+    titles_scope = {}
+    for t in classifier_titles:
+        info = _scope_info(t)
+        if info:
+            titles_scope[t.title] = info
+    texts_scope = {}
+    for t in classifier_texts:
+        info = _scope_info(t)
+        if info:
+            texts_scope[t.text] = info
+    urls_scope = {}
+    for u in classifier_urls:
+        info = _scope_info(u)
+        if info:
+            urls_scope[u.url] = info
+    authors_scope = {}
+    for a in classifier_authors:
+        info = _scope_info(a)
+        if info:
+            authors_scope[a.author] = info
+    tags_scope = {}
+    for t in classifier_tags:
+        info = _scope_info(t)
+        if info:
+            tags_scope[t.tag] = info
+
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
-        "titles": dict([(t.title, t.score) for t in classifier_titles]),
+        "titles": titles_dict,
+        "title_regex": title_regex_dict,
         "tags": dict([(t.tag, t.score) for t in classifier_tags]),
-        "texts": dict([(t.text, t.score) for t in classifier_texts]),
+        "texts": texts_dict,
+        "text_regex": text_regex_dict,
+        "urls": urls_dict,
+        "url_regex": url_regex_dict,
+        "titles_scope": titles_scope,
+        "texts_scope": texts_scope,
+        "urls_scope": urls_scope,
+        "authors_scope": authors_scope,
+        "tags_scope": tags_scope,
     }
 
     return payload
@@ -512,12 +1009,27 @@ def sort_classifiers_by_feed(
     classifier_titles=None,
     classifier_tags=None,
     classifier_texts=None,
+    classifier_urls=None,
+    folder_feed_ids=None,
 ):
     def sort_by_feed(classifiers):
+        """Sort classifiers by feed_id, distributing global/folder classifiers to all relevant feeds."""
         feed_classifiers = defaultdict(list)
         if classifiers:
             for classifier in classifiers:
-                feed_classifiers[classifier.feed_id].append(classifier)
+                scope = getattr(classifier, "scope", "feed")
+                if scope == "global":
+                    # Global classifiers apply to all feed_ids
+                    for fid in feed_ids or []:
+                        feed_classifiers[fid].append(classifier)
+                elif scope == "folder" and folder_feed_ids:
+                    # Folder classifiers apply to feeds in their folder
+                    folder = getattr(classifier, "folder_name", "")
+                    for fid in folder_feed_ids.get(folder, set()):
+                        if feed_ids is None or fid in feed_ids:
+                            feed_classifiers[fid].append(classifier)
+                else:
+                    feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
 
     classifiers = {}
@@ -528,6 +1040,7 @@ def sort_classifiers_by_feed(
         classifier_titles = sort_by_feed(classifier_titles)
         classifier_tags = sort_by_feed(classifier_tags)
         classifier_texts = sort_by_feed(classifier_texts)
+        classifier_urls = sort_by_feed(classifier_urls)
 
         for feed_id in feed_ids:
             classifiers[feed_id] = get_classifiers_for_user(
@@ -538,6 +1051,7 @@ def sort_classifiers_by_feed(
                 classifier_titles=classifier_titles[feed_id],
                 classifier_tags=classifier_tags[feed_id],
                 classifier_texts=classifier_texts[feed_id],
+                classifier_urls=classifier_urls[feed_id],
             )
 
     return classifiers

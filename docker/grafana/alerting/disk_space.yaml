@@ -8,13 +8,13 @@ groups:
     rules:
       - uid: disk_space_high
         title: Disk Space High
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: prometheus
+            datasourceUid: U1-fPO3Mk
             model:
               expr: '(node_filesystem_size_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"} - node_filesystem_avail_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"}) / node_filesystem_size_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"} * 100'
               refId: A
@@ -26,9 +26,21 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
-              expr: A
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
@@ -38,7 +50,7 @@ groups:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -48,7 +60,7 @@ groups:
         for: 5m
         annotations:
           summary: "Disk space critically high on {{ $labels.instance }}"
-          description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ printf \"%.2f\" $values.A.Value }}% full (threshold: 95%)"
+          description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ printf \"%.2f\" $values.B.Value }}% full (threshold: 95%)"
         labels:
           severity: critical
         isPaused: false

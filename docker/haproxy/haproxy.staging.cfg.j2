@@ -123,19 +123,19 @@ backend app_django_counts
     balance roundrobin
     option httpchk GET /_haproxychk
     retry-on all-retryable-errors
-    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
+    server hstaging 127.0.0.1:8000 check inter 3000ms fall 4
 
 backend app_django_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
     retry-on all-retryable-errors
-    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
+    server hstaging 127.0.0.1:8000 check inter 3000ms fall 4
 
 backend app_django
     balance roundrobin
     option httpchk GET /_haproxychk
     retry-on all-retryable-errors
-    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
+    server hstaging 127.0.0.1:8000 check inter 3000ms fall 4
 
 backend maintenance
     option httpchk HEAD /maintenance

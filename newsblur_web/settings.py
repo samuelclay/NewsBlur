@@ -135,6 +135,8 @@ MIDDLEWARE = (
     "apps.profile.middleware.TimingMiddleware",
     "apps.profile.middleware.LastSeenMiddleware",
     "apps.profile.middleware.UserAgentBanMiddleware",
+    "apps.profile.middleware.ScannerTrackingMiddleware",
+    "apps.profile.middleware.IPRateTrackingMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
@@ -403,6 +405,7 @@ CELERY_TASK_ROUTES = {
     "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -453,6 +456,27 @@ CELERY_TASK_QUEUES = {
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
+# Worktree queue isolation: prefix all queue names so worktree celery workers
+# only process tasks from their own worktree, not from main or other worktrees.
+NEWSBLUR_WORKTREE = os.environ.get("NEWSBLUR_WORKTREE", "")
+if NEWSBLUR_WORKTREE:
+    CELERY_TASK_QUEUES = {
+        f"{NEWSBLUR_WORKTREE}_{name}": {
+            "exchange": f"{NEWSBLUR_WORKTREE}_{name}",
+            "exchange_type": config["exchange_type"],
+            "binding_key": f"{NEWSBLUR_WORKTREE}_{name}",
+        }
+        for name, config in CELERY_TASK_QUEUES.items()
+    }
+    CELERY_TASK_DEFAULT_QUEUE = f"{NEWSBLUR_WORKTREE}_{CELERY_TASK_DEFAULT_QUEUE}"
+    CELERY_TASK_ROUTES = {
+        name: {
+            "queue": f"{NEWSBLUR_WORKTREE}_{route['queue']}",
+            "binding_key": f"{NEWSBLUR_WORKTREE}_{route['binding_key']}",
+        }
+        for name, route in CELERY_TASK_ROUTES.items()
+    }
+
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS = (
     "apps.rss_feeds.tasks",
@@ -465,6 +489,7 @@ CELERY_IMPORTS = (
     "apps.ask_ai.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
+    "apps.briefing.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -539,7 +564,26 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
+    "generate-briefings": {
+        "task": "generate-briefings",
+        "schedule": datetime.timedelta(minutes=15),
+        "options": {"queue": "cron_queue"},
+    },
 }
+
+# Beat tasks that should also run in worktrees during development.
+# Tasks here ALSO exist in CELERY_BEAT_SCHEDULE above — this set just controls
+# which ones survive the worktree filter. In production (no NEWSBLUR_WORKTREE env),
+# this set is ignored and the full CELERY_BEAT_SCHEDULE runs as-is.
+# Entries can be removed once a feature is stable and no longer needs worktree testing.
+CELERY_WORKTREE_BEAT_TASKS = {
+    "generate-briefings",
+}
+
+if NEWSBLUR_WORKTREE:
+    CELERY_BEAT_SCHEDULE = {
+        name: entry for name, entry in CELERY_BEAT_SCHEDULE.items() if name in CELERY_WORKTREE_BEAT_TASKS
+    }
 
 # =========
 # = Mongo =
@@ -890,6 +934,17 @@ REDIS_PUBSUB_POOL = redis.ConnectionPool(
     host=REDIS_PUBSUB["host"], port=REDIS_PUBSUB_PORT, db=0, decode_responses=True
 )
 
+# ==================
+# = IP Rate Limits =
+# ==================
+
+# IP rate tracking configuration (see utils/ip_rate_tracker.py)
+# When enabled, requests exceeding the threshold will be blocked with 429
+IP_RATE_LIMITING_ENABLED = False  # Set True to enable blocking
+IP_RATE_LIMIT_THRESHOLD = 300  # Max requests per window before flagging as abuse
+IP_RATE_WINDOW_MINUTES = 5  # Time window for counting requests
+IP_RATE_TTL_SECONDS = 3600  # How long to keep rate data (1 hour)
+
 # ==========
 # = Celery =
 # ==========
@@ -926,7 +981,7 @@ PIPELINE = {
     "PIPELINE_ENABLED": not DEBUG_ASSETS,
     "PIPELINE_COLLECTOR_ENABLED": not DEBUG_ASSETS,
     "SHOW_ERRORS_INLINE": DEBUG_ASSETS,
-    "CSS_COMPRESSOR": "pipeline.compressors.yuglify.YuglifyCompressor",
+    "CSS_COMPRESSOR": "utils.pipeline_utils.LightningCSSCompressor",
     "JS_COMPRESSOR": "pipeline.compressors.closure.ClosureCompressor",
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
@@ -958,17 +1013,14 @@ PIPELINE = {
         "common": {
             "source_filenames": assets["stylesheets"]["common"],
             "output_filename": "css/common.css",
-            # 'variant': 'datauri',
         },
         "bookmarklet": {
             "source_filenames": assets["stylesheets"]["bookmarklet"],
             "output_filename": "css/bookmarklet.css",
-            # 'variant': 'datauri',
         },
         "blurblog": {
             "source_filenames": assets["stylesheets"]["blurblog"],
             "output_filename": "css/blurblog.css",
-            # 'variant': 'datauri',
         },
     },
 }

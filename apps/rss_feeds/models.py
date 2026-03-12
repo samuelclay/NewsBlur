@@ -113,7 +113,7 @@ class Feed(models.Model):
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     discover_indexed = models.BooleanField(default=None, null=True, blank=True)
-    fs_size_bytes = models.IntegerField(null=True, blank=True)
+    fs_size_bytes = models.BigIntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
     similar_feeds = models.ManyToManyField(
         "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
@@ -224,6 +224,10 @@ class Feed(models.Model):
             "http://newsletter:"
         )
 
+    @property
+    def is_daily_briefing(self):
+        return self.feed_address.startswith("daily-briefing:")
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             "id": self.pk,
@@ -243,6 +247,7 @@ class Feed(models.Model):
             "subs": self.num_subscribers,
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
+            "is_daily_briefing": self.is_daily_briefing,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
             "discover_indexed": self.discover_indexed,
@@ -419,11 +424,27 @@ class Feed(models.Model):
             stories_per_month = int(stories_per_month)
         except ValueError:
             stories_per_month = 30
-        feeds = Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month).only(
-            "pk"
+        feeds = (
+            Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month)
+            .exclude(feed_address__startswith="daily-briefing:")
+            .only("pk")
         )
 
         return [f.pk for f in feeds]
+
+    @classmethod
+    def exclude_briefing_feeds(cls, feed_ids):
+        """Exclude daily briefing feeds from a list of feed IDs."""
+        if not feed_ids:
+            return feed_ids
+        briefing_ids = set(
+            cls.objects.filter(pk__in=feed_ids, feed_address__startswith="daily-briefing:").values_list(
+                "pk", flat=True
+            )
+        )
+        if not briefing_ids:
+            return feed_ids
+        return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
     def autocomplete(cls, prefix, limit=5):
@@ -626,12 +647,20 @@ class Feed(models.Model):
                     feed = feed.update()
                 elif create:
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
-                    feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
+                    try:
+                        feed = cls.objects.create(feed_address=feed_finder_url)
+                        feed = feed.update()
+                    except IntegrityError:
+                        feed = by_url(feed_finder_url)
+                        feed = feed[offset] if feed and len(feed) > offset else None
             elif without_rss:
                 logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
-                feed = cls.objects.create(feed_address=url, feed_link=original_url)
-                feed = feed.update(requesting_user_id=user.pk if user else None)
+                try:
+                    feed = cls.objects.create(feed_address=url, feed_link=original_url)
+                    feed = feed.update(requesting_user_id=user.pk if user else None)
+                except IntegrityError:
+                    feed = by_url(url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
 
         # Check for JSON feed
         if not feed and fetch and create:
@@ -640,16 +669,24 @@ class Feed(models.Model):
             except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
             if r and "application/json" in r.headers.get("Content-Type"):
-                feed = cls.objects.create(feed_address=url)
-                feed = feed.update()
+                try:
+                    feed = cls.objects.create(feed_address=url)
+                    feed = feed.update()
+                except IntegrityError:
+                    feed = by_url(url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
 
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
             feed_finder_url = found_feed_urls[0]
             feed = by_url(feed_finder_url)
             if not feed and create:
-                feed = cls.objects.create(feed_address=feed_finder_url)
-                feed = feed.update()
+                try:
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
+                except IntegrityError:
+                    feed = by_url(feed_finder_url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
             elif feed and len(feed) > offset:
                 feed = feed[offset]
 
@@ -759,12 +796,12 @@ class Feed(models.Model):
             self.save(update_fields=["last_story_date"])
 
     @classmethod
-    def setup_feeds_for_premium_subscribers(cls, feed_ids):
+    def setup_feeds_for_premium_subscribers(cls, feed_ids, allow_skip_resync=False):
         logging.info(f" ---> ~SN~FMScheduling immediate premium setup of ~SB{len(feed_ids)}~SN feeds...")
 
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
-            feed.setup_feed_for_premium_subscribers()
+            feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
@@ -1479,6 +1516,9 @@ class Feed(models.Model):
 
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
+            if not feed.fetched_once:
+                feed.fetched_once = True
+                feed.save(update_fields=["fetched_once"])
         else:
             disp = feed_fetcher.Dispatcher(options, 1)
             disp.add_jobs([[self.pk]])
@@ -2414,6 +2454,8 @@ class Feed(models.Model):
                 story_title = story_db.story_permalink
             if story_title and len(story_title) > 80:
                 story_title = story_title[:80] + "..."
+            if not story_title:
+                story_title = "Untitled"
 
         story = {}
         story["story_hash"] = getattr(story_db, "story_hash", None)
@@ -2851,10 +2893,10 @@ class Feed(models.Model):
         if self.pro_subscribers and self.pro_subscribers >= 1:
             before_pro = total
             if self.stories_last_month == 0:
-                total = min(total, 60)
+                total = min(total, 60 * 3)
                 if before_pro != total:
                     adjustments.append(
-                        "Pro boost (no stories): %s min -> %s min (60 min max for %s pro subs)"
+                        "Pro boost (no stories): %s min -> %s min (180 min max for %s pro subs)"
                         % (before_pro, total, self.pro_subscribers)
                     )
             else:
@@ -4146,9 +4188,12 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_tags_for_user(cls, user_id):
-        all_tags = MStarredStory.objects(user_id=user_id, user_tags__exists=True).item_frequencies(
-            "user_tags"
-        )
+        pipeline = [
+            {"$match": {"user_id": user_id, "user_tags": {"$exists": True}}},
+            {"$unwind": "$user_tags"},
+            {"$group": {"_id": "$user_tags", "_count": {"$sum": 1}}},
+        ]
+        all_tags = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_tags = sorted(
             [(k, v) for k, v in list(all_tags.items()) if int(v) > 0 and k],
             key=lambda x: x[0].lower(),
@@ -4176,7 +4221,11 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_feeds_for_user(cls, user_id):
-        all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies("story_feed_id")
+        pipeline = [
+            {"$match": {"user_id": user_id}},
+            {"$group": {"_id": "$story_feed_id", "_count": {"$sum": 1}}},
+        ]
+        all_feeds = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_feeds = dict([(k, v) for k, v in list(all_feeds.items()) if v])
 
         # Clean up None'd and 0'd feed_ids, so they can be counted against the total
@@ -4213,6 +4262,8 @@ class MStarredStoryCounts(mongo.Document):
             story_count = cls.objects.get(**params)
         except cls.MultipleObjectsReturned:
             story_count = cls.objects(**params).first()
+        except cls.DoesNotExist:
+            return
         if story_count and story_count.count <= 0:
             story_count.delete()
 
@@ -4246,6 +4297,75 @@ class MStarredStoryCounts(mongo.Document):
                     dup_count.slug = "feed:%s" % original_feed_id if dup_count.feed_id else dup_count.slug
                     dup_count.save()
         return count
+
+    @classmethod
+    def rename_tag(cls, user_id, old_tag, new_tag):
+        """
+        Rename a tag for a user: update all starred stories and recalculate counts.
+        If new_tag already exists, merges the stories (case-insensitive).
+        Returns the updated starred counts.
+        """
+        from django.template.defaultfilters import slugify
+
+        if not old_tag or not new_tag:
+            return None
+
+        old_tag = old_tag.strip()
+        new_tag = new_tag.strip()
+
+        if not old_tag or not new_tag:
+            return None
+
+        # Case-insensitive comparison: if old and new are the same (ignoring case), just normalize
+        if old_tag.lower() == new_tag.lower():
+            # Just update the tag name to the new casing if different
+            if old_tag != new_tag:
+                MStarredStory.objects(user_id=user_id, user_tags=old_tag).update(set__user_tags__S=new_tag)
+                cls.objects(user_id=user_id, tag=old_tag).update(set__tag=new_tag, set__slug=slugify(new_tag))
+            return cls.user_counts(user_id)
+
+        # Update all stories: for each story that has old_tag, add new_tag (if not present) and remove old_tag
+        # Use MongoDB's atomic operators for efficiency
+        stories_with_old_tag = MStarredStory.objects(user_id=user_id, user_tags=old_tag)
+        for story in stories_with_old_tag:
+            user_tags = story.user_tags or []
+            # Remove old_tag and add new_tag if not already present (case-insensitive check)
+            new_tags = [t for t in user_tags if t.lower() != old_tag.lower()]
+            # Check if new_tag (case-insensitive) is already present
+            has_new_tag = any(t.lower() == new_tag.lower() for t in new_tags)
+            if not has_new_tag:
+                new_tags.append(new_tag)
+            story.user_tags = new_tags
+            story.save()
+
+        # Delete the old tag count entry
+        cls.objects(user_id=user_id, tag=old_tag).delete()
+
+        # Recalculate counts for the user (this will create/update the new tag count)
+        cls.count_tags_for_user(user_id)
+
+        return cls.user_counts(user_id)
+
+    @classmethod
+    def delete_tag(cls, user_id, tag):
+        """
+        Delete a tag from all user's starred stories (stories remain saved, just without the tag).
+        Returns the updated starred counts.
+        """
+        if not tag:
+            return None
+
+        tag = tag.strip()
+        if not tag:
+            return None
+
+        # Remove the tag from all stories that have it
+        MStarredStory.objects(user_id=user_id, user_tags=tag).update(pull__user_tags=tag)
+
+        # Delete the tag count entry
+        cls.objects(user_id=user_id, tag=tag).delete()
+
+        return cls.user_counts(user_id)
 
 
 class MSavedSearch(mongo.Document):

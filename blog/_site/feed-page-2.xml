@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-16T18:27:14-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,149 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title>
+    <link href="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" />
+    <published>2019-07-01T09:29:07-04:00</published>
+    <updated>2019-07-01T09:29:07-04:00</updated>
+    <id>https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
+      <![CDATA[<p>A whopper of a release with many, many new features!</p>
+
+<ul>
+  <li>Autoscroll: Read long stories hands-free</li>
+  <li>Full screen: Reading stories without the toolbar for a better experience</li>
+  <li>Longer story titles: New options for longer and shorter story title and content previews in the story titles list</li>
+  <li>Smaller image previews: New option for smaller image previews in the story titles list</li>
+  <li>Show story changes: All stories with edits now show a “Show Changes” button at the top that lets you see the differences</li>
+  <li>Return to last read story: When you return to the app, you will start where you left off</li>
+  <li>Return to last read scroll position: When you return to a story, you will automatically scroll to where you left off</li>
+</ul>
+
+<p>Take a look at some of the image and story title customizations you can now make:</p>
+
+<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png" /></figure>
+
+<p>There’s also many smaller fixes that improve the polish of the app:</p>
+
+<ul>
+  <li>If you had a slow connection, some stories would take a while to draw while images were downloaded. Now they show immediately</li>
+  <li>Support for larger iPad Pros</li>
+  <li>Suport for iOS 13</li>
+  <li>Fixes for split mode on iPad</li>
+  <li>Fixes for marking stories as read while scrolling the story titles list</li>
+  <li>Fixes for navigating stories with an external keyboard</li>
+  <li>Fixes for scroll performance on the feed list and the story titles list</li>
+  <li>Fixes for sharing stories accidentally having double titles in emails and messages</li>
+</ul>
+
+<p>Thanks to <a href="https://github.com/dejal">David Sinclair</a> for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please <a href="https://forum.newsblur.com/c/idea">submit them to the forum</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[A whopper of a release with many, many new features!
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Updates to the Android app and a new addition to the team</title>
+    <link href="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/" rel="alternate" type="text/html" title="Updates to the Android app and a new addition to the team" />
+    <published>2019-06-01T08:51:21-04:00</published>
+    <updated>2019-06-01T08:51:21-04:00</updated>
+    <id>https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
+      <![CDATA[<p>Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</p>
+
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png" /></figure>
+
+<p>Here’s the full list of changes for version 9.0:</p>
+
+<ul>
+  <li>Fixes black background for stories while reading with the Light theme.</li>
+  <li>Total rewrite of the backend story management platform. This fixes the oldest issues known in story paging and scroll state. The story rivers should now act like dynamic views instead of static lists.</li>
+  <li>New feature: renaming feeds directly in the app.</li>
+  <li>Improved messaging and display behavior for the original text view.</li>
+  <li>Fixes for the dark theme’s menu color.</li>
+  <li>Many other bug fixes and performance tweaks.</li>
+</ul>
+
+<p>I’d also like to introduce our newest developer, <a href="https://github.com/caleb-allen">Caleb Allen</a>.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg" alt="" /></p>
+
+<p>Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">The NewsBlur iOS app also hits version 8.0</title>
+    <link href="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" />
+    <published>2018-10-31T09:16:24-04:00</published>
+    <updated>2018-10-31T09:16:24-04:00</updated>
+    <id>https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
+      <![CDATA[<p>Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.</p>
+
+<p>Here’s what’s new:</p>
+
+<ul>
+  <li>NEW: Save stories offline</li>
+  <li>NEW: Share stories from other apps into NewsBlur with the new share extension</li>
+  <li>NEW: Scroll vertically between stories (can be turned on while reading a story)</li>
+  <li>NEW: 3D Touch links in stories to preview them</li>
+  <li>NEW: search for sites directly from the feed list</li>
+  <li>Switching themes no longer reloads the story</li>
+  <li>iOS 12 compatibility fixes</li>
+  <li>Upgrading to a premium subscription now handles App Store payment updates</li>
+  <li>Fixed issue where locking the device while playing a video over Airplay would stop the video</li>
+</ul>
+
+<p>Here’s a preview of what a 3D touch on a link looks like:</p>
+
+<video src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-preview.mov" width="350" style="margin: 0 auto;border: 1px solid #606060" autoplay="" muted="" loop=""></video>
+
+<p>And sharing stories from other apps directly to your blurblog is now easy to do from the share menu.</p>
+
+<figure class="tmblr-full" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"><img width="350" style="margin: 0 auto;border: 1px solid #606060" data-orig-height="1334" data-orig-width="750" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png" /></figure>
+
+<p>Now that David’s back there’s a lot to look forward to.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team....]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">The NewsBlur Android app hits version 8.0 with a new Grid view</title>
@@ -994,122 +1137,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[NewsBlur has been tracking story changes for a long, long time now (first mentioned on the blog five years ago in April 2011). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Story thumbnails for story titles</title>
-    <link href="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/" rel="alternate" type="text/html" title="Story thumbnails for story titles" />
-    <published>2016-02-19T06:30:10-05:00</published>
-    <updated>2016-02-19T06:30:10-05:00</updated>
-    <id>https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/">
-      <![CDATA[<p>The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images.png" alt="" /></p>
-
-<p>What I’ve noticed is that while I don’t use the image to identify which stories I want to read, I do use them to act as a signature of a story.</p>
-
-<p>There’s precedence for this on NewsBlur. Every site already does this using the color of its favicon. NewsBlur liberally applies a two-tone color palette based on each feed’s favicon. This serves as a per-feed signature, giving context to a story when it’s in the same view as every other feed’s stories.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_left.png" alt="" /></p>
-
-<p>These story preview thumbnails serve as the same signature. Stories are best remembered through their colors and photos, so thumbnails act as a visual signature that’s easy to recognize. It works on a subconscious but perceptable level.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_pref.png" alt="" /></p>
-
-<p>Of course you can turn them right off.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Two new third-party NewsBlur apps for iOS and Windows</title>
-    <link href="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/" rel="alternate" type="text/html" title="Two new third-party NewsBlur apps for iOS and Windows" />
-    <published>2016-02-03T13:51:32-05:00</published>
-    <updated>2016-02-03T13:51:32-05:00</updated>
-    <id>https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/">
-      <![CDATA[<p>NewsBlur has an amazingly active third-party app community, thanks to the <a href="http://www.newsblur.com/api">well documented NewsBlur API</a>. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.</p>
-
-<h2 id="hypersonic-for-windows-10--windows-phone">Hypersonic for Windows 10 &amp; Windows Phone</h2>
-
-<p><a href="https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6">Hypersonic</a> is clean, simple, beautiful, and designed to run across both mobile and desktop devices.</p>
-
-<p><img src="https://store-images.s-microsoft.com/image/apps.57443.13510798886379389.f16a7ef2-bbfc-4fb0-9af1-b4be3b6902c1.d4e474de-9462-4612-946f-55ef3a89e295?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
-
-<p><img src="https://store-images.s-microsoft.com/image/apps.35702.13510798886379389.51b7a825-88ad-466c-ba41-6870a81fff17.8672bf08-f8e1-47a9-b393-e22cbe6cb8ca?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
-
-<p><img src="https://store-images.s-microsoft.com/image/apps.35090.13510798886379389.acef2ff2-e379-47b0-957e-1265f82f6967.20046293-77d2-477b-8ffb-644eeba7c817?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
-
-<p><img src="https://store-images.s-microsoft.com/image/apps.6547.13510798886379389.edddb027-0403-4b79-9471-b53afd6793a7.7c3f7a94-959f-4910-a38c-db0474493f9a?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
-
-<h2 id="add-my-feed-for-ios">Add My Feed for iOS</h2>
-
-<p><a href="http://addmyfeed.cubesoft.fr">Add My Feed</a> is an extension allowing you to effortlessly add RSS feeds to your online reader of choice.</p>
-
-<p>When you encounter a site you would like to subscribe to, simply tap the Add My Feed extension and you’re done !</p>
-
-<p>Add My Feed works in Safari and in any app supporting the standard iOS share sheet.</p>
-
-<p><img src="https://lh3.googleusercontent.com/Fth086Rlw5rB9ljQgFiJrkqupdOY3Xv501DOxZ2M4MN4k9goHi-dz-2n4vDiBn6ZUa7dvbEFqzb9Y5HH_7twqqJiY9Mrxw" alt="" /></p>
-
-<p>Both of these apps and many more are on the <a href="http://www.newsblur.com/?next=goodies">Goodies &amp; Mobile Apps</a> dialog. If you’ve developed an app for NewsBlur and would like to add it to Goodies (and have it blogged about here), let me know!</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    <category term="windows" />
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur has an amazingly active third-party app community, thanks to the well documented NewsBlur API. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Search for pizza with your Android device</title>
-    <link href="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/" rel="alternate" type="text/html" title="Search for pizza with your Android device" />
-    <published>2016-01-28T14:26:36-05:00</published>
-    <updated>2016-01-28T14:26:36-05:00</updated>
-    <id>https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/">
-      <![CDATA[<p>I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_search.png" alt="" /></p>
-
-<p>Well now you can search for pizza to your heart’s content on the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Good luck with your tomato pie.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?
 ]]>
     </summary>
     

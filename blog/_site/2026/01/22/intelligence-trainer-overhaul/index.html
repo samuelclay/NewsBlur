@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one." />
+<meta property="og:description" content="The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/url-classifier-section.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-22T00:00:00-05:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/url-classifier-section.png" />
+<meta property="twitter:title" content="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-22T00:00:00-05:00","datePublished":"2026-01-22T00:00:00-05:00","description":"The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.","headline":"Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place","image":"https://blog.newsblur.com/assets/url-classifier-section.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-01-22T00:00:00-05:00" itemprop="datePublished">Jan 22, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.</p>
+
+<p>Today I’m launching three major improvements: URL classifiers, regex mode for power users, and a completely redesigned Manage Training tab.</p>
+
+<h3 id="train-on-urls">Train on URLs</h3>
+
+<p>You can now train on story permalink URLs, not just titles and content. This opens up new filtering possibilities based on URL patterns.</p>
+
+<p><img src="/assets/url-classifier-section.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The URL classifier matches against the full story permalink. Some use cases:</p>
+
+<ul>
+  <li><strong>Filter by URL path</strong>: Like or dislike stories that contain <code class="language-plaintext highlighter-rouge">/sponsored/</code> or <code class="language-plaintext highlighter-rouge">/opinion/</code> in their URL</li>
+  <li><strong>Domain sections</strong>: Match specific subdomains or URL segments that indicate content types</li>
+  <li><strong>Landing pages vs articles</strong>: Some feeds include both—filter by URL structure to show only what you want</li>
+</ul>
+
+<p>URL classifiers support both exact phrase matching and regex mode. The exact phrase match is available to Premium subscribers, while regex mode requires <a href="https://newsblur.com/?next=premium">Premium Pro</a>.</p>
+
+<p>When a URL classifier matches, you’ll see the matched portion highlighted directly in the story header, so you always know why a story was filtered.</p>
+
+<h3 id="regex-matching-for-power-users">Regex matching for power users</h3>
+
+<p>For years, the text classifier only supported exact phrase matching. If you wanted to match “iPhone” and “iPad” you needed two separate classifiers. Now you can use regex patterns in the Title, Text, and URL classifiers.</p>
+
+<p><img src="/assets/regex-mode-toggle.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A segmented control lets you switch between “Exact phrase” and “Regex” mode. In regex mode, you get access to the full power of regular expressions:</p>
+
+<ul>
+  <li><strong>Word boundaries</strong> (<code class="language-plaintext highlighter-rouge">\b</code>): Match <code class="language-plaintext highlighter-rouge">\bapple\b</code> to find “apple” but not “pineapple”</li>
+  <li><strong>Alternation</strong> (<code class="language-plaintext highlighter-rouge">|</code>): Match <code class="language-plaintext highlighter-rouge">iPhone|iPad|Mac</code> in a single classifier</li>
+  <li><strong>Optional characters</strong> (<code class="language-plaintext highlighter-rouge">?</code>): Match <code class="language-plaintext highlighter-rouge">colou?r</code> to find both “color” and “colour”</li>
+  <li><strong>Anchors</strong> (<code class="language-plaintext highlighter-rouge">^</code> and <code class="language-plaintext highlighter-rouge">$</code>): Match patterns at the start or end of text</li>
+  <li><strong>Character classes</strong>: Match <code class="language-plaintext highlighter-rouge">[0-9]+</code> for any number sequence</li>
+</ul>
+
+<p><img src="/assets/regex-help-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A built-in help popover explains regex syntax with practical examples. The trainer validates your regex in real-time and shows helpful error messages if the pattern is invalid.</p>
+
+<p>Regex matching is case-insensitive, so <code class="language-plaintext highlighter-rouge">apple</code> matches “Apple”, “APPLE”, and “apple”. This mode is available to Premium Pro subscribers.</p>
+
+<h3 id="manage-all-your-training-in-one-place">Manage all your training in one place</h3>
+
+<p>Over the years you may have trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when you wanted to review what you’d trained, you had to open each feed’s trainer individually and click through them one by one.</p>
+
+<p>The new Manage Training tab provides a consolidated view of every classifier you’ve ever trained, organized by folder. You can see everything at a glance, edit inline, and save changes across multiple feeds in a single click.</p>
+
+<p><img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Open the Intelligence Trainer from the sidebar menu (or press the <code class="language-plaintext highlighter-rouge">t</code> key). You’ll now see two tabs at the top: “Site by Site” and “Manage Training”. The Manage Training tab is available everywhere you train—from the story trainer, feed trainer, or the main Intelligence Trainer dialog.</p>
+
+<p>The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That’s still the best way to train new feeds with lots of suggestions.</p>
+
+<p>The Manage Training tab shows only what you’ve already trained. Every thumbs up and thumbs down you’ve ever given, organized by folder just like your feed list. Each feed shows its trained classifiers as pills you can click to toggle.</p>
+
+<h4 id="filtering-made-easy">Filtering made easy</h4>
+
+<p>The real power comes from the filtering options. At the top of the tab you’ll find several ways to narrow down your training:</p>
+
+<p><strong>Folder/Site dropdown</strong> — Only folders and sites with training appear in this dropdown. Select a folder to see all training within it, or select a specific site to focus on just that feed’s classifiers. This is especially useful when you have hundreds of trained items and want to review just one area.</p>
+
+<p><img src="/assets/manage-training-site-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Instant search</strong> — Type in the search box and results filter as you type. Search matches against classifier names, feed titles, and folder names. Looking for everything you’ve trained about “apple”? Just type it and see all matches instantly.</p>
+
+<p><img src="/assets/manage-training-search.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Likes and Dislikes</strong> — Toggle between All, Likes only, or Dislikes only. Want to see everything you’ve marked as disliked? One click shows you all the red thumbs-down items across your entire training history.</p>
+
+<p><img src="/assets/manage-training-dislikes.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Type filters</strong> — Filter by classifier type: Title, Author, Tag, Text, URL, or Site. These are multi-select, so you can show just Authors and Tags while hiding everything else. Perfect for when you want to audit just the authors you’ve trained across all your feeds.</p>
+
+<h4 id="edit-inline-and-save-in-bulk">Edit inline and save in bulk</h4>
+
+<p>Click any classifier pill to toggle it between like, dislike, and neutral. The Save button shows exactly how many changes you’ve made, so you always know what’s pending. Made a mistake? Just click again to undo—the count updates automatically.</p>
+
+<p>When you click Save, all your changes across all feeds are saved in a single request. No more clicking through feeds one at a time to clean up old training.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Title/Author/Tag/Feed classifiers</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Manage Training tab</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>URL classifiers (exact phrase)</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <td>Text classifiers (exact phrase)</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Regex mode (Title, Text, URL)</td>
+      <td>Premium Pro</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All three features are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/01/22/intelligence-trainer-overhaul/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

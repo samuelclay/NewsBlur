@@ -194,6 +194,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
                             &middot;\
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                            <% if (has_auto_mark_read) { %>\
+                                &middot;\
+                                <div class="NB-feedbar-auto-mark-read-icon"></div>\
+                            <% } %>\
                         </span>\
                     </div>\
                     <div class="NB-story-title-indicator">\
@@ -231,7 +235,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             root: this.options.root,
             feedbar: this.options.feedbar,
             show_discover: NEWSBLUR.assets.preference("show_discover"),
-            list_type: this.options.feedbar ? 'div' : 'li'
+            list_type: this.options.feedbar ? 'div' : 'li',
+            has_auto_mark_read: (function () {
+                var setting = NEWSBLUR.assets.get_folder_auto_mark_read(this.options.folder_title);
+                return setting !== null && setting !== undefined;
+            }).call(this)
         });
 
         this.$el.replaceWith($folder);

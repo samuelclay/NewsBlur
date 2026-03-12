@@ -54,24 +54,14 @@
 /* ========== */
 
 .NB-welcome .NB-inner {
-    width: 960px;
+    width: 100%;
+    max-width: 960px;
     margin: 0 auto;
     position: relative;
     height: 100%;
+    box-sizing: border-box;
 }
 
-.NB-welcome .NB-inner-account {
-    width: 960px;
-    margin: 0 auto;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    height: 100%;
-    margin-right: -50%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    pointer-events: none;
-}
 
 .NB-button {
     border: 1px solid #07360F;
@@ -98,432 +88,708 @@
     overflow-x: hidden;
 }
 
+/* ========================== */
+/* = Tryout Signup Banner   = */
+/* ========================== */
+
+/* Light mode (default) */
+.NB-tryout-signup-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #f5f0e6 0%, #ece5d5 100%);
+    border-bottom: 1px solid rgba(217, 166, 33, 0.25);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.NB-tryout-signup-banner:hover {
+    background: linear-gradient(135deg, #efe9d8 0%, #e6dece 100%);
+}
+
+.NB-tryout-signup-banner:hover .NB-tryout-signup-banner-button {
+    background: #C4941B;
+}
+
+.NB-tryout-signup-banner-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: url(/media/img/logo_512.png) no-repeat center center;
+    background-size: 28px;
+    filter: drop-shadow(0 1px 4px rgba(217, 166, 33, 0.3));
+}
+
+.NB-tryout-signup-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-tryout-signup-banner-text {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a3226;
+    line-height: 1.2;
+}
+
+.NB-tryout-signup-banner-subtext {
+    font-size: 11px;
+    color: rgba(58, 50, 38, 0.55);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.NB-tryout-signup-banner-button {
+    flex-shrink: 0;
+    background: #D9A621;
+    color: white;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+/* Dark mode */
+.NB-dark .NB-tryout-signup-banner {
+    background: linear-gradient(135deg, #1a1f1f 0%, #242b2b 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.2);
+}
+
+.NB-dark .NB-tryout-signup-banner:hover {
+    background: linear-gradient(135deg, #1f2626 0%, #2a3232 100%);
+}
+
+.NB-dark .NB-tryout-signup-banner-text {
+    color: white;
+}
+
+.NB-dark .NB-tryout-signup-banner-subtext {
+    color: rgba(255, 255, 255, 0.45);
+}
+
 /* ========== */
 /* = Header = */
 /* ========== */
 
-.NB-welcome-header {
+.NB-welcome-hero-wrap {
     position: relative;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3F5354), to(#1B2424));
-    background: -moz-linear-gradient(center top, #3F5354 0%, #1B2424 100%) repeat scroll 0 0 transparent;
-    height: 420px;
-    color: white;
-    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.3);
-}
-
-.NB-welcome-header .NB-background {
-    background: url(/media/img/welcome/header_background.jpg) no-repeat center center;
-    width: 100%;
-    height: 100%;
+    background: linear-gradient(180deg, #5a7a7b 0%, #334848 50%, #243636 100%);
     overflow: hidden;
 }
 
-.NB-welcome-header .NB-welcome-header-logo {
-    padding: 48px 0 0 0;
+.NB-welcome-header-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.NB-welcome-header {
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+/* Split hero: branding left, form right */
+.NB-welcome-header-hero {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 72px 48px 64px;
+    display: flex;
+    align-items: center;
+    gap: 64px;
+}
+
+.NB-welcome-header-branding {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    width: 460px;
+}
+
+.NB-welcome-header .NB-welcome-header-logo {
+    margin: 0 0 8px;
 }
 
 .NB-welcome-header .NB-welcome-header-logo img {
+    height: 88px;
+    width: 88px;
+    filter: drop-shadow(0 2px 16px rgba(217, 166, 33, 0.4));
+    transition: opacity .15s ease-in-out;
     opacity: .9;
-    -webkit-transition: all .15s ease-in-out;
-    -moz-transition: all .15s ease-in-out;
-    -o-transition: all .15s ease-in-out;
-    -ms-transition: all .15s ease-in-out;
-
 }
 
 .NB-welcome-header .NB-welcome-header-logo img:hover {
     opacity: 1;
 }
 
+.NB-welcome-header-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    margin: 0 0 12px;
+    line-height: 1.1;
+}
+
 .NB-welcome-header .NB-welcome-header-tagline {
-    margin: 24px 0 0 0;
-    font-size: 22px;
-    text-shadow: 0 1px 0 rgba(25, 25, 25, 0.75);
-    text-align: center;
-    width: 460px;
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #FBDB9B;
+    margin: 0 0 32px;
+    line-height: 1.5;
+    max-width: 400px;
 }
 
-.NB-welcome-header .NB-welcome-header-tagline b {
-    padding: 2px 8px;
-    background-color: rgba(205, 205, 205, 0.1);
-    font-weight: normal;
-    border-radius: 4px;
+/* ==================== */
+/* = Frosted Formcard = */
+/* ==================== */
+
+.NB-welcome-header-formcard {
+    width: 340px;
+    flex-shrink: 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.15);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 24px;
 }
 
-.NB-welcome-header-image {
+@supports not (backdrop-filter: blur(20px)) {
+    .NB-welcome-header-formcard {
+        background: rgba(50, 70, 70, 0.85);
+    }
+}
+
+/* Segmented control */
+.NB-welcome-header-segment {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 2px;
+    margin: 0 0 20px;
+    position: relative;
+}
+
+/* Sliding glass pill */
+.NB-welcome-header-segment::before {
+    content: '';
     position: absolute;
-    right: 0;
-    bottom: 0;
-}
-
-.NB-welcome-header-image img {
+    top: 2px;
+    left: 2px;
+    width: calc(50% - 2px);
+    height: calc(100% - 4px);
+    border-radius: 8px;
+    background:
+        linear-gradient(
+            170deg,
+            rgba(255, 255, 255, 0.35) 0%,
+            rgba(255, 255, 255, 0.12) 40%,
+            rgba(255, 255, 255, 0.06) 60%,
+            rgba(255, 255, 255, 0.15) 100%
+        );
+    box-shadow:
+        0 0.5px 0 0 rgba(255, 255, 255, 0.25) inset,
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        0 0 12px rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transform: translateX(0%);
+    transition: transform 0.45s cubic-bezier(0.4, 0.0, 0.1, 1.0);
     z-index: 0;
-    opacity: 0;
-    transition: bottom 1s ease-in-out,
-        opacity 1s ease-in-out;
 }
 
-.NB-welcome-header-image.NB-1 img {
-    height: 300px;
-    position: absolute;
-    bottom: -350px;
-    right: 0;
-    border-radius: 2px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+.NB-welcome-header-segment.NB-segment-right::before {
+    transform: translateX(100%);
 }
 
-.NB-welcome-header-image.NB-2 img {
-    opacity: 0;
-    height: 300px;
-    position: absolute;
-    bottom: -300px;
-    right: -80px;
-    border-radius: 2px;
-    margin-right: 100px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.NB-welcome-header-image.NB-3 img {
-    opacity: 0;
-    height: 300px;
-    position: absolute;
-    bottom: -300px;
-    right: -24px;
-    border-radius: 2px;
-    margin-right: 140px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.NB-welcome-header-image.NB-active img {
+.NB-segment-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    user-select: none;
+    position: relative;
     z-index: 1;
-    bottom: 0;
+}
+
+.NB-segment-option:hover {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.NB-segment-option.NB-active {
+    color: white;
+}
+
+/* Form panels */
+.NB-formcard-panel {
+    display: none;
+}
+
+.NB-formcard-panel.NB-active {
+    display: block;
+}
+
+/* Form field wrappers */
+.NB-formcard-field {
+    margin: 0 0 12px;
+}
+
+.NB-formcard-field label {
+    display: none;
+}
+
+/* Form inputs */
+.NB-welcome-header-formcard input[type=text],
+.NB-welcome-header-formcard input[type=password],
+.NB-welcome-header-formcard input[type=email] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
+    font-size: 15px;
+    color: white;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.NB-welcome-header-formcard input[type=text]::placeholder,
+.NB-welcome-header-formcard input[type=password]::placeholder,
+.NB-welcome-header-formcard input[type=email]::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.NB-welcome-header-formcard input[type=text]:focus,
+.NB-welcome-header-formcard input[type=password]:focus,
+.NB-welcome-header-formcard input[type=email]:focus {
+    border-color: rgba(217, 166, 33, 0.5);
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.NB-welcome-header-formcard input[type=hidden] {
+    display: none;
+}
+
+/* Submit button */
+.NB-welcome-submit-button {
+    width: 100%;
+    background: #D9A621;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    text-transform: capitalize;
+    transition: background 0.2s ease;
+    box-sizing: border-box;
+    margin: 4px 0 0;
+}
+
+.NB-welcome-submit-button:hover {
+    background: #C4941B;
+}
+
+.NB-welcome-submit-button:active {
+    background: #B08518;
+}
+
+/* Forgot password */
+.NB-welcome-forgot {
+    display: block;
+    text-align: center;
+    margin: 14px 0 0;
+    color: #FBDB9B;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.NB-welcome-forgot:hover {
+    color: #fff;
+}
+
+/* Error display */
+.NB-formcard-errors {
+    margin: 12px 0 0;
+}
+
+.NB-formcard-errors .errorlist {
+    list-style: none;
+    font-size: 13px;
+    color: #F5A87A;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+/* ================================ */
+/* = Header Try-out / Actions     = */
+/* ================================ */
+
+.NB-welcome-header .NB-welcome-header-actions {
+    margin: 0;
+    float: none;
+    background: none;
+    border-radius: 0;
+    overflow: visible;
+}
+
+.NB-welcome-header .NB-welcome-header-actions .NB-button-tryout {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    text-shadow: none;
+    box-shadow: none;
+    float: none;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:active {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.NB-welcome-header .NB-welcome-header-actions .NB-button-tryout img {
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:hover img {
     opacity: 1;
 }
 
-.NB-welcome-header-captions {
-    text-align: center;
-    margin: 12px auto 0;
-    position: absolute;
-    top: 0;
-    right: 32px;
-    overflow: hidden;
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.35);
-    padding-left: 64px;
+/* Tryout chevron hint */
+.NB-tryout-chevrons {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px 0;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease,
+                margin 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.NB-welcome-header-caption {
-    float: left;
-    color: white;
-    cursor: pointer;
-    padding: 36px 12px 12px;
-    text-transform: uppercase;
-}
-
-.NB-welcome-header-caption.NB-welcome-header-caption-signin {
-    color: #E8F64A;
-}
-
-.NB-welcome-header-caption span {
-    padding: 2px 8px;
-    border-radius: 4px;
+.NB-tryout-chevron {
     display: block;
-    -webkit-transition: all 1s ease-in-out;
-    -moz-transition: all 1s ease-in-out;
-    -o-transition: all 1s ease-in-out;
-    -ms-transition: all 1s ease-in-out;
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
 }
 
-.NB-welcome-header-caption:hover span {
-    -webkit-transition: all .25s ease-in-out;
-    -moz-transition: all .25s ease-in-out;
-    -o-transition: all .25s ease-in-out;
-    -ms-transition: all .25s ease-in-out;
+/* Left chevrons: point left, visible by default */
+.NB-tryout-chevrons-left {
+    width: 26px;
+    opacity: 1;
+    margin-right: -2px;
 }
 
-.NB-welcome-header-caption.NB-active span {
-    color: #FDC85B;
-    background-color: rgba(235, 235, 235, 0.1);
+.NB-tryout-chevrons-left .NB-tryout-chevron {
+    border-left: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    opacity: 0.15;
+    animation: chevron-wave-left 2.4s ease-in-out infinite;
 }
 
-.NB-welcome-header-actions {
-    margin: 36px 0 0;
-    line-height: 16px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    overflow: hidden;
-    float: left;
+.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(1) { animation-delay: 0s; }
+.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(2) { animation-delay: 0.15s; }
+.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes chevron-wave-left {
+    0%, 100% { opacity: 0.15; transform: rotate(45deg) translateX(0); }
+    30% { opacity: 0.7; transform: rotate(45deg) translateX(-2px); }
+    60% { opacity: 0.15; transform: rotate(45deg) translateX(0); }
 }
 
-.NB-welcome-header-action {
-    float: left;
-    margin: 4px 0 16px;
+
+/* Right chevrons: point right, collapsed by default */
+.NB-tryout-chevrons-right {
+    width: 0;
+    opacity: 0;
+    margin-left: 0;
 }
 
-.NB-welcome-header-action-subtext {
-    text-align: center;
-    line-height: 24px;
-    padding: 0 12px;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: white;
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.4);
+.NB-tryout-chevrons-right .NB-tryout-chevron {
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: 0.15;
 }
 
-.NB-welcome-header-actions img {
-    vertical-align: top;
-    width: 16px;
-    height: 16px;
+/* Opening: left collapses first, then right expands */
+.NB-welcome-tryout .NB-tryout-chevrons-left {
+    width: 0;
+    opacity: 0;
+    margin-right: 0;
+    transition-delay: 0s;
 }
 
-.NB-welcome-header-actions .NB-welcome-header-action-arrow {
-    display: none;
+.NB-welcome-tryout .NB-tryout-chevrons-left .NB-tryout-chevron {
+    animation: none;
 }
 
-.NB-welcome-header-actions .NB-active .NB-welcome-header-action-bolt {
-    display: none;
+.NB-welcome-tryout .NB-tryout-chevrons-right {
+    width: 26px;
+    opacity: 1;
+    margin-left: -2px;
+    transition-delay: 0.3s;
 }
 
-.NB-welcome-header-actions .NB-active .NB-welcome-header-action-arrow {
-    display: block;
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron {
+    animation: chevron-wave-right 2.4s ease-in-out infinite;
 }
 
-.NB-welcome-header-actions .NB-button {
-    float: left;
-    font-size: 16px;
-    padding: 6px 10px;
-    margin: 0 24px;
-    text-transform: none;
-    text-shadow: 0 1px 0 rgba(235, 235, 235, 0.4);
-    background-color: #F5FFE2;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F5FFE2), to(#E8FACA));
-    background: -moz-linear-gradient(center top, #F5FFE2 0%, #E8FACA 100%);
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(1) { animation-delay: 0s; }
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(2) { animation-delay: 0.15s; }
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes chevron-wave-right {
+    0%, 100% { opacity: 0.15; transform: rotate(-45deg) translateX(0); }
+    30% { opacity: 0.7; transform: rotate(-45deg) translateX(2px); }
+    60% { opacity: 0.15; transform: rotate(-45deg) translateX(0); }
 }
 
-.NB-welcome-header-actions .NB-button:hover {
-    background-color: #F4DD43;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F4DD43), to(#F1D526));
-    background: -moz-linear-gradient(center top, #F4DD43 0%, #F1D526 100%);
+
+/* Closing: right collapses first, then left re-expands */
+.NB-tryout-chevrons-left {
+    transition-delay: 0.3s;
 }
 
-.NB-welcome-header-actions .NB-button:active {
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.4);
-    background-color: #E97326;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E97326), to(#D94B0D));
-    background: -moz-linear-gradient(center top, #E97326 0%, #D94B0D 100%);
-    color: white;
+.NB-tryout-chevrons-right {
+    transition-delay: 0s;
 }
 
-/* ================== */
-/* = Login / Signup = */
-/* ================== */
+/* ======================== */
+/* = Platform Showcase    = */
+/* ======================== */
 
-.NB-welcome-header-account {
-    pointer-events: all;
-    position: absolute;
-    transition: bottom 1s ease-in-out;
-    bottom: -350px;
-    right: 12px;
-    width: 400px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    background-color: rgba(245, 245, 245, 0.4);
-    padding: 36px 36px 12px;
-}
-
-.NB-welcome-header-account.NB-active {
-    bottom: 0px;
-}
-
-.NB-welcome-header-account .NB-module-header-login {
-    width: 142px;
-    margin: 0 50px 0 0;
-    padding: 0 4px;
-    float: left;
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
-}
-
-.NB-welcome-header-account .NB-module-header-signup {
-    width: 142px;
-    margin: 0;
-    padding: 0 4px;
-    float: left;
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
-}
-
-.NB-welcome-header-account .NB-login {
-    padding: 0 4px;
-    margin: 12px 50px 0 12px;
-    width: 146px;
-    float: left;
-}
-
-.NB-welcome-header-account .NB-signup {
-    float: left;
-    width: 146px;
-    padding: 0 4px;
-    margin: 12px 0 0;
-    height: 206px;
+.NB-welcome-platforms {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0) 0px,
+        rgba(255, 255, 255, 0.2) 100px,
+        rgba(255, 255, 255, 0.4) 300px,
+        rgba(255, 255, 255, 0.6) 600px);
+    padding: 80px 0 0;
     overflow: hidden;
 }
 
-.NB-welcome-header-account .NB-import-signup {
-    float: left;
-    width: 146px;
-    padding: 0 0 64px 0;
-    margin: 0 24px 0 12px;
-    height: 206px;
-    overflow: hidden;
-}
-
-.NB-welcome-header-account .NB-import-signup-text {
+/* Section header */
+.NB-welcome-platforms-header {
     text-align: center;
-    width: 190px;
+    margin: 0 0 72px;
+    padding: 24px 24px 0;
 }
 
-.NB-welcome-header-account .NB-import-signup-text h3 {
-    margin-top: 48px;
-    color: #20843D;
-}
-
-.NB-welcome-header-account .NB-import-signup-text p {
-    color: #636363;
-}
-
-.NB-welcome-header-account .NB-signup-orline {
-    margin: 30px auto 24px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 10px;
-    color: #F9F9F9;
-    font-weight: bold;
-}
-
-.NB-welcome-header-account .NB-signup-orline-reduced {
-    margin: 0px auto 0px;
-}
-
-.NB-welcome-header-account .NB-signup-orline .NB-signup-orline-or {
-    padding: 0 4px;
-}
-
-.NB-welcome-header-account .NB-signup-optional {
-    float: right;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
-    font-weight: bold;
-    font-size: 9px;
-    line-height: 17px;
-}
-
-.NB-welcome-header-account .NB-signup-hidden {
-    display: none;
-}
-
-.NB-welcome-header-account .NB-import-signup {
-    height: auto;
-}
-
-.NB-welcome-header-account .NB-signup .NB-signup-google {
-    margin: 12px auto;
-    display: block;
-    font-size: 12px;
-    text-align: center;
-}
-
-/* Trial banner - compact version for welcome page */
-.NB-welcome-header-account .NB-signup-trial-banner {
-    background: linear-gradient(135deg, #6c9633 0%, #5a7f2a 100%);
-    padding: 8px 4px;
-    border-radius: 4px;
-    margin: 0 0 8px 0;
-    text-align: center;
-    color: white;
-}
-
-.NB-welcome-header-account .NB-signup-trial-banner .NB-trial-highlight {
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 1.3;
-    margin-bottom: 2px;
-}
-
-.NB-welcome-header-account .NB-signup-trial-banner .NB-trial-subtitle {
-    font-size: 9px;
-    opacity: 0.9;
-    line-height: 1.2;
-}
-
-.NB-welcome-header-account input[type=text],
-.NB-welcome-header-account input[type=password] {
-    border: 1px solid rgba(35, 35, 35, 0.5);
-    display: block;
-    font-size: 13px;
+.NB-platforms-heading {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #FFF5E0;
     margin: 0 0 12px;
-    padding: 5px;
-    width: 134px;
+    letter-spacing: -0.5px;
+    text-shadow:
+        0 0 40px rgba(217, 166, 33, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-.NB-welcome-header-account input[type=text]:focus,
-.NB-welcome-header-account input[type=password]:focus {
-    border-color: #739BBE;
+.NB-platforms-subheading {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #FBDB9B;
+    line-height: 1.5;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-.NB-welcome-header-account input[type=submit] {
-    outline: none;
-    width: 146px;
-    /* 174=input-width + 5*2=padding + 2=border */
-    margin: 4px 5px 0 0;
-    padding: 4px 10px 5px;
-    font-size: 12px;
-    color: white;
-    cursor: pointer;
+/* Each platform row */
+.NB-welcome-platform {
+    padding: 0 0 96px;
 }
 
-.NB-welcome-header-account input[type=hidden] {
-    display: none;
+.NB-platform-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 64px;
 }
 
-.NB-welcome-header-account label,
-.NB-welcome-header-account .NB-account-label {
-    margin: 0;
-    color: #FFFFD5;
-    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
-    font-size: 12px;
-    display: block;
+/* Reversed layout (screenshot on left) */
+.NB-platform-reversed .NB-platform-inner {
+    flex-direction: row-reverse;
+}
+
+/* Text column */
+.NB-platform-text {
+    flex: 0 0 320px;
+}
+
+.NB-platform-badge {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #FBDB9B;
+    margin: 0 0 16px;
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid rgba(251, 219, 155, 0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    background: rgba(217, 166, 33, 0.12);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-.NB-welcome-header-account .NB-account-label {
-    font-weight: bold;
+.NB-platform-title {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #FFF5E0;
+    line-height: 1.2;
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(50, 70, 70, 0.4);
+    margin: 0 0 16px;
+    letter-spacing: -0.3px;
 }
 
-.NB-welcome-header-account .NB-account-text {
-    font-size: 13px;
-    color: #90A0B0;
-    margin-bottom: 30px;
+.NB-platform-description {
+    font-size: 16px;
+    color: rgba(58, 46, 30, 0.75);
+    line-height: 1.65;
 }
 
-.NB-welcome-header-account .NB-account-text a {
-    text-decoration: none;
-    color: #3E4773;
+/* Screenshot column */
+.NB-platform-screenshot {
+    flex: 1;
+    min-width: 0;
 }
 
-.NB-welcome-header-account .NB-account-text a:hover {
-    color: #0E1763;
+.NB-platform-screenshot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
-.NB-welcome-header-account .errorlist {
-    list-style: none;
-    font-size: 12px;
-    color: #AF4D18;
-    font-weight: bold;
-    padding: 0;
+/* Web platform: slightly larger screenshot area */
+.NB-platform-web .NB-platform-screenshot {
+    flex: 1.2;
+}
+
+/* Android image is nearly square, cap its height to match the others */
+.NB-platform-android .NB-platform-screenshot img {
+    max-height: 420px;
+    width: auto;
+    max-width: 100%;
+}
+
+/* ======================= */
+/* = Responsive          = */
+/* ======================= */
+
+@media (max-width: 900px) {
+    .NB-welcome-header-hero {
+        flex-direction: column;
+        padding: 48px 24px 48px;
+        gap: 36px;
+        align-items: stretch;
+        text-align: center;
+    }
+    .NB-welcome-header .NB-welcome-header-tagline {
+        max-width: none;
+    }
+    .NB-welcome-header-branding {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .NB-welcome-header-formcard {
+        width: 100%;
+        max-width: 380px;
+        align-self: center;
+    }
+    .NB-welcome-header .NB-welcome-header-actions {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .NB-welcome-platforms {
+        padding: 56px 0 0;
+    }
+    .NB-welcome-platforms-header {
+        margin: 0 0 48px;
+    }
+    .NB-platforms-heading {
+        font-size: 30px;
+    }
+    .NB-welcome-platform {
+        padding: 0 0 56px;
+    }
+    .NB-platform-inner,
+    .NB-platform-reversed .NB-platform-inner {
+        flex-direction: column;
+        padding: 0 24px;
+        gap: 32px;
+        text-align: center;
+    }
+    .NB-platform-text {
+        flex: none;
+        width: 100%;
+    }
+    .NB-platform-title {
+        font-size: 26px;
+    }
 }
 
 
@@ -531,6 +797,28 @@
 /* ============ */
 /* = Features = */
 /* ============ */
+
+.NB-welcome-features-header {
+    text-align: center;
+    padding: 64px 24px 0;
+}
+
+.NB-features-heading {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #3a2e1e;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-features-subheading {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #8a7a5a;
+    line-height: 1.5;
+}
 
 .NB-welcome-features {
     margin: 64px 0;
@@ -569,8 +857,12 @@
     overflow: hidden;
 }
 
+.NB-welcome-subfeatures .NB-inner {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .NB-welcome-subfeatures .NB-feature {
-    float: left;
     width: 46%;
     margin: 0 4% 48px 0;
     text-align: left;
@@ -578,10 +870,12 @@
 
 .NB-welcome-subfeatures img {
     float: left;
+    flex-shrink: 0;
     width: 120px;
     height: 100px;
     margin: 0 24px 0 0;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: left top;
     box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
 }
 
@@ -612,43 +906,45 @@
     clear: both;
     margin: 48px 0 0;
     padding: 48px 0;
-    background: linear-gradient(180deg, #f8f9fa 0%, #eef0f2 100%);
-    border-top: 1px solid #e0e4e8;
-    border-bottom: 1px solid #e0e4e8;
+    background: linear-gradient(180deg, #f5f3f0 0%, #eee9e2 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-welcome-pricing h2 {
     text-align: center;
-    font-size: 32px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 40px;
     font-weight: 700;
     margin: 0 0 12px;
-    color: #1a1a1a;
+    color: #3a2e1e;
+    letter-spacing: -0.5px;
 }
 
 .NB-welcome-pricing>.NB-inner>p {
     text-align: center;
     line-height: 26px;
     font-size: 16px;
-    color: #5c6370;
+    color: rgba(58, 46, 30, 0.6);
     margin: 0 auto 24px;
     max-width: 750px;
 }
 
 .NB-pricing-trial-callout {
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-    border: 1px solid #6ee7b7;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
     border-radius: 8px;
     padding: 14px 20px;
     margin: 0 auto 32px;
     text-align: center;
     font-size: 15px;
-    color: #065f46;
+    color: #0d7c5a;
     max-width: 580px;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
 }
 
 .NB-pricing-trial-callout strong {
-    color: #047857;
+    color: #0a6b4d;
     font-weight: 600;
 }
 
@@ -662,7 +958,7 @@
 
 .NB-pricing-tier {
     flex: 1;
-    background: #ffffff;
+    background: white;
     border-radius: 12px;
     overflow: hidden;
     display: flex;
@@ -678,8 +974,8 @@
 .NB-pricing-tier:hover {
     transform: translateY(-4px);
     box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.08),
-        0 16px 40px rgba(0, 0, 0, 0.12);
+        0 4px 8px rgba(0, 0, 0, 0.06),
+        0 16px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Premium tier proportions: 34-38-28 */
@@ -727,13 +1023,13 @@
 }
 
 .NB-pricing-tier-free .NB-pricing-tier-features {
-    background: #f9fafb;
+    background: rgba(0, 0, 0, 0.02);
     padding: 16px 20px;
     flex: 1;
 }
 
 .NB-pricing-tier-free .NB-pricing-tier-features li {
-    color: #374151;
+    color: rgba(58, 46, 30, 0.7);
     padding: 8px 0;
     font-size: 14px;
     display: flex;
@@ -780,13 +1076,13 @@
 }
 
 .NB-pricing-tier-selfhosted .NB-pricing-tier-features {
-    background: #f8fafc;
+    background: rgba(0, 0, 0, 0.02);
     padding: 16px 20px;
     flex: 1;
 }
 
 .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
-    color: #374151;
+    color: rgba(58, 46, 30, 0.7);
     padding: 8px 0;
     font-size: 14px;
     display: flex;
@@ -808,8 +1104,8 @@
 
 .NB-pricing-tier-actions {
     padding: 12px 16px;
-    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
-    border-top: 1px solid #cbd5e1;
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-pricing-github-button {
@@ -893,13 +1189,13 @@
 .NB-pricing-tier-premium .NB-pricing-tier-features,
 .NB-pricing-tier-archive .NB-pricing-tier-features,
 .NB-pricing-tier-pro .NB-pricing-tier-features {
-    background: #fafafa;
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .NB-pricing-tier-features li {
     padding: 8px 0;
     font-size: 14px;
-    color: #374151;
+    color: rgba(58, 46, 30, 0.7);
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -918,7 +1214,7 @@
     letter-spacing: 0.5px;
     padding-bottom: 12px;
     margin-bottom: 4px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     display: block;
 }
 
@@ -1014,45 +1310,69 @@
 }
 
 .NB-pricing-tier-archive .NB-pricing-tier-features li.NB-3 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/mark-read.svg');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-7 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
     /* violet */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-7 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-8 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
     /* orange */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-8 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-9 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/history.svg');
+    filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(330deg) brightness(95%) contrast(95%);
+    /* pink/magenta */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-10 .NB-pricing-bullet {
+    background-image: url('/media/img/icons/nouns/prompt.svg');
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
+    /* purple */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-11 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
     /* cyan */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-9 .NB-pricing-bullet {
-    background-image: url('/media/img/icons/nouns/prompt.svg');
-    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
-    /* purple */
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-12 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/folder-open.svg');
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-13 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/world.svg');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
 
 /* Pro tier bullets with vivid colors */
@@ -1069,18 +1389,24 @@
 }
 
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-3 .NB-pricing-bullet {
-    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
-    /* gold */
-}
-
-.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */
 }
 
+.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/train.svg');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
+.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */
@@ -1095,7 +1421,7 @@
     color: #9ca3af;
     padding-top: 12px;
     margin-top: 8px;
-    border-top: 1px dashed #e5e7eb;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
     display: block;
 }
 
@@ -1116,8 +1442,9 @@
     margin-top: 32px;
     padding: 20px 24px;
     background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .NB-pricing-lyric .NB-lyric-photo {
@@ -1125,7 +1452,7 @@
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #e5e7eb;
+    border: 3px solid rgba(0, 0, 0, 0.08);
     flex-shrink: 0;
 }
 
@@ -1136,13 +1463,13 @@
 .NB-pricing-lyric .NB-lyric-title {
     font-size: 16px;
     font-weight: 600;
-    color: #1f2937;
+    color: #3a2e1e;
     margin-bottom: 4px;
 }
 
 .NB-pricing-lyric .NB-lyric-description {
     font-size: 14px;
-    color: #6b7280;
+    color: rgba(58, 46, 30, 0.6);
     line-height: 1.5;
 }
 
@@ -1182,26 +1509,98 @@
 /* ================== */
 
 .NB-welcome-bottomactions {
-    overflow: hidden;
     clear: both;
-    margin: 48px 0 0;
-    padding: 36px 0;
-    background-color: #FAFAFA;
-    border-top: 1px solid #F0F0F0;
-    border-bottom: 1px solid #F0F0F0;
+    margin: 0;
+    padding: 64px 0;
+    background: linear-gradient(180deg, #eee9e2 0%, #f5f3f0 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    text-align: center;
 }
 
-.NB-welcome-bottomactions .NB-welcome-header-actions {
-    padding: 0;
-    margin: 0 auto;
+.NB-welcome-bottomactions-heading {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #3a2e1e;
+    margin: 0 0 28px;
+    letter-spacing: -0.3px;
+}
+
+.NB-welcome-bottomactions-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* Shared button base */
+.NB-welcome-bottomactions .NB-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: none;
+    box-shadow: none;
     float: none;
-    background-color: rgba(209, 211, 219, .4);
-    width: 450px;
+    margin: 0;
+    text-decoration: none;
 }
 
-.NB-welcome-bottomactions .NB-welcome-header-action-subtext {
-    color: #363C53;
-    text-shadow: 0 1px 0 white;
+/* Ghost / outline style — try out */
+.NB-welcome-bottomactions .NB-bottomaction-tryout {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #3a2e1e;
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-tryout:hover {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.25);
+    color: #1a1408;
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-tryout:active {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-tryout img {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-tryout:hover img {
+    opacity: 1;
+}
+
+/* Gold primary — sign up */
+.NB-welcome-bottomactions .NB-bottomaction-signup {
+    background: #D9A621;
+    border: 1px solid transparent;
+    color: white;
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-signup:hover {
+    background: #C4941B;
+}
+
+.NB-welcome-bottomactions .NB-bottomaction-signup:active {
+    background: #B08518;
+}
+
+@media (max-width: 500px) {
+    .NB-welcome-bottomactions-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    .NB-welcome-bottomactions-heading {
+        font-size: 22px;
+        padding: 0 24px;
+    }
 }
 
 /* ============ */
@@ -1212,6 +1611,14 @@
     overflow: hidden;
     clear: both;
     padding: 36px 0;
+}
+
+.NB-welcome-activity h2 {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #3a2e1e;
+    margin: 0 0 16px;
 }
 
 .NB-welcome-activity .NB-module {
@@ -1339,4 +1746,353 @@
     bottom: 0;
     margin: 0 2px 0 4px;
     border-radius: 2px;
+}
+
+
+/* ================================= */
+/* = Responsive — all sections     = */
+/* ================================= */
+
+@media (max-width: 960px) {
+    .NB-welcome .NB-inner {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Features: 4-across → 2 columns */
+    .NB-welcome-features {
+        margin: 48px 0;
+    }
+    .NB-welcome-features .NB-inner {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px 0;
+    }
+    .NB-welcome-features .NB-feature {
+        float: none;
+        width: 50%;
+        margin: 0;
+        box-sizing: border-box;
+        padding: 0 16px;
+    }
+    .NB-welcome-features img {
+        width: 100%;
+        height: auto;
+        max-width: 200px;
+    }
+
+    /* Subfeatures: keep 2-col, stack image above text in each card */
+    .NB-welcome-subfeatures .NB-inner {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .NB-welcome-subfeatures .NB-feature {
+        float: none;
+        width: 50%;
+        margin: 0 0 36px 0;
+        box-sizing: border-box;
+        padding: 0 12px;
+        text-align: center;
+    }
+    .NB-welcome-subfeatures img {
+        float: none;
+        width: 100%;
+        height: auto;
+        max-width: 120px;
+        margin: 0 auto 12px;
+        display: block;
+    }
+
+    /* Pricing: reduce heading and padding */
+    .NB-welcome-pricing {
+        padding: 36px 0;
+    }
+    .NB-welcome-pricing h2 {
+        font-size: 26px;
+    }
+    .NB-welcome-pricing > .NB-inner > p {
+        font-size: 15px;
+        padding: 0 12px;
+    }
+
+    /* Bottom actions: reduce vertical padding */
+    .NB-welcome-bottomactions {
+        padding: 48px 0;
+    }
+
+    /* Activity/Stats: stack columns */
+    .NB-welcome-activity .NB-module {
+        width: 100%;
+        float: none;
+    }
+    .NB-welcome-activity .NB-module-stats {
+        float: none;
+        margin-right: 0;
+        margin-bottom: 32px;
+    }
+    .NB-welcome-activity .NB-module-features {
+        float: none;
+    }
+
+    /* Footer: center content, stack icons above text */
+    .NB-welcome-footer .NB-welcome-footer-content {
+        text-align: center;
+        line-height: 28px;
+    }
+    .NB-welcome-footer .NB-footer-icons {
+        float: none;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .NB-welcome-footer .NB-footer-icons a {
+        float: none;
+        margin: 0;
+    }
+
+    /* Footer links bar */
+    .NB-welcome .NB-splash-info.NB-splash-bottom {
+        float: none;
+    }
+    .NB-welcome .NB-splash-info .NB-splash-links {
+        float: none;
+        left: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 8px 12px;
+    }
+    .NB-welcome .NB-splash-info .NB-splash-links li {
+        right: auto;
+        position: static;
+    }
+}
+
+@media (max-width: 500px) {
+    /* Features: keep 2 columns, tighten padding */
+    .NB-welcome-features .NB-feature {
+        padding: 0 8px;
+    }
+
+    /* Pricing: Lyric section stacks */
+    .NB-pricing-lyric {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Footer: tighter padding */
+    .NB-welcome-footer {
+        padding: 32px 0 0;
+    }
+    .NB-welcome-footer .NB-welcome-footer-content {
+        margin-bottom: 24px;
+    }
+}
+
+/* ================================= */
+/* = Dark Mode Overrides           = */
+/* ================================= */
+
+/* Hero / Header — darker teal in dark mode */
+.NB-dark .NB-welcome-hero-wrap {
+    background: linear-gradient(180deg, #3F5354 0%, #1B2424 50%, #111919 100%);
+}
+
+/* Platforms */
+.NB-dark .NB-welcome-platforms {
+    background: linear-gradient(180deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0.35) 60px,
+        rgba(0, 0, 0, 0.5) 150px,
+        rgba(0, 0, 0, 0.6) 400px);
+}
+
+.NB-dark .NB-platforms-heading {
+    color: white;
+}
+
+.NB-dark .NB-platforms-subheading {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-platform-badge {
+    color: #D9A621;
+    border-color: rgba(217, 166, 33, 0.3);
+    background: rgba(217, 166, 33, 0.15);
+}
+
+.NB-dark .NB-platform-title {
+    color: white;
+}
+
+.NB-dark .NB-features-heading {
+    color: white;
+}
+
+.NB-dark .NB-features-subheading {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-welcome-activity h2 {
+    color: white;
+}
+
+.NB-dark .NB-platform-description {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Pricing */
+.NB-dark .NB-welcome-pricing {
+    background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-welcome-pricing h2 {
+    color: #ffffff;
+}
+
+.NB-dark .NB-welcome-pricing>.NB-inner>p {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-pricing-tier:hover {
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-pricing-tier-free .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-selfhosted .NB-pricing-tier-features {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-pricing-tier-free .NB-pricing-tier-features li,
+.NB-dark .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-pricing-tier-premium .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-archive .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-pro .NB-pricing-tier-features {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-pricing-tier-features li.NB-pricing-tier-includes {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-tier-features li.NB-pricing-tier-upcoming-header {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-tier-actions {
+    background: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Lyric */
+.NB-dark .NB-pricing-lyric {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-photo {
+    border: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-description {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Bottom Actions */
+.NB-dark .NB-welcome-bottomactions {
+    background: linear-gradient(180deg, #111919 0%, #1a2222 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-welcome-bottomactions-heading {
+    color: white;
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout:active {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout img {
+    filter: brightness(0) invert(1);
+}
+
+/* Trial callout */
+.NB-dark .NB-pricing-trial-callout {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(110, 231, 183, 0.3);
+    color: #6ee7b7;
+}
+
+.NB-dark .NB-pricing-trial-callout strong {
+    color: #a7f3d0;
+}
+
+/* Footer */
+.NB-dark .NB-welcome-footer {
+    background-color: #2a3030;
+    background-blend-mode: overlay;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-welcome-footer .NB-splash-link {
+    color: #FBDB9B;
+    text-shadow: none;
+}
+
+.NB-dark .NB-welcome-footer .NB-splash-link:hover {
+    color: #fff;
+}
+
+.NB-dark .NB-welcome-footer .NB-footer-icons a img {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-welcome-footer .NB-footer-icons a img:hover {
+    opacity: 0.9;
+}
+
+.NB-dark .NB-welcome-footer .NB-twitter-avatar {
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
 }

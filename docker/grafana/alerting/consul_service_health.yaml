@@ -1,0 +1,68 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: consul_service_alerts
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: consul_service_unhealthy
+        title: Consul Service Unhealthy
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'consul_service_state'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 9
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "85"
+          summary: "Consul service {{ $labels.service }} is unhealthy"
+          description: "Service {{ $labels.service }} has been in an unhealthy state (value: {{ printf \"%.0f\" $values.B.Value }}) for more than 15 minutes. Status codes: 9=passing, 8=warning, 2=critical, 0=unknown"
+        labels:
+          severity: critical
+        isPaused: false

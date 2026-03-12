@@ -10,6 +10,7 @@ services:
     environment:
       - DOCKERBUILD=True
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
+      - NEWSBLUR_WORKTREE={{ workspace_name }}
     stdin_open: true
     tty: true
     restart: "no"
@@ -60,15 +61,27 @@ services:
     volumes:
       - ${PWD}/docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
       - ${PWD}:/srv/newsblur
+    networks:
+      - default
+      - newsblur_default
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /var/run/nginx.pid ] && kill -0 $$(cat /var/run/nginx.pid)"]
+      interval: 2s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
 
   haproxy:
     container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
-    restart: "no"
+    restart: on-failure
     depends_on:
-      - nginx
-      - newsblur_web
-      - newsblur_node
+      nginx:
+        condition: service_healthy
+      newsblur_web:
+        condition: service_started
+      newsblur_node:
+        condition: service_started
     ports:
       - {{ haproxy_http_port }}:80
       - {{ haproxy_https_port }}:443
@@ -84,12 +97,13 @@ services:
     container_name: newsblur_celery_{{ workspace_name }}
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    command: "celery worker -A newsblur_web -B -s /srv/newsblur/logs/celerybeat-schedule-{{ workspace_name }}.db -Q {{ workspace_name }}_work_queue,{{ workspace_name }}_new_feeds,{{ workspace_name }}_push_feeds,{{ workspace_name }}_cron_queue,{{ workspace_name }}_beat_feeds_task,{{ workspace_name }}_search_indexer,{{ workspace_name }}_discover_indexer,{{ workspace_name }}_ask_ai --loglevel=INFO"
     restart: "no"
     volumes:
       - ${PWD}:/srv/newsblur
     environment:
       - DOCKERBUILD=True
+      - NEWSBLUR_WORKTREE={{ workspace_name }}
     networks:
       - default
       - newsblur_default

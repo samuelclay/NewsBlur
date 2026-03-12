@@ -1,6 +1,7 @@
 NEWSBLUR.Router = Backbone.Router.extend({
 
     routes: {
+        "welcome": "welcome",
         "add/?": "add_site",
         "try/?": "try_site",
         "site/:site_id/:slug": "site",
@@ -13,12 +14,18 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "saved/:tag": "starred",
         "folder/saved": "starred",
         "folder/saved/:tag": "starred",
+        "briefing": "briefing",
+        "briefing/:section": "briefing_section",
         "folder/:folder_name": "folder",
         "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
         "social/:user_id/": "social",
         "social/:user_id": "social",
         "user/*user": "user"
+    },
+
+    welcome: function () {
+        // No-op: keep URL as /welcome
     },
 
     add_site: function () {
@@ -81,6 +88,21 @@ NEWSBLUR.Router = Backbone.Router.extend({
         };
         console.log(["archive", options]);
         NEWSBLUR.reader.open_archive(options);
+    },
+
+    briefing: function () {
+        var options = {
+            router: true
+        };
+        var story = $.getQueryString('story');
+        if (story) {
+            options.story_hash = story;
+        }
+        NEWSBLUR.reader.open_daily_briefing(options);
+    },
+
+    briefing_section: function (section) {
+        NEWSBLUR.reader.open_daily_briefing({ router: true, section: section });
     },
 
     starred: function (tag) {

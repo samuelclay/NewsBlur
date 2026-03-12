@@ -36,6 +36,7 @@ def ask_ai_question(request):
         custom_question: Optional custom question text (required if question_id is "custom")
         conversation_history: Optional JSON string of conversation history for follow-ups
         model: Optional model to use (opus, gpt-5.2, gemini-3, grok-4.1). Defaults to server setting.
+        thinking: Optional "true"/"false" to enable reasoning/thinking mode.
 
     Returns:
         JSON response with request_id and status
@@ -46,6 +47,7 @@ def ask_ai_question(request):
     conversation_history_json = request.POST.get("conversation_history", "")
     request_id = request.POST.get("request_id")
     model = request.POST.get("model", "")
+    thinking = request.POST.get("thinking", "").lower() in ("true", "1", "yes")
 
     # Validate request identifier (optional client-provided UUID)
     if request_id:
@@ -107,6 +109,7 @@ def ask_ai_question(request):
             "conversation_history": conversation_history,
             "request_id": request_id,
             "model": model if model else None,
+            "thinking": thinking,
         },
         queue="work_queue",
     )

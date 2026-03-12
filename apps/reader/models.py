@@ -23,11 +23,16 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
 from apps.reader.managers import UserSubscriptionManager
@@ -65,6 +70,10 @@ class UserSubscription(models.Model):
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
+    auto_mark_read_days = models.IntegerField(null=True, blank=True, default=None)
+    # None = inherit from folder/site-wide
+    # 0 = never auto-mark (explicit override to disable aging)
+    # 1-365 = days until auto-mark
 
     objects = UserSubscriptionManager()
 
@@ -83,6 +92,8 @@ class UserSubscription(models.Model):
         feed["active"] = self.active
         feed["feed_opens"] = self.feed_opens
         feed["subscribed"] = True
+        if self.auto_mark_read_days is not None:
+            feed["auto_mark_read_days"] = self.auto_mark_read_days
         if classifiers:
             feed["classifiers"] = classifiers
 
@@ -113,11 +124,11 @@ class UserSubscription(models.Model):
             usersubs = usersubs.filter(Q(unread_count_neutral__gt=0) | Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, active=True).only(
-                "feed", "mark_read_date", "is_trained", "needs_unread_recalc"
+                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
             )
         else:
             usersubs = usersubs.filter(user=user_id, active=True, feed__in=feed_ids).only(
-                "feed", "mark_read_date", "is_trained", "needs_unread_recalc"
+                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
             )
 
         return usersubs
@@ -168,9 +179,26 @@ class UserSubscription(models.Model):
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
+
+        # Pre-fetch folder settings and feed-to-folder mapping for auto_mark_read calculation
+        folder_settings = None
+        feed_folder_mapping = None
+        if is_archive and usersubs:
+            folder_settings = {}
+            for setting in MFolderAutoMarkRead.get_folder_settings_for_user(user_id):
+                folder_settings[setting.folder_title] = setting.auto_mark_read_days
+            # Pre-compute feed-to-folder mapping to avoid N+1 queries
+            feed_folder_mapping = UserSubscriptionFolders.get_feed_folder_mapping(user)
+
         # usersub_count = len(usersubs)
         for us in usersubs:
-            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime("%s"))
+            # Calculate effective cutoff for this feed based on auto_mark_read settings
+            effective_cutoff = cutoff_date
+            if is_archive:
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings, feed_folder_mapping)
+                if auto_mark_read_cutoff:
+                    effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
+            read_dates[us.feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
             if read_filter == "unread":
                 needs_unread_recalc[us.feed_id] = us.needs_unread_recalc  # or usersub_count == 1
                 user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
@@ -221,12 +249,14 @@ class UserSubscription(models.Model):
                         pipeline.zdiffstore(unread_ranked_stories_key, [sorted_stories_key, read_stories_key])
                         # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
                         pipeline.expire(unread_ranked_stories_key, 1 * 60 * 60)  # 1 hours
-                        if order == "oldest":
-                            pipeline.zremrangebyscore(ranked_stories_key, 0, min_score - 1)
-                            pipeline.zremrangebyscore(ranked_stories_key, max_score + 1, 2 * max_score)
-                        else:
-                            pipeline.zremrangebyscore(ranked_stories_key, 0, max_score - 1)
-                            pipeline.zremrangebyscore(ranked_stories_key, min_score + 1, 2 * min_score)
+                    # Always apply score filtering to ensure per-feed auto_mark_read cutoffs are enforced
+                    # even when reading from existing cache. This is safe because zremrangebyscore is idempotent.
+                    if order == "oldest":
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, min_score - 1)
+                        pipeline.zremrangebyscore(ranked_stories_key, max_score + 1, 2 * max_score)
+                    else:
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, max_score - 1)
+                        pipeline.zremrangebyscore(ranked_stories_key, min_score + 1, 2 * min_score)
                 else:
                     ranked_stories_key = sorted_stories_key
 
@@ -805,18 +835,20 @@ class UserSubscription(models.Model):
             "~FCFetching archive stories from ~SB%s feeds~SN in %s chunks..." % (total, len(feed_id_chunks)),
         )
 
+        stagger_delay = 10  # seconds between each feed's archive fetch start
         search_chunks = [
             FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk, user_id=user_id)
             .set(queue="search_indexer")
             .set(
+                countdown=i * stagger_delay,
                 time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                 soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
             )
-            for feed_id_chunk in feed_id_chunks
+            for i, feed_id_chunk in enumerate(feed_id_chunks)
         ]
         callback = FinishFetchArchiveFeeds.s(
             user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
-        ).set(queue="search_indexer")
+        ).set(queue="search_indexer", time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH)
         celery.chord(search_chunks)(callback)
 
     @classmethod
@@ -869,6 +901,22 @@ class UserSubscription(models.Model):
             % (total, round(duration, 2)),
         )
         r.publish(user.username, "fetch_archive:done")
+
+        # Sync Redis story hashes now that archive fetch is done, staggered to avoid Redis spike.
+        # This is needed because sync_redis was skipped during SchedulePremiumSetup to avoid
+        # concurrent Redis storms with the archive fetch.
+        logging.user(
+            user, "~FC~SBSyncing Redis story hashes for ~SB%s feeds~SN after archive fetch..." % total
+        )
+        for i, sub in enumerate(subscriptions):
+            try:
+                feed = Feed.get_by_id(sub.feed.pk)
+                if feed:
+                    feed.sync_redis()
+                    if i < total - 1:
+                        time.sleep(0.5)
+            except Feed.DoesNotExist:
+                continue
 
         return ending_story_count, min(pre_archive_count, starting_story_count)
 
@@ -1134,6 +1182,90 @@ class UserSubscription(models.Model):
 
         return data
 
+    def get_effective_auto_mark_read_days(self, folder_settings=None, feed_folder_mapping=None):
+        """
+        Returns the effective auto_mark_read_days setting following inheritance:
+        feed -> folder (walking up nested hierarchy) -> site-wide
+
+        Returns tuple of (days, source) where source is 'feed', 'folder:FolderName', or 'site-wide'
+
+        Args:
+            folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
+            feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
+                                 (use UserSubscriptionFolders.get_feed_folder_mapping() to generate)
+        """
+        # First check if feed has explicit setting
+        if self.auto_mark_read_days is not None:
+            if self.auto_mark_read_days == 0:
+                return (None, "feed")  # Explicit "never auto-mark"
+            return (self.auto_mark_read_days, "feed")
+
+        # Find folders containing this feed
+        if feed_folder_mapping is not None:
+            feed_folders = feed_folder_mapping.get(self.feed_id, [])
+        else:
+            try:
+                usf = UserSubscriptionFolders.objects.get(user=self.user)
+                feed_folders = usf.find_feed_folders(self.feed_id)
+            except UserSubscriptionFolders.DoesNotExist:
+                feed_folders = []
+
+        # Get all folder settings for this user if not provided
+        if folder_settings is None:
+            folder_settings = {}
+            for setting in MFolderAutoMarkRead.get_folder_settings_for_user(self.user_id):
+                folder_settings[setting.folder_title] = setting.auto_mark_read_days
+
+        # Walk up the folder hierarchy for each folder containing the feed
+        for folder_title in feed_folders:
+            days, source = self._resolve_folder_auto_mark_read(folder_title, folder_settings)
+            if days is not None or source.startswith("folder:"):
+                return (days, source)
+
+        # Fall back to site-wide setting (only for archive users)
+        if self.user.profile.is_archive and self.user.profile.days_of_unread:
+            return (self.user.profile.days_of_unread, "site-wide")
+
+        return (None, "default")
+
+    def _resolve_folder_auto_mark_read(self, folder_title, folder_settings):
+        """
+        Walk up folder hierarchy to find auto_mark_read_days setting.
+        Folder titles use " - " as hierarchy separator (e.g., "Parent - Child - Grandchild").
+        Returns tuple of (days, source).
+        """
+        if not folder_title:
+            return (None, "default")
+
+        # Check this folder's setting
+        if folder_title in folder_settings:
+            days = folder_settings[folder_title]
+            if days == 0:
+                return (None, f"folder:{folder_title}")  # Explicit "never auto-mark"
+            return (days, f"folder:{folder_title}")
+
+        # Walk up to parent folder (split on " - ")
+        if " - " in folder_title:
+            parent_folder = " - ".join(folder_title.split(" - ")[:-1])
+            return self._resolve_folder_auto_mark_read(parent_folder, folder_settings)
+
+        return (None, "default")
+
+    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None):
+        """
+        Returns the unread cutoff date based on auto_mark_read_days setting.
+        Takes into account feed, folder, and site-wide settings.
+        Returns None if no aging should be applied.
+
+        Args:
+            folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
+            feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
+        """
+        days, source = self.get_effective_auto_mark_read_days(folder_settings, feed_folder_mapping)
+        if days is None:
+            return None
+        return datetime.datetime.utcnow() - datetime.timedelta(days=days)
+
     def calculate_feed_scores(self, silent=False, stories=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
@@ -1160,14 +1292,21 @@ class UserSubscription(models.Model):
 
         feed_scores = dict(negative=0, neutral=0, positive=0)
 
-        # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = self.user.profile.unread_cutoff
+        # Determine the unread cutoff. Per-feed/folder settings take priority over site-wide.
+        # Check for per-feed or per-folder auto_mark_read_days setting first
+        auto_mark_cutoff = self.get_auto_mark_read_cutoff()
+        if auto_mark_cutoff is not None:
+            date_delta = auto_mark_cutoff
+        else:
+            date_delta = self.user.profile.unread_cutoff
+
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
             self.mark_read_date = date_delta
 
-        if self.is_trained:
+        has_scoped = self.user.profile.is_archive and self.user.profile.has_scoped_classifiers
+        if self.is_trained or has_scoped:
             if not stories:
                 stories = cache.get("S:v3:%s" % self.feed_id)
 
@@ -1176,7 +1315,7 @@ class UserSubscription(models.Model):
                 feed_ids=[self.feed_id],
                 usersubs=[self],
                 read_filter="unread",
-                cutoff_date=self.user.profile.unread_cutoff,
+                cutoff_date=date_delta,
             )
 
             if not stories:
@@ -1202,13 +1341,40 @@ class UserSubscription(models.Model):
             # if not silent:
             #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
 
+            # Include global/folder-scoped classifiers (feed_id=0) when user has scoped classifiers
+            folder_feed_map = None
+            feed_ids = [self.feed_id, 0] if has_scoped else [self.feed_id]
+
             classifier_feeds = list(
                 MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0)
             )
-            classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_urls = list(MClassifierUrl.objects(user_id=self.user_id, feed_id__in=feed_ids))
+
+            # Filter folder-scoped classifiers to only include those for folders containing this feed
+            if has_scoped:
+                folder_feed_map = None
+
+                def _in_folder(classifier):
+                    nonlocal folder_feed_map
+                    if getattr(classifier, "scope", "feed") != "folder":
+                        return True
+                    if folder_feed_map is None:
+                        try:
+                            usf = UserSubscriptionFolders.objects.get(user_id=self.user_id)
+                            folder_feed_map = usf.flatten_folders()
+                        except UserSubscriptionFolders.DoesNotExist:
+                            folder_feed_map = {}
+                    return self.feed_id in folder_feed_map.get(classifier.folder_name, [])
+
+                classifier_authors = [c for c in classifier_authors if _in_folder(c)]
+                classifier_titles = [c for c in classifier_titles if _in_folder(c)]
+                classifier_tags = [c for c in classifier_tags if _in_folder(c)]
+                classifier_texts = [c for c in classifier_texts if _in_folder(c)]
+                classifier_urls = [c for c in classifier_urls if _in_folder(c)]
 
             if (
                 not len(classifier_feeds)
@@ -1216,9 +1382,11 @@ class UserSubscription(models.Model):
                 and not len(classifier_titles)
                 and not len(classifier_tags)
                 and not len(classifier_texts)
+                and not len(classifier_urls)
             ):
-                logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
-                self.is_trained = False
+                if self.is_trained:
+                    logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
+                    self.is_trained = False
 
             # if not silent:
             #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
@@ -1227,18 +1395,74 @@ class UserSubscription(models.Model):
                 "feed": apply_classifier_feeds(classifier_feeds, self.feed),
             }
 
+            user_is_pro = self.user.profile.is_pro
+            user_is_premium = self.user.profile.is_premium
+
             for story in unread_stories:
                 scores.update(
                     {
-                        "author": apply_classifier_authors(classifier_authors, story),
-                        "tags": apply_classifier_tags(classifier_tags, story),
-                        "title": apply_classifier_titles(classifier_titles, story),
-                        "text": apply_classifier_texts(classifier_texts, story),
+                        "author": apply_classifier_authors(
+                            classifier_authors, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "tags": apply_classifier_tags(
+                            classifier_tags, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "title": apply_classifier_titles(
+                            classifier_titles, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "title_regex": (
+                            apply_classifier_title_regex(
+                                classifier_titles, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
+                        "text": apply_classifier_texts(
+                            classifier_texts, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "text_regex": (
+                            apply_classifier_text_regex(
+                                classifier_texts, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
+                        "url": apply_classifier_urls(
+                            classifier_urls,
+                            story,
+                            user_is_premium=user_is_premium,
+                            folder_feed_ids=folder_feed_map,
+                        ),
+                        "url_regex": (
+                            apply_classifier_url_regex(
+                                classifier_urls, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
                     }
                 )
 
-                max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
-                min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
+                max_score = max(
+                    scores["author"],
+                    scores["tags"],
+                    scores["title"],
+                    scores["title_regex"],
+                    scores["text"],
+                    scores["text_regex"],
+                    scores["url"],
+                    scores["url_regex"],
+                )
+                min_score = min(
+                    scores["author"],
+                    scores["tags"],
+                    scores["title"],
+                    scores["title_regex"],
+                    scores["text"],
+                    scores["text_regex"],
+                    scores["url"],
+                    scores["url_regex"],
+                )
                 if max_score > 0:
                     feed_scores["positive"] += 1
                 elif min_score < 0:
@@ -1321,8 +1545,26 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        max_score = max(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
-        min_score = min(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
+        max_score = max(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
+        )
+        min_score = min(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
+        )
 
         if max_score > 0:
             return 1
@@ -1907,6 +2149,27 @@ class UserSubscriptionFolders(models.Model):
 
         usf.compact()
 
+    @classmethod
+    def get_feed_folder_mapping(cls, user):
+        """Returns dict mapping feed_id -> list of folder titles for all feeds.
+
+        This is used to avoid N+1 queries when calculating auto_mark_read cutoffs
+        for multiple feeds in a loop.
+        """
+        try:
+            usf = cls.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            feed_to_folders = {}
+            for folder_title, feed_ids in flat_folders.items():
+                folder_title = folder_title.strip() if folder_title else ""
+                for feed_id in feed_ids:
+                    if feed_id not in feed_to_folders:
+                        feed_to_folders[feed_id] = []
+                    feed_to_folders[feed_id].append(folder_title)
+            return feed_to_folders
+        except cls.DoesNotExist:
+            return {}
+
     def compact(self):
         folders = json.decode(self.folders)
 
@@ -2017,6 +2280,21 @@ class UserSubscriptionFolders(models.Model):
         _flatten_folders(folders)
 
         return flat_folders
+
+    def find_feed_folders(self, feed_id):
+        """Find the folder(s) containing a feed. Returns a list of folder paths.
+
+        Note: flatten_folders() returns full nested paths like "Parent - Child - Grandchild".
+        This method returns the full path so that _resolve_folder_auto_mark_read can walk up
+        the hierarchy to find inherited folder settings.
+        """
+        flat_folders = self.flatten_folders()
+        folders_with_feed = []
+        for folder_title, feed_ids in flat_folders.items():
+            if feed_id in feed_ids:
+                folder_title = folder_title.strip() if folder_title else ""
+                folders_with_feed.append(folder_title)
+        return folders_with_feed
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
@@ -2315,6 +2593,8 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_folder_feeds:
                 feed = Feed.get_by_id(feed_id)
                 if feed and feed.pk == feed_id:
+                    if feed.is_daily_briefing:
+                        continue
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()
@@ -2620,4 +2900,90 @@ class MCustomFeedIcon(mongo.Document):
             "icon_data": self.icon_data,
             "icon_color": self.icon_color,
             "icon_set": self.icon_set or "lucide",
+        }
+
+
+class MFolderAutoMarkRead(mongo.Document):
+    """
+    Auto-mark-read settings for folders. Allows users to automatically mark
+    stories as read after a certain number of days on a per-folder basis.
+
+    This works with inheritance:
+    - Site-wide setting (Profile.days_of_unread) is the default
+    - Folder settings can override the site-wide setting
+    - Nested folders inherit from parent unless overridden
+    - Feed settings (UserSubscription.auto_mark_read_days) override folder settings
+    """
+
+    user_id = mongo.IntField()
+    folder_title = mongo.StringField(max_length=256)
+    auto_mark_read_days = mongo.IntField()
+    # None = inherit from parent folder or site-wide
+    # 0 = never auto-mark (explicit override to disable aging)
+    # 1-365 = days until auto-mark
+
+    meta = {
+        "collection": "folder_auto_mark_read",
+        "indexes": [
+            {"fields": ["user_id", "folder_title"], "unique": True},
+            "user_id",
+        ],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        return f"[{self.user_id}] {self.folder_title}: {self.auto_mark_read_days} days"
+
+    @classmethod
+    def get_folder_setting(cls, user_id, folder_title):
+        """Get the auto-mark-read setting for a specific folder."""
+        try:
+            return cls.objects.get(user_id=user_id, folder_title=folder_title)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def get_folder_settings_for_user(cls, user_id):
+        """Get all auto-mark-read settings for a user."""
+        return cls.objects.filter(user_id=user_id)
+
+    @classmethod
+    def save_folder_setting(cls, user_id, folder_title, auto_mark_read_days):
+        """Save or update an auto-mark-read setting for a folder."""
+        try:
+            setting = cls.objects.get(user_id=user_id, folder_title=folder_title)
+            if auto_mark_read_days is None:
+                # Delete the setting if set to None (inherit)
+                setting.delete()
+                return None
+            setting.auto_mark_read_days = auto_mark_read_days
+            setting.save()
+        except cls.DoesNotExist:
+            if auto_mark_read_days is None:
+                return None
+            setting = cls.objects.create(
+                user_id=user_id,
+                folder_title=folder_title,
+                auto_mark_read_days=auto_mark_read_days,
+            )
+        return setting
+
+    @classmethod
+    def delete_folder_setting(cls, user_id, folder_title):
+        """Delete an auto-mark-read setting for a folder."""
+        cls.objects.filter(user_id=user_id, folder_title=folder_title).delete()
+
+    @classmethod
+    def rename_folder_setting(cls, user_id, old_folder_title, new_folder_title):
+        """Update folder_title when folder is renamed."""
+        setting = cls.get_folder_setting(user_id, old_folder_title)
+        if setting:
+            setting.folder_title = new_folder_title
+            setting.save()
+        return setting
+
+    def to_json(self):
+        return {
+            "folder_title": self.folder_title,
+            "auto_mark_read_days": self.auto_mark_read_days,
         }

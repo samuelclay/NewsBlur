@@ -29,6 +29,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
 
     reset_flags: function () {
+        // story_list_view.js: Skip event-triggered resets during briefing view
+        // to avoid destroying story views and resetting scroll position.
+        if (NEWSBLUR.reader.flags.briefing_view &&
+            arguments.length && arguments[0] && arguments[0].models) {
+            return;
+        }
         this.clear();
         this.cache = {
             story_pane_position: null,
@@ -50,6 +56,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // ==========
 
     render: function () {
+        // story_list_view.js: When triggered by a collection reset event in
+        // briefing view, skip re-rendering to avoid resetting scroll position.
+        // Backbone passes the collection as the first arg on reset events.
+        if (NEWSBLUR.reader.flags.briefing_view &&
+            arguments.length && arguments[0] && arguments[0].models) {
+            return;
+        }
         // console.log(["Rendering story list", NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')]);
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) return;
 
@@ -303,7 +316,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     fill_out: function (options) {
         if (this.collection.no_more_stories ||
             !NEWSBLUR.reader.flags.story_titles_closed) {
-            this.show_no_more_stories();
             return;
         }
 
@@ -318,8 +330,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             _.delay(_.bind(function () {
                 this.scroll();
             }, this), 10);
-        } else {
-            this.show_no_more_stories();
         }
     },
 

@@ -7,6 +7,7 @@ import re
 
 from django.conf import settings
 from django.contrib.staticfiles.finders import find
+from pipeline.compressors import CompressorBase
 from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinder
 from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
 from pipeline.packager import Package
@@ -47,6 +48,18 @@ def debug_sources(self):
 
 if settings.DEBUG_ASSETS:
     Package.sources = property(debug_sources)
+
+
+class LightningCSSCompressor(CompressorBase):
+    def compress_css(self, css):
+        import lightningcss
+
+        return lightningcss.process_stylesheet(
+            css,
+            filename="pipeline.css",
+            error_recovery=True,
+            minify=True,
+        )
 
 
 class PipelineStorage(PipelineManifestStorage):

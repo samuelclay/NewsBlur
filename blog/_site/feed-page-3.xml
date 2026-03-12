@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-16T18:27:14-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,122 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Story thumbnails for story titles</title>
+    <link href="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/" rel="alternate" type="text/html" title="Story thumbnails for story titles" />
+    <published>2016-02-19T06:30:10-05:00</published>
+    <updated>2016-02-19T06:30:10-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/">
+      <![CDATA[<p>The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images.png" alt="" /></p>
+
+<p>What I’ve noticed is that while I don’t use the image to identify which stories I want to read, I do use them to act as a signature of a story.</p>
+
+<p>There’s precedence for this on NewsBlur. Every site already does this using the color of its favicon. NewsBlur liberally applies a two-tone color palette based on each feed’s favicon. This serves as a per-feed signature, giving context to a story when it’s in the same view as every other feed’s stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_left.png" alt="" /></p>
+
+<p>These story preview thumbnails serve as the same signature. Stories are best remembered through their colors and photos, so thumbnails act as a visual signature that’s easy to recognize. It works on a subconscious but perceptable level.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_pref.png" alt="" /></p>
+
+<p>Of course you can turn them right off.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Two new third-party NewsBlur apps for iOS and Windows</title>
+    <link href="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/" rel="alternate" type="text/html" title="Two new third-party NewsBlur apps for iOS and Windows" />
+    <published>2016-02-03T13:51:32-05:00</published>
+    <updated>2016-02-03T13:51:32-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/">
+      <![CDATA[<p>NewsBlur has an amazingly active third-party app community, thanks to the <a href="http://www.newsblur.com/api">well documented NewsBlur API</a>. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.</p>
+
+<h2 id="hypersonic-for-windows-10--windows-phone">Hypersonic for Windows 10 &amp; Windows Phone</h2>
+
+<p><a href="https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6">Hypersonic</a> is clean, simple, beautiful, and designed to run across both mobile and desktop devices.</p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.57443.13510798886379389.f16a7ef2-bbfc-4fb0-9af1-b4be3b6902c1.d4e474de-9462-4612-946f-55ef3a89e295?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35702.13510798886379389.51b7a825-88ad-466c-ba41-6870a81fff17.8672bf08-f8e1-47a9-b393-e22cbe6cb8ca?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35090.13510798886379389.acef2ff2-e379-47b0-957e-1265f82f6967.20046293-77d2-477b-8ffb-644eeba7c817?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.6547.13510798886379389.edddb027-0403-4b79-9471-b53afd6793a7.7c3f7a94-959f-4910-a38c-db0474493f9a?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<h2 id="add-my-feed-for-ios">Add My Feed for iOS</h2>
+
+<p><a href="http://addmyfeed.cubesoft.fr">Add My Feed</a> is an extension allowing you to effortlessly add RSS feeds to your online reader of choice.</p>
+
+<p>When you encounter a site you would like to subscribe to, simply tap the Add My Feed extension and you’re done !</p>
+
+<p>Add My Feed works in Safari and in any app supporting the standard iOS share sheet.</p>
+
+<p><img src="https://lh3.googleusercontent.com/Fth086Rlw5rB9ljQgFiJrkqupdOY3Xv501DOxZ2M4MN4k9goHi-dz-2n4vDiBn6ZUa7dvbEFqzb9Y5HH_7twqqJiY9Mrxw" alt="" /></p>
+
+<p>Both of these apps and many more are on the <a href="http://www.newsblur.com/?next=goodies">Goodies &amp; Mobile Apps</a> dialog. If you’ve developed an app for NewsBlur and would like to add it to Goodies (and have it blogged about here), let me know!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="windows" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has an amazingly active third-party app community, thanks to the well documented NewsBlur API. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Search for pizza with your Android device</title>
+    <link href="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/" rel="alternate" type="text/html" title="Search for pizza with your Android device" />
+    <published>2016-01-28T14:26:36-05:00</published>
+    <updated>2016-01-28T14:26:36-05:00</updated>
+    <id>https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/">
+      <![CDATA[<p>I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_search.png" alt="" /></p>
+
+<p>Well now you can search for pizza to your heart’s content on the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Good luck with your tomato pie.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Power users need powerful statistics</title>
@@ -877,131 +993,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[After launching Saved Story Tagging earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Full text search across all of your subscriptions and folders </title>
-    <link href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" rel="alternate" type="text/html" title="Full text search across all of your subscriptions and folders " />
-    <published>2014-04-29T04:45:28-04:00</published>
-    <updated>2014-04-29T04:45:28-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
-      <![CDATA[<p>Last Summer <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">Simple Search was launched</a>, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.</p>
-
-<p>Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search%20screenshot.jpg" alt="" /></p>
-
-<p>Because you’re searching for a story, hidden stories are also shown in the results, albeit with a red unread mark (as shown above). Also, in order to handle the demands of full text search, the first time you perform a search the system will index all of your feeds, which can take a couple minutes. It’s a one time process and you will see a progress bar that will update automatically when finished.</p>
-
-<p>Since this was one of the most requested features since day one, I’m now looking to decide on the next big feature. There’s a few big ones to hit: an organizer that surfaces inactive feeds that no longer get read, a discovery platform that helps you find users, stories, and feeds related to what you like and what you may not even know you like yet, and porting many of these web-only features to Android and iOS.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Last Summer Simple Search was launched, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Unread is a new iOS app with NewsBlur support</title>
-    <link href="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/" rel="alternate" type="text/html" title="Unread is a new iOS app with NewsBlur support" />
-    <published>2014-04-24T11:56:00-04:00</published>
-    <updated>2014-04-24T11:56:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
-      <![CDATA[<p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
-
-<p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_screenshot.jpeg" alt="" /></p>
-
-<p><a href="http://jaredsinclair.com/unread/">Unread</a>, by <a href="https://twitter.com/jaredsinclair">Jared Sinclair</a>, is a unique RSS reader, with a focus on simplicity and cleanliness. Sinclair built Unread because he wanted to see a different kind of reading experience, one where he could focus more on reading well written stories than consuming lots of content. Unread app has a different feel than any other news reader I’ve seen and I think many of the choices made by Sinclair work in a quiet harmony.</p>
-
-<p>In Sinclair’s own words:</p>
-
-<blockquote>
-  <p>Most RSS apps are patterned after email. Noisy parades of dots, dates, and tags trample over their screens. Their source lists look like overflowing inboxes instead of stately tables of contents. Toolbars bristling with options obscure the text. Putting it bluntly, using these apps feels like work.</p>
-</blockquote>
-
-<p>NewsBlur’s native iOS app certainly does fit this description. And if you want an incredibly well-made alternative, look no further than Unread, <a href="https://itunes.apple.com/us/app/unread-an-rss-reader/id754143884">available on the App Store</a>.</p>
-
-<style>
-.NB-unread-app-post p {
-clear: none;
-}
-.NB-unread-app-post blockquote {
-color: #606060;
-}
-</style>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur has a free and open API that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">The new font and style manager</title>
-    <link href="https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager/" rel="alternate" type="text/html" title="The new font and style manager" />
-    <published>2014-04-10T11:53:11-04:00</published>
-    <updated>2014-04-10T11:53:11-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager/">
-      <![CDATA[<p>This is not just any font and style manager. You now have control over font size, line spacing, story layout, and type faces directly in the reading view. This nifty popover gives you quick access to all of these customizable features.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/style%20popover.png" alt="" /></p>
-
-<p>The type faces come from <a href="http://www.typography.com">Hoefler &amp; Co.</a> (née Hoefler &amp; Frere-Jones) which is the premier web type foundry. It’s also one of the most expensive, but that’s where the incredible font quality comes from.</p>
-
-<p>The four new fonts are:</p>
-
-<h3 id="gotham-narrow">Gotham Narrow</h3>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/gotham.png" alt="" /></p>
-
-<h3 id="sentinel">Sentinel</h3>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/sentinel.png" alt="" /></p>
-
-<h3 id="whitney">Whitney</h3>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/whitney.png" alt="" /></p>
-
-<h3 id="chronicle">Chronicle</h3>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/chronicle.png" alt="" /></p>
-
-<p>These new fonts are available immediately for premium users. Another great reason to pay for NewsBlur.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is not just any font and style manager. You now have control over font size, line spacing, story layout, and type faces directly in the reading view. This nifty popover gives you quick access to all of these customizable features.
 ]]>
     </summary>
     

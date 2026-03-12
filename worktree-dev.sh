@@ -72,6 +72,10 @@ fi
 if [ ! -f "config/certificates/localhost.pem" ]; then
     NEEDS_SETUP=true
 fi
+# Regenerate if template is newer than the generated compose file
+if [ -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ] && [ "docker/compose/worktree.yml.j2" -nt ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
@@ -370,7 +374,7 @@ if [ "$IS_MAIN_REPO" = false ] && command -v jq &>/dev/null; then
             jq ".projects[\"$WORKTREE_PATH\"].mcpServers[\"chrome-devtools\"] = {
                 \"type\": \"stdio\",
                 \"command\": \"npx\",
-                \"args\": [\"-y\", \"chrome-devtools-mcp@latest\", \"--isolated\"],
+                \"args\": [\"-y\", \"chrome-devtools-mcp@latest\", \"--isolated\", \"--accept-insecure-certs\"],
                 \"env\": {}
             }" "$CLAUDE_CONFIG" > "$TEMP_CONFIG" && mv "$TEMP_CONFIG" "$CLAUDE_CONFIG"
             echo -e "${GREEN}✓ Configured Chrome DevTools MCP with --isolated flag${NC}"

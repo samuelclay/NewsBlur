@@ -1,16 +1,31 @@
 # NewsBlur Development Guidelines
 
-## Planning & Clarification
-**IMPORTANT: Before starting any implementation or creating a plan, use the AskUserQuestion tool to interview me thoroughly.** Ask as many clarifying questions as needed to understand:
-- The specific goals and desired outcomes
-- Edge cases and error handling preferences
-- UI/UX preferences (if applicable)
-- Performance or scalability requirements
-- Integration points with existing code
-- Testing expectations
-- Any constraints or preferences I might have
+## Ask Questions Liberally
 
-Don't assume - ask. Multiple rounds of questions are encouraged before writing code.
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
+
+Asking questions is encouraged and appreciated because it:
+- Helps both of us think through problems more clearly
+- Surfaces edge cases and requirements that might be missed
+- Leads to better solutions through collaborative dialogue
+- Catches misunderstandings early before code is written
+
+Ask about:
+- Clarifying requirements and desired behavior
+- UI/UX preferences and design decisions
+- Trade-offs between different approaches
+- Edge cases and error handling
+- Whether a proposed solution matches expectations
+- Anything you're uncertain about
+
+Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
+## Debugging
+
+For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
@@ -42,7 +57,7 @@ Don't assume - ask. Multiple rounds of questions are encouraged before writing c
 
 **IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
-- Task/Celery server must be manually restarted only when working on background tasks
+- Task/Celery server must be manually restarted when modifying **any** code that runs inside a Celery task — this includes the task file itself and any module it calls (e.g., scoring, summary, models). Without a restart, the worker keeps running the old code. Restart with: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
 - Use `make` to apply migrations after git pull
 - Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
@@ -139,9 +154,16 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 4. Commit the fix
 5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
-## Browser Testing with Chrome DevTools MCP
-- Local dev: `https://localhost` (when using containers directly)
-- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+## Browser Testing
+- Use the Chrome DevTools MCP server for browser automation and testing
+- Local dev: `https://localhost` (self-signed certs are accepted by default)
+- **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
+
+### Dev Auto-Login (DEBUG mode only)
+- `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
+- `https://localhost/reader/dev/autologin/<username>/` - Login as specific user
+- Add `?next=/path` to redirect after login
+- Returns 403 Forbidden in production (DEBUG=False)
 
 ### Test Query Parameters
 - `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
@@ -178,10 +200,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 - `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
 - `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
 - `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
-- Click `.NB-feed-story` - Select first story
-- Click `.NB-feed-story-train` - Open story intelligence trainer
-- Click `.NB-feedbar-options` - Open feed options popover
-- Click `.folder .folder_title` - Open folder
+
+### Element Interactions
+- `.NB-feed-story` - Select first story
+- `.NB-feed-story-train` - Open story intelligence trainer
+- `.NB-feedbar-options` - Open feed options popover
+- `.folder .folder_title` - Open folder
 
 ### User State (via Django shell)
 To test different subscription states, modify user profile in Django shell:
@@ -210,3 +234,8 @@ p.save()
   - Mongo (`hdb-mongo-*`): `mongo`
   - Postgres (`hdb-postgres-*`): `postgres`
   - Nginx (`hwww`): `nginx`, `haproxy`
+
+## Writing Emails
+- Never use em dashes
+- Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
+- Keep it concise and direct

@@ -18,8 +18,17 @@ NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     runner: function () {
+        var self = this;
         this.options.onOpen = _.bind(function () {
             this.resize_modal();
+            if (self.options.scroll_to === 'briefing') {
+                _.defer(function () {
+                    var $target = self.$modal.find('.NB-preference-briefing-enabled');
+                    if ($target.length) {
+                        $target[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         }, this);
         this.make_modal();
         this.select_preferences();
@@ -50,25 +59,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
                     $.make('div', { className: 'NB-preference NB-preference-daysofunread' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-1', type: 'radio', name: 'days_of_unread', value: 9999, disabled: !NEWSBLUR.Globals.is_archive }),
-                                $.make('label', { 'for': 'NB-preference-daysofunread-1' }, [
-                                    'Manually mark every story as read'
-                                ])
+                            $.make('ul', { className: 'segmented-control NB-preference-daysofunread-control' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-default', 'data-value': 'default', role: 'button' }, 'Default'),
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-days', 'data-value': 'days', role: 'button' }, 'Days'),
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-never', 'data-value': 'never', role: 'button' }, 'Never')
                             ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-2', type: 'radio', name: 'days_of_unread', value: 0, disabled: !NEWSBLUR.Globals.is_archive }),
-                                $.make('label', { 'for': 'NB-preference-daysofunread-2', className: 'NB-preference-daysofunread-slider-label' }, [
-                                    'Mark stories as read after',
-                                    $.make('span', { className: 'NB-tangle-daysofunread-control NB-preference-slider', 'data-var': 'arrow' }),
-                                    $.make('span', { className: 'NB-tangle-daysofunread' }, (NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread) + ' days'),
-                                    $.make('input', { name: 'daysofunread_input', value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread, type: 'hidden' })
-                                ])
+                            $.make('div', { className: 'NB-daysofunread-slider-container' }, [
+                                $.make('input', {
+                                    type: 'range',
+                                    className: 'NB-daysofunread-slider',
+                                    name: 'days_of_unread',
+                                    min: '1',
+                                    max: '400',
+                                    value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
+                                    disabled: !NEWSBLUR.Globals.is_archive
+                                }),
+                                $.make('div', { className: 'NB-daysofunread-slider-value' })
                             ]),
-                            (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-preference-archive-notice' }, [
-                                'Requires ',
-                                $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium archive'),
-                                ' to change from ' + NEWSBLUR.Globals.default_days_of_unread + ' days.'
+                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-daysofunread-upgrade-notice NB-premium-link', href: '#' }, [
+                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
                             ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -353,6 +362,32 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Right-clicking',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-1', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable daily briefings'),
+                                    $.make('ul', { className: 'NB-social-features-list' }, [
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'AI-curated summary of your top stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Customizable writing style and length']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Scheduled delivery (daily or twice daily)']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Choose which feeds to include'])
+                                    ])
+                                ])
+                            ]),
+                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-2', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable daily briefings'),
+                                    $.make('span', { className: 'NB-social-card-desc' }, 'Turn off automatic briefing generation')
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Daily Briefing'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
@@ -1177,12 +1212,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=days_of_unread]', $modal).each(function () {
-            if ($(this).val() == "" + NEWSBLUR.Preferences.days_of_unread) {
-                $(this).prop('checked', true);
-                return false;
-            }
-        });
+        // Days of unread is now handled by setup_daysofunread_control
         $('input[name=read_story_delay]', $modal).each(function () {
             if ($(this).val() == "" + NEWSBLUR.Preferences.read_story_delay) {
                 $(this).prop('checked', true);
@@ -1283,15 +1313,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             $('input#NB-preference-story-share-' + share_name, $modal).prop('checked', NEWSBLUR.Preferences[share]);
         });
 
-        $(".NB-tangle-daysofunread-control", $modal).slider({
-            range: 'min',
-            min: 1,
-            max: 365,
-            step: 1,
-            value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
-            slide: _.bind(this.slide_days_of_unread_slider, this),
-            disabled: !NEWSBLUR.Globals.is_archive
-        });
+        this.setup_daysofunread_control();
         $(".NB-tangle-readstorydelay", $modal).slider({
             range: 'min',
             min: 1,
@@ -1318,34 +1340,201 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             slide: _.bind(this.slide_space_scroll_spacing_slider, this),
             disabled: !NEWSBLUR.Globals.is_premium
         });
-        this.slide_days_of_unread_slider();
         this.slide_read_story_delay_slider();
         this.slide_arrow_scroll_spacing_slider();
         this.slide_space_scroll_spacing_slider();
+
+        // reader_preferences.js: Load briefing preferences from API
+        this.load_briefing_preferences();
     },
 
-    slide_days_of_unread_slider: function (e, ui) {
-        var value = (ui && ui.value) ||
-            (NEWSBLUR.Preferences.days_of_unread);
-        if (!NEWSBLUR.Globals.is_archive && ui) {
-            value = NEWSBLUR.Preferences.days_of_unread;
-        }
-        if (NEWSBLUR.Preferences.days_of_unread <= 365 || ui) {
-            $(".NB-tangle-daysofunread", this.$modal).text(value == 1 ? value + ' day' : value + ' days');
-            $("input[name=daysofunread_input]", this.$modal).val(value);
-            $("#NB-preference-daysofunread-2", this.$modal).prop('checked', true).val(value);
-            if (ui) {
-                this.enable_save();
+    load_briefing_preferences: function () {
+        var $modal = this.$modal;
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var enabled = data.enabled !== false;
+                $('input[name=briefing_enabled][value=' + enabled + ']', $modal).prop('checked', true);
             }
-        } else {
-            $("#NB-preference-daysofunread-1", this.$modal).prop('checked', true).val(value);
+        });
+    },
 
-            var default_days_of_unread = NEWSBLUR.Globals.default_days_of_unread;
-            $(".NB-tangle-daysofunread", this.$modal).text(default_days_of_unread + ' days');
-            $("input[name=daysofunread_input]", this.$modal).val(default_days_of_unread);
-            $("#NB-preference-daysofunread-2", this.$modal).val(default_days_of_unread);
-            $(".NB-tangle-daysofunread-control", this.$modal).slider('value', default_days_of_unread);
+    save_briefing_preferences: function (form) {
+        // reader_preferences.js: Save briefing enabled/disabled to separate API endpoint
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'POST',
+            data: { enabled: form['briefing_enabled'] },
+            dataType: 'json'
+        });
+        delete form['briefing_enabled'];
+    },
+
+    // ===================
+    // = Days of Unread  =
+    // ===================
+
+    setup_daysofunread_control: function () {
+        var $options = $('.NB-daysofunread-option', this.$modal);
+        var $slider = $('.NB-daysofunread-slider', this.$modal);
+
+        // Check if user is Archive tier
+        if (!NEWSBLUR.Globals.is_archive) {
+            $slider.prop('disabled', true);
+            $('.NB-preference-daysofunread-control', this.$modal).addClass('NB-disabled');
         }
+
+        // Get current preference and system default
+        var days_of_unread = NEWSBLUR.Globals.is_archive ?
+            NEWSBLUR.Preferences.days_of_unread :
+            NEWSBLUR.Globals.default_days_of_unread;
+        var system_default = NEWSBLUR.Globals.default_days_of_unread;
+
+        // Determine mode: default (0), never (9999), or days
+        var mode = 'days';
+        var slider_value = days_of_unread;
+        var display_days = days_of_unread;
+
+        if (!days_of_unread || days_of_unread === 0) {
+            // Use system default
+            mode = 'default';
+            slider_value = system_default >= 9999 ? 400 : system_default;
+            display_days = system_default;
+        } else if (days_of_unread >= 9999) {
+            mode = 'never';
+            slider_value = 400;
+            display_days = 0;
+        }
+
+        // Update segmented control selection
+        $options.removeClass('NB-active');
+        $('.NB-daysofunread-' + mode, this.$modal).addClass('NB-active');
+
+        // Update slider value and display
+        $slider.val(slider_value);
+        this.update_daysofunread_status_text(mode, display_days);
+        this.update_daysofunread_slider_gradient($slider, slider_value);
+    },
+
+    handle_daysofunread_option_click: function ($option) {
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_daysofunread_upgrade_notice();
+            return;
+        }
+
+        var value = $option.data('value');
+        var $options = $('.NB-daysofunread-option', this.$modal);
+        var $slider = $('.NB-daysofunread-slider', this.$modal);
+        var system_default = NEWSBLUR.Globals.default_days_of_unread;
+
+        // Update selection
+        $options.removeClass('NB-active');
+        $option.addClass('NB-active');
+
+        var slider_value;
+        if (value === 'default') {
+            // Use system default
+            slider_value = system_default >= 9999 ? 400 : system_default;
+            this.update_daysofunread_status_text('default', system_default);
+        } else if (value === 'never') {
+            slider_value = 400;
+            this.update_daysofunread_status_text('never', 0);
+        } else {
+            // Days mode - use current slider value, or restore from preference if in "never" zone
+            var current_slider = parseInt($slider.val(), 10);
+            if (current_slider > 365) {
+                // Restore from original preference if it was a valid days value
+                var original_pref = NEWSBLUR.Preferences.days_of_unread;
+                slider_value = (original_pref && original_pref > 0 && original_pref <= 365) ? original_pref : 30;
+            } else {
+                slider_value = current_slider;
+            }
+            this.update_daysofunread_status_text('days', slider_value);
+        }
+
+        $slider.val(slider_value);
+        this.update_daysofunread_slider_gradient($slider, slider_value);
+        this.enable_save();
+    },
+
+    on_daysofunread_slider_input: function () {
+        var $slider = $('.NB-daysofunread-slider', this.$modal);
+        var slider_val = parseInt($slider.val(), 10);
+        var $options = $('.NB-daysofunread-option', this.$modal);
+        var system_default = NEWSBLUR.Globals.default_days_of_unread;
+
+        var is_never = slider_val > 365;
+        var is_default = !is_never && slider_val === system_default;
+
+        this.update_daysofunread_slider_gradient($slider, slider_val);
+
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_daysofunread_upgrade_notice();
+            return;
+        }
+
+        // Auto-select appropriate option based on slider position
+        $options.removeClass('NB-active');
+        if (is_never) {
+            $('.NB-daysofunread-never', this.$modal).addClass('NB-active');
+            this.update_daysofunread_status_text('never', 0);
+        } else if (is_default) {
+            // Slider matches system default - switch back to Default mode
+            $('.NB-daysofunread-default', this.$modal).addClass('NB-active');
+            this.update_daysofunread_status_text('default', system_default);
+        } else {
+            $('.NB-daysofunread-days', this.$modal).addClass('NB-active');
+            this.update_daysofunread_status_text('days', slider_val);
+        }
+    },
+
+    handle_daysofunread_slider_change: function () {
+        this.on_daysofunread_slider_input();
+        this.enable_save();
+    },
+
+    update_daysofunread_slider_gradient: function ($slider, value) {
+        var min = parseInt($slider.attr('min'), 10) || 1;
+        var max = parseInt($slider.attr('max'), 10) || 400;
+        var percent = ((value - min) / (max - min)) * 100;
+
+        // Create gradient: blue for filled, light gray for unfilled, darker gray for "never" zone (366-400)
+        var never_zone_start = ((365 - min) / (max - min)) * 100;
+
+        if (value > 365) {
+            // In never zone - all blue up to never zone, then purple for never
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + never_zone_start + '%, #8b5cf6 ' + never_zone_start + '%, #8b5cf6 100%)');
+        } else {
+            // Normal days zone
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 ' + never_zone_start + '%, #d4d0e8 ' + never_zone_start + '%, #d4d0e8 100%)');
+        }
+    },
+
+    update_daysofunread_status_text: function (mode, days) {
+        var $slider_value = $('.NB-daysofunread-slider-value', this.$modal);
+        var html = '';
+        if (mode === 'default') {
+            if (days >= 9999) {
+                html = 'Using default: stories will <b>never</b> be auto-marked as read';
+            } else {
+                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+            }
+        } else if (mode === 'never') {
+            html = 'Stories will <b>never</b> be auto-marked as read';
+        } else {
+            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+        }
+        $slider_value.html(html);
+    },
+
+    flash_daysofunread_upgrade_notice: function () {
+        var $notice = $('.NB-daysofunread-upgrade-notice', this.$modal);
+        $notice.addClass('NB-flash');
+        setTimeout(function () {
+            $notice.removeClass('NB-flash');
+        }, 600);
     },
 
     slide_read_story_delay_slider: function (e, ui) {
@@ -1405,6 +1594,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         preferences['default_order'] = $('.NB-preference-view-setting-order li.NB-active', this.$modal).hasClass('NB-preference-view-setting-order-oldest') ? 'oldest' : 'newest';
         preferences['default_read_filter'] = $('.NB-preference-view-setting-read-filter li.NB-active', this.$modal).hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
 
+        // Handle days_of_unread: check which option is selected
+        var $default_option = $('.NB-daysofunread-default.NB-active', this.$modal);
+        var $slider = $('.NB-daysofunread-slider', this.$modal);
+        if ($default_option.length) {
+            // "Default" is selected - save 0 to indicate use system default
+            preferences['days_of_unread'] = 0;
+        } else if ($slider.length) {
+            // Days or Never mode - values 366-400 map to 9999 (never)
+            var slider_val = parseInt($slider.val(), 10);
+            preferences['days_of_unread'] = slider_val > 365 ? 9999 : slider_val;
+        }
+
         return preferences;
     },
 
@@ -1413,6 +1614,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
         $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
+
+        // reader_preferences.js: Save briefing preferences separately
+        this.save_briefing_preferences(form);
 
         this.model.save_preferences(form, function (data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();
@@ -1549,11 +1753,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             self.clear_overrides('layout');
         });
+        $.targetIs(e, { tagSelector: '.NB-daysofunread-option' }, function ($t, $p) {
+            e.preventDefault();
+            self.handle_daysofunread_option_click($t);
+        });
     },
 
     handle_change: function () {
+        var self = this;
 
         $('input[type=radio],input[type=checkbox],select', this.$modal).bind('change', _.bind(this.enable_save, this));
+
+        // Days of unread slider change handler
+        $('.NB-daysofunread-slider', this.$modal).bind('change', function () {
+            self.handle_daysofunread_slider_change();
+        });
+
+        // Days of unread slider input handler (real-time)
+        $('.NB-daysofunread-slider', this.$modal).bind('input', function () {
+            self.on_daysofunread_slider_input();
+        });
     },
 
     enable_save: function () {
