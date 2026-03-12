@@ -3717,19 +3717,32 @@ a.mention, a.mention-group {
     color: #555;
 }
 
+.NB-dark .NB-image-filter-thumb-label {
+    background: #3a3c3e;
+    color: #888;
+}
+
+.NB-dark .NB-image-filter-thumb-label-match {
+    background: #2e7d32;
+    color: #fff;
+}
+
 .NB-dark .NB-image-filter-status-match {
-    background: #1a2a3a;
-    color: #5b9fd9;
+    background: #1a2e1a;
+    color: #66bb6a;
+    border-color: #2e7d32;
 }
 
 .NB-dark .NB-image-filter-status-neutral {
-    background: #2a2c2e;
-    color: #888;
+    background: #2e1a1a;
+    color: #ef9a9a;
+    border-color: #6d3a3a;
 }
 
 .NB-dark .NB-image-filter-status-error {
     background: #3a2a1a;
     color: #e6a040;
+    border-color: #7a5a2a;
 }
 
 .NB-dark .NB-image-filter-item-delete {

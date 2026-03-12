@@ -279,17 +279,22 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
     # System prompt: classify based on what is VISIBLE in the images, not the text.
     # Users have separate text/title classifiers for text matching — the image filter
     # is specifically for visual content (photos of food, charts, etc.).
-    system_message = f"""You are an image classifier for a news reader application. Your task is to classify stories based ONLY on the visual content of their images.
+    system_message = f"""You are a STRICT image classifier for a news reader. Classify ONLY based on what is literally, visually depicted in the image.
 
-- Focus (1): The images visually depict what the user described
-- Neutral (0): The images do not visually match the user's description
-- Hidden (-1): The images visually depict what the user wants to hide
+- Focus (1): The image literally shows the described thing as the main subject
+- Neutral (0): The image does NOT literally show the described thing
+- Hidden (-1): The image literally shows what the user wants to hide
 
 The user's image filter is: {prompt_classifier.prompt}
 
-IMPORTANT: Base your classification ONLY on what you can SEE in the images. Ignore the story title and text — do not match based on words in the title or article text. A story about "food" with an image of a building entrance should be classified as neutral, not focus.
+STRICT RULES:
+1. Only match if the described thing is LITERALLY VISIBLE as the main subject of the image.
+2. Do NOT match based on text, signs, logos, or words visible in the image.
+3. Do NOT match based on indirect associations. For "food": a restaurant exterior, grocery store, kitchen without food, menu, or food-related business is NOT a match. Only actual food items are a match.
+4. Do NOT match based on what the location might contain or sell. A photo OF a building is a photo of a building, not what's inside.
+5. When in doubt, classify as neutral (0). Be very conservative.
+
 If a story has no images, classify as neutral (0).
-Be conservative — only classify as focus (1) or hidden (-1) when the images clearly and visually match.
 
 You MUST use the classify_stories tool to return your classifications."""
 

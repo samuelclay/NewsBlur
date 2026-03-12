@@ -1018,7 +1018,7 @@ var classifier_prototype = {
                         disabled: !is_premium
                     }),
                     (story && $.make('div', {
-                        className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green' + (!is_premium ? ' NB-disabled' : '')
+                        className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
                     }, 'Test on this story'))
                 ]),
                 $.make('div', { className: 'NB-content-filter-test-status' }),
@@ -1038,6 +1038,7 @@ var classifier_prototype = {
 
         var update_content_prompt = function () {
             var text = $.trim($input.val());
+            var $btn = $('.NB-content-filter-test-button', $section);
             if (text.length) {
                 $placeholder.text(text);
                 $placeholder.css('font-style', 'normal');
@@ -1045,9 +1046,11 @@ var classifier_prototype = {
                 if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($pill_classifier, 'like');
                 }
+                if (is_premium) $btn.removeClass('NB-disabled');
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $btn.addClass('NB-disabled');
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1074,7 +1077,7 @@ var classifier_prototype = {
                 if (resp.code === 0) {
                     var cls = resp.classification;
                     var matched = cls !== 0;
-                    var result_text = matched ? '\u2713 Story matches this filter' : 'Story does not match this filter';
+                    var result_text = matched ? '\u2713 Story matches this filter' : '\u2717 Story does not match this filter';
                     var result_badge_class = matched ? 'NB-image-filter-status-match' : 'NB-image-filter-status-neutral';
                     $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
                 } else {
@@ -1228,7 +1231,7 @@ var classifier_prototype = {
                         disabled: !is_premium
                     }),
                     (image_urls.length > 0 && $.make('div', {
-                        className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green' + (!is_premium ? ' NB-disabled' : '')
+                        className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
                     }, image_urls.length === 1 ? 'Test on this image' : 'Test on these images'))
                 ]),
                 $.make('div', { className: 'NB-image-filter-test-status' }),
@@ -1249,6 +1252,7 @@ var classifier_prototype = {
 
         var update_prompt_classifier = function () {
             var text = $.trim($input.val());
+            var $btn = $('.NB-image-filter-test-button', $section);
             if (text.length) {
                 $placeholder.text(text);
                 $placeholder.css('font-style', 'normal');
@@ -1256,9 +1260,11 @@ var classifier_prototype = {
                 if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($pill_classifier, 'like');
                 }
+                if (is_premium) $btn.removeClass('NB-disabled');
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $btn.addClass('NB-disabled');
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1311,7 +1317,7 @@ var classifier_prototype = {
                     var total = image_urls.length;
                     var result_text, result_badge_class;
                     if (match_count === 0) {
-                        result_text = total === 1 ? 'Image does not match this filter' : 'No images match this filter';
+                        result_text = total === 1 ? '\u2717 Image does not match this filter' : '\u2717 No images match this filter';
                         result_badge_class = 'NB-image-filter-status-neutral';
                     } else if (total === 1) {
                         result_text = '\u2713 Image matches this filter';
