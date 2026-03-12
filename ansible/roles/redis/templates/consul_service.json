@@ -3,7 +3,7 @@
         {% if not redis_secondary %}
             "name": "{{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace("hdb", "db") }}",
         {% else %}
-            "name": "db-redis-{{ redis_role }}-staging",
+            "name": "db-redis-{{ redis_role }}-secondary",
         {% endif %}
         "id": "{{ inventory_hostname }}",
         "tags": [
