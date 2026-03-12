@@ -490,6 +490,12 @@ class Profile(models.Model):
         self.is_premium_trial = True
         self.premium_expire = now + datetime.timedelta(days=30)
         self.save()
+
+        MPremiumTrial.record(
+            user_id=self.user.pk,
+            start_date=now,
+            end_date=self.premium_expire,
+        )
         self.user.is_active = True
         self.user.save()
 
@@ -2283,6 +2289,23 @@ class Profile(models.Model):
         first_payment_date = first_payment.payment_date if first_payment else None
         latest_payments = list(payments[:5])
 
+        # Trial history
+        trial = MPremiumTrial.objects.filter(user_id=user.pk).first()
+        if trial:
+            trial_entry = {
+                "payment_date": trial.start_date,
+                "payment_amount": 0,
+                "payment_provider": "trial",
+                "refunded": False,
+                "is_trial": True,
+                "trial_end": trial.end_date,
+            }
+            latest_payments.append(trial_entry)
+            latest_payments.sort(
+                key=lambda p: p.payment_date if hasattr(p, "payment_date") else p["payment_date"],
+                reverse=True,
+            )
+
         # Tier display
         tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
         previous_tier_names = {
@@ -3111,6 +3134,29 @@ class MEmailUnsubscribe(mongo.Document):
     @classmethod
     def unsubscribe(cls, user_id, email_type):
         cls.objects.create()
+
+
+class MPremiumTrial(mongo.Document):
+    user_id = mongo.IntField(unique=True)
+    start_date = mongo.DateTimeField()
+    end_date = mongo.DateTimeField()
+
+    meta = {
+        "collection": "premium_trials",
+        "allow_inheritance": False,
+        "indexes": ["user_id"],
+    }
+
+    def __str__(self):
+        return "%s trial %s - %s" % (self.user_id, self.start_date, self.end_date)
+
+    @classmethod
+    def record(cls, user_id, start_date, end_date):
+        cls.objects(user_id=user_id).update_one(
+            set__start_date=start_date,
+            set__end_date=end_date,
+            upsert=True,
+        )
 
 
 class MSentEmail(mongo.Document):

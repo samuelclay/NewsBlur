@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-archive{% endblock %}
+{% block title %}Story Archive - NewsBlur{% endblock %}
+{% block nav_title %}Story Archive{% endblock %}
+{% block head %}
+    <meta name="description" content="Every story archived and searchable forever. Your personal knowledge base. When you subscribe to a feed, NewsBlur back-fills its entire history. Stories never expire.">
+    <meta property="og:title" content="Story Archive - NewsBlur">
+    <meta property="og:description" content="Every story archived and searchable forever. Your personal knowledge base.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Story Archive - NewsBlur">
+    <meta name="twitter:description" content="Every story archived and searchable forever. Your personal knowledge base.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">Archive</div>
+        <h1 class="NB-feature-detail-title">Story Archive</h1>
+        <p class="NB-feature-detail-subtitle">Every story archived and searchable forever. Your personal knowledge base.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/archive.png" alt="Archive showing unread stories going back months">
+            <div class="NB-feature-detail-caption">Archive showing unread stories going back months</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Subscribe to Premium Archive</li>
+            <li class="NB-feature-detail-step">Every new story is archived permanently</li>
+            <li class="NB-feature-detail-step">When you subscribe to a new feed, its history is back-filled</li>
+            <li class="NB-feature-detail-step">Stories never expire or disappear</li>
+            <li class="NB-feature-detail-step">Search your entire archive with full-text search</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How far back does the archive go?</h3>
+            <p class="NB-feature-detail-faq-a">When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story is kept forever.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What happens if I downgrade from Archive?</h3>
+            <p class="NB-feature-detail-faq-a">Your archived stories remain accessible, but new stories will start following the standard retention policy.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I search the archive?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, every archived story is fully searchable with Elasticsearch.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">Story Archive requires Premium Archive ($99/year) or Premium Pro ($29/month).</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

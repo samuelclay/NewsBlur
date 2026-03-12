@@ -50,6 +50,7 @@
 {% block bodyclass %}NB-welcome{% endblock %}
 
 {% block header %}
+    <script>document.body.style.backgroundColor='#c4a870';if(document.body.classList.contains('NB-dark'))document.body.style.backgroundColor='#1a2525';</script>
     {% render_feeds_skeleton %}
 {% endblock header %}
 
@@ -558,12 +559,46 @@
                     See all frequently asked questions <span class="NB-banner-arrow">&rarr;</span>
                 </a>
             </div>
+            <div class="NB-welcome-compare-header">
+                <div class="NB-welcome-compare-rule"></div>
+                <span class="NB-welcome-compare-label">Compare</span>
+                <div class="NB-welcome-compare-rule"></div>
+            </div>
+            <div class="NB-welcome-compare-versus">
+                <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedly</span>
+                </a>
+                <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Inoreader</span>
+                </a>
+                <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Readwise Reader</span>
+                </a>
+                <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">The Old Reader</span>
+                </a>
+                <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedbin</span>
+                </a>
+            </div>
+            <div class="NB-welcome-compare-alts">
+                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
+                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
+                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
+                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
+                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
+            </div>
         </div>
     </div>
 
     <div class="NB-welcome-testimonials">
         <div class="NB-testimonials-heading">
-            <h2>People &#10084;&#65039; NewsBlur</h2>
+            <h2>Kind words people say about NewsBlur</h2>
             <div class="NB-testimonials-nav">
                 <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-prev" aria-label="Previous page">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1673,45 +1708,6 @@
         </div>
         <div class="NB-testimonials-fade NB-testimonials-fade-left"></div>
         <div class="NB-testimonials-fade NB-testimonials-fade-right"></div>
-    </div>
-
-    <div class="NB-welcome-compare">
-        <div class="NB-inner">
-            <div class="NB-welcome-compare-header">
-                <div class="NB-welcome-compare-rule"></div>
-                <span class="NB-welcome-compare-label">Compare</span>
-                <div class="NB-welcome-compare-rule"></div>
-            </div>
-            <div class="NB-welcome-compare-versus">
-                <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Feedly</span>
-                </a>
-                <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Inoreader</span>
-                </a>
-                <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Readwise Reader</span>
-                </a>
-                <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">The Old Reader</span>
-                </a>
-                <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Feedbin</span>
-                </a>
-            </div>
-            <div class="NB-welcome-compare-alts">
-                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
-                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
-                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
-                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
-                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
-            </div>
-        </div>
     </div>
 
     <div class="NB-welcome-activity">
