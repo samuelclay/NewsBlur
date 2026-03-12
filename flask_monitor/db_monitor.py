@@ -14,7 +14,7 @@ from newsblur_web import settings
 sentry_sdk.init(
     dsn=settings.FLASK_SENTRY_DSN,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=0.001,
+    traces_sample_rate=0,
 )
 
 app = Flask(__name__)
@@ -35,19 +35,21 @@ def db_check_postgres():
         f"{settings.SERVER_NAME}.node.nyc1.consul",
         settings.DATABASES["default"]["PORT"],
     )
+    conn = None
     try:
         conn = psycopg2.connect(connect_params)
-    except:
+        cur = conn.cursor()
+        cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
+        rows = cur.fetchall()
+        for row in rows:
+            return str(row[0])
+        abort(Response("No rows found", 504))
+    except psycopg2.Error:
         print(" ---> Postgres can't connect to the database: %s" % connect_params)
         abort(Response("Can't connect to db", 503))
-
-    cur = conn.cursor()
-    cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
-    rows = cur.fetchall()
-    for row in rows:
-        return str(row[0])
-
-    abort(Response("No rows found", 504))
+    finally:
+        if conn:
+            conn.close()
 
 
 @app.route("/db_check/mysql")
@@ -55,13 +57,7 @@ def db_check_mysql():
     if request.args.get("consul") == "1":
         return str(1)
 
-    connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
-        settings.DATABASES["default"]["NAME"],
-        settings.DATABASES["default"]["USER"],
-        settings.DATABASES["default"]["PASSWORD"],
-        settings.DATABASES["default"]["HOST"],
-        settings.DATABASES["default"]["PORT"],
-    )
+    conn = None
     try:
         conn = pymysql.connect(
             host="mysql",
@@ -70,17 +66,18 @@ def db_check_mysql():
             passwd=settings.DATABASES["default"]["PASSWORD"],
             db=settings.DATABASES["default"]["NAME"],
         )
-    except:
-        print(" ---> Mysql can't connect to the database: %s" % connect_params)
+        cur = conn.cursor()
+        cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
+        rows = cur.fetchall()
+        for row in rows:
+            return str(row[0])
+        abort(Response("No rows found", 504))
+    except pymysql.Error:
+        print(" ---> Mysql can't connect to the database")
         abort(Response("Can't connect to mysql db", 503))
-
-    cur = conn.cursor()
-    cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
-    rows = cur.fetchall()
-    for row in rows:
-        return str(row[0])
-
-    abort(Response("No rows found", 504))
+    finally:
+        if conn:
+            conn.close()
 
 
 @app.route("/db_check/mongo")
@@ -173,16 +170,16 @@ def db_check_redis_user():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_USER_PORT)
+    r = None
 
     try:
         r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=0)
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
         randkey = r.randomkey()
     except:
-        abort(Response("Couldn't process randomkey", 504))
+        abort(Response("Can't connect to db", 503))
+    finally:
+        if r:
+            r.close()
 
     if randkey:
         return str(randkey)
@@ -196,16 +193,16 @@ def db_check_redis_story():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_STORY_PORT)
+    r = None
 
     try:
         r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=1)
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
         randkey = r.randomkey()
     except:
-        abort(Response("Couldn't process randomkey", 504))
+        abort(Response("Can't connect to db", 503))
+    finally:
+        if r:
+            r.close()
 
     if randkey:
         return str(randkey)
@@ -219,16 +216,16 @@ def db_check_redis_sessions():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_SESSION_PORT)
+    r = None
 
     try:
         r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=5)
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
         randkey = r.randomkey()
     except:
-        abort(Response("Couldn't process randomkey", 504))
+        abort(Response("Can't connect to db", 503))
+    finally:
+        if r:
+            r.close()
 
     if randkey:
         return str(randkey)
@@ -242,16 +239,16 @@ def db_check_redis_pubsub():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_PUBSUB_PORT)
+    r = None
 
     try:
         r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=1)
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
         pubsub_numpat = r.pubsub_numpat()
     except:
-        abort(Response("Couldn't process pubsub_numpat", 504))
+        abort(Response("Can't connect to db", 503))
+    finally:
+        if r:
+            r.close()
 
     if pubsub_numpat or isinstance(pubsub_numpat, int):
         return str(pubsub_numpat)
@@ -261,24 +258,21 @@ def db_check_redis_pubsub():
 
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
-    try:
-        conn = elasticsearch.Elasticsearch(f"http://{settings.SERVER_NAME}.node.nyc1.consul:9200")
-    except:
-        abort(Response("Can't connect to db", 503))
-
     if request.args.get("consul") == "1":
         return str(1)
 
-    if conn.indices.exists(index="discover-feeds-openai-index"):
-        return str("Index exists, but didn't try search")
-        # query = pyes.query.TermQuery("title", "daring fireball")
-        # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")
-        # for result in results:
-        #     return unicode(result)
-        # else:
-        #     abort(Response("Couldn't find any search results", 504))
-    else:
-        abort(Response("Couldn't find discover-feeds-openai-index", 504))
+    conn = None
+    try:
+        conn = elasticsearch.Elasticsearch(f"http://{settings.SERVER_NAME}.node.nyc1.consul:9200")
+        if conn.indices.exists(index="discover-feeds-openai-index"):
+            return str("Index exists, but didn't try search")
+        else:
+            abort(Response("Couldn't find discover-feeds-openai-index", 504))
+    except:
+        abort(Response("Can't connect to db", 503))
+    finally:
+        if conn:
+            conn.close()
 
 
 if __name__ == "__main__":
