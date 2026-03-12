@@ -15,6 +15,7 @@ from apps.analyzer.models import (
     SCOPED_CLASSIFIER_CLASSES,
     MClassifierAuthor,
     MClassifierFeed,
+    MClassifierPrompt,
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
@@ -210,6 +211,172 @@ def save_classifier(request):
 
     response = dict(code=code, message=message, payload=payload)
     return response
+
+
+@require_POST
+@ajax_login_required
+@json.json_view
+def save_prompt_classifier(request):
+    """Save or delete an AI prompt classifier with optional image vision support."""
+    post = request.POST
+    feed_id = int(post.get("feed_id", 0))
+    prompt = post.get("prompt", "").strip()
+    classifier_type = post.get("classifier_type", "focus")
+    include_images = post.get("include_images", "false") == "true"
+    action = post.get("action", "save")  # "save" or "delete"
+    prompt_id = post.get("prompt_id", "")
+
+    if classifier_type not in ("focus", "hidden"):
+        return {"code": -1, "message": "Invalid classifier_type"}
+
+    # Premium gating: image vision requires archive/pro tier
+    if include_images and not (request.user.profile.is_archive or request.user.profile.is_pro):
+        return {"code": -1, "message": "Image filters require Premium Archive or Pro"}
+
+    if action == "delete" and prompt_id:
+        try:
+            classifier = MClassifierPrompt.objects.get(id=prompt_id, user_id=request.user.pk)
+            classifier.delete()
+            logging.user(request, "~FGDeleted prompt classifier: ~SB%s" % prompt_id)
+        except MClassifierPrompt.DoesNotExist:
+            return {"code": -1, "message": "Prompt classifier not found"}
+    elif action == "save" and prompt:
+        if len(prompt) > 500:
+            return {"code": -1, "message": "Prompt too long (max 500 characters)"}
+
+        classifier = MClassifierPrompt(
+            user_id=request.user.pk,
+            feed_id=feed_id,
+            prompt=prompt,
+            classifier_type=classifier_type,
+            include_images=include_images,
+        )
+        classifier.save()
+        logging.user(
+            request,
+            "~FGSaved prompt classifier: ~SB%s~SN (type=%s, images=%s) ~FW%s"
+            % (feed_id, classifier_type, include_images, prompt[:50]),
+        )
+
+        # Mark subscription as needing recalc
+        if feed_id:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
+                usersub.needs_unread_recalc = True
+                usersub.save()
+            except UserSubscription.DoesNotExist:
+                pass
+    else:
+        return {"code": -1, "message": "Missing prompt or prompt_id"}
+
+    # Return current prompt classifiers for this feed
+    prompts = MClassifierPrompt.objects.filter(user_id=request.user.pk, feed_id=feed_id)
+    prompt_list = [
+        {
+            "id": str(p.id),
+            "prompt": p.prompt,
+            "classifier_type": p.classifier_type,
+            "include_images": p.include_images,
+        }
+        for p in prompts
+    ]
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, "feed:%s" % feed_id)
+
+    return {"code": 0, "message": "OK", "prompt_classifiers": prompt_list}
+
+
+@require_POST
+@ajax_login_required
+@json.json_view
+def test_prompt_classifier(request):
+    """Test a prompt against a story using AI. Supports text-only or image (VLM) modes."""
+    import zlib
+
+    from apps.rss_feeds.models import MStory
+    from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
+
+    post = request.POST
+    prompt_text = post.get("prompt", "").strip()
+    story_hash = post.get("story_hash", "")
+    include_images = post.get("include_images", "false") == "true"
+
+    if not prompt_text:
+        return {"code": -1, "message": "Missing prompt"}
+    if not story_hash:
+        return {"code": -1, "message": "Missing story_hash"}
+
+    if not (request.user.profile.is_archive or request.user.profile.is_pro):
+        return {"code": -1, "message": "Requires Premium Archive or Pro"}
+
+    try:
+        story_db = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        return {"code": -1, "message": "Story not found"}
+
+    # Build a temporary prompt-like object for the classifier
+    class TempPrompt:
+        pass
+
+    temp_prompt = TempPrompt()
+    temp_prompt.prompt = prompt_text
+
+    if include_images:
+        # VLM mode: classify each image individually so the frontend
+        # can show per-image match/no-match labels.
+        image_urls = story_db.image_urls or []
+        if not image_urls:
+            return {"code": -1, "message": "Story has no images"}
+
+        # Send each image as its own "story" so VLM returns per-image results
+        image_stories = []
+        for i, url in enumerate(image_urls):
+            image_stories.append(
+                {
+                    "story_id": "img_%d" % i,
+                    "story_title": "",
+                    "story_content": "",
+                    "image_urls": [url],
+                }
+            )
+        results = classify_stories_with_vision(temp_prompt, image_stories)
+
+        # Build per-image results list (ordered by image index)
+        image_results = []
+        for i in range(len(image_urls)):
+            cls = results.get("img_%d" % i, 0)
+            image_results.append(1 if cls != 0 else 0)
+
+        classification = 1 if any(r == 1 for r in image_results) else 0
+    else:
+        # Text-only mode: classify based on title and content
+        story_content = story_db.story_content or ""
+        if story_db.story_content_z:
+            story_content = zlib.decompress(story_db.story_content_z).decode("utf-8")
+
+        story_dict = {
+            "story_id": story_hash,
+            "story_title": story_db.story_title or "",
+            "story_content": story_content,
+        }
+        results = classify_stories_with_ai(temp_prompt, [story_dict])
+
+    if not include_images:
+        classification = results.get(story_hash, 0)
+        classification = 1 if classification != 0 else 0
+
+    mode = "vision" if include_images else "text"
+
+    logging.user(
+        request,
+        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s" % (mode, story_hash, classification, prompt_text[:50]),
+    )
+
+    resp = {"code": 0, "classification": classification}
+    if include_images:
+        resp["image_results"] = image_results
+    return resp
 
 
 @json.json_view

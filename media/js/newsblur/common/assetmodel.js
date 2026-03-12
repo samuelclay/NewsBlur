@@ -1489,6 +1489,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    save_prompt_classifier: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save_prompt', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    test_prompt_classifier: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/test_prompt', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
     save_all_classifiers: function (classifiers_by_feed, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save_all', {

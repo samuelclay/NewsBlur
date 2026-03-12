@@ -3661,6 +3661,85 @@ a.mention, a.mention-group {
     color: #f59e0b;
 }
 
+/* ========================================== */
+/* = AI Content Filter (text) Dark Mode    = */
+/* ========================================== */
+
+.NB-dark .NB-content-filter-header-icon {
+    color: #5b9fd9;
+}
+
+.NB-dark .NB-classifier-content-prompt-input {
+    background: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-content-prompt-input:focus {
+    border-color: #4A90D9;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-classifier-content-prompt-input:disabled {
+    background: #1e2022;
+    color: #555;
+}
+
+/* ====================================== */
+/* = AI Image Filter (VLM) Dark Mode   = */
+/* ====================================== */
+
+.NB-dark .NB-image-filter-header-icon {
+    color: #5b9fd9;
+}
+
+.NB-dark .NB-image-filter-thumb {
+    background: #2a2c2e;
+}
+
+.NB-dark .NB-image-filter-thumb-neutral {
+    border-color: #555;
+}
+
+.NB-dark .NB-classifier-prompt-input {
+    background: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-prompt-input:focus {
+    border-color: #4A90D9;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-classifier-prompt-input:disabled {
+    background: #1e2022;
+    color: #555;
+}
+
+.NB-dark .NB-image-filter-status-match {
+    background: #1a2a3a;
+    color: #5b9fd9;
+}
+
+.NB-dark .NB-image-filter-status-neutral {
+    background: #2a2c2e;
+    color: #888;
+}
+
+.NB-dark .NB-image-filter-status-error {
+    background: #3a2a1a;
+    color: #e6a040;
+}
+
+.NB-dark .NB-image-filter-item-delete {
+    color: #555;
+}
+
+.NB-dark .NB-image-filter-item-delete:hover {
+    color: #c45555;
+}
+
 /* ===================================== */
 /* = Getting Started Module Dark Mode  = */
 /* ===================================== */

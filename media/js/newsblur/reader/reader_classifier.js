@@ -643,11 +643,15 @@ var classifier_prototype = {
                         this.make_story_title_section(story_title),
                         // Section 3: URL
                         this.make_story_url_section(story),
-                        // Section 4: Combined Authors (story author + feed authors)
+                        // Section 4: AI Content Filter (text-only prompt classifier)
+                        this.make_content_filter_section(),
+                        // Section 5: AI Image Filter (VLM prompt classifier)
+                        this.make_image_filter_section(),
+                        // Section 6: Combined Authors (story author + feed authors)
                         this.make_combined_authors_section(story),
-                        // Section 5: Combined Tags (story tags + feed tags)
+                        // Section 7: Combined Tags (story tags + feed tags)
                         this.make_combined_tags_section(story),
-                        // Section 6: Publisher
+                        // Section 8: Publisher
                         this.make_combined_publisher_section(feed)
                     ])
                 ),
@@ -978,6 +982,562 @@ var classifier_prototype = {
                 [this.make_publisher(feed)].concat($scoped_groups)
             )
         ]);
+    },
+
+    make_content_filter_section: function () {
+        var self = this;
+        var feed_id = this.feed_id;
+        var story = this.story;
+        var is_premium = NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro;
+
+        var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
+
+        var $prompt_classifier = this.make_prompt_classifier(
+            '<span class="NB-classifier-content-prompt-placeholder">Describe what to focus or hide</span>', '', 'content'
+        );
+
+        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-filter-section', 'data-section': 'content_prompt' }, [
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', { className: 'NB-content-filter-header' }, [
+                    $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
+                    'AI Content Filter'
+                ]),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!is_premium && $.make('span', { className: 'NB-classifier-archive-notice' }, [
+                        'Requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ]))
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-classifier-content-prompt-input',
+                        placeholder: is_premium ? 'e.g., "AI and machine learning" or "local politics"' : 'Upgrade to use AI content filters',
+                        disabled: !is_premium
+                    }),
+                    (story && $.make('div', {
+                        className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green' + (!is_premium ? ' NB-disabled' : '')
+                    }, 'Test on this story'))
+                ]),
+                $.make('div', { className: 'NB-content-filter-test-status' }),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                        $prompt_classifier
+                    ]),
+                    $.make('div', { className: 'NB-content-filter-saved-list' })
+                ])
+            ])
+        ]);
+
+        var $input = $('.NB-classifier-content-prompt-input', $section);
+        var $placeholder = $('.NB-classifier-content-prompt-placeholder', $section);
+        var $pill_classifier = $placeholder.parents('.NB-classifier').eq(0);
+        var $pill_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $pill_classifier);
+
+        var update_content_prompt = function () {
+            var text = $.trim($input.val());
+            if (text.length) {
+                $placeholder.text(text);
+                $placeholder.css('font-style', 'normal');
+                $pill_checkboxes.val(text);
+                if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($pill_classifier, 'like');
+                }
+            } else {
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+            }
+            $('.NB-content-filter-test-status', $section).empty();
+        };
+
+        $input.on('input keyup', update_content_prompt);
+
+        // Test button: call text-only AI to classify this story
+        var run_test = function () {
+            if (!is_premium || !story) return;
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var $btn = $('.NB-content-filter-test-button', $section);
+            var $status = $('.NB-content-filter-test-status', $section);
+            $btn.text('Testing on this story...').addClass('NB-disabled');
+            $status.empty();
+
+            NEWSBLUR.assets.test_prompt_classifier({
+                prompt: prompt_text,
+                story_hash: story.get('story_hash'),
+                include_images: 'false'
+            }, function (resp) {
+                $btn.text('Test on this story').removeClass('NB-disabled');
+                if (resp.code === 0) {
+                    var cls = resp.classification;
+                    var matched = cls !== 0;
+                    var result_text = matched ? '\u2713 Story matches this filter' : 'Story does not match this filter';
+                    var result_badge_class = matched ? 'NB-image-filter-status-match' : 'NB-image-filter-status-neutral';
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
+                } else {
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                }
+            });
+        };
+
+        $section.on('click', '.NB-content-filter-test-button', function () {
+            if (!$(this).hasClass('NB-disabled')) run_test();
+        });
+
+        // Enter saves the prompt classifier
+        $input.on('keypress', function (e) {
+            if (e.which !== 13) return;
+            e.preventDefault();
+            if (!is_premium) return;
+
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var classifier_type = $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus';
+
+            $input.prop('disabled', true);
+            NEWSBLUR.assets.save_prompt_classifier({
+                feed_id: feed_id,
+                prompt: prompt_text,
+                classifier_type: classifier_type,
+                include_images: 'false',
+                action: 'save'
+            }, function (resp) {
+                $input.prop('disabled', false).val('').focus();
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+                $('.NB-content-filter-test-status', $section).empty();
+                if (resp.code === 0) {
+                    self.render_content_filter_list($section, resp.prompt_classifiers);
+                }
+            });
+        });
+
+        return $section;
+    },
+
+    render_content_filter_list: function ($section, prompt_classifiers) {
+        var self = this;
+        var feed_id = this.feed_id;
+        var $list = $('.NB-content-filter-saved-list', $section);
+        $list.empty();
+
+        if (!prompt_classifiers || !prompt_classifiers.length) return;
+
+        // Only show text-only classifiers (include_images === false)
+        var text_classifiers = _.filter(prompt_classifiers, function (pc) { return !pc.include_images; });
+        if (!text_classifiers.length) return;
+
+        _.each(text_classifiers, function (pc) {
+            var score = pc.classifier_type === 'focus' ? 1 : -1;
+            var $pill = self.make_prompt_classifier(pc.prompt, pc.prompt, 'content');
+            var $cl = $('.NB-classifier', $pill);
+
+            if (score > 0) {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', score > 0 ? 'like' : 'dislike');
+            $cl.data('prompt-id', pc.id);
+
+            var $delete = $.make('span', {
+                className: 'NB-image-filter-item-delete',
+                title: 'Remove filter'
+            }, '\u00d7');
+
+            $delete.on('click', function (e) {
+                e.stopPropagation();
+                var $container = $(this).closest('.NB-classifier-container');
+                $container.css({ opacity: 0.5, 'pointer-events': 'none' });
+
+                NEWSBLUR.assets.save_prompt_classifier({
+                    feed_id: feed_id,
+                    prompt_id: pc.id,
+                    action: 'delete'
+                }, function (resp) {
+                    if (resp.code === 0) {
+                        $container.slideUp(200, function () {
+                            self.render_content_filter_list($section, resp.prompt_classifiers);
+                        });
+                    } else {
+                        $container.css({ opacity: 1, 'pointer-events': 'auto' });
+                    }
+                });
+            });
+
+            $pill.append($delete);
+            $list.append($pill);
+        });
+    },
+
+    make_image_filter_section: function () {
+        var self = this;
+        var feed_id = this.feed_id;
+        var story = this.story;
+        var is_premium = NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro;
+
+        // SVG icon for the header
+        var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+        // Build image thumbnails from the current story
+        var image_urls = (story && story.get('image_urls')) || [];
+        var $image_grid = '';
+        if (image_urls.length > 0) {
+            var $thumbs = [];
+            _.each(image_urls, function (url, i) {
+                var secure_url = story.image_url(i) || url;
+                $thumbs.push($.make('div', { className: 'NB-image-filter-thumb' }, [
+                    $.make('img', { src: secure_url, loading: 'lazy' })
+                ]));
+            });
+            $image_grid = $.make('div', { className: 'NB-image-filter-grid' }, $thumbs);
+        }
+
+        // Build the live classifier pill
+        var $prompt_classifier = this.make_prompt_classifier(
+            '<span class="NB-classifier-prompt-placeholder">Describe what to focus or hide</span>', ''
+        );
+
+        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-image-filter-section', 'data-section': 'prompt' }, [
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', { className: 'NB-image-filter-header' }, [
+                    $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
+                    'AI Image Filter'
+                ]),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!is_premium && $.make('span', { className: 'NB-classifier-archive-notice' }, [
+                        'Requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ]))
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $image_grid,
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-classifier-prompt-input',
+                        placeholder: is_premium ? 'e.g., "food photography" or "charts and graphs"' : 'Upgrade to use AI image filters',
+                        disabled: !is_premium
+                    }),
+                    (image_urls.length > 0 && $.make('div', {
+                        className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green' + (!is_premium ? ' NB-disabled' : '')
+                    }, image_urls.length === 1 ? 'Test on this image' : 'Test on these images'))
+                ]),
+                $.make('div', { className: 'NB-image-filter-test-status' }),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                        $prompt_classifier
+                    ]),
+                    $.make('div', { className: 'NB-image-filter-saved-list' })
+                ])
+            ])
+        ]);
+
+        // Wire up input to update the classifier pill as the user types
+        var $input = $('.NB-classifier-prompt-input', $section);
+        var $placeholder = $('.NB-classifier-prompt-placeholder', $section);
+        var $pill_classifier = $placeholder.parents('.NB-classifier').eq(0);
+        var $pill_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $pill_classifier);
+
+        var update_prompt_classifier = function () {
+            var text = $.trim($input.val());
+            if (text.length) {
+                $placeholder.text(text);
+                $placeholder.css('font-style', 'normal');
+                $pill_checkboxes.val(text);
+                if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($pill_classifier, 'like');
+                }
+            } else {
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+            }
+            // Clear previous test results when prompt changes
+            self.clear_image_test_results($section);
+        };
+
+        $input.on('input keyup', update_prompt_classifier);
+
+        // Test button: call VLM API to classify this story's images against the prompt
+        var run_test = function () {
+            if (!is_premium) return;
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+            if (!story || !image_urls.length) return;
+
+            var $btn = $('.NB-image-filter-test-button', $section);
+            var $status = $('.NB-image-filter-test-status', $section);
+            $btn.text('Analyzing images...').addClass('NB-disabled');
+            $status.empty();
+
+            // Show loading state on images
+            $('.NB-image-filter-thumb', $section)
+                .removeClass('NB-image-filter-thumb-match NB-image-filter-thumb-neutral')
+                .addClass('NB-image-filter-thumb-testing');
+
+            NEWSBLUR.assets.test_prompt_classifier({
+                prompt: prompt_text,
+                story_hash: story.get('story_hash'),
+                include_images: 'true'
+            }, function (resp) {
+                $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');
+                var $thumbs = $('.NB-image-filter-thumb', $section);
+                $thumbs.removeClass('NB-image-filter-thumb-testing');
+                // Remove old labels
+                $thumbs.find('.NB-image-filter-thumb-label').remove();
+
+                if (resp.code === 0) {
+                    var image_results = resp.image_results || [];
+                    var match_count = 0;
+
+                    // Apply per-image results
+                    $thumbs.each(function (i) {
+                        var img_matched = image_results[i] === 1;
+                        $(this).addClass(img_matched ? 'NB-image-filter-thumb-match' : 'NB-image-filter-thumb-neutral');
+                        var label_text = img_matched ? 'Match' : 'No match';
+                        var label_class = 'NB-image-filter-thumb-label' + (img_matched ? ' NB-image-filter-thumb-label-match' : '');
+                        $(this).append($.make('span', { className: label_class }, label_text));
+                        if (img_matched) match_count++;
+                    });
+
+                    var total = image_urls.length;
+                    var result_text, result_badge_class;
+                    if (match_count === 0) {
+                        result_text = total === 1 ? 'Image does not match this filter' : 'No images match this filter';
+                        result_badge_class = 'NB-image-filter-status-neutral';
+                    } else if (total === 1) {
+                        result_text = '\u2713 Image matches this filter';
+                        result_badge_class = 'NB-image-filter-status-match';
+                    } else {
+                        result_text = '\u2713 ' + match_count + ' of ' + total + ' images match this filter';
+                        result_badge_class = 'NB-image-filter-status-match';
+                    }
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
+                } else {
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                }
+            });
+        };
+
+        $section.on('click', '.NB-image-filter-test-button', function () {
+            if (!$(this).hasClass('NB-disabled')) run_test();
+        });
+
+        // On Enter, save the prompt classifier immediately via the API
+        $input.on('keypress', function (e) {
+            if (e.which !== 13) return;
+            e.preventDefault();
+            if (!is_premium) return;
+
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var classifier_type = $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus';
+
+            $input.prop('disabled', true);
+            NEWSBLUR.assets.save_prompt_classifier({
+                feed_id: feed_id,
+                prompt: prompt_text,
+                classifier_type: classifier_type,
+                include_images: 'true',
+                action: 'save'
+            }, function (resp) {
+                $input.prop('disabled', false).val('').focus();
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+                self.clear_image_test_results($section);
+                if (resp.code === 0) {
+                    self.render_image_filter_list($section, resp.prompt_classifiers);
+                }
+            });
+        });
+
+        return $section;
+    },
+
+    clear_image_test_results: function ($section) {
+        $('.NB-image-filter-thumb', $section)
+            .removeClass('NB-image-filter-thumb-match NB-image-filter-thumb-neutral NB-image-filter-thumb-testing');
+        $('.NB-image-filter-thumb-label', $section).remove();
+        $('.NB-image-filter-test-status', $section).empty();
+    },
+
+    make_prompt_classifier: function (title_html, value, filter_type) {
+        // Build a classifier pill for AI prompts. Follows the same DOM structure
+        // as make_classifier() so all existing CSS and click handlers apply.
+        // filter_type: 'image' (default) or 'content'
+        filter_type = filter_type || 'image';
+        var scope = 'feed';
+
+        var label;
+        if (filter_type === 'content') {
+            label = 'Content';
+        } else {
+            label = 'Image';
+        }
+
+        // Scope toggle icons — same as make_classifier() for non-feed types
+        var scope_icon_data = [
+            { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+            { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+            { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+        ];
+        var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
+        _.each(scope_icon_data, function (icon) {
+            var $toggle = $.make('span', {
+                className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === scope ? ' NB-active' : ''),
+                'data-tooltip': icon.title
+            });
+            $toggle.html(icon.svg);
+            $toggle.data('scope', icon.key);
+            $scope_toggles.append($toggle);
+        });
+
+        var $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
+            $scope_toggles,
+            $.make('span', { className: 'NB-classifier-type-label' }, label)
+        ]);
+
+        var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
+            $.make('span', { className: 'NB-classifier NB-classifier-prompt' }, [
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-classifier-input-like',
+                    name: 'like_prompt',
+                    value: value
+                }),
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-classifier-input-dislike',
+                    name: 'dislike_prompt',
+                    value: value
+                }),
+                $.make('div', { className: 'NB-classifier-icon-like' }),
+                $.make('div', { className: 'NB-classifier-icon-dislike' }, [
+                    $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
+                ]),
+                $.make('label', [
+                    $type_badge,
+                    $.make('span', title_html)
+                ])
+            ])
+        ]);
+
+        // Store original state for change tracking
+        $('.NB-classifier', $classifier).data('original-state', 'neutral');
+        $('.NB-classifier', $classifier).data('scope', scope);
+        $('.NB-classifier', $classifier).data('original-scope', scope);
+        $('.NB-classifier', $classifier).data('folder-name', '');
+        $('.NB-classifier', $classifier).data('original-folder-name', '');
+
+        // Standard hover behavior matching make_classifier()
+        var self = this;
+        $('.NB-classifier', $classifier).bind('mouseenter', function (e) {
+            $(e.currentTarget).addClass('NB-classifier-hover-like');
+        }).bind('mouseleave', function (e) {
+            $(e.currentTarget).removeClass('NB-classifier-hover-like');
+        });
+
+        $('.NB-classifier-icon-dislike', $classifier).bind('mouseenter', function (e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
+        }).bind('mouseleave', function (e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
+        });
+
+        // Scope toggle click handlers
+        $('.NB-scope-toggle', $classifier).on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            self.select_scope($(this), $classifier);
+        });
+
+        // Scope toggle tooltips
+        $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
+            var $this = $(this);
+            var text = $this.attr('data-tooltip');
+            if (!text) return;
+            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+            $('body').append($tip);
+            var rect = this.getBoundingClientRect();
+            $tip.css({
+                top: rect.top - $tip.outerHeight() - 6,
+                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+            });
+            $this.data('$tooltip', $tip);
+        }).on('mouseleave', function () {
+            var $tip = $(this).data('$tooltip');
+            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+        });
+
+        return $classifier;
+    },
+
+    render_image_filter_list: function ($section, prompt_classifiers) {
+        var self = this;
+        var feed_id = this.feed_id;
+        var $list = $('.NB-image-filter-saved-list', $section);
+        $list.empty();
+
+        if (!prompt_classifiers || !prompt_classifiers.length) return;
+
+        // Only show image classifiers (include_images === true)
+        var image_classifiers = _.filter(prompt_classifiers, function (pc) { return pc.include_images; });
+        if (!image_classifiers.length) return;
+
+        _.each(image_classifiers, function (pc) {
+            var score = pc.classifier_type === 'focus' ? 1 : -1;
+            var $pill = self.make_prompt_classifier(pc.prompt, pc.prompt, 'image');
+            var $cl = $('.NB-classifier', $pill);
+
+            // Set the correct like/dislike state
+            if (score > 0) {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', score > 0 ? 'like' : 'dislike');
+            $cl.data('prompt-id', pc.id);
+
+            // Add delete button (x) to the right of the pill
+            var $delete = $.make('span', {
+                className: 'NB-image-filter-item-delete',
+                title: 'Remove filter'
+            }, '\u00d7');
+
+            $delete.on('click', function (e) {
+                e.stopPropagation();
+                var $container = $(this).closest('.NB-classifier-container');
+                $container.css({ opacity: 0.5, 'pointer-events': 'none' });
+
+                NEWSBLUR.assets.save_prompt_classifier({
+                    feed_id: feed_id,
+                    prompt_id: pc.id,
+                    action: 'delete'
+                }, function (resp) {
+                    if (resp.code === 0) {
+                        $container.slideUp(200, function () {
+                            self.render_image_filter_list($section, resp.prompt_classifiers);
+                        });
+                    } else {
+                        $container.css({ opacity: 1, 'pointer-events': 'auto' });
+                    }
+                });
+            });
+
+            $pill.append($delete);
+            $list.append($pill);
+        });
     },
 
     make_modal_title: function () {

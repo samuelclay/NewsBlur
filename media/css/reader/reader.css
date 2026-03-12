@@ -12834,6 +12834,250 @@ h5.NB-classifier-section-header {
     font-weight: 600;
 }
 
+/* ============================ */
+/* = AI Content Filter (text) = */
+/* ============================ */
+
+.NB-content-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-content-filter-header-icon {
+    display: flex;
+    align-items: center;
+    color: #4A90D9;
+}
+
+.NB-content-filter-header-icon svg {
+    display: block;
+}
+
+.NB-classifier-content-prompt-input {
+    flex: 1;
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.NB-classifier-content-prompt-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+}
+
+.NB-classifier-content-prompt-input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+.NB-classifier-content-prompt-placeholder {
+    font-style: italic;
+}
+
+.NB-classifier-content-filter-section .NB-classifier-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-content-filter-test-button {
+    font-size: 11px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-content-filter-test-status {
+    min-height: 0;
+    margin-bottom: 2px;
+}
+
+.NB-content-filter-saved-list .NB-classifier-container {
+    position: relative;
+}
+
+/* ======================== */
+/* = AI Image Filter (VLM) = */
+/* ======================== */
+
+.NB-image-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-image-filter-header-icon {
+    display: flex;
+    align-items: center;
+    color: #4A90D9;
+}
+
+.NB-image-filter-header-icon svg {
+    display: block;
+}
+
+/* Image thumbnail grid */
+.NB-image-filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.NB-image-filter-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f0f0f0;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.NB-image-filter-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.NB-image-filter-thumb-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.NB-image-filter-thumb-label-match {
+    background: rgba(74, 144, 217, 0.85);
+    color: #fff;
+}
+
+.NB-image-filter-thumb-testing {
+    border-color: #999;
+    animation: image-filter-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes image-filter-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.NB-image-filter-thumb-match {
+    border-color: #4A90D9;
+    box-shadow: 0 0 0 1px #4A90D9, 0 0 6px rgba(74, 144, 217, 0.4);
+}
+
+.NB-image-filter-thumb-neutral {
+    border-color: #ccc;
+}
+
+/* Input row with test button */
+.NB-classifier-image-filter-section .NB-classifier-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-classifier-prompt-input {
+    flex: 1;
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.NB-classifier-prompt-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+}
+
+.NB-classifier-prompt-input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+.NB-image-filter-test-button {
+    font-size: 11px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Test result status */
+.NB-image-filter-test-status {
+    min-height: 0;
+    margin-bottom: 2px;
+}
+
+.NB-image-filter-status-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 4px;
+}
+
+.NB-image-filter-status-match {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.NB-image-filter-status-neutral {
+    background: #f5f5f5;
+    color: #757575;
+}
+
+.NB-image-filter-status-error {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.NB-classifier-prompt-placeholder {
+    font-style: italic;
+}
+
+.NB-image-filter-saved-list .NB-classifier-container {
+    position: relative;
+}
+
+.NB-image-filter-item-delete {
+    cursor: pointer;
+    color: #ccc;
+    font-size: 18px;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+    float: left;
+    margin: 2px 0 0 4px;
+}
+
+.NB-image-filter-item-delete:hover {
+    color: #c45555;
+}
+
 /* =================== */
 /* = Mouse Indicator = */
 /* =================== */
