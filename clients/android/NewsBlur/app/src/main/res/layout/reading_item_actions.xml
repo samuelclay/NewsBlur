@@ -60,10 +60,22 @@
                 android:layout_width="0dp"
                 android:layout_height="38dp"
                 android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:text="@string/share_this"
                 app:icon="@drawable/ic_share" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ask_ai_story_button"
+                style="?storyButtons"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/ask_ai"
+                app:icon="@drawable/ic_ask_ai" />
 
         </LinearLayout>
 

@@ -33,6 +33,7 @@ import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
+import com.newsblur.askai.AskAiBottomSheetFragment
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.delegate.ReadingStoryMenuPopup
 import com.newsblur.databinding.FragmentReadingitemBinding
@@ -216,6 +217,7 @@ class ReadingItemFragment :
     override fun onResume() {
         super.onResume()
         reloadStoryContent()
+        updateAskAiButton()
         binding.readingWebview.onResume()
     }
 
@@ -248,6 +250,7 @@ class ReadingItemFragment :
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
+        updateAskAiButton()
         updateMarkStoryReadState()
         setupItemCommentsAndShares()
 
@@ -267,6 +270,7 @@ class ReadingItemFragment :
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
+        readingItemActionsBinding.askAiStoryButton.setOnClickListener { openAskAiDialog() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -657,6 +661,10 @@ class ReadingItemFragment :
         readingItemActionsBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
     }
 
+    private fun updateAskAiButton() {
+        readingItemActionsBinding.askAiStoryButton.visibility = if (prefsRepo.isShowAskAi()) View.VISIBLE else View.GONE
+    }
+
     fun switchStorySavedState(notifyUser: Boolean = false) {
         story?.let {
             val msg =
@@ -688,6 +696,17 @@ class ReadingItemFragment :
             }
         }
         readingItemActionsBinding.shareStoryButton.setText(R.string.share_this)
+    }
+
+    private fun openAskAiDialog() {
+        val currentStory = story ?: return
+        if (parentFragmentManager.findFragmentByTag(AskAiBottomSheetFragment.TAG) != null) return
+
+        AskAiBottomSheetFragment
+            .newInstance(
+                storyHash = currentStory.storyHash,
+                storyTitle = UIUtils.fromHtml(currentStory.title).toString(),
+            ).show(parentFragmentManager, AskAiBottomSheetFragment.TAG)
     }
 
     private fun setupItemCommentsAndShares() {

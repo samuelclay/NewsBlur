@@ -65,6 +65,7 @@
     <string name="save_this">Save</string>
     <string name="unsave_this">Unsave</string>
     <string name="train_this">Train</string>
+    <string name="ask_ai">Ask AI</string>
     <string name="story_mark_unread_state">Read</string>
     <string name="story_mark_read_state">Mark story read</string>
 
@@ -578,6 +579,7 @@
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
     <string name="settings_reading">Reading</string>
+    <string name="settings_show_ask_ai">Show Ask AI</string>
     <string name="settings_content_preview">Content preview text…</string>
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>
     <string name="settings_preview_images_title">Preview images</string>
@@ -589,6 +591,16 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
     <string name="settings_enable_notifications_key">enable_notifications</string>
+    <string name="ask_ai_upgrade_archive">Upgrade to Premium Archive</string>
+    <string name="ask_ai_ask_question">Ask a question…</string>
+    <string name="ask_ai_follow_up">Follow up…</string>
+    <string name="ask_ai_ask">Ask</string>
+    <string name="ask_ai_send">Send</string>
+    <string name="ask_ai_reask">Re-ask</string>
+    <string name="ask_ai_recording">Recording…</string>
+    <string name="ask_ai_transcribing">Transcribing…</string>
+    <string name="ask_ai_microphone_permission_denied">Microphone permission denied</string>
+    <string name="ask_ai_microphone_error">Unable to record audio</string>
     <string name="settings_confirm_mark_all_read_note">Mark read options are always available via long press on the mark read button.</string>
     <string name="settings_confirm_mark_all_read_segment_both">Both</string>
     <string name="settings_confirm_mark_all_read_segment_folders">Folders</string>
