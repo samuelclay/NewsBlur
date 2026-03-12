@@ -2,8 +2,9 @@
 # unmount_backup_drive.sh - Unmount and power off the NewsBlur backup drive
 #
 # Runs via nsenter on the host so it works from any container.
-# Unbinds the USB device to fully power off the drive — neither hdparm
-# nor sg_start work through the Sabrent USB-SATA bridge.
+# Deauthorizes the USB device to cut power — unbind alone doesn't stick
+# because udev re-binds it. Neither hdparm nor sg_start work through
+# the Sabrent USB-SATA bridge.
 
 USB_DEVICE="2-1"  # USB port the drive is on (see: readlink /sys/block/sda)
 HOST_MOUNT_POINT="/mnt/data/supervisor/media/newsblur-backup"
@@ -21,11 +22,11 @@ else
     echo "Not mounted"
 fi
 
-# Unbind the USB device to power off the drive completely
+# Deauthorize the USB device to power it off and prevent udev from re-binding
 if nsenter_run test -d "/sys/bus/usb/devices/${USB_DEVICE}"; then
-    nsenter_run sh -c "echo ${USB_DEVICE} > /sys/bus/usb/drivers/usb/unbind" \
-        && echo "USB device unbound (drive powered off)" \
-        || echo "WARNING: could not unbind USB device"
+    nsenter_run sh -c "echo 0 > /sys/bus/usb/devices/${USB_DEVICE}/authorized" \
+        && echo "USB device deauthorized (drive powered off)" \
+        || echo "WARNING: could not deauthorize USB device"
 else
-    echo "USB device already unbound"
+    echo "USB device not present"
 fi
