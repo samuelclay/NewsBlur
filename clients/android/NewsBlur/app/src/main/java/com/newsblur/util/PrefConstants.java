@@ -121,6 +121,8 @@ public class PrefConstants {
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
+    public static final String SHOW_ASK_AI = "show_ask_ai";
+    public static final String ASK_AI_MODEL = "ask_ai_model";
 
     public static final String READING_FONT = "reading_font";
     public static final String WIDGET_FEED_SET = "widget_feed_set";

@@ -780,6 +780,18 @@ class PrefsRepo(
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
+    fun isShowAskAi() = prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true)
+
+    fun setShowAskAi(value: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.SHOW_ASK_AI, value) }
+    }
+
+    fun getAskAiModel(): String? = prefs.getString(PrefConstants.ASK_AI_MODEL, null)
+
+    fun setAskAiModel(value: String) {
+        prefs.edit { putString(PrefConstants.ASK_AI_MODEL, value) }
+    }
+
     fun isBackgroundNeeded(context: Context) = isEnableNotifications() || isOfflineEnabled() || hasActiveAppWidgets(context)
 
     fun getFont(): Font = Font.getFont(getFontString())
