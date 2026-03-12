@@ -60,7 +60,7 @@
                     android:textSize="11sp"
                     app:icon="@drawable/ic_arrow_down"
                     app:iconGravity="textEnd"
-                    app:iconPadding="2dp"
+                    app:iconPadding="4dp"
                     app:iconSize="10dp"
                     app:iconTint="@null" />
 
