@@ -76,7 +76,6 @@
     content: "nameserver 127.0.0.1\n"
     dest: /run/systemd/resolve/resolv.conf
     mode: '0644'
-  notify: restart docker
 
 - name: Remove resolv.conf symlink
   become: yes
