@@ -727,6 +727,18 @@
                               withRect:CGRectMake(0, yOffset, CGRectGetWidth(self.view.bounds), 25)]; // 1024 hack for self.webView.frame.size.width
     self.feedTitleGradient.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
+
+    if (appDelegate.storiesCollection.isRiverView ||
+        appDelegate.storiesCollection.isSocialView ||
+        appDelegate.storiesCollection.isSavedView ||
+        appDelegate.storiesCollection.isWidgetView ||
+        appDelegate.storiesCollection.isReadView) {
+        self.feedTitleGradient.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                       initWithTarget:self
+                                       action:@selector(openFeedFromGradient:)];
+        [self.feedTitleGradient addGestureRecognizer:tap];
+    }
     
     for (UIView *subview in self.webView.subviews) {
         if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
@@ -754,6 +766,24 @@
     }
 
     [self updateFeedTitleGradientPosition];
+}
+
+- (void)openFeedFromGradient:(UITapGestureRecognizer *)recognizer {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory objectForKey:@"story_feed_id"]];
+
+    appDelegate.storiesCollection.isRiverView = NO;
+    appDelegate.storiesCollection.isSocialView = NO;
+    appDelegate.storiesCollection.isSavedView = NO;
+    appDelegate.storiesCollection.isReadView = NO;
+    appDelegate.storiesCollection.isWidgetView = NO;
+
+    if (appDelegate.detailViewController.isPhoneOrCompact) {
+        // Pop back from story pages to feed detail, then load the feed
+        [appDelegate.feedsNavigationController popViewControllerAnimated:NO];
+    }
+
+    [appDelegate loadFolder:nil feedID:feedIdStr];
 }
 
 - (CGFloat)feedTitleGradientBaseYOffset {
