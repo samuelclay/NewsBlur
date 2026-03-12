@@ -87,6 +87,8 @@ public class APIConstants {
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
     public static final String PATH_EXPORT_OPML = "/import/opml_export";
     public static final String PATH_IMPORT_OPML = "/import/opml_upload";
+    public static final String PATH_ASK_AI_QUESTION = "/ask-ai/question";
+    public static final String PATH_ASK_AI_TRANSCRIBE = "/ask-ai/transcribe";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -149,6 +151,11 @@ public class APIConstants {
     public static final String PARAMETER_PRODUCT_ID = "product_id";
     public static final String PARAMETER_SHOW_CHANGES = "show_changes";
     public static final String PARAMETER_FEED_IDS = "feed_ids";
+    public static final String PARAMETER_QUESTION_ID = "question_id";
+    public static final String PARAMETER_CUSTOM_QUESTION = "custom_question";
+    public static final String PARAMETER_REQUEST_ID = "request_id";
+    public static final String PARAMETER_MODEL = "model";
+    public static final String PARAMETER_CONVERSATION_HISTORY = "conversation_history";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
