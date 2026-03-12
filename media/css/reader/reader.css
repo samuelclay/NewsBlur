@@ -28463,6 +28463,28 @@ h5.NB-classifier-section-header {
     border-color: #C8E6C9;
 }
 
+/* Reddit API results section */
+.NB-add-site-reddit-api-section {
+    margin-top: 16px;
+}
+
+.NB-add-site-reddit-api-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 4px 8px;
+}
+
+/* Reddit direct-add card */
+.NB-add-site-reddit-direct-card {
+    border-style: dashed;
+    border-color: #CCC;
+    background: #FAFAFA;
+    margin-bottom: 12px;
+}
+
 /* Empty State */
 .NB-add-site-empty-state {
     display: flex;
@@ -30909,6 +30931,15 @@ h5.NB-classifier-section-header {
 
 .NB-dark .NB-add-site-card-subscribed {
     border-color: #2E5930;
+}
+
+.NB-dark .NB-add-site-reddit-api-header {
+    color: #777;
+}
+
+.NB-dark .NB-add-site-reddit-direct-card {
+    border-color: #555;
+    background: #1E1E1E;
 }
 
 .NB-dark .NB-add-site-subscribed-indicator {
