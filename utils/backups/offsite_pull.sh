@@ -307,3 +307,9 @@ log "=== Backup pull complete ==="
 log "Disk usage:"
 du -sh "${BACKUP_DRIVE}/mongo_full" "${BACKUP_DRIVE}/postgres" "${BACKUP_DRIVE}/redis" 2>/dev/null | while read line; do log "  $line"; done
 df -h "${BACKUP_DRIVE}" | tail -1 | while read line; do log "  $line"; done
+
+# --- 6. Unmount backup drive ---
+# Unmount so the drive can spin down and rest between backups.
+# Without this, HA's filesystem monitoring keeps the drive spinning 24/7.
+log "Unmounting backup drive..."
+"${SCRIPT_DIR}/unmount_backup_drive.sh" 2>&1 | while read line; do log "  $line"; done

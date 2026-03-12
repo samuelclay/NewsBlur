@@ -521,7 +521,7 @@ grafana-dashboards:
 # Hardware: Intel Celeron N5105, 3.6GB RAM, HAOS (Alpine-based)
 # SSH: key-based auth via Advanced SSH & Web Terminal add-on (protection mode off)
 # Backup drive: WD 12TB at /media/newsblur-backup (ext4, label=newsblur-backup)
-#   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, auto-mounted on boot via HA automation
+#   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, mounted on-demand (not at boot — prevents 24/7 spinning)
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
 # Python venv at /config/scripts/venv (boto3 for S3 downloads)
 # HA automation: nightly 6am, mounts drive then runs shell_command.offsite_backup
@@ -547,6 +547,8 @@ offsite-backup-install:
 	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
 	cat utils/backups/mount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mount_backup_drive.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/mount_backup_drive.sh"
+	cat utils/backups/unmount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/unmount_backup_drive.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/unmount_backup_drive.sh"
 	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
@@ -565,7 +567,7 @@ offsite-backup:
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
 
 offsite-backup-status:
-	@ssh $(HA_HOST) "echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py"
+	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)
