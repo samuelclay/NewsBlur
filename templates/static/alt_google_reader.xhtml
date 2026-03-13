@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load utils_tags %}
-{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block bodyclass %}NB-static NB-static-compare NB-static-alt-google-reader{% endblock %}
 {% block title %}Google Reader Alternative - NewsBlur Has Been the Answer Since 2009{% endblock %}
 {% block nav_title %}Google Reader Alternative{% endblock %}
 {% block head %}
@@ -78,10 +78,7 @@
 
     {% include "static/_compare_links.xhtml" %}
 
-    <div class="NB-compare-bottom-cta">
-        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
-        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
-    </div>
+    {% include "static/_feature_crosslinks.xhtml" %}
 
 </div>
 

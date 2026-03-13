@@ -766,7 +766,7 @@ class Test_Scoring(BriefingTestCase):
         self.assertEqual(_normalize_title(None), "")
 
     def test_find_clustered_basic(self):
-        """Pre-computed Redis cluster with 2+ feeds should mark candidates as widely_covered."""
+        """Pre-computed Redis cluster with 2+ feeds should mark ONE candidate as widely_covered."""
         from apps.clustering.models import store_clusters_to_redis
 
         h0 = self.stories[0].story_hash
@@ -779,10 +779,10 @@ class Test_Scoring(BriefingTestCase):
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3]]}
         clustered = _find_clustered_stories(candidates, stories_by_hash)
+        # Only the first (highest-scored) candidate per cluster should be marked
+        self.assertEqual(len(clustered), 1)
         self.assertIn(h0, clustered)
-        self.assertIn(h3, clustered)
         self.assertEqual(clustered[h0], "widely_covered")
-        self.assertEqual(clustered[h3], "widely_covered")
 
     def test_find_clustered_no_redis_cluster(self):
         """Stories with same title but no pre-computed cluster should NOT be widely_covered."""
@@ -811,7 +811,7 @@ class Test_Scoring(BriefingTestCase):
         self.assertEqual(len(clustered), 0)
 
     def test_find_clustered_widely_covered(self):
-        """Pre-computed cluster with 4 feeds should mark all as widely_covered."""
+        """Pre-computed cluster with 4 feeds should mark only ONE candidate as widely_covered."""
         from apps.clustering.models import store_clusters_to_redis
 
         feed3 = Feed.objects.create(
@@ -843,9 +843,10 @@ class Test_Scoring(BriefingTestCase):
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3], story3, story4]}
         clustered = _find_clustered_stories(candidates, stories_by_hash)
-        self.assertEqual(len(clustered), 4)
-        for h in clustered.values():
-            self.assertEqual(h, "widely_covered")
+        # Only the first (highest-scored) candidate per cluster is marked
+        self.assertEqual(len(clustered), 1)
+        self.assertIn(h0, clustered)
+        self.assertEqual(clustered[h0], "widely_covered")
 
     def test_estimate_word_count(self):
         story = self.stories[0]

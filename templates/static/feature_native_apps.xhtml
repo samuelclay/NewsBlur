@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-native-apps{% endblock %}
+{% block title %}Native Apps - NewsBlur{% endblock %}
+{% block nav_title %}Native Apps{% endblock %}
+{% block head %}
+    <meta name="description" content="First-class native iOS and Android apps built for each platform, not web wrappers. Offline reading, background refresh, widgets, training, search, and sharing.">
+    <meta property="og:title" content="Native Apps - NewsBlur">
+    <meta property="og:description" content="First-class native iOS and Android apps built for each platform, not web wrappers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Native Apps - NewsBlur">
+    <meta name="twitter:description" content="First-class native iOS and Android apps built for each platform, not web wrappers.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-free">Free</div>
+        <h1 class="NB-feature-detail-title">Native Apps</h1>
+        <p class="NB-feature-detail-subtitle">First-class native apps built for each platform, not web wrappers. Everything you love about NewsBlur, on every device.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/native-apps.png" alt="NewsBlur iOS app on iPad showing the dashboard">
+            <div class="NB-feature-detail-caption">NewsBlur on iOS with native interface and full feature set</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Download NewsBlur from the App Store or Google Play</li>
+            <li class="NB-feature-detail-step">Sign in and your feeds, training, and saved stories sync instantly</li>
+            <li class="NB-feature-detail-step">Read offline with automatic background refresh</li>
+            <li class="NB-feature-detail-step">Train stories, search, share, and tag just like on the web</li>
+            <li class="NB-feature-detail-step">Use widgets to see unread counts and stories at a glance</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Are the apps free?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the web.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Do the apps work offline?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Stories are cached locally and the iOS app uses background refresh to stay up to date even when you're not using it.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I use third-party apps instead?</h3>
+            <p class="NB-feature-detail-faq-a">Absolutely. NewsBlur's open API powers dozens of third-party clients including Reeder, ReadKit, Unread, and many more.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Are the apps open source?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, both apps are open source and actively developed on GitHub.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}
