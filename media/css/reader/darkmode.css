@@ -3726,6 +3726,18 @@ a.mention, a.mention-group {
     color: #999;
 }
 
+.NB-dark .NB-ai-billing-setup {
+    background: #4a3f00;
+    border-color: #7a6600;
+    color: #ffd54f;
+}
+
+.NB-dark .NB-ai-billing-manage {
+    background: #1b3a1b;
+    border-color: #2e6b2e;
+    color: #81c784;
+}
+
 /* ====================================== */
 /* = AI Image Filter (VLM) Dark Mode   = */
 /* ====================================== */
