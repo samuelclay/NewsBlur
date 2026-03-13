@@ -38,6 +38,7 @@ urlpatterns = [
     url(r"^upgrade_premium/?", views.upgrade_premium, name="profile-upgrade-premium"),
     url(r"^save_ios_receipt/?", views.save_ios_receipt, name="save-ios-receipt"),
     url(r"^save_android_receipt/?", views.save_android_receipt, name="save-android-receipt"),
+    url(r"^google_play_rtdn/?", views.google_play_rtdn, name="google-play-rtdn"),
     url(r"^update_payment_history/?", views.update_payment_history, name="profile-update-payment-history"),
     url(r"^delete_account/?", views.delete_account, name="profile-delete-account"),
     url(r"^forgot_password_return/?", views.forgot_password_return, name="profile-forgot-password-return"),
