@@ -2055,7 +2055,8 @@ border-bottom: 1px solid #222d31;
 */
 
 /* Staff-Only Badge - Dark Mode */
-.NB-dark .NB-staff-badge {
+.NB-dark .NB-staff-badge,
+.NB-dark .NB-classifier-staff-badge {
     color: #a89880;
 }
 
