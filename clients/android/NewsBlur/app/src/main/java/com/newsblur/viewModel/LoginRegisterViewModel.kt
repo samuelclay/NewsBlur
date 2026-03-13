@@ -27,7 +27,7 @@ class LoginRegisterViewModel
         private val authApi: AuthApi,
         private val prefsRepo: PrefsRepo,
     ) : ViewModel() {
-        private val _uiState = MutableStateFlow<UiState>(UiState.SignIn)
+        private val _uiState = MutableStateFlow(UiState())
         val uiState = _uiState.asStateFlow()
 
         fun signIn(
@@ -35,7 +35,12 @@ class LoginRegisterViewModel
             password: String,
         ) {
             viewModelScope.launch(Dispatchers.IO) {
-                _uiState.emit(UiState.SigningIn)
+                _uiState.emit(
+                    _uiState.value.copy(
+                        errorMessage = null,
+                        phase = AuthPhase.SigningIn,
+                    ),
+                )
                 val response = authApi.login(username, password)
                 if (!response.isError) {
                     userApi.updateUserProfile()
@@ -44,10 +49,22 @@ class LoginRegisterViewModel
                             UIUtils.clipAndRound(userImage, true, false)
                         }
                     SubscriptionSyncService.schedule(context)
-                    _uiState.emit(UiState.SignedIn(roundedUserImage))
+                    _uiState.emit(
+                        _uiState.value.copy(
+                            phase = AuthPhase.Authenticated,
+                            userImage = roundedUserImage,
+                        ),
+                    )
                 } else {
                     val message = response.getErrorMessage()
-                    _uiState.emit(UiState.Error(message, BackTo.SignIn))
+                    _uiState.emit(
+                        _uiState.value.copy(
+                            mode = AuthMode.SignIn,
+                            phase = AuthPhase.Idle,
+                            errorMessage = message,
+                            userImage = null,
+                        ),
+                    )
                 }
             }
         }
@@ -58,26 +75,59 @@ class LoginRegisterViewModel
             email: String,
         ) {
             viewModelScope.launch(Dispatchers.IO) {
-                _uiState.emit(UiState.SigningUp)
+                _uiState.emit(
+                    _uiState.value.copy(
+                        errorMessage = null,
+                        phase = AuthPhase.SigningUp,
+                    ),
+                )
                 val response = authApi.signup(username, password, email)
                 if (response.authenticated) {
-                    _uiState.emit(UiState.SignedUp)
+                    userApi.updateUserProfile()
+                    val roundedUserImage =
+                        prefsRepo.getUserImage(context)?.let { userImage ->
+                            UIUtils.clipAndRound(userImage, true, false)
+                        }
+                    SubscriptionSyncService.schedule(context)
+                    _uiState.emit(
+                        _uiState.value.copy(
+                            phase = AuthPhase.Authenticated,
+                            userImage = roundedUserImage,
+                        ),
+                    )
                 } else {
                     val message = response.getErrorMessage()
-                    _uiState.emit(UiState.Error(message, BackTo.SignUp))
+                    _uiState.emit(
+                        _uiState.value.copy(
+                            mode = AuthMode.SignUp,
+                            phase = AuthPhase.Idle,
+                            errorMessage = message,
+                            userImage = null,
+                        ),
+                    )
                 }
             }
         }
 
         fun showSignIn() {
-            _uiState.value = UiState.SignIn
+            _uiState.value =
+                _uiState.value.copy(
+                    mode = AuthMode.SignIn,
+                    phase = AuthPhase.Idle,
+                    errorMessage = null,
+                )
         }
 
         fun showSignUp() {
-            _uiState.value = UiState.SignUp
+            _uiState.value =
+                _uiState.value.copy(
+                    mode = AuthMode.SignUp,
+                    phase = AuthPhase.Idle,
+                    errorMessage = null,
+                )
         }
 
-        fun getCustomServer() = prefsRepo.getCustomSever()
+        fun getCustomServer() = prefsRepo.getCustomServer()
 
         fun saveCustomServer(value: String) {
             APIConstants.setCustomServer(value)
@@ -89,45 +139,18 @@ class LoginRegisterViewModel
             prefsRepo.clearCustomServer()
         }
 
-        fun getCustomServerCaPem() = prefsRepo.getCustomServerCaPem()
-
-        fun saveCustomServerCaPem(pem: String) {
-            prefsRepo.saveCustomServerCaPem(pem)
+        fun clearError() {
+            _uiState.value = _uiState.value.copy(errorMessage = null)
         }
 
-        fun clearCustomServerCaPem() {
-            prefsRepo.clearCustomServerCaPem()
-        }
+        data class UiState(
+            val mode: AuthMode = AuthMode.SignIn,
+            val phase: AuthPhase = AuthPhase.Idle,
+            val errorMessage: String? = null,
+            val userImage: Bitmap? = null,
+        )
 
-        fun backTo(backTo: BackTo) {
-            val state =
-                when (backTo) {
-                    BackTo.SignIn -> UiState.SignIn
-                    BackTo.SignUp -> UiState.SignUp
-                }
-            _uiState.value = state
-        }
+        enum class AuthMode { SignIn, SignUp }
 
-        sealed interface UiState {
-            object SignIn : UiState
-
-            object SignUp : UiState
-
-            object SigningIn : UiState
-
-            object SigningUp : UiState
-
-            data class SignedIn(
-                val userImage: Bitmap? = null,
-            ) : UiState
-
-            object SignedUp : UiState
-
-            data class Error(
-                val message: String? = null,
-                val backTo: BackTo,
-            ) : UiState
-        }
-
-        enum class BackTo { SignIn, SignUp }
+        enum class AuthPhase { Idle, SigningIn, SigningUp, Authenticated }
     }
