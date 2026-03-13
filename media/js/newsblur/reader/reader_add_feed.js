@@ -194,7 +194,6 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             },
             select: function (e, ui) {
                 $add.val(ui.item.value);
-                self.save_add_url();
                 return false;
             },
             search: function (e, ui) {
