@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-ask-ai{% endblock %}
+{% block title %}Ask AI & Daily Briefing - NewsBlur{% endblock %}
+{% block nav_title %}Ask AI & Daily Briefing{% endblock %}
+{% block head %}
+    <meta name="description" content="AI-powered story analysis and personalized daily summaries from your news feeds. Choose from Claude, GPT, Gemini, or Grok. Get a daily briefing tailored to your interests.">
+    <meta property="og:title" content="Ask AI & Daily Briefing - NewsBlur">
+    <meta property="og:description" content="AI-powered story analysis and personalized daily summaries from your news feeds.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Ask AI & Daily Briefing - NewsBlur">
+    <meta name="twitter:description" content="AI-powered story analysis and personalized daily summaries from your news feeds.">
+    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">Archive</div>
+        <h1 class="NB-feature-detail-title">Ask AI &amp; Daily Briefing</h1>
+        <p class="NB-feature-detail-subtitle">AI-powered story analysis and personalized daily summaries from your news feeds.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-askai">
+        <div class="NB-feature-detail-screenshots-left">
+            <div class="NB-feature-detail-screenshot">
+                <img src="{{ MEDIA_URL }}img/features/ask-ai.png" alt="Ask AI dialog with model selector showing Claude, GPT, Gemini, and Grok">
+                <div class="NB-feature-detail-caption">Ask AI dialog with model selector</div>
+            </div>
+            <div class="NB-feature-detail-screenshot">
+                <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="Story clustering grouping related stories together">
+                <div class="NB-feature-detail-caption">Story clustering</div>
+            </div>
+        </div>
+        <div class="NB-feature-detail-screenshot NB-feature-detail-screenshot-tall">
+            <img src="{{ MEDIA_URL }}img/features/briefing.png" alt="Daily briefing with AI-generated story summaries">
+            <div class="NB-feature-detail-caption">Daily briefing with story summaries</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">Select any story and click "Ask AI"</li>
+            <li class="NB-feature-detail-step">Choose your preferred AI model: Claude, GPT, Gemini, or Grok</li>
+            <li class="NB-feature-detail-step">Ask questions, get summaries, or request key points</li>
+            <li class="NB-feature-detail-step">Enable Daily Briefing for an AI-generated summary of your top stories</li>
+            <li class="NB-feature-detail-step">Customize briefing sections and delivery schedule</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Which AI models are available?</h3>
+            <p class="NB-feature-detail-faq-a">Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Does Ask AI work with audio and video?</h3>
+            <p class="NB-feature-detail-faq-a">Yes, it can transcribe audio and video content and then answer questions about it.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What is the Daily Briefing?</h3>
+            <p class="NB-feature-detail-faq-a">An AI-generated summary delivered to your NewsBlur account with sections for top stories, long reads, widely covered topics, and custom sections you define.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">Ask AI and Daily Briefing require Premium Archive ($99/year).</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

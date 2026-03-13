@@ -126,7 +126,7 @@
             <td style="padding: 5px 8px 5px 0;">{{ payment.payment_date|date:"M j, Y" }}</td>
             <td style="padding: 5px 8px;">${{ payment.payment_amount }}</td>
             <td style="padding: 5px 8px;">{{ payment.payment_provider }}</td>
-            <td style="padding: 5px 0 5px 8px;">{% if payment.refunded %}<span style="color: #c0392b; font-weight: bold;">Refunded</span>{% else %}Paid{% endif %}</td>
+            <td style="padding: 5px 0 5px 8px;">{% if payment.is_trial %}<span style="color: #888;">Trial ended {{ payment.trial_end|date:"M j, Y" }}</span>{% elif payment.refunded %}<span style="color: #c0392b; font-weight: bold;">Refunded</span>{% else %}Paid{% endif %}</td>
         </tr>
         {% endfor %}
     </table>

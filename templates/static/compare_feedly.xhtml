@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load utils_tags %}
-{% block bodyclass %}NB-static NB-static-compare{% endblock %}
+{% block bodyclass %}NB-static NB-static-compare NB-static-compare-feedly{% endblock %}
 {% block title %}NewsBlur vs Feedly - RSS Reader Comparison{% endblock %}
 {% block nav_title %}NewsBlur vs Feedly{% endblock %}
 {% block head %}
@@ -161,10 +161,7 @@
 
     {% include "static/_compare_links.xhtml" %}
 
-    <div class="NB-compare-bottom-cta">
-        <a href="{% url "pricing" %}" class="NB-pricing-cta NB-pricing-cta-pro">See NewsBlur plans</a>
-        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">Try NewsBlur free</a>
-    </div>
+    {% include "static/_feature_crosslinks.xhtml" %}
 
 </div>
 
