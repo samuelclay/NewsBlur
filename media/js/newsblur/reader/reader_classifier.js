@@ -286,7 +286,7 @@ var classifier_prototype = {
     },
 
     resize_modal: function () {
-        var MAX_HEIGHT = 800;
+        var MAX_HEIGHT = 1000;
         var available_height = window.innerHeight - 80;
         var target_height = Math.min(MAX_HEIGHT, available_height);
         var $container = this.$modal.closest('#simplemodal-container.NB-classifier-container');

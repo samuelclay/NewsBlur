@@ -8890,14 +8890,14 @@ form.opml_import_form input {
 }
 
 #simplemodal-container.NB-full-container.NB-classifier-container {
-    max-height: 800px;
+    max-height: 1000px;
 }
 
 .NB-modal.NB-modal-classifiers {
     position: relative;
     overflow: hidden;
     height: 100%;
-    max-height: 800px;
+    max-height: 1000px;
     padding: 18px;
     display: flex;
     flex-direction: column;
