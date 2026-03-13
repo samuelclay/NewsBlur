@@ -672,12 +672,14 @@ var classifier_prototype = {
 
     make_story_text_section: function (selected_text, story) {
         var story_content = story.get('story_content') || '';
+        var original_text = story.get('original_text') || '';
+        var combined_text = story_content + (original_text ? ' ' + original_text : '');
 
         // Separate text classifiers into matching and non-matching
-        var matching_texts = this.make_user_texts(story_content);
-        var matching_text_regex = this.make_user_text_regex(story_content);
-        var non_matching_texts = this.make_user_texts_non_matching(story_content);
-        var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
+        var matching_texts = this.make_user_texts(combined_text);
+        var matching_text_regex = this.make_user_text_regex(combined_text);
+        var non_matching_texts = this.make_user_texts_non_matching(combined_text);
+        var non_matching_text_regex = this.make_user_text_regex_non_matching(combined_text);
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex), current_folder_names);
 
@@ -1775,6 +1777,7 @@ var classifier_prototype = {
                 // Validate based on mode
                 if (self.story) {
                     var story_content = $('<div>').html(self.story.get('story_content') || '').text();
+                    var original_text = self.story.get('original_text') ? $('<div>').html(self.story.get('original_text')).text() : '';
                     var is_full_match = self.check_full_content_match(text, story_content, is_regex_mode);
 
                     if (is_regex_mode) {
@@ -1782,7 +1785,8 @@ var classifier_prototype = {
                         var validation_result = self.validate_regex(text);
                         if (validation_result.valid) {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
-                            if (validation_result.regex.test(story_content)) {
+                            if (validation_result.regex.test(story_content) ||
+                                (original_text && validation_result.regex.test(original_text))) {
                                 $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches story'));
                             } else {
                                 $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in story'));
@@ -1791,8 +1795,10 @@ var classifier_prototype = {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                         }
                     } else {
-                        // Exact phrase validation
-                        if (story_content.toLowerCase().indexOf(text.toLowerCase()) !== -1) {
+                        // Exact phrase validation against RSS body and full article text
+                        var text_lower = text.toLowerCase();
+                        if (story_content.toLowerCase().indexOf(text_lower) !== -1 ||
+                            (original_text && original_text.toLowerCase().indexOf(text_lower) !== -1)) {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in story'));
                         } else {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in story'));
