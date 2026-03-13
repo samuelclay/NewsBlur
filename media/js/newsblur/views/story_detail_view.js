@@ -886,7 +886,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ===========
 
     mark_read: function () {
-        this.model.mark_read({ force: true });
+        this.model.mark_read();
     },
 
     preserve_classifier_color: function (classifier_type, value, score) {
