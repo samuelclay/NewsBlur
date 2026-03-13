@@ -1273,68 +1273,127 @@ class Profile(models.Model):
         return preferences.get(key, default)
 
     @classmethod
-    def backfill_android_payments(cls, dry_run=True):
-        """Backfill missing Android subscription renewals.
+    def backfill_android_payments(cls, dry_run=True, skip=0):
+        """Backfill missing Android subscription renewals using Google Play API.
 
-        Google Play renewal order IDs follow the pattern:
-        - Original: GPA.3330-8556-5969-85003
-        - Renewal 1: GPA.3330-8556-5969-85003..0
-        - Renewal 2: GPA.3330-8556-5969-85003..1
-
-        This method finds all Android subscribers with only their initial
-        payment recorded and creates PaymentHistory records for the
-        expected annual renewals up to the current date.
+        For each existing Android payment, calls the Orders API to get the
+        purchaseToken, then calls subscriptionsv2.get to determine the
+        subscription state, latest order ID, and service period dates.
+        Creates missing PaymentHistory records for renewals and stores
+        GooglePlayIds for RTDN webhook mapping.
         """
-        from django.db.models import Count
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
 
-        now = datetime.datetime.now()
-        users_with_android = (
-            PaymentHistory.objects.filter(payment_provider="android-subscription")
-            .values("user")
-            .annotate(count=Count("id"))
+        if not settings.GOOGLE_PLAY_SERVICE_ACCOUNT_INFO:
+            print(" ---> GOOGLE_PLAY_SERVICE_ACCOUNT_INFO not configured")
+            return
+
+        credentials = service_account.Credentials.from_service_account_info(
+            settings.GOOGLE_PLAY_SERVICE_ACCOUNT_INFO,
+            scopes=["https://www.googleapis.com/auth/androidpublisher"],
         )
+        service = build("androidpublisher", "v3", credentials=credentials)
+        package_name = settings.GOOGLE_PLAY_PACKAGE_NAME
+
+        # Get all Android payments grouped by user
+        android_payments = list(
+            PaymentHistory.objects.filter(payment_provider="android-subscription")
+            .order_by("payment_date")
+        )
+        # Build user -> payments mapping
+        user_payments = {}
+        for p in android_payments:
+            user_payments.setdefault(p.user_id, []).append(p)
+
+        print(" ---> Found %s Android subscribers to process" % len(user_payments))
 
         total_created = 0
+        total_tokens_stored = 0
         total_users_updated = 0
 
-        for entry in users_with_android:
-            user_id = entry["user"]
-            payments = list(
-                PaymentHistory.objects.filter(
-                    user_id=user_id,
-                    payment_provider="android-subscription",
-                ).order_by("payment_date")
-            )
-
-            # Find the original payment (earliest, no ".." in order_id)
-            original = None
-            existing_identifiers = set()
-            for p in payments:
-                existing_identifiers.add(p.payment_identifier)
-                if original is None and p.payment_identifier and ".." not in p.payment_identifier:
-                    original = p
-
-            if not original or not original.payment_identifier:
+        for i, (user_id, payments) in enumerate(user_payments.items()):
+            if i < skip:
                 continue
 
-            # Calculate expected renewals from original payment date
-            base_order_id = original.payment_identifier
-            base_date = original.payment_date
-            amount = original.payment_amount
-            renewal_num = 0
+            # Use the earliest payment's order_id to look up via Orders API
+            original = payments[0]
+            order_id = original.payment_identifier
+            if not order_id:
+                continue
+
+            existing_identifiers = set(p.payment_identifier for p in payments)
+
+            try:
+                # Step 1: Get the order to retrieve purchaseToken
+                order = service.orders().get(
+                    packageName=package_name,
+                    orderId=order_id,
+                ).execute()
+            except Exception as e:
+                print(" ---> [%s/%s] Order lookup failed for %s: %s" % (i, len(user_payments), order_id, e))
+                continue
+
+            purchase_token = order.get("purchaseToken")
+            if not purchase_token:
+                print(" ---> [%s/%s] No purchaseToken for order %s" % (i, len(user_payments), order_id))
+                continue
+
+            # Step 2: Store GooglePlayIds for RTDN mapping
+            product_id = None
+            line_items = order.get("lineItems", [])
+            if line_items:
+                product_id = line_items[0].get("productId")
+
+            if not dry_run:
+                try:
+                    user = User.objects.get(pk=user_id)
+                    user.profile.store_google_play_ids(
+                        purchase_token=purchase_token,
+                        product_id=product_id,
+                        order_id=order_id,
+                    )
+                    total_tokens_stored += 1
+                except Exception as e:
+                    print(" ---> [%s/%s] Error storing token for user %s: %s" % (i, len(user_payments), user_id, e))
+
+            # Step 3: Get full subscription state via purchaseToken
+            try:
+                sub_info = service.purchases().subscriptionsv2().get(
+                    packageName=package_name,
+                    token=purchase_token,
+                ).execute()
+            except Exception as e:
+                print(" ---> [%s/%s] Subscription lookup failed for user %s: %s" % (i, len(user_payments), user_id, e))
+                continue
+
+            # Step 4: Determine renewals from latestOrderId
+            latest_order_id = sub_info.get("latestOrderId", "")
+            sub_state = sub_info.get("subscriptionState", "")
             created_for_user = 0
 
-            while True:
-                renewal_date = base_date + datetime.timedelta(days=365 * (renewal_num + 1))
-                if renewal_date > now:
-                    break
-                renewal_order_id = "%s..%d" % (base_order_id, renewal_num)
+            # Parse renewal count from latest order ID (e.g., GPA.xxx..4 means 5 renewals)
+            if ".." in latest_order_id:
+                base_id, renewal_str = latest_order_id.rsplit("..", 1)
+                try:
+                    latest_renewal_num = int(renewal_str)
+                except ValueError:
+                    latest_renewal_num = -1
 
-                if renewal_order_id not in existing_identifiers:
+                # Create PaymentHistory for each missing renewal
+                base_date = original.payment_date
+                amount = original.payment_amount
+                for renewal_num in range(latest_renewal_num + 1):
+                    renewal_order_id = "%s..%d" % (base_id, renewal_num)
+                    if renewal_order_id in existing_identifiers:
+                        continue
+
+                    renewal_date = base_date + datetime.timedelta(days=365 * (renewal_num + 1))
+
                     if dry_run:
                         print(
-                            " ---> [DRY RUN] Would create: user=%s date=%s order=%s"
-                            % (user_id, renewal_date.date(), renewal_order_id)
+                            " ---> [%s/%s] [DRY RUN] user=%s date=%s order=%s"
+                            % (i, len(user_payments), user_id, renewal_date.date(), renewal_order_id)
                         )
                     else:
                         PaymentHistory.objects.create(
@@ -1346,27 +1405,31 @@ class Profile(models.Model):
                         )
                     created_for_user += 1
 
-                renewal_num += 1
-
-            if created_for_user > 0:
+            if created_for_user > 0 or not dry_run:
                 total_created += created_for_user
-                total_users_updated += 1
+                if created_for_user > 0:
+                    total_users_updated += 1
                 if not dry_run:
                     try:
-                        from django.contrib.auth.models import User
-
                         user = User.objects.get(pk=user_id)
                         user.profile.setup_premium_history()
+                        if sub_state in ("SUBSCRIPTION_STATE_ACTIVE",):
+                            user.profile.active_provider = "google-play"
+                            user.profile.premium_renewal = True
+                            user.profile.save()
                         print(
-                            " ---> Backfilled %s payments for %s (expire: %s)"
-                            % (created_for_user, user.username, user.profile.premium_expire)
+                            " ---> [%s/%s] %s: +%s payments, state=%s, latest=%s, expire=%s"
+                            % (i, len(user_payments), user.username, created_for_user,
+                               sub_state, latest_order_id, user.profile.premium_expire)
                         )
                     except Exception as e:
-                        print(" ---> Error updating user %s: %s" % (user_id, e))
+                        print(" ---> [%s/%s] Error updating user %s: %s" % (i, len(user_payments), user_id, e))
+            elif dry_run and created_for_user > 0:
+                print(" ---> [%s/%s] user=%s: would create %s payments" % (i, len(user_payments), user_id, created_for_user))
 
         print(
-            "\n ---> %s: %s payments for %s users"
-            % ("Would create" if dry_run else "Created", total_created, total_users_updated)
+            "\n ---> %s: %s payments for %s users, %s tokens stored"
+            % ("Would create" if dry_run else "Created", total_created, total_users_updated, total_tokens_stored)
         )
 
     @classmethod
