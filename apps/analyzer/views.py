@@ -340,7 +340,7 @@ def save_prompt_classifier(request):
     from apps.analyzer.vlm_usage import AIClassifierCostEstimator
 
     cost_estimate = {}
-    if request.user.profile.is_pro:
+    if request.user.profile.can_use_ai_classifiers:
         estimator = AIClassifierCostEstimator(request.user)
         cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
 
@@ -430,7 +430,7 @@ def test_prompt_classifier(request):
 
     # Include cost estimate so frontend can show per-run cost
     cost_estimate = {}
-    if request.user.profile.is_pro:
+    if request.user.profile.can_use_ai_classifiers:
         from apps.analyzer.vlm_usage import AIClassifierCostEstimator
 
         estimator = AIClassifierCostEstimator(request.user)
@@ -452,13 +452,13 @@ def test_prompt_classifier(request):
 def get_ai_classifier_usage(request):
     from apps.analyzer.vlm_usage import AIClassifierCostEstimator
 
-    if not request.user.profile.is_pro:
-        return {"code": 0, "is_pro": False}
+    if not request.user.profile.can_use_ai_classifiers:
+        return {"code": 0, "can_use_ai": False}
 
     feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
     estimator = AIClassifierCostEstimator(request.user)
     cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
-    return {"code": 0, "is_pro": True, **cost_estimate}
+    return {"code": 0, "can_use_ai": True, **cost_estimate}
 
 
 @json.json_view

@@ -920,6 +920,59 @@ def stripe_checkout(request):
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
+@login_required
+@require_POST
+def setup_usage_billing(request):
+    stripe.api_key = settings.STRIPE_SECRET
+    domain = Site.objects.get_current().domain
+
+    if not settings.STRIPE_PRICE_TEXT_CLASSIFICATION or not settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
+        logging.user(request, "~BR~FRStripe usage billing prices not configured")
+        return HttpResponseRedirect(reverse("index"))
+
+    session_dict = {
+        "line_items": [
+            {
+                "price": settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
+            },
+            {
+                "price": settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
+            },
+        ],
+        "mode": "subscription",
+        "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
+        "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
+        "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
+    }
+    if request.user.profile.stripe_id:
+        session_dict["customer"] = request.user.profile.stripe_id
+    else:
+        session_dict["customer_email"] = request.user.email
+
+    checkout_session = stripe.checkout.Session.create(**session_dict)
+
+    logging.user(request, "~BM~FBLoading Stripe usage billing checkout")
+
+    return HttpResponseRedirect(checkout_session.url, status=303)
+
+
+@login_required
+@require_POST
+def manage_usage_billing(request):
+    stripe.api_key = settings.STRIPE_SECRET
+    domain = Site.objects.get_current().domain
+
+    if not request.user.profile.stripe_id:
+        return HttpResponseRedirect(reverse("index"))
+
+    portal_session = stripe.billing_portal.Session.create(
+        customer=request.user.profile.stripe_id,
+        return_url="https://%s%s?next=payments" % (domain, reverse("index")),
+    )
+
+    return HttpResponseRedirect(portal_session.url, status=303)
+
+
 @render_to("reader/activities_module.xhtml")
 def load_activities(request):
     user = get_user(request)
@@ -1001,6 +1054,7 @@ def payment_history(request):
         "premium_expire": user.profile.premium_expire,
         "premium_renewal": user.profile.premium_renewal,
         "active_provider": user.profile.active_provider,
+        "is_usage_billing": user.profile.is_usage_billing,
         "payments": history,
         "statistics": statistics,
         "next_invoice": next_invoice,

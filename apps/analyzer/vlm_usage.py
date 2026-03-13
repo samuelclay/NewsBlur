@@ -8,6 +8,9 @@ class AIClassifierCostEstimator:
     FALLBACK_COST_TEXT = 0.001  # ~$0.001 per text classification
     FALLBACK_COST_IMAGE = 0.005  # ~$0.005 per image classification (VLM)
 
+    # Markup applied to all user-facing costs (50% over actual cost)
+    COST_MARKUP = 1.5
+
     def __init__(self, user):
         self.user = user
 
@@ -137,10 +140,10 @@ class AIClassifierCostEstimator:
             ]
             result = list(MLLMCost._get_collection().aggregate(pipeline))
             if result and result[0]["count"] >= 1:
-                return round(result[0]["avg"], 6)
+                return round(result[0]["avg"] * self.COST_MARKUP, 6)
         except Exception:
             pass
 
         if feature == "vision_classification":
-            return self.FALLBACK_COST_IMAGE
-        return self.FALLBACK_COST_TEXT
+            return self.FALLBACK_COST_IMAGE * self.COST_MARKUP
+        return self.FALLBACK_COST_TEXT * self.COST_MARKUP
