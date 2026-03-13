@@ -273,6 +273,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         custom_section_prompts=prefs.custom_section_prompts,
         active_sections=prefs.sections,
         exclude_hashes=exclude_hashes,
+        section_order=section_order,
     )
 
     # tasks.py: Lower minimum threshold for twice/thrice_daily since shorter windows may have fewer stories

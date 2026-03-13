@@ -128,10 +128,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('Briefing length', 'Number of stories to include in each briefing', [
                 this.make_control('story_count', [
-                    ['5', '5'],
-                    ['10', '10'],
-                    ['15', '15'],
-                    ['20', '20']
+                    ['10', 'S'],
+                    ['15', 'M'],
+                    ['20', 'L'],
+                    ['25', 'XL']
                 ])
             ]),
             this.make_section('Writing style', null, [
@@ -426,12 +426,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     update_story_count_labels: function () {
-        // briefing_preferences_popover.js: Show "X stories" for active option, just "X" for others
+        // briefing_preferences_popover.js: Show size label with range for active, just size for others
+        var size_labels = {
+            '10': { short: 'S', long: 'S (5-10)' },
+            '15': { short: 'M', long: 'M (10-15)' },
+            '20': { short: 'L', long: 'L (15-20)' },
+            '25': { short: 'XL', long: 'XL (20-25)' }
+        };
         this.$('.NB-briefing-control-story_count .NB-briefing-setting-option').each(function () {
             var $opt = $(this);
-            var value = $opt.data('value');
+            var value = String($opt.data('value'));
             var is_active = $opt.hasClass('NB-active');
-            $opt.text(value + (is_active ? ' stories' : ''));
+            var labels = size_labels[value] || { short: value, long: value };
+            $opt.text(is_active ? labels.long : labels.short);
         });
     },
 

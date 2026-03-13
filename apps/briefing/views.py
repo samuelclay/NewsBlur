@@ -285,7 +285,7 @@ def briefing_preferences(request):
         if story_count:
             try:
                 story_count = int(story_count)
-                if story_count in (5, 10, 15, 20):
+                if story_count in (5, 10, 15, 20, 25):
                     prefs.story_count = story_count
             except (ValueError, TypeError):
                 pass
