@@ -41,7 +41,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 authors: {},
                 feeds: {},
                 urls: {},
-                url_regex: {}
+                url_regex: {},
+                prompts: {},
+                image_prompts: {}
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
@@ -1486,6 +1488,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/classifier/save', data, callback);
         } else {
             if ($.isFunction(callback)) callback();
+        }
+    },
+
+    get_ai_classifier_usage: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/ai_classifier_usage', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback({});
         }
     },
 

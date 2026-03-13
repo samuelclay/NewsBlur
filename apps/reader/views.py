@@ -53,6 +53,7 @@ from mongoengine.queryset import NotUniqueError, OperationError
 from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
+    MClassifierPrompt,
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
@@ -4035,12 +4036,13 @@ def all_classifiers(request):
     classifier_texts = list(MClassifierText.objects.filter(user_id=user.pk, score__ne=0))
     classifier_feeds = list(MClassifierFeed.objects.filter(user_id=user.pk, score__ne=0))
     classifier_urls = list(MClassifierUrl.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_prompts = list(MClassifierPrompt.objects.filter(user_id=user.pk))
 
     # Group classifiers by feed_id
     from collections import defaultdict
 
     classifiers_by_feed = defaultdict(
-        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []}
+        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": [], "prompts": [], "image_prompts": []}
     )
 
     # Separate scoped classifiers (global/folder) from feed-scoped ones
@@ -4111,6 +4113,14 @@ def all_classifiers(request):
             scoped_classifiers["urls"].append(entry)
         else:
             classifiers_by_feed[c.feed_id]["urls"].append(entry)
+    for c in classifier_prompts:
+        score = 1 if c.classifier_type == "focus" else -1
+        key = "image_prompts" if c.include_images else "prompts"
+        entry = {
+            "prompt": c.prompt,
+            "score": score,
+        }
+        classifiers_by_feed[c.feed_id][key].append(entry)
 
     # Batch fetch all feeds with classifiers to avoid N+1 queries
     all_classifier_feed_ids = set(classifiers_by_feed.keys())
@@ -4168,6 +4178,8 @@ def all_classifiers(request):
         + len(c["texts"])
         + len(c["feeds"])
         + len(c["urls"])
+        + len(c["prompts"])
+        + len(c["image_prompts"])
         for c in classifiers_by_feed.values()
     )
 

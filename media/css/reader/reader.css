@@ -12903,6 +12903,68 @@ h5.NB-classifier-section-header {
     position: relative;
 }
 
+/* ======================================= */
+/* = AI Classifier Cost Estimate          = */
+/* ======================================= */
+
+.NB-ai-cost-estimate {
+    padding: 8px 12px;
+    background: #f5f7f9;
+    border: 1px solid #e2e5e9;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.NB-ai-cost-amounts {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.NB-ai-cost-monthly {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-ai-cost-monthly small {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+    margin-left: 1px;
+}
+
+.NB-ai-cost-separator {
+    color: #ccc;
+    font-size: 12px;
+}
+
+.NB-ai-cost-daily {
+    font-size: 12px;
+    color: #666;
+}
+
+.NB-ai-cost-daily small {
+    font-size: 10px;
+    color: #999;
+    margin-left: 1px;
+}
+
+.NB-ai-cost-breakdown {
+    font-size: 10px;
+    color: #999;
+}
+
+.NB-ai-cost-preview {
+    font-size: 11px;
+    color: #888;
+}
+
+.NB-ai-cost-preview b {
+    color: #555;
+}
+
 /* ======================== */
 /* = AI Image Filter (VLM) = */
 /* ======================== */
@@ -13078,6 +13140,33 @@ h5.NB-classifier-section-header {
 
 .NB-image-filter-item-delete:hover {
     color: #c45555;
+}
+
+/* AI filter upgrade banner */
+.NB-ai-filter-upgrade-banner {
+    display: none;
+}
+
+.NB-ai-filter-upgrade-banner-inner {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #6d5a00;
+    text-align: center;
+}
+
+.NB-ai-filter-upgrade-banner-inner a {
+    color: #d68400;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.NB-ai-filter-upgrade-banner-inner a:hover {
+    color: #b36d00;
 }
 
 /* =================== */
