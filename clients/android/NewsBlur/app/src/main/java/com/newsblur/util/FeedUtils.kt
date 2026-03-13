@@ -137,13 +137,15 @@ class FeedUtils(
         )
     }
 
+    @JvmOverloads
     fun markStoryAsRead(
         story: Story,
         context: Context,
+        readTimesJson: String? = null,
     ) {
         NBScope.executeAsyncTask(
             doInBackground = {
-                setStoryReadState(story, context, true)
+                setStoryReadState(story, context, true, readTimesJson)
             },
         )
     }
@@ -152,6 +154,7 @@ class FeedUtils(
         story: Story,
         context: Context,
         read: Boolean,
+        readTimesJson: String? = null,
     ) {
         try {
             // this shouldn't throw errors, but crash logs suggest something is racing it for DB resources.
@@ -167,7 +170,7 @@ class FeedUtils(
         // tell the sync service we need to mark read
         val ra =
             if (read) {
-                ReadingAction.MarkStoryRead(story.storyHash)
+                ReadingAction.MarkStoryRead(story.storyHash, readTimesJson)
             } else {
                 ReadingAction.MarkStoryUnread(story.storyHash)
             }
@@ -179,6 +182,21 @@ class FeedUtils(
 
         syncServiceState.addRecountCandidates(impactedFeeds)
         triggerSync(context)
+    }
+
+    fun flushStoryReadTimes(
+        context: Context,
+        readTimesJson: String?,
+    ) {
+        if (readTimesJson.isNullOrBlank()) return
+
+        NBScope.executeAsyncTask(
+            doInBackground = {
+                val ra = ReadingAction.ReportStoryReadTimes(readTimesJson)
+                dbHelper.enqueueAction(ra)
+                triggerSync(context)
+            },
+        )
     }
 
     fun markRead(

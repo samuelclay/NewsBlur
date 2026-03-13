@@ -156,6 +156,7 @@ public class APIConstants {
     public static final String PARAMETER_REQUEST_ID = "request_id";
     public static final String PARAMETER_MODEL = "model";
     public static final String PARAMETER_CONVERSATION_HISTORY = "conversation_history";
+    public static final String PARAMETER_READ_TIMES = "read_times";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

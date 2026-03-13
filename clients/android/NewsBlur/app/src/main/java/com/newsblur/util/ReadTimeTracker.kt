@@ -1,158 +1,88 @@
 package com.newsblur.util
 
-import com.newsblur.network.APIConstants
-import com.newsblur.network.NetworkClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import org.json.JSONObject
-import javax.inject.Inject
-import javax.inject.Singleton
+import android.os.SystemClock
+import com.google.gson.Gson
 
-@Singleton
-class ReadTimeTracker @Inject constructor(
-    private val networkClient: NetworkClient,
+class ReadTimeTracker(
+    private val nowMillis: () -> Long = SystemClock::elapsedRealtime,
+    private val idleThresholdMillis: Long = IDLE_THRESHOLD_MILLIS,
 ) {
+    private val gson = Gson()
+    private val readTimes = mutableMapOf<String, Int>()
+    private val queuedReadTimes = linkedMapOf<String, Int>()
+    private var lastActivityMillis: Long = nowMillis()
+
+    @get:Synchronized
     var currentStoryHash: String? = null
         private set
 
-    // Hash saved across background transitions so tracking can resume on foreground
-    private var backgroundedStoryHash: String? = null
-
-    private val readTimes = mutableMapOf<String, Int>()
-    private val queuedReadTimes = mutableMapOf<String, Int>()
-    private var lastActivityMs: Long = 0L
-    var isAppActive: Boolean = true
-    private var timerJob: Job? = null
-
+    @Synchronized
     fun startTracking(storyHash: String) {
-        stopTracking()
-        synchronized(this) {
-            currentStoryHash = storyHash
-            lastActivityMs = System.currentTimeMillis()
-        }
-        timerJob = CoroutineScope(Dispatchers.Default).launch {
-            while (isActive) {
-                delay(1000)
-                synchronized(this@ReadTimeTracker) {
-                    val hash = currentStoryHash ?: return@synchronized
-                    if (!isAppActive) return@synchronized
-                    if (System.currentTimeMillis() - lastActivityMs < IDLE_THRESHOLD_MS) {
-                        readTimes[hash] = (readTimes[hash] ?: 0) + 1
-                    }
-                }
-            }
-        }
+        if (storyHash.isBlank()) return
+
+        currentStoryHash = storyHash
+        lastActivityMillis = nowMillis()
     }
 
+    @Synchronized
     fun stopTracking() {
-        timerJob?.cancel()
-        timerJob = null
-        synchronized(this) {
-            currentStoryHash = null
-        }
+        currentStoryHash = null
     }
 
+    @Synchronized
     fun recordActivity() {
-        synchronized(this) {
-            lastActivityMs = System.currentTimeMillis()
-        }
+        lastActivityMillis = nowMillis()
     }
 
-    fun getAndResetReadTime(storyHash: String): Int {
-        synchronized(this) {
-            return readTimes.remove(storyHash) ?: 0
-        }
+    @Synchronized
+    fun tick() {
+        val storyHash = currentStoryHash ?: return
+        if (nowMillis() - lastActivityMillis >= idleThresholdMillis) return
+
+        readTimes[storyHash] = (readTimes[storyHash] ?: 0) + 1
     }
 
+    @Synchronized
+    fun getAndResetReadTime(storyHash: String): Int = readTimes.remove(storyHash) ?: 0
+
+    @Synchronized
     fun queueReadTime(storyHash: String, seconds: Int) {
-        synchronized(this) {
-            queuedReadTimes[storyHash] = (queuedReadTimes[storyHash] ?: 0) + seconds
+        if (storyHash.isBlank() || seconds <= 0) return
+
+        queuedReadTimes[storyHash] = (queuedReadTimes[storyHash] ?: 0) + seconds
+    }
+
+    @Synchronized
+    fun harvestCurrentStory() {
+        val storyHash = currentStoryHash ?: return
+        val seconds = getAndResetReadTime(storyHash)
+        if (seconds > 0) {
+            queueReadTime(storyHash, seconds)
         }
     }
 
-    fun consumeQueuedReadTimesJSON(): String? {
-        synchronized(this) {
-            if (queuedReadTimes.isEmpty()) return null
-            val json = JSONObject(queuedReadTimes.mapValues { it.value } as Map<*, *>).toString()
-            queuedReadTimes.clear()
-            return json
+    @Synchronized
+    fun drainReadTimesForMarkedStory(storyHash: String): String? {
+        if (storyHash.isBlank()) return drainQueuedReadTimesJson()
+
+        val seconds = getAndResetReadTime(storyHash)
+        if (seconds > 0) {
+            queueReadTime(storyHash, seconds)
         }
+
+        return drainQueuedReadTimesJson()
     }
 
-    fun restoreQueuedReadTimes(json: String) {
-        synchronized(this) {
-            val obj = JSONObject(json)
-            for (key in obj.keys()) {
-                queuedReadTimes[key] = (queuedReadTimes[key] ?: 0) + obj.getInt(key)
-            }
-        }
-    }
+    @Synchronized
+    fun drainQueuedReadTimesJson(): String? {
+        if (queuedReadTimes.isEmpty()) return null
 
-    fun harvestAndFlush() {
-        synchronized(this) {
-            currentStoryHash?.let { hash ->
-                val seconds = readTimes.remove(hash) ?: 0
-                if (seconds > 0) {
-                    queuedReadTimes[hash] = (queuedReadTimes[hash] ?: 0) + seconds
-                }
-            }
-        }
-        stopTracking()
-        flushReadTimes()
-    }
-
-    /**
-     * Harvest accumulated time and flush, but remember which story was being
-     * tracked so [resumeFromBackground] can restart the timer.
-     */
-    fun harvestForBackground() {
-        synchronized(this) {
-            backgroundedStoryHash = currentStoryHash
-        }
-        harvestAndFlush()
-    }
-
-    /**
-     * Restart tracking for the story that was active when the app went to background.
-     */
-    fun resumeFromBackground() {
-        val hash: String?
-        synchronized(this) {
-            hash = backgroundedStoryHash
-            backgroundedStoryHash = null
-        }
-        hash?.let { startTracking(it) }
-    }
-
-    private fun flushReadTimes() {
-        val json: String
-        synchronized(this) {
-            if (queuedReadTimes.isEmpty()) return
-            json = JSONObject(queuedReadTimes.mapValues { it.value } as Map<*, *>).toString()
-            queuedReadTimes.clear()
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val values = com.newsblur.domain.ValueMultimap()
-                values.put(APIConstants.PARAMETER_READ_TIMES, json)
-                val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
-                val response = networkClient.post(urlString, values)
-                if (response.isError) {
-                    Log.w(this@ReadTimeTracker, "Flush read times API error, restoring")
-                    restoreQueuedReadTimes(json)
-                }
-            } catch (e: Exception) {
-                Log.e(this@ReadTimeTracker, "Failed to flush read times", e)
-                restoreQueuedReadTimes(json)
-            }
-        }
+        val readTimesToSend = LinkedHashMap(queuedReadTimes)
+        queuedReadTimes.clear()
+        return gson.toJson(readTimesToSend)
     }
 
     companion object {
-        private const val IDLE_THRESHOLD_MS = 120_000L
+        const val IDLE_THRESHOLD_MILLIS: Long = 120_000L
     }
 }
