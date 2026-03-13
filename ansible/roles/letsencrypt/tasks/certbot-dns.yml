@@ -140,7 +140,7 @@
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
     flat: yes
-  when: linked
+  when: linked is changed
   with_items:
     - dest: /srv/secrets-newsblur/certificates/newsblur.com.crt
       src: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
