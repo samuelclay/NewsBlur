@@ -66,6 +66,38 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Jun 1, 2019</span>
+          <h3>
+            <a class="post-link" href="/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
+              Updates to the Android app and a new addition to the team
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</p>
+
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png" /></figure>
+
+<p>Here’s the full list of changes for version 9.0:</p>
+
+<ul>
+  <li>Fixes black background for stories while reading with the Light theme.</li>
+  <li>Total rewrite of the backend story management platform. This fixes the oldest issues known in story paging and scroll state. The story rivers should now act like dynamic views instead of static lists.</li>
+  <li>New feature: renaming feeds directly in the app.</li>
+  <li>Improved messaging and display behavior for the original text view.</li>
+  <li>Fixes for the dark theme’s menu color.</li>
+  <li>Many other bug fixes and performance tweaks.</li>
+</ul>
+
+<p>I’d also like to introduce our newest developer, <a href="https://github.com/caleb-allen">Caleb Allen</a>.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg" alt="" /></p>
+
+<p>Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Oct 31, 2018</span>
           <h3>
             <a class="post-link" href="/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
@@ -392,48 +424,6 @@
 <p>This spec is a terrific effort by open web advocates to make it easier to keep the web open and free by lowering the cost to writing and publishing.</p>
 
 <p>Try it for yourself, just subscribe to this feed: <a href="https://daringfireball.net/feeds/json">https://daringfireball.net/feeds/json</a>. Even viewing it in a web browser is more pleasant than its <a href="https://daringfireball.net/feeds/main">XML counterpart</a>.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">May 22, 2017</span>
-          <h3>
-            <a class="post-link" href="/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
-              Add your own Custom CSS and Custom JavaScript to NewsBlur on the web
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two new fields: Custom CSS and Custom Javascript.</p>
-
-<p>Head to <em>Manage &gt; Account &gt; Custom CSS/JS</em>. And here’s what you can do with this new feature.</p>
-
-<p><strong>Install an unofficial dark theme for NewsBlur</strong></p>
-
-<figure class="tmblr-full" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"><img style="width: 650px;" data-orig-height="960" data-orig-width="1098" src="https://userstyles.org/style_screenshots/124890_after.png" /></figure>
-
-<p>Over on Stylish, a community for custom CSS, there are <a href="https://userstyles.org/styles/browse?search_terms=newsblur">a bunch of stylesheets that change how NewsBlur looks</a>. Have you ever wanted a dark theme? There’s a few and <a href="https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike">the most popular is made by NewsBlur user Splike</a>. (Note: you will have to remove the @moz delcaraction along with the surrounding {}’s at the top and bottom lines.)</p>
-
-<p><strong>Hide that module or link that you don’t want to see on NewsBlur</strong></p>
-
-<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png" /></figure>
-
-<p>Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/* Hides the Global Shared Stories feed */
-.NB-feeds-header-river-global-container { 
-    display: none !important; 
-}
-
-/* Hides the Dashboard River */
-.NB-module-river {
-    display: none !important;
-}
-</code></pre></div></div>
-
-<p><strong>Run a custom script</strong></p>
-
-<p>Ok, to be 100% truthful, I have no idea why you’d want to run custom JavaScript on NewsBlur. But if you figure out a reason please let me know! Either <a href="http://samuel@newsblur.com">shoot me an email</a> or mention it to <a href="https://twitter.com/newsblur">@newsblur on Twitter</a>.</p>
 
 
         </div>

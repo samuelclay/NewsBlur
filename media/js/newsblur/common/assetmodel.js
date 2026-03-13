@@ -2581,8 +2581,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
                 if (intelligence.text <= 0) {
-                    // Standard substring matching
-                    if (story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                    // Standard substring matching against RSS body and full article text
+                    var ct = classifier_text.toLowerCase();
+                    if (story.get('story_content', '').toLowerCase().indexOf(ct) != -1 ||
+                        (story.get('original_text') && story.get('original_text').toLowerCase().indexOf(ct) != -1)) {
                         intelligence.text = classifier_score;
                     }
                 }
@@ -2610,7 +2612,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     if (intelligence.text_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
-                            if (regex.test(story.get('story_content', ''))) {
+                            if (regex.test(story.get('story_content', '')) ||
+                                (story.get('original_text') && regex.test(story.get('original_text')))) {
                                 intelligence.text_regex = classifier_score;
                             }
                         } catch (e) {
