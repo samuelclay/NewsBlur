@@ -297,8 +297,8 @@ internal fun LoginScreenContent(
                             Brush.verticalGradient(
                                 colors =
                                     listOf(
-                                        palette.gradientTop.copy(alpha = 0.92f),
-                                        palette.gradientBottom.copy(alpha = 0.86f),
+                                        palette.gradientTop.copy(alpha = 0.82f),
+                                        palette.gradientBottom.copy(alpha = 0.80f),
                                     ),
                             ),
                     ),
@@ -1015,44 +1015,52 @@ private const val LOGIN_SHADER_SOURCE =
         float3 bg = mix(u_mid, u_base, smoothstep(0.0, 1.0, uv.y));
 
         float2 flow = uv;
-        flow.x += sin(uv.y * 6.0 + u_time * 1.1) * 0.06;
-        flow.y += cos(uv.x * 5.0 - u_time * 0.8) * 0.05;
+        flow.x += sin(uv.y * 6.0 + u_time * 1.25) * 0.075;
+        flow.y += cos(uv.x * 5.0 - u_time * 0.95) * 0.06;
 
         float diag = flow.x * 0.72 + flow.y * 0.48;
 
-        float wave1 = sin(diag * 10.0 + u_time * 1.6) * 0.5 + 0.5;
+        float wave1 = sin(diag * 10.0 + u_time * 1.8) * 0.5 + 0.5;
         wave1 = pow(wave1, 3.0);
 
-        float wave2 = sin(diag * 16.0 - u_time * 1.15 + 1.5) * 0.5 + 0.5;
+        float wave2 = sin(diag * 16.0 - u_time * 1.3 + 1.5) * 0.5 + 0.5;
         wave2 = pow(wave2, 4.0);
 
-        float wave3 = sin(diag * 25.0 + u_time * 0.95 + 3.0) * 0.5 + 0.5;
+        float wave3 = sin(diag * 25.0 + u_time * 1.15 + 3.0) * 0.5 + 0.5;
         wave3 = pow(wave3, 5.0);
 
-        float3 ridge1 = mix(bg, u_light, wave1 * 0.48);
-        float3 ridge2 = mix(ridge1, u_light, wave2 * 0.34);
-        float3 color = mix(ridge2, u_light, wave3 * 0.22);
+        float3 ridge1 = mix(bg, u_light, wave1 * 0.54);
+        float3 ridge2 = mix(ridge1, u_light, wave2 * 0.38);
+        float3 color = mix(ridge2, u_light, wave3 * 0.26);
 
-        float glow = sin(flow.x * 4.0 + u_time * 0.65) * sin(flow.y * 3.0 - u_time * 0.45);
+        float glow = sin(flow.x * 4.0 + u_time * 0.8) * sin(flow.y * 3.0 - u_time * 0.55);
         glow = max(glow, 0.0);
-        glow = pow(glow, 2.0) * 0.42;
-        color = mix(color, u_soft_gold, glow * 0.34);
+        glow = pow(glow, 2.0) * 0.50;
+        color = mix(color, u_soft_gold, glow * 0.40);
 
         float goldHighlight = wave1 * wave2;
-        float shimmer = sin((flow.x + flow.y) * 18.0 - u_time * 2.2) * 0.5 + 0.5;
-        shimmer = pow(shimmer, 6.0) * 0.18;
+        float shimmer = sin((flow.x + flow.y) * 18.0 - u_time * 2.45) * 0.5 + 0.5;
+        shimmer = pow(shimmer, 6.0) * 0.22;
         color = mix(color, u_soft_gold, shimmer * goldHighlight);
-        color = mix(color, u_gold, goldHighlight * 0.12);
+        color = mix(color, u_gold, goldHighlight * 0.15);
 
         float2 bloomCenter = float2(0.18 + 0.16 * sin(u_time * 0.22), 0.12 + 0.05 * cos(u_time * 0.17));
         float bloom = exp(-distance(flow, bloomCenter) * 8.0);
-        color = mix(color, u_soft_gold, bloom * 0.12);
+        color = mix(color, u_soft_gold, bloom * 0.15);
 
-        float topMask = 1.0 - smoothstep(0.24, 0.76, uv.y);
-        float topCrest = sin(flow.x * 9.0 - u_time * 1.35 + flow.y * 3.0) * 0.5 + 0.5;
-        topCrest = pow(topCrest, 5.0) * topMask * 0.22;
-        color = mix(color, u_soft_gold, topCrest);
-        color = mix(color, u_light, topMask * wave1 * 0.08);
+        float topMask = 1.0 - smoothstep(0.16, 0.68, uv.y);
+        float topCrest = sin(flow.x * 10.5 - u_time * 1.8 + flow.y * 4.4) * 0.5 + 0.5;
+        topCrest = pow(topCrest, 4.0) * topMask * 0.30;
+        float topSweep = sin((flow.x * 15.0) + (flow.y * 7.0) - u_time * 2.4) * 0.5 + 0.5;
+        topSweep = pow(topSweep, 6.0) * topMask * 0.20;
+        color = mix(color, u_soft_gold, topCrest + topSweep);
+        color = mix(color, u_light, topMask * wave1 * 0.13);
+
+        float bottomMask = smoothstep(0.28, 0.92, uv.y);
+        float bottomSweep = sin(flow.x * 12.0 + u_time * 1.9 - flow.y * 5.0) * 0.5 + 0.5;
+        bottomSweep = pow(bottomSweep, 5.0) * bottomMask * 0.18;
+        color = mix(color, u_soft_gold, bottomSweep);
+        color = mix(color, u_light, bottomMask * wave2 * 0.10);
 
         return half4(color, 1.0);
     }
