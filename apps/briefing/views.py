@@ -12,6 +12,7 @@ from django.utils.encoding import smart_str
 
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
+    DEFAULT_SECTION_ORDER,
     DEFAULT_SECTIONS,
     VALID_SECTION_KEYS,
     MBriefing,
@@ -45,6 +46,19 @@ def _normalize_section_dict(d, merge_lists=False):
         else:
             result[normalized] = value
     return result
+
+
+def _build_section_order(prefs):
+    """Build complete section_order list from prefs, falling back to default order."""
+    custom_keys = ["custom_%d" % (i + 1) for i in range(len(prefs.custom_section_prompts or []))]
+    if prefs.section_order:
+        # views.py: Return stored order, but ensure any new custom keys are appended
+        order = list(prefs.section_order)
+        for key in custom_keys:
+            if key not in order:
+                order.append(key)
+        return order
+    return DEFAULT_SECTION_ORDER + custom_keys
 
 
 def _get_briefing_notification_types(user_id, briefing_feed_id):
@@ -219,6 +233,7 @@ def load_briefing_stories(request):
             "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
             "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
+            "section_order": _build_section_order(prefs),
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
@@ -270,7 +285,7 @@ def briefing_preferences(request):
         if story_count:
             try:
                 story_count = int(story_count)
-                if story_count in (5, 10, 15, 20):
+                if story_count in (5, 10, 15, 20, 25):
                     prefs.story_count = story_count
             except (ValueError, TypeError):
                 pass
@@ -334,6 +349,16 @@ def briefing_preferences(request):
             except (ValueError, TypeError):
                 pass
 
+        section_order_raw = request.POST.get("section_order")
+        if section_order_raw:
+            try:
+                order_list = stdlib_json.loads(section_order_raw)
+                if isinstance(order_list, list):
+                    validated = [k for k in order_list if k in VALID_SECTION_KEYS]
+                    prefs.section_order = validated if validated else None
+            except (ValueError, TypeError):
+                pass
+
         prefs.save()
 
     # Migrate old "focused" story_sources to the new read_filter field
@@ -373,6 +398,7 @@ def briefing_preferences(request):
         "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
         "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
+        "section_order": _build_section_order(prefs),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,

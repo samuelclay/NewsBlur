@@ -721,6 +721,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 ])
                             ]),
                             $.make('div', [
+                                $.make('input', { id: 'NB-preference-readstorydelay-3', type: 'radio', name: 'read_story_delay', value: "-2" }),
+                                $.make('label', { 'for': 'NB-preference-readstorydelay-3' }, [
+                                    'Manually or by clicking in the story'
+                                ])
+                            ]),
+                            $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
                                     'Manually by hitting ',
@@ -742,7 +748,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Mark a story as read',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Clicking on a story marks it as read immediately.')
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Selecting a story in the story titles marks it as read.')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-markreadnextfeed' }, [

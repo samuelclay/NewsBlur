@@ -412,7 +412,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             delay = 0;
         } else if (options.force) {
             delay = 0;
-        } else if (delay == -1) {
+        } else if (delay == -1 || delay == -2) {
             return;
         }
 
