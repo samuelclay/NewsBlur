@@ -271,12 +271,14 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
 /* Dropdown panel - lives in <body> (moved via JS) so backdrop-filter
    works without being blocked by the header's own backdrop-filter. */
 .NB-splash-dropdown {
-    position: absolute;
+    position: fixed;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.2s ease, visibility 0.2s ease;
     padding-top: 8px;
+    top: 0;
+    left: 0;
 }
 
 /* Constrain dropdown widths */
@@ -3274,25 +3276,25 @@ body.NB-dark.NB-static a:hover {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training,
-.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
-.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
-.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
-.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search,
-.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive,
-.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved,
-.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
+body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training,
+body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
+body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
+body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search,
+body.NB-dark.NB-static-feature-archive .NB-splash-dropdown-item-archive,
+body.NB-dark.NB-static-feature-saved .NB-splash-dropdown-item-saved,
+body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
     background: rgba(255, 255, 255, 0.06);
 }
 
-.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
+body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
     color: #FBDB9B;
 }
 
