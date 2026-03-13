@@ -65,6 +65,34 @@
 #import <CoreServices/CoreServices.h>
 #import <BackgroundTasks/BackgroundTasks.h>
 
+static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplitPreferredBehavior behavior) {
+    switch (behavior) {
+        case StorySplitPreferredBehaviorTile:
+            return UISplitViewControllerSplitBehaviorTile;
+        case StorySplitPreferredBehaviorOverlay:
+            return UISplitViewControllerSplitBehaviorOverlay;
+        default:
+            return UISplitViewControllerSplitBehaviorDisplace;
+    }
+}
+
+static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySplitPreferredDisplayMode displayMode) {
+    switch (displayMode) {
+        case StorySplitPreferredDisplayModeOneBesideSecondary:
+            return UISplitViewControllerDisplayModeOneBesideSecondary;
+        case StorySplitPreferredDisplayModeOneOverSecondary:
+            return UISplitViewControllerDisplayModeOneOverSecondary;
+        case StorySplitPreferredDisplayModeTwoBesideSecondary:
+            return UISplitViewControllerDisplayModeTwoBesideSecondary;
+        case StorySplitPreferredDisplayModeTwoOverSecondary:
+            return UISplitViewControllerDisplayModeTwoOverSecondary;
+        case StorySplitPreferredDisplayModeTwoDisplaceSecondary:
+            return UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        default:
+            return UISplitViewControllerDisplayModeSecondaryOnly;
+    }
+}
+
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSString *cachedURL;
@@ -940,44 +968,30 @@
 
 - (void)updateSplitBehavior:(BOOL)refresh {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *behavior = [preferences stringForKey:@"split_behavior"];
+    NSString *behavior = [preferences stringForKey:@"split_behavior"] ?: @"auto";
     
     if (self.detailViewController.storyTitlesOnLeft) {
-        if ([behavior isEqualToString:@"tile"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-        } else if ([behavior isEqualToString:@"displace"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-        } else if ([behavior isEqualToString:@"overlay"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
-        } else {
-            // Auto: 3 columns (tile) in landscape, 2 columns (displace) in portrait
-            CGSize screenSize = self.splitViewController.view.bounds.size;
-            if (screenSize.width <= 0) {
-                screenSize = UIScreen.mainScreen.bounds.size;
-            }
-            BOOL isLandscape = screenSize.width > screenSize.height;
-            // On Mac, use a minimum width threshold instead of just aspect ratio.
-            // Below 1100pt the sidebar should auto-hide to overlay mode.
-            BOOL isTooNarrow = screenSize.width < 1100;
-            
-            if (detailViewController.isMac && isTooNarrow) {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
-            } else if (isLandscape) {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
-                if (!self.splitViewController.isCollapsed) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-                    });
-                }
-            } else {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-            }
+        CGSize screenSize = self.splitViewController.view.bounds.size;
+        if (screenSize.width <= 0) {
+            screenSize = UIScreen.mainScreen.bounds.size;
+        }
+
+        StorySplitPreferredBehavior preferredBehavior = [StorySplitBehaviorDecision preferredBehaviorFor:behavior
+                                                                                                   width:screenSize.width
+                                                                                                  height:screenSize.height
+                                                                                                   isMac:detailViewController.isMac];
+        StorySplitPreferredDisplayMode preferredDisplayMode = [StorySplitBehaviorDecision preferredDisplayModeFor:behavior
+                                                                                                             width:screenSize.width
+                                                                                                            height:screenSize.height
+                                                                                                             isMac:detailViewController.isMac];
+        self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+        self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+
+        if (preferredDisplayMode == StorySplitPreferredDisplayModeOneBesideSecondary &&
+            !self.splitViewController.isCollapsed) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+            });
         }
     } else {
         if ([behavior isEqualToString:@"overlay"]) {
@@ -992,6 +1006,11 @@
     if (refresh) {
         [self.storyPagesViewController refreshPages];
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.detailViewController resetStoryTitlesRevealOverride];
+        [self.detailViewController collapseFeedListIfNeededForStory];
+    });
 }
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {

@@ -753,6 +753,8 @@
 		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		177D076B2F29B80900B66376 /* DividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D076A2F29B80900B66376 /* DividerView.swift */; };
 		177D076C2F29B80900B66376 /* DividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D076A2F29B80900B66376 /* DividerView.swift */; };
+		C0D3C0DE2F2A4A0100000002 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
+		C0D3C0DE2F2A4A0100000003 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		1781B97F2C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
 		1781B9802C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
@@ -1619,6 +1621,7 @@
 		17760B3E2E8C9CF0005641E9 /* drag_icon_v.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = drag_icon_v.png; sourceTree = "<group>"; };
 		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
 		177D076A2F29B80900B66376 /* DividerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerView.swift; sourceTree = "<group>"; };
+		C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAutoCollapseDecision.swift; sourceTree = "<group>"; };
 		1781B97E2C9D332B00C8F344 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
 		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
@@ -3534,6 +3537,7 @@
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
 				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
+				C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */,
 				177D076A2F29B80900B66376 /* DividerView.swift */,
 				17432C7D1C533FBC003F8FD6 /* MenuViewController.h */,
 				17432C7E1C533FBC003F8FD6 /* MenuViewController.m */,
@@ -5217,6 +5221,7 @@
 				175792932930605500490924 /* UnreadCountView.m in Sources */,
 				175792952930605500490924 /* MenuTableViewCell.m in Sources */,
 				175792962930605500490924 /* DetailViewController.swift in Sources */,
+				C0D3C0DE2F2A4A0100000002 /* StoryAutoCollapseDecision.swift in Sources */,
 				175792972930605500490924 /* MenuViewController.m in Sources */,
 				175792982930605500490924 /* ActivitiesNavigationBar.m in Sources */,
 				172ECBFE298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
@@ -5446,6 +5451,7 @@
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
 				176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */,
+				C0D3C0DE2F2A4A0100000003 /* StoryAutoCollapseDecision.swift in Sources */,
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
 				FFF8B3AF1F847505001AB95E /* ActivitiesNavigationBar.m in Sources */,
 				172ECBFD298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,

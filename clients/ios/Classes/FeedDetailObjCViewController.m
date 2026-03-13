@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL feedListRevealBouncing;
 @property (nonatomic, strong) UIView *feedListRevealContainer;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
+@property (nonatomic, strong) UIBarButtonItem *storiesSidebarBarButton;
 @property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
 
 @end
@@ -518,8 +519,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 
     UIBarButtonItem *sidebarButton = nil;
+    UIBarButtonItem *storiesSidebarButton = nil;
     BOOL shouldShowSidebarButton = (displayMode == UISplitViewControllerDisplayModeSecondaryOnly ||
-                                    displayMode == UISplitViewControllerDisplayModeOneOverSecondary);
+                                    displayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
+                                    displayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
+                                    displayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary);
+    BOOL isFullscreenOverlayController = self != appDelegate.feedDetailViewController;
     if (!appDelegate.isPhone && !self.isMac && shouldShowSidebarButton) {
         if (!self.sidebarBarButton) {
             UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
@@ -535,21 +540,49 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                                                                     target:self
                                                                     action:@selector(toggleFeeds:)];
             self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+        if (!self.storiesSidebarBarButton) {
+            self.storiesSidebarBarButton = [[UIBarButtonItem alloc] initWithImage:self.sidebarBarButton.image
+                                                                            style:UIBarButtonItemStylePlain
+                                                                           target:self
+                                                                           action:@selector(toggleFeeds:)];
+            self.storiesSidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+
+        if (appDelegate.detailViewController.areStoryTitlesCollapsed) {
+            self.sidebarBarButton.target = appDelegate.detailViewController;
+            self.sidebarBarButton.action = @selector(toggleStoryTitles:);
+            self.storiesSidebarBarButton.target = appDelegate.detailViewController;
+            self.storiesSidebarBarButton.action = @selector(toggleStoryTitles:);
         } else {
             self.sidebarBarButton.target = self;
             self.sidebarBarButton.action = @selector(toggleFeeds:);
+            self.storiesSidebarBarButton.target = self;
+            self.storiesSidebarBarButton.action = @selector(toggleFeeds:);
         }
         sidebarButton = self.sidebarBarButton;
+        storiesSidebarButton = self.storiesSidebarBarButton;
     }
 
     NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton]
                                    : @[settingsBarButton];
+    NSArray *storiesItems = storiesSidebarButton ? @[storiesSidebarButton] : nil;
 
     if (appDelegate.isPhone) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
+    } else if (isFullscreenOverlayController) {
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+        self.navigationItem.leftBarButtonItems = storiesItems;
+    } else if (appDelegate.detailViewController.feedDetailNavigationItem ==
+               appDelegate.detailViewController.storiesNavigationItem) {
+        appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
+        appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems =
+            appDelegate.detailViewController.areStoryTitlesCollapsed ? storiesItems : items;
     } else {
         appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
         appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
+        appDelegate.detailViewController.storiesNavigationItem.leftItemsSupplementBackButton = YES;
+        appDelegate.detailViewController.storiesNavigationItem.leftBarButtonItems = storiesItems;
     }
 }
 
@@ -2923,12 +2956,14 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
             
             if (!isGridView) {
+                [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
                 return;
             }
         }
         
         [self loadStoryAtRow:location];
         [self reload];
+        [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if (location == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
@@ -4499,6 +4534,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.feedsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
         self.sidebarBarButton.tintColor = toolbarButtonTint;
+    }
+    if (self.storiesSidebarBarButton) {
+        self.storiesSidebarBarButton.tintColor = toolbarButtonTint;
     }
     self.settingsBarButton.tintColor = toolbarButtonTint;
     self.feedMarkReadButton.tintColor = toolbarButtonTint;

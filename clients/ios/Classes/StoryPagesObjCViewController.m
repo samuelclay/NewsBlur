@@ -36,6 +36,7 @@
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
+@property (nonatomic, strong) UIBarButtonItem *fullscreenStoryTitlesButton;
 
 @end
 
@@ -73,6 +74,47 @@
     }
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     return (safeAreaBottom > 0) ? 12.0 : 8.0;
+}
+
+- (void)ensureStoryTitlesFullscreenButton {
+    if (self.fullscreenStoryTitlesButton) {
+        return;
+    }
+
+    UIImage *fullscreenImage = [UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right"];
+    if (!fullscreenImage) {
+        fullscreenImage = [UIImage systemImageNamed:@"arrow.left.arrow.right.square"];
+    }
+    if (fullscreenImage) {
+        fullscreenImage = [fullscreenImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+
+    self.fullscreenStoryTitlesButton = [[UIBarButtonItem alloc] initWithImage:fullscreenImage
+                                                                        style:UIBarButtonItemStylePlain
+                                                                       target:appDelegate.detailViewController
+                                                                       action:@selector(showFullscreenStoryDetail:)];
+    self.fullscreenStoryTitlesButton.accessibilityLabel = @"Full screen";
+}
+
+- (void)updateStoryTitleNavigationButtons {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    [self ensureStoryTitlesFullscreenButton];
+
+    self.fullscreenStoryTitlesButton.target = self.appDelegate.detailViewController;
+    self.fullscreenStoryTitlesButton.action = @selector(showFullscreenStoryDetail:);
+
+    NSMutableArray *items = [NSMutableArray array];
+    if (self.appDelegate.detailViewController.shouldShowStoryTitlesFullscreenButton) {
+        [items addObject:self.fullscreenStoryTitlesButton];
+    }
+    [items addObject:originalStoryButton];
+    [items addObject:fontSettingsButton];
+
+    if (!self.appDelegate.detailViewController.storyTitlesOnLeft) {
+        [items addObject:markReadBarButton];
+    }
+
+    self.appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = items;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -208,11 +250,7 @@
 
     self.traverseBottomConstraint.constant = self.traverseBottomGap;
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton, nil];
-    }
+    [self updateStoryTitleNavigationButtons];
 
     // Custom toolbar for scroll-to-hide (replaces system nav bar when fullscreen)
     self.toolbarScrollHandler = [[StoryToolbarScrollHandler alloc] init];
@@ -273,6 +311,7 @@
 
     [self applyToolbarButtonTint];
     [self updateTheme];
+    [self updateStoryTitleNavigationButtons];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -1191,6 +1230,7 @@
     fontSettingsButton.tintColor = toolbarButtonTint;
     originalStoryButton.tintColor = toolbarButtonTint;
     markReadBarButton.tintColor = toolbarButtonTint;
+    self.fullscreenStoryTitlesButton.tintColor = toolbarButtonTint;
     self.subscribeButton.tintColor = toolbarButtonTint;
     UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
     if ([settingsButton isKindOfClass:[UIButton class]]) {
@@ -1920,16 +1960,7 @@
     self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
 #endif
     
-    if (appDelegate.detailViewController.storyTitlesOnLeft) {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton, nil];
-    } else {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton,
-                                                   markReadBarButton, nil];
-    }
+    [self updateStoryTitleNavigationButtons];
     
     [self setNextPreviousButtons];
     
