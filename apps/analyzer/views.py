@@ -302,6 +302,7 @@ def save_prompt_classifier(request):
         try:
             classifier = MClassifierPrompt.objects.get(id=prompt_id, user_id=request.user.pk)
             classifier.delete()
+            MClassifierPrompt.invalidate_cache(request.user.pk, prompt_id)
             logging.user(request, "~FGDeleted prompt classifier: ~SB%s" % prompt_id)
         except MClassifierPrompt.DoesNotExist:
             return {"code": -1, "message": "Prompt classifier not found"}
