@@ -5,6 +5,10 @@
     <color name="primaryDark">@color/black</color>
     <color name="secondary">@color/newsblur_blue</color>
 
+    <color name="primary_sepia">#F3E2CB</color>
+    <color name="primaryDark_sepia">#F3E2CB</color>
+    <color name="secondary_sepia">#1D4BA6</color>
+
     <color name="primary.dark">@color/gray13</color>
     <color name="primaryDark.dark">@color/black</color>
     <color name="secondary.dark">@color/newsblur_blue</color>
@@ -34,37 +38,65 @@
     <color name="nb_green_gray91">#E4E7E1</color>
 
     <color name="bar_background">@color/nb_green_gray91</color>
+    <color name="bar_background_sepia">@color/primary_sepia</color>
     <color name="dark_bar_background">@color/gray13</color>
+    <color name="feed_list_top_background">#EAECE6</color>
+    <color name="feed_list_top_background_sepia">#E9DECE</color>
+    <color name="feed_list_top_background_dark">#3A3A3C</color>
+    <color name="feed_list_top_background_black">#2C2C2E</color>
 
     <color name="text">@color/gray20</color>
+    <color name="text_sepia">#3C3226</color>
     <color name="dark_text">@color/gray85</color>
     <color name="button_text">@color/gray46</color>
+    <color name="button_text_sepia">#8B7B6B</color>
     <color name="button_text_dark">@color/gray75</color>
 
     <color name="col_button_background">@color/gray90</color>
+    <color name="col_button_background_sepia">#FAF5ED</color>
     <color name="col_button_background_dark">@color/gray20</color>
     <color name="col_button_background_pressed">@color/gray65</color>
+    <color name="col_button_background_pressed_sepia">#E8D8C5</color>
     <color name="col_button_background_pressed_dark">@color/gray30</color>
 
     <color name="folder_background">#E9EBE4</color>
-    <color name="dark_folder_background">@color/gray13</color>
-    <color name="black_folder_background">@color/gray07</color>
+    <color name="feed_list_row_background">#F0F2ED</color>
+    <color name="folder_background_sepia">#F0E3CD</color>
+    <color name="feed_list_row_background_sepia">#F6ECDA</color>
+    <color name="dark_folder_background">#414143</color>
+    <color name="black_folder_background">#323234</color>
+    <color name="feed_background_light">#F7F8F5</color>
+    <color name="feed_background_sepia">#F6ECDA</color>
+    <color name="feed_background_dark">#48484A</color>
+    <color name="feed_background_black">#38383A</color>
     <color name="folder_background_selected">#CDD0C7</color>
+    <color name="folder_background_selected_sepia">#D4C8B8</color>
     <color name="dark_folder_background_selected">#4C4C4C</color>
     <color name="row_border">@color/gray95</color>
+    <color name="row_border_sepia">#D4C8B8</color>
     <color name="dark_row_border">@color/gray10</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
+    <color name="feed_background_selected_end_sepia">#F7E9D8</color>
+    <color name="feed_background_selected_start_sepia">#E8D8C5</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
     <color name="dark_feed_background_selected_start">#1A1A1A</color>
     <color name="story_background">@color/gray96</color>
     <color name="story_background_selected">#FFFDEF</color>
+    <color name="story_background_sepia">#F3E2CB</color>
+    <color name="story_background_selected_sepia">#EEE0CE</color>
     <color name="dark_story_background">@color/gray07</color>
     <color name="dark_story_background_selected">#4C4C4C</color>
 
     <color name="story_feed_title_text">#606060</color>
+    <color name="story_feed_title_text_sepia">#606060</color>
+    <color name="story_title_text">#111111</color>
+    <color name="story_title_text_sepia">#333333</color>
+    <color name="story_title_text_dark">#D0D0D0</color>
+    <color name="story_title_text_black">#CCCCCC</color>
     <color name="dark_story_feed_title_text">@color/gray55</color>
     <color name="story_content_text">#404040</color>
+    <color name="story_content_text_sepia">#404040</color>
     <color name="dark_story_content_text">#CECECE</color>
 
     <color name="widget_title">#8C8C8C</color>
@@ -76,22 +108,29 @@
     <color name="widget_story_date_time">#BDBDBD</color>
 
     <color name="story_comment_divider">#F0F0F0</color>
+    <color name="story_comment_divider_sepia">#D4C8B8</color>
     <color name="dark_story_comment_divider">#42453E</color>
 
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
+    <color name="item_header_background_start_sepia">#FCF6ED</color>
+    <color name="item_header_background_end_sepia">#FAF3E8</color>
     <color name="dark_item_header_background_start">#505050</color>
     <color name="dark_item_header_background_end">#303030</color>
     <color name="black_item_header_background_start">@color/gray07</color>
     <color name="black_item_header_background_end">@color/black</color>
     <color name="item_background">#F4F4F4</color>
+    <color name="item_background_sepia">#FAF5ED</color>
+    <color name="reading_background_sepia">#FAF3E8</color>
     <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
+    <color name="share_bar_background_sepia">#EDE0D0</color>
     <color name="dark_share_bar_background">#303030</color>
     
     <color name="half_black">#7000</color>
     
     <color name="half_darkgray">#77434343</color>
+    <color name="half_darkgray_sepia">#998B7B6B</color>
     <color name="half_lightgray">#77dddddd</color>
     <color name="half_white">#7fff</color>
     
@@ -105,7 +144,36 @@
     <color name="saved_drop_shadow">#0E366f</color>
     
     <color name="linkblue">#405BA8</color>
+    <color name="linkblue_sepia">#1D4BA6</color>
     <color name="dark_linkblue">#319DC5</color>
+
+    <color name="segmented_control_background_light">#E7E6E7</color>
+    <color name="segmented_control_background_sepia">#E8DED0</color>
+    <color name="segmented_control_background_dark">#707070</color>
+    <color name="segmented_control_background_black">#303030</color>
+    <color name="segmented_control_selected_light">#DCE6F0</color>
+    <color name="segmented_control_selected_sepia">#FAF5ED</color>
+    <color name="segmented_control_selected_dark">#BBBBBB</color>
+    <color name="segmented_control_selected_black">#888890</color>
+    <color name="segmented_control_text_light">#909090</color>
+    <color name="segmented_control_text_sepia">#8B7B6B</color>
+    <color name="segmented_control_text_dark">#CCCCCC</color>
+    <color name="segmented_control_text_black">#AAAAAA</color>
+    <color name="segmented_control_selected_text_light">#000000</color>
+    <color name="segmented_control_selected_text_sepia">#3C3226</color>
+    <color name="segmented_control_selected_text_dark">#FFFFFF</color>
+    <color name="segmented_control_selected_text_black">#FFFFFF</color>
+    <color name="segmented_control_border_light">#C0C0C0</color>
+    <color name="segmented_control_border_sepia">#C8B8A8</color>
+    <color name="segmented_control_border_dark">#555555</color>
+    <color name="segmented_control_border_black">#444444</color>
+    <color name="theme_dot_light">#FAFAF8</color>
+    <color name="theme_dot_sepia">#F3E2CB</color>
+    <color name="theme_dot_dark">#5A5A5C</color>
+    <color name="theme_dot_black">#1C1C1E</color>
+    <color name="feed_list_search_background_dark">#444444</color>
+    <color name="feed_list_search_background_black">#333333</color>
+    <color name="feed_list_search_hint">#8F918B</color>
     
     <color name="negative">#CC2A2E</color>
 
@@ -114,6 +182,7 @@
     <color name="tag_green">#AACFA6</color>
     <color name="tag_green_text">#FFFFFF</color>
     <color name="tag_gray">#E0E0DE</color>
+    <color name="tag_gray_sepia">#EDE0D0</color>
     <color name="tag_bg_dark">#757575</color>
 
     <color name="newsblur_blue">#319DC5</color>
@@ -123,6 +192,59 @@
 
     <color name="status_overlay_text">#CCFFFFFF</color>
     <color name="status_overlay_background">#AA777777</color>
+    <color name="sync_status_background_light">#AA777777</color>
+    <color name="sync_status_background_done_light">#AA848484</color>
+    <color name="sync_status_background_sepia">#AA777777</color>
+    <color name="sync_status_background_done_sepia">#AA848484</color>
+    <color name="sync_status_background_dark">#AA777777</color>
+    <color name="sync_status_background_done_dark">#AA848484</color>
+    <color name="sync_status_background_black">#AA777777</color>
+    <color name="sync_status_background_done_black">#AA848484</color>
+    <color name="story_status_fetching_background_light">#E1EBFF</color>
+    <color name="story_status_fetching_text_light">#4A6A8A</color>
+    <color name="story_status_fetching_border_light">#C0D0E8</color>
+    <color name="story_status_fetching_background_sepia">#F0E8D8</color>
+    <color name="story_status_fetching_text_sepia">#6B5A45</color>
+    <color name="story_status_fetching_border_sepia">#D8C8B0</color>
+    <color name="story_status_fetching_background_dark">#2A3340</color>
+    <color name="story_status_fetching_text_dark">#B0C8E0</color>
+    <color name="story_status_fetching_border_dark">#3A4A58</color>
+    <color name="story_status_fetching_background_black">#1E2830</color>
+    <color name="story_status_fetching_text_black">#90B0D0</color>
+    <color name="story_status_fetching_border_black">#2A3A48</color>
+    <color name="story_status_offline_background_light">#FFE0E0</color>
+    <color name="story_status_offline_text_light">#A03030</color>
+    <color name="story_status_offline_border_light">#E0B0B0</color>
+    <color name="story_status_offline_background_sepia">#F0D8C8</color>
+    <color name="story_status_offline_text_sepia">#8B4030</color>
+    <color name="story_status_offline_border_sepia">#D8B8A0</color>
+    <color name="story_status_offline_background_dark">#3A2020</color>
+    <color name="story_status_offline_text_dark">#E0A0A0</color>
+    <color name="story_status_offline_border_dark">#4A3030</color>
+    <color name="story_status_offline_background_black">#2A1818</color>
+    <color name="story_status_offline_text_black">#D08080</color>
+    <color name="story_status_offline_border_black">#3A2828</color>
+
+    <color name="story_action_button_background_light">#0A000000</color>
+    <color name="story_action_button_border_light">#1A000000</color>
+    <color name="story_action_button_text_light">#66000000</color>
+    <color name="story_action_button_text_dimmed_light">#40000000</color>
+    <color name="story_action_button_ripple_light">#14000000</color>
+    <color name="story_action_button_background_sepia">#0D503C1E</color>
+    <color name="story_action_button_border_sepia">#26503C1E</color>
+    <color name="story_action_button_text_sepia">#66503C1E</color>
+    <color name="story_action_button_text_dimmed_sepia">#40503C1E</color>
+    <color name="story_action_button_ripple_sepia">#14503C1E</color>
+    <color name="story_action_button_background_dark">#0FFFFFFF</color>
+    <color name="story_action_button_border_dark">#26FFFFFF</color>
+    <color name="story_action_button_text_dark">#99C8C8C8</color>
+    <color name="story_action_button_text_dimmed_dark">#66C8C8C8</color>
+    <color name="story_action_button_ripple_dark">#1FFFFFFF</color>
+    <color name="story_action_button_background_black">#14FFFFFF</color>
+    <color name="story_action_button_border_black">#24FFFFFF</color>
+    <color name="story_action_button_text_black">#99CCCCCC</color>
+    <color name="story_action_button_text_dimmed_black">#66CCCCCC</color>
+    <color name="story_action_button_ripple_black">#24FFFFFF</color>
 
     <color name="bg_midgray">#55898989</color>
 
@@ -131,10 +253,41 @@
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
 
+    <color name="loading_indicator_light">#7EB5CC</color>
+    <color name="loading_indicator_track_light">#E8EEF2</color>
+    <color name="loading_indicator_sepia">#B8A080</color>
+    <color name="loading_indicator_track_sepia">#E8DDD0</color>
+    <color name="loading_indicator_dark">#4A90A5</color>
+    <color name="loading_indicator_track_dark">#2A3038</color>
+    <color name="loading_indicator_black">#3A7A90</color>
+    <color name="loading_indicator_track_black">#161E24</color>
+
     <color name="widget_background">#C8000000</color>
 
     <color name="almost_green">#D6E3DA</color>
     <color name="almost_blue">#DADFE7</color>
     <color name="almost_red">#DFDCD5</color>
+
+    <color name="premium_gold">#D9A620</color>
+    <color name="premium_gold_light">#F0CB53</color>
+    <color name="premium_archive_purple">#8B59D9</color>
+    <color name="premium_archive_purple_light">#B17FF2</color>
+    <color name="premium_pro_orange">#F59D0C</color>
+    <color name="premium_pro_orange_light">#D97A0B</color>
+
+    <color name="premium_feature_blue">#3E8EFA</color>
+    <color name="premium_feature_yellow">#F0C330</color>
+    <color name="premium_feature_orange">#F2992E</color>
+    <color name="premium_feature_purple">#C15EFF</color>
+    <color name="premium_feature_pink">#FF5E93</color>
+    <color name="premium_feature_green">#47BF6B</color>
+    <color name="premium_feature_cyan">#39C7E7</color>
+    <color name="premium_feature_teal">#37C0B3</color>
+    <color name="premium_feature_brown">#B68A63</color>
+    <color name="premium_feature_red">#E05D5D</color>
+    <color name="premium_feature_ai">#D9735F</color>
+    <color name="premium_feature_mint">#55C7A2</color>
+    <color name="premium_feature_indigo">#5D6CFF</color>
+    <color name="premium_feature_gray">#8B8B93</color>
 
 </resources>

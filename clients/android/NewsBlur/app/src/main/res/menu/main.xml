@@ -76,6 +76,8 @@
                     android:title="@string/auto" />
                 <item android:id="@+id/menu_theme_light"
                       android:title="@string/light" />
+                <item android:id="@+id/menu_theme_sepia"
+                      android:title="@string/sepia" />
                 <item android:id="@+id/menu_theme_dark"
                       android:title="@string/dark" />
                 <item android:id="@+id/menu_theme_black"

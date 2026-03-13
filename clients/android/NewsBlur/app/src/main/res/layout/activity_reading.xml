@@ -12,18 +12,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/reading_empty_view_text"
-        style="?explainerText"
+    <View
+        android:id="@+id/reading_surface_background"
+        style="?readingBackground"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center_horizontal"
-        android:text="@string/loading"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@id/include_toolbar"
-        app:layout_constraintStart_toStartOf="@id/include_toolbar"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/reading_empty_view_text"
+        style="?circleProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorSize="32dp"
+        app:trackThickness="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <FrameLayout
         android:id="@+id/content"
@@ -34,86 +44,188 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
+    <View
+        android:id="@+id/reading_back_swipe_edge"
+        android:layout_width="24dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+
     <FrameLayout
         android:id="@+id/content_bottom_overlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="@id/content"
         app:layout_constraintEnd_toEndOf="@id/content"
         app:layout_constraintStart_toStartOf="@id/content">
 
-        <TextView
-            android:id="@+id/reading_overlay_text"
-            style="?selectorOverlayBackgroundText"
-            android:layout_width="110dp"
-            android:layout_height="40dp"
-            android:layout_gravity="start"
-            android:layout_marginStart="8dp"
-            android:gravity="center"
-            android:paddingStart="8dp"
-            android:text="@string/overlay_text"
-            android:textSize="14sp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content_bottom_overlay_inner"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_gravity="bottom"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-        <ImageButton
-            android:id="@+id/reading_overlay_send"
-            style="?selectorOverlayBackgroundSend"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_gravity="start"
-            android:layout_marginStart="120dp" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/reading_overlay_left_group"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/reading_overlay_right"
-            style="?selectorOverlayBackgroundRight"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:layout_marginRight="8dp"
-            android:gravity="center"
-            android:text="@string/overlay_next"
-            android:textSize="14sp" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/reading_overlay_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/overlay_text"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:text="@string/overlay_text"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/reading_overlay_left"
-            style="?selectorOverlayBackgroundLeft"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:layout_marginEnd="130dp" />
+                <View
+                    android:id="@+id/reading_overlay_left_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reading_overlay_text"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/reading_overlay_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="98dp"
-            app:indicatorColor="@color/progress_circle_remaining"
-            app:indicatorSize="20dp"
-            app:trackColor="@color/progress_circle_complete"
-            app:trackThickness="2dp" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/reading_overlay_send"
+                    android:layout_width="44dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/short_share_this_story"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reading_overlay_left_separator"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/reading_overlay_progress_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="100dp"
-            android:indeterminate="true"
-            app:indicatorColor="@color/newsblur_blue"
-            app:indicatorSize="16dp"
-            app:trackThickness="2dp" />
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/reading_overlay_progress_left"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="14dp"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    app:indicatorSize="16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/reading_overlay_text"
+                    app:layout_constraintEnd_toEndOf="@id/reading_overlay_text"
+                    app:layout_constraintTop_toTopOf="@id/reading_overlay_text"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:trackThickness="2dp" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/reading_overlay_progress_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="90dp"
-            android:indeterminate="true"
-            app:indicatorColor="@color/newsblur_blue"
-            app:indicatorSize="20dp"
-            app:trackThickness="2dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/reading_overlay_right_group"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/reading_overlay_left_group"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/reading_overlay_left"
+                    android:layout_width="44dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/short_previous_story"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:scaleType="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/reading_overlay_right_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reading_overlay_left"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <FrameLayout
+                    android:id="@+id/reading_overlay_progress_tap_area"
+                    android:layout_width="32dp"
+                    android:layout_height="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reading_overlay_right_separator"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/reading_overlay_progress"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:clickable="false"
+                        android:focusable="false"
+                        app:indicatorSize="16dp"
+                        app:trackThickness="2dp" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/reading_overlay_progress_right"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        app:indicatorSize="16dp"
+                        app:trackThickness="2dp" />
+
+                </FrameLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/reading_overlay_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/overlay_next"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:text="@string/overlay_next"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reading_overlay_progress_tap_area"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/reading_sync_status"

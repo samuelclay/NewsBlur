@@ -8,9 +8,9 @@
     <!-- Toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
+        style="?feedListToolbarBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?colorPrimary"
         android:focusable="false"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,10 +37,10 @@
             android:layout_marginStart="6dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="1dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="12dp"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/main_search_feeds_button"
+            app:layout_constraintEnd_toStartOf="@id/main_sync_status_container"
             app:layout_constraintStart_toEndOf="@id/main_user_image"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,23 +82,66 @@
             app:layout_constraintStart_toEndOf="@id/main_unread_count_posi_icon"
             app:layout_constraintTop_toBottomOf="@id/main_user_name" />
 
-        <ImageButton
-            android:id="@+id/main_search_feeds_button"
-            android:layout_width="28dp"
+        <LinearLayout
+            android:id="@+id/main_sync_status_container"
+            android:layout_width="wrap_content"
             android:layout_height="28dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/ic_search"
-            android:contentDescription="@string/menu_search_feeds"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/shape_sync_status_pill"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="8dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/main_sync_status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:maxWidth="140dp"
+                android:textColor="@color/status_overlay_text"
+                android:textSize="12sp" />
+
+            <FrameLayout
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="6dp"
+                android:gravity="center"
+                android:padding="1dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/main_sync_status_spinner"
+                    style="@style/syncStatusProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminate="true" />
+
+                <ImageView
+                    android:id="@+id/main_sync_status_done_icon"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_sync_done"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Bottom Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_toolbar"
-        style="?actionbarBackground"
+        style="?feedListToolbarBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:focusable="false"
@@ -119,14 +162,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/main_menu_button"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/ic_more_vertical"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="4dp"
+            android:background="?attr/actionBarItemBackground"
             android:contentDescription="@string/description_menu"
             android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_settings"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -182,23 +228,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Search Field -->
-    <EditText
-        android:id="@+id/input_search_query"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:drawableLeft="@android:drawable/ic_menu_search"
-        android:hint="@string/your_feeds_search_hint"
-        android:imeOptions="actionSearch"
-        android:importantForAutofill="no"
-        android:inputType="textNoSuggestions"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/content"
-        app:layout_constraintStart_toStartOf="@id/content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
     <!-- Swipe Container -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/content"
@@ -208,7 +237,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_search_query">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <fragment
             android:name="com.newsblur.fragment.FolderListFragment"
@@ -217,21 +246,5 @@
             android:tag="folderFeedListFragment" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!-- Sync Status -->
-    <TextView
-        android:id="@+id/main_sync_status"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/status_overlay_background"
-        android:focusable="false"
-        android:gravity="center"
-        android:padding="2dp"
-        android:text="SYNC STATUS"
-        android:textColor="@color/status_overlay_text"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
-        app:layout_constraintEnd_toEndOf="@id/content"
-        app:layout_constraintStart_toStartOf="@id/content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,8 @@ package com.newsblur.util;
 public enum GestureAction {
 
     GEST_ACTION_NONE,
+    GEST_ACTION_BACK,
+    GEST_ACTION_TOGGLE_READ,
     GEST_ACTION_MARKREAD,
     GEST_ACTION_MARKUNREAD,
     GEST_ACTION_SAVE,

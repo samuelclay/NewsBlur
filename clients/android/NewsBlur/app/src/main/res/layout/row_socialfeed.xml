@@ -62,7 +62,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:textStyle="bold"
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_socialfeed_icon"
         android:textSize="14sp" />

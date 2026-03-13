@@ -4,6 +4,7 @@ package com.newsblur.database
 
 import android.graphics.Color
 import android.os.Parcelable
+import android.os.SystemClock
 import android.text.TextUtils
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.View.OnCreateContextMenuListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -25,9 +27,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
+import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.AppConstants
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
@@ -73,6 +77,7 @@ class StoryViewAdapter(
     listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
+    private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
 
@@ -389,6 +394,9 @@ class StoryViewAdapter(
                 return
             }
             if (gestureL2R || gestureR2L) return
+            val now = SystemClock.elapsedRealtime()
+            if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
+            lastStoryOpenElapsedRealtime = now
             listener.onStoryClicked(fs, story?.storyHash)
         }
 
@@ -445,12 +453,19 @@ class StoryViewAdapter(
                 intelFrag.show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
-                val fs = FeedSet.singleFeed(story!!.feedId)
+                val targetFeedSet = FeedSet.singleFeed(story!!.feedId)
+                val folderName = targetFeedFolderName()
+                feedUtils.currentFolderName =
+                    if (folderName == AppConstants.ROOT_FOLDER) {
+                        null
+                    } else {
+                        folderName
+                    }
                 FeedItemsList.startActivity(
                     context,
-                    fs,
+                    targetFeedSet,
                     feedUtils.getFeed(story!!.feedId),
-                    null,
+                    folderName,
                     null,
                 )
                 return true
@@ -458,6 +473,13 @@ class StoryViewAdapter(
                 return false
             }
         }
+
+        private fun targetFeedFolderName(): String =
+            when {
+                fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+                !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+                else -> AppConstants.ROOT_FOLDER
+            }
 
         override fun onTouch(
             v: View,
@@ -488,6 +510,8 @@ class StoryViewAdapter(
                 gestureR2L = false
             }
             when (action) {
+                GestureAction.GEST_ACTION_BACK -> (context as? ItemsList)?.completeInteractiveStoryListSwipe()
+                GestureAction.GEST_ACTION_TOGGLE_READ -> toggleStoryReadState()
                 GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
                 GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
@@ -495,6 +519,15 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}
+            }
+        }
+
+        private fun toggleStoryReadState() {
+            val targetStory = story ?: return
+            if (targetStory.read) {
+                feedUtils.markStoryUnread(targetStory, context)
+            } else {
+                feedUtils.markStoryAsRead(targetStory, context)
             }
         }
     }
@@ -657,6 +690,9 @@ class StoryViewAdapter(
         vh: StoryTileViewHolder,
         story: Story,
     ) {
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -676,6 +712,11 @@ class StoryViewAdapter(
         story: Story,
     ) {
         val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
+        val showRightThumbnail = thumbnailStyle.isRight() && !TextUtils.isEmpty(story.thumbnailUrl)
+
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
@@ -705,7 +746,18 @@ class StoryViewAdapter(
         vh.storyAuthor.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
         vh.storySnippet.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
 
-        val contentRightPadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        val contentRightPadding =
+            spacingStyle.getStoryContentRightPadding(
+                context,
+                if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
+            )
+        val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
+        vh.storyTitleView.setPadding(
+            vh.storyTitleView.paddingLeft,
+            titleVerticalPadding,
+            contentRightPadding,
+            titleVerticalPadding,
+        )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
         vh.storySnippet.setPadding(
             vh.storySnippet.paddingLeft,
@@ -733,10 +785,13 @@ class StoryViewAdapter(
             } else if (thumbnailStyle.isRight()) {
                 val thumbSizeGuess = vh.thumbViewRight.measuredHeight
                 vh.thumbViewRight.setImageBitmap(null)
-                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
                 vh.thumbViewLeft.visibility = View.GONE
-                val hideThumbnail = TextUtils.isEmpty(story.thumbnailUrl) && storyContentPreviewStyle == StoryContentPreviewStyle.NONE
-                vh.thumbViewRight.visibility = if (hideThumbnail) View.GONE else View.VISIBLE
+                if (showRightThumbnail) {
+                    vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
+                    vh.thumbViewRight.visibility = View.VISIBLE
+                } else {
+                    vh.thumbViewRight.visibility = View.GONE
+                }
             }
             vh.lastThumbUrl = story.thumbnailUrl
         } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
@@ -752,26 +807,25 @@ class StoryViewAdapter(
         val sizeDp = context.resources.getDimensionPixelSize(sizeRes)
 
         var params: RelativeLayout.LayoutParams? = null
+        var thumbView: StoryThumbnailView? = null
         if (thumbnailStyle.isLeft() && vh.thumbViewLeft != null) {
             vh.thumbViewLeft.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewLeft
             params = vh.thumbViewLeft.layoutParams as RelativeLayout.LayoutParams
         } else if (thumbnailStyle.isRight() && vh.thumbViewRight != null) {
             vh.thumbViewRight.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewRight
             params = vh.thumbViewRight.layoutParams as RelativeLayout.LayoutParams
-        }
-        if (params != null && params.width != sizeDp) {
-            params.width = sizeDp
         }
         if (params != null && thumbnailStyle.isSmall()) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
             val leftMargin = if (thumbnailStyle.isLeft()) UIUtils.dp2px(context, 8) else 0
             val rightMargin = if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 8) else 0
-            params.setMargins(leftMargin, verticalMargin, rightMargin, verticalMargin)
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.id)
+            thumbView?.setExpandedLayout(sizeDp, sizeDp, leftMargin, verticalMargin, rightMargin, verticalMargin)
         } else if (params != null) {
-            params.setMargins(0, 0, 0, 0)
             params.removeRule(RelativeLayout.ALIGN_BOTTOM)
-            params.height = sizeDp
+            thumbView?.setExpandedLayout(sizeDp, sizeDp, 0, 0, 0, 0)
         }
 
         if (this.ignoreReadStatus || !story.read) {
@@ -811,6 +865,7 @@ class StoryViewAdapter(
             val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
             val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
             if (e1 != null &&
+                shouldHandleLeftToRightStoryGesture() &&
                 e1.x > edgeWithNavGesturesPaddingPx &&
                 // the gesture should not start too close to the left edge and
                 e2.x - e1.x > 50f &&
@@ -833,6 +888,11 @@ class StoryViewAdapter(
                 return true
             }
             return false
+        }
+
+        private fun shouldHandleLeftToRightStoryGesture(): Boolean {
+            if (context !is ItemsList) return true
+            return prefsRepo.getLeftToRightGestureAction() != GestureAction.GEST_ACTION_BACK
         }
     }
 

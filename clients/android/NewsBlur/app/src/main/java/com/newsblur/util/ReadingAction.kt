@@ -521,6 +521,7 @@ fun ReadingAction.doLocal(
         is ReadingAction.RenameFeed -> {
             dbHelper.renameFeed(feedId, newFeedName)
             plus(UPDATE_METADATA)
+            plus(UPDATE_STORY)
         }
     }
 

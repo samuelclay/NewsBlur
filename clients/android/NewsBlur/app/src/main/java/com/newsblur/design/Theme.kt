@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.newsblur.util.PrefConstants.ThemeValue
 
-enum class NbThemeVariant { Light, Dark, Black, System }
+enum class NbThemeVariant { Light, Sepia, Dark, Black, System }
 
 @Composable
 fun NewsBlurTheme(
@@ -20,16 +20,18 @@ fun NewsBlurTheme(
     val dark =
         when (variant) {
             NbThemeVariant.Light -> false
+            NbThemeVariant.Sepia -> false
             NbThemeVariant.Dark, NbThemeVariant.Black -> true
             NbThemeVariant.System -> isSystemInDarkTheme()
         }
 
     val scheme =
-        if (dynamic && android.os.Build.VERSION.SDK_INT >= 31) {
+        if (dynamic && android.os.Build.VERSION.SDK_INT >= 31 && variant != NbThemeVariant.Sepia) {
             if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         } else {
             when (variant) {
                 NbThemeVariant.Light -> LightColors
+                NbThemeVariant.Sepia -> SepiaColors
                 NbThemeVariant.Dark -> DarkColors
                 NbThemeVariant.Black -> BlackColors
                 NbThemeVariant.System -> if (dark) DarkColors else LightColors
@@ -48,6 +50,7 @@ fun NewsBlurTheme(
 fun ThemeValue.toVariant(): NbThemeVariant =
     when (this) {
         ThemeValue.LIGHT -> NbThemeVariant.Light
+        ThemeValue.SEPIA -> NbThemeVariant.Sepia
         ThemeValue.DARK -> NbThemeVariant.Dark
         ThemeValue.BLACK -> NbThemeVariant.Black
         ThemeValue.AUTO -> NbThemeVariant.System

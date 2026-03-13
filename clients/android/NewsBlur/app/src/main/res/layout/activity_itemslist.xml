@@ -14,25 +14,319 @@
         android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <EditText
-            android:id="@+id/itemlist_search_query"
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:id="@+id/itemlist_story_header"
+            style="?actionbarBackground"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:animateLayoutChanges="true"
-            android:autofillHints="@null"
-            android:drawableLeft="@drawable/ic_search"
-            android:hint="@string/story_search_hint"
-            android:imeOptions="actionSearch"
-            android:inputType="textNoSuggestions"
-            android:textSize="16sp"
-            android:visibility="gone" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/itemlist_story_header_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/itemlist_discover_pill"
+                    style="?toggleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="6dp"
+                    android:contentDescription="@string/story_header_related_sites"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:textSize="11sp"
+                    app:icon="@drawable/ic_discover"
+                    app:iconGravity="textStart"
+                    app:iconPadding="2dp"
+                    app:iconSize="12dp"
+                    app:iconTint="@null" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/itemlist_options_pill"
+                    style="?toggleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:textSize="11sp"
+                    app:icon="@drawable/ic_arrow_down"
+                    app:iconGravity="textEnd"
+                    app:iconPadding="4dp"
+                    app:iconSize="10dp"
+                    app:iconTint="@null" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/itemlist_search_pill"
+                    style="?toggleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="6dp"
+                    android:contentDescription="@string/story_header_search"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:textSize="11sp"
+                    app:icon="@drawable/ic_search"
+                    app:iconGravity="textStart"
+                    app:iconPadding="2dp"
+                    app:iconSize="12dp"
+                    app:iconTint="@null" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/itemlist_mark_read_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/itemlist_mark_read_more_button"
+                        android:layout_width="22dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/menu_mark_all_as_read"
+                        android:padding="4dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_add"
+                        android:tint="@android:color/white" />
+
+                    <View
+                        android:id="@+id/itemlist_mark_read_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="16dp" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/itemlist_mark_read_button"
+                        android:layout_width="72dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/menu_mark_all_as_read"
+                        android:padding="0dp"
+                        android:src="@drawable/ic_mark_read"
+                        android:tint="@android:color/white" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/itemlist_search_container"
+                style="?actionbarBackground"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="noExcludeDescendants"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:background="?attr/feedListSearchBackground"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_search"
+                        android:tint="?attr/feedListSearchHintColor" />
+
+                    <EditText
+                        android:id="@+id/itemlist_search_query"
+                        style="?defaultText"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:autofillHints="@null"
+                        android:background="@null"
+                        android:gravity="center_vertical"
+                        android:hint="@string/story_search_hint"
+                        android:imeOptions="actionSearch"
+                        android:includeFontPadding="false"
+                        android:inputType="textNoSuggestions"
+                        android:maxLines="1"
+                        android:minHeight="0dp"
+                        android:paddingVertical="0dp"
+                        android:textColor="?attr/feedListSearchTextColor"
+                        android:textColorHint="?attr/feedListSearchHintColor"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/itemlist_search_progress"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        app:indicatorColor="?attr/feedListSearchHintColor"
+                        app:indicatorInset="0dp"
+                        app:indicatorSize="16dp"
+                        app:trackColor="@color/transparent"
+                        app:trackThickness="2dp" />
+
+                    <ImageView
+                        android:id="@+id/itemlist_clear_search_query"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="6dp"
+                        android:background="@null"
+                        android:contentDescription="@string/feed_list_clear_search"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:padding="0dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_search_clear"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/itemlist_try_feed_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemlist_story_header"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/itemlist_try_feed_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemlist_try_feed_title"
+                    style="?defaultText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/itemlist_try_feed_subtitle"
+                    style="?defaultText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="2"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/itemlist_try_feed_subscribe_button"
+                style="@style/tryFeedBannerSubscribeButton"
+                android:layout_width="wrap_content"
+                android:text="@string/try_feed_subscribe_button"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/itemlist_story_status_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemlist_try_feed_banner"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/itemlist_story_status_banner_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
+
+                <FrameLayout
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:foregroundGravity="center">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/itemlist_story_status_spinner"
+                        style="@style/syncStatusProgressIndicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="true"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/itemlist_story_status_offline_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_offline"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/itemlist_story_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/itemlist_story_status_border"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/activity_itemlist_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/itemlist_search_query"
+            android:layout_below="@id/itemlist_story_status_banner"
             android:orientation="horizontal" />
 
         <include
@@ -40,20 +334,8 @@
             layout="@layout/row_fleuron"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/itemlist_search_query"
+            android:layout_below="@id/itemlist_story_status_banner"
             android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/itemlist_sync_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/status_overlay_background"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="SYNC STATUS"
-            android:textColor="@color/status_overlay_text"
-            android:textSize="14sp" />
 
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground"
+    style="?selectorFolderBackground"
     android:addStatesFromChildren="true" >
 
     <ImageView
@@ -73,7 +73,6 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@+id/row_foldersums"
-        android:textStyle="bold"
         android:shadowDy="1"
         android:shadowRadius="1"
         android:maxLines="1"

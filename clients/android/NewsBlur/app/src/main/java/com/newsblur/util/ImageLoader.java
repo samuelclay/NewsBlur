@@ -18,6 +18,7 @@ import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
+import com.newsblur.view.StoryThumbnailView;
 
 import dagger.hilt.android.internal.managers.FragmentComponentManager;
 
@@ -213,8 +214,9 @@ public class ImageLoader {
             // ensure this imageview even still wants this image
             if (!isUrlMapped(photoToLoad.imageView, photoToLoad.url)) return;
 
+            boolean hideStoryThumbnail = (photoToLoad.imageView instanceof StoryThumbnailView);
             if ((bitmap == null) || (bitmap.getHeight() < minImgHeight)) {
-                if (hideMissing) {
+                if (hideMissing || hideStoryThumbnail) {
                     photoToLoad.imageView.setVisibility(View.GONE);
                 } else {
                     photoToLoad.imageView.setImageResource(emptyRID);

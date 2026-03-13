@@ -9,20 +9,18 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
@@ -51,7 +49,17 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, KeyboardListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, KeyboardListener {
+    private static final long SYNC_STATUS_ANIMATION_DURATION_MS = 500L;
+    private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
+    private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
+    private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
+
+    private enum SyncStatusAccessory {
+        NONE,
+        SPINNER,
+        DONE,
+    }
 
     @Inject
     FeedUtils feedUtils;
@@ -64,6 +72,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private ActivityMainBinding binding;
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
+    private boolean hasSeenActiveSyncStatus = false;
+    private boolean isShowingDoneSyncStatus = false;
+    private boolean isShowingLoadingSyncPlaceholder = true;
+    private boolean shouldTrackActiveSyncStatus = false;
+    private int lastForegroundSessionId = 0;
+    private final Runnable hideSyncStatusRunnable = () -> {
+        isShowingDoneSyncStatus = false;
+        hideSyncStatusIndicator(true);
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,13 +93,19 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         keyboardManager = new KeyboardManager();
         EdgeToEdgeUtil.applyView(this, binding);
 
-        // set the status bar to an generic loading message when the activity is first created so
-        // that something is displayed while the service warms up
-        binding.mainSyncStatus.setText(R.string.loading);
-        binding.mainSyncStatus.setVisibility(View.VISIBLE);
+        // Show a placeholder sync status while the service warms up.
+        binding.mainSyncStatusText.setText(R.string.loading);
+        binding.mainSyncStatusSpinner.setVisibility(View.VISIBLE);
+        binding.mainSyncStatusDoneIcon.setVisibility(View.GONE);
+        updateSyncStatusIndicatorBackground(SyncStatusAccessory.SPINNER);
+        binding.mainSyncStatusContainer.setAlpha(1f);
+        binding.mainSyncStatusContainer.setTranslationX(0f);
+        binding.mainSyncStatusContainer.setVisibility(View.VISIBLE);
 
         binding.content.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
-        binding.content.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
+        binding.content.setProgressBackgroundColorSchemeColor(
+                UIUtils.getThemedColor(this, R.attr.actionbarBackground, android.R.attr.background)
+        );
         binding.content.setOnRefreshListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -95,39 +118,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         setUserImageAndName();
 
-        binding.inputSearchQuery.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.inputSearchQuery.setVisibility(View.GONE);
-                    binding.inputSearchQuery.setText("");
-                    checkSearchQuery();
-                    return true;
-                }
-                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    checkSearchQuery();
-                    return true;
-                }
-                return false;
-            }
-        });
-        binding.inputSearchQuery.addTextChangedListener(new TextWatcher() {
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                checkSearchQuery();
-            }
-
-            public void afterTextChanged(Editable s) {
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-        });
-
         feedUtils.currentFolderName = null;
 
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
-        binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
@@ -162,10 +157,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             folderFeedList.forceShowFeed(forceShowFeedId);
         }
 
-        if (folderFeedList.getSearchQuery() != null) {
-            binding.inputSearchQuery.setText(folderFeedList.getSearchQuery());
-            binding.inputSearchQuery.setVisibility(View.VISIBLE);
-        }
+        int foregroundSessionId = NbApplication.getForegroundSessionId();
+        shouldTrackActiveSyncStatus = foregroundSessionId != lastForegroundSessionId;
+        lastForegroundSessionId = foregroundSessionId;
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
         // behaving itself. because the system will re-use the activity, at least one update on resume
@@ -185,7 +179,18 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onPause() {
         keyboardManager.removeListener();
+        cancelPendingSyncStatusHide();
+        hasSeenActiveSyncStatus = false;
+        isShowingDoneSyncStatus = false;
+        shouldTrackActiveSyncStatus = false;
+        hideSyncStatusIndicator(false);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        cancelPendingSyncStatusHide();
+        super.onDestroy();
     }
 
     @Override
@@ -193,9 +198,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if (!((state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
                 (state == StateFilter.BEST))) {
-            binding.inputSearchQuery.setText("");
-            binding.inputSearchQuery.setVisibility(View.GONE);
-            checkSearchQuery();
+            folderFeedList.setSearchQuery(null);
         }
 
         folderFeedList.changeState(state);
@@ -289,34 +292,148 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
+        String rawSyncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        boolean isOfflineSyncStatus = isOfflineSyncStatus(rawSyncStatus);
+        boolean isShowingActiveSyncPill = rawSyncStatus != null && !isOfflineSyncStatus;
+        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning() && !isShowingActiveSyncPill);
 
-        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
-        if (syncStatus != null) {
+        String displayedSyncStatus = rawSyncStatus;
+        if (displayedSyncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
-                syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
+                displayedSyncStatus = displayedSyncStatus + UIUtils.getMemoryUsageDebug(this);
             }
-            binding.mainSyncStatus.setText(syncStatus);
-            binding.mainSyncStatus.setVisibility(View.VISIBLE);
-        } else {
-            binding.mainSyncStatus.setVisibility(View.GONE);
+            isShowingLoadingSyncPlaceholder = false;
+            isShowingDoneSyncStatus = false;
+            if (isOfflineSyncStatus) {
+                hasSeenActiveSyncStatus = false;
+                showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.NONE);
+            } else {
+                if (shouldTrackActiveSyncStatus) {
+                    hasSeenActiveSyncStatus = true;
+                }
+                showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.SPINNER);
+            }
+            return;
+        }
+
+        if (hasSeenActiveSyncStatus) {
+            hasSeenActiveSyncStatus = false;
+            shouldTrackActiveSyncStatus = false;
+            isShowingLoadingSyncPlaceholder = false;
+            showSyncStatusIndicator(getString(R.string.sync_status_done), SyncStatusAccessory.DONE);
+            scheduleDoneSyncStatusHide();
+        } else if (isShowingLoadingSyncPlaceholder) {
+            isShowingLoadingSyncPlaceholder = false;
+            hideSyncStatusIndicator(false);
+        } else if (!isShowingDoneSyncStatus) {
+            hideSyncStatusIndicator(false);
+        }
+    }
+
+    private boolean isOfflineSyncStatus(String syncStatus) {
+        return getString(R.string.sync_status_offline).equals(syncStatus);
+    }
+
+    private void showSyncStatusIndicator(String syncStatus, SyncStatusAccessory accessory) {
+        cancelPendingSyncStatusHide();
+        isShowingDoneSyncStatus = accessory == SyncStatusAccessory.DONE;
+
+        binding.mainSyncStatusText.setText(syncStatus);
+        binding.mainSyncStatusSpinner.setVisibility(accessory == SyncStatusAccessory.SPINNER ? View.VISIBLE : View.GONE);
+        binding.mainSyncStatusDoneIcon.setVisibility(accessory == SyncStatusAccessory.DONE ? View.VISIBLE : View.GONE);
+        updateSyncStatusIndicatorBackground(accessory);
+
+        View container = binding.mainSyncStatusContainer;
+        container.animate().cancel();
+        if (container.getVisibility() != View.VISIBLE) {
+            container.setVisibility(View.VISIBLE);
+            container.post(() -> {
+                container.setTranslationX(getShownSyncStatusStartTranslation());
+                container.setAlpha(0f);
+                container.animate()
+                        .translationX(0f)
+                        .alpha(1f)
+                        .setInterpolator(SYNC_STATUS_SHOW_INTERPOLATOR)
+                        .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
+                        .start();
+            });
+            return;
+        }
+
+        container.animate()
+                .translationX(0f)
+                .alpha(1f)
+                .setInterpolator(SYNC_STATUS_SHOW_INTERPOLATOR)
+                .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
+                .start();
+    }
+
+    private void updateSyncStatusIndicatorBackground(SyncStatusAccessory accessory) {
+        binding.mainSyncStatusContainer.setBackgroundResource(
+                accessory == SyncStatusAccessory.DONE
+                        ? R.drawable.shape_sync_status_pill_done
+                        : R.drawable.shape_sync_status_pill
+        );
+    }
+
+    private void hideSyncStatusIndicator(boolean animated) {
+        cancelPendingSyncStatusHide();
+
+        View container = binding.mainSyncStatusContainer;
+        container.animate().cancel();
+        if (container.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
+        if (!animated) {
+            container.setVisibility(View.GONE);
+            container.setTranslationX(0f);
+            container.setAlpha(1f);
+            return;
+        }
+
+        container.post(() -> container.animate()
+                .translationX(getHiddenSyncStatusTranslation())
+                .alpha(0f)
+                .setInterpolator(SYNC_STATUS_HIDE_INTERPOLATOR)
+                .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
+                .withEndAction(() -> {
+                    container.setVisibility(View.GONE);
+                    container.setTranslationX(0f);
+                    container.setAlpha(1f);
+                })
+                .start());
+    }
+
+    private int getHiddenSyncStatusTranslation() {
+        return binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20);
+    }
+
+    private int getShownSyncStatusStartTranslation() {
+        return binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20);
+    }
+
+    private void scheduleDoneSyncStatusHide() {
+        binding.mainSyncStatusContainer.removeCallbacks(hideSyncStatusRunnable);
+        binding.mainSyncStatusContainer.postDelayed(hideSyncStatusRunnable, SYNC_STATUS_DONE_DURATION_MS);
+    }
+
+    private void cancelPendingSyncStatusHide() {
+        if (binding != null) {
+            binding.mainSyncStatusContainer.removeCallbacks(hideSyncStatusRunnable);
         }
     }
 
     @Override
     public void onRefresh() {
+        shouldTrackActiveSyncStatus = true;
         syncServiceState.forceFeedsFolders();
         triggerSync();
         folderFeedList.clearRecents();
     }
 
     private void onClickMenuButton() {
-        contextMenuDelegate.onMenuClick(binding.mainMenuButton, this);
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return contextMenuDelegate.onMenuItemClick(item, folderFeedList);
+        contextMenuDelegate.onMenuClick(binding.mainMenuButton, folderFeedList);
     }
 
     private void onClickAddButton() {
@@ -327,17 +444,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void onClickUserButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
-    }
-
-    private void onClickSearchFeedsButton() {
-        if (binding.inputSearchQuery.getVisibility() != View.VISIBLE) {
-            binding.inputSearchQuery.setVisibility(View.VISIBLE);
-            binding.inputSearchQuery.requestFocus();
-        } else {
-            binding.inputSearchQuery.setText("");
-            binding.inputSearchQuery.setVisibility(View.GONE);
-            checkSearchQuery();
-        }
     }
 
     @Override
@@ -354,14 +460,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 wasSwipeEnabled = enable;
             }
         }
-    }
-
-    private void checkSearchQuery() {
-        String q = binding.inputSearchQuery.getText().toString().trim();
-        if (q.isEmpty()) {
-            q = null;
-        }
-        folderFeedList.setSearchQuery(q);
     }
 
     private void openAllStories(boolean isAllStoriesSearch) {

@@ -693,7 +693,7 @@ def save_android_receipt(request):
 
     logging.user(request, "~BM~FBSaving Android Receipt: %s %s" % (product_id, order_id))
 
-    paid = request.user.profile.activate_android_premium(order_id)
+    paid = request.user.profile.activate_android_premium(order_id, product_id)
     if paid:
         logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
         subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)

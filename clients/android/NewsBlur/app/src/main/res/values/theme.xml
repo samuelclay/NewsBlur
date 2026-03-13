@@ -15,18 +15,21 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
         <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground</item>
         <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground</item>
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
         <item name="layoutBackground">@style/layoutBackground</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground</item>
         <item name="readingBackground">@style/readingBackground</item>
         <item name="defaultText">@style/defaultText</item>
         <item name="linkText">@style/linkText</item>
+        <item name="storyTitleText">@style/storyTitleText</item>
         <item name="storySnippetText">@style/storySnippetText</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
@@ -60,9 +63,101 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="linearProgressIndicator">@style/linearProgressIndicator</item>
         <item name="toggleButton">@style/toggleButton</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_light</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_light</item>
+        <item name="storyStatusFetchingBackgroundColor">@color/story_status_fetching_background_light</item>
+        <item name="storyStatusFetchingTextColor">@color/story_status_fetching_text_light</item>
+        <item name="storyStatusFetchingBorderColor">@color/story_status_fetching_border_light</item>
+        <item name="storyStatusOfflineBackgroundColor">@color/story_status_offline_background_light</item>
+        <item name="storyStatusOfflineTextColor">@color/story_status_offline_text_light</item>
+        <item name="storyStatusOfflineBorderColor">@color/story_status_offline_border_light</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_white</item>
+        <item name="feedListSearchTextColor">@color/gray20</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
+    </style>
+
+    <style name="NewsBlurSepiaTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/primary_sepia</item>
+        <item name="android:navigationBarColor">@color/primary_sepia</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="colorPrimary">@color/primary_sepia</item>
+        <item name="colorPrimaryDark">@color/primaryDark_sepia</item>
+        <item name="colorSecondary">@color/secondary_sepia</item>
+        <item name="actionBarTheme">@style/actionbar.sepia</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.sepia</item>
+        <item name="popupMenuBackground">@color/item_background_sepia</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.sepia</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.sepia</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.sepia</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.sepia</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.sepia</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.sepia</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground.sepia</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground.sepia</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground.sepia</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.sepia</item>
+        <item name="actionbarBackground">@style/actionbarBackground.sepia</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.sepia</item>
+        <item name="listBackground">@style/listBackground.sepia</item>
+        <item name="layoutBackground">@style/layoutBackground.sepia</item>
+        <item name="layoutRoundedBackground">@style/layoutRoundedBackground.sepia</item>
+        <item name="readingBackground">@style/readingBackground.sepia</item>
+        <item name="defaultText">@style/defaultText.sepia</item>
+        <item name="linkText">@style/linkText.sepia</item>
+        <item name="storyTitleText">@style/storyTitleText.sepia</item>
+        <item name="storySnippetText">@style/storySnippetText.sepia</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.sepia</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.sepia</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.sepia</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata.sepia</item>
+        <item name="chip">@style/chip.sepia</item>
+        <item name="actionButtons">@style/actionButtons.sepia</item>
+        <item name="storyButtons">@style/storyButtons.sepia</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.sepia</item>
+        <item name="shareBarBackground">@style/shareBarBackground.sepia</item>
+        <item name="shareBarText">@style/shareBarText.sepia</item>
+        <item name="commentsHeader">@style/commentsHeader.sepia</item>
+        <item name="rowBorder">@style/rowBorder.sepia</item>
+        <item name="profileCount">@style/profileCount.sepia</item>
+        <item name="profileActivityList">@style/profileActivityList.sepia</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.sepia</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager.sepia</item>
+        <item name="explainerText">@style/explainerText.sepia</item>
+        <item name="toggleText">@style/toggleText.sepia</item>
+        <item name="delimiter">@style/delimiter.sepia</item>
+        <item name="subscriptionHeader">@style/subscriptionHeader.sepia</item>
+        <item name="subscriptionIcon">@style/subscriptionIcon.sepia</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.sepia</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.sepia</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.sepia</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.sepia</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.sepia</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.sepia</item>
+        <item name="muteicon">@style/muteicon.sepia</item>
+        <item name="android:textColor">@color/text_sepia</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="linearProgressIndicator">@style/linearProgressIndicator.sepia</item>
+        <item name="toggleButton">@style/toggleButton.sepia</item>
+        <item name="snackbarStyle">@style/materialSnackBarTheme.sepia</item>
+        <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.sepia</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_sepia</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_sepia</item>
+        <item name="storyStatusFetchingBackgroundColor">@color/story_status_fetching_background_sepia</item>
+        <item name="storyStatusFetchingTextColor">@color/story_status_fetching_text_sepia</item>
+        <item name="storyStatusFetchingBorderColor">@color/story_status_fetching_border_sepia</item>
+        <item name="storyStatusOfflineBackgroundColor">@color/story_status_offline_background_sepia</item>
+        <item name="storyStatusOfflineTextColor">@color/story_status_offline_text_sepia</item>
+        <item name="storyStatusOfflineBorderColor">@color/story_status_offline_border_sepia</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_sepia</item>
+        <item name="feedListSearchTextColor">@color/gray20</item>
+        <item name="feedListSearchHintColor">@color/button_text_sepia</item>
     </style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
@@ -80,18 +175,21 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
-        <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
-        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
-        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
-        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.dark</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.black</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground.black</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground.black</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground.black</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="layoutBackground">@style/layoutBackground.dark</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground.dark</item>
         <item name="readingBackground">@style/readingBackground.dark</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
+        <item name="storyTitleText">@style/storyTitleText.dark</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
@@ -125,9 +223,21 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="linearProgressIndicator">@style/linearProgressIndicator.dark</item>
         <item name="toggleButton">@style/toggleButton.dark</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_dark</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_dark</item>
+        <item name="storyStatusFetchingBackgroundColor">@color/story_status_fetching_background_dark</item>
+        <item name="storyStatusFetchingTextColor">@color/story_status_fetching_text_dark</item>
+        <item name="storyStatusFetchingBorderColor">@color/story_status_fetching_border_dark</item>
+        <item name="storyStatusOfflineBackgroundColor">@color/story_status_offline_background_dark</item>
+        <item name="storyStatusOfflineTextColor">@color/story_status_offline_text_dark</item>
+        <item name="storyStatusOfflineBorderColor">@color/story_status_offline_border_dark</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_feed_list_search_dark</item>
+        <item name="feedListSearchTextColor">@color/story_title_text_dark</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
@@ -145,18 +255,21 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
+        <item name="selectorTopLevelBackground">@style/selectorTopLevelBackground.black</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.black</item>
+        <item name="feedListToolbarBackground">@style/feedListToolbarBackground.black</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="layoutBackground">@style/layoutBackground.black</item>
         <item name="layoutRoundedBackground">@style/layoutRoundedBackground.black</item>
         <item name="readingBackground">@style/readingBackground.black</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
+        <item name="storyTitleText">@style/storyTitleText.black</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
@@ -164,8 +277,8 @@
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
-        <item name="storyButtons">@style/storyButtons.dark</item>
-        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
+        <item name="storyButtons">@style/storyButtons.black</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.black</item>
         <item name="shareBarBackground">@style/shareBarBackground.black</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.black</item>
@@ -190,12 +303,31 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="linearProgressIndicator">@style/linearProgressIndicator.black</item>
         <item name="toggleButton">@style/toggleButton.dark</item>
         <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
         <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
+        <item name="syncStatusBackgroundColor">@color/sync_status_background_black</item>
+        <item name="syncStatusDoneBackgroundColor">@color/sync_status_background_done_black</item>
+        <item name="storyStatusFetchingBackgroundColor">@color/story_status_fetching_background_black</item>
+        <item name="storyStatusFetchingTextColor">@color/story_status_fetching_text_black</item>
+        <item name="storyStatusFetchingBorderColor">@color/story_status_fetching_border_black</item>
+        <item name="storyStatusOfflineBackgroundColor">@color/story_status_offline_background_black</item>
+        <item name="storyStatusOfflineTextColor">@color/story_status_offline_text_black</item>
+        <item name="storyStatusOfflineBorderColor">@color/story_status_offline_border_black</item>
+        <item name="feedListSearchBackground">@drawable/shape_rounded_corners_6dp_feed_list_search_black</item>
+        <item name="feedListSearchTextColor">@color/story_title_text_dark</item>
+        <item name="feedListSearchHintColor">@color/feed_list_search_hint</item>
     </style>
 
     <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="NewsBlurSepiaTheme.Translucent" parent="NewsBlurSepiaTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>

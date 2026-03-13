@@ -217,6 +217,7 @@ open class SyncService :
             Log.d(this, "Finishing primary sync")
 
             syncServiceState.setServiceState(ServiceState.Idle)
+            sendSyncUpdate(UPDATE_STATUS)
         }
 
     override fun onDestroy() {
@@ -396,6 +397,7 @@ open class SyncService :
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
+            prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
             prefsRepo.setIsStaff(feedResponse.isStaff)
             prefsRepo.setExtToken(feedResponse.shareExtToken)
 

@@ -57,6 +57,7 @@ object StoryUtil {
 
             when (themeValue) {
                 PrefConstants.ThemeValue.LIGHT -> sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\"/>")
+                PrefConstants.ThemeValue.SEPIA -> sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"sepia_reading.css\"/>")
                 PrefConstants.ThemeValue.DARK -> sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\"/>")
                 PrefConstants.ThemeValue.BLACK -> sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\"/>")
                 PrefConstants.ThemeValue.AUTO ->

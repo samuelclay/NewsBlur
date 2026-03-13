@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -214,10 +216,21 @@ public class UIUtils {
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         ImageView arrowView = activity.findViewById(R.id.toolbar_arrow);
-        arrowView.setVisibility(showHomeEnabled ? View.VISIBLE : View.GONE);
+        boolean showBackArrow = showHomeEnabled || (activity instanceof Reading) || (activity instanceof ItemsList);
+        arrowView.setVisibility(showBackArrow ? View.VISIBLE : View.INVISIBLE);
         TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
         ImageView iconView = activity.findViewById(R.id.toolbar_icon);
+        ViewGroup.LayoutParams iconLayoutParams = iconView.getLayoutParams();
+        if (iconLayoutParams instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) iconLayoutParams;
+            params.horizontalBias = activity instanceof ItemsList ? 0.5f : 0f;
+            iconView.setLayoutParams(params);
+        }
+        View settingsButton = activity.findViewById(R.id.toolbar_settings_button);
+        if (settingsButton != null) {
+            settingsButton.setVisibility(activity instanceof Reading ? View.VISIBLE : View.INVISIBLE);
+        }
         // using a custom view breaks the system-standard ability to tap the icon or title to return
         // to the previous activity. Re-implement that here.
         arrowView.setOnClickListener(v0 -> activity.finish());
@@ -572,7 +585,7 @@ public class UIUtils {
         PrefConstants.ThemeValue value = prefsRepo.getSelectedTheme();
         if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
             return CustomTabsIntent.COLOR_SCHEME_DARK;
-        } else if (value == PrefConstants.ThemeValue.LIGHT) {
+        } else if (value == PrefConstants.ThemeValue.LIGHT || value == PrefConstants.ThemeValue.SEPIA) {
             return CustomTabsIntent.COLOR_SCHEME_LIGHT;
         } else {
             return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
