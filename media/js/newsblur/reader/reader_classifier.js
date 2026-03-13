@@ -3036,10 +3036,9 @@ var classifier_prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-ai-billing-manage' }, function ($t, $p) {
             e.preventDefault();
-            var $form = $('<form method="POST" action="/profile/manage_usage_billing/"></form>');
-            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
-            $('body').append($form);
-            $form.submit();
+            self.close(function () {
+                NEWSBLUR.reader.open_account_modal({ 'tab': 'premium' });
+            });
         });
 
         // Tab switching

@@ -31,6 +31,7 @@ urlpatterns = [
     url(r"^stripe_checkout/?", views.stripe_checkout, name="stripe-checkout"),
     url(r"^setup_usage_billing/?", views.setup_usage_billing, name="setup-usage-billing"),
     url(r"^manage_usage_billing/?", views.manage_usage_billing, name="manage-usage-billing"),
+    url(r"^usage_billing_history/?", views.usage_billing_history, name="usage-billing-history"),
     url(r"^activities/?", views.load_activities, name="profile-activities"),
     url(r"^payment_history/?", views.payment_history, name="profile-payment-history"),
     url(r"^invoice/(?P<payment_id>\d+)/?$", views.invoice, name="profile-invoice"),

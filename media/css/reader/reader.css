@@ -22430,13 +22430,15 @@ h5.NB-classifier-section-header {
     overflow: hidden;
 }
 
-.NB-account-payments {
+.NB-account-payments,
+.NB-account-usage-payments {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.NB-account-payments .NB-account-payment {
+.NB-account-payments .NB-account-payment,
+.NB-account-usage-payments .NB-account-payment {
     display: flex;
     align-items: center;
     list-style: none;
@@ -22445,45 +22447,54 @@ h5.NB-classifier-section-header {
     border-bottom: 1px solid #E0E0E0;
 }
 
-.NB-account-payments li:last-child {
+.NB-account-payments li:last-child,
+.NB-account-usage-payments li:last-child {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-.NB-account-payments .NB-payments-loading {
+.NB-account-payments .NB-payments-loading,
+.NB-account-usage-payments .NB-payments-loading {
     padding: 0 0 0 20px;
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat left 3px top 3px;
     background-size: 16px;
 }
 
-.NB-account-payments .NB-account-payment-date {
+.NB-account-payments .NB-account-payment-date,
+.NB-account-usage-payments .NB-account-payment-date {
     width: 180px;
     font-weight: bold;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-account-payment-amount {
+.NB-account-payments .NB-account-payment-amount,
+.NB-account-usage-payments .NB-account-payment-amount {
     width: 80px;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-account-payment-provider {
+.NB-account-payments .NB-account-payment-provider,
+.NB-account-usage-payments .NB-account-payment-provider {
     width: 80px;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-scheduled .NB-account-payment-provider {
+.NB-account-payments .NB-scheduled .NB-account-payment-provider,
+.NB-account-usage-payments .NB-scheduled .NB-account-payment-provider {
     color: darkgrey;
 }
 
 .NB-account-payments .NB-scheduled.NB-canceled .NB-account-payment-provider,
-.NB-account-payments .NB-refunded .NB-account-payment-amount {
+.NB-account-payments .NB-refunded .NB-account-payment-amount,
+.NB-account-usage-payments .NB-scheduled.NB-canceled .NB-account-payment-provider,
+.NB-account-usage-payments .NB-refunded .NB-account-payment-amount {
     text-decoration: line-through;
     color: darkred;
 }
 
-.NB-account-payments .NB-account-payment-invoice {
+.NB-account-payments .NB-account-payment-invoice,
+.NB-account-usage-payments .NB-account-payment-invoice {
     font-size: 11px;
     color: #707070;
     text-decoration: none;
@@ -22495,12 +22506,14 @@ h5.NB-classifier-section-header {
     align-items: center;
 }
 
-.NB-account-payments .NB-account-payment-invoice:hover {
+.NB-account-payments .NB-account-payment-invoice:hover,
+.NB-account-usage-payments .NB-account-payment-invoice:hover {
     background-color: #FAD961;
     color: #505050;
 }
 
-.NB-account-payments .NB-account-payment-invoice-icon {
+.NB-account-payments .NB-account-payment-invoice-icon,
+.NB-account-usage-payments .NB-account-payment-invoice-icon {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -22511,7 +22524,8 @@ h5.NB-classifier-section-header {
     margin-right: 4px;
 }
 
-.NB-account-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon {
+.NB-account-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon,
+.NB-account-usage-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon {
     opacity: 1;
 }
 
