@@ -1049,7 +1049,7 @@ abstract class Reading :
 
     fun markStoryAsRead(story: Story) {
         val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
-        feedUtils.markStoryAsRead(story, this, readTimesJson)
+        feedUtils.syncStoryAsRead(story, this, readTimesJson)
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -1152,7 +1152,7 @@ abstract class Reading :
     private fun flushStoryReadTimes() {
         readTimeTracker.harvestCurrentStory()
         val readTimesJson = readTimeTracker.drainQueuedReadTimesJson()
-        feedUtils.flushStoryReadTimes(this, readTimesJson)
+        feedUtils.flushStoryReadTimes(this, readTimesJson, sendImmediately = true)
     }
 
     private fun flushAndStopReadTimeTracking() {
