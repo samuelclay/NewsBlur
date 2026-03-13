@@ -62,7 +62,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -616,14 +615,6 @@ private fun FrostedPanel(
                             colors = listOf(palette.cardTop, palette.cardBottom),
                         ),
                 )
-                .drawBehind {
-                    drawRect(
-                        brush =
-                            Brush.verticalGradient(
-                                colors = listOf(palette.cardHighlight, Color.Transparent),
-                            ),
-                    )
-                }
                 .border(1.dp, palette.cardBorder, shape),
     ) {
         Column(
