@@ -1,16 +1,16 @@
-# Add to Home Assistant configuration.yaml
-# The mount_backup_drive command should already exist.
-# Add offsite_backup to the same shell_command: block.
-
-shell_command:
-  mount_backup_drive: "/config/scripts/mount_backup_drive.sh"
-  offsite_backup: "/config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1"
-
-# Then create an automation in the HA UI or in automations.yaml:
+# Backup scheduling uses cron inside the SSH add-on (not HA shell_command,
+# which runs in HA Core and doesn't have Docker access for mount/unmount).
 #
-# - alias: "Nightly NewsBlur off-site backup"
-#   trigger:
-#     - platform: time
-#       at: "06:00:00"
-#   action:
-#     - service: shell_command.offsite_backup
+# The cron job is installed by /config/scripts/setup_cron.sh, which runs
+# on SSH add-on startup via init_commands in the add-on config.
+#
+# Cron entry (daily 6 AM):
+#   0 6 * * * /config/scripts/mount_backup_drive.sh && \
+#     /config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1; \
+#     /config/scripts/unmount_backup_drive.sh >> /media/newsblur-backup/backup_run.log 2>&1
+#
+# SSH add-on config (/data/options.json):
+#   "init_commands": ["/config/scripts/setup_cron.sh"]
+#
+# NOTE: Do NOT use HA automations or shell_command for backups. HA Core
+# doesn't have Docker, so mount/unmount scripts fail with exit code 127.

@@ -55,7 +55,17 @@ class FeedFinder(object):
         data = text.lower()
         if data and data[:100].count("<html"):
             return False
+        if self.is_wp_json_data(text):
+            return True
         return data.count("<rss") + data.count("<rdf") + data.count("<feed") + data.count("jsonfeed.org")
+
+    def is_wp_json_data(self, text):
+        """Check if text looks like a WordPress REST API JSON response."""
+        text = text.strip()
+        if not text.startswith("["):
+            return False
+        snippet = text[:2000]
+        return '"rendered"' in snippet and '"link"' in snippet and '"type"' in snippet
 
     def is_feed(self, url):
         text = self.get_feed(url)

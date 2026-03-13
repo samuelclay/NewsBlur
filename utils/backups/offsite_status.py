@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import datetime, timedelta
 
 BACKUP_DRIVE = "/media/newsblur-backup"
 SHOW_N = 3
@@ -110,8 +111,6 @@ def get_mongo_start_time():
             match = re.match(r"(\d+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", lines[-1])
             if match:
                 ts_str = match.group(1).split(":", 1)[1]
-                from datetime import datetime
-
                 return datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
     except Exception:
         pass
@@ -128,8 +127,6 @@ def get_partial():
         date_str = match.group(1) if match else None
         size = os.path.getsize(f)
         # Elapsed time from mongodump start in backup.log
-        from datetime import datetime
-
         start = get_mongo_start_time()
         elapsed = (datetime.now() - start).total_seconds() if start else 0
         return date_str, size, elapsed
@@ -195,6 +192,35 @@ def get_mongodump_progress():
     return None
 
 
+def _parse_log_timestamp(log_line):
+    """Extract datetime from a log line (format: '2026-03-04 08:26:25 ...')."""
+    match = re.match(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", log_line)
+    if not match:
+        return None
+    try:
+        return datetime.strptime(match.group(1), "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return None
+
+
+# Max age (hours) before a phase marker is considered stale.
+# If the backup process crashed, the marker stays in the log forever;
+# these thresholds let us stop reporting it as "running".
+_PHASE_MAX_AGE_HOURS = {
+    "MongoDB": 25,  # mongodump streams for 12+ hours; timeout is 24h
+}
+_DEFAULT_MAX_AGE_HOURS = 1  # PostgreSQL, Redis, cleanup, etc. finish quickly
+
+
+def _phase_is_stale(log_line, phase_name):
+    """Check if a phase marker's timestamp is too old for that phase to still be running."""
+    ts = _parse_log_timestamp(log_line)
+    if ts is None:
+        return True
+    max_hours = _PHASE_MAX_AGE_HOURS.get(phase_name, _DEFAULT_MAX_AGE_HOURS)
+    return (datetime.now() - ts) > timedelta(hours=max_hours)
+
+
 def get_active_phase():
     """Determine if a backup is currently running and which phase it's in."""
     log_file = os.path.join(BACKUP_DRIVE, "backup.log")
@@ -207,20 +233,74 @@ def get_active_phase():
             if "=== Backup pull complete ===" in line:
                 return None
             if "--- Verifying backup integrity ---" in line:
-                return "verifying"
+                return None if _phase_is_stale(line, "verifying") else "verifying"
             if "--- Running local retention cleanup ---" in line:
-                return "cleanup"
+                return None if _phase_is_stale(line, "cleanup") else "cleanup"
             if "--- MongoDB full dump" in line:
-                return "MongoDB"
+                return None if _phase_is_stale(line, "MongoDB") else "MongoDB"
             if "--- Redis backups from S3 ---" in line:
-                return "Redis"
+                return None if _phase_is_stale(line, "Redis") else "Redis"
             if "--- PostgreSQL backup from S3 ---" in line:
-                return "PostgreSQL"
+                return None if _phase_is_stale(line, "PostgreSQL") else "PostgreSQL"
             if "=== Starting NewsBlur off-site backup pull ===" in line:
-                return "starting"
+                return None if _phase_is_stale(line, "starting") else "starting"
     except Exception:
         pass
     return None
+
+
+BACKUP_SCHEDULE_HOUR = 6  # HA automation runs at 06:00 daily
+
+
+def format_relative_time(dt):
+    """Format a datetime as a human-readable relative string (e.g., '2h ago', 'in 5h 30m')."""
+    now = datetime.now()
+    delta = abs(now - dt)
+    total_seconds = int(delta.total_seconds())
+    if total_seconds < 60:
+        rel = "just now"
+    elif total_seconds < 3600:
+        minutes = total_seconds // 60
+        rel = "%dm" % minutes
+    elif total_seconds < 86400:
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        rel = "%dh %dm" % (hours, minutes) if minutes else "%dh" % hours
+    else:
+        days = total_seconds // 86400
+        hours = (total_seconds % 86400) // 3600
+        rel = "%dd %dh" % (days, hours) if hours else "%dd" % days
+
+    if rel == "just now":
+        return rel
+    return "%s ago" % rel if dt < now else "in %s" % rel
+
+
+def get_last_backup_time():
+    """Find the timestamp of the most recent '=== Backup pull complete ===' in backup.log."""
+    log_file = os.path.join(BACKUP_DRIVE, "backup.log")
+    if not os.path.exists(log_file):
+        return None
+    try:
+        result = subprocess.run(
+            ["grep", "-n", "=== Backup pull complete ===", log_file], capture_output=True, text=True
+        )
+        lines = result.stdout.strip().split("\n")
+        if lines and lines[-1]:
+            ts = _parse_log_timestamp(lines[-1].split(":", 1)[1] if ":" in lines[-1] else lines[-1])
+            return ts
+    except Exception:
+        pass
+    return None
+
+
+def get_next_backup_time():
+    """Calculate the next scheduled backup (daily at BACKUP_SCHEDULE_HOUR:00)."""
+    now = datetime.now()
+    next_run = now.replace(hour=BACKUP_SCHEDULE_HOUR, minute=0, second=0, microsecond=0)
+    if next_run <= now:
+        next_run += timedelta(days=1)
+    return next_run
 
 
 def get_disk_usage():
@@ -272,12 +352,26 @@ def print_table():
     print("  \033[1mNewsBlur Off-site Backup Status\033[0m")
     print("  \033[2m%s\033[0m" % ("─" * 52))
 
+    last = get_last_backup_time()
+    if last:
+        print(
+            "  \033[2mLast backup: %s (%s)\033[0m"
+            % (last.strftime("%Y-%m-%d %H:%M"), format_relative_time(last))
+        )
+
+    active = get_active_phase()
+    if not active:
+        next_run = get_next_backup_time()
+        print(
+            "  \033[2mNext backup: %s (%s)\033[0m"
+            % (next_run.strftime("%Y-%m-%d %H:%M"), format_relative_time(next_run))
+        )
+
     verify_data = load_verify_status()
     if verify_data:
         ts = verify_data.get("timestamp", "")
         print("  \033[2mLast verified: %s\033[0m" % ts)
 
-    active = get_active_phase()
     if active:
         if active == "starting":
             print("  \033[33m◀ Backup starting...\033[0m")

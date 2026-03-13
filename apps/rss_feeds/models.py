@@ -599,6 +599,11 @@ class Feed(models.Model):
             without_rss = True
         if url and "reddit.com/r/" in url and url.endswith(".rss"):
             without_rss = True
+        if url and "/wp-json/wp/v2/posts" in url:
+            if "_embed" not in url:
+                separator = "&" if "?" in url else "?"
+                url = f"{url}{separator}_embed=true"
+            without_rss = True
 
         def criteria(key, value):
             if aggressive:

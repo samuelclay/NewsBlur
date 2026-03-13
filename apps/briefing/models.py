@@ -149,6 +149,8 @@ VALID_SECTION_KEYS.update({"custom_%d" % i for i in range(1, 6)})
 
 DEFAULT_SECTIONS = {s["key"]: s["default"] for s in BRIEFING_SECTION_DEFINITIONS}
 
+DEFAULT_SECTION_ORDER = [s["key"] for s in BRIEFING_SECTION_DEFINITIONS]
+
 MAX_CUSTOM_SECTIONS = 5
 
 
@@ -172,6 +174,7 @@ class MBriefingPreferences(mongo.Document):
         default=None
     )  # {"trending_unread": True, "custom_1": True, ...} or None for defaults
     custom_section_prompts = mongo.ListField(mongo.StringField(), default=None)  # Up to 5 custom prompts
+    section_order = mongo.ListField(mongo.StringField(), default=None)  # Ordered section keys, None = default
 
     meta = {
         "collection": "briefing_preferences",

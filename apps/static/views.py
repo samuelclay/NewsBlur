@@ -65,6 +65,50 @@ def compare_feedbin(request):
     return render(request, "static/compare_feedbin.xhtml")
 
 
+def feature_intelligence_training(request):
+    return render(request, "static/feature_intelligence_training.xhtml")
+
+
+def feature_ask_ai(request):
+    return render(request, "static/feature_ask_ai.xhtml")
+
+
+def feature_web_feeds(request):
+    return render(request, "static/feature_web_feeds.xhtml")
+
+
+def feature_newsletters(request):
+    return render(request, "static/feature_newsletters.xhtml")
+
+
+def feature_search(request):
+    return render(request, "static/feature_search.xhtml")
+
+
+def feature_archive(request):
+    return render(request, "static/feature_archive.xhtml")
+
+
+def feature_saved_stories(request):
+    return render(request, "static/feature_saved_stories.xhtml")
+
+
+def feature_native_apps(request):
+    return render(request, "static/feature_native_apps.xhtml")
+
+
+def pricing_premium(request):
+    return render(request, "static/pricing_premium.xhtml", {"current_plan": "premium"})
+
+
+def pricing_archive(request):
+    return render(request, "static/pricing_archive.xhtml", {"current_plan": "archive"})
+
+
+def pricing_pro(request):
+    return render(request, "static/pricing_pro.xhtml", {"current_plan": "pro"})
+
+
 def faq(request):
     return render(request, "static/faq.xhtml")
 

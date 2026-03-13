@@ -8419,7 +8419,7 @@
                 e.preventDefault();
                 var story_id = $t.closest('.NB-menu-manage').data('story_id');
                 var story = self.model.get_story(story_id);
-                NEWSBLUR.assets.stories.mark_read(story);
+                NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
             });
 
             $.targetIs(e, { tagSelector: '.task_view_page:not(.NB-task-return)' }, function ($t, $p) {

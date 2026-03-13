@@ -193,6 +193,12 @@ class AskAIViewModel: ObservableObject {
         conversation.questionText = customQuestion
         conversation.questionId = "custom"
         conversation.model = selectedModel  // Use the currently selected model
+
+        // Add follow-up question to conversation history before sending (matches web behavior)
+        conversation.conversationHistory.append(
+            AskAIMessage(role: "user", content: customQuestion)
+        )
+
         customQuestion = ""
 
         // Save model preference
@@ -424,12 +430,7 @@ class AskAIViewModel: ObservableObject {
         )
         conversation.completedBlocks.append(block)
 
-        // Preserve conversation context for follow-ups
-        if !questionText.isEmpty {
-            conversation.conversationHistory.append(
-                AskAIMessage(role: "user", content: questionText)
-            )
-        }
+        // Preserve conversation context for follow-ups (only assistant; user messages are added in sendFollowUp before sending)
         if !responseText.isEmpty {
             conversation.conversationHistory.append(
                 AskAIMessage(role: "assistant", content: responseText)
@@ -503,11 +504,6 @@ class AskAIViewModel: ObservableObject {
                         isFollowUp: isFollowUp
                     )
                     self.conversation.completedBlocks.append(block)
-                    if !questionText.isEmpty {
-                        self.conversation.conversationHistory.append(
-                            AskAIMessage(role: "user", content: questionText)
-                        )
-                    }
                     if !responseText.isEmpty {
                         self.conversation.conversationHistory.append(
                             AskAIMessage(role: "assistant", content: responseText)

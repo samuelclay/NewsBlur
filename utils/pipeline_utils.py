@@ -65,6 +65,7 @@ class LightningCSSCompressor(CompressorBase):
             filename="pipeline.css",
             error_recovery=True,
             minify=True,
+            browsers_list=["> 0.5%"],
         )
 
 

@@ -167,7 +167,19 @@ def save_classifier(request):
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        classifier = None
+                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
+                        fallback_dict = {
+                            k: v
+                            for k, v in classifier_dict.items()
+                            if k not in ("scope", "folder_name", "is_regex")
+                        }
+                        if fallback_dict != classifier_dict:
+                            try:
+                                classifier = ClassifierCls.objects.get(**fallback_dict)
+                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
+                                classifier = None
+                        else:
+                            classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:
@@ -625,7 +637,19 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        classifier = None
+                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
+                        fallback_dict = {
+                            k: v
+                            for k, v in classifier_dict.items()
+                            if k not in ("scope", "folder_name", "is_regex")
+                        }
+                        if fallback_dict != classifier_dict:
+                            try:
+                                classifier = ClassifierCls.objects.get(**fallback_dict)
+                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
+                                classifier = None
+                        else:
+                            classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:

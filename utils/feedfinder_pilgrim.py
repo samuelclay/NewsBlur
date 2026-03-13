@@ -264,10 +264,13 @@ def tryBrokenRedirect(data):
 
 
 def couldBeFeedData(data):
-    data = data.lower()
-    if data.count("<html"):
+    data_lower = data.lower()
+    if data_lower.count("<html"):
         return 0
-    return data.count("<rss") + data.count("<rdf") + data.count("<feed")
+    stripped = data.strip()
+    if stripped.startswith("[") and '"rendered"' in stripped[:2000] and '"link"' in stripped[:2000]:
+        return 1
+    return data_lower.count("<rss") + data_lower.count("<rdf") + data_lower.count("<feed")
 
 
 def isFeed(uri):
