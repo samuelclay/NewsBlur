@@ -627,7 +627,7 @@ class ReadingItemFragment :
                     feedUtils.markStoryUnread(it, requireContext())
                     getString(R.string.story_unread)
                 } else {
-                    feedUtils.markStoryAsRead(it, requireContext())
+                    (activity as? Reading)?.markStoryAsRead(it) ?: feedUtils.markStoryAsRead(it, requireContext())
                     getString(R.string.story_read)
                 }
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)

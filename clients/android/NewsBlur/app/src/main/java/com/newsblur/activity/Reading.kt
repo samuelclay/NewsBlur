@@ -47,6 +47,7 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
@@ -113,6 +114,8 @@ abstract class Reading :
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
+    private val readTimeTracker = ReadTimeTracker()
+    private var readTimeTickJob: Job? = null
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
@@ -227,6 +230,7 @@ abstract class Reading :
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false)
         keyboardManager.addListener(this)
+        resumeCurrentStoryReadTimeTracking()
         updateBackSwipeGestureExclusion()
     }
 
@@ -234,6 +238,7 @@ abstract class Reading :
         if (!isFinishing) {
             resetInteractiveReaderBackSwipe(cancelAnimation = true)
         }
+        flushAndStopReadTimeTracking()
         super.onPause()
         keyboardManager.removeListener()
         if (isMultiWindowModeHack) {
@@ -542,6 +547,7 @@ abstract class Reading :
                 readingAdapter?.let { readingAdapter ->
                     val story = readingAdapter.getStory(position)
                     if (story != null) {
+                        beginReadTimeTracking(story.storyHash)
                         synchronized(pageHistory) {
                             // if the history is just starting out or the last entry in it isn't this page, add this page
                             if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
@@ -566,6 +572,8 @@ abstract class Reading :
         currentWidth: Int,
         currentHeight: Int,
     ) {
+        readTimeTracker.recordActivity()
+
         // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
         if (abs(lastVScrollPos - vPos) < 2) return
@@ -1036,8 +1044,25 @@ abstract class Reading :
     ): Job =
         lifecycleScope.launch(Dispatchers.Default) {
             if (isActive) delay(delayMillis)
-            if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
+            if (isActive) markStoryAsRead(story)
         }
+
+    fun markStoryAsRead(story: Story) {
+        val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
+        feedUtils.markStoryAsRead(story, this, readTimesJson)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (
+            event.actionMasked == MotionEvent.ACTION_DOWN ||
+            event.actionMasked == MotionEvent.ACTION_MOVE ||
+            event.actionMasked == MotionEvent.ACTION_UP
+        ) {
+            readTimeTracker.recordActivity()
+        }
+
+        return super.dispatchTouchEvent(event)
+    }
 
     override fun onKeyboardEvent(event: KeyboardEvent) {
         when (event) {
@@ -1071,6 +1096,7 @@ abstract class Reading :
             completeInteractiveReaderBackSwipe()
             return
         }
+        flushAndStopReadTimeTracking()
         setResult(
             RESULT_OK,
             Intent().apply {
@@ -1087,6 +1113,53 @@ abstract class Reading :
         }
         suppressNextExitTransition = false
         allowImmediateFinish = false
+    }
+
+    private fun beginReadTimeTracking(storyHash: String?) {
+        if (storyHash.isNullOrBlank()) return
+
+        val previousStoryHash = readTimeTracker.currentStoryHash
+        if (previousStoryHash != null && previousStoryHash != storyHash) {
+            readTimeTracker.harvestCurrentStory()
+        }
+
+        readTimeTracker.startTracking(storyHash)
+        ensureReadTimeTickJob()
+    }
+
+    private fun resumeCurrentStoryReadTimeTracking() {
+        val currentStory =
+            if (pager == null || readingAdapter == null) {
+                null
+            } else {
+                readingAdapter!!.getStory(pager!!.currentItem)
+            }
+        beginReadTimeTracking(currentStory?.storyHash)
+    }
+
+    private fun ensureReadTimeTickJob() {
+        if (readTimeTickJob?.isActive == true) return
+
+        readTimeTickJob =
+            lifecycleScope.launch(Dispatchers.Default) {
+                while (isActive) {
+                    delay(1_000L)
+                    readTimeTracker.tick()
+                }
+            }
+    }
+
+    private fun flushStoryReadTimes() {
+        readTimeTracker.harvestCurrentStory()
+        val readTimesJson = readTimeTracker.drainQueuedReadTimesJson()
+        feedUtils.flushStoryReadTimes(this, readTimesJson)
+    }
+
+    private fun flushAndStopReadTimeTracking() {
+        readTimeTickJob?.cancel()
+        readTimeTickJob = null
+        flushStoryReadTimes()
+        readTimeTracker.stopTracking()
     }
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
