@@ -58,6 +58,7 @@
     <string name="share_this">Share</string>
     <string name="already_shared">Shared</string>
     <string name="share_this_story">Share</string>
+    <string name="share_with_comment">Share with comment</string>
     <string name="unshare">Delete share</string>
     <string name="update_shared">Update comment</string>
     <string name="rename">Rename</string>

@@ -86,10 +86,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newsblur.R
-import com.newsblur.design.Black
-import com.newsblur.design.Gray10
-import com.newsblur.design.Gray96
-import com.newsblur.design.NbSepiaSurface
+import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.PrefConstants.ThemeValue
 
 @Composable
@@ -1202,48 +1199,18 @@ private fun askAiListIcon(type: AskAiQuestionType): ImageVector =
         else -> Icons.Rounded.AutoAwesome
     }
 
-private fun askAiPalette(theme: ThemeValue): AskAiPalette =
-    when (theme) {
-        ThemeValue.SEPIA ->
-            AskAiPalette(
-                background = NbSepiaSurface,
-                cardBackground = Color(0xFFFAF5ED),
-                border = Color(0xFFD4C8B8),
-                textPrimary = Color(0xFF5C4A3D),
-                textSecondary = Color(0xFF8B7B6B),
-                inputBackground = Color(0xFFFAF5ED),
-            )
-
-        ThemeValue.DARK ->
-            AskAiPalette(
-                background = Gray10,
-                cardBackground = Color(0xFF4A4A4A),
-                border = Color(0xFF5A5A5A),
-                textPrimary = Color(0xFFE0E0E0),
-                textSecondary = Color(0xFFA0A0A0),
-                inputBackground = Color(0xFF3A3A3A),
-            )
-
-        ThemeValue.BLACK ->
-            AskAiPalette(
-                background = Black,
-                cardBackground = Color(0xFF2A2A2A),
-                border = Color(0xFF404040),
-                textPrimary = Color(0xFFE8E8E8),
-                textSecondary = Color(0xFFB0B0B0),
-                inputBackground = Color(0xFF222222),
-            )
-
-        else ->
-            AskAiPalette(
-                background = Gray96,
-                cardBackground = Color.White,
-                border = Color(0xFFD0D2CC),
-                textPrimary = Color(0xFF5E6267),
-                textSecondary = Color(0xFF90928B),
-                inputBackground = Color(0xFFF8F9F6),
-            )
-    }
+private fun askAiPalette(theme: ThemeValue): AskAiPalette {
+    val palette = ReaderSheetPalette.colors(theme)
+    return AskAiPalette(
+        background = palette.background,
+        cardBackground = palette.cardBackground,
+        border = palette.border,
+        textPrimary = palette.textPrimary,
+        textSecondary = palette.textSecondary,
+        inputBackground = palette.inputBackground,
+        accent = palette.accent,
+    )
+}
 
 internal fun askAiSheetBackgroundColor(theme: ThemeValue): Color = askAiPalette(theme).background
 
