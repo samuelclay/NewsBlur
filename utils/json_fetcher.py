@@ -99,8 +99,18 @@ class JSONFetcher:
             excerpt_obj = post.get("excerpt", {})
             content = excerpt_obj.get("rendered", "") if isinstance(excerpt_obj, dict) else str(excerpt_obj)
 
-        author_name = ""
         embedded = post.get("_embedded", {})
+
+        # Prepend featured image if available and not already in content
+        featured_media = embedded.get("wp:featuredmedia", []) if embedded else []
+        if featured_media and isinstance(featured_media, list):
+            media = featured_media[0]
+            image_url = media.get("source_url", "")
+            alt_text = media.get("alt_text", "")
+            if image_url and image_url not in content:
+                content = f'<img src="{image_url}" alt="{alt_text}" />' + content
+
+        author_name = ""
         if embedded:
             authors = embedded.get("author", [])
             if authors and isinstance(authors, list):
