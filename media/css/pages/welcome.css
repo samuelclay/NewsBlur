@@ -1801,6 +1801,12 @@ a.NB-fgi img {
     /* indigo-purple */
 }
 
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-15 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/search-filled.svg');
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
+}
+
 /* Pro tier bullets with vivid colors */
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/stack.svg');

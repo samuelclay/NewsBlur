@@ -176,6 +176,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-14' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Web Feeds from any website, even without RSS'
+                        ]),
+                        $.make('li', { className: 'NB-15' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Natural language search by near terms'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -213,10 +217,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-upcoming NB-5' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Natural language filters'
-                        ]),
-                        $.make('li', { className: 'NB-upcoming NB-6' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Natural language search'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

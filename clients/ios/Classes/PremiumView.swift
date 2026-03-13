@@ -138,7 +138,8 @@ struct PremiumView: View {
         PremiumFeature(title: "Filter stories by date range", icon: "calendar", iconColor: .pink),
         PremiumFeature(title: "Apply training across a folder", icon: "folder.fill", iconColor: .mint),
         PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo),
-        PremiumFeature(title: "Web Feeds from any website, even without RSS", icon: "web-feed-100", iconColor: .purple, isCustomImage: true)
+        PremiumFeature(title: "Web Feeds from any website, even without RSS", icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
+        PremiumFeature(title: "Natural language search by near terms", icon: "magnifyingglass.circle.fill", iconColor: .teal)
     ]
 
     @available(iOS 15.0, *)
@@ -149,8 +150,7 @@ struct PremiumView: View {
             PremiumFeature(title: "All feeds fetched every 5-15 minutes", icon: "bolt.fill", iconColor: PremiumColors.proOrange),
             PremiumFeature(title: "Train stories with regular expressions", icon: "textformat.abc", iconColor: .yellow),
             PremiumFeature(title: "Priority support", icon: "headphones", iconColor: .yellow),
-            PremiumFeature(title: "Natural language filters", icon: "text.magnifyingglass", iconColor: .gray, isUpcoming: true),
-            PremiumFeature(title: "Natural language search", icon: "magnifyingglass.circle", iconColor: .gray, isUpcoming: true)
+            PremiumFeature(title: "Natural language filters", icon: "text.magnifyingglass", iconColor: .gray, isUpcoming: true)
         ]
     }
 
