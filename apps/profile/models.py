@@ -963,6 +963,31 @@ class Profile(models.Model):
         self.user.paypal_ids.create(paypal_sub_id=paypal_sub_id)
         logging.user(self.user, f"~FBPaypal sub ~SBadded~SN: ~SB{paypal_sub_id}")
 
+    def store_google_play_ids(self, purchase_token, product_id=None, order_id=None):
+        if not purchase_token:
+            logging.user(self.user, "~FBGoogle Play purchase token not found, ignoring")
+            return
+
+        existing = self.user.google_play_ids.filter(purchase_token=purchase_token).first()
+        if existing:
+            updated = False
+            if order_id and existing.order_id != order_id:
+                existing.order_id = order_id
+                updated = True
+            if product_id and existing.product_id != product_id:
+                existing.product_id = product_id
+                updated = True
+            if updated:
+                existing.save()
+            return
+
+        self.user.google_play_ids.create(
+            purchase_token=purchase_token,
+            product_id=product_id,
+            order_id=order_id,
+        )
+        logging.user(self.user, f"~FBGoogle Play purchase token ~SBadded~SN: product={product_id}")
+
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day
         for provider in [
@@ -1806,7 +1831,10 @@ class Profile(models.Model):
         logging.user(self.user, "~FG~BBNew iOS pro subscription: $%s~FW" % amount)
         return True
 
-    def activate_android_premium(self, order_id=None, amount=36):
+    def activate_android_premium(self, order_id=None, product_id=None, amount=36):
+        if product_id == "nb.premium.archive.99":
+            amount = 99
+
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
@@ -1843,12 +1871,12 @@ class Profile(models.Model):
 
         self.setup_premium_history()
 
-        if order_id == "nb.premium.archive.99":
+        if product_id == "nb.premium.archive.99":
             self.activate_archive()
         elif not self.is_premium:
             self.activate_premium()
 
-        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % amount)
+        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s (%s)~FW" % (amount, product_id))
         return True
 
     @classmethod
@@ -2793,6 +2821,16 @@ class PaypalIds(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.user.username, self.paypal_sub_id)
+
+
+class GooglePlayIds(models.Model):
+    user = models.ForeignKey(User, related_name="google_play_ids", on_delete=models.CASCADE, null=True)
+    purchase_token = models.TextField(unique=True)
+    product_id = models.CharField(max_length=64, blank=True, null=True)
+    order_id = models.CharField(max_length=64, blank=True, null=True)
+
+    def __str__(self):
+        return "%s: %s (%s)" % (self.user.username, self.product_id, self.order_id or "")
 
 
 def create_profile(sender, instance, created, **kwargs):
