@@ -2,20 +2,14 @@ package com.newsblur.askai
 
 import android.Manifest
 import android.app.Dialog
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
@@ -29,6 +23,7 @@ import com.newsblur.R
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.NewsBlurBottomSheet
 import com.newsblur.util.UIUtils
 import com.newsblur.viewModel.AskAiViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,22 +54,11 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
         )
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        BottomSheetDialog(requireContext()).apply {
-            behavior.skipCollapsed = true
-            behavior.isFitToContents = true
-            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = NewsBlurBottomSheet.createDialog(this)
 
     override fun onStart() {
         super.onStart()
-        val dialog = dialog as? BottomSheetDialog ?: return
-        val bottomSheet =
-            dialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet) ?: return
-
-        bottomSheet.background = createBottomSheetBackground()
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        dialog?.let { NewsBlurBottomSheet.expandWithTheme(it, prefsRepo.getSelectedTheme()) }
     }
 
     override fun onCreateView(
@@ -83,7 +67,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
-            setBackgroundColor(Color.TRANSPARENT)
+            setBackgroundColor(android.graphics.Color.TRANSPARENT)
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 NewsBlurTheme(
@@ -166,13 +150,6 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
             viewModel.transcribeAudio(audioFile)
         } else {
             viewModel.setVoiceError(getString(R.string.ask_ai_microphone_error))
-        }
-    }
-
-    private fun createBottomSheetBackground(): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            setColor(askAiSheetBackgroundColor(prefsRepo.getSelectedTheme()).toArgb())
         }
     }
 

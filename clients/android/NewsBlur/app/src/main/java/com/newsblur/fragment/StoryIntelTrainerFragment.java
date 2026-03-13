@@ -1,66 +1,63 @@
 package com.newsblur.fragment;
 
+import java.util.Map;
+
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.Nullable;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogTrainstoryBinding;
+import com.newsblur.databinding.FragmentStoryIntelTrainerSheetBinding;
+import com.newsblur.design.ReaderSheetPalette;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.NewsBlurBottomSheet;
 import com.newsblur.util.UIUtils;
-import com.newsblur.viewModel.StoryIntelTrainerViewModel;
-import com.newsblur.viewModel.StoryIntelUiState;
-
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class StoryIntelTrainerFragment extends DialogFragment {
+public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
 
     @Inject
     FeedUtils feedUtils;
 
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    PrefsRepo prefsRepo;
+
     private Story story;
     private FeedSet fs;
-    private DialogTrainstoryBinding binding;
+    private Classifier classifier;
+    private Integer newTitleTraining;
+    private DialogTrainstoryBinding contentBinding;
+    private FragmentStoryIntelTrainerSheetBinding binding;
 
-    private StoryIntelUiState latestState;
-    private StoryIntelTrainerViewModel viewModel;
-    private AlertDialog dialog;
-
-    public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs, @Nullable String selectedText) {
+    public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs) {
         if (story.feedId.equals("0")) {
             throw new IllegalArgumentException("cannot intel train stories with a null/zero feed");
         }
         StoryIntelTrainerFragment fragment = new StoryIntelTrainerFragment();
         Bundle args = new Bundle();
-        args.putString("feedId", story.feedId);
-        args.putString("storyHash", story.storyHash);
-        args.putString("storyTitle", story.title);
-
         args.putSerializable("story", story);
-        args.putSerializable("feedSet", fs);
-        args.putString("selectedText", selectedText);
+        args.putSerializable("feedset", fs);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,235 +65,143 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        return NewsBlurBottomSheet.createDialog(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            NewsBlurBottomSheet.expandWithTheme(dialog, prefsRepo.getSelectedTheme());
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentStoryIntelTrainerSheetBinding.inflate(inflater, container, false);
+        contentBinding = binding.trainContent;
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         story = (Story) getArguments().getSerializable("story");
-        fs = (FeedSet) getArguments().getSerializable("feedSet");
-        @Nullable String selectedText = getArguments().getString("selectedText");
-
-        View v = getLayoutInflater().inflate(R.layout.dialog_trainstory, null);
-        binding = DialogTrainstoryBinding.bind(v);
-
-        binding.intelLoading.setVisibility(View.VISIBLE);
-        binding.intelContent.setVisibility(View.GONE);
-
-        // get the viewmodel (Hilt-created Kotlin VM) using ViewModelProvider
-        viewModel = new ViewModelProvider(this).get(StoryIntelTrainerViewModel.class);
-
-        // observe LiveData UI state
-        viewModel.getUiState().observe(this, uiState -> {
-            latestState = uiState;
-            renderUiState(uiState);
-        });
+        fs = (FeedSet) getArguments().getSerializable("feedset");
+        classifier = dbHelper.getClassifierForFeed(story.feedId);
+        bindTheme();
 
         // set up the special title training box for the title from this story and the associated buttons
-        binding.intelTitleSelection.setText(story.title);
+        contentBinding.intelTitleSelection.setText(story.title);
         // the layout sets inputType="none" on this EditText, but a widespread platform bug requires us
         // to also set this programmatically to make the field read-only for selection.
-        binding.intelTitleSelection.setInputType(InputType.TYPE_NULL);
+        contentBinding.intelTitleSelection.setInputType(android.text.InputType.TYPE_NULL);
         // the user is selecting for our custom widget, not to copy/paste
-        binding.intelTitleSelection.disableActionMenu();
+        contentBinding.intelTitleSelection.disableActionMenu();
         // pre-select the whole title to make it easier for the user to manipulate the selection handles
-        binding.intelTitleSelection.selectAll();
+        contentBinding.intelTitleSelection.selectAll();
         // do this after init and selection to prevent toast spam
-        binding.intelTitleSelection.setForceSelection(true);
+        contentBinding.intelTitleSelection.setForceSelection(true);
         // the disposition buttons for a new title training don't immediately impact the classifier object,
         // lest the user want to change selection substring after choosing the disposition.  so just store
         // the training factor in a variable that can be pulled on completion
-        binding.intelTitleLike.setOnClickListener(v1 -> {
-            viewModel.setPendingTitleTraining(Classifier.LIKE);
-            setLikeViews(binding.intelTitleLike, binding.intelTitleDislike);
+        contentBinding.intelTitleLike.setOnClickListener(v -> {
+            newTitleTraining = Classifier.LIKE;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_green);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
         });
-        binding.intelTitleDislike.setOnClickListener(v2 -> {
-            viewModel.setPendingTitleTraining(Classifier.DISLIKE);
-            setDislikeViews(binding.intelTitleLike, binding.intelTitleDislike);
+        contentBinding.intelTitleDislike.setOnClickListener(v -> {
+            newTitleTraining = Classifier.DISLIKE;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
         });
-        binding.intelTitleClear.setOnClickListener(v3 -> {
-            viewModel.setPendingTitleTraining(null);
-            setClearViews(binding.intelTitleLike, binding.intelTitleDislike);
+        contentBinding.intelTitleClear.setOnClickListener(v -> {
+            newTitleTraining = null;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
         });
 
-        if (selectedText != null && !selectedText.isEmpty()) {
-            // data
-            binding.intelTextSelection.setText(selectedText);
-            binding.intelTextSelection.setInputType(InputType.TYPE_NULL);
-            binding.intelTextSelection.disableActionMenu();
-            binding.intelTextSelection.selectAll();
-            binding.intelTextSelection.setForceSelection(true);
-
-            // visibility
-            binding.intelTextHeader.setVisibility(View.VISIBLE);
-            binding.intelTextSelection.setVisibility(View.VISIBLE);
-            binding.intelTextClear.setVisibility(View.VISIBLE);
-            binding.intelTextLike.setVisibility(View.VISIBLE);
-            binding.intelTextDislike.setVisibility(View.VISIBLE);
-
-            // disposition buttons
-
-            binding.intelTextLike.setOnClickListener(v4 -> {
-                viewModel.setPendingTextTraining(Classifier.LIKE);
-                setLikeViews(binding.intelTextLike, binding.intelTextDislike);
-            });
-            binding.intelTextDislike.setOnClickListener(v5 -> {
-                viewModel.setPendingTextTraining(Classifier.DISLIKE);
-                setDislikeViews(binding.intelTextLike, binding.intelTextDislike);
-            });
-            binding.intelTextClear.setOnClickListener(v6 -> {
-                viewModel.setPendingTextTraining(null);
-                setClearViews(binding.intelTextLike, binding.intelTextDislike);
-            });
-        } else {
-            binding.intelTextHeader.setVisibility(View.GONE);
-            binding.intelTextLike.setVisibility(View.GONE);
-            binding.intelTextDislike.setVisibility(View.GONE);
-            binding.intelTextClear.setVisibility(View.GONE);
-            binding.intelTextSelection.setVisibility(View.GONE);
-        }
-
-        AlertDialog.Builder builder = getBuilder(v);
-
-        dialog = builder.create();
-        dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
-        dialog.setOnShowListener(d -> {
-            if (latestState != null) {
-                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                if (positive != null) {
-                    positive.setEnabled(!latestState.getLoading() && latestState.getClassifier() != null);
-                }
-            }
-        });
-        return dialog;
-    }
-
-    @NonNull
-    private AlertDialog.Builder getBuilder(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setTitle(R.string.story_intel_dialog_title);
-        builder.setView(v);
-
-        builder.setNegativeButton(R.string.alert_dialog_cancel, (dialogInterface, i) -> StoryIntelTrainerFragment.this.dismiss());
-        builder.setPositiveButton(R.string.dialog_story_intel_save, (dialogInterface, i) -> {
-            if (latestState == null || latestState.getClassifier() == null) {
-                return;
-            }
-            String textSelection =
-                    (binding.intelTextSelection.getVisibility() == View.VISIBLE)
-                            ? binding.intelTextSelection.getSelection()
-                            : null;
-
-            Classifier updated = viewModel.buildUpdatedClassifier(
-                    latestState.getClassifier(),
-                    binding.intelTitleSelection.getSelection(),
-                    textSelection
-            );
-            // existing call to persist/send
-            feedUtils.updateClassifier(story.feedId, updated, fs, requireActivity());
-            StoryIntelTrainerFragment.this.dismiss();
-        });
-        return builder;
-    }
-
-    private void setDislikeViews(View like, View dislike) {
-        like.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-        dislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
-    }
-
-    private void setLikeViews(View like, View dislike) {
-        like.setBackgroundResource(R.drawable.ic_thumb_up_green);
-        dislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-    }
-
-    private void setClearViews(View like, View dislike) {
-        like.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-        dislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-    }
-
-    private void renderUiState(StoryIntelUiState state) {
-        latestState = state;
-
-        binding.intelLoading.setVisibility(state.getLoading() ? View.VISIBLE : View.GONE);
-        binding.intelContent.setVisibility(state.getLoading() ? View.GONE : View.VISIBLE);
-
-        if (state.getError() != null) {
-            Toast.makeText(requireContext(), state.getError(), Toast.LENGTH_LONG).show();
-        }
-
-        // enable/disable Save
-        if (dialog != null) {
-            Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            if (positive != null) {
-                positive.setEnabled(!state.getLoading() && state.getClassifier() != null);
+        // scan trained title fragments for this feed and see if any apply to this story
+        for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
+            if (story.title.indexOf(rule.getKey()) >= 0) {
+                View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+                TextView label = row.findViewById(R.id.intel_row_label);
+                label.setText(rule.getKey());
+                UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
+                contentBinding.existingTitleIntelContainer.addView(row);
             }
         }
-
-        if (state.getLoading() || state.getClassifier() == null) return;
-
-        Classifier c = state.getClassifier();
-
-        // ----- Title matches -----
-        binding.existingTitleIntelContainer.removeAllViews();
-        if (story.title != null) {
-            for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
-                if (story.title.contains(rule.getKey())) {
-                    View row = getLayoutInflater().inflate(R.layout.include_intel_row, binding.existingTitleIntelContainer, false);
-                    ((TextView) row.findViewById(R.id.intel_row_label)).setText(rule.getKey());
-                    UIUtils.setupIntelDialogRow(row, c.title, rule.getKey());
-                    binding.existingTitleIntelContainer.addView(row);
-                }
-            }
+        
+        // list all tags for this story, trained or not
+        for (String tag : story.tags) {
+            View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+            TextView label = row.findViewById(R.id.intel_row_label);
+            label.setText(tag);
+            UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
+            contentBinding.existingTagIntelContainer.addView(row);
         }
+        if (story.tags.length < 1) contentBinding.intelTagHeader.setVisibility(View.GONE);
 
-        // ----- Text matches -----
-        binding.existingTextIntelContainer.removeAllViews();
-        String storyText = state.getStoryText();
-        if (storyText != null) {
-            String lower = storyText.toLowerCase(Locale.US);
-            for (Map.Entry<String, Integer> rule : c.texts.entrySet()) {
-                if (lower.contains(rule.getKey().toLowerCase(Locale.US))) {
-                    View row = getLayoutInflater().inflate(R.layout.include_intel_row, binding.existingTextIntelContainer, false);
-                    ((TextView) row.findViewById(R.id.intel_row_label)).setText(rule.getKey());
-                    UIUtils.setupIntelDialogRow(row, c.texts, rule.getKey());
-                    binding.existingTextIntelContainer.addView(row);
-                }
-            }
-
-            if (binding.intelTextHeader.getVisibility() == View.GONE &&
-                    binding.existingTextIntelContainer.getChildCount() > 0) {
-                binding.intelTextHeader.setVisibility(View.VISIBLE);
-            }
-        }
-
-        // ----- Tags -----
-        binding.existingTagIntelContainer.removeAllViews();
-        if (story.tags != null && story.tags.length > 0) {
-            binding.intelTagHeader.setVisibility(View.VISIBLE);
-            for (String tag : story.tags) {
-                View row = getLayoutInflater().inflate(R.layout.include_intel_row, binding.existingTagIntelContainer, false);
-                ((TextView) row.findViewById(R.id.intel_row_label)).setText(tag);
-                UIUtils.setupIntelDialogRow(row, c.tags, tag);
-                binding.existingTagIntelContainer.addView(row);
-            }
-        } else {
-            binding.intelTagHeader.setVisibility(View.GONE);
-        }
-
-        // ----- Author -----
-        binding.existingAuthorIntelContainer.removeAllViews();
+        // there is a single author per story
         if (!TextUtils.isEmpty(story.authors)) {
-            binding.intelAuthorHeader.setVisibility(View.VISIBLE);
-            View row = getLayoutInflater().inflate(R.layout.include_intel_row, binding.existingAuthorIntelContainer, false);
-            ((TextView) row.findViewById(R.id.intel_row_label)).setText(story.authors);
-            UIUtils.setupIntelDialogRow(row, c.authors, story.authors);
-            binding.existingAuthorIntelContainer.addView(row);
+            View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+            TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
+            labelAuthor.setText(story.authors);
+            UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
+            contentBinding.existingAuthorIntelContainer.addView(rowAuthor);
         } else {
-            binding.intelAuthorHeader.setVisibility(View.GONE);
+            contentBinding.intelAuthorHeader.setVisibility(View.GONE);
         }
 
-        // ----- Feed -----
-        binding.existingFeedIntelContainer.removeAllViews();
-        View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, binding.existingFeedIntelContainer, false);
-        ((TextView) rowFeed.findViewById(R.id.intel_row_label)).setText(feedUtils.getFeedTitle(story.feedId));
-        UIUtils.setupIntelDialogRow(rowFeed, c.feeds, story.feedId);
-        binding.existingFeedIntelContainer.addView(rowFeed);
-    }
-}
+        // there is a single feed to be trained, but it is a bit odd in that the label is the title and
+        // the intel identifier is the feed ID
+        View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+        TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
+        labelFeed.setText(feedUtils.getFeedTitle(story.feedId));
+        UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
+        contentBinding.existingFeedIntelContainer.addView(rowFeed);
 
+        binding.cancelButton.setOnClickListener(v -> dismiss());
+        binding.saveButton.setOnClickListener(v -> saveAndDismiss());
+    }
+
+    private void saveAndDismiss() {
+        if ((newTitleTraining != null) && (!TextUtils.isEmpty(contentBinding.intelTitleSelection.getSelection()))) {
+            classifier.title.put(contentBinding.intelTitleSelection.getSelection(), newTitleTraining);
+        }
+        feedUtils.updateClassifier(story.feedId, classifier, fs, requireActivity());
+        dismiss();
+    }
+
+    private void bindTheme() {
+        int borderColor = ReaderSheetPalette.borderArgb(prefsRepo.getSelectedTheme());
+        int textPrimaryColor = ReaderSheetPalette.textPrimaryArgb(prefsRepo.getSelectedTheme());
+        int textSecondaryColor = ReaderSheetPalette.textSecondaryArgb(prefsRepo.getSelectedTheme());
+        int accentColor = ReaderSheetPalette.accentArgb(prefsRepo.getSelectedTheme());
+
+        binding.sheetDragHandle.setBackground(makeRoundedRect(borderColor, 2f));
+        binding.sheetTitle.setTextColor(textPrimaryColor);
+        binding.cancelButton.setTextColor(textSecondaryColor);
+        binding.cancelButton.setRippleColor(android.content.res.ColorStateList.valueOf(borderColor));
+        binding.saveButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accentColor));
+        binding.saveButton.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white));
+    }
+
+    private android.graphics.drawable.GradientDrawable makeRoundedRect(int color, float radiusDp) {
+        android.graphics.drawable.GradientDrawable drawable = new android.graphics.drawable.GradientDrawable();
+        drawable.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        drawable.setCornerRadius(radiusDp * getResources().getDisplayMetrics().density);
+        drawable.setColor(color);
+        return drawable;
+    }
+
+    @Override
+    public void onDestroyView() {
+        contentBinding = null;
+        binding = null;
+        super.onDestroyView();
+    }
+
+}
