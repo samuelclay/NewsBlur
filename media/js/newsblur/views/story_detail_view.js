@@ -886,7 +886,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ===========
 
     mark_read: function () {
-        this.model.mark_read();
+        var delay = NEWSBLUR.assets.preference('read_story_delay');
+        if (delay == -2) {
+            this.model.mark_read({ skip_delay: true });
+        } else {
+            this.model.mark_read();
+        }
     },
 
     preserve_classifier_color: function (classifier_type, value, score) {
