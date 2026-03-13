@@ -2436,6 +2436,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, null, { request_type: 'GET' });
     },
 
+    fetch_usage_billing_history: function (callback) {
+        this.make_request('/profile/usage_billing_history', {}, callback, null, { request_type: 'GET' });
+    },
+
     upgrade_premium: function (user_id, callback, error_callback) {
         this.make_request('/profile/upgrade_premium', {
             user_id: user_id

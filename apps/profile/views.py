@@ -973,6 +973,80 @@ def manage_usage_billing(request):
     return HttpResponseRedirect(portal_session.url, status=303)
 
 
+@ajax_login_required
+@json.json_view
+def usage_billing_history(request):
+    user = request.user
+    if not user.profile.stripe_id or not user.profile.is_usage_billing:
+        return {"invoices": [], "upcoming_invoice": None}
+
+    stripe.api_key = settings.STRIPE_SECRET
+    usage_price_ids = set(
+        filter(None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION])
+    )
+
+    if not usage_price_ids:
+        return {"invoices": [], "upcoming_invoice": None}
+
+    invoices = []
+    try:
+        stripe_invoices = stripe.Invoice.list(customer=user.profile.stripe_id, limit=24)
+        for inv in stripe_invoices.data:
+            line_items = []
+            is_usage_invoice = False
+            for line in inv.lines.data:
+                if line.price and line.price.id in usage_price_ids:
+                    is_usage_invoice = True
+                    line_items.append(
+                        {
+                            "description": line.description or line.price.nickname or "AI classifier usage",
+                            "quantity": line.quantity,
+                            "amount": line.amount / 100.0,
+                        }
+                    )
+            if is_usage_invoice:
+                invoices.append(
+                    {
+                        "date": datetime.datetime.fromtimestamp(inv.created).strftime("%Y-%m-%d"),
+                        "amount": inv.amount_due / 100.0,
+                        "amount_paid": inv.amount_paid / 100.0,
+                        "status": inv.status,
+                        "hosted_invoice_url": inv.hosted_invoice_url,
+                        "invoice_number": inv.number,
+                        "line_items": line_items,
+                    }
+                )
+    except stripe.error.InvalidRequestError:
+        pass
+
+    upcoming_invoice = None
+    try:
+        upcoming = stripe.Invoice.upcoming(customer=user.profile.stripe_id)
+        upcoming_lines = []
+        is_usage = False
+        for line in upcoming.lines.data:
+            if line.price and line.price.id in usage_price_ids:
+                is_usage = True
+                upcoming_lines.append(
+                    {
+                        "description": line.description or line.price.nickname or "AI classifier usage",
+                        "quantity": line.quantity,
+                        "amount": line.amount / 100.0,
+                    }
+                )
+        if is_usage:
+            upcoming_invoice = {
+                "date": datetime.datetime.fromtimestamp(upcoming.period_end).strftime("%Y-%m-%d"),
+                "amount": sum(l["amount"] for l in upcoming_lines),
+                "status": "upcoming",
+                "line_items": upcoming_lines,
+            }
+    except stripe.error.InvalidRequestError:
+        pass
+
+    return {"invoices": invoices, "upcoming_invoice": upcoming_invoice}
+
+
 @render_to("reader/activities_module.xhtml")
 def load_activities(request):
     user = get_user(request)

@@ -32,6 +32,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.select_preferences();
 
         this.fetch_payment_history();
+        this.fetch_usage_billing_history();
         this.render_dates();
         this.fetch_classifiers_count();
         this.handle_classifier_pill_change();
@@ -241,12 +242,22 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                     : 'Set up usage-based billing to use AI content and image filters.'
                             ),
                             (NEWSBLUR.Globals.is_usage_billing
-                                ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, 'Manage billing')
+                                ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, 'Manage billing on Stripe')
                                 : $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-setup NB-modal-submit-button NB-modal-submit-green' }, 'Set up billing')
                             )
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'AI classifier billing'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-usage-billing-history' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('ul', { className: 'NB-account-usage-payments' }, [
+                                $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Usage billing history'
                         ])
                     ])
                 ]),
@@ -799,6 +810,60 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
                         $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider),
+                        $invoice_link
+                    ]));
+                });
+            }
+
+            $(window).resize();
+        }, this));
+    },
+
+    fetch_usage_billing_history: function () {
+        if (!NEWSBLUR.Globals.is_usage_billing) {
+            var $history = $('.NB-account-usage-payments', this.$modal).empty();
+            $history.append($.make('li', { className: 'NB-account-payment' }, [
+                $.make('i', 'No usage billing set up.')
+            ]));
+            return;
+        }
+
+        this.model.fetch_usage_billing_history(_.bind(function (data) {
+            var $history = $('.NB-account-usage-payments', this.$modal).empty();
+
+            if ((!data.invoices || !data.invoices.length) && !data.upcoming_invoice) {
+                $history.append($.make('li', { className: 'NB-account-payment' }, [
+                    $.make('i', 'No usage billing invoices yet.')
+                ]));
+            } else {
+                if (data.upcoming_invoice) {
+                    var upcoming = data.upcoming_invoice;
+                    var upcoming_date = new Date(upcoming.date);
+                    $history.append($.make('li', { className: 'NB-account-payment NB-scheduled' }, [
+                        $.make('div', { className: 'NB-account-payment-date' }, upcoming_date.format("F d, Y")),
+                        $.make('div', { className: 'NB-account-payment-amount' }, "$" + upcoming.amount.toFixed(2)),
+                        $.make('div', { className: 'NB-account-payment-provider' }, '(upcoming)')
+                    ]));
+                }
+                _.each(data.invoices, function (invoice) {
+                    var date = new Date(invoice.date);
+                    var $invoice_link = null;
+
+                    if (invoice.hosted_invoice_url) {
+                        $invoice_link = $.make('a', {
+                            href: invoice.hosted_invoice_url,
+                            target: '_blank',
+                            className: 'NB-account-payment-invoice'
+                        }, [
+                            $.make('span', { className: 'NB-account-payment-invoice-icon' }),
+                            'Invoice'
+                        ]);
+                    }
+
+                    $history.append($.make('li', { className: 'NB-account-payment' + (invoice.status === 'draft' ? ' NB-scheduled' : '') }, [
+                        $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
+                        $.make('div', { className: 'NB-account-payment-amount' }, "$" + invoice.amount_paid.toFixed(2)),
+                        $.make('div', { className: 'NB-account-payment-provider' }, 'stripe'),
                         $invoice_link
                     ]));
                 });
