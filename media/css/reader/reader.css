@@ -37236,12 +37236,46 @@ span.NB-briefing-inline-favicon {
     padding: 6px 8px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: transform 0.15s ease, background 0.15s;
     flex-wrap: wrap;
 }
 
 .NB-briefing-section-item:hover {
     background: rgba(0, 0, 0, 0.04);
+}
+
+/* reader.css: Briefing section drag handle */
+.NB-briefing-drag-handle {
+    width: 18px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: grab;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-briefing-drag-handle:hover {
+    opacity: 0.6;
+}
+
+.NB-briefing-drag-handle:active {
+    cursor: grabbing;
+}
+
+.NB-briefing-drag-handle svg {
+    width: 14px;
+    height: 14px;
+    fill: #888;
+}
+
+.NB-briefing-section-item.NB-briefing-section-dragging {
+    background: #e8eae6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    opacity: 0.9;
+    position: relative;
 }
 
 .NB-briefing-section-checkbox {
@@ -37480,6 +37514,14 @@ span.NB-briefing-inline-favicon {
 
 .NB-dark .NB-briefing-section-item:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-drag-handle svg {
+    fill: #999;
+}
+
+.NB-dark .NB-briefing-section-item.NB-briefing-section-dragging {
+    background: #3a3a3e;
 }
 
 .NB-dark .NB-briefing-section-checkbox {
