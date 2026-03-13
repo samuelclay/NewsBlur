@@ -232,7 +232,23 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Premium renewal'
                         ])
-                    ]))
+                    ])),
+                    $.make('div', { className: 'NB-preference NB-preference-usage-billing' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-usage-billing-status' },
+                                NEWSBLUR.Globals.is_usage_billing
+                                    ? 'Usage-based billing is enabled for AI classifiers.'
+                                    : 'Set up usage-based billing to use AI content and image filters.'
+                            ),
+                            (NEWSBLUR.Globals.is_usage_billing
+                                ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, 'Manage billing')
+                                : $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-setup NB-modal-submit-button NB-modal-submit-green' }, 'Set up billing')
+                            )
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'AI classifier billing'
+                        ])
+                    ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-emails' }, [
                     $.make('div', { className: 'NB-preference NB-preference-emails' }, [
@@ -751,6 +767,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 }
             }
 
+            if (data.is_usage_billing !== undefined) {
+                NEWSBLUR.Globals.is_usage_billing = data.is_usage_billing;
+            }
+
             if (!data.payments || !data.payments.length) {
                 $history.append($.make('li', { className: 'NB-account-payment' }, [
                     $.make('i', 'No payments found.')
@@ -843,6 +863,20 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
 
             self.delete_classifiers();
+        });
+        $.targetIs(e, { tagSelector: '.NB-account-usage-billing-setup' }, function ($t, $p) {
+            e.preventDefault();
+            var $form = $('<form method="POST" action="/profile/setup_usage_billing/"></form>');
+            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
+            $('body').append($form);
+            $form.submit();
+        });
+        $.targetIs(e, { tagSelector: '.NB-account-usage-billing-manage' }, function ($t, $p) {
+            e.preventDefault();
+            var $form = $('<form method="POST" action="/profile/manage_usage_billing/"></form>');
+            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
+            $('body').append($form);
+            $form.submit();
         });
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function ($t, $p) {
             e.preventDefault();

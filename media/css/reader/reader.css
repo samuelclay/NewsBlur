@@ -12913,6 +12913,9 @@ h5.NB-classifier-section-header {
     border: 1px solid #e2e5e9;
     border-radius: 6px;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
 .NB-ai-cost-amounts {
@@ -12963,6 +12966,29 @@ h5.NB-classifier-section-header {
 
 .NB-ai-cost-preview b {
     color: #555;
+}
+
+.NB-ai-billing-action {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.NB-ai-billing-setup {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #6d5a00;
+}
+
+.NB-ai-billing-manage {
+    background: #e8f5e9;
+    border: 1px solid #81c784;
+    color: #2e7d32;
 }
 
 /* ======================== */
