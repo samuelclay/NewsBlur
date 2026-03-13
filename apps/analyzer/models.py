@@ -798,13 +798,13 @@ class MClassifierPrompt(mongo.Document):
             # Apply global prompts (feed_id=0)
             if 0 in feed_prompts:
                 for prompt in feed_prompts[0]:
-                    results = cls._run_classifier(prompt, feed_stories)
+                    results = cls._run_classifier(prompt, feed_stories, user_id=user_id)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
             # Apply feed-specific prompts
             if feed_id in feed_prompts:
                 for prompt in feed_prompts[feed_id]:
-                    results = cls._run_classifier(prompt, feed_stories)
+                    results = cls._run_classifier(prompt, feed_stories, user_id=user_id)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
         # Apply folder-specific prompts if we have folder_ids
@@ -821,13 +821,13 @@ class MClassifierPrompt(mongo.Document):
 
                     # Apply folder prompts to eligible stories
                     for prompt in folder_prompts[folder_id]:
-                        results = cls._run_classifier(prompt, folder_stories)
+                        results = cls._run_classifier(prompt, folder_stories, user_id=user_id)
                         cls._update_classifications(classifications, results, prompt.classifier_type)
 
         return classifications
 
     @classmethod
-    def _run_classifier(cls, prompt, stories):
+    def _run_classifier(cls, prompt, stories, user_id=None):
         """Route to text-only or vision classifier based on prompt's include_images flag."""
         if prompt.include_images:
             return classify_stories_with_vision(prompt, stories)
@@ -1020,6 +1020,19 @@ def get_classifiers_for_user(
         if info:
             tags_scope[t.tag] = info
 
+    # Fetch prompt classifiers for this user/feed, split into content vs image dicts
+    prompt_params = {"user_id": user.pk}
+    if feed_id and not isinstance(feed_id, list):
+        prompt_params["feed_id"] = feed_id
+    prompts_dict = {}
+    image_prompts_dict = {}
+    for p in MClassifierPrompt.objects.filter(**prompt_params):
+        score = 1 if p.classifier_type == "focus" else -1
+        if p.include_images:
+            image_prompts_dict[p.prompt] = score
+        else:
+            prompts_dict[p.prompt] = score
+
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
@@ -1035,6 +1048,8 @@ def get_classifiers_for_user(
         "urls_scope": urls_scope,
         "authors_scope": authors_scope,
         "tags_scope": tags_scope,
+        "prompts": prompts_dict,
+        "image_prompts": image_prompts_dict,
     }
 
     return payload

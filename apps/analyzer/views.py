@@ -200,6 +200,63 @@ def save_classifier(request):
     _save_classifier(MClassifierUrl, "url")
     _save_classifier(MClassifierFeed, "feed")
 
+    # Handle AI prompt classifiers (content and image)
+    # Content prompts: like_prompt / dislike_prompt (include_images=False)
+    # Image prompts: like_image_prompt / dislike_image_prompt (include_images=True)
+    prompt_opinions = {
+        "like_prompt": ("focus", False),
+        "dislike_prompt": ("hidden", False),
+        "remove_like_prompt": (None, False),
+        "remove_dislike_prompt": (None, False),
+        "like_image_prompt": ("focus", True),
+        "dislike_image_prompt": ("hidden", True),
+        "remove_like_image_prompt": (None, True),
+        "remove_dislike_image_prompt": (None, True),
+    }
+    for opinion, (classifier_type, include_images) in prompt_opinions.items():
+        if opinion in post:
+            for prompt_text in post.getlist(opinion):
+                if not prompt_text:
+                    continue
+                if len(prompt_text) > 500:
+                    continue
+                lookup = {
+                    "user_id": request.user.pk,
+                    "feed_id": feed_id or 0,
+                    "prompt": prompt_text,
+                    "include_images": include_images,
+                }
+                try:
+                    classifier = MClassifierPrompt.objects.get(**lookup)
+                except MClassifierPrompt.DoesNotExist:
+                    classifier = None
+                except MClassifierPrompt.MultipleObjectsReturned:
+                    classifiers_found = MClassifierPrompt.objects.filter(**lookup)
+                    if classifier_type is None:
+                        for c in classifiers_found:
+                            c.delete()
+                    else:
+                        first = classifiers_found[0]
+                        first.classifier_type = classifier_type
+                        first.save()
+                        for dup in classifiers_found[1:]:
+                            dup.delete()
+                    continue
+                if not classifier:
+                    if classifier_type is not None:
+                        MClassifierPrompt.objects.create(
+                            user_id=request.user.pk,
+                            feed_id=feed_id or 0,
+                            prompt=prompt_text,
+                            classifier_type=classifier_type,
+                            include_images=include_images,
+                        )
+                elif classifier_type is None:
+                    classifier.delete()
+                elif classifier.classifier_type != classifier_type:
+                    classifier.classifier_type = classifier_type
+                    classifier.save()
+
     # Update has_scoped_classifiers flag on profile
     if scope != "feed":
         if not request.user.profile.has_scoped_classifiers:
@@ -228,10 +285,6 @@ def save_prompt_classifier(request):
 
     if classifier_type not in ("focus", "hidden"):
         return {"code": -1, "message": "Invalid classifier_type"}
-
-    # Premium gating: image vision requires archive/pro tier
-    if include_images and not (request.user.profile.is_archive or request.user.profile.is_pro):
-        return {"code": -1, "message": "Image filters require Premium Archive or Pro"}
 
     if action == "delete" and prompt_id:
         try:
@@ -284,7 +337,14 @@ def save_prompt_classifier(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % feed_id)
 
-    return {"code": 0, "message": "OK", "prompt_classifiers": prompt_list}
+    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+    cost_estimate = {}
+    if request.user.profile.is_pro:
+        estimator = AIClassifierCostEstimator(request.user)
+        cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
+
+    return {"code": 0, "message": "OK", "prompt_classifiers": prompt_list, "cost_estimate": cost_estimate}
 
 
 @require_POST
@@ -295,7 +355,10 @@ def test_prompt_classifier(request):
     import zlib
 
     from apps.rss_feeds.models import MStory
-    from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
+    from utils.ai_functions import (
+        classify_stories_with_ai,
+        classify_stories_with_vision,
+    )
 
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
@@ -306,9 +369,6 @@ def test_prompt_classifier(request):
         return {"code": -1, "message": "Missing prompt"}
     if not story_hash:
         return {"code": -1, "message": "Missing story_hash"}
-
-    if not (request.user.profile.is_archive or request.user.profile.is_pro):
-        return {"code": -1, "message": "Requires Premium Archive or Pro"}
 
     try:
         story_db = MStory.objects.get(story_hash=story_hash)
@@ -368,15 +428,37 @@ def test_prompt_classifier(request):
 
     mode = "vision" if include_images else "text"
 
+    # Include cost estimate so frontend can show per-run cost
+    cost_estimate = {}
+    if request.user.profile.is_pro:
+        from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+        estimator = AIClassifierCostEstimator(request.user)
+        cost_estimate = estimator.get_cost_estimate(feed_id=int(request.POST.get("feed_id", 0)))
+
     logging.user(
         request,
         "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s" % (mode, story_hash, classification, prompt_text[:50]),
     )
 
-    resp = {"code": 0, "classification": classification}
+    resp = {"code": 0, "classification": classification, "cost_estimate": cost_estimate}
     if include_images:
         resp["image_results"] = image_results
     return resp
+
+
+@ajax_login_required
+@json.json_view
+def get_ai_classifier_usage(request):
+    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+    if not request.user.profile.is_pro:
+        return {"code": 0, "is_pro": False}
+
+    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
+    estimator = AIClassifierCostEstimator(request.user)
+    cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
+    return {"code": 0, "is_pro": True, **cost_estimate}
 
 
 @json.json_view

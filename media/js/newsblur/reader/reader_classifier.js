@@ -163,6 +163,7 @@ var classifier_prototype = {
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
             this.resize_modal();
+            this.load_prompt_classifiers();
             // Initialize Tipsy tooltips for help icons (now that modal is in DOM)
             this.$modal.find('.NB-classifier-help-icon').tipsy({
                 gravity: 's',
@@ -988,7 +989,7 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var is_premium = NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro;
+        var is_premium = NEWSBLUR.Globals.is_pro;
 
         var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
 
@@ -1001,21 +1002,15 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-content-filter-header' }, [
                     $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
                     'AI Content Filter'
-                ]),
-                $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!is_premium && $.make('span', { className: 'NB-classifier-archive-notice' }, [
-                        'Requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
-                    ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-ai-cost-estimate' }),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-content-prompt-input',
-                        placeholder: is_premium ? 'e.g., "AI and machine learning" or "local politics"' : 'Upgrade to use AI content filters',
-                        disabled: !is_premium
+                        placeholder: 'e.g., "AI and machine learning" or "local politics"'
                     }),
                     (story && $.make('div', {
                         className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
@@ -1026,7 +1021,8 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-this-story' }, [
                         $prompt_classifier
                     ]),
-                    $.make('div', { className: 'NB-content-filter-saved-list' })
+                    $.make('div', { className: 'NB-content-filter-saved-list' }),
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
                 ])
             ])
         ]);
@@ -1039,6 +1035,7 @@ var classifier_prototype = {
         var update_content_prompt = function () {
             var text = $.trim($input.val());
             var $btn = $('.NB-content-filter-test-button', $section);
+            var $banner = $('.NB-ai-filter-upgrade-banner', $section);
             if (text.length) {
                 $placeholder.text(text);
                 $placeholder.css('font-style', 'normal');
@@ -1046,11 +1043,21 @@ var classifier_prototype = {
                 if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($pill_classifier, 'like');
                 }
-                if (is_premium) $btn.removeClass('NB-disabled');
+                $btn.removeClass('NB-disabled');
+                if (!is_premium) {
+                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                        $.make('b', 'AI content filters won\'t apply until you '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                        $.make('b', '.')
+                    ])).show();
+                }
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
                 $btn.addClass('NB-disabled');
+                // Only hide banner if no saved classifiers
+                var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
+                if (!has_saved) $banner.empty().hide();
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1059,7 +1066,7 @@ var classifier_prototype = {
 
         // Test button: call text-only AI to classify this story
         var run_test = function () {
-            if (!is_premium || !story) return;
+            if (!story) return;
             var prompt_text = $.trim($input.val());
             if (!prompt_text) return;
 
@@ -1071,9 +1078,11 @@ var classifier_prototype = {
             NEWSBLUR.assets.test_prompt_classifier({
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
-                include_images: 'false'
+                include_images: 'false',
+                feed_id: feed_id
             }, function (resp) {
                 $btn.text('Test on this story').removeClass('NB-disabled');
+                if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
                 if (resp.code === 0) {
                     var cls = resp.classification;
                     var matched = cls !== 0;
@@ -1090,54 +1099,104 @@ var classifier_prototype = {
             if (!$(this).hasClass('NB-disabled')) run_test();
         });
 
-        // Enter saves the prompt classifier
+        // Enter adds the prompt as a pill to the saved list
         $input.on('keypress', function (e) {
             if (e.which !== 13) return;
             e.preventDefault();
-            if (!is_premium) return;
 
             var prompt_text = $.trim($input.val());
             if (!prompt_text) return;
 
-            var classifier_type = $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus';
+            var is_dislike = $pill_classifier.is('.NB-classifier-dislike');
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'content');
+            var $cl = $('.NB-classifier', $pill);
+            if (is_dislike) {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', 'neutral');
 
-            $input.prop('disabled', true);
-            NEWSBLUR.assets.save_prompt_classifier({
-                feed_id: feed_id,
-                prompt: prompt_text,
-                classifier_type: classifier_type,
-                include_images: 'false',
-                action: 'save'
-            }, function (resp) {
-                $input.prop('disabled', false).val('').focus();
-                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-                $placeholder.html('Describe what to focus or hide');
-                $placeholder.css('font-style', 'italic');
-                $('.NB-content-filter-test-status', $section).empty();
-                if (resp.code === 0) {
-                    self.render_content_filter_list($section, resp.prompt_classifiers);
+            var $list = $('.NB-content-filter-saved-list', $section);
+            $list.append($pill);
+
+            $input.val('').focus();
+            $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+            $placeholder.html('Describe what to focus or hide');
+            $placeholder.css('font-style', 'italic');
+            $('.NB-content-filter-test-status', $section).empty();
+            var $btn = $('.NB-content-filter-test-button', $section);
+            $btn.addClass('NB-disabled');
+
+            // Show upgrade banner for non-Pro users
+            if (!is_premium) {
+                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                    $.make('b', 'AI content filters are saved but won\'t apply until you '),
+                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                    $.make('b', '.')
+                ])).show();
+            }
+
+            self.recalculate_section_costs();
+        });
+
+        // Fetch and display cost estimate for Pro users
+        if (is_premium) {
+            NEWSBLUR.assets.get_ai_classifier_usage({ feed_id: feed_id }, function (resp) {
+                if (resp.is_pro) {
+                    self.update_ai_cost_estimates(resp);
                 }
             });
-        });
+        }
 
         return $section;
     },
 
-    render_content_filter_list: function ($section, prompt_classifiers) {
+    load_prompt_classifiers: function () {
+        if (!this.user_classifiers) return;
+        var prompts = this.user_classifiers.prompts || {};
+        var image_prompts = this.user_classifiers.image_prompts || {};
+
+        var $content_section = this.$modal.find('.NB-classifier-content-filter-section');
+        var $image_section = this.$modal.find('.NB-classifier-image-filter-section');
+
+        if ($content_section.length) {
+            this.render_content_filter_list($content_section, prompts);
+        }
+        if ($image_section.length) {
+            this.render_image_filter_list($image_section, image_prompts);
+        }
+
+        // Recalculate cost estimates now that pills are in the DOM
+        this.recalculate_section_costs();
+    },
+
+    render_content_filter_list: function ($section, prompts) {
         var self = this;
-        var feed_id = this.feed_id;
         var $list = $('.NB-content-filter-saved-list', $section);
         $list.empty();
 
-        if (!prompt_classifiers || !prompt_classifiers.length) return;
+        var prompt_keys = _.keys(prompts || {});
 
-        // Only show text-only classifiers (include_images === false)
-        var text_classifiers = _.filter(prompt_classifiers, function (pc) { return !pc.include_images; });
-        if (!text_classifiers.length) return;
+        // Show/hide upgrade banner
+        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_pro) {
+            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                $.make('b', 'AI content filters are saved but won\'t apply until you '),
+                $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                $.make('b', '.')
+            ])).show();
+        } else {
+            $banner.empty().hide();
+        }
 
-        _.each(text_classifiers, function (pc) {
-            var score = pc.classifier_type === 'focus' ? 1 : -1;
-            var $pill = self.make_prompt_classifier(pc.prompt, pc.prompt, 'content');
+        if (!prompt_keys.length) return;
+
+        _.each(prompts, function (score, prompt_text) {
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'content');
             var $cl = $('.NB-classifier', $pill);
 
             if (score > 0) {
@@ -1148,34 +1207,7 @@ var classifier_prototype = {
                 $('.NB-classifier-input-dislike', $pill).prop('checked', true);
             }
             $cl.data('original-state', score > 0 ? 'like' : 'dislike');
-            $cl.data('prompt-id', pc.id);
 
-            var $delete = $.make('span', {
-                className: 'NB-image-filter-item-delete',
-                title: 'Remove filter'
-            }, '\u00d7');
-
-            $delete.on('click', function (e) {
-                e.stopPropagation();
-                var $container = $(this).closest('.NB-classifier-container');
-                $container.css({ opacity: 0.5, 'pointer-events': 'none' });
-
-                NEWSBLUR.assets.save_prompt_classifier({
-                    feed_id: feed_id,
-                    prompt_id: pc.id,
-                    action: 'delete'
-                }, function (resp) {
-                    if (resp.code === 0) {
-                        $container.slideUp(200, function () {
-                            self.render_content_filter_list($section, resp.prompt_classifiers);
-                        });
-                    } else {
-                        $container.css({ opacity: 1, 'pointer-events': 'auto' });
-                    }
-                });
-            });
-
-            $pill.append($delete);
             $list.append($pill);
         });
     },
@@ -1184,7 +1216,7 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var is_premium = NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro;
+        var is_premium = NEWSBLUR.Globals.is_pro;
 
         // SVG icon for the header
         var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1213,22 +1245,16 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-image-filter-header' }, [
                     $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
                     'AI Image Filter'
-                ]),
-                $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!is_premium && $.make('span', { className: 'NB-classifier-archive-notice' }, [
-                        'Requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
-                    ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-ai-cost-estimate' }),
                 $image_grid,
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-prompt-input',
-                        placeholder: is_premium ? 'e.g., "food photography" or "charts and graphs"' : 'Upgrade to use AI image filters',
-                        disabled: !is_premium
+                        placeholder: 'e.g., "food photography" or "charts and graphs"'
                     }),
                     (image_urls.length > 0 && $.make('div', {
                         className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
@@ -1239,7 +1265,8 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-this-story' }, [
                         $prompt_classifier
                     ]),
-                    $.make('div', { className: 'NB-image-filter-saved-list' })
+                    $.make('div', { className: 'NB-image-filter-saved-list' }),
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
                 ])
             ])
         ]);
@@ -1253,6 +1280,7 @@ var classifier_prototype = {
         var update_prompt_classifier = function () {
             var text = $.trim($input.val());
             var $btn = $('.NB-image-filter-test-button', $section);
+            var $banner = $('.NB-ai-filter-upgrade-banner', $section);
             if (text.length) {
                 $placeholder.text(text);
                 $placeholder.css('font-style', 'normal');
@@ -1260,11 +1288,20 @@ var classifier_prototype = {
                 if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($pill_classifier, 'like');
                 }
-                if (is_premium) $btn.removeClass('NB-disabled');
+                $btn.removeClass('NB-disabled');
+                if (!is_premium) {
+                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                        $.make('b', 'AI image filters won\'t apply until you '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                        $.make('b', '.')
+                    ])).show();
+                }
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
                 $btn.addClass('NB-disabled');
+                var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
+                if (!has_saved) $banner.empty().hide();
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1274,7 +1311,6 @@ var classifier_prototype = {
 
         // Test button: call VLM API to classify this story's images against the prompt
         var run_test = function () {
-            if (!is_premium) return;
             var prompt_text = $.trim($input.val());
             if (!prompt_text) return;
             if (!story || !image_urls.length) return;
@@ -1292,9 +1328,11 @@ var classifier_prototype = {
             NEWSBLUR.assets.test_prompt_classifier({
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
-                include_images: 'true'
+                include_images: 'true',
+                feed_id: feed_id
             }, function (resp) {
                 $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');
+                if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
                 var $thumbs = $('.NB-image-filter-thumb', $section);
                 $thumbs.removeClass('NB-image-filter-thumb-testing');
                 // Remove old labels
@@ -1337,37 +1375,201 @@ var classifier_prototype = {
             if (!$(this).hasClass('NB-disabled')) run_test();
         });
 
-        // On Enter, save the prompt classifier immediately via the API
+        // Enter adds the prompt as a pill to the saved list
         $input.on('keypress', function (e) {
             if (e.which !== 13) return;
             e.preventDefault();
-            if (!is_premium) return;
 
             var prompt_text = $.trim($input.val());
             if (!prompt_text) return;
 
-            var classifier_type = $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus';
+            var is_dislike = $pill_classifier.is('.NB-classifier-dislike');
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'image');
+            var $cl = $('.NB-classifier', $pill);
+            if (is_dislike) {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', 'neutral');
 
-            $input.prop('disabled', true);
-            NEWSBLUR.assets.save_prompt_classifier({
-                feed_id: feed_id,
-                prompt: prompt_text,
-                classifier_type: classifier_type,
-                include_images: 'true',
-                action: 'save'
-            }, function (resp) {
-                $input.prop('disabled', false).val('').focus();
-                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-                $placeholder.html('Describe what to focus or hide');
-                $placeholder.css('font-style', 'italic');
-                self.clear_image_test_results($section);
-                if (resp.code === 0) {
-                    self.render_image_filter_list($section, resp.prompt_classifiers);
-                }
-            });
+            var $list = $('.NB-image-filter-saved-list', $section);
+            $list.append($pill);
+
+            $input.val('').focus();
+            $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+            $placeholder.html('Describe what to focus or hide');
+            $placeholder.css('font-style', 'italic');
+            self.clear_image_test_results($section);
+            var $btn = $('.NB-image-filter-test-button', $section);
+            $btn.addClass('NB-disabled');
+
+            // Show upgrade banner for non-Pro users
+            if (!is_premium) {
+                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                    $.make('b', 'AI image filters are saved but won\'t apply until you '),
+                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                    $.make('b', '.')
+                ])).show();
+            }
+
+            self.recalculate_section_costs();
         });
 
         return $section;
+    },
+
+    update_ai_cost_estimates: function (estimate) {
+        // Store estimate data for recalculation when scope changes
+        if (estimate) {
+            this._cost_estimate = estimate;
+        }
+        this.recalculate_section_costs();
+    },
+
+    recalculate_section_costs: function () {
+        var estimate = this._cost_estimate;
+        if (!estimate) {
+            $('.NB-ai-cost-estimate').hide();
+            return;
+        }
+
+        var avg_text = estimate.avg_cost_per_text || 0;
+        var avg_image = estimate.avg_cost_per_image || 0;
+
+        // Content filter section
+        var $content_section = this.$modal.find('.NB-classifier-content-filter-section');
+        var $content_el = $content_section.find('.NB-ai-cost-estimate');
+        this._render_section_cost($content_el, {
+            type: 'content filter',
+            cost_per_run: avg_text,
+            $section: $content_section,
+            pill_selector: '.NB-content-filter-saved-list .NB-classifier-container'
+        });
+
+        // Image filter section
+        var $image_section = this.$modal.find('.NB-classifier-image-filter-section');
+        var $image_el = $image_section.find('.NB-ai-cost-estimate');
+        this._render_section_cost($image_el, {
+            type: 'image filter',
+            cost_per_run: avg_image,
+            $section: $image_section,
+            pill_selector: '.NB-image-filter-saved-list .NB-classifier-container'
+        });
+    },
+
+    _stories_for_scope: function (scope, folder_name) {
+        if (scope === 'global') {
+            var total = 0;
+            NEWSBLUR.assets.feeds.each(function (feed) {
+                total += (feed.get('stories_last_month') || 0);
+            });
+            return total;
+        } else if (scope === 'folder' && folder_name) {
+            var folder = NEWSBLUR.assets.get_folder(folder_name);
+            if (!folder) return 0;
+            var feed_ids = folder.feed_ids_in_folder();
+            var total = 0;
+            _.each(feed_ids, function (fid) {
+                var f = NEWSBLUR.assets.get_feed(fid);
+                if (f) total += (f.get('stories_last_month') || 0);
+            });
+            return total;
+        } else {
+            // feed scope — use current feed
+            return this.feed ? (this.feed.get('stories_last_month') || 0) : 0;
+        }
+    },
+
+    _format_cost: function (amount) {
+        if (amount === 0) return '$0.00';
+        if (amount < 0.005) return '$' + amount.toFixed(4);
+        if (amount < 0.10) return '$' + amount.toFixed(3);
+        return '$' + amount.toFixed(2);
+    },
+
+    _render_section_cost: function ($el, opts) {
+        if (!$el.length) return;
+
+        var cost_per = opts.cost_per_run || 0;
+        var type = opts.type;
+        var self = this;
+        var feed_stories = this.feed ? (this.feed.get('stories_last_month') || 0) : 0;
+
+        // Count saved pills and compute total stories across all scopes
+        var $pills = opts.$section.find(opts.pill_selector);
+        var total_stories = 0;
+        var filter_count = 0;
+        var scope_groups = {};
+
+        $pills.each(function () {
+            var $cl = $(this).find('.NB-classifier');
+            // Only count active (liked or disliked) pills
+            if (!$cl.hasClass('NB-classifier-like') && !$cl.hasClass('NB-classifier-dislike')) return;
+            filter_count++;
+            var scope = $cl.data('scope') || 'feed';
+            var folder_name = $cl.data('folder-name') || '';
+            var stories = self._stories_for_scope(scope, folder_name);
+            total_stories += stories;
+
+            if (!scope_groups[scope]) scope_groups[scope] = { count: 0, stories: stories };
+            scope_groups[scope].count++;
+        });
+
+        if (!feed_stories && !total_stories) {
+            $el.hide();
+            return;
+        }
+
+        // Use feed stories as the default when no filters are saved yet
+        var effective_stories = total_stories || feed_stories;
+        var monthly = effective_stories * cost_per;
+        var daily = monthly / 30;
+
+        var $content = [];
+
+        // Always show the cost amounts
+        $content.push($.make('div', { className: 'NB-ai-cost-amounts' }, [
+            $.make('span', { className: 'NB-ai-cost-monthly' }, [
+                self._format_cost(monthly),
+                $.make('small', '/mo')
+            ]),
+            $.make('span', { className: 'NB-ai-cost-separator' }, '\u00b7'),
+            $.make('span', { className: 'NB-ai-cost-daily' }, [
+                self._format_cost(daily),
+                $.make('small', '/day')
+            ])
+        ]));
+
+        // Always show the breakdown
+        var breakdown;
+        var scope_names = _.keys(scope_groups);
+        if (filter_count === 0) {
+            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
+                '0 ' + type + 's \u00d7 ' + self._format_cost(cost_per) + '/story';
+        } else if (scope_names.length === 1 && scope_names[0] === 'feed') {
+            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
+                filter_count + ' ' + type + (filter_count !== 1 ? 's' : '') +
+                ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+        } else {
+            var parts = [];
+            _.each(scope_groups, function (group, scope) {
+                var scope_label = scope === 'feed' ? 'this site' :
+                    scope === 'folder' ? 'folder' : 'all sites';
+                parts.push(
+                    group.count + ' on ' + scope_label +
+                    ' (' + group.stories.toLocaleString() + ' stories/mo)'
+                );
+            });
+            breakdown = parts.join(' + ') + ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+        }
+
+        $content.push($.make('div', { className: 'NB-ai-cost-breakdown' }, breakdown));
+
+        $el.empty().append($content).show();
     },
 
     clear_image_test_results: function ($section) {
@@ -1418,13 +1620,13 @@ var classifier_prototype = {
                 $.make('input', {
                     type: 'checkbox',
                     className: 'NB-classifier-input-like',
-                    name: 'like_prompt',
+                    name: filter_type === 'image' ? 'like_image_prompt' : 'like_prompt',
                     value: value
                 }),
                 $.make('input', {
                     type: 'checkbox',
                     className: 'NB-classifier-input-dislike',
-                    name: 'dislike_prompt',
+                    name: filter_type === 'image' ? 'dislike_image_prompt' : 'dislike_prompt',
                     value: value
                 }),
                 $.make('div', { className: 'NB-classifier-icon-like' }),
@@ -1487,24 +1689,31 @@ var classifier_prototype = {
         return $classifier;
     },
 
-    render_image_filter_list: function ($section, prompt_classifiers) {
+    render_image_filter_list: function ($section, image_prompts) {
         var self = this;
-        var feed_id = this.feed_id;
         var $list = $('.NB-image-filter-saved-list', $section);
         $list.empty();
 
-        if (!prompt_classifiers || !prompt_classifiers.length) return;
+        var prompt_keys = _.keys(image_prompts || {});
 
-        // Only show image classifiers (include_images === true)
-        var image_classifiers = _.filter(prompt_classifiers, function (pc) { return pc.include_images; });
-        if (!image_classifiers.length) return;
+        // Show/hide upgrade banner
+        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_pro) {
+            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                $.make('b', 'AI image filters are saved but won\'t apply until you '),
+                $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                $.make('b', '.')
+            ])).show();
+        } else {
+            $banner.empty().hide();
+        }
 
-        _.each(image_classifiers, function (pc) {
-            var score = pc.classifier_type === 'focus' ? 1 : -1;
-            var $pill = self.make_prompt_classifier(pc.prompt, pc.prompt, 'image');
+        if (!prompt_keys.length) return;
+
+        _.each(image_prompts, function (score, prompt_text) {
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'image');
             var $cl = $('.NB-classifier', $pill);
 
-            // Set the correct like/dislike state
             if (score > 0) {
                 $cl.addClass('NB-classifier-like');
                 $('.NB-classifier-input-like', $pill).prop('checked', true);
@@ -1513,35 +1722,7 @@ var classifier_prototype = {
                 $('.NB-classifier-input-dislike', $pill).prop('checked', true);
             }
             $cl.data('original-state', score > 0 ? 'like' : 'dislike');
-            $cl.data('prompt-id', pc.id);
 
-            // Add delete button (x) to the right of the pill
-            var $delete = $.make('span', {
-                className: 'NB-image-filter-item-delete',
-                title: 'Remove filter'
-            }, '\u00d7');
-
-            $delete.on('click', function (e) {
-                e.stopPropagation();
-                var $container = $(this).closest('.NB-classifier-container');
-                $container.css({ opacity: 0.5, 'pointer-events': 'none' });
-
-                NEWSBLUR.assets.save_prompt_classifier({
-                    feed_id: feed_id,
-                    prompt_id: pc.id,
-                    action: 'delete'
-                }, function (resp) {
-                    if (resp.code === 0) {
-                        $container.slideUp(200, function () {
-                            self.render_image_filter_list($section, resp.prompt_classifiers);
-                        });
-                    } else {
-                        $container.css({ opacity: 1, 'pointer-events': 'auto' });
-                    }
-                });
-            });
-
-            $pill.append($delete);
             $list.append($pill);
         });
     },
@@ -2174,6 +2355,11 @@ var classifier_prototype = {
             $cl.removeClass('NB-classifier-changed');
         }
         this.update_save_button();
+
+        // Recalculate cost estimates when a prompt classifier's scope changes
+        if ($cl.hasClass('NB-classifier-prompt')) {
+            this.recalculate_section_costs();
+        }
     },
 
     save_scope_change: function ($classifier) {
@@ -2255,6 +2441,11 @@ var classifier_prototype = {
             $close.text('Save & Close');
         } else {
             this.update_save_button();
+        }
+
+        // Recalculate cost estimates when a prompt classifier is toggled
+        if ($classifier.hasClass('NB-classifier-prompt')) {
+            this.recalculate_section_costs();
         }
     },
 
@@ -3183,6 +3374,16 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
                     self.model.classifiers[feed_id].feeds[feed_id] = score;
+                } else if (name == 'prompt') {
+                    if (!self.model.classifiers[feed_id].prompts) {
+                        self.model.classifiers[feed_id].prompts = {};
+                    }
+                    self.model.classifiers[feed_id].prompts[value] = score;
+                } else if (name == 'image_prompt') {
+                    if (!self.model.classifiers[feed_id].image_prompts) {
+                        self.model.classifiers[feed_id].image_prompts = {};
+                    }
+                    self.model.classifiers[feed_id].image_prompts[value] = score;
                 }
             } else {
                 if (name == 'tag' && self.model.classifiers[feed_id].tags[value] == score) {
@@ -3203,6 +3404,10 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
                     delete self.model.classifiers[feed_id].feeds[feed_id];
+                } else if (name == 'prompt' && self.model.classifiers[feed_id].prompts && self.model.classifiers[feed_id].prompts[value] == score) {
+                    delete self.model.classifiers[feed_id].prompts[value];
+                } else if (name == 'image_prompt' && self.model.classifiers[feed_id].image_prompts && self.model.classifiers[feed_id].image_prompts[value] == score) {
+                    delete self.model.classifiers[feed_id].image_prompts[value];
                 }
             }
         });
@@ -3471,6 +3676,8 @@ var classifier_prototype = {
             text: 0,
             feed: 0,
             url: 0,
+            prompt: 0,
+            image_prompt: 0,
             scope_all: 0,
             scope_feed: 0,
             scope_folder: 0,
@@ -3516,6 +3723,7 @@ var classifier_prototype = {
                     else if (type === 'text') value = item.text || '';
                     else if (type === 'feed') value = item.feed_title || '';
                     else if (type === 'url') value = item.url || '';
+                    else if (type === 'prompt' || type === 'image_prompt') value = item.prompt || '';
                     value = value.toLowerCase();
                     search_match = value.indexOf(search_filter) !== -1 ||
                                    (feeds_matching_search && feeds_matching_search[feed_id]);
@@ -3556,6 +3764,8 @@ var classifier_prototype = {
                     countItems(classifiers.texts, 'text', feed.feed_id);
                     countItems(classifiers.feeds, 'feed', feed.feed_id);
                     countItems(classifiers.urls, 'url', feed.feed_id);
+                    countItems(classifiers.prompts, 'prompt', feed.feed_id);
+                    countItems(classifiers.image_prompts, 'image_prompt', feed.feed_id);
                 }
             });
         });
@@ -3612,6 +3822,8 @@ var classifier_prototype = {
             type_text: type_counts.text,
             type_feed: type_counts.feed,
             type_url: type_counts.url,
+            type_prompt: type_counts.prompt,
+            type_image_prompt: type_counts.image_prompt,
             // Scope control counts (filtered by sentiment + type)
             scope_all: scope_counts.scope_all,
             scope_feed: scope_counts.scope_feed,
@@ -3867,6 +4079,20 @@ var classifier_prototype = {
                     }, [
                         $.make('span', { className: 'NB-type-label' }, 'URL'),
                         $.make('span', { className: 'NB-type-count' }, counts.type_url)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-prompt' + (this.manage_filter_types === 'prompt' ? ' NB-active' : '') + (counts.type_prompt === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'prompt'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'AI Content'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_prompt)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-image_prompt' + (this.manage_filter_types === 'image_prompt' ? ' NB-active' : '') + (counts.type_image_prompt === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'image_prompt'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'AI Image'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_image_prompt)
                     ])
                 ])
             ])
@@ -4078,6 +4304,16 @@ var classifier_prototype = {
             $classifiers_list.push($item);
         });
 
+        // AI Content prompts
+        _.each(classifiers.prompts, function (c) {
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'prompt', c.prompt, c.score));
+        });
+
+        // AI Image prompts
+        _.each(classifiers.image_prompts, function (c) {
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'image_prompt', c.prompt, c.score));
+        });
+
         if (!$classifiers_list.length) return null;
 
         return $.make('div', { className: 'NB-manage-feed', 'data-feed-id': feed.feed_id }, [
@@ -4095,6 +4331,8 @@ var classifier_prototype = {
         var type_label = type.charAt(0).toUpperCase() + type.slice(1);
         if (type === 'feed') type_label = 'Site';
         if (type === 'url') type_label = 'URL';
+        if (type === 'prompt') type_label = 'AI Content';
+        if (type === 'image_prompt') type_label = 'AI Image';
 
         var effective_scope = scope || 'feed';
         var scope_svgs = {
