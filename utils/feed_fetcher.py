@@ -383,25 +383,37 @@ class FetchFeed:
                         # Don't retry with fake user agent for 429 - respect the rate limit
                         # The Retry-After header will be processed below if present
                     elif raw_feed:
-                        logging.debug(
-                            "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
-                            % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
-                        )
-                        raw_feed = requests.get(
-                            self.feed.feed_address,
-                            headers=self.feed.fetch_headers(fake=True),
-                            timeout=15,
-                        )
+                        if "openrss.org" in self.feed.feed_address:
+                            logging.debug(
+                                "   ***> [%-30s] ~FRopenrss.org feed returned %s, skipping fake UA retry"
+                                % (self.feed.log_title[:30], raw_feed.status_code)
+                            )
+                        else:
+                            logging.debug(
+                                "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
+                                % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
+                            )
+                            raw_feed = requests.get(
+                                self.feed.feed_address,
+                                headers=self.feed.fetch_headers(fake=True),
+                                timeout=15,
+                            )
                     else:
-                        logging.debug(
-                            "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
-                            % (self.feed.log_title[:30], address)
-                        )
-                        raw_feed = requests.get(
-                            self.feed.feed_address,
-                            headers=self.feed.fetch_headers(fake=True),
-                            timeout=15,
-                        )
+                        if "openrss.org" in self.feed.feed_address:
+                            logging.debug(
+                                "   ***> [%-30s] ~FRopenrss.org feed timed out, skipping retries: %s"
+                                % (self.feed.log_title[:30], address)
+                            )
+                        else:
+                            logging.debug(
+                                "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
+                                % (self.feed.log_title[:30], address)
+                            )
+                            raw_feed = requests.get(
+                                self.feed.feed_address,
+                                headers=self.feed.fetch_headers(fake=True),
+                                timeout=15,
+                            )
 
                 # Detect bot challenge pages (e.g., Anubis) that return 200 + text/html
                 # instead of RSS/XML. The fake browser UA in our default User-Agent
@@ -488,7 +500,7 @@ class FetchFeed:
                 )
                 # raise e
 
-        if not self.fpf or self.options.get("force_fp", False):
+        if (not self.fpf or self.options.get("force_fp", False)) and "openrss.org" not in address:
             try:
                 # When feedparser fetches the URL itself, we cannot preprocess the content first
                 # We'll have to rely on feedparser's built-in handling here
@@ -509,7 +521,7 @@ class FetchFeed:
                 logging.debug("   ***> [%-30s] ~FRFeed fetch error: %s" % (self.feed.log_title[:30], e))
                 pass
 
-        if not self.fpf:
+        if not self.fpf and "openrss.org" not in address:
             try:
                 logging.debug(
                     "   ***> [%-30s] ~FRTurning off headers: %s" % (self.feed.log_title[:30], address)
@@ -1329,22 +1341,21 @@ class FeedFetcherWorker:
                 elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True
 
-                # Check for openrss.org rate limiting
+                # Check for openrss.org rate limiting - enforce minimum 3s gap between requests
                 if not skip and "openrss.org" in feed.feed_address and not self.options.get("force"):
                     r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-                    current_timestamp = int(time.time())
-                    openrss_key = f"openrss_fetch:{current_timestamp}"
+                    current_time = time.time()
+                    openrss_key = "openrss_last_fetch"
 
-                    # Try to set the key with 5 minutes expiration, only if it doesn't exist
-                    was_set = r.set(openrss_key, 1, nx=True, ex=300)
-
-                    if not was_set:
-                        # Another openrss.org feed was fetched in this same second
+                    last_fetch = r.get(openrss_key)
+                    if last_fetch and (current_time - float(last_fetch)) < 3:
                         skip = True
                         logging.debug(
-                            f"   ---> [{feed.log_title[:30]:<30}] ~FYSkipping openrss.org fetch, another openrss feed fetched in last second"
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FYSkipping openrss.org fetch, "
+                            f"last fetch was {current_time - float(last_fetch):.1f}s ago"
                         )
                     else:
+                        r.set(openrss_key, current_time, ex=60)
                         logging.debug(
                             f"   ---> [{feed.log_title[:30]:<30}] ~FGProceeding with openrss.org fetch"
                         )
