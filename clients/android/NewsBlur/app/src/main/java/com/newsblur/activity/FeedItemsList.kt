@@ -14,10 +14,11 @@ import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
+import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.fragment.DeleteFeedFragment
 import com.newsblur.fragment.FeedIntelTrainerFragment
 import com.newsblur.fragment.RenameDialogFragment
-import com.newsblur.fragment.AddFeedFragment
+import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.FeedExt.isAndroidNotifyFocus
 import com.newsblur.util.FeedExt.isAndroidNotifyUnread
@@ -26,9 +27,23 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.Session
 import com.newsblur.util.SessionDataSource
 import com.newsblur.util.UIUtils
-import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+internal enum class FeedItemsBackAction {
+    FINISH_STORY_LIST,
+    LAUNCH_REVIEW,
+}
+
+internal fun resolveFeedItemsBackAction(
+    hasReviewInfo: Boolean,
+    isGestureNavigation: Boolean,
+): FeedItemsBackAction =
+    if (hasReviewInfo && !isGestureNavigation) {
+        FeedItemsBackAction.LAUNCH_REVIEW
+    } else {
+        FeedItemsBackAction.FINISH_STORY_LIST
+    }
 
 @AndroidEntryPoint
 class FeedItemsList : ItemsList() {
@@ -56,17 +71,24 @@ class FeedItemsList : ItemsList() {
         checkInAppReview()
     }
 
-    override fun interceptBackPress(): Boolean {
-        if (reviewInfo == null) return false
-        val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
-        flow.addOnCompleteListener { _: Task<Void?>? ->
-            prefsRepo.setInAppReviewed()
-            finish()
-        }
-        return true
-    }
+    override fun interceptBackPress(isGestureNavigation: Boolean): Boolean =
+        when (
+            resolveFeedItemsBackAction(
+                hasReviewInfo = reviewInfo != null,
+                isGestureNavigation = isGestureNavigation,
+            )
+        ) {
+            FeedItemsBackAction.LAUNCH_REVIEW -> {
+                val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
+                flow.addOnCompleteListener { _: Task<Void?>? ->
+                    prefsRepo.setInAppReviewed()
+                    finish()
+                }
+                true
+            }
 
-    override fun shouldHandlePredictiveBack(): Boolean = reviewInfo == null
+            FeedItemsBackAction.FINISH_STORY_LIST -> false
+        }
 
     override fun shouldResetReadingSessionOnCreate(): Boolean =
         intent?.getBooleanExtra(EXTRA_IS_TRY_FEED, false) == true

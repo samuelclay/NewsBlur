@@ -69,6 +69,7 @@ import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
+import com.newsblur.util.StoryHeaderPillLayoutDecider;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.TryFeedSessionResetter;
 import com.newsblur.util.UIUtils;
@@ -536,29 +537,26 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 ? ((ViewGroup.MarginLayoutParams) binding.itemlistMarkReadContainer.getLayoutParams()).getMarginStart()
                 : 0;
 
-        boolean showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
-        boolean showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
-        int baseWidth = optionsWidth + markReadWidth + discoverMargin + searchMargin + markReadMargin;
-
-        if (baseWidth + discoverFullWidth + searchFullWidth <= availableWidth) {
-            showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
-            showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
-        } else if (baseWidth + discoverFullWidth + searchCompactWidth <= availableWidth) {
-            showDiscoverText = binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE;
-            showSearchText = false;
-        } else if (baseWidth + discoverCompactWidth + searchFullWidth <= availableWidth) {
-            showDiscoverText = false;
-            showSearchText = binding.itemlistSearchPill.getVisibility() == View.VISIBLE;
-        } else {
-            showDiscoverText = false;
-            showSearchText = false;
-        }
+        StoryHeaderPillLayoutDecider.Decision decision = StoryHeaderPillLayoutDecider.decide(
+                availableWidth,
+                optionsWidth,
+                markReadWidth,
+                discoverFullWidth,
+                discoverCompactWidth,
+                searchFullWidth,
+                searchCompactWidth,
+                discoverMargin,
+                searchMargin,
+                markReadMargin,
+                binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE,
+                binding.itemlistSearchPill.getVisibility() == View.VISIBLE
+        );
 
         if (binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE) {
-            binding.itemlistDiscoverPill.setText(showDiscoverText ? getString(R.string.story_header_related_sites) : "");
+            binding.itemlistDiscoverPill.setText(decision.showDiscoverText() ? getString(R.string.story_header_related_sites) : "");
         }
         if (binding.itemlistSearchPill.getVisibility() == View.VISIBLE) {
-            binding.itemlistSearchPill.setText(showSearchText ? getString(R.string.story_header_search) : "");
+            binding.itemlistSearchPill.setText(decision.showSearchText() ? getString(R.string.story_header_search) : "");
         }
     }
 
@@ -969,7 +967,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         animateInteractiveStoryListSwipe(targetTranslation, true);
     }
 
-    protected boolean interceptBackPress() {
+    protected boolean interceptBackPress(boolean isGestureNavigation) {
         return false;
     }
 
@@ -1132,12 +1130,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             @Override
             public void handleOnBackPressed() {
                 predictiveBackInProgress = false;
-                if (interceptBackPress()) {
-                    cancelInteractiveStoryListSwipe();
+                View surface = getInteractiveSwipeSurface();
+                boolean isGestureNavigation = surface.getTranslationX() > 0f;
+                if (interceptBackPress(isGestureNavigation)) {
+                    if (isGestureNavigation) {
+                        cancelInteractiveStoryListSwipe();
+                    }
                     return;
                 }
-                View surface = getInteractiveSwipeSurface();
-                if (surface.getTranslationX() > 0f) {
+                if (isGestureNavigation) {
                     completeInteractiveStoryListSwipe();
                 } else {
                     finish();
