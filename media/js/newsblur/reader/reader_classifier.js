@@ -986,6 +986,8 @@ var classifier_prototype = {
     },
 
     make_content_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
@@ -1002,7 +1004,8 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-content-filter-header' }, [
                     $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
                     'AI Content Filter'
-                ])
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
@@ -1054,10 +1057,12 @@ var classifier_prototype = {
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
                 // Only hide banner if no saved classifiers
                 var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1213,6 +1218,8 @@ var classifier_prototype = {
     },
 
     make_image_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
@@ -1245,7 +1252,8 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-image-filter-header' }, [
                     $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
                     'AI Image Filter'
-                ])
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
@@ -1299,9 +1307,11 @@ var classifier_prototype = {
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
                 var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1447,7 +1457,7 @@ var classifier_prototype = {
             type: 'content filter',
             cost_per_run: avg_text,
             $section: $content_section,
-            pill_selector: '.NB-content-filter-saved-list .NB-classifier-container'
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
         });
 
         // Image filter section
@@ -1457,7 +1467,7 @@ var classifier_prototype = {
             type: 'image filter',
             cost_per_run: avg_image,
             $section: $image_section,
-            pill_selector: '.NB-image-filter-saved-list .NB-classifier-container'
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
         });
     },
 
@@ -1524,9 +1534,9 @@ var classifier_prototype = {
             return;
         }
 
-        // Use feed stories as the default when no filters are saved yet
+        // Use feed stories as the default when filters exist but are all feed-scoped
         var effective_stories = total_stories || feed_stories;
-        var monthly = effective_stories * cost_per;
+        var monthly = filter_count > 0 ? effective_stories * cost_per : 0;
         var daily = monthly / 30;
 
         var $content = [];

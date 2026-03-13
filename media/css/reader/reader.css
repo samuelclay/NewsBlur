@@ -12854,6 +12854,15 @@ h5.NB-classifier-section-header {
     display: block;
 }
 
+.NB-classifier-staff-badge {
+    color: #8B7355;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    pointer-events: none;
+}
+
 .NB-classifier-content-prompt-input {
     flex: 1;
     height: 28px;
