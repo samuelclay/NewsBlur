@@ -89,6 +89,11 @@ class Profile(models.Model):
     is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
     has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
+    is_usage_billing = models.BooleanField(default=False, blank=True, null=True)
+
+    @property
+    def can_use_ai_classifiers(self):
+        return bool(self.is_usage_billing)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -2953,6 +2958,21 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
         logging.debug(" ---> Stripe checkout webhook for non-NewsBlur product, ignoring")
         return
 
+    # Handle usage billing setup
+    purpose = metadata.get("purpose", "")
+    if purpose == "usage_billing":
+        stripe_id = full_json["data"]["object"].get("customer")
+        try:
+            profile = User.objects.get(pk=int(newsblur_user_id)).profile
+            if stripe_id and not profile.stripe_id:
+                profile.stripe_id = stripe_id
+            profile.is_usage_billing = True
+            profile.save()
+            logging.user(profile.user, "~BC~SB~FBStripe usage billing setup complete")
+        except User.DoesNotExist:
+            logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)
+        return
+
     stripe_id = full_json["data"]["object"]["customer"]
     profile = None
     try:
@@ -2981,7 +3001,14 @@ zebra_webhook_checkout_session_completed.connect(stripe_checkout_session_complet
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json["data"]["object"]["customer"]
-    plan_id = full_json["data"]["object"]["plan"]["id"]
+    plan = full_json["data"]["object"].get("plan")
+    plan_id = plan["id"] if plan else None
+
+    # Metered usage subscriptions (AI classifiers) don't have a top-level plan.
+    # They are handled by the checkout_session_completed webhook instead.
+    if not plan_id:
+        return
+
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")

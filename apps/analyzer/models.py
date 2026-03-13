@@ -780,6 +780,16 @@ class MClassifierPrompt(mongo.Document):
         if not stories:
             return {}
 
+        # Check if user has usage billing set up
+        from apps.profile.models import Profile
+
+        try:
+            profile = Profile.objects.get(user_id=user_id)
+            if not profile.can_use_ai_classifiers:
+                return {}
+        except Profile.DoesNotExist:
+            return {}
+
         # Group stories by feed_id for efficient classification
         stories_by_feed = defaultdict(list)
         for story in stories:

@@ -222,11 +222,47 @@ class LLMCostTracker:
                 f"{input_tokens}+{output_tokens} tokens = ${cost_usd:.6f}"
             )
 
+            # Report to Stripe meter for usage-based billing
+            if feature in ("story_classification", "vision_classification") and user_id:
+                cls._report_stripe_meter_event(feature, user_id)
+
             return cost_record
 
         except Exception as e:
             logging.error(f"Failed to record LLM cost to MongoDB: {e}")
             return None
+
+    @classmethod
+    def _report_stripe_meter_event(cls, feature, user_id):
+        """Report a meter event to Stripe for usage-based billing."""
+        try:
+            import stripe
+            from django.conf import settings
+
+            from apps.profile.models import Profile
+
+            profile = Profile.objects.get(user_id=user_id)
+            if not profile.is_usage_billing or not profile.stripe_id:
+                return
+
+            meter_event_map = {
+                "story_classification": getattr(settings, "STRIPE_METER_TEXT_CLASSIFICATION", ""),
+                "vision_classification": getattr(settings, "STRIPE_METER_IMAGE_CLASSIFICATION", ""),
+            }
+            event_name = meter_event_map.get(feature)
+            if not event_name:
+                return
+
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe.billing.MeterEvent.create(
+                event_name=event_name,
+                payload={
+                    "stripe_customer_id": profile.stripe_id,
+                    "value": "1",
+                },
+            )
+        except Exception as e:
+            logging.error(f"Failed to report Stripe meter event: {e}")
 
     @classmethod
     def record_transcription(cls, duration_seconds, user_id=None, request_id=None, metadata=None):
