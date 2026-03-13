@@ -526,7 +526,7 @@ private fun AndroidShaderBackground(
         while (true) {
             withFrameNanos { frameTime ->
                 if (start == 0L) start = frameTime
-                value = (frameTime - start) / 1_000_000_000f * 0.4f
+                value = (frameTime - start) / 1_000_000_000f
             }
         }
     }
@@ -1014,28 +1014,45 @@ private const val LOGIN_SHADER_SOURCE =
         float2 uv = fragCoord / u_resolution;
         float3 bg = mix(u_mid, u_base, smoothstep(0.0, 1.0, uv.y));
 
-        float diag = uv.x * 0.6 + uv.y * 0.4;
+        float2 flow = uv;
+        flow.x += sin(uv.y * 6.0 + u_time * 1.1) * 0.06;
+        flow.y += cos(uv.x * 5.0 - u_time * 0.8) * 0.05;
 
-        float wave1 = sin(diag * 8.0 + u_time * 0.7) * 0.5 + 0.5;
+        float diag = flow.x * 0.72 + flow.y * 0.48;
+
+        float wave1 = sin(diag * 10.0 + u_time * 1.6) * 0.5 + 0.5;
         wave1 = pow(wave1, 3.0);
 
-        float wave2 = sin(diag * 14.0 - u_time * 0.5 + 1.5) * 0.5 + 0.5;
+        float wave2 = sin(diag * 16.0 - u_time * 1.15 + 1.5) * 0.5 + 0.5;
         wave2 = pow(wave2, 4.0);
 
-        float wave3 = sin(diag * 22.0 + u_time * 0.3 + 3.0) * 0.5 + 0.5;
+        float wave3 = sin(diag * 25.0 + u_time * 0.95 + 3.0) * 0.5 + 0.5;
         wave3 = pow(wave3, 5.0);
 
-        float3 ridge1 = mix(bg, u_light, wave1 * 0.4);
-        float3 ridge2 = mix(ridge1, u_light, wave2 * 0.25);
-        float3 color = mix(ridge2, u_light, wave3 * 0.15);
+        float3 ridge1 = mix(bg, u_light, wave1 * 0.48);
+        float3 ridge2 = mix(ridge1, u_light, wave2 * 0.34);
+        float3 color = mix(ridge2, u_light, wave3 * 0.22);
 
-        float glow = sin(uv.x * 3.0 + u_time * 0.2) * sin(uv.y * 2.0 - u_time * 0.15);
+        float glow = sin(flow.x * 4.0 + u_time * 0.65) * sin(flow.y * 3.0 - u_time * 0.45);
         glow = max(glow, 0.0);
-        glow = pow(glow, 2.0) * 0.3;
-        color = mix(color, u_soft_gold, glow * 0.25);
+        glow = pow(glow, 2.0) * 0.42;
+        color = mix(color, u_soft_gold, glow * 0.34);
 
         float goldHighlight = wave1 * wave2;
-        color = mix(color, u_gold, goldHighlight * 0.08);
+        float shimmer = sin((flow.x + flow.y) * 18.0 - u_time * 2.2) * 0.5 + 0.5;
+        shimmer = pow(shimmer, 6.0) * 0.18;
+        color = mix(color, u_soft_gold, shimmer * goldHighlight);
+        color = mix(color, u_gold, goldHighlight * 0.12);
+
+        float2 bloomCenter = float2(0.18 + 0.16 * sin(u_time * 0.22), 0.12 + 0.05 * cos(u_time * 0.17));
+        float bloom = exp(-distance(flow, bloomCenter) * 8.0);
+        color = mix(color, u_soft_gold, bloom * 0.12);
+
+        float topMask = 1.0 - smoothstep(0.24, 0.76, uv.y);
+        float topCrest = sin(flow.x * 9.0 - u_time * 1.35 + flow.y * 3.0) * 0.5 + 0.5;
+        topCrest = pow(topCrest, 5.0) * topMask * 0.22;
+        color = mix(color, u_soft_gold, topCrest);
+        color = mix(color, u_light, topMask * wave1 * 0.08);
 
         return half4(color, 1.0);
     }
