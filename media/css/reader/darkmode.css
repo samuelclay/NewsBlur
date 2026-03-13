@@ -2040,6 +2040,10 @@ border-bottom-color: #303739;
     background-color: rgb(43, 49, 51);
 }
 
+.NB-dark .NB-search-semantic-badge {
+    background-color: #6C5CE7;
+}
+
 .NB-dark .NB-story-content-wrapper .NB-story-content-expander {
     background-color: #191b1c;
 }

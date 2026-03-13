@@ -21010,6 +21010,12 @@ h5.NB-classifier-section-header {
     /* indigo-purple */
 }
 
+.NB-premium-tier-features-archive li.NB-15 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/search-filled.svg');
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
+}
+
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/stack.svg');
@@ -25580,6 +25586,20 @@ h5.NB-classifier-section-header {
 .NB-search-header .NB-search-header-save.NB-search-header-clear:hover {
     opacity: 1;
     background-color: transparent;
+}
+
+.NB-search-semantic-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #7B68EE;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
 }
 
 .NB-search-header .NB-search-header-icon {

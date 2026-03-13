@@ -1027,7 +1027,13 @@ def load_single_feed(request, feed_id):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
+            search_type = "keyword"
+            if user.profile.is_archive:
+                user_search.touch_discover_date()
+                search_type = "hybrid" if user_search.discover_indexed else "keyword"
+            stories = feed.find_stories(
+                query, order=order, offset=offset, limit=limit, search_type=search_type
+            )
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -1364,6 +1370,11 @@ def load_single_feed(request, feed_id):
         elapsed_time=round(float(timediff), 2),
         message=message,
     )
+
+    if query and user.profile.is_premium:
+        data["semantic_search"] = search_type == "hybrid"
+        if not data["semantic_search"] and user_search and user_search.discover_indexing:
+            data["semantic_indexing"] = True
 
     if include_feeds:
         data["feeds"] = feeds
@@ -2212,12 +2223,18 @@ def load_river_stories__redis(request):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
+            search_type = "keyword"
+            if user.profile.is_archive:
+                user_search.touch_discover_date()
+                search_type = "hybrid" if user_search.discover_indexed else "keyword"
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter="all")
             feed_ids = [sub.feed_id for sub in usersubs]
             feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
+            stories = Feed.find_feed_stories(
+                feed_ids, query, order=order, offset=offset, limit=limit, search_type=search_type
+            )
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(
                 user.pk,
@@ -2569,6 +2586,11 @@ def load_river_stories__redis(request):
         user_search=user_search,
         user_profiles=user_profiles,
     )
+
+    if query and user.profile.is_premium:
+        data["semantic_search"] = search_type == "hybrid"
+        if not data["semantic_search"] and user_search and user_search.discover_indexing:
+            data["semantic_indexing"] = True
 
     if include_feeds:
         data["feeds"] = feeds
@@ -4042,7 +4064,16 @@ def all_classifiers(request):
     from collections import defaultdict
 
     classifiers_by_feed = defaultdict(
-        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": [], "prompts": [], "image_prompts": []}
+        lambda: {
+            "titles": [],
+            "authors": [],
+            "tags": [],
+            "texts": [],
+            "feeds": [],
+            "urls": [],
+            "prompts": [],
+            "image_prompts": [],
+        }
     )
 
     # Separate scoped classifiers (global/folder) from feed-scoped ones
