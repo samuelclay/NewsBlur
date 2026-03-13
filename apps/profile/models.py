@@ -1273,6 +1273,103 @@ class Profile(models.Model):
         return preferences.get(key, default)
 
     @classmethod
+    def backfill_android_payments(cls, dry_run=True):
+        """Backfill missing Android subscription renewals.
+
+        Google Play renewal order IDs follow the pattern:
+        - Original: GPA.3330-8556-5969-85003
+        - Renewal 1: GPA.3330-8556-5969-85003..0
+        - Renewal 2: GPA.3330-8556-5969-85003..1
+
+        This method finds all Android subscribers with only their initial
+        payment recorded and creates PaymentHistory records for the
+        expected annual renewals up to the current date.
+        """
+        from django.db.models import Count
+
+        now = datetime.datetime.now()
+        users_with_android = (
+            PaymentHistory.objects.filter(payment_provider="android-subscription")
+            .values("user")
+            .annotate(count=Count("id"))
+        )
+
+        total_created = 0
+        total_users_updated = 0
+
+        for entry in users_with_android:
+            user_id = entry["user"]
+            payments = list(
+                PaymentHistory.objects.filter(
+                    user_id=user_id,
+                    payment_provider="android-subscription",
+                ).order_by("payment_date")
+            )
+
+            # Find the original payment (earliest, no ".." in order_id)
+            original = None
+            existing_identifiers = set()
+            for p in payments:
+                existing_identifiers.add(p.payment_identifier)
+                if original is None and p.payment_identifier and ".." not in p.payment_identifier:
+                    original = p
+
+            if not original or not original.payment_identifier:
+                continue
+
+            # Calculate expected renewals from original payment date
+            base_order_id = original.payment_identifier
+            base_date = original.payment_date
+            amount = original.payment_amount
+            renewal_num = 0
+            created_for_user = 0
+
+            while True:
+                renewal_date = base_date + datetime.timedelta(days=365 * (renewal_num + 1))
+                if renewal_date > now:
+                    break
+                renewal_order_id = "%s..%d" % (base_order_id, renewal_num)
+
+                if renewal_order_id not in existing_identifiers:
+                    if dry_run:
+                        print(
+                            " ---> [DRY RUN] Would create: user=%s date=%s order=%s"
+                            % (user_id, renewal_date.date(), renewal_order_id)
+                        )
+                    else:
+                        PaymentHistory.objects.create(
+                            user_id=user_id,
+                            payment_date=renewal_date,
+                            payment_amount=amount,
+                            payment_provider="android-subscription",
+                            payment_identifier=renewal_order_id,
+                        )
+                    created_for_user += 1
+
+                renewal_num += 1
+
+            if created_for_user > 0:
+                total_created += created_for_user
+                total_users_updated += 1
+                if not dry_run:
+                    try:
+                        from django.contrib.auth.models import User
+
+                        user = User.objects.get(pk=user_id)
+                        user.profile.setup_premium_history()
+                        print(
+                            " ---> Backfilled %s payments for %s (expire: %s)"
+                            % (created_for_user, user.username, user.profile.premium_expire)
+                        )
+                    except Exception as e:
+                        print(" ---> Error updating user %s: %s" % (user_id, e))
+
+        print(
+            "\n ---> %s: %s payments for %s users"
+            % ("Would create" if dry_run else "Created", total_created, total_users_updated)
+        )
+
+    @classmethod
     def resync_stripe_and_paypal_history(cls, start_days=365, end_days=0, skip=0):
         start_date = datetime.datetime.now() - datetime.timedelta(days=start_days)
         end_date = datetime.datetime.now() - datetime.timedelta(days=end_days)
