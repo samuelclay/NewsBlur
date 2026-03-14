@@ -5,6 +5,7 @@ premium subscription management (Stripe/PayPal), notification preferences,
 and account import/export (OPML).
 """
 
+import calendar
 import datetime
 import json as python_json
 import re
@@ -1195,12 +1196,19 @@ def usage_billing_history(request):
 
     current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
 
+    now = datetime.datetime.utcnow()
+    cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
+    last_day = calendar.monthrange(now.year, now.month)[1]
+    cycle_end = now.replace(day=last_day).strftime("%Y-%m-%d")
+
     return {
         "invoices": invoices,
         "upcoming_invoice": upcoming_invoice,
         "current_cycle_spend": round(current_spend, 2),
         "usage_billing_limit": float(limit) if limit else None,
         "is_limit_reached": is_limit_reached,
+        "cycle_start": cycle_start,
+        "cycle_end": cycle_end,
     }
 
 

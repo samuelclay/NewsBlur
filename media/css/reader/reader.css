@@ -13181,6 +13181,116 @@ h5.NB-classifier-section-header {
     margin-bottom: 4px;
 }
 
+/* Current spend hero section */
+.NB-usage-billing-current-spend-section {
+    margin: 8px 0 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.NB-usage-billing-spend-hero {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+}
+
+.NB-usage-billing-spend-period {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.NB-usage-billing-current-spend-section .NB-usage-billing-limit-bar {
+    margin-top: 8px;
+}
+
+.NB-usage-billing-limit-reached-note {
+    font-size: 11px;
+    color: #c62828;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.NB-usage-billing-upcoming-charge {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.NB-usage-billing-upcoming-amount {
+    font-weight: 700;
+    color: #333;
+}
+
+/* Invoice line items */
+.NB-account-payment-line-items {
+    width: 100%;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.NB-account-payment-line-item {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #666;
+    padding: 2px 0;
+}
+
+.NB-account-payment-line-item-desc {
+    flex: 1;
+}
+
+.NB-account-payment-line-item-qty {
+    width: 50px;
+    text-align: right;
+    color: #999;
+    margin-right: 8px;
+}
+
+.NB-account-payment-line-item-amount {
+    width: 60px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.NB-account-usage-payments .NB-account-payment {
+    flex-wrap: wrap;
+}
+
+/* Dark theme overrides */
+.NB-dark .NB-usage-billing-current-spend-section {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.NB-dark .NB-usage-billing-spend-hero {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-usage-billing-upcoming-amount {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-usage-billing-upcoming-charge {
+    border-top-color: #444;
+}
+
+.NB-dark .NB-account-payment-line-items {
+    border-top-color: #444;
+}
+
+.NB-dark .NB-usage-billing-limit-bar {
+    background: #333;
+}
+
 /* Limit reached banner in classifier dialog */
 .NB-ai-filter-limit-reached-banner-inner {
     background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
