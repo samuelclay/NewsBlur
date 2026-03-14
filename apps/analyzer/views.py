@@ -36,6 +36,19 @@ def index(requst):
     pass
 
 
+def _get_recent_story_hashes(feed_id, hours=24):
+    """Get story hashes from the last N hours for a feed from Redis."""
+    import time
+
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        cutoff = int(time.time()) - hours * 60 * 60
+        hashes = r.zrangebyscore(f"zF:{feed_id}", cutoff, "+inf")
+        return [h.decode("utf-8") if isinstance(h, bytes) else h for h in hashes]
+    except redis.ConnectionError:
+        return []
+
+
 @require_POST
 @ajax_login_required
 @json.json_view
@@ -269,6 +282,15 @@ def save_classifier(request):
                     classifier.classifier_type = classifier_type
                     classifier.save()
 
+    # Queue async classification for recent stories when a prompt classifier is added
+    has_new_prompt = any(opinion in post for opinion in prompt_opinions if "remove_" not in opinion)
+    if has_new_prompt and feed_id:
+        from apps.analyzer.tasks import ClassifyStoriesWithPrompt
+
+        recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
+        if recent_hashes:
+            ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
+
     # Update has_scoped_classifiers flag on profile
     if scope != "feed":
         if not request.user.profile.has_scoped_classifiers:
@@ -332,6 +354,14 @@ def save_prompt_classifier(request):
                 usersub.save()
             except UserSubscription.DoesNotExist:
                 pass
+
+        # Queue async classification for recent stories
+        if feed_id:
+            from apps.analyzer.tasks import ClassifyStoriesWithPrompt
+
+            recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
+            if recent_hashes:
+                ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
     else:
         return {"code": -1, "message": "Missing prompt or prompt_id"}
 
@@ -471,6 +501,12 @@ def get_ai_classifier_usage(request):
     feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
     estimator = AIClassifierCostEstimator(request.user)
     cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
+
+    current_spend, limit, is_limit_reached = request.user.profile.get_usage_billing_spend()
+    cost_estimate["current_cycle_spend"] = round(current_spend, 2)
+    cost_estimate["usage_billing_limit"] = float(limit) if limit else None
+    cost_estimate["is_limit_reached"] = is_limit_reached
+
     return {"code": 0, "can_use_ai": True, **cost_estimate}
 
 
