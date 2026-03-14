@@ -12999,6 +12999,113 @@ h5.NB-classifier-section-header {
     color: #2e7d32;
 }
 
+/* ================================= */
+/* = Spending Limit (Account Dialog) = */
+/* ================================= */
+
+.NB-usage-billing-limit-section {
+    clear: both;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.NB-usage-billing-limit-label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+
+.NB-usage-billing-limit-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.NB-usage-billing-limit-dollar {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.NB-usage-billing-limit-input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.NB-usage-billing-limit-per-month {
+    color: #666;
+    font-size: 12px;
+}
+
+.NB-usage-billing-limit-help {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Progress bar */
+.NB-usage-billing-limit-bar {
+    position: relative;
+    height: 22px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.NB-usage-billing-limit-bar-fill {
+    height: 100%;
+    background: #81c784;
+    transition: width 0.3s;
+}
+
+.NB-usage-billing-limit-bar.NB-limit-warning .NB-usage-billing-limit-bar-fill {
+    background: #ffc107;
+}
+
+.NB-usage-billing-limit-bar.NB-limit-reached .NB-usage-billing-limit-bar-fill {
+    background: #e57373;
+}
+
+.NB-usage-billing-limit-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-usage-billing-limit-nolimit {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+/* Limit reached banner in classifier dialog */
+.NB-ai-filter-limit-reached-banner-inner {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.NB-ai-filter-limit-reached-banner-inner a {
+    color: #c62828;
+    font-weight: 700;
+}
+
 /* ======================== */
 /* = AI Image Filter (VLM) = */
 /* ======================== */
@@ -22407,6 +22514,11 @@ h5.NB-classifier-section-header {
 /* ================== */
 /* = Account Dialog = */
 /* ================== */
+
+#simplemodal-container.NB-account-container .simplemodal-wrap {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto !important;
+}
 
 .NB-modal-account .NB-modal-title .NB-icon {
     background: transparent url('/media/embed/icons/nouns/dialog-account.svg') no-repeat 0 0;

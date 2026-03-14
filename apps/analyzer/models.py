@@ -863,6 +863,11 @@ class MClassifierPrompt(mongo.Document):
             profile = Profile.objects.get(user_id=user_id)
             if not profile.can_use_ai_classifiers:
                 return {}
+            if profile.is_usage_limit_reached:
+                logging.user(
+                    profile.user, "~BR~FRAI classifier spending limit reached, skipping classification"
+                )
+                return {}
         except Profile.DoesNotExist:
             return {}
 

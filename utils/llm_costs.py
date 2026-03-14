@@ -225,6 +225,7 @@ class LLMCostTracker:
             # Report to Stripe meter for usage-based billing
             if feature in ("story_classification", "vision_classification") and user_id:
                 cls._report_stripe_meter_event(feature, user_id)
+                cls._invalidate_limit_cache(user_id)
 
             return cost_record
 
@@ -263,6 +264,19 @@ class LLMCostTracker:
             )
         except Exception as e:
             logging.error(f"Failed to report Stripe meter event: {e}")
+
+    @classmethod
+    def _invalidate_limit_cache(cls, user_id):
+        """Invalidate the Redis spending limit cache for a user."""
+        try:
+            import redis as redis_lib
+
+            from django.conf import settings
+
+            r = redis_lib.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+            r.delete(f"usage_limit:{user_id}")
+        except Exception:
+            pass
 
     @classmethod
     def record_transcription(cls, duration_seconds, user_id=None, request_id=None, metadata=None):

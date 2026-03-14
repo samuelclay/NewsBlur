@@ -1084,6 +1084,11 @@ def setup_usage_billing(request):
             },
         ],
         "mode": "subscription",
+        "subscription_data": {
+            "billing_thresholds": {
+                "amount_gte": 5000,  # $50 in cents
+            },
+        },
         "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
         "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
         "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
@@ -1188,7 +1193,56 @@ def usage_billing_history(request):
     except stripe.error.InvalidRequestError:
         pass
 
-    return {"invoices": invoices, "upcoming_invoice": upcoming_invoice}
+    current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
+
+    return {
+        "invoices": invoices,
+        "upcoming_invoice": upcoming_invoice,
+        "current_cycle_spend": round(current_spend, 2),
+        "usage_billing_limit": float(limit) if limit else None,
+        "is_limit_reached": is_limit_reached,
+    }
+
+
+@ajax_login_required
+@require_POST
+@json.json_view
+def save_usage_billing_limit(request):
+    """Save or clear the user's monthly spending limit for AI classifiers."""
+    from decimal import Decimal, InvalidOperation
+
+    from utils.llm_costs import LLMCostTracker
+
+    user = request.user
+    if not user.profile.is_usage_billing:
+        return {"code": -1, "message": "Usage billing not enabled"}
+
+    limit_str = request.POST.get("limit", "").strip()
+
+    if not limit_str:
+        user.profile.usage_billing_limit = None
+        user.profile.save()
+        LLMCostTracker._invalidate_limit_cache(user.pk)
+        logging.user(request, "~BC~FBCleared AI classifier spending limit")
+        return {"code": 1, "limit": None}
+
+    try:
+        limit = Decimal(limit_str)
+    except (InvalidOperation, ValueError):
+        return {"code": -1, "message": "Invalid amount"}
+
+    if limit <= 0:
+        return {"code": -1, "message": "Limit must be a positive amount"}
+
+    if limit > 10000:
+        return {"code": -1, "message": "Limit cannot exceed $10,000"}
+
+    user.profile.usage_billing_limit = limit
+    user.profile.save()
+    LLMCostTracker._invalidate_limit_cache(user.pk)
+    logging.user(request, "~BC~FBSet AI classifier spending limit to $%.2f" % limit)
+
+    return {"code": 1, "limit": float(limit)}
 
 
 @render_to("reader/activities_module.xhtml")
