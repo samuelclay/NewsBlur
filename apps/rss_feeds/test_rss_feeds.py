@@ -425,6 +425,26 @@ class Test_Feed(TransactionTestCase):
         pass
 
 
+class Test_GetFeedFromUrl(TestCase):
+    """Tests for Feed.get_feed_from_url edge cases."""
+
+    @patch("apps.rss_feeds.models.requests.get")
+    @patch("apps.rss_feeds.models.feedfinder_pilgrim")
+    @patch("apps.rss_feeds.models.feedfinder_forman")
+    def test_get_feed_from_url__no_content_type_header(self, mock_forman, mock_pilgrim, mock_requests_get):
+        """When response has no Content-Type header, should not raise TypeError."""
+        mock_forman.find_feeds.return_value = []
+        mock_pilgrim.feeds.return_value = []
+
+        mock_response = MagicMock()
+        mock_response.headers = {}  # No Content-Type header
+        mock_requests_get.return_value = mock_response
+
+        # Should not raise TypeError: argument of type 'NoneType' is not iterable
+        result = Feed.get_feed_from_url("http://example.com/no-content-type", create=False, fetch=True)
+        self.assertIsNone(result)
+
+
 class Test_PremiumSetupResyncPassthrough(TestCase):
     """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
 

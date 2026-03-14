@@ -718,7 +718,7 @@ class Feed(models.Model):
                 r = requests.get(url, timeout=10)
             except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
-            if r and "application/json" in r.headers.get("Content-Type"):
+            if r and "application/json" in (r.headers.get("Content-Type") or ""):
                 try:
                     feed = cls.objects.create(feed_address=url)
                     if not feed.pk:
