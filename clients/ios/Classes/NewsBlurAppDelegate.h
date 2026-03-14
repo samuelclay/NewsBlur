@@ -357,6 +357,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
+- (void)openDiscoverSitesView;
 - (void)cleanUpTryFeed;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;

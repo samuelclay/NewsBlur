@@ -1428,6 +1428,40 @@
 		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
 		PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 		PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
+		95F81ABB6CC5BE523C066BCF /* DiscoverSitesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571D0FB40A999A1B191F9E50 /* DiscoverSitesModels.swift */; };
+		5F6F5C96EB54ED6A3FCFFCAF /* DiscoverSitesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571D0FB40A999A1B191F9E50 /* DiscoverSitesModels.swift */; };
+		606A28163490F79C0B5F9F21 /* DiscoverSitesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84675224A994E760637202A4 /* DiscoverSitesViewModel.swift */; };
+		C3F84A22FB4F2912353AFEAD /* DiscoverSitesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84675224A994E760637202A4 /* DiscoverSitesViewModel.swift */; };
+		AFC7435FA975F1012377F8CD /* DiscoverSitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C7DEC02C13139F44F1D4BD /* DiscoverSitesView.swift */; };
+		E99025B8C22A60CA72E92D26 /* DiscoverSitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C7DEC02C13139F44F1D4BD /* DiscoverSitesView.swift */; };
+		CF19E983C62DAD18E38E1C52 /* DiscoverSitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748CE3F5BD105C626024FEB4 /* DiscoverSitesViewController.swift */; };
+		DE9E1E70E3F8F404D501AB2E /* DiscoverSitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748CE3F5BD105C626024FEB4 /* DiscoverSitesViewController.swift */; };
+		F9E5DAB47FA115F89D3B700D /* DiscoverColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B813CFEF5CE77C347F6563F7 /* DiscoverColors.swift */; };
+		90AD4DF955C751880C7FB5E6 /* DiscoverColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B813CFEF5CE77C347F6563F7 /* DiscoverColors.swift */; };
+		6631DC7FB6C4419FA083E197 /* DiscoverTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C2C14F4EEB6CA7AE7BB8 /* DiscoverTabBarView.swift */; };
+		607C785BF6816E6F2DE7F176 /* DiscoverTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C2C14F4EEB6CA7AE7BB8 /* DiscoverTabBarView.swift */; };
+		6D2B9D69B8AACCDBAFA36756 /* DiscoverSearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */; };
+		3494D69E479E45D434522C7F /* DiscoverSearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */; };
+		FBFD83AA22CBAE24A0DA4E32 /* DiscoverCategoryPillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD76514798171EAB6A4C20D /* DiscoverCategoryPillsView.swift */; };
+		DB275059F80D9D46607B511B /* DiscoverCategoryPillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD76514798171EAB6A4C20D /* DiscoverCategoryPillsView.swift */; };
+		FDC609F18D82A1DE48D5BEB6 /* DiscoverFeedCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01039C41DB97CCE6BF8CAA21 /* DiscoverFeedCardView.swift */; };
+		B94F58A7AE5AA0B2100756F1 /* DiscoverFeedCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01039C41DB97CCE6BF8CAA21 /* DiscoverFeedCardView.swift */; };
+		31B469EB96FDFC0B2326E681 /* SearchTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */; };
+		8B019815443085DA6B12A587 /* SearchTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */; };
+		E81439B3673AE42C5B01F247 /* WebFeedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */; };
+		268BE1B0D603F3C6A4418FEA /* WebFeedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */; };
+		FACBFD8CDD7E522253DE1C07 /* PopularTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */; };
+		21C84B8328634A992018F409 /* PopularTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */; };
+		84347F899F899B127AE9B9F5 /* YouTubeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */; };
+		A1A45A4B881E211614B013CC /* YouTubeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */; };
+		49DF174C47FFBD2BC40D01DE /* RedditTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AC2EA8A4592C71DAFB528A /* RedditTabView.swift */; };
+		F57DA71FF55DA67AACE3B513 /* RedditTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AC2EA8A4592C71DAFB528A /* RedditTabView.swift */; };
+		E84AF7EDDAF220D7B543A717 /* NewslettersTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */; };
+		DE1AF20EAB8D22C0FF4B3E69 /* NewslettersTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */; };
+		472CECB842DB678DF71E4CA1 /* PodcastsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */; };
+		5381F56CB9C32BE993925842 /* PodcastsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */; };
+		9377F5CC7BB5AE45FEF140E0 /* GoogleNewsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */; };
+		4C3C1AAB474F4ABD02A47BC1 /* GoogleNewsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2396,6 +2430,23 @@
 		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 		PREM1EW5W1FT000000000001 /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
+		571D0FB40A999A1B191F9E50 /* DiscoverSitesModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverSitesModels.swift; sourceTree = "<group>"; };
+		84675224A994E760637202A4 /* DiscoverSitesViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverSitesViewModel.swift; sourceTree = "<group>"; };
+		69C7DEC02C13139F44F1D4BD /* DiscoverSitesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverSitesView.swift; sourceTree = "<group>"; };
+		748CE3F5BD105C626024FEB4 /* DiscoverSitesViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverSitesViewController.swift; sourceTree = "<group>"; };
+		B813CFEF5CE77C347F6563F7 /* DiscoverColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverColors.swift; sourceTree = "<group>"; };
+		E1B2C2C14F4EEB6CA7AE7BB8 /* DiscoverTabBarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverTabBarView.swift; sourceTree = "<group>"; };
+		6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverSearchBarView.swift; sourceTree = "<group>"; };
+		7DD76514798171EAB6A4C20D /* DiscoverCategoryPillsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverCategoryPillsView.swift; sourceTree = "<group>"; };
+		01039C41DB97CCE6BF8CAA21 /* DiscoverFeedCardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedCardView.swift; sourceTree = "<group>"; };
+		47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SearchTabView.swift; sourceTree = "<group>"; };
+		C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebFeedTabView.swift; sourceTree = "<group>"; };
+		71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PopularTabView.swift; sourceTree = "<group>"; };
+		7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YouTubeTabView.swift; sourceTree = "<group>"; };
+		72AC2EA8A4592C71DAFB528A /* RedditTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedditTabView.swift; sourceTree = "<group>"; };
+		E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewslettersTabView.swift; sourceTree = "<group>"; };
+		442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PodcastsTabView.swift; sourceTree = "<group>"; };
+		76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleNewsTabView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2537,6 +2588,7 @@
 				FF3FA8871BB26595001F7C32 /* Activities */,
 				85E04F189E2E16709A8F3703 /* AskAI */,
 				43B9EE58B25854C29BD2A8F2 /* DiscoverFeeds */,
+				A1696C2EBEE94293886EEEFD /* DiscoverSites */,
 				AABB1122334455667788CCDD /* AddSite */,
 				8CB4A9B8E48F436D53F119DB /* Network */,
 				A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */,
@@ -3418,6 +3470,47 @@
 			path = DiscoverFeeds;
 			sourceTree = "<group>";
 		};
+		A1696C2EBEE94293886EEEFD /* DiscoverSites */ = {
+			isa = PBXGroup;
+			children = (
+				571D0FB40A999A1B191F9E50 /* DiscoverSitesModels.swift */,
+				84675224A994E760637202A4 /* DiscoverSitesViewModel.swift */,
+				69C7DEC02C13139F44F1D4BD /* DiscoverSitesView.swift */,
+				748CE3F5BD105C626024FEB4 /* DiscoverSitesViewController.swift */,
+				53BA8F2E15900DE6B7B0A95F /* Components */,
+				108798C0301051228AA8DA96 /* Tabs */,
+			);
+			path = DiscoverSites;
+			sourceTree = "<group>";
+		};
+		53BA8F2E15900DE6B7B0A95F /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B813CFEF5CE77C347F6563F7 /* DiscoverColors.swift */,
+				E1B2C2C14F4EEB6CA7AE7BB8 /* DiscoverTabBarView.swift */,
+				6163A68EAB80BF81F0CAB50B /* DiscoverSearchBarView.swift */,
+				7DD76514798171EAB6A4C20D /* DiscoverCategoryPillsView.swift */,
+				01039C41DB97CCE6BF8CAA21 /* DiscoverFeedCardView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		108798C0301051228AA8DA96 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				47A48E4C9BFDC206CDC7D730 /* SearchTabView.swift */,
+				C56FEFC86230F6E5A4853DD3 /* WebFeedTabView.swift */,
+				71A846FDD2AA6CED916AAA1E /* PopularTabView.swift */,
+				7FD14E5A058E2E3FF750AB32 /* YouTubeTabView.swift */,
+				72AC2EA8A4592C71DAFB528A /* RedditTabView.swift */,
+				E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */,
+				442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */,
+				76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */,
+			);
+			path = Tabs;
+			sourceTree = "<group>";
+		};
+
 		43D0451C1565BC090085F811 /* Resources-iPad */ = {
 			isa = PBXGroup;
 			children = (
@@ -5270,6 +5363,23 @@
 				2E3396F1F15DBA12C7141E45 /* DiscoverFeedsViewModel.swift in Sources */,
 				13DB7118073751BD9F617C25 /* DiscoverFeedsView.swift in Sources */,
 				5C325D54A81ED657B7137B6E /* DiscoverFeedsViewController.swift in Sources */,
+				95F81ABB6CC5BE523C066BCF /* DiscoverSitesModels.swift in Sources */,
+				606A28163490F79C0B5F9F21 /* DiscoverSitesViewModel.swift in Sources */,
+				AFC7435FA975F1012377F8CD /* DiscoverSitesView.swift in Sources */,
+				CF19E983C62DAD18E38E1C52 /* DiscoverSitesViewController.swift in Sources */,
+				F9E5DAB47FA115F89D3B700D /* DiscoverColors.swift in Sources */,
+				6631DC7FB6C4419FA083E197 /* DiscoverTabBarView.swift in Sources */,
+				6D2B9D69B8AACCDBAFA36756 /* DiscoverSearchBarView.swift in Sources */,
+				FBFD83AA22CBAE24A0DA4E32 /* DiscoverCategoryPillsView.swift in Sources */,
+				FDC609F18D82A1DE48D5BEB6 /* DiscoverFeedCardView.swift in Sources */,
+				31B469EB96FDFC0B2326E681 /* SearchTabView.swift in Sources */,
+				E81439B3673AE42C5B01F247 /* WebFeedTabView.swift in Sources */,
+				FACBFD8CDD7E522253DE1C07 /* PopularTabView.swift in Sources */,
+				84347F899F899B127AE9B9F5 /* YouTubeTabView.swift in Sources */,
+				49DF174C47FFBD2BC40D01DE /* RedditTabView.swift in Sources */,
+				E84AF7EDDAF220D7B543A717 /* NewslettersTabView.swift in Sources */,
+				472CECB842DB678DF71E4CA1 /* PodcastsTabView.swift in Sources */,
+				9377F5CC7BB5AE45FEF140E0 /* GoogleNewsTabView.swift in Sources */,
 				DD4E5F6A7B8C9D0E1F2A3B4C /* AddSiteViewModel.swift in Sources */,
 				FF6A7B8C9D0E1F2A3B4C5D6E /* AddSiteView.swift in Sources */,
 				228C9D0E1F2A3B4C5D6E7F80 /* AddSiteSheetViewController.swift in Sources */,
@@ -5500,6 +5610,23 @@
 				8C5EBDC062EED545534FF0DD /* DiscoverFeedsViewModel.swift in Sources */,
 				96A7B60C053444BD990A5A3C /* DiscoverFeedsView.swift in Sources */,
 				58EE12AF7C78A34873A6A6CB /* DiscoverFeedsViewController.swift in Sources */,
+				5F6F5C96EB54ED6A3FCFFCAF /* DiscoverSitesModels.swift in Sources */,
+				C3F84A22FB4F2912353AFEAD /* DiscoverSitesViewModel.swift in Sources */,
+				E99025B8C22A60CA72E92D26 /* DiscoverSitesView.swift in Sources */,
+				DE9E1E70E3F8F404D501AB2E /* DiscoverSitesViewController.swift in Sources */,
+				90AD4DF955C751880C7FB5E6 /* DiscoverColors.swift in Sources */,
+				607C785BF6816E6F2DE7F176 /* DiscoverTabBarView.swift in Sources */,
+				3494D69E479E45D434522C7F /* DiscoverSearchBarView.swift in Sources */,
+				DB275059F80D9D46607B511B /* DiscoverCategoryPillsView.swift in Sources */,
+				B94F58A7AE5AA0B2100756F1 /* DiscoverFeedCardView.swift in Sources */,
+				8B019815443085DA6B12A587 /* SearchTabView.swift in Sources */,
+				268BE1B0D603F3C6A4418FEA /* WebFeedTabView.swift in Sources */,
+				21C84B8328634A992018F409 /* PopularTabView.swift in Sources */,
+				A1A45A4B881E211614B013CC /* YouTubeTabView.swift in Sources */,
+				F57DA71FF55DA67AACE3B513 /* RedditTabView.swift in Sources */,
+				DE1AF20EAB8D22C0FF4B3E69 /* NewslettersTabView.swift in Sources */,
+				5381F56CB9C32BE993925842 /* PodcastsTabView.swift in Sources */,
+				4C3C1AAB474F4ABD02A47BC1 /* GoogleNewsTabView.swift in Sources */,
 				EE5F6A7B8C9D0E1F2A3B4C5D /* AddSiteViewModel.swift in Sources */,
 				117B8C9D0E1F2A3B4C5D6E7F /* AddSiteView.swift in Sources */,
 				339D0E1F2A3B4C5D6E7F8091 /* AddSiteSheetViewController.swift in Sources */,

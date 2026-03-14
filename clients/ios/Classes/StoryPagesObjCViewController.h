@@ -96,6 +96,7 @@
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
+@property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic) CGFloat navBarFadeAccumulator;
 @property (nonatomic) CGFloat traverseFadeAccumulator;

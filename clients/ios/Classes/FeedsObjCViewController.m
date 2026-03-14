@@ -113,8 +113,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
-                                        /* 1 */ @"infrequent",
-                                        /* 2 */ @"everything"];
+                                        /* 1 */ @"discover_sites",
+                                        /* 2 */ @"infrequent",
+                                        /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -1721,6 +1722,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     for (NSString *folder in self.appDelegate.dictFoldersArray) {
         if ([folder hasPrefix:@"river_"] ||
             [folder isEqualToString:@"dashboard"] ||
+            [folder isEqualToString:@"discover_sites"] ||
             [folder isEqualToString:@"everything"] ||
             [folder isEqualToString:@"infrequent"] ||
             [folder isEqualToString:@"widget"] ||
@@ -2288,6 +2290,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
     if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
+        section != NewsBlurTopSectionDiscoverSites &&
         section != NewsBlurTopSectionInfrequentSiteStories &&
         section != NewsBlurTopSectionAllStories &&
         ![folderName isEqualToString:@"river_global"] &&
@@ -2366,13 +2369,17 @@ heightForHeaderInSection:(NSInteger)section {
     if ([folder isEqualToString:@"dashboard"]) {
         appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
+    } else if ([folder isEqualToString:@"discover_sites"]) {
+        [appDelegate openDiscoverSitesView];
     } else {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
-    
-    if (!appDelegate.detailViewController.isPhoneOrCompact) {
-        [appDelegate.feedDetailViewController viewWillAppear:NO];
-        [appDelegate.feedDetailViewController viewDidAppear:NO];
+
+    if (![folder isEqualToString:@"discover_sites"]) {
+        if (!appDelegate.detailViewController.isPhoneOrCompact) {
+            [appDelegate.feedDetailViewController viewWillAppear:NO];
+            [appDelegate.feedDetailViewController viewDidAppear:NO];
+        }
     }
 }
 
@@ -2793,6 +2800,7 @@ heightForHeaderInSection:(NSInteger)section {
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         // Skip special folders that don't have collapse functionality
         if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||
@@ -2822,6 +2830,7 @@ heightForHeaderInSection:(NSInteger)section {
         NSString *folderName = appDelegate.dictFoldersArray[i];
         // Skip special folders that don't have collapse functionality
         if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"discover_sites"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
             [folderName isEqualToString:@"saved_stories"] ||
@@ -3490,7 +3499,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-unread"]];
     [self.userInfoView addSubview:yellowIcon];
     yellowIcon.hidden = YES;
     
@@ -3500,7 +3509,7 @@ heightForHeaderInSection:(NSInteger)section {
     neutralCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:neutralCount];
     
-    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
+    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-focus"]];
     [self.userInfoView addSubview:greenIcon];
     greenIcon.hidden = YES;
     
@@ -3562,16 +3571,19 @@ heightForHeaderInSection:(NSInteger)section {
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
     neutralCount.accessibilityLabel = [NSString stringWithFormat:@"%@ unread stories", neutralCount.text];
 
-    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
+    CGFloat countY = CGRectGetMaxY(userLabel.frame) + 2 - yOffset;
+    CGFloat iconY = countY + 3;
+
+    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), iconY, 10, 10);
 
     neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
-                                    CGRectGetMinY(yellowIcon.frame) - 2 - yOffset, 100, 16);
+                                    countY, 100, 16);
     [neutralCount sizeToFit];
-    
+
     greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
-                                 CGRectGetMinY(yellowIcon.frame), 8, 8);
+                                 iconY, 10, 10);
     positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
-                                     CGRectGetMinY(greenIcon.frame) - 2 - yOffset, 100, 16);
+                                     countY, 100, 16);
     [positiveCount sizeToFit];
     
     yellowIcon.hidden = NO;
