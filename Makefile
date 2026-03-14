@@ -238,6 +238,8 @@ logmongo:
 alllogs: 
 	docker compose logs -f --tail 20
 logall: alllogs
+tlnb-samuel:
+	/srv/newsblur/utils/tlnb.py | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (/\[samuel\^]/) print line}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:
