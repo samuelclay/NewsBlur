@@ -1085,11 +1085,6 @@ def setup_usage_billing(request):
             },
         ],
         "mode": "subscription",
-        "subscription_data": {
-            "billing_thresholds": {
-                "amount_gte": 5000,  # $50 in cents
-            },
-        },
         "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
         "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
         "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
