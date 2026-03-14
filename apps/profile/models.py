@@ -1322,10 +1322,14 @@ class Profile(models.Model):
 
         # Step 1: Get the order to retrieve purchaseToken
         try:
-            order = service.orders().get(
-                packageName=package_name,
-                orderId=order_id,
-            ).execute()
+            order = (
+                service.orders()
+                .get(
+                    packageName=package_name,
+                    orderId=order_id,
+                )
+                .execute()
+            )
         except Exception as e:
             print(" ---> %s: Order lookup failed for %s: %s" % (self.user.username, order_id, e))
             return 0
@@ -1350,10 +1354,15 @@ class Profile(models.Model):
 
         # Step 3: Get full subscription state via purchaseToken
         try:
-            sub_info = service.purchases().subscriptionsv2().get(
-                packageName=package_name,
-                token=purchase_token,
-            ).execute()
+            sub_info = (
+                service.purchases()
+                .subscriptionsv2()
+                .get(
+                    packageName=package_name,
+                    token=purchase_token,
+                )
+                .execute()
+            )
         except Exception as e:
             print(" ---> %s: Subscription lookup failed: %s" % (self.user.username, e))
             return 0

@@ -522,10 +522,15 @@ def get_google_play_subscription(purchase_token):
             scopes=["https://www.googleapis.com/auth/androidpublisher"],
         )
         service = build("androidpublisher", "v3", credentials=credentials)
-        result = service.purchases().subscriptionsv2().get(
-            packageName=settings.GOOGLE_PLAY_PACKAGE_NAME,
-            token=purchase_token,
-        ).execute()
+        result = (
+            service.purchases()
+            .subscriptionsv2()
+            .get(
+                packageName=settings.GOOGLE_PLAY_PACKAGE_NAME,
+                token=purchase_token,
+            )
+            .execute()
+        )
         return result
     except Exception as e:
         logging.debug(" ---> Google Play API error: %s" % e)
@@ -534,9 +539,17 @@ def get_google_play_subscription(purchase_token):
 
 def handle_google_play_notification(user, notification_type, purchase_token, subscription_id):
     NOTIFICATION_NAMES = {
-        1: "RECOVERED", 2: "RENEWED", 3: "CANCELED", 4: "PURCHASED",
-        5: "ON_HOLD", 6: "IN_GRACE_PERIOD", 7: "RESTARTED",
-        9: "DEFERRED", 10: "PAUSED", 12: "REVOKED", 13: "EXPIRED",
+        1: "RECOVERED",
+        2: "RENEWED",
+        3: "CANCELED",
+        4: "PURCHASED",
+        5: "ON_HOLD",
+        6: "IN_GRACE_PERIOD",
+        7: "RESTARTED",
+        9: "DEFERRED",
+        10: "PAUSED",
+        12: "REVOKED",
+        13: "EXPIRED",
     }
     type_name = NOTIFICATION_NAMES.get(notification_type, "UNKNOWN(%s)" % notification_type)
     logging.user(user, "~BM~FBGoogle Play RTDN: %s for %s" % (type_name, subscription_id))
@@ -596,8 +609,10 @@ def google_play_rtdn(request):
     notification_type = sub_notification["notificationType"]
     subscription_id = sub_notification.get("subscriptionId", "")
 
-    logging.debug(" ---> Google Play RTDN type=%s subscription=%s token=%s..." % (
-        notification_type, subscription_id, purchase_token[:20]))
+    logging.debug(
+        " ---> Google Play RTDN type=%s subscription=%s token=%s..."
+        % (notification_type, subscription_id, purchase_token[:20])
+    )
 
     # Look up user by purchase token
     user = find_google_play_user(purchase_token)
@@ -827,8 +842,11 @@ def save_android_receipt(request):
     product_id = request.POST.get("product_id")
     purchase_token = request.POST.get("purchase_token")
 
-    logging.user(request, "~BM~FBSaving Android Receipt: %s %s (token: %s)" % (
-        product_id, order_id, "yes" if purchase_token else "no"))
+    logging.user(
+        request,
+        "~BM~FBSaving Android Receipt: %s %s (token: %s)"
+        % (product_id, order_id, "yes" if purchase_token else "no"),
+    )
 
     if purchase_token:
         request.user.profile.store_google_play_ids(

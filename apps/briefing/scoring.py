@@ -15,7 +15,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     compute_story_score,
 )
-from apps.briefing.models import DEFAULT_SECTIONS, DEFAULT_SECTION_ORDER
+from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils import log as logging
