@@ -296,8 +296,8 @@ internal fun LoginScreenContent(
                             Brush.verticalGradient(
                                 colors =
                                     listOf(
-                                        palette.gradientTop.copy(alpha = 0.82f),
-                                        palette.gradientBottom.copy(alpha = 0.80f),
+                                        palette.gradientTop.copy(alpha = 0.68f),
+                                        palette.gradientBottom.copy(alpha = 0.72f),
                                     ),
                             ),
                     ),
@@ -338,7 +338,7 @@ internal fun LoginScreenContent(
                         .widthIn(max = 420.dp)
                         .testTag(LoginScreenTags.AuthPanel),
                 palette = palette,
-                filled = false,
+                filled = true,
             ) {
                 SegmentedControl(
                     mode = uiState.mode,
@@ -648,7 +648,6 @@ private fun SegmentedControl(
                 .fillMaxWidth()
                 .height(40.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(palette.segmentTrack)
                 .border(1.dp, palette.segmentBorder, RoundedCornerShape(12.dp)),
     ) {
         val pillWidth = (maxWidth - 4.dp) / 2
@@ -754,7 +753,13 @@ private fun AuthTextField(
                 .fillMaxWidth()
                 .height(52.dp)
                 .clip(shape)
-                .background(palette.fieldBackground)
+                .background(
+                    if (isFocused) {
+                        palette.fieldBackground.copy(alpha = 0.10f)
+                    } else {
+                        Color.Transparent
+                    },
+                )
                 .border(1.dp, borderColor, shape),
     ) {
         BasicTextField(
