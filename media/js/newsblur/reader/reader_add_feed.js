@@ -236,8 +236,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         };
         $add.data("ui-autocomplete")._resizeMenu = function () {
             var ul = this.menu.element;
-            var $row = self.$('.NB-add-input-row');
-            ul.outerWidth($row.length ? $row.outerWidth() : this.element.outerWidth());
+            ul.outerWidth(self.$('.NB-add-url').outerWidth());
         };
     },
 

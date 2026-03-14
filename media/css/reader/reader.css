@@ -10857,17 +10857,15 @@ form.opml_import_form input {
 .NB-add-folder-row .NB-add-folder-icon {
     width: 20px;
     height: 20px;
-    background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
     background-size: 20px;
     cursor: pointer;
     flex-shrink: 0;
-    opacity: 0.6;
+    opacity: 0.7;
     transition: opacity 0.15s ease;
 }
 
 .NB-add-folder-row .NB-add-folder-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
-    background-size: 20px;
     opacity: 1;
 }
 
