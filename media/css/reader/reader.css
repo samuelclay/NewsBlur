@@ -5320,6 +5320,96 @@ body {
     color: #A90103;
 }
 
+/* AI Classifier Pills */
+.NB-feed-story .NB-feed-story-ai-classifiers {
+    display: inline;
+    line-height: 22px;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {
+    margin: 0 2px;
+    color: #B0B0A0;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier {
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin: 0 4px 4px 0;
+    line-height: 14px;
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier-label {
+    font-weight: bold;
+}
+
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 9px;
+}
+
+.NB-theme-size-s .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 10px;
+}
+
+.NB-theme-size-l .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 13px;
+}
+
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 14px;
+}
+
+.NB-feed-story.read .NB-feed-story-ai-classifier {
+    color: #949181;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score-1 {
+    /* Green */
+    background-color: #A3CA87;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score--1 {
+    /* Red */
+    background-color: #D58586;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier:hover {
+    /* Gray, active -> [Light] Green */
+    background-color: #9CB987;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    color: white;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score-1:hover {
+    /* Green hover */
+    background-color: #34912E;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score--1:hover {
+    /* Red hover */
+    background-color: #A90103;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
 .NB-feed-story .NB-feed-story-title .NB-score-1 {
     color: #34912E;
 }

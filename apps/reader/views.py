@@ -944,25 +944,28 @@ def refresh_feed(request, feed_id):
 def get_prompt_scores_or_queue(user, stories, feed_ids):
     """Get cached AI prompt classifier scores, queueing uncached stories for async classification.
 
-    Returns {story_hash: prompt_score} from cache. Uncached stories get score 0
-    and a Celery task is fired to classify them in the background.
+    Returns dict with:
+      "scores": {story_hash: prompt_score} - aggregate score per story
+      "details": {story_hash: [{"prompt": text, "score": int, "include_images": bool}]}
+    Uncached stories get score 0 and a Celery task is fired to classify them in the background.
     """
+    empty_result = {"scores": {}, "details": {}}
     if not stories or not feed_ids:
-        return {}
+        return empty_result
 
     if not user.profile.can_use_ai_classifiers:
-        return {}
+        return empty_result
 
     # Quick check: does user have any prompt classifiers?
     prompt_count = MClassifierPrompt.objects.filter(user_id=user.pk).count()
     if not prompt_count:
-        return {}
+        return empty_result
 
     # Get applicable prompts
     prompts = MClassifierPrompt.get_prompts_for_user(user.pk, feed_ids=feed_ids)
     feed_prompts = prompts["feed_prompts"]
     if not feed_prompts:
-        return {}
+        return empty_result
 
     # Group stories by feed
     stories_by_feed = defaultdict(list)
@@ -971,6 +974,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
 
     # Check cache for all prompts and collect uncached story hashes
     prompt_scores = {}  # {story_hash: aggregated_score}
+    prompt_details = defaultdict(list)  # {story_hash: [{prompt, score, include_images}]}
     uncached_hashes = set()
 
     for feed_id, feed_stories in stories_by_feed.items():
@@ -992,10 +996,20 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
                     score = cached[sh]
                     if score != 0:
                         # Apply classification type: focus prompts → +1, hidden prompts → -1
+                        effective_score = 0
                         if prompt.classifier_type == "focus" and score > 0:
-                            prompt_scores[sh] = 1
+                            effective_score = 1
                         elif prompt.classifier_type == "hidden" and score < 0:
-                            prompt_scores[sh] = -1
+                            effective_score = -1
+                        if effective_score != 0:
+                            prompt_scores[sh] = effective_score
+                            prompt_details[sh].append(
+                                {
+                                    "prompt": prompt.prompt,
+                                    "score": effective_score,
+                                    "include_images": prompt.include_images,
+                                }
+                            )
                 else:
                     uncached_hashes.add(sh)
 
@@ -1003,7 +1017,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     if uncached_hashes:
         ClassifyStoriesWithPrompt.delay(user.pk, list(uncached_hashes))
 
-    return prompt_scores
+    return {"scores": prompt_scores, "details": dict(prompt_details)}
 
 
 @never_cache
@@ -1256,7 +1270,7 @@ def load_single_feed(request, feed_id):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_scores = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
+    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
 
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
@@ -1291,8 +1305,9 @@ def load_single_feed(request, feed_id):
                 if user_is_pro
                 else 0
             ),
-            "prompt": prompt_scores.get(story["story_hash"], 0),
+            "prompt": prompt_data["scores"].get(story["story_hash"], 0),
         }
+        story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
         # Apply YouTube captions if user preference is enabled
@@ -2466,7 +2481,7 @@ def load_river_stories__redis(request):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_scores = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
 
     # Look up actual read status for starred stories from Redis
     if read_filter == "starred":
@@ -2534,8 +2549,9 @@ def load_river_stories__redis(request):
                 if user_is_pro
                 else 0
             ),
-            "prompt": prompt_scores.get(story["story_hash"], 0),
+            "prompt": prompt_data["scores"].get(story["story_hash"], 0),
         }
+        story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
         # Apply YouTube captions if user preference is enabled
