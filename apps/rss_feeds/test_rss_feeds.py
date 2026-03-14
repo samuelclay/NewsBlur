@@ -444,6 +444,59 @@ class Test_GetFeedFromUrl(TestCase):
         result = Feed.get_feed_from_url("http://example.com/no-content-type", create=False, fetch=True)
         self.assertIsNone(result)
 
+    @patch("apps.rss_feeds.models.requests.get")
+    @patch("apps.rss_feeds.models.feedfinder_pilgrim")
+    @patch("apps.rss_feeds.models.feedfinder_forman")
+    def test_get_feed_from_url__read_timeout(self, mock_forman, mock_pilgrim, mock_requests_get):
+        """ReadTimeout on JSON feed check should not crash."""
+        import requests as req
+
+        mock_forman.find_feeds.return_value = []
+        mock_pilgrim.feeds.return_value = []
+        mock_requests_get.side_effect = req.ReadTimeout("timed out")
+
+        result = Feed.get_feed_from_url("http://example.com/slow-site", create=False, fetch=True)
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.requests.get")
+    @patch("apps.rss_feeds.models.feedfinder_pilgrim")
+    @patch("apps.rss_feeds.models.feedfinder_forman")
+    def test_get_feed_from_url__missing_schema(self, mock_forman, mock_pilgrim, mock_requests_get):
+        """MissingSchema (user passes search query instead of URL) should not crash."""
+        import requests as req
+
+        mock_forman.find_feeds.return_value = []
+        mock_pilgrim.feeds.return_value = []
+        mock_requests_get.side_effect = req.exceptions.MissingSchema("No scheme supplied")
+
+        result = Feed.get_feed_from_url("http://not a real url but normalized", create=False, fetch=True)
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.requests.get")
+    @patch("apps.rss_feeds.models.feedfinder_pilgrim")
+    @patch("apps.rss_feeds.models.feedfinder_forman")
+    def test_get_feed_from_url__invalid_schema(self, mock_forman, mock_pilgrim, mock_requests_get):
+        """InvalidSchema (WhatsApp link etc.) should not crash."""
+        import requests as req
+
+        mock_forman.find_feeds.return_value = []
+        mock_pilgrim.feeds.return_value = []
+        mock_requests_get.side_effect = req.exceptions.InvalidSchema("No connection adapters")
+
+        result = Feed.get_feed_from_url("http://example.com/whatsapp-link", create=False, fetch=True)
+        self.assertIsNone(result)
+
+
+class Test_FeedSave(TestCase):
+    """Tests for Feed.save edge cases."""
+
+    def test_save__force_update_without_pk(self):
+        """save(force_update=True) with no pk should not raise ValueError."""
+        feed = Feed(feed_address="http://example.com/feed.xml", feed_link="http://example.com")
+        # Should not raise ValueError: Cannot force an update in save() with no primary key
+        feed.save(force_update=True)
+        self.assertIsNone(feed.pk)
+
 
 class Test_PremiumSetupResyncPassthrough(TestCase):
     """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
