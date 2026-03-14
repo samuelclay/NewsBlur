@@ -90,10 +90,53 @@ class Profile(models.Model):
     grandfather_expires = models.DateTimeField(blank=True, null=True)
     has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
     is_usage_billing = models.BooleanField(default=False, blank=True, null=True)
+    usage_billing_limit = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True,
+        help_text="Optional monthly spending limit in USD for AI classifiers",
+    )
 
     @property
     def can_use_ai_classifiers(self):
         return bool(self.is_usage_billing)
+
+    def get_usage_billing_spend(self):
+        """Get current billing cycle spend from MLLMCost MongoDB records.
+        Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
+        """
+        if not self.is_usage_billing:
+            return (0.0, None, False)
+
+        from apps.monitor.models import MLLMCost
+
+        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
+        limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
+        is_reached = limit is not None and current_spend >= limit
+        return (current_spend, limit, is_reached)
+
+    @property
+    def is_usage_limit_reached(self):
+        """Quick check: has user hit their spending limit? Uses Redis cache."""
+        if not self.is_usage_billing or not self.usage_billing_limit:
+            return False
+        return self._check_cached_limit_status()
+
+    def _check_cached_limit_status(self):
+        """Check Redis cache for limit status, fall back to MongoDB."""
+        import redis as redis_lib
+        from django.conf import settings as django_settings
+
+        r = redis_lib.Redis(connection_pool=django_settings.REDIS_STATISTICS_POOL)
+        cache_key = f"usage_limit:{self.user_id}"
+        cached = r.get(cache_key)
+        if cached is not None:
+            return cached == "1"
+
+        from apps.monitor.models import MLLMCost
+
+        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
+        is_reached = current_spend >= float(self.usage_billing_limit)
+        r.setex(cache_key, 300, "1" if is_reached else "0")
+        return is_reached
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -3200,12 +3243,25 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
     purpose = metadata.get("purpose", "")
     if purpose == "usage_billing":
         stripe_id = full_json["data"]["object"].get("customer")
+        subscription_id = full_json["data"]["object"].get("subscription")
         try:
             profile = User.objects.get(pk=int(newsblur_user_id)).profile
             if stripe_id and not profile.stripe_id:
                 profile.stripe_id = stripe_id
             profile.is_usage_billing = True
             profile.save()
+            # Set $50 billing threshold on the subscription
+            if subscription_id:
+                try:
+                    import stripe
+
+                    stripe.api_key = settings.STRIPE_SECRET
+                    stripe.Subscription.modify(
+                        subscription_id,
+                        billing_thresholds={"amount_gte": 5000},
+                    )
+                except Exception as e:
+                    logging.debug(" ---> Failed to set billing threshold: %s" % e)
             logging.user(profile.user, "~BC~SB~FBStripe usage billing setup complete")
         except User.DoesNotExist:
             logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)

@@ -1,6 +1,7 @@
 NEWSBLUR.ReaderAccount = function (options) {
     var defaults = {
-        'width': 700,
+        'width': 800,
+        'modal_container_class': 'NB-account-container',
         'animate_email': false,
         'change_password': false,
         'onOpen': _.bind(function () {
@@ -244,7 +245,26 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             (NEWSBLUR.Globals.is_usage_billing
                                 ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, 'Manage billing on Stripe')
                                 : $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-setup NB-modal-submit-button NB-modal-submit-green' }, 'Set up billing')
-                            )
+                            ),
+                            (NEWSBLUR.Globals.is_usage_billing && $.make('div', { className: 'NB-usage-billing-limit-section' }, [
+                                $.make('div', { className: 'NB-usage-billing-limit-label' }, 'Monthly spending limit'),
+                                $.make('div', { className: 'NB-usage-billing-limit-status' }),
+                                $.make('div', { className: 'NB-usage-billing-limit-input-row' }, [
+                                    $.make('span', { className: 'NB-usage-billing-limit-dollar' }, '$'),
+                                    $.make('input', {
+                                        type: 'number',
+                                        className: 'NB-usage-billing-limit-input',
+                                        placeholder: 'No limit',
+                                        min: '1',
+                                        step: '1',
+                                        value: NEWSBLUR.Globals.usage_billing_limit || ''
+                                    }),
+                                    $.make('span', { className: 'NB-usage-billing-limit-per-month' }, '/month')
+                                ]),
+                                $.make('div', { className: 'NB-usage-billing-limit-help' },
+                                    'Optional. Classifiers pause when the limit is reached and resume next billing cycle.'
+                                )
+                            ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'AI classifier billing'
@@ -717,6 +737,17 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
+
+        // Save usage billing limit if changed
+        if (NEWSBLUR.Globals.is_usage_billing) {
+            var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
+            this.model.save_usage_billing_limit(limit, function (data) {
+                if (data.code === 1) {
+                    NEWSBLUR.Globals.usage_billing_limit = data.limit;
+                }
+            });
+        }
+
         this.model.save_account_settings(form, _.bind(function (data) {
             if (data.code == -1) {
                 $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
@@ -868,6 +899,27 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]));
                 });
             }
+
+            // Render spending limit status
+            var $limit_status = $('.NB-usage-billing-limit-status', this.$modal);
+            if (data.usage_billing_limit) {
+                var pct = Math.min(100, (data.current_cycle_spend / data.usage_billing_limit) * 100);
+                var status_class = data.is_limit_reached ? 'NB-limit-reached' : (pct > 80 ? 'NB-limit-warning' : '');
+                $limit_status.html($.make('div', { className: 'NB-usage-billing-limit-bar ' + status_class }, [
+                    $.make('div', { className: 'NB-usage-billing-limit-bar-fill', style: 'width:' + pct + '%' }),
+                    $.make('span', { className: 'NB-usage-billing-limit-bar-text' },
+                        '$' + data.current_cycle_spend.toFixed(2) + ' / $' + data.usage_billing_limit.toFixed(2) + ' used this month'
+                    )
+                ]));
+            } else if (data.current_cycle_spend > 0) {
+                $limit_status.html($.make('div', { className: 'NB-usage-billing-limit-nolimit' },
+                    '$' + data.current_cycle_spend.toFixed(2) + ' spent this month (no limit set)'
+                ));
+            } else {
+                $limit_status.empty();
+            }
+            // Update input value from server
+            $('.NB-usage-billing-limit-input', this.$modal).val(data.usage_billing_limit || '');
 
             $(window).resize();
         }, this));

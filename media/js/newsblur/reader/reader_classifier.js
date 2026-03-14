@@ -1155,6 +1155,10 @@ var classifier_prototype = {
             NEWSBLUR.assets.get_ai_classifier_usage({ feed_id: feed_id }, function (resp) {
                 if (resp.can_use_ai) {
                     self.update_ai_cost_estimates(resp);
+                    NEWSBLUR.Globals.usage_billing_limit_reached = resp.is_limit_reached;
+                    if (resp.is_limit_reached) {
+                        self.show_limit_reached_banner();
+                    }
                 }
             });
         }
@@ -1588,15 +1592,27 @@ var classifier_prototype = {
         var $billing_btn;
         if (NEWSBLUR.Globals.is_usage_billing) {
             $billing_btn = $.make('a', {
-                href: '#', className: 'NB-ai-billing-action NB-ai-billing-manage'
-            }, 'Manage billing');
+                href: '#', className: 'NB-ai-billing-manage NB-modal-submit-button NB-modal-submit-green'
+            }, 'Manage billing and limits');
         } else {
             $billing_btn = $.make('a', {
-                href: '#', className: 'NB-ai-billing-action NB-ai-billing-setup'
+                href: '#', className: 'NB-ai-billing-setup NB-modal-submit-button NB-modal-submit-green'
             }, 'Set up billing');
         }
 
         $el.empty().append([$cost_info, $billing_btn]).show();
+    },
+
+    show_limit_reached_banner: function () {
+        var $banners = $('.NB-ai-filter-upgrade-banner', this.$modal);
+        $banners.each(function () {
+            var $banner = $(this);
+            $banner.html($.make('div', { className: 'NB-ai-filter-limit-reached-banner-inner' }, [
+                $.make('b', 'Monthly spending limit reached. '),
+                $.make('span', 'AI classifiers are paused until next billing cycle. '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, 'Increase or remove your limit')
+            ])).show();
+        });
     },
 
     clear_image_test_results: function ($section) {
