@@ -338,6 +338,7 @@ internal fun LoginScreenContent(
                         .widthIn(max = 420.dp)
                         .testTag(LoginScreenTags.AuthPanel),
                 palette = palette,
+                filled = false,
             ) {
                 SegmentedControl(
                     mode = uiState.mode,
@@ -601,6 +602,7 @@ private fun Header(palette: LoginAuthPalette) {
 private fun FrostedPanel(
     modifier: Modifier = Modifier,
     palette: LoginAuthPalette,
+    filled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(24.dp)
@@ -609,11 +611,17 @@ private fun FrostedPanel(
             modifier
                 .shadow(32.dp, shape, ambientColor = palette.cardShadow, spotColor = palette.cardShadow)
                 .clip(shape)
-                .background(
-                    brush =
-                        Brush.verticalGradient(
-                            colors = listOf(palette.cardTop, palette.cardBottom),
-                        ),
+                .then(
+                    if (filled) {
+                        Modifier.background(
+                            brush =
+                                Brush.verticalGradient(
+                                    colors = listOf(palette.cardTop, palette.cardBottom),
+                                ),
+                        )
+                    } else {
+                        Modifier
+                    },
                 )
                 .border(1.dp, palette.cardBorder, shape),
     ) {
