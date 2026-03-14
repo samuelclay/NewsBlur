@@ -609,7 +609,6 @@ private fun FrostedPanel(
     Box(
         modifier =
             modifier
-                .shadow(32.dp, shape, ambientColor = palette.cardShadow, spotColor = palette.cardShadow)
                 .clip(shape)
                 .then(
                     if (filled) {
