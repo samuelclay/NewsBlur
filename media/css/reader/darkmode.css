@@ -1703,6 +1703,14 @@ color: #a85b40;
     background-color: #585b63;
 }
 
+.NB-dark .NB-dashboard-column-control li img {
+    filter: invert(0.7);
+}
+
+.NB-dark .NB-dashboard-column-control li.NB-active img {
+    filter: invert(0.9);
+}
+
 .NB-dark #story_taskbar {
     border-top: 1px solid #303030;
 }
