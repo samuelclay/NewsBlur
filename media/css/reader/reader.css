@@ -23755,6 +23755,121 @@ h5.NB-classifier-section-header {
     min-height: 500px;
 }
 
+/* Section header with inline search */
+.NB-folder-icon-editor .NB-folder-icon-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0 6px 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-section-header .NB-folder-icon-section-label {
+    margin: 0;
+}
+
+/* Icon search filter - inline rounded rect input */
+.NB-folder-icon-editor .NB-folder-icon-search {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #FFF;
+    border: 1px solid #D0D4D8;
+    border-radius: 4px;
+    padding: 3px 8px;
+    width: 150px;
+    transition: border-color 0.15s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-icon {
+    width: 13px;
+    height: 13px;
+    opacity: 0.35;
+    flex-shrink: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input,
+.NB-modal-exception .NB-folder-icon-editor input[type=text].NB-folder-icon-search-input {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    padding: 1px 0;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input {
+    color: #333;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input::placeholder {
+    color: #AAA;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear {
+    cursor: pointer;
+    font-size: 14px;
+    color: #999;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear:hover {
+    color: #333;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear.NB-hidden {
+    display: none;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-no-results {
+    text-align: center;
+    padding: 24px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+/* Dark mode: icon search filter */
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search {
+    background: #2A2D30;
+    border-color: #404346;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-icon {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-input {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-input::placeholder {
+    color: #666;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-clear {
+    color: #777;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-clear:hover {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-no-results {
+    color: #777;
+}
+
 /* Upload section margin */
 .NB-folder-icon-editor .NB-folder-icon-upload-section {
     margin-top: 8px;
