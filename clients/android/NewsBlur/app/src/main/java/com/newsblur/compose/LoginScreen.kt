@@ -999,6 +999,7 @@ private fun customServerHost(value: String): String? {
     return Uri.parse(value).host ?: value.removePrefix("https://")
 }
 
+// Keep Android aligned with the iOS Metal and web WebGL login background wave shader.
 private const val LOGIN_SHADER_SOURCE =
     """
     uniform float2 u_resolution;
@@ -1012,54 +1013,29 @@ private const val LOGIN_SHADER_SOURCE =
     half4 main(float2 fragCoord) {
         float2 uv = fragCoord / u_resolution;
         float3 bg = mix(u_mid, u_base, smoothstep(0.0, 1.0, uv.y));
+        float time = u_time * 0.4;
 
-        float2 flow = uv;
-        flow.x += sin(uv.y * 6.0 + u_time * 1.25) * 0.075;
-        flow.y += cos(uv.x * 5.0 - u_time * 0.95) * 0.06;
+        float d1 = uv.x * 0.6 + uv.y * 0.4;
+        float d2 = uv.x * 0.4 - uv.y * 0.6;
+        float d3 = uv.x * 0.8 + uv.y * 0.2;
 
-        float diag = flow.x * 0.72 + flow.y * 0.48;
+        float w1 = sin(d1 * 8.0 + time * 0.5 + sin(uv.y * 4.0 + time * 0.3) * 0.8);
+        float ridge1 = exp(-w1 * w1 * 2.5) * 0.35;
 
-        float wave1 = sin(diag * 10.0 + u_time * 1.8) * 0.5 + 0.5;
-        wave1 = pow(wave1, 3.0);
+        float w2 = sin(d2 * 6.0 + time * 0.7 + cos(uv.x * 3.0 - time * 0.5) * 0.6);
+        float ridge2 = exp(-w2 * w2 * 3.0) * 0.2;
 
-        float wave2 = sin(diag * 16.0 - u_time * 1.3 + 1.5) * 0.5 + 0.5;
-        wave2 = pow(wave2, 4.0);
+        float w3 = sin(d3 * 14.0 - time * 0.9 + sin(d1 * 5.0 + time * 0.4) * 0.4);
+        float ridge3 = exp(-w3 * w3 * 4.0) * 0.12;
 
-        float wave3 = sin(diag * 25.0 + u_time * 1.15 + 3.0) * 0.5 + 0.5;
-        wave3 = pow(wave3, 5.0);
+        float w4 = sin(d1 * 3.0 + time * 0.25);
+        float glow = w4 * w4 * 0.15;
 
-        float3 ridge1 = mix(bg, u_light, wave1 * 0.54);
-        float3 ridge2 = mix(ridge1, u_light, wave2 * 0.38);
-        float3 color = mix(ridge2, u_light, wave3 * 0.26);
-
-        float glow = sin(flow.x * 4.0 + u_time * 0.8) * sin(flow.y * 3.0 - u_time * 0.55);
-        glow = max(glow, 0.0);
-        glow = pow(glow, 2.0) * 0.50;
-        color = mix(color, u_soft_gold, glow * 0.40);
-
-        float goldHighlight = wave1 * wave2;
-        float shimmer = sin((flow.x + flow.y) * 18.0 - u_time * 2.45) * 0.5 + 0.5;
-        shimmer = pow(shimmer, 6.0) * 0.22;
-        color = mix(color, u_soft_gold, shimmer * goldHighlight);
-        color = mix(color, u_gold, goldHighlight * 0.15);
-
-        float2 bloomCenter = float2(0.18 + 0.16 * sin(u_time * 0.22), 0.12 + 0.05 * cos(u_time * 0.17));
-        float bloom = exp(-distance(flow, bloomCenter) * 8.0);
-        color = mix(color, u_soft_gold, bloom * 0.15);
-
-        float topMask = 1.0 - smoothstep(0.16, 0.68, uv.y);
-        float topCrest = sin(flow.x * 10.5 - u_time * 1.8 + flow.y * 4.4) * 0.5 + 0.5;
-        topCrest = pow(topCrest, 4.0) * topMask * 0.30;
-        float topSweep = sin((flow.x * 15.0) + (flow.y * 7.0) - u_time * 2.4) * 0.5 + 0.5;
-        topSweep = pow(topSweep, 6.0) * topMask * 0.20;
-        color = mix(color, u_soft_gold, topCrest + topSweep);
-        color = mix(color, u_light, topMask * wave1 * 0.13);
-
-        float bottomMask = smoothstep(0.28, 0.92, uv.y);
-        float bottomSweep = sin(flow.x * 12.0 + u_time * 1.9 - flow.y * 5.0) * 0.5 + 0.5;
-        bottomSweep = pow(bottomSweep, 5.0) * bottomMask * 0.18;
-        color = mix(color, u_soft_gold, bottomSweep);
-        color = mix(color, u_light, bottomMask * wave2 * 0.10);
+        float3 color = bg;
+        color += u_light * ridge1;
+        color += u_gold * 0.7 * ridge2;
+        color += u_soft_gold * 0.4 * ridge3;
+        color += u_mid * glow;
 
         return half4(color, 1.0);
     }
