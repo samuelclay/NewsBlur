@@ -242,13 +242,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                     ? 'Usage-based billing is enabled for AI classifiers.'
                                     : 'Set up usage-based billing to use AI content and image filters.'
                             ),
+                            (NEWSBLUR.Globals.is_usage_billing && $.make('div', { className: 'NB-usage-billing-current-spend-section' })),
                             (NEWSBLUR.Globals.is_usage_billing
                                 ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, 'Manage billing on Stripe')
                                 : $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-setup NB-modal-submit-button NB-modal-submit-green' }, 'Set up billing')
                             ),
                             (NEWSBLUR.Globals.is_usage_billing && $.make('div', { className: 'NB-usage-billing-limit-section' }, [
                                 $.make('div', { className: 'NB-usage-billing-limit-label' }, 'Monthly spending limit'),
-                                $.make('div', { className: 'NB-usage-billing-limit-status' }),
                                 $.make('div', { className: 'NB-usage-billing-limit-input-row' }, [
                                     $.make('span', { className: 'NB-usage-billing-limit-dollar' }, '$'),
                                     $.make('input', {
@@ -860,7 +860,63 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         }
 
         this.model.fetch_usage_billing_history(_.bind(function (data) {
+            // Render current spend hero
+            var $spend_section = $('.NB-usage-billing-current-spend-section', this.$modal).empty();
+
+            var spend_amount = '$' + (data.current_cycle_spend || 0).toFixed(2);
+            var $hero = $.make('div', { className: 'NB-usage-billing-spend-hero' }, spend_amount);
+
+            var now = new Date();
+            var cycle_start = data.cycle_start ? new Date(data.cycle_start + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth(), 1);
+            var cycle_end = data.cycle_end ? new Date(data.cycle_end + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            var period_text = cycle_start.format("M j") + ' \u2013 ' + cycle_end.format("M j, Y");
+            var $period = $.make('div', { className: 'NB-usage-billing-spend-period' }, period_text);
+
+            $spend_section.append($hero, $period);
+
+            // Progress bar if limit is set
+            if (data.usage_billing_limit) {
+                var pct = Math.min(100, (data.current_cycle_spend / data.usage_billing_limit) * 100);
+                var status_class = data.is_limit_reached ? 'NB-limit-reached' : (pct > 80 ? 'NB-limit-warning' : '');
+                $spend_section.append($.make('div', { className: 'NB-usage-billing-limit-bar ' + status_class }, [
+                    $.make('div', { className: 'NB-usage-billing-limit-bar-fill', style: 'width:' + pct + '%' }),
+                    $.make('span', { className: 'NB-usage-billing-limit-bar-text' },
+                        '$' + data.current_cycle_spend.toFixed(2) + ' / $' + data.usage_billing_limit.toFixed(2)
+                    )
+                ]));
+                if (data.is_limit_reached) {
+                    $spend_section.append($.make('div', { className: 'NB-usage-billing-limit-reached-note' },
+                        'Spending limit reached. Classifiers paused until next cycle.'
+                    ));
+                }
+            }
+
+            // Upcoming charge preview
+            if (data.upcoming_invoice) {
+                $spend_section.append($.make('div', { className: 'NB-usage-billing-upcoming-charge' }, [
+                    $.make('span', { className: 'NB-usage-billing-upcoming-label' }, 'Upcoming charge: '),
+                    $.make('span', { className: 'NB-usage-billing-upcoming-amount' }, '$' + data.upcoming_invoice.amount.toFixed(2))
+                ]));
+            }
+
+            // Update limit input value from server
+            $('.NB-usage-billing-limit-input', this.$modal).val(data.usage_billing_limit || '');
+
+            // Render usage billing history
             var $history = $('.NB-account-usage-payments', this.$modal).empty();
+
+            var make_line_items = function (items) {
+                if (!items || !items.length) return null;
+                var $line_items = $.make('div', { className: 'NB-account-payment-line-items' });
+                _.each(items, function (item) {
+                    $line_items.append($.make('div', { className: 'NB-account-payment-line-item' }, [
+                        $.make('span', { className: 'NB-account-payment-line-item-desc' }, item.description),
+                        $.make('span', { className: 'NB-account-payment-line-item-qty' }, '\u00d7' + item.quantity),
+                        $.make('span', { className: 'NB-account-payment-line-item-amount' }, '$' + item.amount.toFixed(2))
+                    ]));
+                });
+                return $line_items;
+            };
 
             if ((!data.invoices || !data.invoices.length) && !data.upcoming_invoice) {
                 $history.append($.make('li', { className: 'NB-account-payment' }, [
@@ -873,7 +929,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     $history.append($.make('li', { className: 'NB-account-payment NB-scheduled' }, [
                         $.make('div', { className: 'NB-account-payment-date' }, upcoming_date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + upcoming.amount.toFixed(2)),
-                        $.make('div', { className: 'NB-account-payment-provider' }, '(upcoming)')
+                        $.make('div', { className: 'NB-account-payment-provider' }, '(upcoming)'),
+                        make_line_items(upcoming.line_items)
                     ]));
                 }
                 _.each(data.invoices, function (invoice) {
@@ -895,31 +952,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + invoice.amount_paid.toFixed(2)),
                         $.make('div', { className: 'NB-account-payment-provider' }, 'stripe'),
-                        $invoice_link
+                        $invoice_link,
+                        make_line_items(invoice.line_items)
                     ]));
                 });
             }
-
-            // Render spending limit status
-            var $limit_status = $('.NB-usage-billing-limit-status', this.$modal);
-            if (data.usage_billing_limit) {
-                var pct = Math.min(100, (data.current_cycle_spend / data.usage_billing_limit) * 100);
-                var status_class = data.is_limit_reached ? 'NB-limit-reached' : (pct > 80 ? 'NB-limit-warning' : '');
-                $limit_status.html($.make('div', { className: 'NB-usage-billing-limit-bar ' + status_class }, [
-                    $.make('div', { className: 'NB-usage-billing-limit-bar-fill', style: 'width:' + pct + '%' }),
-                    $.make('span', { className: 'NB-usage-billing-limit-bar-text' },
-                        '$' + data.current_cycle_spend.toFixed(2) + ' / $' + data.usage_billing_limit.toFixed(2) + ' used this month'
-                    )
-                ]));
-            } else if (data.current_cycle_spend > 0) {
-                $limit_status.html($.make('div', { className: 'NB-usage-billing-limit-nolimit' },
-                    '$' + data.current_cycle_spend.toFixed(2) + ' spent this month (no limit set)'
-                ));
-            } else {
-                $limit_status.empty();
-            }
-            // Update input value from server
-            $('.NB-usage-billing-limit-input', this.$modal).val(data.usage_billing_limit || '');
 
             $(window).resize();
         }, this));
