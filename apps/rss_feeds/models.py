@@ -719,7 +719,13 @@ class Feed(models.Model):
         if not feed and fetch and create:
             try:
                 r = requests.get(url, timeout=10)
-            except (requests.ConnectionError, requests.models.InvalidURL, requests.ReadTimeout, requests.exceptions.MissingSchema, requests.exceptions.InvalidSchema):
+            except (
+                requests.ConnectionError,
+                requests.models.InvalidURL,
+                requests.ReadTimeout,
+                requests.exceptions.MissingSchema,
+                requests.exceptions.InvalidSchema,
+            ):
                 r = None
             if r and "application/json" in (r.headers.get("Content-Type") or ""):
                 try:

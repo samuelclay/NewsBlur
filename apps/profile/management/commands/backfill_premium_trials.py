@@ -12,7 +12,9 @@ class Command(BaseCommand):
         count = 0
 
         # 1. Users currently on trial: derive start from premium_expire - 30 days
-        active_trials = Profile.objects.filter(is_premium=True, is_premium_trial=True, premium_expire__isnull=False)
+        active_trials = Profile.objects.filter(
+            is_premium=True, is_premium_trial=True, premium_expire__isnull=False
+        )
         for profile in active_trials:
             end_date = profile.premium_expire
             start_date = end_date - datetime.timedelta(days=30)

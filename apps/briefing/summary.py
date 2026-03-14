@@ -152,8 +152,7 @@ def _build_system_prompt(
                 section_lines.append(
                     "%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories "
                     'with these keywords: "%s". Generate a section header based on the keywords. '
-                    "ONLY include stories whose CATEGORY field is set to %s."
-                    % (num, key, prompts[idx], key)
+                    "ONLY include stories whose CATEGORY field is set to %s." % (num, key, prompts[idx], key)
                 )
                 num += 1
 
