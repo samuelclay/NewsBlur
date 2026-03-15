@@ -2224,7 +2224,7 @@
                 NEWSBLUR.app.story_titles.show_loading(options);
             }
 
-            this.model.fetch_briefing_stories(
+            this.model.fetch_briefing_stories(1,
                 _.bind(this.post_open_daily_briefing, this),
                 NEWSBLUR.app.taskbar_info.show_stories_error
             );
@@ -2234,17 +2234,27 @@
             if (!this.flags['briefing_view']) return;
 
             this.flags['opening_feed'] = false;
+            this.flags['briefing_loading_page'] = false;
 
-            // reader.js: Store briefing data for the story titles view to render
-            NEWSBLUR.assets.briefing_data = data;
+            var is_append = data.page > 1;
+
+            if (is_append) {
+                // reader.js: Append new briefings to existing data for infinite scroll
+                NEWSBLUR.assets.briefing_data.briefings = (NEWSBLUR.assets.briefing_data.briefings || []).concat(data.briefings || []);
+                NEWSBLUR.assets.briefing_data.has_next_page = data.has_next_page;
+                NEWSBLUR.assets.briefing_data.page = data.page;
+            } else {
+                // reader.js: Store briefing data for the story titles view to render
+                NEWSBLUR.assets.briefing_data = data;
+            }
 
             // reader.js: Build aggregate section counts from all briefings' curated_sections
             // and include sections that only exist in section_summaries (meta sections
             // like quick_catchup that reference stories from other sections).
-            var section_definitions = data.section_definitions || {};
+            var all_briefings = NEWSBLUR.assets.briefing_data.briefings || [];
+            var section_definitions = NEWSBLUR.assets.briefing_data.section_definitions || {};
             var aggregate_sections = {};
-            var briefings = data.briefings || [];
-            _.each(briefings, function (briefing) {
+            _.each(all_briefings, function (briefing) {
                 var sections = briefing.curated_sections || {};
                 _.each(sections, function (hashes, key) {
                     if (!aggregate_sections[key]) {
@@ -2266,7 +2276,7 @@
             // matches the order sections appear in the summary.
             var section_models = [];
             var added_keys = {};
-            var latest_briefing = briefings[0];
+            var latest_briefing = all_briefings[0];
             if (latest_briefing && latest_briefing.section_summaries) {
                 _.each(_.keys(latest_briefing.section_summaries), function (key) {
                     if (key in aggregate_sections) {
@@ -2305,7 +2315,7 @@
                 }
             }
 
-            if (!data.enabled && !briefings.length) {
+            if (!data.enabled && !all_briefings.length) {
                 // reader.js: Show full-pane onboarding for users who haven't opted in
                 if (this.briefing_onboarding_view) {
                     this.briefing_onboarding_view.close();
@@ -2317,7 +2327,11 @@
             } else {
                 // reader.js: Re-render story titles for normal briefing view
                 if (NEWSBLUR.app.story_titles) {
-                    NEWSBLUR.app.story_titles.render();
+                    if (is_append) {
+                        NEWSBLUR.app.story_titles.append_briefing_page(data.briefings || []);
+                    } else {
+                        NEWSBLUR.app.story_titles.render();
+                    }
                 }
             }
 
@@ -2334,6 +2348,33 @@
                     }, 100);
                 }
             }
+        },
+
+        load_next_briefing_page: function () {
+            if (!this.flags.briefing_view) return;
+            if (this.flags.briefing_loading_page) return;
+            var briefing_data = NEWSBLUR.assets.briefing_data;
+            if (!briefing_data || !briefing_data.has_next_page) return;
+
+            var next_page = (briefing_data.page || 1) + 1;
+            this.flags.briefing_loading_page = true;
+
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_loading();
+            }
+
+            this.model.fetch_briefing_stories(next_page,
+                _.bind(this.post_open_daily_briefing, this),
+                _.bind(function () {
+                    this.flags.briefing_loading_page = false;
+                    if (NEWSBLUR.app.story_titles) {
+                        NEWSBLUR.app.story_titles.hide_briefing_loading();
+                    }
+                    NEWSBLUR.app.taskbar_info.show_stories_error.apply(
+                        NEWSBLUR.app.taskbar_info, arguments
+                    );
+                }, this)
+            );
         },
 
         // ==================
@@ -2470,7 +2511,7 @@
                 this.briefing_onboarding_view = null;
             }
             if (this.flags.briefing_view) {
-                this.model.fetch_briefing_stories(
+                this.model.fetch_briefing_stories(1,
                     _.bind(this.post_open_daily_briefing, this),
                     NEWSBLUR.app.taskbar_info.show_stories_error
                 );

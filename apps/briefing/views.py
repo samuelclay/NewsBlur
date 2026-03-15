@@ -94,9 +94,13 @@ def load_briefing_stories(request):
         return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     profile = user.profile
     is_premium_archive = profile.is_archive or profile.is_pro
-    limit = int(request.GET.get("limit", 10))
+    per_page = min(50, max(1, int(request.GET.get("limit", 5))))
+    page = max(1, int(request.GET.get("page", 1)))
+    offset = (page - 1) * per_page
 
-    briefings = MBriefing.latest_for_user(user.pk, limit=limit)
+    briefings = list(MBriefing.latest_for_user(user.pk, limit=per_page + 1, offset=offset))
+    has_next_page = len(briefings) > per_page
+    briefings = briefings[:per_page]
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     read_stories_key = "RS:%s" % user.pk
@@ -205,6 +209,8 @@ def load_briefing_stories(request):
         "briefing_feed_id": prefs.briefing_feed_id,
         "enabled": prefs.enabled,
         "section_definitions": section_definitions,
+        "has_next_page": has_next_page,
+        "page": page,
     }
 
     # views.py: Include full preferences when not enabled so the onboarding view

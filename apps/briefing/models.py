@@ -66,8 +66,8 @@ class MBriefing(mongo.Document):
         )
 
     @classmethod
-    def latest_for_user(cls, user_id, limit=10):
-        return cls.objects.filter(user_id=user_id, status="complete").order_by("-briefing_date")[:limit]
+    def latest_for_user(cls, user_id, limit=10, offset=0):
+        return cls.objects.filter(user_id=user_id, status="complete").order_by("-briefing_date")[offset : offset + limit]
 
     @classmethod
     def exists_for_period(cls, user_id, period_start, period_end):

@@ -99,35 +99,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         // story_titles_view.js: Collect summary + curated stories and load them into the
         // main stories collection so split view, selection, and story detail all work.
-        // When a section filter is active, only include stories in that section.
-        var active_section = NEWSBLUR.reader.flags.briefing_section;
-        var all_stories = [];
-        _.each(briefings, function (briefing) {
-            if (active_section) {
-                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
-                var section_hash_set = {};
-                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
-                // story_titles_view.js: Include section summary as first story if available
-                var section_html = (briefing.section_summaries || {})[active_section];
-                if (section_html && briefing.summary_story) {
-                    all_stories.push(_.extend({}, briefing.summary_story, {
-                        story_content: section_html
-                    }));
-                }
-                _.each(briefing.curated_stories || [], function (story_data) {
-                    if (section_hash_set[story_data.story_hash]) {
-                        all_stories.push(story_data);
-                    }
-                });
-            } else {
-                if (briefing.summary_story) {
-                    all_stories.push(briefing.summary_story);
-                }
-                _.each(briefing.curated_stories || [], function (story_data) {
-                    all_stories.push(story_data);
-                });
-            }
-        });
+        var all_stories = this._collect_briefing_stories(briefings);
         if (all_stories.length) {
             this.collection.reset(all_stories, { added: all_stories.length, silent: true });
             // story_titles_view.js: Manually trigger the story list view to create
@@ -141,39 +113,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
         // story_titles_view.js: Set no_more_stories AFTER reset_flags, because
         // reset_flags->clear() resets it to false.
-        this.collection.no_more_stories = true;
+        this.collection.no_more_stories = !data.has_next_page;
 
-        _.each(briefings, function (briefing) {
-            briefing.is_preview = data.is_preview;
-            // story_titles_view.js: When filtering by section, pass a modified briefing
-            // with only the matching curated stories to the group view.
-            var display_briefing = briefing;
-            if (active_section) {
-                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
-                var section_hash_set = {};
-                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
-                // story_titles_view.js: Show section-specific summary if available
-                var section_html = (briefing.section_summaries || {})[active_section];
-                var section_summary = null;
-                if (section_html && briefing.summary_story) {
-                    section_summary = _.extend({}, briefing.summary_story, {
-                        story_content: section_html
-                    });
-                }
-                display_briefing = _.extend({}, briefing, {
-                    summary_story: section_summary,
-                    curated_stories: _.filter(briefing.curated_stories || [], function (s) {
-                        return section_hash_set[s.story_hash];
-                    })
-                });
-                if (!display_briefing.curated_stories.length && !section_summary) return;
-            }
-            var group = new NEWSBLUR.Views.BriefingGroupView({
-                briefing: display_briefing,
-                collection: this.collection
-            }).render();
-            $groups.push(group.el);
-        }, this);
+        $groups = this._render_briefing_groups(briefings, data);
 
         if (!briefings.length) {
             var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
@@ -200,6 +142,122 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
 
         return this;
+    },
+
+    append_briefing_page: function (briefings) {
+        var data = NEWSBLUR.assets.briefing_data;
+
+        // story_titles_view.js: Add new stories to the collection for split view
+        var new_stories = this._collect_briefing_stories(briefings);
+        if (new_stories.length) {
+            this.collection.add(new_stories, { silent: true });
+            if (NEWSBLUR.app.story_list) {
+                NEWSBLUR.app.story_list.render();
+                NEWSBLUR.app.story_list.reset_story_positions();
+            }
+        }
+
+        this.collection.no_more_stories = !data.has_next_page;
+
+        // story_titles_view.js: Remove the old regenerate/loading elements, append new groups, then re-add
+        this.$el.find('.NB-briefing-regenerate').remove();
+        this.$el.find('.NB-briefing-loading').remove();
+
+        var $groups = this._render_briefing_groups(briefings, data);
+        var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
+        ]);
+        $groups.push($regenerate);
+
+        this.$el.append($groups);
+
+        if (!data.has_next_page) {
+            this.show_no_more_stories();
+        }
+    },
+
+    _collect_briefing_stories: function (briefings) {
+        var active_section = NEWSBLUR.reader.flags.briefing_section;
+        var all_stories = [];
+        _.each(briefings, function (briefing) {
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                var section_html = (briefing.section_summaries || {})[active_section];
+                if (section_html && briefing.summary_story) {
+                    all_stories.push(_.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    }));
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    if (section_hash_set[story_data.story_hash]) {
+                        all_stories.push(story_data);
+                    }
+                });
+            } else {
+                if (briefing.summary_story) {
+                    all_stories.push(briefing.summary_story);
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    all_stories.push(story_data);
+                });
+            }
+        });
+        return all_stories;
+    },
+
+    _render_briefing_groups: function (briefings, data) {
+        var active_section = NEWSBLUR.reader.flags.briefing_section;
+        var $groups = [];
+        _.each(briefings, function (briefing) {
+            briefing.is_preview = data.is_preview;
+            var display_briefing = briefing;
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                var section_html = (briefing.section_summaries || {})[active_section];
+                var section_summary = null;
+                if (section_html && briefing.summary_story) {
+                    section_summary = _.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    });
+                }
+                display_briefing = _.extend({}, briefing, {
+                    summary_story: section_summary,
+                    curated_stories: _.filter(briefing.curated_stories || [], function (s) {
+                        return section_hash_set[s.story_hash];
+                    })
+                });
+                if (!display_briefing.curated_stories.length && !section_summary) return;
+            }
+            var group = new NEWSBLUR.Views.BriefingGroupView({
+                briefing: display_briefing,
+                collection: this.collection
+            }).render();
+            $groups.push(group.el);
+        }, this);
+        return $groups;
+    },
+
+    show_briefing_loading: function () {
+        this.$el.find('.NB-briefing-loading').remove();
+        var $loading = $.make('div', { className: 'NB-briefing-loading' }, [
+            $.make('div', { className: 'NB-briefing-progress-spinner' }),
+            $.make('div', { className: 'NB-briefing-progress-message' }, 'Loading more briefings...')
+        ]);
+        // story_titles_view.js: Insert loading indicator before the regenerate button
+        var $regenerate = this.$el.find('.NB-briefing-regenerate');
+        if ($regenerate.length) {
+            $regenerate.before($loading);
+        } else {
+            this.$el.append($loading);
+        }
+    },
+
+    hide_briefing_loading: function () {
+        this.$el.find('.NB-briefing-loading').remove();
     },
 
     _briefing_target: function () {
@@ -592,7 +650,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         // console.log(["scroll titles", this.options.on_dashboard ? "dashboard" : "stories", visible_height, scroll_y, ">", total_height, this.$el, container_offset]);
         if (visible_height + scroll_y >= total_height) {
-            NEWSBLUR.reader.load_page_of_feed_stories({ scroll_to_loadbar: false });
+            // story_titles_view.js: For briefing view, load next page instead of feed stories
+            if (NEWSBLUR.reader.flags.briefing_view) {
+                NEWSBLUR.reader.load_next_briefing_page();
+            } else {
+                NEWSBLUR.reader.load_page_of_feed_stories({ scroll_to_loadbar: false });
+            }
         }
     },
 
