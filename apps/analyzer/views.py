@@ -245,9 +245,11 @@ def save_classifier(request):
                     continue
                 if len(prompt_text) > 500:
                     continue
+                use_scope = scope != "feed"
                 lookup = {
                     "user_id": request.user.pk,
-                    "feed_id": feed_id or 0,
+                    "feed_id": 0 if use_scope else (feed_id or 0),
+                    "folder_id": scope_folder_name if scope == "folder" else "",
                     "prompt": prompt_text,
                     "include_images": include_images,
                 }
@@ -271,7 +273,8 @@ def save_classifier(request):
                     if classifier_type is not None:
                         MClassifierPrompt.objects.create(
                             user_id=request.user.pk,
-                            feed_id=feed_id or 0,
+                            feed_id=0 if use_scope else (feed_id or 0),
+                            folder_id=scope_folder_name if scope == "folder" else "",
                             prompt=prompt_text,
                             classifier_type=classifier_type,
                             include_images=include_images,
@@ -403,6 +406,9 @@ def test_prompt_classifier(request):
         classify_stories_with_vision,
     )
 
+    if not request.user.profile.can_use_ai_classifiers:
+        return {"code": -1, "message": "Usage billing required for AI classifiers"}
+
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
     story_hash = post.get("story_hash", "")
@@ -443,7 +449,7 @@ def test_prompt_classifier(request):
                     "image_urls": [url],
                 }
             )
-        results = classify_stories_with_vision(temp_prompt, image_stories)
+        results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
 
         # Build per-image results list (ordered by image index)
         image_results = []
@@ -463,7 +469,7 @@ def test_prompt_classifier(request):
             "story_title": story_db.story_title or "",
             "story_content": story_content,
         }
-        results = classify_stories_with_ai(temp_prompt, [story_dict])
+        results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
 
     if not include_images:
         classification = results.get(story_hash, 0)
@@ -712,6 +718,63 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                     elif classifier.score != score:
                         classifier.score = score
                         classifier.save()
+
+    # Handle AI prompt classifiers (prompt = text-only, image_prompt = VLM)
+    prompt_opinions = {
+        "like_prompt": ("focus", False),
+        "dislike_prompt": ("hidden", False),
+        "remove_like_prompt": (None, False),
+        "remove_dislike_prompt": (None, False),
+        "like_image_prompt": ("focus", True),
+        "dislike_image_prompt": ("hidden", True),
+        "remove_like_image_prompt": (None, True),
+        "remove_dislike_image_prompt": (None, True),
+    }
+    for opinion, (classifier_type, include_images) in prompt_opinions.items():
+        if opinion not in classifier_data:
+            continue
+        values = classifier_data[opinion]
+        if not isinstance(values, list):
+            values = [values]
+        for prompt_text in values:
+            if not prompt_text:
+                continue
+            lookup = {
+                "user_id": user_id,
+                "feed_id": feed_id or 0,
+                "prompt": prompt_text,
+                "include_images": include_images,
+            }
+            try:
+                classifier = MClassifierPrompt.objects.get(**lookup)
+            except MClassifierPrompt.DoesNotExist:
+                classifier = None
+            except MClassifierPrompt.MultipleObjectsReturned:
+                classifiers_found = MClassifierPrompt.objects.filter(**lookup)
+                if classifier_type is None:
+                    for c in classifiers_found:
+                        c.delete()
+                else:
+                    first = classifiers_found[0]
+                    first.classifier_type = classifier_type
+                    first.save()
+                    for dup in classifiers_found[1:]:
+                        dup.delete()
+                continue
+            if not classifier:
+                if classifier_type is not None:
+                    MClassifierPrompt.objects.create(
+                        user_id=user_id,
+                        feed_id=feed_id or 0,
+                        prompt=prompt_text,
+                        classifier_type=classifier_type,
+                        include_images=include_images,
+                    )
+            elif classifier_type is None:
+                classifier.delete()
+            elif classifier.classifier_type != classifier_type:
+                classifier.classifier_type = classifier_type
+                classifier.save()
 
 
 def popularity_query(request):
