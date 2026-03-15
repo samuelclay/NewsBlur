@@ -1638,6 +1638,11 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
+        # AI prompt classifier takes absolute priority
+        prompt = scores.get("prompt", 0)
+        if prompt != 0:
+            return prompt
+
         max_score = max(
             scores["author"],
             scores["tags"],

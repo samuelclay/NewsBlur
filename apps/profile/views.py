@@ -5,6 +5,7 @@ premium subscription management (Stripe/PayPal), notification preferences,
 and account import/export (OPML).
 """
 
+import calendar
 import datetime
 import json as python_json
 import re
@@ -1082,6 +1083,189 @@ def stripe_checkout(request):
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
+@login_required
+@require_POST
+def setup_usage_billing(request):
+    stripe.api_key = settings.STRIPE_SECRET
+    domain = Site.objects.get_current().domain
+
+    if not settings.STRIPE_PRICE_TEXT_CLASSIFICATION or not settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
+        logging.user(request, "~BR~FRStripe usage billing prices not configured")
+        return HttpResponseRedirect(reverse("index"))
+
+    session_dict = {
+        "line_items": [
+            {
+                "price": settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
+            },
+            {
+                "price": settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
+            },
+        ],
+        "mode": "subscription",
+        "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
+        "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
+        "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
+    }
+    if request.user.profile.stripe_id:
+        session_dict["customer"] = request.user.profile.stripe_id
+    else:
+        session_dict["customer_email"] = request.user.email
+
+    checkout_session = stripe.checkout.Session.create(**session_dict)
+
+    logging.user(request, "~BM~FBLoading Stripe usage billing checkout")
+
+    return HttpResponseRedirect(checkout_session.url, status=303)
+
+
+@login_required
+@require_POST
+def manage_usage_billing(request):
+    stripe.api_key = settings.STRIPE_SECRET
+    domain = Site.objects.get_current().domain
+
+    if not request.user.profile.stripe_id:
+        return HttpResponseRedirect(reverse("index"))
+
+    portal_session = stripe.billing_portal.Session.create(
+        customer=request.user.profile.stripe_id,
+        return_url="https://%s%s?next=payments" % (domain, reverse("index")),
+    )
+
+    return HttpResponseRedirect(portal_session.url, status=303)
+
+
+@ajax_login_required
+@json.json_view
+def usage_billing_history(request):
+    user = request.user
+    if not user.profile.stripe_id or not user.profile.is_usage_billing:
+        return {"invoices": [], "upcoming_invoice": None}
+
+    stripe.api_key = settings.STRIPE_SECRET
+    usage_price_ids = set(
+        filter(None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION])
+    )
+
+    if not usage_price_ids:
+        return {"invoices": [], "upcoming_invoice": None}
+
+    invoices = []
+    try:
+        stripe_invoices = stripe.Invoice.list(customer=user.profile.stripe_id, limit=24)
+        for inv in stripe_invoices.data:
+            line_items = []
+            is_usage_invoice = False
+            for line in inv.lines.data:
+                if line.price and line.price.id in usage_price_ids:
+                    is_usage_invoice = True
+                    line_items.append(
+                        {
+                            "description": line.description or line.price.nickname or "AI classifier usage",
+                            "quantity": line.quantity,
+                            "amount": line.amount / 100.0,
+                        }
+                    )
+            if is_usage_invoice:
+                invoices.append(
+                    {
+                        "date": datetime.datetime.fromtimestamp(inv.created).strftime("%Y-%m-%d"),
+                        "amount": inv.amount_due / 100.0,
+                        "amount_paid": inv.amount_paid / 100.0,
+                        "status": inv.status,
+                        "hosted_invoice_url": inv.hosted_invoice_url,
+                        "invoice_number": inv.number,
+                        "line_items": line_items,
+                    }
+                )
+    except stripe.error.InvalidRequestError:
+        pass
+
+    upcoming_invoice = None
+    try:
+        upcoming = stripe.Invoice.upcoming(customer=user.profile.stripe_id)
+        upcoming_lines = []
+        is_usage = False
+        for line in upcoming.lines.data:
+            if line.price and line.price.id in usage_price_ids:
+                is_usage = True
+                upcoming_lines.append(
+                    {
+                        "description": line.description or line.price.nickname or "AI classifier usage",
+                        "quantity": line.quantity,
+                        "amount": line.amount / 100.0,
+                    }
+                )
+        if is_usage:
+            upcoming_invoice = {
+                "date": datetime.datetime.fromtimestamp(upcoming.period_end).strftime("%Y-%m-%d"),
+                "amount": sum(l["amount"] for l in upcoming_lines),
+                "status": "upcoming",
+                "line_items": upcoming_lines,
+            }
+    except stripe.error.InvalidRequestError:
+        pass
+
+    current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
+
+    now = datetime.datetime.utcnow()
+    cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
+    last_day = calendar.monthrange(now.year, now.month)[1]
+    cycle_end = now.replace(day=last_day).strftime("%Y-%m-%d")
+
+    return {
+        "invoices": invoices,
+        "upcoming_invoice": upcoming_invoice,
+        "current_cycle_spend": round(current_spend, 2),
+        "usage_billing_limit": float(limit) if limit else None,
+        "is_limit_reached": is_limit_reached,
+        "cycle_start": cycle_start,
+        "cycle_end": cycle_end,
+    }
+
+
+@ajax_login_required
+@require_POST
+@json.json_view
+def save_usage_billing_limit(request):
+    """Save or clear the user's monthly spending limit for AI classifiers."""
+    from decimal import Decimal, InvalidOperation
+
+    from utils.llm_costs import LLMCostTracker
+
+    user = request.user
+    if not user.profile.is_usage_billing:
+        return {"code": -1, "message": "Usage billing not enabled"}
+
+    limit_str = request.POST.get("limit", "").strip()
+
+    if not limit_str:
+        user.profile.usage_billing_limit = None
+        user.profile.save()
+        LLMCostTracker._invalidate_limit_cache(user.pk)
+        logging.user(request, "~BC~FBCleared AI classifier spending limit")
+        return {"code": 1, "limit": None}
+
+    try:
+        limit = Decimal(limit_str)
+    except (InvalidOperation, ValueError):
+        return {"code": -1, "message": "Invalid amount"}
+
+    if limit <= 0:
+        return {"code": -1, "message": "Limit must be a positive amount"}
+
+    if limit > 10000:
+        return {"code": -1, "message": "Limit cannot exceed $10,000"}
+
+    user.profile.usage_billing_limit = limit
+    user.profile.save()
+    LLMCostTracker._invalidate_limit_cache(user.pk)
+    logging.user(request, "~BC~FBSet AI classifier spending limit to $%.2f" % limit)
+
+    return {"code": 1, "limit": float(limit)}
+
+
 @render_to("reader/activities_module.xhtml")
 def load_activities(request):
     user = get_user(request)
@@ -1163,6 +1347,7 @@ def payment_history(request):
         "premium_expire": user.profile.premium_expire,
         "premium_renewal": user.profile.premium_renewal,
         "active_provider": user.profile.active_provider,
+        "is_usage_billing": user.profile.is_usage_billing,
         "payments": history,
         "statistics": statistics,
         "next_invoice": next_invoice,
