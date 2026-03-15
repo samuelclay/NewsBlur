@@ -91,8 +91,8 @@ SECTION_PROMPTS = {
     "top_stories": '"Top stories" — CATEGORY: top_stories. The most important stories from the reader\'s feeds.',
     "infrequent": (
         '"From infrequent sites" — CATEGORY: infrequent. '
-        "Stories from feeds that publish rarely (a few times a month or less). "
-        "Highlight that these are noteworthy because the site doesn't post often."
+        "Stories from feeds that publish rarely. "
+        "Do NOT mention how rarely the site posts or that it's infrequent — just describe the story normally."
     ),
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
     "classifier_match": (
@@ -152,8 +152,7 @@ def _build_system_prompt(
                 section_lines.append(
                     "%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories "
                     'with these keywords: "%s". Generate a section header based on the keywords. '
-                    "ONLY include stories whose CATEGORY field is set to %s."
-                    % (num, key, prompts[idx], key)
+                    "ONLY include stories whose CATEGORY field is set to %s." % (num, key, prompts[idx], key)
                 )
                 num += 1
 

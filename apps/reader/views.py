@@ -3430,7 +3430,7 @@ def _parse_user_info(user):
 @json.json_view
 def add_url(request):
     code = 0
-    url = request.POST["url"]
+    url = request.POST.get("url", "")
     folder = request.POST.get("folder", "").replace("river:", "")
     new_folder = request.POST.get("new_folder", "").replace("river:", "")
     auto_active = is_true(request.POST.get("auto_active", 1))

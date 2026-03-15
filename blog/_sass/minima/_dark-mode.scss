@@ -1,0 +1,359 @@
+@use "variables" as *;
+
+// Smooth transitions for theme switching
+body,
+.site-header,
+.site-subheader,
+.post-header-sticky,
+.site-footer {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+a {
+  transition: color 0.2s ease;
+}
+
+// ---- Theme Toggle ----
+
+.NB-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.NB-theme-toggle-sun,
+.NB-theme-toggle-moon {
+  color: rgba(0, 0, 0, 0.2);
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+  display: block;
+}
+
+// Active sun icon in light mode
+body:not(.NB-dark) .NB-theme-toggle-sun {
+  color: #b8960a;
+}
+
+// Dark mode: dim icons use white
+body.NB-dark .NB-theme-toggle-sun,
+body.NB-dark .NB-theme-toggle-moon {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+// Active moon icon in dark mode
+body.NB-dark .NB-theme-toggle-moon {
+  color: #8bb8d8;
+}
+
+.NB-theme-toggle-track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.NB-theme-toggle-track:hover {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+body.NB-dark .NB-theme-toggle-track {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.NB-dark .NB-theme-toggle-track:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.NB-theme-toggle-track:focus-visible {
+  border-color: #FBDB9B;
+  box-shadow: 0 0 0 2px rgba(251, 219, 155, 0.3);
+}
+
+.NB-theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #555;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.3s ease;
+  display: block;
+}
+
+body.NB-dark .NB-theme-toggle-thumb {
+  transform: translateX(16px);
+  background: #8bb8d8;
+}
+
+@include media-query($on-palm) {
+  .NB-theme-toggle {
+    margin-left: auto;
+    margin-right: 50px;
+    gap: 5px;
+  }
+  .NB-theme-toggle-track {
+    width: 28px;
+    height: 16px;
+    border-radius: 8px;
+  }
+  .NB-theme-toggle-thumb {
+    width: 11px;
+    height: 11px;
+    top: 1.5px;
+    left: 2px;
+  }
+  body.NB-dark .NB-theme-toggle-thumb {
+    transform: translateX(12px);
+  }
+  .NB-theme-toggle-sun,
+  .NB-theme-toggle-moon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+
+// ---- Dark Mode Color Overrides ----
+// Colors matched to the welcome/landing page dark theme
+
+body.NB-dark {
+  background-color: #2a524e;
+  color: #c0c0c0;
+
+  // Canvas fallback gradient (matches welcome page dark)
+  .blog-header-canvas {
+    background: linear-gradient(180deg, #4a6866 0%, #2c4a48 50%, #243e3c 100%);
+  }
+
+  // Header: solid teal when scrolled, transparent when at top
+  .site-header {
+    background-color: #2a524e;
+    border-top-color: #7cc5c6;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+
+    &.at-top,
+    body.at-top-init & {
+      background-color: transparent;
+      border-bottom-color: transparent;
+    }
+  }
+
+  // Subheader: light frosted glass over WebGL
+  .site-subheader {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    .top { color: rgba(200, 220, 200, 0.75); }
+    .bottom { color: rgba(251, 219, 155, 0.5); }
+  }
+
+  // Title
+  .site-title,
+  .site-title:visited {
+    color: #a8d4e8;
+  }
+
+  // Links: gold accent (matches welcome page)
+  a {
+    color: #FBDB9B;
+    &:visited { color: #e8c87a; }
+    &:hover { color: #fce8b8; }
+  }
+
+  // Nav
+  .site-nav {
+    .page-link {
+      color: rgba(255, 255, 255, 0.7);
+      &:hover { color: #FBDB9B; }
+    }
+
+    @include media-query($on-palm) {
+      background: rgba(72, 132, 128, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-color: rgba(255, 255, 255, 0.15);
+
+      .menu-icon > svg {
+        fill: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+
+  // Sticky post headers
+  .post-header-sticky {
+    background-color: #2a524e;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  // Post meta
+  .post-meta { color: rgba(255, 255, 255, 0.5); }
+
+  // Headings
+  .post-title,
+  .post-link {
+    color: #e0e0e0;
+    &:visited { color: #e0e0e0; }
+  }
+
+  // Blockquotes
+  blockquote {
+    color: rgba(255, 255, 255, 0.5);
+    border-left-color: rgba(255, 255, 255, 0.12);
+  }
+
+  // Code
+  pre,
+  code {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #c0c0c0;
+  }
+
+  // HR
+  hr {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  // Tables
+  table {
+    color: #b0b8a8;
+    border-color: rgba(255, 255, 255, 0.08);
+
+    tr {
+      &:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.04);
+      }
+    }
+    th {
+      background-color: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.08);
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+    td {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  // Footer
+  .site-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+  .footer-heading {
+    color: #e0e0e0;
+  }
+  .footer-col-wrapper {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .footer-col a {
+    color: #FBDB9B;
+    &:visited { color: #e8c87a; }
+  }
+
+  // SVG icons
+  .svg-icon {
+    fill: rgba(255, 255, 255, 0.5);
+  }
+
+  // Pagination
+  .pagination {
+    a {
+      color: #FBDB9B;
+      &:visited { color: #e8c87a; }
+    }
+    .previous,
+    .next {
+      color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  // RSS subscribe link
+  .rss-subscribe {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  // Syntax highlighting - dark mode overrides
+  .highlight {
+    background: rgba(255, 255, 255, 0.05);
+
+    .highlighter-rouge & {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .c     { color: #6a7a78; } // Comment
+    .err   { color: #e88; background-color: rgba(255, 0, 0, 0.08); } // Error
+    .k     { color: #c4c0b8; font-weight: bold; } // Keyword
+    .o     { color: #c4c0b8; font-weight: bold; } // Operator
+    .cm    { color: #6a7a78; } // Comment.Multiline
+    .cp    { color: #8a9888; } // Comment.Preproc
+    .c1    { color: #6a7a78; } // Comment.Single
+    .cs    { color: #8a9888; } // Comment.Special
+    .gd    { color: #e88; background-color: rgba(255, 0, 0, 0.08); } // Generic.Deleted
+    .gd .x { color: #e88; background-color: rgba(255, 0, 0, 0.12); } // Generic.Deleted.Specific
+    .gr    { color: #e88; } // Generic.Error
+    .gh    { color: #6a7a78; } // Generic.Heading
+    .gi    { color: #8c8; background-color: rgba(0, 255, 0, 0.06); } // Generic.Inserted
+    .gi .x { color: #8c8; background-color: rgba(0, 255, 0, 0.1); } // Generic.Inserted.Specific
+    .go    { color: #6a7a78; } // Generic.Output
+    .gp    { color: #8a9888; } // Generic.Prompt
+    .gu    { color: #6a7a78; } // Generic.Subheading
+    .gt    { color: #e88; } // Generic.Traceback
+    .kc    { color: #c4c0b8; } // Keyword.Constant
+    .kd    { color: #c4c0b8; } // Keyword.Declaration
+    .kp    { color: #c4c0b8; } // Keyword.Pseudo
+    .kr    { color: #c4c0b8; } // Keyword.Reserved
+    .kt    { color: #7cc5c6; } // Keyword.Type
+    .m     { color: #6cc; } // Literal.Number
+    .s     { color: #FBDB9B; } // Literal.String
+    .na    { color: #6cc; } // Name.Attribute
+    .nb    { color: #7cc5c6; } // Name.Builtin
+    .nc    { color: #7cc5c6; } // Name.Class
+    .no    { color: #6cc; } // Name.Constant
+    .ni    { color: #6cc; } // Name.Entity
+    .ne    { color: #FBDB9B; } // Name.Exception
+    .nf    { color: #FBDB9B; } // Name.Function
+    .nn    { color: #8a9888; } // Name.Namespace
+    .nt    { color: #7cc5c6; } // Name.Tag
+    .nv    { color: #6cc; } // Name.Variable
+    .w     { color: #4a5a58; } // Text.Whitespace
+    .mf    { color: #6cc; } // Literal.Number.Float
+    .mh    { color: #6cc; } // Literal.Number.Hex
+    .mi    { color: #6cc; } // Literal.Number.Integer
+    .mo    { color: #6cc; } // Literal.Number.Oct
+    .sb    { color: #FBDB9B; } // Literal.String.Backtick
+    .sc    { color: #FBDB9B; } // Literal.String.Char
+    .sd    { color: #FBDB9B; } // Literal.String.Doc
+    .s2    { color: #FBDB9B; } // Literal.String.Double
+    .se    { color: #FBDB9B; } // Literal.String.Escape
+    .sh    { color: #FBDB9B; } // Literal.String.Heredoc
+    .si    { color: #FBDB9B; } // Literal.String.Interpol
+    .sx    { color: #FBDB9B; } // Literal.String.Other
+    .sr    { color: #6c6; } // Literal.String.Regex
+    .s1    { color: #FBDB9B; } // Literal.String.Single
+    .ss    { color: #FBDB9B; } // Literal.String.Symbol
+    .bp    { color: #6a7a78; } // Name.Builtin.Pseudo
+    .vc    { color: #6cc; } // Name.Variable.Class
+    .vg    { color: #6cc; } // Name.Variable.Global
+    .vi    { color: #6cc; } // Name.Variable.Instance
+    .il    { color: #6cc; } // Literal.Number.Integer.Long
+  }
+}
