@@ -932,6 +932,24 @@ var classifier_prototype = {
         var story_tags = story.get('story_tags') || [];
         var feed_tags = this.feed_tags || [];
 
+        // Build a count lookup from feed tags so story tags can show counts
+        var feed_tag_counts = {};
+        feed_tags.forEach(function (tag_obj) {
+            if (typeof tag_obj !== 'string') {
+                feed_tag_counts[tag_obj[0].toLowerCase()] = tag_obj[1];
+            }
+        });
+
+        // Enrich story tags with counts from feed data
+        var enriched_story_tags = story_tags.map(function (tag) {
+            var tag_name = typeof tag === 'string' ? tag : tag[0];
+            var count = feed_tag_counts[tag_name.toLowerCase()];
+            if (count) {
+                return [tag_name, count];
+            }
+            return tag;
+        });
+
         // Get story tag names for comparison
         var story_tag_names = story_tags.map(function (tag) {
             return typeof tag === 'string' ? tag.toLowerCase() : tag[0].toLowerCase();
@@ -944,7 +962,7 @@ var classifier_prototype = {
         });
 
         // Build combined tags list
-        var has_story_tags = story_tags.length > 0;
+        var has_story_tags = enriched_story_tags.length > 0;
         var has_other_tags = other_tags.length > 0;
 
         if (!has_story_tags && !has_other_tags) {
@@ -952,7 +970,7 @@ var classifier_prototype = {
         }
 
         var $story_tags = has_story_tags ?
-            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
+            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(enriched_story_tags)) : '';
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_tags ?
             this.make_scoped_groups(this.make_tags(other_tags), current_folder_names) : [];

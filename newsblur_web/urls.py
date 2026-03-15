@@ -71,7 +71,11 @@ urlpatterns = [
     url(r"^pricing/archive/?$", static_views.pricing_archive, name="pricing-archive"),
     url(r"^pricing/pro/?$", static_views.pricing_pro, name="pricing-pro"),
     url(r"^features/?$", static_views.features, name="features"),
-    url(r"^features/intelligence-training/?$", static_views.feature_intelligence_training, name="feature-intelligence-training"),
+    url(
+        r"^features/intelligence-training/?$",
+        static_views.feature_intelligence_training,
+        name="feature-intelligence-training",
+    ),
     url(r"^features/ask-ai/?$", static_views.feature_ask_ai, name="feature-ask-ai"),
     url(r"^features/web-feeds/?$", static_views.feature_web_feeds, name="feature-web-feeds"),
     url(r"^features/newsletters/?$", static_views.feature_newsletters, name="feature-newsletters"),

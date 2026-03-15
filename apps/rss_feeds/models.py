@@ -303,6 +303,9 @@ class Feed(models.Model):
         return feed
 
     def save(self, *args, **kwargs):
+        if kwargs.get("force_update") and not self.pk:
+            logging.debug(" ---> ~FRFeed.save(force_update=True) with no pk, skipping")
+            return
         if not self.last_update:
             self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
@@ -716,9 +719,15 @@ class Feed(models.Model):
         if not feed and fetch and create:
             try:
                 r = requests.get(url, timeout=10)
-            except (requests.ConnectionError, requests.models.InvalidURL):
+            except (
+                requests.ConnectionError,
+                requests.models.InvalidURL,
+                requests.ReadTimeout,
+                requests.exceptions.MissingSchema,
+                requests.exceptions.InvalidSchema,
+            ):
                 r = None
-            if r and "application/json" in r.headers.get("Content-Type"):
+            if r and "application/json" in (r.headers.get("Content-Type") or ""):
                 try:
                     feed = cls.objects.create(feed_address=url)
                     if not feed.pk:
