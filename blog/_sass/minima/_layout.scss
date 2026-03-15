@@ -206,7 +206,7 @@
   @include relative-font-size(0.9375);
   color: $grey-color;
   margin-left: calc($spacing-unit / -2);
-  @extend %clearfix;
+  &:after { content: ""; display: table; clear: both; }
 }
 
 .footer-col {

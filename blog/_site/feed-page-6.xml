@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator>
+  <link href="/feed-page-6.xml" rel="self" type="application/atom+xml" />
+  <link href="/" rel="alternate" type="text/html" />
+
+  
+  
+  <link href="/feed-page-5.xml" rel="prev-archive" type="application/atom+xml" />
+  
+  
+
+  <updated>2026-03-14T23:37:12-04:00</updated>
+  <id>https://blog.newsblur.com/feed.xml</id>
+  <title type="html">The NewsBlur Blog</title>
+  
+  <subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+A new sound of an old instrument.
+</subtitle>
+  
+  
+
+  
+  <entry>
+    <title type="html">Mute feeds for a set amount of time</title>
+    <link href="https://blog.newsblur.com/2026/03/05/mute-feeds-for-a-set-amount-of-time/" rel="alternate" type="text/html" title="Mute feeds for a set amount of time" />
+    <published>2026-03-05T17:51:16-05:00</published>
+    <updated>2026-03-05T17:51:16-05:00</updated>
+    <id>https://blog.newsblur.com/2026/03/05/mute-feeds-for-a-set-amount-of-time</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/05/mute-feeds-for-a-set-amount-of-time/">
+      <![CDATA[<p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
+
+<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
+
+<h3 id="two-ways-to-mute">Two ways to mute</h3>
+
+<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
+
+<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
+
+<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
+
+<h3 id="auto-unmute">Auto-unmute</h3>
+
+<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
+
+<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Daily Briefing: A personalized summary of your news, delivered on your schedule</title>
+    <link href="https://blog.newsblur.com/2026/03/04/daily-briefing/" rel="alternate" type="text/html" title="Daily Briefing: A personalized summary of your news, delivered on your schedule" />
+    <published>2026-03-04T11:40:55-05:00</published>
+    <updated>2026-03-04T11:40:55-05:00</updated>
+    <id>https://blog.newsblur.com/2026/03/04/daily-briefing</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/04/daily-briefing/">
+      <![CDATA[<p>Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the topics I’ve trained as interesting?</p>
+
+<p>That’s the Daily Briefing. It reads your feeds, scores every story, and writes a personalized summary organized into sections that make sense for the way you read. It shows up as a feed in your sidebar, and you can have it emailed to you on a schedule you control.</p>
+
+<!-- SCREENSHOT: Daily Briefing summary view showing a full briefing with sections like Top Stories, Based on your interests, and Long reads for later, with feed favicons next to each story -->
+<p><img src="/assets/daily-briefing-summary.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Click “Daily Briefing” in your sidebar to open the briefing view. The first time, you’ll see an onboarding screen where you configure your preferences. Hit generate and NewsBlur does the rest: it scores your stories using a mix of trending read time, feed engagement, your classifier training, and recency, then generates a written summary of the top stories.</p>
+
+<!-- SCREENSHOT: Briefing onboarding/settings view showing frequency, time, style, and section options -->
+<p><img src="/assets/daily-briefing-onboarding.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each briefing is organized into sections:</p>
+
+<ul>
+  <li><strong>Top stories</strong> — The most important stories from your feeds, ranked by a weighted score of trending engagement, your reading habits, and recency</li>
+  <li><strong>Based on your interests</strong> — Stories matching your trained topics, authors, and tags, with green classifier pills showing exactly why each story was selected</li>
+  <li><strong>Long reads for later</strong> — Longer articles worth setting time aside for, detected by word count</li>
+  <li><strong>Follow-ups</strong> — New posts from feeds where you recently read other stories</li>
+  <li><strong>Widely covered</strong> — Stories that appear across 3 or more of your feeds, using NewsBlur’s story clustering to group duplicates</li>
+</ul>
+
+<p>You can enable or disable any of these sections. If you only care about top stories and classifier matches, turn off the rest.</p>
+
+<h3 id="custom-keyword-sections">Custom keyword sections</h3>
+
+<p>On top of the built-in sections, you can add up to five custom keyword sections. Type a keyword or phrase and NewsBlur uses Elasticsearch to find matching stories across your feeds, then a dedicated section is written for them. If you always want a section about “climate change” or “Apple earnings,” just add the keyword and it appears in every briefing when there’s stories that match.</p>
+
+<h3 id="three-writing-styles">Three writing styles</h3>
+
+<p>Choose how you want your briefing written:</p>
+
+<ul>
+  <li><strong>Bullets</strong> — One-sentence summaries for each story, grouped by section. Quick to scan.</li>
+  <li><strong>Editorial</strong> — Narrative prose that explains why each story matters and connects them thematically. Each story’s feed favicon appears as an inline bullet.</li>
+  <li><strong>Headlines</strong> — Just the linked story titles, nothing else. The fastest way to scan.</li>
+</ul>
+
+<!-- SCREENSHOT: Side-by-side comparison or single example of the editorial writing style with favicons as bullets -->
+<p><img src="/assets/daily-briefing-editorial-style.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="delivery-schedule">Delivery schedule</h3>
+
+<p>Set the briefing to generate once, twice, or three times a day, or weekly. Each frequency has its own delivery slots:</p>
+
+<ul>
+  <li><strong>Daily</strong>: Pick morning, afternoon, or evening</li>
+  <li><strong>Twice daily</strong>: Morning plus your choice of afternoon or evening</li>
+  <li><strong>Three times daily</strong>: Morning, afternoon, and evening</li>
+  <li><strong>Weekly</strong>: Pick the day of the week</li>
+</ul>
+
+<p>Briefings are delivered at fixed times in your local timezone: 8:30 AM, 12:30 PM, and 5:00 PM. Each briefing only includes stories from its lookback window, and stories never repeat across same-day briefings.</p>
+
+<h3 id="notifications">Notifications</h3>
+
+<p>Turn on email notifications for your briefing feed and the full summary lands in your inbox, complete with feed favicons, section icons, and classifier pills. The HTML is fully inlined for email clients, so it looks right in Gmail, Apple Mail, Outlook, and everywhere else.</p>
+
+<!-- SCREENSHOT: Daily Briefing email in an email client showing the full formatted summary -->
+<p><img src="/assets/daily-briefing-email.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>You can also enable web, iOS, and Android push notifications if you’d rather get a ping than an email.</p>
+
+<h3 id="choose-your-model">Choose your model</h3>
+
+<p>The briefing summary is written by a language model, and you can pick which one. The same model selector from Ask AI is available here, so you can use whichever model you prefer for writing style and quality.</p>
+
+<h3 id="your-data-stays-yours">Your data stays yours</h3>
+
+<p>The briefing uses your feed stories and classifier training to generate the summary. Story content is sent to the model provider you choose, but NewsBlur doesn’t use your data to train models or for any purpose beyond generating your briefing. The same privacy principles from Ask AI apply here.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The Daily Briefing is available now on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. You can configure everything from the briefing view in the sidebar.</p>
+
+<p>If you have feedback or ideas for how to make the Daily Briefing better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the...]]>
+    </summary>
+    
+  </entry>
+  
+</feed>

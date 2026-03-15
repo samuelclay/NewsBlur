@@ -29,7 +29,7 @@
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
 <body>
-    <script>(function(){var t;try{t=localStorage.getItem('newsblur:theme')}catch(e){}if(!t)t='auto';if(t==='auto')t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
 
     <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
 
@@ -165,9 +165,6 @@ A new sound of an old instrument.<br />
     (function() {
       // Theme management
       function get_theme() {
-        var stored;
-        try { stored = localStorage.getItem('newsblur:theme'); } catch (e) {}
-        if (stored && stored !== 'auto') return stored;
         return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
       }
 
@@ -191,9 +188,7 @@ A new sound of an old instrument.<br />
         toggle.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          var next = (get_theme() === 'dark') ? 'light' : 'dark';
-          try { localStorage.setItem('newsblur:theme', next); } catch (e) {}
-          apply(next);
+          apply(get_theme() === 'dark' ? 'light' : 'dark');
         });
       }
 
@@ -201,21 +196,9 @@ A new sound of an old instrument.<br />
       if (window.matchMedia) {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
         try {
-          mq.addEventListener('change', function() {
-            var stored;
-            try { stored = localStorage.getItem('newsblur:theme'); } catch (e) {}
-            if (!stored || stored === 'auto') {
-              apply(get_theme());
-            }
-          });
+          mq.addEventListener('change', function() { apply(get_theme()); });
         } catch (e1) {
-          try { mq.addListener(function() {
-            var stored;
-            try { stored = localStorage.getItem('newsblur:theme'); } catch (e) {}
-            if (!stored || stored === 'auto') {
-              apply(get_theme());
-            }
-          }); } catch (e2) {}
+          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
         }
       }
 

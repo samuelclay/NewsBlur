@@ -39,7 +39,7 @@ body {
 h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
 ul, ol, dl, figure {
-  @extend %vertical-rhythm;
+  margin-bottom: calc($spacing-unit / 2);
 }
 
 
@@ -191,7 +191,7 @@ pre {
   margin-left: auto;
   padding-right: $spacing-unit;
   padding-left: $spacing-unit;
-  @extend %clearfix;
+  &:after { content: ""; display: table; clear: both; }
 
   @include media-query($on-laptop) {
     max-width: calc(#{$content-width} - (#{$spacing-unit}));
