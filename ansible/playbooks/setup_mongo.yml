@@ -8,6 +8,7 @@
     - ../env_vars/base.yml
 
   roles:
+    - { role: "swap", tags: "swap" }
     - { role: "base", tags: "base" }
     - { role: "ufw", tags: "ufw" }
     - { role: "docker", tags: "docker" }
