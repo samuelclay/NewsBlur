@@ -247,8 +247,8 @@ class LLMCostTracker:
                 return
 
             meter_event_map = {
-                "story_classification": getattr(settings, "STRIPE_METER_TEXT_CLASSIFICATION", ""),
-                "vision_classification": getattr(settings, "STRIPE_METER_IMAGE_CLASSIFICATION", ""),
+                "story_classification": "nb_ai_text_classification",
+                "vision_classification": "nb_ai_image_classification",
             }
             event_name = meter_event_map.get(feature)
             if not event_name:
