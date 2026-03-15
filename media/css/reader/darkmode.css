@@ -5470,6 +5470,11 @@ a.mention, a.mention-group {
     color: #A0A0A0;
 }
 
+.NB-dark .NB-briefing-loading {
+    background-color: #1A1A1A;
+    border-bottom-color: #303030;
+}
+
 /* darkmode.css: Error state */
 .NB-dark .NB-briefing-error {
     border-bottom-color: #303030;

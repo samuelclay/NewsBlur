@@ -961,8 +961,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     },
 
-    fetch_briefing_stories: function (callback, error_callback) {
-        this.make_request('/briefing/stories', {}, callback, error_callback, {
+    fetch_briefing_stories: function (page, callback, error_callback) {
+        this.make_request('/briefing/stories', { page: page || 1 }, callback, error_callback, {
             'ajax_group': 'feed',
             'request_type': 'GET'
         });

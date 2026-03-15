@@ -38447,6 +38447,17 @@ span.NB-briefing-inline-favicon {
     color: #606060;
 }
 
+/* reader.css: Loading indicator for infinite scroll pagination */
+.NB-briefing-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    background-color: #F5F6F2;
+}
+
 /* reader.css: Error state during generation */
 .NB-briefing-error {
     padding: 12px 14px;
