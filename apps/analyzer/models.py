@@ -950,9 +950,9 @@ class MClassifierPrompt(mongo.Document):
         new_results = {}
         if uncached_stories:
             if prompt.include_images:
-                new_results = classify_stories_with_vision(prompt, uncached_stories)
+                new_results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
             else:
-                new_results = classify_stories_with_ai(prompt, uncached_stories)
+                new_results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
 
             # Write new results to cache keyed by story_hash
             if user_id and feed_id and new_results:
@@ -989,13 +989,12 @@ class MClassifierPrompt(mongo.Document):
             Updated classifications dictionary
         """
         for story_id, result in results.items():
-            # Only update if the AI gave a non-neutral classification
+            # Any non-zero result means the AI matched the prompt.
+            # The classifier_type determines the polarity of the score.
             if result != 0:
-                # For "focus" classifiers, only accept positive scores (1)
-                if classifier_type == "focus" and result > 0:
+                if classifier_type == "focus":
                     classifications[story_id] = 1
-                # For "hidden" classifiers, only accept negative scores (-1)
-                elif classifier_type == "hidden" and result < 0:
+                elif classifier_type == "hidden":
                     classifications[story_id] = -1
 
         return classifications

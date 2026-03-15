@@ -30,7 +30,7 @@ def setup_openai_model(openai_model):
     return encoding
 
 
-def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5"):
+def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
     """
     Classify a list of stories using Claude's tool use.
 
@@ -38,6 +38,7 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
         prompt_classifier: User-defined prompt (MClassifierPrompt) for classification criteria
         stories: List of dictionaries containing story data with at least title and content
         model: Claude model to use
+        user_id: User ID for usage tracking and billing
 
     Returns:
         Dictionary mapping story_ids to classifications: 1 (focus), 0 (neutral), -1 (hidden)
@@ -128,6 +129,7 @@ You MUST use the classify_stories tool to return your classifications."""
                 feature="story_classification",
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
+                user_id=user_id,
                 metadata={"story_count": len(stories)},
             )
 
@@ -205,7 +207,7 @@ def _fetch_image_as_base64(url, timeout=10, max_size_bytes=5 * 1024 * 1024):
         return None, None
 
 
-def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku-4-5"):
+def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
     """Classify stories using Claude Vision (VLM) — analyzes both text AND images.
 
     This is the VLM version of classify_stories_with_ai(). The key difference:
@@ -232,6 +234,7 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
         prompt_classifier: MClassifierPrompt with the user's criteria (e.g., "show me food photos")
         stories: List of story dicts with story_id, story_title, story_content, image_urls
         model: Claude model ID (must support vision — Haiku 4.5, Sonnet 4, Opus 4 all do)
+        user_id: User ID for usage tracking and billing
 
     Returns:
         Dict mapping story_id to classification: 1 (focus), 0 (neutral), -1 (hidden)
@@ -281,9 +284,8 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
     # is specifically for visual content (photos of food, charts, etc.).
     system_message = f"""You are a STRICT image classifier for a news reader. Classify ONLY based on what is literally, visually depicted in the image.
 
-- Focus (1): The image literally shows the described thing as the main subject
-- Neutral (0): The image does NOT literally show the described thing
-- Hidden (-1): The image literally shows what the user wants to hide
+- Match (1): The image literally shows the described thing as the main subject
+- No match (0): The image does NOT literally show the described thing
 
 The user's image filter is: {prompt_classifier.prompt}
 
@@ -292,9 +294,9 @@ STRICT RULES:
 2. Do NOT match based on text, signs, logos, or words visible in the image.
 3. Do NOT match based on indirect associations. For "food": a restaurant exterior, grocery store, kitchen without food, menu, or food-related business is NOT a match. Only actual food items are a match.
 4. Do NOT match based on what the location might contain or sell. A photo OF a building is a photo of a building, not what's inside.
-5. When in doubt, classify as neutral (0). Be very conservative.
+5. When in doubt, classify as no match (0). Be very conservative.
 
-If a story has no images, classify as neutral (0).
+If a story has no images, classify as no match (0).
 
 You MUST use the classify_stories tool to return your classifications."""
 
@@ -373,6 +375,7 @@ You MUST use the classify_stories tool to return your classifications."""
                 feature="vision_classification",
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
+                user_id=user_id,
                 metadata={
                     "story_count": len(stories),
                     "has_images": True,
