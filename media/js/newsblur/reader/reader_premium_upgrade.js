@@ -107,7 +107,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'AI classifiers'
+                            'Natural language text and image classifiers'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
