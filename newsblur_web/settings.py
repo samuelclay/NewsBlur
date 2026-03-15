@@ -133,6 +133,7 @@ MIDDLEWARE = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.profile.middleware.AttackBanMiddleware",
     "apps.profile.middleware.TimingMiddleware",
     "apps.profile.middleware.LastSeenMiddleware",
     "apps.profile.middleware.UserAgentBanMiddleware",
