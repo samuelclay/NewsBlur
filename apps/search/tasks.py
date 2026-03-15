@@ -4,7 +4,6 @@ import datetime
 import json
 import re
 
-import redis
 from django.conf import settings
 
 from newsblur_web.celeryapp import app
@@ -76,6 +75,8 @@ def _json_default(obj):
 
 
 def _publish_global_search(username, search_id, event_type, extra=None):
+    import redis
+
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     payload = {"type": event_type, "search_id": search_id}
     if extra:
@@ -228,6 +229,8 @@ def GlobalSearchVector(user_id, username, search_id, query_vector, feed_ids=None
 
 @app.task(name="global-search-complete")
 def GlobalSearchComplete(user_id, username, search_id):
+    import redis
+
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     payload = {
         "type": "complete",
