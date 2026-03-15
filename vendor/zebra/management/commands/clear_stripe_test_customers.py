@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
         num_checked = 0
         while len(customer_chunk) is not 0:
-            customer_chunk = stripe.Customer.all(count=CLEAR_CHUNK_SIZE, offset=num_checked).data
+            customer_chunk = stripe.Customer.list(limit=CLEAR_CHUNK_SIZE).data
 
             if verbosity > 1:
                 print("Processing records %s-%s" % (num_checked, num_checked + len(customer_chunk)))

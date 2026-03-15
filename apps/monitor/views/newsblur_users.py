@@ -71,6 +71,12 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),
+            "usage_billing": MStatistics.get(
+                "munin:users_usage_billing",
+                lambda: Profile.objects.filter(is_usage_billing=True).count(),
+                set_default=True,
+                expiration_sec=expiration_sec_short,
+            ),
             "trial": MStatistics.get(
                 "munin:users_trial",
                 lambda: Profile.objects.filter(is_premium=True, is_premium_trial=True).count(),

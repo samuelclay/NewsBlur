@@ -13,7 +13,7 @@ import feedparser
 import requests
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.utils.encoding import smart_bytes
+from django.utils.encoding import smart_bytes, smart_str
 from django.utils.text import compress_string as compress_string_with_gzip
 from mongoengine.queryset import NotUniqueError
 from OpenSSL.SSL import Error as OpenSSLError
@@ -208,7 +208,7 @@ class PageImporter(object):
 
         return html
 
-    @timelimit(10)
+    @timelimit(30)
     def _fetch_story(self):
         html = None
         story_permalink = self.story.story_permalink
@@ -250,6 +250,28 @@ class PageImporter(object):
                     % (self.feed.log_title[:30], e)
                 )
                 return
+
+        if self._is_blocked_response(response):
+            logging.user(
+                self.request,
+                "~SN~FYOriginal story ~FRblocked~FY (%s), retrying with ScrapingBee: %s"
+                % (response.status_code, story_permalink),
+            )
+            data = self._fetch_story_with_scrapingbee(story_permalink)
+        else:
+            data = self._decode_response(response)
+
+        if data:
+            data = data.replace("\xc2\xa0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
+            data = data.replace("\\u00a0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
+            html = self.rewrite_page(data)
+            if not html:
+                return
+            self.save_story(html)
+
+        return html
+
+    def _decode_response(self, response):
         encoding = response.encoding
         content = response.content
 
@@ -267,19 +289,64 @@ class PageImporter(object):
                 encoding = "utf-8"
 
         try:
-            data = content.decode(encoding or "utf-8")
+            return content.decode(encoding or "utf-8")
         except (UnicodeDecodeError, LookupError):
-            data = content.decode("utf-8", errors="replace")
+            return content.decode("utf-8", errors="replace")
 
-        if data:
-            data = data.replace("\xc2\xa0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
-            data = data.replace("\\u00a0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
-            html = self.rewrite_page(data)
-            if not html:
-                return
-            self.save_story(html)
+    def _is_blocked_response(self, response):
+        """Check if a response indicates the request was blocked by anti-bot protection."""
+        if response.status_code in (403, 429, 503):
+            return True
 
-        return html
+        if response.status_code == 200:
+            content_lower = response.content[:4096].lower()
+            blocked_markers = [
+                b"cf-browser-verification",
+                b"_cf_chl",
+                b"cf-challenge",
+                b"challenge-platform",
+                b"just a moment",
+                b"checking your browser",
+                b"attention required",
+                b"anubis-challenge",
+            ]
+            if any(marker in content_lower for marker in blocked_markers):
+                return True
+
+        return False
+
+    def _fetch_story_with_scrapingbee(self, url):
+        """Fetch a story page using ScrapingBee residential proxy."""
+        api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
+        if not api_key:
+            logging.user(self.request, "~SN~FRScrapingBee API key not configured")
+            return None
+
+        params = {
+            "api_key": api_key,
+            "url": url,
+            "render_js": "false",
+            "return_page_source": "true",
+        }
+
+        try:
+            response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+            if response.status_code == 200 and response.content:
+                logging.user(
+                    self.request,
+                    "~SN~FGScrapingBee original story fetch succeeded: ~SB%s bytes" % len(response.content),
+                )
+                return smart_str(response.content)
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original story fetch failed: status %s" % response.status_code,
+            )
+        except Exception as e:
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original story fetch error: %s" % e,
+            )
+        return None
 
     def save_story(self, html):
         self.story.original_page_z = zlib.compress(smart_bytes(html))

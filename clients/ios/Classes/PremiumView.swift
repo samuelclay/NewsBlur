@@ -120,6 +120,7 @@ struct PremiumView: View {
         PremiumFeature(title: "Custom RSS feeds for saved stories", icon: "dot.radiowaves.up.forward", iconColor: .orange),
         PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
+        PremiumFeature(title: "Natural language text and image classifiers", icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
     ]
 

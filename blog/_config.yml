@@ -53,9 +53,11 @@ paginate_path: "/page:num"
 # Enable paginated feeds with RFC 5005 archive links for NewsBlur backfill
 paginate_feeds: true
 
-# Disable jekyll-feed plugin since we use custom paginated feeds
+# Redirect jekyll-feed output to avoid conflicting with our custom paginated feeds
+feed:
+  path: /atom.xml
+
 disable_disk_cache: true
-whitelist: []
 
 # Exclude from processing.
 # The following items will not be processed, by default.

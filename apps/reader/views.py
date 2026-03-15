@@ -19,6 +19,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zlib
+from collections import defaultdict
 
 import pytz
 import redis
@@ -71,6 +72,7 @@ from apps.analyzer.models import (
     load_scoped_classifiers,
     sort_classifiers_by_feed,
 )
+from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
 from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
@@ -939,6 +941,86 @@ def refresh_feed(request, feed_id):
     return load_single_feed(request, feed_id)
 
 
+def get_prompt_scores_or_queue(user, stories, feed_ids):
+    """Get cached AI prompt classifier scores, queueing uncached stories for async classification.
+
+    Returns dict with:
+      "scores": {story_hash: prompt_score} - aggregate score per story
+      "details": {story_hash: [{"prompt": text, "score": int, "include_images": bool}]}
+    Uncached stories get score 0 and a Celery task is fired to classify them in the background.
+    """
+    empty_result = {"scores": {}, "details": {}}
+    if not stories or not feed_ids:
+        return empty_result
+
+    if not user.profile.can_use_ai_classifiers:
+        return empty_result
+
+    # Quick check: does user have any prompt classifiers?
+    prompt_count = MClassifierPrompt.objects.filter(user_id=user.pk).count()
+    if not prompt_count:
+        return empty_result
+
+    # Get applicable prompts
+    prompts = MClassifierPrompt.get_prompts_for_user(user.pk, feed_ids=feed_ids)
+    feed_prompts = prompts["feed_prompts"]
+    if not feed_prompts:
+        return empty_result
+
+    # Group stories by feed
+    stories_by_feed = defaultdict(list)
+    for story in stories:
+        stories_by_feed[story["story_feed_id"]].append(story)
+
+    # Check cache for all prompts and collect uncached story hashes
+    prompt_scores = {}  # {story_hash: aggregated_score}
+    prompt_details = defaultdict(list)  # {story_hash: [{prompt, score, include_images}]}
+    uncached_hashes = set()
+
+    for feed_id, feed_stories in stories_by_feed.items():
+        story_hashes = [s["story_hash"] for s in feed_stories]
+
+        # Collect prompts that apply to this feed (feed-specific + global)
+        applicable_prompts = []
+        if 0 in feed_prompts:
+            applicable_prompts.extend(feed_prompts[0])
+        if feed_id in feed_prompts:
+            applicable_prompts.extend(feed_prompts[feed_id])
+
+        for prompt in applicable_prompts:
+            prompt_id = str(prompt.id)
+            cached = MClassifierPrompt.get_cached_scores(user.pk, prompt_id, feed_id, story_hashes)
+
+            for sh in story_hashes:
+                if sh in cached:
+                    score = cached[sh]
+                    if score != 0:
+                        # Any non-zero cached score means the prompt matched.
+                        # Apply polarity from classifier_type.
+                        effective_score = 0
+                        if prompt.classifier_type == "focus":
+                            effective_score = 1
+                        elif prompt.classifier_type == "hidden":
+                            effective_score = -1
+                        if effective_score != 0:
+                            prompt_scores[sh] = effective_score
+                            prompt_details[sh].append(
+                                {
+                                    "prompt": prompt.prompt,
+                                    "score": effective_score,
+                                    "include_images": prompt.include_images,
+                                }
+                            )
+                else:
+                    uncached_hashes.add(sh)
+
+    # Queue async classification for uncached stories
+    if uncached_hashes:
+        ClassifyStoriesWithPrompt.delay(user.pk, list(uncached_hashes))
+
+    return {"scores": prompt_scores, "details": dict(prompt_details)}
+
+
 @never_cache
 @json.json_view
 def load_single_feed(request, feed_id):
@@ -1194,6 +1276,9 @@ def load_single_feed(request, feed_id):
 
     user_is_pro = user.profile.is_pro
 
+    # AI prompt classifiers (cached in Redis, async classification for uncached)
+    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
+
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
@@ -1227,7 +1312,9 @@ def load_single_feed(request, feed_id):
                 if user_is_pro
                 else 0
             ),
+            "prompt": prompt_data["scores"].get(story["story_hash"], 0),
         }
+        story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
         # Apply YouTube captions if user preference is enabled
@@ -2411,6 +2498,9 @@ def load_river_stories__redis(request):
 
     user_is_pro = user.profile.is_pro
 
+    # AI prompt classifiers (cached in Redis, async classification for uncached)
+    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
+
     # Look up actual read status for starred stories from Redis
     if read_filter == "starred":
         r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -2477,7 +2567,9 @@ def load_river_stories__redis(request):
                 if user_is_pro
                 else 0
             ),
+            "prompt": prompt_data["scores"].get(story["story_hash"], 0),
         }
+        story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
         # Apply YouTube captions if user preference is enabled
@@ -3360,7 +3452,7 @@ def _parse_user_info(user):
 @json.json_view
 def add_url(request):
     code = 0
-    url = request.POST["url"]
+    url = request.POST.get("url", "")
     folder = request.POST.get("folder", "").replace("river:", "")
     new_folder = request.POST.get("new_folder", "").replace("river:", "")
     auto_active = is_true(request.POST.get("auto_active", 1))

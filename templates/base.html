@@ -39,6 +39,8 @@
       'is_premium'              : {{ user_profile.is_premium|yesno:"true,false" }},
       'is_archive'              : {{ user_profile.is_archive|yesno:"true,false" }},
       'is_pro'                  : {{ user_profile.is_pro|yesno:"true,false" }},
+      'is_usage_billing'        : {{ user_profile.is_usage_billing|yesno:"true,false,false" }},
+      'usage_billing_limit'     : {% if user_profile.usage_billing_limit %}{{ user_profile.usage_billing_limit }}{% else %}null{% endif %},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'premium_expire'          : {% if user_profile.premium_expire %}new Date('{{ user_profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},

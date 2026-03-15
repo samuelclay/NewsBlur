@@ -19,7 +19,7 @@ import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.template.defaultfilters import slugify
 from mongoengine.queryset import NotUniqueError, OperationError
@@ -116,7 +116,8 @@ class UserSubscription(models.Model):
         if self.user_title and len(self.user_title) > user_title_max:
             self.user_title = self.user_title[:user_title_max]
         try:
-            super(UserSubscription, self).save(*args, **kwargs)
+            with transaction.atomic():
+                super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed_id)
             for duplicate_feed in duplicate_feeds:
@@ -1637,6 +1638,11 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
+        # AI prompt classifier takes absolute priority
+        prompt = scores.get("prompt", 0)
+        if prompt != 0:
+            return prompt
+
         max_score = max(
             scores["author"],
             scores["tags"],

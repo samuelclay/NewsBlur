@@ -49,12 +49,38 @@ class MLLMCost(mongo.Document):
             {"fields": ["feature", "-timestamp"]},
             {"fields": ["model", "-timestamp"]},
             {"fields": ["user_id", "-timestamp"]},
+            {"fields": ["user_id", "feature", "-timestamp"]},
         ],
         "db_alias": "nbanalytics",
     }
 
     def __str__(self):
         return f"LLMCost({self.feature}/{self.model}: ${self.cost_usd:.4f})"
+
+    @classmethod
+    def get_current_cycle_spend(cls, user_id):
+        """Get total classifier spend for a user in the current billing month.
+
+        Returns:
+            float: Total cost in USD for current month's classifier usage.
+        """
+        now = datetime.utcnow()
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        pipeline = [
+            {
+                "$match": {
+                    "user_id": user_id,
+                    "feature": {"$in": ["story_classification", "vision_classification"]},
+                    "timestamp": {"$gte": month_start},
+                }
+            },
+            {"$group": {"_id": None, "total_cost": {"$sum": "$cost_usd"}}},
+        ]
+        result = list(cls._get_collection().aggregate(pipeline))
+        if result:
+            return result[0]["total_cost"]
+        return 0.0
 
     @classmethod
     def get_cost_summary(cls, feature=None, provider=None, model=None, days=1):

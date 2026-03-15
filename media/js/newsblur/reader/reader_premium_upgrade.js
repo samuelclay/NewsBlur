@@ -104,6 +104,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-9' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Discover related stories and sites'
+                        ]),
+                        $.make('li', { className: 'NB-10' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Natural language text and image classifiers'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

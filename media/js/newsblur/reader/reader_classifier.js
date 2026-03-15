@@ -932,6 +932,24 @@ var classifier_prototype = {
         var story_tags = story.get('story_tags') || [];
         var feed_tags = this.feed_tags || [];
 
+        // Build a count lookup from feed tags so story tags can show counts
+        var feed_tag_counts = {};
+        feed_tags.forEach(function (tag_obj) {
+            if (typeof tag_obj !== 'string') {
+                feed_tag_counts[tag_obj[0].toLowerCase()] = tag_obj[1];
+            }
+        });
+
+        // Enrich story tags with counts from feed data
+        var enriched_story_tags = story_tags.map(function (tag) {
+            var tag_name = typeof tag === 'string' ? tag : tag[0];
+            var count = feed_tag_counts[tag_name.toLowerCase()];
+            if (count) {
+                return [tag_name, count];
+            }
+            return tag;
+        });
+
         // Get story tag names for comparison
         var story_tag_names = story_tags.map(function (tag) {
             return typeof tag === 'string' ? tag.toLowerCase() : tag[0].toLowerCase();
@@ -944,7 +962,7 @@ var classifier_prototype = {
         });
 
         // Build combined tags list
-        var has_story_tags = story_tags.length > 0;
+        var has_story_tags = enriched_story_tags.length > 0;
         var has_other_tags = other_tags.length > 0;
 
         if (!has_story_tags && !has_other_tags) {
@@ -952,7 +970,7 @@ var classifier_prototype = {
         }
 
         var $story_tags = has_story_tags ?
-            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
+            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(enriched_story_tags)) : '';
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_tags ?
             this.make_scoped_groups(this.make_tags(other_tags), current_folder_names) : [];
@@ -988,10 +1006,12 @@ var classifier_prototype = {
     },
 
     make_content_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var is_premium = NEWSBLUR.Globals.is_pro;
+        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
 
         var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
 
@@ -1004,7 +1024,8 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-content-filter-header' }, [
                     $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
                     'AI Content Filter'
-                ])
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
@@ -1046,20 +1067,22 @@ var classifier_prototype = {
                     self.change_classifier($pill_classifier, 'like');
                 }
                 $btn.removeClass('NB-disabled');
-                if (!is_premium) {
+                if (!can_use_ai) {
                     $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', 'AI content filters won\'t apply until you '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                        $.make('b', 'AI filters are saved but won\'t run until you '),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                         $.make('b', '.')
                     ])).show();
                 }
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
                 // Only hide banner if no saved classifiers
                 var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1132,12 +1155,12 @@ var classifier_prototype = {
             var $btn = $('.NB-content-filter-test-button', $section);
             $btn.addClass('NB-disabled');
 
-            // Show upgrade banner for non-Pro users
-            if (!is_premium) {
+            // Show upgrade banner for non-billing users
+            if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
                 $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', 'AI content filters are saved but won\'t apply until you '),
-                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                    $.make('b', 'AI filters are saved but won\'t run until you '),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                     $.make('b', '.')
                 ])).show();
             }
@@ -1145,11 +1168,15 @@ var classifier_prototype = {
             self.recalculate_section_costs();
         });
 
-        // Fetch and display cost estimate for Pro users
-        if (is_premium) {
+        // Fetch and display cost estimate for billing users
+        if (can_use_ai) {
             NEWSBLUR.assets.get_ai_classifier_usage({ feed_id: feed_id }, function (resp) {
-                if (resp.is_pro) {
+                if (resp.can_use_ai) {
                     self.update_ai_cost_estimates(resp);
+                    NEWSBLUR.Globals.usage_billing_limit_reached = resp.is_limit_reached;
+                    if (resp.is_limit_reached) {
+                        self.show_limit_reached_banner();
+                    }
                 }
             });
         }
@@ -1185,10 +1212,10 @@ var classifier_prototype = {
 
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.is_pro) {
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', 'AI content filters are saved but won\'t apply until you '),
-                $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                $.make('b', 'AI filters are saved but won\'t run until you '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                 $.make('b', '.')
             ])).show();
         } else {
@@ -1215,10 +1242,12 @@ var classifier_prototype = {
     },
 
     make_image_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var is_premium = NEWSBLUR.Globals.is_pro;
+        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
 
         // SVG icon for the header
         var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1247,7 +1276,8 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-image-filter-header' }, [
                     $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
                     'AI Image Filter'
-                ])
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
@@ -1291,19 +1321,21 @@ var classifier_prototype = {
                     self.change_classifier($pill_classifier, 'like');
                 }
                 $btn.removeClass('NB-disabled');
-                if (!is_premium) {
+                if (!can_use_ai) {
                     $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', 'AI image filters won\'t apply until you '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                        $.make('b', 'AI filters are saved but won\'t run until you '),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                         $.make('b', '.')
                     ])).show();
                 }
             } else {
                 $placeholder.html('Describe what to focus or hide');
                 $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
                 var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1408,12 +1440,12 @@ var classifier_prototype = {
             var $btn = $('.NB-image-filter-test-button', $section);
             $btn.addClass('NB-disabled');
 
-            // Show upgrade banner for non-Pro users
-            if (!is_premium) {
+            // Show upgrade banner for non-billing users
+            if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
                 $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', 'AI image filters are saved but won\'t apply until you '),
-                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                    $.make('b', 'AI filters are saved but won\'t run until you '),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                     $.make('b', '.')
                 ])).show();
             }
@@ -1449,7 +1481,7 @@ var classifier_prototype = {
             type: 'content filter',
             cost_per_run: avg_text,
             $section: $content_section,
-            pill_selector: '.NB-content-filter-saved-list .NB-classifier-container'
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
         });
 
         // Image filter section
@@ -1459,7 +1491,7 @@ var classifier_prototype = {
             type: 'image filter',
             cost_per_run: avg_image,
             $section: $image_section,
-            pill_selector: '.NB-image-filter-saved-list .NB-classifier-container'
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
         });
     },
 
@@ -1526,9 +1558,9 @@ var classifier_prototype = {
             return;
         }
 
-        // Use feed stories as the default when no filters are saved yet
+        // Use feed stories as the default when filters exist but are all feed-scoped
         var effective_stories = total_stories || feed_stories;
-        var monthly = effective_stories * cost_per;
+        var monthly = filter_count > 0 ? effective_stories * cost_per : 0;
         var daily = monthly / 30;
 
         var $content = [];
@@ -1571,7 +1603,34 @@ var classifier_prototype = {
 
         $content.push($.make('div', { className: 'NB-ai-cost-breakdown' }, breakdown));
 
-        $el.empty().append($content).show();
+        // Wrap cost amounts and breakdown in a left-side container
+        var $cost_info = $.make('div', { className: 'NB-ai-cost-info' }, $content);
+
+        // Add billing action button on the right
+        var $billing_btn;
+        if (NEWSBLUR.Globals.is_usage_billing) {
+            $billing_btn = $.make('a', {
+                href: '#', className: 'NB-ai-billing-manage NB-modal-submit-button NB-modal-submit-green'
+            }, 'Manage billing and limits');
+        } else {
+            $billing_btn = $.make('a', {
+                href: '#', className: 'NB-ai-billing-setup NB-modal-submit-button NB-modal-submit-green'
+            }, 'Set up billing');
+        }
+
+        $el.empty().append([$cost_info, $billing_btn]).show();
+    },
+
+    show_limit_reached_banner: function () {
+        var $banners = $('.NB-ai-filter-upgrade-banner', this.$modal);
+        $banners.each(function () {
+            var $banner = $(this);
+            $banner.html($.make('div', { className: 'NB-ai-filter-limit-reached-banner-inner' }, [
+                $.make('b', 'Monthly spending limit reached. '),
+                $.make('span', 'AI classifiers are paused until next billing cycle. '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, 'Increase or remove your limit')
+            ])).show();
+        });
     },
 
     clear_image_test_results: function ($section) {
@@ -1700,10 +1759,10 @@ var classifier_prototype = {
 
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.is_pro) {
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', 'AI image filters are saved but won\'t apply until you '),
-                $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'upgrade to Premium Pro'),
+                $.make('b', 'AI filters are saved but won\'t run until you '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
                 $.make('b', '.')
             ])).show();
         } else {
@@ -3014,6 +3073,21 @@ var classifier_prototype = {
             e.preventDefault();
             self.close(function () {
                 NEWSBLUR.reader.open_premium_upgrade_modal();
+            });
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-ai-billing-setup, .NB-ai-billing-setup-link' }, function ($t, $p) {
+            e.preventDefault();
+            var $form = $('<form method="POST" action="/profile/setup_usage_billing/"></form>');
+            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
+            $('body').append($form);
+            $form.submit();
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-ai-billing-manage' }, function ($t, $p) {
+            e.preventDefault();
+            self.close(function () {
+                NEWSBLUR.reader.open_account_modal({ 'tab': 'premium' });
             });
         });
 
