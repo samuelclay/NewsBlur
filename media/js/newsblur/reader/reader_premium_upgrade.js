@@ -104,6 +104,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-9' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Discover related stories and sites'
+                        ]),
+                        $.make('li', { className: 'NB-10' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Natural language text and image classifiers'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -208,15 +212,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Priority support'
-                        ]),
-                        $.make('li', { className: 'NB-premium-tier-upcoming-header' }, 'Coming soon:'),
-                        $.make('li', { className: 'NB-upcoming NB-5' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Natural language filters'
-                        ]),
-                        $.make('li', { className: 'NB-upcoming NB-6' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Natural language search'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

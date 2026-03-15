@@ -12,6 +12,7 @@ import threading
 from collections import defaultdict
 
 import mongoengine as mongo
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
@@ -21,7 +22,7 @@ from django.template.loader import render_to_string
 from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
-from utils.ai_functions import classify_stories_with_ai
+from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 
 # Regex timeout in seconds to prevent ReDoS attacks
 REGEX_TIMEOUT = 0.1  # 100ms
@@ -708,6 +709,7 @@ class MClassifierPrompt(mongo.Document):
     folder_id = mongo.StringField(default="")  # Empty string means applies to feed level
     prompt = mongo.StringField()
     classifier_type = mongo.StringField(choices=["focus", "hidden"])
+    include_images = mongo.BooleanField(default=False)  # When True, send story images to VLM
     creation_date = mongo.DateTimeField(default=datetime.datetime.now)
 
     meta = {
@@ -716,10 +718,70 @@ class MClassifierPrompt(mongo.Document):
         "allow_inheritance": False,
     }
 
+    CACHE_KEY_PREFIX = "AIC"
+    CACHE_TTL_DEFAULT = settings.DAYS_OF_UNREAD * 24 * 60 * 60  # 30 days in seconds
+
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
         target = f"Feed: {self.feed_id}" if self.feed_id else f"Folder: {self.folder_id}"
         return f"{user} - {target}: ({self.classifier_type}) {self.prompt[:50]}..."
+
+    @classmethod
+    def _cache_key(cls, user_id, prompt_id, feed_id):
+        return f"{cls.CACHE_KEY_PREFIX}:{user_id}:{prompt_id}:{feed_id}"
+
+    @classmethod
+    def get_cached_scores(cls, user_id, prompt_id, feed_id, story_hashes):
+        """Fetch cached classification scores from Redis.
+
+        Returns dict of {story_hash: int_score} for cached stories only.
+        """
+        if not story_hashes:
+            return {}
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            key = cls._cache_key(user_id, prompt_id, feed_id)
+            values = r.hmget(key, story_hashes)
+            cached = {}
+            for sh, val in zip(story_hashes, values):
+                if val is not None:
+                    cached[sh] = int(val)
+            return cached
+        except redis.ConnectionError:
+            logging.debug("~BR~FK~SBRedis unavailable for AI classifier cache read")
+            return {}
+
+    @classmethod
+    def set_cached_scores(cls, user_id, prompt_id, feed_id, scores, ttl_seconds=None):
+        """Write classification scores to Redis cache."""
+        if not scores:
+            return
+        if ttl_seconds is None:
+            ttl_seconds = cls.CACHE_TTL_DEFAULT
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            key = cls._cache_key(user_id, prompt_id, feed_id)
+            str_scores = {sh: str(score) for sh, score in scores.items()}
+            r.hset(key, mapping=str_scores)
+            r.expire(key, ttl_seconds)
+        except redis.ConnectionError:
+            logging.debug("~BR~FK~SBRedis unavailable for AI classifier cache write")
+
+    @classmethod
+    def invalidate_cache(cls, user_id, prompt_id):
+        """Delete all cached scores for a prompt across all feeds."""
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            pattern = f"{cls.CACHE_KEY_PREFIX}:{user_id}:{prompt_id}:*"
+            cursor = 0
+            while True:
+                cursor, keys = r.scan(cursor, match=pattern, count=100)
+                if keys:
+                    r.delete(*keys)
+                if cursor == 0:
+                    break
+        except redis.ConnectionError:
+            pass
 
     @classmethod
     def get_prompts_for_user(cls, user_id, feed_ids=None, folder_ids=None):
@@ -763,9 +825,24 @@ class MClassifierPrompt(mongo.Document):
         return {"feed_prompts": feed_prompts, "folder_prompts": folder_prompts}
 
     @classmethod
+    def _compute_feed_ttl(cls, user_id, feed_id):
+        """Compute cache TTL in seconds based on the feed's effective auto_mark_read_days."""
+        from apps.reader.models import UserSubscription
+
+        try:
+            usersub = UserSubscription.objects.get(user_id=user_id, feed_id=feed_id)
+            days, _source = usersub.get_effective_auto_mark_read_days()
+            if days is not None:
+                return days * 24 * 60 * 60
+        except UserSubscription.DoesNotExist:
+            pass
+        return cls.CACHE_TTL_DEFAULT
+
+    @classmethod
     def classify_stories(cls, user_id, stories, feed_ids=None, folder_ids=None):
         """
         Apply AI-based classification to a list of stories based on user's prompts.
+        Uses Redis caching so each story is only classified once per prompt.
 
         Args:
             user_id: The ID of the user
@@ -774,10 +851,30 @@ class MClassifierPrompt(mongo.Document):
             folder_ids: Optional list of folder IDs the stories belong to
 
         Returns:
-            Dictionary mapping story_ids to scores (1 for focus, 0 for neutral, -1 for hidden)
+            Dictionary mapping story_hashes to scores (1 for focus, 0 for neutral, -1 for hidden)
         """
         if not stories:
             return {}
+
+        # Check if user has usage billing set up
+        from apps.profile.models import Profile
+
+        try:
+            profile = Profile.objects.get(user_id=user_id)
+            if not profile.can_use_ai_classifiers:
+                return {}
+            if profile.is_usage_limit_reached:
+                logging.user(
+                    profile.user, "~BR~FRAI classifier spending limit reached, skipping classification"
+                )
+                return {}
+        except Profile.DoesNotExist:
+            return {}
+
+        # Ensure stories have story_id set (views use story_hash as the ID)
+        for story in stories:
+            if "story_id" not in story:
+                story["story_id"] = story["story_hash"]
 
         # Group stories by feed_id for efficient classification
         stories_by_feed = defaultdict(list)
@@ -789,41 +886,94 @@ class MClassifierPrompt(mongo.Document):
         feed_prompts = prompts["feed_prompts"]
         folder_prompts = prompts["folder_prompts"]
 
-        # Final classifications
-        classifications = {story["story_id"]: 0 for story in stories}
+        # Final classifications keyed by story_hash
+        classifications = {story["story_hash"]: 0 for story in stories}
 
         # Apply feed-specific prompts
         for feed_id, feed_stories in stories_by_feed.items():
+            ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
+
             # Apply global prompts (feed_id=0)
             if 0 in feed_prompts:
                 for prompt in feed_prompts[0]:
-                    results = classify_stories_with_ai(prompt, feed_stories)
+                    results = cls._run_classifier(
+                        prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+                    )
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
             # Apply feed-specific prompts
             if feed_id in feed_prompts:
                 for prompt in feed_prompts[feed_id]:
-                    results = classify_stories_with_ai(prompt, feed_stories)
+                    results = cls._run_classifier(
+                        prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+                    )
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
         # Apply folder-specific prompts if we have folder_ids
         if folder_ids and folder_prompts:
             for folder_id in folder_ids:
                 if folder_id in folder_prompts:
-                    # Find stories that belong to feeds in this folder
                     folder_stories = []
                     for feed_id, feed_stories in stories_by_feed.items():
-                        # We would need to check if feed_id belongs to folder_id here
-                        # For simplicity, we'll just apply to all stories
-                        # In a real implementation, you'd use a feed_folder mapping
                         folder_stories.extend(feed_stories)
 
-                    # Apply folder prompts to eligible stories
                     for prompt in folder_prompts[folder_id]:
-                        results = classify_stories_with_ai(prompt, folder_stories)
-                        cls._update_classifications(classifications, results, prompt.classifier_type)
+                        # For folder prompts, classify per-feed for correct cache keys
+                        for feed_id, feed_stories in stories_by_feed.items():
+                            ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
+                            results = cls._run_classifier(
+                                prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+                            )
+                            cls._update_classifications(classifications, results, prompt.classifier_type)
 
         return classifications
+
+    @classmethod
+    def _run_classifier(cls, prompt, stories, user_id=None, feed_id=None, ttl_seconds=None):
+        """Route to text-only or vision classifier, with Redis caching.
+
+        For each story, checks the cache first. Only uncached stories
+        are sent to the LLM. New results are written back to cache.
+        """
+        prompt_id = str(prompt.id)
+        story_hashes = [s["story_hash"] for s in stories]
+
+        # Check cache
+        cached = {}
+        if user_id and feed_id:
+            cached = cls.get_cached_scores(user_id, prompt_id, feed_id, story_hashes)
+
+        # Find uncached stories
+        uncached_stories = [s for s in stories if s["story_hash"] not in cached]
+
+        # Classify uncached stories via LLM
+        new_results = {}
+        if uncached_stories:
+            if prompt.include_images:
+                new_results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
+            else:
+                new_results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
+
+            # Write new results to cache keyed by story_hash
+            if user_id and feed_id and new_results:
+                cache_scores = {}
+                for s in uncached_stories:
+                    score = new_results.get(s["story_id"], 0)
+                    cache_scores[s["story_hash"]] = score
+                cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
+
+        # Merge cached + new results, keyed by story_hash
+        all_results = {}
+        for s in stories:
+            sh = s["story_hash"]
+            if sh in cached:
+                all_results[sh] = cached[sh]
+            elif s["story_id"] in new_results:
+                all_results[sh] = new_results[s["story_id"]]
+            else:
+                all_results[sh] = 0
+
+        return all_results
 
     @classmethod
     def _update_classifications(cls, classifications, results, classifier_type):
@@ -839,13 +989,12 @@ class MClassifierPrompt(mongo.Document):
             Updated classifications dictionary
         """
         for story_id, result in results.items():
-            # Only update if the AI gave a non-neutral classification
+            # Any non-zero result means the AI matched the prompt.
+            # The classifier_type determines the polarity of the score.
             if result != 0:
-                # For "focus" classifiers, only accept positive scores (1)
-                if classifier_type == "focus" and result > 0:
+                if classifier_type == "focus":
                     classifications[story_id] = 1
-                # For "hidden" classifiers, only accept negative scores (-1)
-                elif classifier_type == "hidden" and result < 0:
+                elif classifier_type == "hidden":
                     classifications[story_id] = -1
 
         return classifications
@@ -1012,6 +1161,19 @@ def get_classifiers_for_user(
         if info:
             tags_scope[t.tag] = info
 
+    # Fetch prompt classifiers for this user/feed, split into content vs image dicts
+    prompt_params = {"user_id": user.pk}
+    if feed_id and not isinstance(feed_id, list):
+        prompt_params["feed_id"] = feed_id
+    prompts_dict = {}
+    image_prompts_dict = {}
+    for p in MClassifierPrompt.objects.filter(**prompt_params):
+        score = 1 if p.classifier_type == "focus" else -1
+        if p.include_images:
+            image_prompts_dict[p.prompt] = score
+        else:
+            prompts_dict[p.prompt] = score
+
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
@@ -1027,6 +1189,8 @@ def get_classifiers_for_user(
         "urls_scope": urls_scope,
         "authors_scope": authors_scope,
         "tags_scope": tags_scope,
+        "prompts": prompts_dict,
+        "image_prompts": image_prompts_dict,
     }
 
     return payload
