@@ -267,8 +267,10 @@ down:
 stop: down
 nbdown: down
 jekyll:
+	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
 jekyll_drafts:
+	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
 	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
