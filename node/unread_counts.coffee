@@ -5,6 +5,7 @@ ask_ai = require './ask_ai.js'
 archive_assistant = require './archive_assistant.js'
 webfeed = require './webfeed.js'
 briefing = require './briefing.js'
+global_search = require './global_search.js'
 
 unread_counts = (server) =>
     ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'debug'
@@ -197,6 +198,12 @@ unread_counts = (server) =>
                 # Route webfeed messages to dedicated handler
                 if message.startsWith?('webfeed:')
                     handled = webfeed.handle_webfeed_message(socket, channel, message)
+                    if handled
+                        return
+
+                # Route global_search messages to dedicated handler
+                if message.startsWith?('global_search:')
+                    handled = global_search.handle_global_search_message(socket, channel, message)
                     if handled
                         return
 

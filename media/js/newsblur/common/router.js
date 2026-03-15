@@ -24,6 +24,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "social/:user_id/:slug": "social",
         "social/:user_id/": "social",
         "social/:user_id": "social",
+        "global-search(?:?*query)": "global_search",
+        "global-search": "global_search",
         "user/*user": "user"
     },
 
@@ -200,6 +202,17 @@ NEWSBLUR.Router = Backbone.Router.extend({
         // console.log('extract_query', search, sanitized);
 
         return sanitized;
+    },
+
+    global_search: function () {
+        var query = $.getQueryString('query');
+        NEWSBLUR.reader.open_global_search({ router: true });
+        if (query) {
+            _.defer(function () {
+                $('.NB-global-search-input').val(query);
+                NEWSBLUR.reader.start_global_search(query);
+            });
+        }
     },
 
     user: function (user) {
