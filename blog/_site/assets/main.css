@@ -1,9 +1,3 @@
-.footer-col-wrapper:after, .wrapper:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
 /**
  * Reset some basic elements
  */
@@ -165,6 +159,11 @@ pre > code {
   margin-left: auto;
   padding-right: 30px;
   padding-left: 30px;
+}
+.wrapper:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 @media screen and (max-width: 800px) {
   .wrapper {
@@ -405,6 +404,11 @@ body.at-top-init .site-header {
   font-size: 15px;
   color: #7a8878;
   margin-left: -15px;
+}
+.footer-col-wrapper:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 .footer-col {
