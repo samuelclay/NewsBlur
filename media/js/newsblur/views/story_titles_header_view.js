@@ -78,6 +78,19 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: NEWSBLUR.reader.feed_title()
             }));
+        } else if (NEWSBLUR.reader.flags['global_search_view']) {
+            $view = $(_.template('\
+                <div class="NB-folder NB-no-hover NB-folder-fake">\
+                    <div class="NB-folder-icon">\
+                        <%= $.favicon_html(folder_id) %>\
+                    </div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                </div>\
+            ', {
+                folder_title: NEWSBLUR.reader.feed_title(),
+                folder_id: NEWSBLUR.reader.active_feed
+            }));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover NB-folder-<%= all_stories ? "river" : "fake" %>">\

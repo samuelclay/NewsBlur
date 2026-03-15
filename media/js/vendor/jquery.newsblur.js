@@ -266,7 +266,7 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
                 if (feed_id == "starred")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
-                if (feed_id == "searches")
+                if (feed_id == "searches" || feed_id == "global-search")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
                 if (feed_id == "archive")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/archive.svg';
