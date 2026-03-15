@@ -2180,12 +2180,24 @@ class Feed(models.Model):
         return stories
 
     @classmethod
-    def find_feed_stories(cls, feed_ids, query, order="newest", offset=0, limit=25):
-        story_ids = SearchStory.query(feed_ids=feed_ids, query=query, order=order, offset=offset, limit=limit)
-        stories_db = MStory.objects(story_hash__in=story_ids).order_by(
-            "-story_date" if order == "newest" else "story_date"
-        )
-        stories = cls.format_stories(stories_db)
+    def find_feed_stories(cls, feed_ids, query, order="newest", offset=0, limit=25, search_type="keyword"):
+        if search_type == "hybrid":
+            story_ids = SearchStory.hybrid_query(
+                feed_ids=feed_ids, query=query, order=order, offset=offset, limit=limit
+            )
+        else:
+            story_ids = SearchStory.query(
+                feed_ids=feed_ids, query=query, order=order, offset=offset, limit=limit
+            )
+        stories_db = MStory.objects(story_hash__in=story_ids)
+        if search_type == "hybrid":
+            # Preserve relevance ordering from hybrid_query
+            story_order = {sid: i for i, sid in enumerate(story_ids)}
+            stories = cls.format_stories(stories_db)
+            stories.sort(key=lambda s: story_order.get(s["story_hash"], len(story_ids)))
+        else:
+            stories_db = stories_db.order_by("-story_date" if order == "newest" else "story_date")
+            stories = cls.format_stories(stories_db)
 
         return stories
 
@@ -2545,15 +2557,23 @@ class Feed(models.Model):
         workbook.close()
         return title
 
-    def find_stories(self, query, order="newest", offset=0, limit=25):
-        story_ids = SearchStory.query(
-            feed_ids=[self.pk], query=query, order=order, offset=offset, limit=limit
-        )
-        stories_db = MStory.objects(story_hash__in=story_ids).order_by(
-            "-story_date" if order == "newest" else "story_date"
-        )
-
-        stories = self.format_stories(stories_db, self.pk)
+    def find_stories(self, query, order="newest", offset=0, limit=25, search_type="keyword"):
+        if search_type == "hybrid":
+            story_ids = SearchStory.hybrid_query(
+                feed_ids=[self.pk], query=query, order=order, offset=offset, limit=limit
+            )
+        else:
+            story_ids = SearchStory.query(
+                feed_ids=[self.pk], query=query, order=order, offset=offset, limit=limit
+            )
+        stories_db = MStory.objects(story_hash__in=story_ids)
+        if search_type == "hybrid":
+            story_order = {sid: i for i, sid in enumerate(story_ids)}
+            stories = self.format_stories(stories_db, self.pk)
+            stories.sort(key=lambda s: story_order.get(s["story_hash"], len(story_ids)))
+        else:
+            stories_db = stories_db.order_by("-story_date" if order == "newest" else "story_date")
+            stories = self.format_stories(stories_db, self.pk)
 
         return stories
 

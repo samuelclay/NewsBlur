@@ -7588,6 +7588,11 @@
                 var progress = total ? Math.ceil(indexed / total * 100) : 0;
                 NEWSBLUR.app.active_search.show_search_indexing_banner(progress);
             }
+
+            NEWSBLUR.reader.flags.semantic_search = !!data.semantic_search;
+            if (NEWSBLUR.app.feed_search_header) {
+                NEWSBLUR.app.feed_search_header.render();
+            }
         },
 
         add_recommended_feed: function (feed_id) {

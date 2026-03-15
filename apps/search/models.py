@@ -570,6 +570,110 @@ class SearchStory:
         return result_ids
 
     @classmethod
+    def generate_query_embedding(cls, query_text):
+        """Generate a 256-dim projected embedding for a search query string."""
+        model_name = "text-embedding-3-small"
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        try:
+            response = client.embeddings.create(model=model_name, input=query_text.lower())
+        except APITimeoutError as e:
+            logging.debug(f" ***> ~FROpenAI API timeout for query embedding: {e}")
+            return None
+        except Exception as e:
+            logging.debug(f" ***> ~FROpenAI API error for query embedding: {e}")
+            return None
+
+        LLMCostTracker.record_embedding(
+            model=model_name,
+            input_tokens=response.usage.total_tokens,
+            feature="story_search_query_embedding",
+            metadata={"query": query_text[:100]},
+        )
+
+        query_embedding = response.data[0].embedding
+        projected_embedding = project_vector(query_embedding)
+
+        return projected_embedding.tolist()
+
+    @classmethod
+    def hybrid_query(cls, feed_ids, query, order, offset, limit, text_weight=0.6, semantic_weight=0.4):
+        """Combine keyword search with semantic vector search for story discovery.
+
+        Returns a list of story_hash IDs ranked by combined relevance score.
+        Falls back to keyword-only results if the semantic component fails.
+        """
+        results = {}
+
+        # Part 1: Keyword search
+        keyword_ids = cls.query(feed_ids, query, order, offset, limit)
+        if keyword_ids:
+            max_rank = len(keyword_ids)
+            for i, story_hash in enumerate(keyword_ids):
+                # Position-based score: first result = 1.0, last = near 0
+                normalized_score = (max_rank - i) / max_rank
+                results[story_hash] = {
+                    "text_score": normalized_score,
+                    "semantic_score": 0,
+                }
+
+        # Part 2: Semantic search
+        try:
+            query_vector = cls.generate_query_embedding(query)
+            if query_vector:
+                semantic_results = DiscoverStory.vector_query(
+                    query_vector,
+                    feed_ids_to_include=feed_ids[:2000],
+                    max_results=limit,
+                    offset=0,
+                )
+                if semantic_results:
+                    max_semantic_score = max(hit["_score"] for hit in semantic_results)
+                    for hit in semantic_results:
+                        story_hash = hit["_id"]
+                        # Normalize semantic score to 0-1 range
+                        semantic_score = (
+                            (hit["_score"] - 1.0) / (max_semantic_score - 1.0)
+                            if max_semantic_score > 1.0
+                            else 0
+                        )
+                        if story_hash in results:
+                            results[story_hash]["semantic_score"] = semantic_score
+                        else:
+                            results[story_hash] = {
+                                "text_score": 0,
+                                "semantic_score": semantic_score,
+                            }
+        except Exception as e:
+            logging.debug(f" ***> ~FRSemantic search failed, using keyword-only: {e}")
+
+        # Combine and rank
+        combined = []
+        for story_hash, scores in results.items():
+            combined_score = (scores["text_score"] * text_weight) + (
+                scores["semantic_score"] * semantic_weight
+            )
+            combined.append((story_hash, combined_score))
+
+        combined.sort(key=lambda x: -x[1])
+
+        result_ids = [story_hash for story_hash, _ in combined]
+
+        logging.info(
+            " ---> ~FG~SNHybrid search ~FCstories~FG for: ~SB%s~SN, ~SB%s~SN keyword + ~SB%s~SN semantic = ~SB%s~SN combined (across %s feed%s)"
+            % (
+                query,
+                len(keyword_ids),
+                len(results) - len(keyword_ids),
+                len(result_ids),
+                len(feed_ids),
+                "s" if len(feed_ids) != 1 else "",
+            )
+        )
+
+        return result_ids
+
+    @classmethod
     def query_briefing_custom(cls, feed_ids, phrase, date_start, date_end, limit=10):
         """Search stories by exact phrase within a date range, for briefing custom sections.
 
