@@ -995,11 +995,12 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
                 if sh in cached:
                     score = cached[sh]
                     if score != 0:
-                        # Apply classification type: focus prompts → +1, hidden prompts → -1
+                        # Any non-zero cached score means the prompt matched.
+                        # Apply polarity from classifier_type.
                         effective_score = 0
-                        if prompt.classifier_type == "focus" and score > 0:
+                        if prompt.classifier_type == "focus":
                             effective_score = 1
-                        elif prompt.classifier_type == "hidden" and score < 0:
+                        elif prompt.classifier_type == "hidden":
                             effective_score = -1
                         if effective_score != 0:
                             prompt_scores[sh] = effective_score
