@@ -7,6 +7,7 @@ import struct
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from io import BytesIO
 from socket import error as SocketError
 
@@ -222,7 +223,10 @@ class IconImporter(object):
             try:
                 page_response = requests.get(url)
                 if page_response.status_code == 200:
-                    content = page_response.content
+                    try:
+                        content = zlib.decompress(page_response.content)
+                    except zlib.error:
+                        content = page_response.content
             except requests.ConnectionError:
                 pass
         elif settings.BACKED_BY_AWS.get("pages_on_s3") and self.feed.s3_page:
@@ -239,7 +243,16 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.cleaned_feed_link, timeout=10).content
+                headers = {
+                    "User-Agent": "NewsBlur Favicon Fetcher - %s subscriber%s - %s %s"
+                    % (
+                        self.feed.num_subscribers,
+                        "s" if self.feed.num_subscribers != 1 else "",
+                        self.feed.permalink,
+                        self.feed.fake_user_agent,
+                    ),
+                }
+                content = requests.get(self.cleaned_feed_link, headers=headers, timeout=10).content
                 url = self._url_from_html(content)
             except (
                 AttributeError,
