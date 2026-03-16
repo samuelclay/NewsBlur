@@ -3,9 +3,8 @@ FROM python:3.12-slim
 WORKDIR /srv/newsblur_mcp
 
 COPY pyproject.toml .
-RUN pip install --no-cache-dir .
-
 COPY newsblur_mcp/ newsblur_mcp/
+RUN pip install --no-cache-dir .
 
 EXPOSE 8099
 
