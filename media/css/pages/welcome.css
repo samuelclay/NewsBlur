@@ -1704,6 +1704,12 @@ a.NB-fgi img {
     /* violet */
 }
 
+.NB-pricing-tier-premium .NB-pricing-tier-features li.NB-10 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
+}
+
 /* Archive tier bullets with vivid colors */
 .NB-pricing-tier-archive .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
