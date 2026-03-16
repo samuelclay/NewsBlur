@@ -43,12 +43,20 @@ class Command(BaseCommand):
             default=50,
             help="Users per batch (default: 50)",
         )
+        parser.add_argument(
+            "-l",
+            "--limit",
+            type=int,
+            default=0,
+            help="Max users to process (default: 0 = all)",
+        )
 
     def handle(self, *args, **options):
         username = options["username"]
         dry_run = options["dry_run"]
         offset = options["offset"]
         batch_size = options["batch_size"]
+        limit = options["limit"]
 
         stripe.api_key = settings.STRIPE_SECRET
 
@@ -60,11 +68,17 @@ class Command(BaseCommand):
                 return
             result = self.audit_user(profile, dry_run=dry_run)
             self.print_user_result(profile, result)
+            if not result["missing_payments"] and not result["extra_local"]:
+                self.stdout.write(f"  {username}: no discrepancies found")
             return
 
         profiles = Profile.objects.filter(is_premium=True).order_by("user__pk")
         total_users = profiles.count()
-        self.stdout.write(f"Auditing {total_users} premium users (offset={offset}, batch_size={batch_size})")
+        max_users = min(offset + limit, total_users) if limit else total_users
+        self.stdout.write(
+            f"Auditing {max_users - offset} of {total_users} premium users "
+            f"(offset={offset}, batch_size={batch_size})"
+        )
         if dry_run:
             self.stdout.write("DRY RUN: no changes will be made")
 
@@ -77,7 +91,7 @@ class Command(BaseCommand):
         batch_num = offset // batch_size
         current_offset = offset
 
-        while current_offset < total_users:
+        while current_offset < max_users:
             batch_num += 1
             end = current_offset + batch_size
             batch_profiles = profiles[current_offset:end]
