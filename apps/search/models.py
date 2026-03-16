@@ -180,6 +180,7 @@ class MUserSearch(mongo.Document):
             discover_chunks = [
                 IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
                     queue="discover_indexer",
+                    soft_time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH - 60,
                     time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
                 )
                 for feed_id_chunk in feed_id_chunks
