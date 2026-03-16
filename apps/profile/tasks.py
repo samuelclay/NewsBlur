@@ -203,7 +203,7 @@ def EmailFeedLimitNotifications():
             continue
 
         # Skip if already sent
-        if MSentEmail.objects.filter(receiver_user_id=user.pk, email_type="feed_limit_notification").exists():
+        if MSentEmail.objects.filter(receiver_user_id=user.pk, email_type="feed_limit_notification").count() > 0:
             continue
 
         deadline = profile.grandfather_expires
