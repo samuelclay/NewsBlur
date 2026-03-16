@@ -91,7 +91,10 @@ class Profile(models.Model):
     has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
     is_usage_billing = models.BooleanField(default=False, blank=True, null=True)
     usage_billing_limit = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True,
+        max_digits=8,
+        decimal_places=2,
+        blank=True,
+        null=True,
         help_text="Optional monthly spending limit in USD for AI classifiers",
     )
 
@@ -1185,21 +1188,27 @@ class Profile(models.Model):
         else:
             logging.user(self.user, "~FBNo Paypal payments")
 
-        # Record Stripe payments
-        existing_stripe_history = PaymentHistory.objects.filter(user=self.user, payment_provider="stripe")
-        if existing_stripe_history.count():
-            logging.user(
-                self.user,
-                "~BY~SN~FRDeleting~FW existing stripe history: ~SB%s payments"
-                % existing_stripe_history.count(),
-            )
-            existing_stripe_history.delete()
-
+        # Record Stripe payments (additive: preserve existing records, only add new ones)
         if self.stripe_id:
             self.retrieve_stripe_ids()
 
-            stripe.api_key = settings.STRIPE_SECRET
             seen_payments = set()
+            existing_stripe_history = PaymentHistory.objects.filter(user=self.user, payment_provider="stripe")
+            deleted_stripe_payments = 0
+            for payment in list(existing_stripe_history):
+                if payment.payment_date.date() in seen_payments:
+                    payment.delete()
+                    deleted_stripe_payments += 1
+                else:
+                    seen_payments.add(payment.payment_date.date())
+                    total_stripe_payments += 1
+            if deleted_stripe_payments > 0:
+                logging.user(
+                    self.user,
+                    f"~BY~SN~FRDeleting~FW duplicate stripe history: ~SB{deleted_stripe_payments} payments",
+                )
+
+            stripe.api_key = settings.STRIPE_SECRET
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
@@ -1218,9 +1227,9 @@ class Profile(models.Model):
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == "failed":
                         continue
-                    if created in seen_payments:
+                    if created.date() in seen_payments:
                         continue
-                    seen_payments.add(created)
+                    seen_payments.add(created.date())
                     total_stripe_payments += 1
                     refunded = None
                     if payment.refunded:
@@ -1868,18 +1877,16 @@ class Profile(models.Model):
         for stripe_id in stripe_ids:
             self.user.stripe_ids.create(stripe_id=stripe_id)
 
-    def retrieve_paypal_ids(self, force=False):
-        if self.paypal_sub_id and not force:
-            return
-
+    def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
             Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
         ).order_by("-payment_date")
         if not len(ipns):
             return
 
-        self.paypal_sub_id = ipns[0].subscr_id
-        self.save()
+        if not self.paypal_sub_id:
+            self.paypal_sub_id = ipns[0].subscr_id
+            self.save()
 
         paypal_ids = set()
         for ipn in ipns:
