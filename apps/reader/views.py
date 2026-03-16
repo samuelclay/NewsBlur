@@ -1893,6 +1893,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=user)
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
+    if not folder_title:
+        raise Http404
 
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
     if feed_ids and ((user.profile.is_archive and date_hack_2023) or (not date_hack_2023)):
