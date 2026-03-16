@@ -422,10 +422,10 @@ class Feed(models.Model):
             logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
             return
 
-        stories = MStory.objects(story_feed_id=self.pk)
+        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date")[:1000]
         for index, story in enumerate(stories):
             if index % 100 == 0:
-                logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
+                logging.debug(f" ---> ~FBIndexing discover story {index} in {self}")
             story.index_story_for_discover()
 
         self.discover_indexed = True
