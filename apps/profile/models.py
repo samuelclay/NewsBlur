@@ -99,14 +99,29 @@ class Profile(models.Model):
     )
 
     @property
+    def is_self_hosted_ai(self):
+        """True when Stripe billing is not configured but AI provider keys are.
+        Self-hosted users provide their own API keys and pay providers directly.
+        """
+        stripe_configured = bool(
+            getattr(settings, "STRIPE_PRICE_TEXT_CLASSIFICATION", "")
+            and getattr(settings, "STRIPE_PRICE_IMAGE_CLASSIFICATION", "")
+        )
+        if stripe_configured:
+            return False
+        from apps.ask_ai.providers import AnthropicProvider
+
+        return AnthropicProvider().is_configured()
+
+    @property
     def can_use_ai_classifiers(self):
-        return bool(self.is_usage_billing)
+        return bool(self.is_usage_billing) or self.is_self_hosted_ai
 
     def get_usage_billing_spend(self):
         """Get current billing cycle spend from MLLMCost MongoDB records.
         Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
         """
-        if not self.is_usage_billing:
+        if not self.is_usage_billing and not self.is_self_hosted_ai:
             return (0.0, None, False)
 
         from apps.monitor.models import MLLMCost
@@ -119,7 +134,9 @@ class Profile(models.Model):
     @property
     def is_usage_limit_reached(self):
         """Quick check: has user hit their spending limit? Uses Redis cache."""
-        if not self.is_usage_billing or not self.usage_billing_limit:
+        if not self.usage_billing_limit:
+            return False
+        if not self.is_usage_billing and not self.is_self_hosted_ai:
             return False
         return self._check_cached_limit_status()
 

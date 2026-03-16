@@ -40,6 +40,8 @@
       'is_archive'              : {{ user_profile.is_archive|yesno:"true,false" }},
       'is_pro'                  : {{ user_profile.is_pro|yesno:"true,false" }},
       'is_usage_billing'        : {{ user_profile.is_usage_billing|yesno:"true,false,false" }},
+      'can_use_ai_classifiers'  : {{ user_profile.can_use_ai_classifiers|yesno:"true,false,false" }},
+      'is_self_hosted_ai'       : {{ user_profile.is_self_hosted_ai|yesno:"true,false,false" }},
       'usage_billing_limit'     : {% if user_profile.usage_billing_limit %}{{ user_profile.usage_billing_limit }}{% else %}null{% endif %},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
