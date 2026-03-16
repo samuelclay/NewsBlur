@@ -24,6 +24,7 @@ data/
 api/ip_addresses.txt
 .prom_cache
 config/certificates
+clients/ios/.build/
 **/*.xcuserstate
 UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate
