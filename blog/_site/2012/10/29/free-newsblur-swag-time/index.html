@@ -27,15 +27,31 @@
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
-<body><header class="site-header" role="banner">
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">
       <div class="site-title-image">
         <img src="/assets/newsblur_logo_512.png">
       </div>
       <div class="site-title-text">The NewsBlur Blog</div>
-    </a><nav class="site-nav">
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
           <span class="menu-icon">
@@ -48,7 +64,6 @@
         <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
       </nav></div>
 </header>
-
 <header class="site-subheader" role="banner">
 
   <div class="wrapper">
@@ -108,6 +123,85 @@ A new sound of an old instrument.<br />
   </div>
 
 </footer>
-</body>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function get_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      function apply(theme) {
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(get_theme());
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(get_theme() === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(get_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
 
 </html>

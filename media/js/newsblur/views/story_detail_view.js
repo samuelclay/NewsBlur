@@ -28,6 +28,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-url": "save_url_classifier",
+        "click .NB-feed-story-ai-classifier": "open_trainer_from_ai_pill",
         "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "open_email",
         "click .NB-sideoption-sharing": "click_sharing_service",
@@ -243,6 +244,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             authors_score: this.classifiers &&
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
+            prompt_classifiers: this.model.get('prompt_classifiers') || [],
             url_match: this.get_url_match(),
             options: this.options,
             truncatable: this.is_truncatable(),
@@ -374,6 +376,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
                                 <span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span>\
                             </span>\
+                        </div>\
+                    <% } %>\
+                    <% if (prompt_classifiers && prompt_classifiers.length) { %>\
+                        <div class="NB-feed-story-ai-classifiers">\
+                            <span class="NB-middot">&middot;</span>\
+                            <% _.each(prompt_classifiers, function(pc) { %>\
+                                <div class="NB-feed-story-ai-classifier NB-score-<%= pc.score %>" data-prompt-type="<%= pc.include_images ? \'image\' : \'content\' %>">\
+                                    <span class="NB-feed-story-ai-classifier-label"><%= pc.include_images ? \'AI Image\' : \'AI Content\' %></span>: <%= pc.prompt %>\
+                                </div>\
+                            <% }) %>\
                         </div>\
                     <% } %>\
                 </div>\
@@ -886,7 +898,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ===========
 
     mark_read: function () {
-        this.model.mark_read({ force: true });
+        var delay = NEWSBLUR.assets.preference('read_story_delay');
+        if (delay == -2) {
+            this.model.mark_read({ skip_delay: true });
+        } else {
+            this.model.mark_read();
+        }
     },
 
     preserve_classifier_color: function (classifier_type, value, score) {
@@ -1743,6 +1760,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     save_url_classifier: function () {
         // Open the Intelligence Trainer instead of toggling inline
         // URL classifiers are complex and benefit from the full trainer interface
+        this.open_story_trainer();
+    },
+
+    open_trainer_from_ai_pill: function () {
         this.open_story_trainer();
     },
 

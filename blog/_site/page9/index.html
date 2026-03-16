@@ -28,15 +28,31 @@
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
-<body><header class="site-header" role="banner">
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">
       <div class="site-title-image">
         <img src="/assets/newsblur_logo_512.png">
       </div>
       <div class="site-title-text">The NewsBlur Blog</div>
-    </a><nav class="site-nav">
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
           <span class="menu-icon">
@@ -49,7 +65,6 @@
         <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
       </nav></div>
 </header>
-
 <header class="site-subheader" role="banner">
 
   <div class="wrapper">
@@ -66,6 +81,42 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Apr 24, 2014</span>
+          <h3>
+            <a class="post-link" href="/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
+              Unread is a new iOS app with NewsBlur support
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
+
+<p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_screenshot.jpeg" alt="" /></p>
+
+<p><a href="http://jaredsinclair.com/unread/">Unread</a>, by <a href="https://twitter.com/jaredsinclair">Jared Sinclair</a>, is a unique RSS reader, with a focus on simplicity and cleanliness. Sinclair built Unread because he wanted to see a different kind of reading experience, one where he could focus more on reading well written stories than consuming lots of content. Unread app has a different feel than any other news reader I’ve seen and I think many of the choices made by Sinclair work in a quiet harmony.</p>
+
+<p>In Sinclair’s own words:</p>
+
+<blockquote>
+  <p>Most RSS apps are patterned after email. Noisy parades of dots, dates, and tags trample over their screens. Their source lists look like overflowing inboxes instead of stately tables of contents. Toolbars bristling with options obscure the text. Putting it bluntly, using these apps feels like work.</p>
+</blockquote>
+
+<p>NewsBlur’s native iOS app certainly does fit this description. And if you want an incredibly well-made alternative, look no further than Unread, <a href="https://itunes.apple.com/us/app/unread-an-rss-reader/id754143884">available on the App Store</a>.</p>
+
+<style>
+.NB-unread-app-post p {
+clear: none;
+}
+.NB-unread-app-post blockquote {
+color: #606060;
+}
+</style>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Apr 10, 2014</span>
           <h3>
             <a class="post-link" href="/2014/04/10/the-new-font-and-style-manager/">
@@ -399,39 +450,6 @@
 
 
         </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Oct 28, 2013</span>
-          <h3>
-            <a class="post-link" href="/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/">
-              The NewsBlur iPhone and iPad app meets iOS 7
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give <a href="http://www.newsblur.com/ios">the NewsBlur iOS app</a> a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v3.5.png" alt="" /></p>
-
-<ul>
-  <li>Entire interface has been redesigned for iOS 7.</li>
-  <li>Gestures galore: mark stories as read/unread, save stories, mark feeds as read, train feeds.</li>
-  <li>Long press a feed or folder to choose a mark as read date: 1 day, 3 days, 7 days, 14 days. Works offline, too!</li>
-  <li>Long press a story title to send it to a third-party read later service.</li>
-  <li>New view layout for iPad: move story titles to the bottom in portrait.</li>
-  <li>Significantly improved scrolling speeds on the feed list and story list.</li>
-  <li>You can now unread stories that were read while offline.</li>
-  <li>Faster marking of folders as read.</li>
-  <li>Fixed numerous bugs related to reading stories while offline.</li>
-</ul>
-
-<p>The iPad app also has a new view for extra-wide reading while in portrait orientation.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v3.5%20iPad.png" alt="" /></p>
-
-<p>I hope you enjoy this latest update. And stay tuned for the next update coming soon which will include even more iOS 7 features: Dynamic Text Size and Background Updates. <a href="http://www.newsblur.com/ios">The NewsBlur iOS app</a> is and will always be free.</p>
-
-
-        </div>
       </li></ul>
 
     <!-- Pagination links -->
@@ -475,6 +493,85 @@ A new sound of an old instrument.<br />
   </div>
 
 </footer>
-</body>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function get_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      function apply(theme) {
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(get_theme());
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(get_theme() === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(get_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
 
 </html>

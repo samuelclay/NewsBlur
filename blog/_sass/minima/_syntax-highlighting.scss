@@ -1,9 +1,11 @@
+@use "variables" as *;
+
 /**
  * Syntax highlighting styles
  */
 .highlight {
   background: #fff;
-  @extend %vertical-rhythm;
+  margin-bottom: calc($spacing-unit / 2);
 
   .highlighter-rouge & {
     background: #eef;

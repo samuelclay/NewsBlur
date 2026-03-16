@@ -27,15 +27,31 @@
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
-<body><header class="site-header" role="banner">
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">
       <div class="site-title-image">
         <img src="/assets/newsblur_logo_512.png">
       </div>
       <div class="site-title-text">The NewsBlur Blog</div>
-    </a><nav class="site-nav">
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
           <span class="menu-icon">
@@ -48,7 +64,6 @@
         <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
       </nav></div>
 </header>
-
 <header class="site-subheader" role="banner">
 
   <div class="wrapper">
@@ -65,6 +80,67 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 13, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/13/web-feeds/">
+              Web Feeds: Turn any website into an RSS feed
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a site didn’t offer RSS, you were out of luck.</p>
+
+<p><strong>Web Feeds</strong> is a new feature that creates RSS feeds from any website. Point it at a URL, and NewsBlur analyzes the page structure, identifies the repeating content patterns, and generates extraction rules that turn the page into a live feed. It works on news sites, blogs, job boards, product pages, or really anything with a list of items that changes over time.</p>
+
+<p>This is a huge feature and has been requested for years. I’m so thrilled to finally be able to offer it in a way that I feel comfortable with. Other solutions including having you select story titles on a re-hosted version of the page, but it was clumsy and error-prone. This way, we use LLMs to figure out what the story titles are likely to be, present the variations to you, and then let you decide what’s right. So much better!</p>
+
+<!-- SCREENSHOT: Web Feed tab showing URL input, story hint field, and Analyze button -->
+<p><img src="/assets/web-feed-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the Add + Discover Sites page and click the <strong>Web Feed</strong> tab. Paste a URL and click Analyze. NewsBlur fetches the page, strips out navigation and boilerplate, and analyzes the HTML structure. Within a few seconds, you’ll see multiple extraction variants, each representing a different content pattern found on the page.</p>
+
+<p>Progress updates stream in real-time while the analysis runs. NewsBlur typically finds 3-5 different extraction patterns on a page. The first variant is usually the main content (article list, blog posts, product grid), but sometimes the page has multiple distinct sections worth subscribing to. Each variant shows a label, a description of what it captures, and a preview of 3 extracted stories so you can see exactly what you’d get.</p>
+
+<!-- SCREENSHOT: Real-time progress updates showing "Fetching page...", "Finding story patterns...", etc. -->
+<p><img src="/assets/web-feed-progress.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Select the variant that matches what you want to follow, pick a folder, and subscribe. NewsBlur will re-fetch and re-extract the page on a regular schedule, just like any other feed.</p>
+
+<h3 id="story-hints">Story hints</h3>
+
+<p>Sometimes the initial best guess isn’t what you’re looking for. Maybe the page has a blog section and a job listings section, and you want the jobs. Click the Refine button and type a hint like “I’m looking for the job postings.” NewsBlur re-analyzes the page with your hint in mind and reorders the variants to prioritize what you described.</p>
+
+<h3 id="what-gets-extracted">What gets extracted</h3>
+
+<p>For each story, NewsBlur extracts whatever it can find: title, link, content snippet, image, author, and date. Not every field will be available on every site, and that’s fine. At minimum you’ll get titles and links. The extraction uses XPath expressions, which means it’s precise and consistent across page refreshes as long as the site’s HTML structure stays the same.</p>
+
+<h3 id="when-things-change">When things change</h3>
+
+<p>Websites redesign. HTML structures shift. When NewsBlur detects that the extraction rules have stopped working (after 3 consecutive failures), the feed is flagged as needing re-analysis. You’ll see a feed exception indicator, and you can re-analyze the page with one click to generate updated extraction rules.</p>
+
+<h3 id="use-cases">Use cases</h3>
+
+<p>Some examples of sites that work well with Web Feeds:</p>
+
+<ul>
+  <li><strong>Company blogs without RSS</strong> — Many corporate blogs dropped their RSS feeds years ago. Web Feeds brings them back.</li>
+  <li><strong>Job boards</strong> — Track new postings on a company’s careers page.</li>
+  <li><strong>Government sites</strong> — Follow press releases, meeting agendas, or public notices.</li>
+  <li><strong>Changelog pages</strong> — Monitor when a tool or service ships updates.</li>
+  <li><strong>Event listings</strong> — Keep tabs on upcoming concerts, conferences, or local events.</li>
+  <li><strong>Product pages</strong> — Watch for new arrivals or restocks on stores that don’t offer feeds.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>Web Feeds are available to <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. The ongoing feed fetching and extraction runs on NewsBlur’s servers like any other feed.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Mar 5, 2026</span>
           <h3>
             <a class="post-link" href="/2026/03/05/newsblur-v14-for-ios-and-mac/">
@@ -747,26 +823,6 @@
 <p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Dec 22, 2025</span>
-          <h3>
-            <a class="post-link" href="/2025/12/22/youtube-captions/">
-              Auto-enable captions on YouTube videos
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>You can now automatically enable captions on YouTube videos embedded in your feeds. Head to Preferences &gt; Stories and check the new “YouTube Captions” option.</p>
-
-<p><img src="/assets/youtube-captions-preference.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>When enabled, any YouTube video in any story will automatically show captions when you start playing it (assuming the video has captions available). This is great for watching videos in noisy environments, for accessibility, or for following along in a language you’re learning.</p>
-
-<p><img src="/assets/youtube-captions-video.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>This works by adding the <code class="language-plaintext highlighter-rouge">cc_load_policy=1</code> parameter to YouTube embed URLs on-the-fly, so it applies to all your feeds without modifying the original content. The preference is off by default, so existing behavior is unchanged unless you opt in.</p>
-
-        </div>
       </li></ul>
 
     <!-- Pagination links -->
@@ -808,6 +864,85 @@ A new sound of an old instrument.<br />
   </div>
 
 </footer>
-</body>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function get_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      function apply(theme) {
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(get_theme());
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(get_theme() === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(get_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
 
 </html>

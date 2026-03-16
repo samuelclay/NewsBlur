@@ -47,7 +47,7 @@ future==0.18.2
 gunicorn==21.2.0
 gevent==22.10.2
 hiredis==1.1.0
-httplib2==0.18.1
+httplib2>=0.19.0
 idna==2.10
 image==1.5.33
 iniconfig==1.1.1
@@ -71,6 +71,9 @@ oauthlib==3.1.0
 openai~=1.56.1
 anthropic>=0.40.0
 google-genai>=1.0.0
+google-api-python-client>=2.190.0
+google-auth>=2.0.0
+google-auth-httplib2>=0.1.0
 paypalrestsdk==1.13.1
 pbr==5.6.0
 Pillow==8.0.1
@@ -109,7 +112,7 @@ smartypants==2.0.1
 soupsieve==2.2.1
 sqlparse==0.4.1
 stevedore==3.3.0
-stripe==2.55.1
+stripe>=11.0.0,<12.0.0
 subdomains==3.0.1
 text-unidecode==1.3
 tiktoken~=0.4.0

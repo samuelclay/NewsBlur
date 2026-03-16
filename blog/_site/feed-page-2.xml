@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-05T17:46:34-05:00</updated>
+  <updated>2026-03-14T23:39:27-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,60 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Turn the lights down, dark mode has come to NewsBlur</title>
+    <link href="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/" rel="alternate" type="text/html" title="Turn the lights down, dark mode has come to NewsBlur" />
+    <published>2020-06-24T11:29:59-04:00</published>
+    <updated>2020-06-24T11:29:59-04:00</updated>
+    <id>https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/">
+      <![CDATA[<p>We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.</p>
+
+<figure class="tmblr-full" data-orig-height="1441" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"><img data-orig-height="1441" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png" /></figure>
+
+<p>The origins for this theme came from the community. Originally started by <a href="https://userstyles.org/styles/86275/newsblur-kemwer-black">Kemwer in 2013</a>, it has been maintained and updated by <a href="https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike">Splike since 2014</a>. In fact, you can still use Splike’s theme as an alternate dark mode.</p>
+
+<p>That’s 7 years of NewsBlur having an unofficial dark mode, but users had to jump through hoops to use it: installing a browser extension (which had a <a href="https://news.ycombinator.com/item?id=17447816">malware scare in 2018</a>) or having to copy the Stylish CSS to NewsBlur’s Account settings where it would need to be manually updated. What NewsBlur needed was having it built in.</p>
+
+<p>Today NewsBlur is shipping first-class support. Building a dark theme requires more than inverting the existing color scheme, turning white to black and green to purple. Quite a bit of thought around UX and information hierarchy went into this dark theme design. I also used this as an opportunity to freshen up icons and small visual details on both light and dark themes.</p>
+
+<p>Now we have a consistent dark theme across all of the first-party apps. The <a href="https://blog.newsblur.com/2021/06/21/2014-11-18-offline-reading-and-a-dark-theme-on-the-android.html">Android app had dark mode first in 2014</a>. Then came the <a href="https://blog.newsblur.com/2021/06/21/2016-04-12-newsblur-goes-dark-on-ios.html">iOS app is 2016</a>. Now we’re firmly in 2020 and it’s made it to the web. Goes to show that NewsBlur is always getting better. </p>
+
+<p>If you like the new features we’ve been releasing recently, I would greatly appreciate if you could share a tweet or Facebook post about NewsBlur. <strong>If you enjoy staying connected with culture and news through NewsBlur and you think your friends and followers would too, let them know about your news reader of choice.</strong> I appreciate all the kind comments that have come in since releasing this new theme.</p>
+
+<blockquote>
+  <p>In love 🥰 with the new dark theme of <a href="https://twitter.com/NewsBlur?ref_src=twsrc%5Etfw">@NewsBlur</a> ! Kudos <a href="https://twitter.com/samuelclay?ref_src=twsrc%5Etfw">@samuelclay</a> 👍</p>
+
+  <p>— Jean Traullé (@jtraulle) <a href="https://twitter.com/jtraulle/status/1275814360141701120?ref_src=twsrc%5Etfw">June 24, 2020</a></p>
+</blockquote>
+
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote>
+  <p>Ooooooooooooooo <a href="https://twitter.com/NewsBlur?ref_src=twsrc%5Etfw">@NewsBlur</a> <a href="https://t.co/eG3XSXzuAG">pic.twitter.com/eG3XSXzuAG</a></p>
+
+  <p>— Billy O’Neal (@MalwareMinigun) <a href="https://twitter.com/MalwareMinigun/status/1275574477753954304?ref_src=twsrc%5Etfw">June 23, 2020</a></p>
+</blockquote>
+
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>And please keep the <a href="https://forum.newsblur.com">good ideas coming on the forum</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">See the news on your Android dashboard with the new home screen widget</title>
@@ -1101,48 +1155,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Twitter’s back, baby</title>
-    <link href="https://blog.newsblur.com/2016/06/01/twitters-back-baby/" rel="alternate" type="text/html" title="Twitter’s back, baby" />
-    <published>2016-06-01T07:00:30-04:00</published>
-    <updated>2016-06-01T07:00:30-04:00</updated>
-    <id>https://blog.newsblur.com/2016/06/01/twitters-back-baby</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/06/01/twitters-back-baby/">
-      <![CDATA[<p>It’s been too long. Twitter <a href="https://blog.twitter.com/2013/api-v1-retirement-final-dates">unceremoniously knee-capped their API</a> a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_api.png" alt="" /></p>
-
-<p>You can now subscribe to <strong><a href="https://twitter.com/">https://twitter.com/</a><em>username</em></strong> to get individual Twitter accounts on NewsBlur. Put them all in a folder to recreate your tweetstream.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_add.png" alt="" /></p>
-
-<p>Not only do you get the full tweetstream for that user, but you can also filter out tweets that are replies, retweets, or contain any text in them. You can also train Twitter feeds to highlight tweets that contain photos, are retweeted or liked, or have a word you want.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_training.png" alt="" /></p>
-
-<p>YouTube also deprecated their API and NewsBlur came to the rescue with <a href="http://blog.newsblur.com/2021/06/21/2015-04-30-a-real-solution-to-the-deprecated-youtube-api.html">native YouTube API support</a>. Now Twitter joins that list of native support, giving you a better Twitter experience than ever before.</p>
-
-<p>And because this native Twitter support takes more work than normal RSS feeds do, this feature is only available to premium subscribers.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[It’s been too long. Twitter unceremoniously knee-capped their API a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.
 ]]>
     </summary>
     

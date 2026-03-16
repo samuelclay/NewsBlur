@@ -633,6 +633,77 @@ class UserAgentBanMiddleware:
         return response
 
 
+class AttackBanMiddleware:
+    """
+    Detect malicious payloads (JNDI/Log4Shell, XSS, SQLi, path traversal, null bytes)
+    in query strings, POST bodies, and URL paths. Auto-bans offending IPs for 24 hours.
+
+    Banned IPs are checked first (fast Redis GET) before payload inspection.
+    Placed after AuthenticationMiddleware so request.user is available for logging.
+
+    See utils/ip_rate_tracker.py AttackDetector for pattern details.
+    """
+
+    # Paths to skip: health checks, and endpoints that receive third-party
+    # content by design (HTML in emails, RSS/Atom feed entries). Content on
+    # these paths is sanitized downstream by the Scrubber, not here.
+    SKIP_PATHS = ("/haproxy", "/dbcheck", "/newsletters/", "/push/")
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        self._detector = None
+
+    @property
+    def detector(self):
+        if self._detector is None:
+            from utils.ip_rate_tracker import AttackDetector
+
+            self._detector = AttackDetector()
+        return self._detector
+
+    def __call__(self, request):
+        # Skip health check paths and test mode (Redis mocks leak into detector)
+        if any(request.path.startswith(p) for p in self.SKIP_PATHS):
+            return self.get_response(request)
+        if getattr(settings, "TEST_DEBUG", False):
+            return self.get_response(request)
+
+        try:
+            ip = self.detector.get_ip(request)
+
+            # Fast path: check if IP is already banned
+            if self.detector.is_banned(ip):
+                from utils.ip_rate_tracker import ATTACK_BANNED_CHECK_TOTAL
+
+                ATTACK_BANNED_CHECK_TOTAL.inc()
+                logging.user(
+                    request,
+                    "~FW~BR~SB BLOCKED ~BT~FR Banned attacker: ~SB%s~SN~FR %s"
+                    % (ip, request.get_full_path()[:200]),
+                )
+                data = {"error": "Forbidden", "code": -1}
+                return HttpResponse(json.encode(data), status=403, content_type="text/json")
+
+            # Inspect request for attack payloads
+            attack_type, payload_sample = self.detector.check_request(request)
+            if attack_type:
+                from utils.ip_rate_tracker import ATTACK_DETECTED_TOTAL
+
+                ATTACK_DETECTED_TOTAL.labels(attack_type=attack_type).inc()
+                self.detector.ban_ip(ip, attack_type, payload_sample, request)
+                logging.user(
+                    request,
+                    "~FW~BR~SB ATTACK ~BT~FR %s from ~SB%s~SN~FR %s payload=%s"
+                    % (attack_type, ip, request.get_full_path()[:200], payload_sample[:100]),
+                )
+                data = {"error": "Forbidden", "code": -1}
+                return HttpResponse(json.encode(data), status=403, content_type="text/json")
+        except Exception as e:
+            logging.debug(" ***> Attack detection error: %s" % e)
+
+        return self.get_response(request)
+
+
 class ScannerTrackingMiddleware:
     """
     Fail2ban-style tracking for vulnerability scanners.

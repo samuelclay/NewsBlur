@@ -13,6 +13,11 @@ NEWSBLUR.utils = {
         var score = 0;
         var intelligence = story.get('intelligence');
         if (!intelligence) return score;
+
+        // AI prompt classifier takes absolute priority
+        var prompt = intelligence['prompt'] || 0;
+        if (prompt != 0) return prompt;
+
         var score_max = Math.max(intelligence['title'],
             intelligence['title_regex'] || 0,
             intelligence['author'],

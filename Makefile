@@ -238,6 +238,8 @@ logmongo:
 alllogs: 
 	docker compose logs -f --tail 20
 logall: alllogs
+tlnb-samuel:
+	/srv/newsblur/utils/tlnb.py | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (/\[samuel\^]/) print line}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:
@@ -265,8 +267,10 @@ down:
 stop: down
 nbdown: down
 jekyll:
+	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
 jekyll_drafts:
+	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
 	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
@@ -521,10 +525,11 @@ grafana-dashboards:
 # Hardware: Intel Celeron N5105, 3.6GB RAM, HAOS (Alpine-based)
 # SSH: key-based auth via Advanced SSH & Web Terminal add-on (protection mode off)
 # Backup drive: WD 12TB at /media/newsblur-backup (ext4, label=newsblur-backup)
-#   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, auto-mounted on boot via HA automation
+#   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, mounted on-demand (not at boot — prevents 24/7 spinning)
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
 # Python venv at /config/scripts/venv (boto3 for S3 downloads)
-# HA automation: nightly 6am, mounts drive then runs shell_command.offsite_backup
+# Cron job in SSH add-on: nightly 6am, mounts drive, runs backup, unmounts+deauthorizes USB
+# Installed by /config/scripts/setup_cron.sh (runs on add-on startup via init_commands)
 # HAOS gotchas:
 #   - SSH add-on runs in a container, not on the host
 #   - For host-level ops (mount, fdisk): docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -- <cmd>
@@ -547,6 +552,10 @@ offsite-backup-install:
 	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
 	cat utils/backups/mount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mount_backup_drive.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/mount_backup_drive.sh"
+	cat utils/backups/unmount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/unmount_backup_drive.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/unmount_backup_drive.sh"
+	cat utils/backups/setup_cron.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/setup_cron.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/setup_cron.sh"
 	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
@@ -557,15 +566,16 @@ offsite-backup-install:
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/mailgun_credentials"
 	@$(call log,~FB---> Setting up Python venv with boto3 on HA box~ST)
 	ssh $(HA_HOST) "python3 -m venv $(HA_SCRIPTS)/venv && $(HA_SCRIPTS)/venv/bin/pip install boto3 requests"
-	@$(call log,~FG---> Off-site backup installed. Add shell_command + automation to HA config.~ST)
-	@$(call log,~FYSee: utils/backups/ha_configuration.yaml~ST)
+	@$(call log,~FB---> Installing cron job~ST)
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/setup_cron.sh"
+	@$(call log,~FG---> Off-site backup installed. Cron runs nightly at 6am.~ST)
 
 offsite-backup:
 	@$(call log,~FB---> Running off-site backup pull~ST)
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
 
 offsite-backup-status:
-	@ssh $(HA_HOST) "echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py"
+	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)

@@ -15,6 +15,7 @@ from apps.analyzer.models import (
     SCOPED_CLASSIFIER_CLASSES,
     MClassifierAuthor,
     MClassifierFeed,
+    MClassifierPrompt,
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
@@ -33,6 +34,19 @@ from utils.user_functions import ajax_login_required, get_user
 
 def index(requst):
     pass
+
+
+def _get_recent_story_hashes(feed_id, hours=24):
+    """Get story hashes from the last N hours for a feed from Redis."""
+    import time
+
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        cutoff = int(time.time()) - hours * 60 * 60
+        hashes = r.zrangebyscore(f"zF:{feed_id}", cutoff, "+inf")
+        return [h.decode("utf-8") if isinstance(h, bytes) else h for h in hashes]
+    except redis.ConnectionError:
+        return []
 
 
 @require_POST
@@ -166,7 +180,19 @@ def save_classifier(request):
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        classifier = None
+                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
+                        fallback_dict = {
+                            k: v
+                            for k, v in classifier_dict.items()
+                            if k not in ("scope", "folder_name", "is_regex")
+                        }
+                        if fallback_dict != classifier_dict:
+                            try:
+                                classifier = ClassifierCls.objects.get(**fallback_dict)
+                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
+                                classifier = None
+                        else:
+                            classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:
@@ -199,6 +225,75 @@ def save_classifier(request):
     _save_classifier(MClassifierUrl, "url")
     _save_classifier(MClassifierFeed, "feed")
 
+    # Handle AI prompt classifiers (content and image)
+    # Content prompts: like_prompt / dislike_prompt (include_images=False)
+    # Image prompts: like_image_prompt / dislike_image_prompt (include_images=True)
+    prompt_opinions = {
+        "like_prompt": ("focus", False),
+        "dislike_prompt": ("hidden", False),
+        "remove_like_prompt": (None, False),
+        "remove_dislike_prompt": (None, False),
+        "like_image_prompt": ("focus", True),
+        "dislike_image_prompt": ("hidden", True),
+        "remove_like_image_prompt": (None, True),
+        "remove_dislike_image_prompt": (None, True),
+    }
+    for opinion, (classifier_type, include_images) in prompt_opinions.items():
+        if opinion in post:
+            for prompt_text in post.getlist(opinion):
+                if not prompt_text:
+                    continue
+                if len(prompt_text) > 500:
+                    continue
+                use_scope = scope != "feed"
+                lookup = {
+                    "user_id": request.user.pk,
+                    "feed_id": 0 if use_scope else (feed_id or 0),
+                    "folder_id": scope_folder_name if scope == "folder" else "",
+                    "prompt": prompt_text,
+                    "include_images": include_images,
+                }
+                try:
+                    classifier = MClassifierPrompt.objects.get(**lookup)
+                except MClassifierPrompt.DoesNotExist:
+                    classifier = None
+                except MClassifierPrompt.MultipleObjectsReturned:
+                    classifiers_found = MClassifierPrompt.objects.filter(**lookup)
+                    if classifier_type is None:
+                        for c in classifiers_found:
+                            c.delete()
+                    else:
+                        first = classifiers_found[0]
+                        first.classifier_type = classifier_type
+                        first.save()
+                        for dup in classifiers_found[1:]:
+                            dup.delete()
+                    continue
+                if not classifier:
+                    if classifier_type is not None:
+                        MClassifierPrompt.objects.create(
+                            user_id=request.user.pk,
+                            feed_id=0 if use_scope else (feed_id or 0),
+                            folder_id=scope_folder_name if scope == "folder" else "",
+                            prompt=prompt_text,
+                            classifier_type=classifier_type,
+                            include_images=include_images,
+                        )
+                elif classifier_type is None:
+                    classifier.delete()
+                elif classifier.classifier_type != classifier_type:
+                    classifier.classifier_type = classifier_type
+                    classifier.save()
+
+    # Queue async classification for recent stories when a prompt classifier is added
+    has_new_prompt = any(opinion in post for opinion in prompt_opinions if "remove_" not in opinion)
+    if has_new_prompt and feed_id:
+        from apps.analyzer.tasks import ClassifyStoriesWithPrompt
+
+        recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
+        if recent_hashes:
+            ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
+
     # Update has_scoped_classifiers flag on profile
     if scope != "feed":
         if not request.user.profile.has_scoped_classifiers:
@@ -210,6 +305,215 @@ def save_classifier(request):
 
     response = dict(code=code, message=message, payload=payload)
     return response
+
+
+@require_POST
+@ajax_login_required
+@json.json_view
+def save_prompt_classifier(request):
+    """Save or delete an AI prompt classifier with optional image vision support."""
+    post = request.POST
+    feed_id = int(post.get("feed_id", 0))
+    prompt = post.get("prompt", "").strip()
+    classifier_type = post.get("classifier_type", "focus")
+    include_images = post.get("include_images", "false") == "true"
+    action = post.get("action", "save")  # "save" or "delete"
+    prompt_id = post.get("prompt_id", "")
+
+    if classifier_type not in ("focus", "hidden"):
+        return {"code": -1, "message": "Invalid classifier_type"}
+
+    if action == "delete" and prompt_id:
+        try:
+            classifier = MClassifierPrompt.objects.get(id=prompt_id, user_id=request.user.pk)
+            classifier.delete()
+            MClassifierPrompt.invalidate_cache(request.user.pk, prompt_id)
+            logging.user(request, "~FGDeleted prompt classifier: ~SB%s" % prompt_id)
+        except MClassifierPrompt.DoesNotExist:
+            return {"code": -1, "message": "Prompt classifier not found"}
+    elif action == "save" and prompt:
+        if len(prompt) > 500:
+            return {"code": -1, "message": "Prompt too long (max 500 characters)"}
+
+        classifier = MClassifierPrompt(
+            user_id=request.user.pk,
+            feed_id=feed_id,
+            prompt=prompt,
+            classifier_type=classifier_type,
+            include_images=include_images,
+        )
+        classifier.save()
+        logging.user(
+            request,
+            "~FGSaved prompt classifier: ~SB%s~SN (type=%s, images=%s) ~FW%s"
+            % (feed_id, classifier_type, include_images, prompt[:50]),
+        )
+
+        # Mark subscription as needing recalc
+        if feed_id:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
+                usersub.needs_unread_recalc = True
+                usersub.save()
+            except UserSubscription.DoesNotExist:
+                pass
+
+        # Queue async classification for recent stories
+        if feed_id:
+            from apps.analyzer.tasks import ClassifyStoriesWithPrompt
+
+            recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
+            if recent_hashes:
+                ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
+    else:
+        return {"code": -1, "message": "Missing prompt or prompt_id"}
+
+    # Return current prompt classifiers for this feed
+    prompts = MClassifierPrompt.objects.filter(user_id=request.user.pk, feed_id=feed_id)
+    prompt_list = [
+        {
+            "id": str(p.id),
+            "prompt": p.prompt,
+            "classifier_type": p.classifier_type,
+            "include_images": p.include_images,
+        }
+        for p in prompts
+    ]
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, "feed:%s" % feed_id)
+
+    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+    cost_estimate = {}
+    if request.user.profile.can_use_ai_classifiers:
+        estimator = AIClassifierCostEstimator(request.user)
+        cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
+
+    return {"code": 0, "message": "OK", "prompt_classifiers": prompt_list, "cost_estimate": cost_estimate}
+
+
+@require_POST
+@ajax_login_required
+@json.json_view
+def test_prompt_classifier(request):
+    """Test a prompt against a story using AI. Supports text-only or image (VLM) modes."""
+    import zlib
+
+    from apps.rss_feeds.models import MStory
+    from utils.ai_functions import (
+        classify_stories_with_ai,
+        classify_stories_with_vision,
+    )
+
+    if not request.user.profile.can_use_ai_classifiers:
+        return {"code": -1, "message": "Usage billing required for AI classifiers"}
+
+    post = request.POST
+    prompt_text = post.get("prompt", "").strip()
+    story_hash = post.get("story_hash", "")
+    include_images = post.get("include_images", "false") == "true"
+
+    if not prompt_text:
+        return {"code": -1, "message": "Missing prompt"}
+    if not story_hash:
+        return {"code": -1, "message": "Missing story_hash"}
+
+    try:
+        story_db = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        return {"code": -1, "message": "Story not found"}
+
+    # Build a temporary prompt-like object for the classifier
+    class TempPrompt:
+        pass
+
+    temp_prompt = TempPrompt()
+    temp_prompt.prompt = prompt_text
+
+    if include_images:
+        # VLM mode: classify each image individually so the frontend
+        # can show per-image match/no-match labels.
+        image_urls = story_db.image_urls or []
+        if not image_urls:
+            return {"code": -1, "message": "Story has no images"}
+
+        # Send each image as its own "story" so VLM returns per-image results
+        image_stories = []
+        for i, url in enumerate(image_urls):
+            image_stories.append(
+                {
+                    "story_id": "img_%d" % i,
+                    "story_title": "",
+                    "story_content": "",
+                    "image_urls": [url],
+                }
+            )
+        results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
+
+        # Build per-image results list (ordered by image index)
+        image_results = []
+        for i in range(len(image_urls)):
+            cls = results.get("img_%d" % i, 0)
+            image_results.append(1 if cls != 0 else 0)
+
+        classification = 1 if any(r == 1 for r in image_results) else 0
+    else:
+        # Text-only mode: classify based on title and content
+        story_content = story_db.story_content or ""
+        if story_db.story_content_z:
+            story_content = zlib.decompress(story_db.story_content_z).decode("utf-8")
+
+        story_dict = {
+            "story_id": story_hash,
+            "story_title": story_db.story_title or "",
+            "story_content": story_content,
+        }
+        results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
+
+    if not include_images:
+        classification = results.get(story_hash, 0)
+        classification = 1 if classification != 0 else 0
+
+    mode = "vision" if include_images else "text"
+
+    # Include cost estimate so frontend can show per-run cost
+    cost_estimate = {}
+    if request.user.profile.can_use_ai_classifiers:
+        from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+        estimator = AIClassifierCostEstimator(request.user)
+        cost_estimate = estimator.get_cost_estimate(feed_id=int(request.POST.get("feed_id", 0)))
+
+    logging.user(
+        request,
+        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s" % (mode, story_hash, classification, prompt_text[:50]),
+    )
+
+    resp = {"code": 0, "classification": classification, "cost_estimate": cost_estimate}
+    if include_images:
+        resp["image_results"] = image_results
+    return resp
+
+
+@ajax_login_required
+@json.json_view
+def get_ai_classifier_usage(request):
+    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
+
+    if not request.user.profile.can_use_ai_classifiers:
+        return {"code": 0, "can_use_ai": False}
+
+    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
+    estimator = AIClassifierCostEstimator(request.user)
+    cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
+
+    current_spend, limit, is_limit_reached = request.user.profile.get_usage_billing_spend()
+    cost_estimate["current_cycle_spend"] = round(current_spend, 2)
+    cost_estimate["usage_billing_limit"] = float(limit) if limit else None
+    cost_estimate["is_limit_reached"] = is_limit_reached
+
+    return {"code": 0, "can_use_ai": True, **cost_estimate}
 
 
 @json.json_view
@@ -376,7 +680,19 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        classifier = None
+                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
+                        fallback_dict = {
+                            k: v
+                            for k, v in classifier_dict.items()
+                            if k not in ("scope", "folder_name", "is_regex")
+                        }
+                        if fallback_dict != classifier_dict:
+                            try:
+                                classifier = ClassifierCls.objects.get(**fallback_dict)
+                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
+                                classifier = None
+                        else:
+                            classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:
@@ -402,6 +718,63 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                     elif classifier.score != score:
                         classifier.score = score
                         classifier.save()
+
+    # Handle AI prompt classifiers (prompt = text-only, image_prompt = VLM)
+    prompt_opinions = {
+        "like_prompt": ("focus", False),
+        "dislike_prompt": ("hidden", False),
+        "remove_like_prompt": (None, False),
+        "remove_dislike_prompt": (None, False),
+        "like_image_prompt": ("focus", True),
+        "dislike_image_prompt": ("hidden", True),
+        "remove_like_image_prompt": (None, True),
+        "remove_dislike_image_prompt": (None, True),
+    }
+    for opinion, (classifier_type, include_images) in prompt_opinions.items():
+        if opinion not in classifier_data:
+            continue
+        values = classifier_data[opinion]
+        if not isinstance(values, list):
+            values = [values]
+        for prompt_text in values:
+            if not prompt_text:
+                continue
+            lookup = {
+                "user_id": user_id,
+                "feed_id": feed_id or 0,
+                "prompt": prompt_text,
+                "include_images": include_images,
+            }
+            try:
+                classifier = MClassifierPrompt.objects.get(**lookup)
+            except MClassifierPrompt.DoesNotExist:
+                classifier = None
+            except MClassifierPrompt.MultipleObjectsReturned:
+                classifiers_found = MClassifierPrompt.objects.filter(**lookup)
+                if classifier_type is None:
+                    for c in classifiers_found:
+                        c.delete()
+                else:
+                    first = classifiers_found[0]
+                    first.classifier_type = classifier_type
+                    first.save()
+                    for dup in classifiers_found[1:]:
+                        dup.delete()
+                continue
+            if not classifier:
+                if classifier_type is not None:
+                    MClassifierPrompt.objects.create(
+                        user_id=user_id,
+                        feed_id=feed_id or 0,
+                        prompt=prompt_text,
+                        classifier_type=classifier_type,
+                        include_images=include_images,
+                    )
+            elif classifier_type is None:
+                classifier.delete()
+            elif classifier.classifier_type != classifier_type:
+                classifier.classifier_type = classifier_type
+                classifier.save()
 
 
 def popularity_query(request):

@@ -91,8 +91,8 @@ SECTION_PROMPTS = {
     "top_stories": '"Top stories" — CATEGORY: top_stories. The most important stories from the reader\'s feeds.',
     "infrequent": (
         '"From infrequent sites" — CATEGORY: infrequent. '
-        "Stories from feeds that publish rarely (a few times a month or less). "
-        "Highlight that these are noteworthy because the site doesn't post often."
+        "Stories from feeds that publish rarely. "
+        "Do NOT mention how rarely the site posts or that it's infrequent — just describe the story normally."
     ),
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
     "classifier_match": (
@@ -120,27 +120,50 @@ SECTION_PROMPTS = {
 
 
 def _build_system_prompt(
-    summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None
+    summary_length="medium",
+    summary_style="bullets",
+    sections=None,
+    custom_section_prompts=None,
+    section_order=None,
 ):
     """Build the system prompt based on user preferences for length, style, and sections."""
-    from apps.briefing.models import DEFAULT_SECTIONS
+    from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
 
     length_instruction = LENGTH_INSTRUCTIONS.get(summary_length, LENGTH_INSTRUCTIONS["medium"])
     style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["bullets"])
 
     active_sections = sections if sections else DEFAULT_SECTIONS
+    ordered_keys = section_order if section_order else DEFAULT_SECTION_ORDER
+    prompts = custom_section_prompts or []
+
     section_lines = []
     num = 1
-    for key, prompt in SECTION_PROMPTS.items():
-        if active_sections.get(key, False):
-            section_lines.append("%d. %s" % (num, prompt))
-            num += 1
+    seen_keys = set()
+    # summary.py: Iterate in user's preferred order so the LLM generates sections in that order
+    for key in ordered_keys:
+        seen_keys.add(key)
+        if key in SECTION_PROMPTS:
+            if active_sections.get(key, False):
+                section_lines.append("%d. %s" % (num, SECTION_PROMPTS[key]))
+                num += 1
+        elif key.startswith("custom_"):
+            idx = int(key.split("_")[1]) - 1
+            if 0 <= idx < len(prompts) and prompts[idx] and active_sections.get(key, False):
+                section_lines.append(
+                    "%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories "
+                    'with these keywords: "%s". Generate a section header based on the keywords. '
+                    "ONLY include stories whose CATEGORY field is set to %s." % (num, key, prompts[idx], key)
+                )
+                num += 1
 
-    # summary.py: Add custom sections (up to 5) with user-defined prompts
-    prompts = custom_section_prompts or []
+    # summary.py: Catch any sections not in section_order (e.g. newly added custom sections)
+    for key, prompt_text in SECTION_PROMPTS.items():
+        if key not in seen_keys and active_sections.get(key, False):
+            section_lines.append("%d. %s" % (num, prompt_text))
+            num += 1
     for i, prompt in enumerate(prompts):
         custom_key = "custom_%d" % (i + 1)
-        if active_sections.get(custom_key, False) and prompt:
+        if custom_key not in seen_keys and active_sections.get(custom_key, False) and prompt:
             section_lines.append(
                 "%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories "
                 'with these keywords: "%s". Generate a section header based on the keywords. '
@@ -191,6 +214,7 @@ def generate_briefing_summary(
     sections=None,
     custom_section_prompts=None,
     model=None,
+    section_order=None,
 ):
     """
     Generate an editorial summary of the selected stories.
@@ -323,7 +347,9 @@ def generate_briefing_summary(
                 logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
                 return None
 
-        system_prompt = _build_system_prompt(summary_length, summary_style, sections, custom_section_prompts)
+        system_prompt = _build_system_prompt(
+            summary_length, summary_style, sections, custom_section_prompts, section_order
+        )
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
         max_tokens = min(1024 + (len(scored_stories) * 80) + (num_sections * 100), 4096)
@@ -775,10 +801,11 @@ def embed_briefing_icons(summary_html, scored_stories):
     return summary_html
 
 
-def filter_disabled_sections(summary_html, active_sections):
+def filter_disabled_sections(summary_html, active_sections, section_order=None):
     """
     Remove sections from briefing HTML that correspond to disabled sections.
-    Parses via extract_section_summaries and rebuilds with only allowed sections.
+    Parses via extract_section_summaries and rebuilds with only allowed sections,
+    respecting section_order for output ordering.
     """
     if not summary_html or not active_sections:
         return summary_html
@@ -795,27 +822,42 @@ def filter_disabled_sections(summary_html, active_sections):
     if not filtered:
         return summary_html
 
-    # Rebuild: concatenate section HTML blocks
-    parts = []
-    for section_html in filtered.values():
-        inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_html)
-        inner = re.sub(r"</div>$", "", inner)
-        parts.append(inner)
-
-    return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
+    return _rebuild_ordered(filtered, section_order)
 
 
-def enforce_exclusive_sections(section_summaries):
-    """Ensure no story hash appears in multiple sections. First occurrence wins."""
+def enforce_exclusive_sections(section_summaries, section_order=None):
+    """Ensure no story hash appears in multiple sections.
+
+    Iterates in section_order so higher-priority sections win duplicate ownership.
+    """
+    from apps.briefing.models import DEFAULT_SECTION_ORDER
+
+    order = section_order if section_order else DEFAULT_SECTION_ORDER
     seen_hashes = set()
     result = {}
-    for key, html in section_summaries.items():
+
+    # summary.py: Process in user's preferred order so earlier sections win
+    for key in order:
+        if key not in section_summaries:
+            continue
+        html = section_summaries[key]
         section_hashes = set(re.findall(r'data-story-hash="([^"]+)"', html))
         dupes = section_hashes & seen_hashes
         if dupes:
             html = _strip_duplicate_story_links(html, dupes)
         seen_hashes.update(section_hashes - dupes)
         result[key] = html
+
+    # Catch any sections not in the order list
+    for key, html in section_summaries.items():
+        if key not in result:
+            section_hashes = set(re.findall(r'data-story-hash="([^"]+)"', html))
+            dupes = section_hashes & seen_hashes
+            if dupes:
+                html = _strip_duplicate_story_links(html, dupes)
+            seen_hashes.update(section_hashes - dupes)
+            result[key] = html
+
     return result
 
 
@@ -834,13 +876,30 @@ def _strip_duplicate_story_links(html, hashes_to_strip):
     return re.sub(pattern, _replace, html, flags=re.DOTALL)
 
 
-def rebuild_summary_from_sections(section_summaries):
-    """Reconstruct full briefing HTML from per-section blocks."""
+def rebuild_summary_from_sections(section_summaries, section_order=None):
+    """Reconstruct full briefing HTML from per-section blocks, respecting section_order."""
+    return _rebuild_ordered(section_summaries, section_order)
+
+
+def _rebuild_ordered(section_summaries, section_order=None):
+    """Concatenate section HTML blocks in section_order, with fallback for unordered keys."""
+    from apps.briefing.models import DEFAULT_SECTION_ORDER
+
+    order = section_order if section_order else DEFAULT_SECTION_ORDER
     parts = []
-    for section_html in section_summaries.values():
-        inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_html)
-        inner = re.sub(r"</div>$", "", inner)
-        parts.append(inner)
+    seen = set()
+    for key in order:
+        if key in section_summaries:
+            inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_summaries[key])
+            inner = re.sub(r"</div>$", "", inner)
+            parts.append(inner)
+            seen.add(key)
+    # Catch any sections not in the order list
+    for key, section_html in section_summaries.items():
+        if key not in seen:
+            inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_html)
+            inner = re.sub(r"</div>$", "", inner)
+            parts.append(inner)
     return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
 
 

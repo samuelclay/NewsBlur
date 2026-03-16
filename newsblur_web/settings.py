@@ -133,6 +133,7 @@ MIDDLEWARE = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.profile.middleware.AttackBanMiddleware",
     "apps.profile.middleware.TimingMiddleware",
     "apps.profile.middleware.LastSeenMiddleware",
     "apps.profile.middleware.UserAgentBanMiddleware",
@@ -388,8 +389,15 @@ STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
 
+# Stripe Metered Billing for AI Classifiers
+STRIPE_PRICE_TEXT_CLASSIFICATION = ""
+STRIPE_PRICE_IMAGE_CLASSIFICATION = ""
+
 PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
 PAYPAL_API_SECRET = "YOUR-PAYPAL-API-SECRET"
+
+GOOGLE_PLAY_PACKAGE_NAME = "com.newsblur"
+GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None
 
 # ==========
 # = Celery =

@@ -47,12 +47,12 @@ default_port = {
 def normalize(url):
     try:
         return url_normalize(url)
-    except UnicodeError as e:
-        # Handle malformed URLs with invalid domain labels (empty or >63 chars)
-        # IDNA encoding fails for these, so we can't normalize them
+    except (UnicodeError, ValueError) as e:
+        # UnicodeError: malformed URLs with invalid domain labels (empty or >63 chars)
+        # ValueError: URLs with empty/invalid IP addresses (e.g., from malformed OPML imports)
         import logging
 
-        logging.debug(f" ---> ~FRFailed to normalize URL due to UnicodeError: {e} - URL: {url}")
+        logging.debug(f" ---> ~FRFailed to normalize URL: {e} - URL: {url}")
         return url if url else None
 
 

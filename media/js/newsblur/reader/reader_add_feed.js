@@ -194,7 +194,6 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             },
             select: function (e, ui) {
                 $add.val(ui.item.value);
-                self.save_add_url();
                 return false;
             },
             search: function (e, ui) {
@@ -237,8 +236,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         };
         $add.data("ui-autocomplete")._resizeMenu = function () {
             var ul = this.menu.element;
-            var $row = self.$('.NB-add-input-row');
-            ul.outerWidth($row.length ? $row.outerWidth() : this.element.outerWidth());
+            ul.outerWidth(self.$('.NB-add-url').outerWidth());
         };
     },
 

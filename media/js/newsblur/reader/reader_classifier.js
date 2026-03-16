@@ -163,6 +163,7 @@ var classifier_prototype = {
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
             this.resize_modal();
+            this.load_prompt_classifiers();
             // Initialize Tipsy tooltips for help icons (now that modal is in DOM)
             this.$modal.find('.NB-classifier-help-icon').tipsy({
                 gravity: 's',
@@ -285,7 +286,7 @@ var classifier_prototype = {
     },
 
     resize_modal: function () {
-        var MAX_HEIGHT = 800;
+        var MAX_HEIGHT = 1000;
         var available_height = window.innerHeight - 80;
         var target_height = Math.min(MAX_HEIGHT, available_height);
         var $container = this.$modal.closest('#simplemodal-container.NB-classifier-container');
@@ -643,11 +644,15 @@ var classifier_prototype = {
                         this.make_story_title_section(story_title),
                         // Section 3: URL
                         this.make_story_url_section(story),
-                        // Section 4: Combined Authors (story author + feed authors)
+                        // Section 4: AI Content Filter (text-only prompt classifier)
+                        this.make_content_filter_section(),
+                        // Section 5: AI Image Filter (VLM prompt classifier)
+                        this.make_image_filter_section(),
+                        // Section 6: Combined Authors (story author + feed authors)
                         this.make_combined_authors_section(story),
-                        // Section 5: Combined Tags (story tags + feed tags)
+                        // Section 7: Combined Tags (story tags + feed tags)
                         this.make_combined_tags_section(story),
-                        // Section 6: Publisher
+                        // Section 8: Publisher
                         this.make_combined_publisher_section(feed)
                     ])
                 ),
@@ -672,12 +677,14 @@ var classifier_prototype = {
 
     make_story_text_section: function (selected_text, story) {
         var story_content = story.get('story_content') || '';
+        var original_text = story.get('original_text') || '';
+        var combined_text = story_content + (original_text ? ' ' + original_text : '');
 
         // Separate text classifiers into matching and non-matching
-        var matching_texts = this.make_user_texts(story_content);
-        var matching_text_regex = this.make_user_text_regex(story_content);
-        var non_matching_texts = this.make_user_texts_non_matching(story_content);
-        var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
+        var matching_texts = this.make_user_texts(combined_text);
+        var matching_text_regex = this.make_user_text_regex(combined_text);
+        var non_matching_texts = this.make_user_texts_non_matching(combined_text);
+        var non_matching_text_regex = this.make_user_text_regex_non_matching(combined_text);
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex), current_folder_names);
 
@@ -925,6 +932,24 @@ var classifier_prototype = {
         var story_tags = story.get('story_tags') || [];
         var feed_tags = this.feed_tags || [];
 
+        // Build a count lookup from feed tags so story tags can show counts
+        var feed_tag_counts = {};
+        feed_tags.forEach(function (tag_obj) {
+            if (typeof tag_obj !== 'string') {
+                feed_tag_counts[tag_obj[0].toLowerCase()] = tag_obj[1];
+            }
+        });
+
+        // Enrich story tags with counts from feed data
+        var enriched_story_tags = story_tags.map(function (tag) {
+            var tag_name = typeof tag === 'string' ? tag : tag[0];
+            var count = feed_tag_counts[tag_name.toLowerCase()];
+            if (count) {
+                return [tag_name, count];
+            }
+            return tag;
+        });
+
         // Get story tag names for comparison
         var story_tag_names = story_tags.map(function (tag) {
             return typeof tag === 'string' ? tag.toLowerCase() : tag[0].toLowerCase();
@@ -937,7 +962,7 @@ var classifier_prototype = {
         });
 
         // Build combined tags list
-        var has_story_tags = story_tags.length > 0;
+        var has_story_tags = enriched_story_tags.length > 0;
         var has_other_tags = other_tags.length > 0;
 
         if (!has_story_tags && !has_other_tags) {
@@ -945,7 +970,7 @@ var classifier_prototype = {
         }
 
         var $story_tags = has_story_tags ?
-            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
+            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(enriched_story_tags)) : '';
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_tags ?
             this.make_scoped_groups(this.make_tags(other_tags), current_folder_names) : [];
@@ -978,6 +1003,789 @@ var classifier_prototype = {
                 [this.make_publisher(feed)].concat($scoped_groups)
             )
         ]);
+    },
+
+    make_content_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
+        var self = this;
+        var feed_id = this.feed_id;
+        var story = this.story;
+        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
+
+        var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
+
+        var $prompt_classifier = this.make_prompt_classifier(
+            '<span class="NB-classifier-content-prompt-placeholder">Describe what to focus or hide</span>', '', 'content'
+        );
+
+        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-filter-section', 'data-section': 'content_prompt' }, [
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', { className: 'NB-content-filter-header' }, [
+                    $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
+                    'AI Content Filter'
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-ai-cost-estimate' }),
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-classifier-content-prompt-input',
+                        placeholder: 'e.g., "AI and machine learning" or "local politics"'
+                    }),
+                    (story && $.make('div', {
+                        className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
+                    }, 'Test on this story'))
+                ]),
+                $.make('div', { className: 'NB-content-filter-test-status' }),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                        $prompt_classifier
+                    ]),
+                    $.make('div', { className: 'NB-content-filter-saved-list' }),
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
+                ])
+            ])
+        ]);
+
+        var $input = $('.NB-classifier-content-prompt-input', $section);
+        var $placeholder = $('.NB-classifier-content-prompt-placeholder', $section);
+        var $pill_classifier = $placeholder.parents('.NB-classifier').eq(0);
+        var $pill_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $pill_classifier);
+
+        var update_content_prompt = function () {
+            var text = $.trim($input.val());
+            var $btn = $('.NB-content-filter-test-button', $section);
+            var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+            if (text.length) {
+                $placeholder.text(text);
+                $placeholder.css('font-style', 'normal');
+                $pill_checkboxes.val(text);
+                if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($pill_classifier, 'like');
+                }
+                $btn.removeClass('NB-disabled');
+                if (!can_use_ai) {
+                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                        $.make('b', 'AI filters are saved but won\'t run until you '),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                        $.make('b', '.')
+                    ])).show();
+                }
+            } else {
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+                $btn.addClass('NB-disabled');
+                // Only hide banner if no saved classifiers
+                var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
+                if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
+            }
+            $('.NB-content-filter-test-status', $section).empty();
+        };
+
+        $input.on('input keyup', update_content_prompt);
+
+        // Test button: call text-only AI to classify this story
+        var run_test = function () {
+            if (!story) return;
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var $btn = $('.NB-content-filter-test-button', $section);
+            var $status = $('.NB-content-filter-test-status', $section);
+            $btn.text('Testing on this story...').addClass('NB-disabled');
+            $status.empty();
+
+            NEWSBLUR.assets.test_prompt_classifier({
+                prompt: prompt_text,
+                story_hash: story.get('story_hash'),
+                include_images: 'false',
+                feed_id: feed_id
+            }, function (resp) {
+                $btn.text('Test on this story').removeClass('NB-disabled');
+                if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
+                if (resp.code === 0) {
+                    var cls = resp.classification;
+                    var matched = cls !== 0;
+                    var result_text = matched ? '\u2713 Story matches this filter' : '\u2717 Story does not match this filter';
+                    var result_badge_class = matched ? 'NB-image-filter-status-match' : 'NB-image-filter-status-neutral';
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
+                } else {
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                }
+            });
+        };
+
+        $section.on('click', '.NB-content-filter-test-button', function () {
+            if (!$(this).hasClass('NB-disabled')) run_test();
+        });
+
+        // Enter adds the prompt as a pill to the saved list
+        $input.on('keypress', function (e) {
+            if (e.which !== 13) return;
+            e.preventDefault();
+
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var is_dislike = $pill_classifier.is('.NB-classifier-dislike');
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'content');
+            var $cl = $('.NB-classifier', $pill);
+            if (is_dislike) {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', 'neutral');
+
+            var $list = $('.NB-content-filter-saved-list', $section);
+            $list.append($pill);
+
+            $input.val('').focus();
+            $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+            $placeholder.html('Describe what to focus or hide');
+            $placeholder.css('font-style', 'italic');
+            $('.NB-content-filter-test-status', $section).empty();
+            var $btn = $('.NB-content-filter-test-button', $section);
+            $btn.addClass('NB-disabled');
+
+            // Show upgrade banner for non-billing users
+            if (!can_use_ai) {
+                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                    $.make('b', 'AI filters are saved but won\'t run until you '),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                    $.make('b', '.')
+                ])).show();
+            }
+
+            self.recalculate_section_costs();
+        });
+
+        // Fetch and display cost estimate for billing users
+        if (can_use_ai) {
+            NEWSBLUR.assets.get_ai_classifier_usage({ feed_id: feed_id }, function (resp) {
+                if (resp.can_use_ai) {
+                    self.update_ai_cost_estimates(resp);
+                    NEWSBLUR.Globals.usage_billing_limit_reached = resp.is_limit_reached;
+                    if (resp.is_limit_reached) {
+                        self.show_limit_reached_banner();
+                    }
+                }
+            });
+        }
+
+        return $section;
+    },
+
+    load_prompt_classifiers: function () {
+        if (!this.user_classifiers) return;
+        var prompts = this.user_classifiers.prompts || {};
+        var image_prompts = this.user_classifiers.image_prompts || {};
+
+        var $content_section = this.$modal.find('.NB-classifier-content-filter-section');
+        var $image_section = this.$modal.find('.NB-classifier-image-filter-section');
+
+        if ($content_section.length) {
+            this.render_content_filter_list($content_section, prompts);
+        }
+        if ($image_section.length) {
+            this.render_image_filter_list($image_section, image_prompts);
+        }
+
+        // Recalculate cost estimates now that pills are in the DOM
+        this.recalculate_section_costs();
+    },
+
+    render_content_filter_list: function ($section, prompts) {
+        var self = this;
+        var $list = $('.NB-content-filter-saved-list', $section);
+        $list.empty();
+
+        var prompt_keys = _.keys(prompts || {});
+
+        // Show/hide upgrade banner
+        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
+            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                $.make('b', 'AI filters are saved but won\'t run until you '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                $.make('b', '.')
+            ])).show();
+        } else {
+            $banner.empty().hide();
+        }
+
+        if (!prompt_keys.length) return;
+
+        _.each(prompts, function (score, prompt_text) {
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'content');
+            var $cl = $('.NB-classifier', $pill);
+
+            if (score > 0) {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', score > 0 ? 'like' : 'dislike');
+
+            $list.append($pill);
+        });
+    },
+
+    make_image_filter_section: function () {
+        if (!NEWSBLUR.Globals.is_staff) return '';
+
+        var self = this;
+        var feed_id = this.feed_id;
+        var story = this.story;
+        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
+
+        // SVG icon for the header
+        var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+        // Build image thumbnails from the current story
+        var image_urls = (story && story.get('image_urls')) || [];
+        var $image_grid = '';
+        if (image_urls.length > 0) {
+            var $thumbs = [];
+            _.each(image_urls, function (url, i) {
+                var secure_url = story.image_url(i) || url;
+                $thumbs.push($.make('div', { className: 'NB-image-filter-thumb' }, [
+                    $.make('img', { src: secure_url, loading: 'lazy' })
+                ]));
+            });
+            $image_grid = $.make('div', { className: 'NB-image-filter-grid' }, $thumbs);
+        }
+
+        // Build the live classifier pill
+        var $prompt_classifier = this.make_prompt_classifier(
+            '<span class="NB-classifier-prompt-placeholder">Describe what to focus or hide</span>', ''
+        );
+
+        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-image-filter-section', 'data-section': 'prompt' }, [
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', { className: 'NB-image-filter-header' }, [
+                    $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
+                    'AI Image Filter'
+                ]),
+                $.make('span', { className: 'NB-classifier-staff-badge' }, 'Staff Only')
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-ai-cost-estimate' }),
+                $image_grid,
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-classifier-prompt-input',
+                        placeholder: 'e.g., "food photography" or "charts and graphs"'
+                    }),
+                    (image_urls.length > 0 && $.make('div', {
+                        className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
+                    }, image_urls.length === 1 ? 'Test on this image' : 'Test on these images'))
+                ]),
+                $.make('div', { className: 'NB-image-filter-test-status' }),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                        $prompt_classifier
+                    ]),
+                    $.make('div', { className: 'NB-image-filter-saved-list' }),
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
+                ])
+            ])
+        ]);
+
+        // Wire up input to update the classifier pill as the user types
+        var $input = $('.NB-classifier-prompt-input', $section);
+        var $placeholder = $('.NB-classifier-prompt-placeholder', $section);
+        var $pill_classifier = $placeholder.parents('.NB-classifier').eq(0);
+        var $pill_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $pill_classifier);
+
+        var update_prompt_classifier = function () {
+            var text = $.trim($input.val());
+            var $btn = $('.NB-image-filter-test-button', $section);
+            var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+            if (text.length) {
+                $placeholder.text(text);
+                $placeholder.css('font-style', 'normal');
+                $pill_checkboxes.val(text);
+                if (!$pill_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($pill_classifier, 'like');
+                }
+                $btn.removeClass('NB-disabled');
+                if (!can_use_ai) {
+                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                        $.make('b', 'AI filters are saved but won\'t run until you '),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                        $.make('b', '.')
+                    ])).show();
+                }
+            } else {
+                $placeholder.html('Describe what to focus or hide');
+                $placeholder.css('font-style', 'italic');
+                $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+                $btn.addClass('NB-disabled');
+                var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
+                if (!has_saved) $banner.empty().hide();
+                self.recalculate_section_costs();
+            }
+            // Clear previous test results when prompt changes
+            self.clear_image_test_results($section);
+        };
+
+        $input.on('input keyup', update_prompt_classifier);
+
+        // Test button: call VLM API to classify this story's images against the prompt
+        var run_test = function () {
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+            if (!story || !image_urls.length) return;
+
+            var $btn = $('.NB-image-filter-test-button', $section);
+            var $status = $('.NB-image-filter-test-status', $section);
+            $btn.text('Analyzing images...').addClass('NB-disabled');
+            $status.empty();
+
+            // Show loading state on images
+            $('.NB-image-filter-thumb', $section)
+                .removeClass('NB-image-filter-thumb-match NB-image-filter-thumb-neutral')
+                .addClass('NB-image-filter-thumb-testing');
+
+            NEWSBLUR.assets.test_prompt_classifier({
+                prompt: prompt_text,
+                story_hash: story.get('story_hash'),
+                include_images: 'true',
+                feed_id: feed_id
+            }, function (resp) {
+                $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');
+                if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
+                var $thumbs = $('.NB-image-filter-thumb', $section);
+                $thumbs.removeClass('NB-image-filter-thumb-testing');
+                // Remove old labels
+                $thumbs.find('.NB-image-filter-thumb-label').remove();
+
+                if (resp.code === 0) {
+                    var image_results = resp.image_results || [];
+                    var match_count = 0;
+
+                    // Apply per-image results
+                    $thumbs.each(function (i) {
+                        var img_matched = image_results[i] === 1;
+                        $(this).addClass(img_matched ? 'NB-image-filter-thumb-match' : 'NB-image-filter-thumb-neutral');
+                        var label_text = img_matched ? 'Match' : 'No match';
+                        var label_class = 'NB-image-filter-thumb-label' + (img_matched ? ' NB-image-filter-thumb-label-match' : '');
+                        $(this).append($.make('span', { className: label_class }, label_text));
+                        if (img_matched) match_count++;
+                    });
+
+                    var total = image_urls.length;
+                    var result_text, result_badge_class;
+                    if (match_count === 0) {
+                        result_text = total === 1 ? '\u2717 Image does not match this filter' : '\u2717 No images match this filter';
+                        result_badge_class = 'NB-image-filter-status-neutral';
+                    } else if (total === 1) {
+                        result_text = '\u2713 Image matches this filter';
+                        result_badge_class = 'NB-image-filter-status-match';
+                    } else {
+                        result_text = '\u2713 ' + match_count + ' of ' + total + ' images match this filter';
+                        result_badge_class = 'NB-image-filter-status-match';
+                    }
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
+                } else {
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                }
+            });
+        };
+
+        $section.on('click', '.NB-image-filter-test-button', function () {
+            if (!$(this).hasClass('NB-disabled')) run_test();
+        });
+
+        // Enter adds the prompt as a pill to the saved list
+        $input.on('keypress', function (e) {
+            if (e.which !== 13) return;
+            e.preventDefault();
+
+            var prompt_text = $.trim($input.val());
+            if (!prompt_text) return;
+
+            var is_dislike = $pill_classifier.is('.NB-classifier-dislike');
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'image');
+            var $cl = $('.NB-classifier', $pill);
+            if (is_dislike) {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', 'neutral');
+
+            var $list = $('.NB-image-filter-saved-list', $section);
+            $list.append($pill);
+
+            $input.val('').focus();
+            $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+            $placeholder.html('Describe what to focus or hide');
+            $placeholder.css('font-style', 'italic');
+            self.clear_image_test_results($section);
+            var $btn = $('.NB-image-filter-test-button', $section);
+            $btn.addClass('NB-disabled');
+
+            // Show upgrade banner for non-billing users
+            if (!can_use_ai) {
+                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                    $.make('b', 'AI filters are saved but won\'t run until you '),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                    $.make('b', '.')
+                ])).show();
+            }
+
+            self.recalculate_section_costs();
+        });
+
+        return $section;
+    },
+
+    update_ai_cost_estimates: function (estimate) {
+        // Store estimate data for recalculation when scope changes
+        if (estimate) {
+            this._cost_estimate = estimate;
+        }
+        this.recalculate_section_costs();
+    },
+
+    recalculate_section_costs: function () {
+        var estimate = this._cost_estimate;
+        if (!estimate) {
+            $('.NB-ai-cost-estimate').hide();
+            return;
+        }
+
+        var avg_text = estimate.avg_cost_per_text || 0;
+        var avg_image = estimate.avg_cost_per_image || 0;
+
+        // Content filter section
+        var $content_section = this.$modal.find('.NB-classifier-content-filter-section');
+        var $content_el = $content_section.find('.NB-ai-cost-estimate');
+        this._render_section_cost($content_el, {
+            type: 'content filter',
+            cost_per_run: avg_text,
+            $section: $content_section,
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
+        });
+
+        // Image filter section
+        var $image_section = this.$modal.find('.NB-classifier-image-filter-section');
+        var $image_el = $image_section.find('.NB-ai-cost-estimate');
+        this._render_section_cost($image_el, {
+            type: 'image filter',
+            cost_per_run: avg_image,
+            $section: $image_section,
+            pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
+        });
+    },
+
+    _stories_for_scope: function (scope, folder_name) {
+        if (scope === 'global') {
+            var total = 0;
+            NEWSBLUR.assets.feeds.each(function (feed) {
+                total += (feed.get('stories_last_month') || 0);
+            });
+            return total;
+        } else if (scope === 'folder' && folder_name) {
+            var folder = NEWSBLUR.assets.get_folder(folder_name);
+            if (!folder) return 0;
+            var feed_ids = folder.feed_ids_in_folder();
+            var total = 0;
+            _.each(feed_ids, function (fid) {
+                var f = NEWSBLUR.assets.get_feed(fid);
+                if (f) total += (f.get('stories_last_month') || 0);
+            });
+            return total;
+        } else {
+            // feed scope — use current feed
+            return this.feed ? (this.feed.get('stories_last_month') || 0) : 0;
+        }
+    },
+
+    _format_cost: function (amount) {
+        if (amount === 0) return '$0.00';
+        if (amount < 0.005) return '$' + amount.toFixed(4);
+        if (amount < 0.10) return '$' + amount.toFixed(3);
+        return '$' + amount.toFixed(2);
+    },
+
+    _render_section_cost: function ($el, opts) {
+        if (!$el.length) return;
+
+        var cost_per = opts.cost_per_run || 0;
+        var type = opts.type;
+        var self = this;
+        var feed_stories = this.feed ? (this.feed.get('stories_last_month') || 0) : 0;
+
+        // Count saved pills and compute total stories across all scopes
+        var $pills = opts.$section.find(opts.pill_selector);
+        var total_stories = 0;
+        var filter_count = 0;
+        var scope_groups = {};
+
+        $pills.each(function () {
+            var $cl = $(this).find('.NB-classifier');
+            // Only count active (liked or disliked) pills
+            if (!$cl.hasClass('NB-classifier-like') && !$cl.hasClass('NB-classifier-dislike')) return;
+            filter_count++;
+            var scope = $cl.data('scope') || 'feed';
+            var folder_name = $cl.data('folder-name') || '';
+            var stories = self._stories_for_scope(scope, folder_name);
+            total_stories += stories;
+
+            if (!scope_groups[scope]) scope_groups[scope] = { count: 0, stories: stories };
+            scope_groups[scope].count++;
+        });
+
+        if (!feed_stories && !total_stories) {
+            $el.hide();
+            return;
+        }
+
+        // Use feed stories as the default when filters exist but are all feed-scoped
+        var effective_stories = total_stories || feed_stories;
+        var monthly = filter_count > 0 ? effective_stories * cost_per : 0;
+        var daily = monthly / 30;
+
+        var $content = [];
+
+        // Always show the cost amounts
+        $content.push($.make('div', { className: 'NB-ai-cost-amounts' }, [
+            $.make('span', { className: 'NB-ai-cost-monthly' }, [
+                self._format_cost(monthly),
+                $.make('small', '/mo')
+            ]),
+            $.make('span', { className: 'NB-ai-cost-separator' }, '\u00b7'),
+            $.make('span', { className: 'NB-ai-cost-daily' }, [
+                self._format_cost(daily),
+                $.make('small', '/day')
+            ])
+        ]));
+
+        // Always show the breakdown
+        var breakdown;
+        var scope_names = _.keys(scope_groups);
+        if (filter_count === 0) {
+            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
+                '0 ' + type + 's \u00d7 ' + self._format_cost(cost_per) + '/story';
+        } else if (scope_names.length === 1 && scope_names[0] === 'feed') {
+            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
+                filter_count + ' ' + type + (filter_count !== 1 ? 's' : '') +
+                ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+        } else {
+            var parts = [];
+            _.each(scope_groups, function (group, scope) {
+                var scope_label = scope === 'feed' ? 'this site' :
+                    scope === 'folder' ? 'folder' : 'all sites';
+                parts.push(
+                    group.count + ' on ' + scope_label +
+                    ' (' + group.stories.toLocaleString() + ' stories/mo)'
+                );
+            });
+            breakdown = parts.join(' + ') + ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+        }
+
+        $content.push($.make('div', { className: 'NB-ai-cost-breakdown' }, breakdown));
+
+        // Wrap cost amounts and breakdown in a left-side container
+        var $cost_info = $.make('div', { className: 'NB-ai-cost-info' }, $content);
+
+        // Add billing action button on the right
+        var $billing_btn;
+        if (NEWSBLUR.Globals.is_usage_billing) {
+            $billing_btn = $.make('a', {
+                href: '#', className: 'NB-ai-billing-manage NB-modal-submit-button NB-modal-submit-green'
+            }, 'Manage billing and limits');
+        } else {
+            $billing_btn = $.make('a', {
+                href: '#', className: 'NB-ai-billing-setup NB-modal-submit-button NB-modal-submit-green'
+            }, 'Set up billing');
+        }
+
+        $el.empty().append([$cost_info, $billing_btn]).show();
+    },
+
+    show_limit_reached_banner: function () {
+        var $banners = $('.NB-ai-filter-upgrade-banner', this.$modal);
+        $banners.each(function () {
+            var $banner = $(this);
+            $banner.html($.make('div', { className: 'NB-ai-filter-limit-reached-banner-inner' }, [
+                $.make('b', 'Monthly spending limit reached. '),
+                $.make('span', 'AI classifiers are paused until next billing cycle. '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, 'Increase or remove your limit')
+            ])).show();
+        });
+    },
+
+    clear_image_test_results: function ($section) {
+        $('.NB-image-filter-thumb', $section)
+            .removeClass('NB-image-filter-thumb-match NB-image-filter-thumb-neutral NB-image-filter-thumb-testing');
+        $('.NB-image-filter-thumb-label', $section).remove();
+        $('.NB-image-filter-test-status', $section).empty();
+    },
+
+    make_prompt_classifier: function (title_html, value, filter_type) {
+        // Build a classifier pill for AI prompts. Follows the same DOM structure
+        // as make_classifier() so all existing CSS and click handlers apply.
+        // filter_type: 'image' (default) or 'content'
+        filter_type = filter_type || 'image';
+        var scope = 'feed';
+
+        var label;
+        if (filter_type === 'content') {
+            label = 'Content';
+        } else {
+            label = 'Image';
+        }
+
+        // Scope toggle icons — same as make_classifier() for non-feed types
+        var scope_icon_data = [
+            { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+            { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+            { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+        ];
+        var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
+        _.each(scope_icon_data, function (icon) {
+            var $toggle = $.make('span', {
+                className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === scope ? ' NB-active' : ''),
+                'data-tooltip': icon.title
+            });
+            $toggle.html(icon.svg);
+            $toggle.data('scope', icon.key);
+            $scope_toggles.append($toggle);
+        });
+
+        var $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
+            $scope_toggles,
+            $.make('span', { className: 'NB-classifier-type-label' }, label)
+        ]);
+
+        var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
+            $.make('span', { className: 'NB-classifier NB-classifier-prompt' }, [
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-classifier-input-like',
+                    name: filter_type === 'image' ? 'like_image_prompt' : 'like_prompt',
+                    value: value
+                }),
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-classifier-input-dislike',
+                    name: filter_type === 'image' ? 'dislike_image_prompt' : 'dislike_prompt',
+                    value: value
+                }),
+                $.make('div', { className: 'NB-classifier-icon-like' }),
+                $.make('div', { className: 'NB-classifier-icon-dislike' }, [
+                    $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
+                ]),
+                $.make('label', [
+                    $type_badge,
+                    $.make('span', title_html)
+                ])
+            ])
+        ]);
+
+        // Store original state for change tracking
+        $('.NB-classifier', $classifier).data('original-state', 'neutral');
+        $('.NB-classifier', $classifier).data('scope', scope);
+        $('.NB-classifier', $classifier).data('original-scope', scope);
+        $('.NB-classifier', $classifier).data('folder-name', '');
+        $('.NB-classifier', $classifier).data('original-folder-name', '');
+
+        // Standard hover behavior matching make_classifier()
+        var self = this;
+        $('.NB-classifier', $classifier).bind('mouseenter', function (e) {
+            $(e.currentTarget).addClass('NB-classifier-hover-like');
+        }).bind('mouseleave', function (e) {
+            $(e.currentTarget).removeClass('NB-classifier-hover-like');
+        });
+
+        $('.NB-classifier-icon-dislike', $classifier).bind('mouseenter', function (e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
+        }).bind('mouseleave', function (e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
+        });
+
+        // Scope toggle click handlers
+        $('.NB-scope-toggle', $classifier).on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            self.select_scope($(this), $classifier);
+        });
+
+        // Scope toggle tooltips
+        $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
+            var $this = $(this);
+            var text = $this.attr('data-tooltip');
+            if (!text) return;
+            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+            $('body').append($tip);
+            var rect = this.getBoundingClientRect();
+            $tip.css({
+                top: rect.top - $tip.outerHeight() - 6,
+                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+            });
+            $this.data('$tooltip', $tip);
+        }).on('mouseleave', function () {
+            var $tip = $(this).data('$tooltip');
+            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+        });
+
+        return $classifier;
+    },
+
+    render_image_filter_list: function ($section, image_prompts) {
+        var self = this;
+        var $list = $('.NB-image-filter-saved-list', $section);
+        $list.empty();
+
+        var prompt_keys = _.keys(image_prompts || {});
+
+        // Show/hide upgrade banner
+        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
+            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
+                $.make('b', 'AI filters are saved but won\'t run until you '),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                $.make('b', '.')
+            ])).show();
+        } else {
+            $banner.empty().hide();
+        }
+
+        if (!prompt_keys.length) return;
+
+        _.each(image_prompts, function (score, prompt_text) {
+            var $pill = self.make_prompt_classifier(prompt_text, prompt_text, 'image');
+            var $cl = $('.NB-classifier', $pill);
+
+            if (score > 0) {
+                $cl.addClass('NB-classifier-like');
+                $('.NB-classifier-input-like', $pill).prop('checked', true);
+            } else {
+                $cl.addClass('NB-classifier-dislike');
+                $('.NB-classifier-input-dislike', $pill).prop('checked', true);
+            }
+            $cl.data('original-state', score > 0 ? 'like' : 'dislike');
+
+            $list.append($pill);
+        });
     },
 
     make_modal_title: function () {
@@ -1608,6 +2416,11 @@ var classifier_prototype = {
             $cl.removeClass('NB-classifier-changed');
         }
         this.update_save_button();
+
+        // Recalculate cost estimates when a prompt classifier's scope changes
+        if ($cl.hasClass('NB-classifier-prompt')) {
+            this.recalculate_section_costs();
+        }
     },
 
     save_scope_change: function ($classifier) {
@@ -1689,6 +2502,11 @@ var classifier_prototype = {
             $close.text('Save & Close');
         } else {
             this.update_save_button();
+        }
+
+        // Recalculate cost estimates when a prompt classifier is toggled
+        if ($classifier.hasClass('NB-classifier-prompt')) {
+            this.recalculate_section_costs();
         }
     },
 
@@ -1775,6 +2593,7 @@ var classifier_prototype = {
                 // Validate based on mode
                 if (self.story) {
                     var story_content = $('<div>').html(self.story.get('story_content') || '').text();
+                    var original_text = self.story.get('original_text') ? $('<div>').html(self.story.get('original_text')).text() : '';
                     var is_full_match = self.check_full_content_match(text, story_content, is_regex_mode);
 
                     if (is_regex_mode) {
@@ -1782,7 +2601,8 @@ var classifier_prototype = {
                         var validation_result = self.validate_regex(text);
                         if (validation_result.valid) {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
-                            if (validation_result.regex.test(story_content)) {
+                            if (validation_result.regex.test(story_content) ||
+                                (original_text && validation_result.regex.test(original_text))) {
                                 $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches story'));
                             } else {
                                 $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in story'));
@@ -1791,8 +2611,10 @@ var classifier_prototype = {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                         }
                     } else {
-                        // Exact phrase validation
-                        if (story_content.toLowerCase().indexOf(text.toLowerCase()) !== -1) {
+                        // Exact phrase validation against RSS body and full article text
+                        var text_lower = text.toLowerCase();
+                        if (story_content.toLowerCase().indexOf(text_lower) !== -1 ||
+                            (original_text && original_text.toLowerCase().indexOf(text_lower) !== -1)) {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in story'));
                         } else {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in story'));
@@ -2254,6 +3076,21 @@ var classifier_prototype = {
             });
         });
 
+        $.targetIs(e, { tagSelector: '.NB-ai-billing-setup, .NB-ai-billing-setup-link' }, function ($t, $p) {
+            e.preventDefault();
+            var $form = $('<form method="POST" action="/profile/setup_usage_billing/"></form>');
+            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
+            $('body').append($form);
+            $form.submit();
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-ai-billing-manage' }, function ($t, $p) {
+            e.preventDefault();
+            self.close(function () {
+                NEWSBLUR.reader.open_account_modal({ 'tab': 'premium' });
+            });
+        });
+
         // Tab switching
         $.targetIs(e, { tagSelector: '.NB-modal-tab-sitebyside' }, function ($t, $p) {
             e.preventDefault();
@@ -2617,6 +3454,16 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
                     self.model.classifiers[feed_id].feeds[feed_id] = score;
+                } else if (name == 'prompt') {
+                    if (!self.model.classifiers[feed_id].prompts) {
+                        self.model.classifiers[feed_id].prompts = {};
+                    }
+                    self.model.classifiers[feed_id].prompts[value] = score;
+                } else if (name == 'image_prompt') {
+                    if (!self.model.classifiers[feed_id].image_prompts) {
+                        self.model.classifiers[feed_id].image_prompts = {};
+                    }
+                    self.model.classifiers[feed_id].image_prompts[value] = score;
                 }
             } else {
                 if (name == 'tag' && self.model.classifiers[feed_id].tags[value] == score) {
@@ -2637,6 +3484,10 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
                     delete self.model.classifiers[feed_id].feeds[feed_id];
+                } else if (name == 'prompt' && self.model.classifiers[feed_id].prompts && self.model.classifiers[feed_id].prompts[value] == score) {
+                    delete self.model.classifiers[feed_id].prompts[value];
+                } else if (name == 'image_prompt' && self.model.classifiers[feed_id].image_prompts && self.model.classifiers[feed_id].image_prompts[value] == score) {
+                    delete self.model.classifiers[feed_id].image_prompts[value];
                 }
             }
         });
@@ -2905,6 +3756,8 @@ var classifier_prototype = {
             text: 0,
             feed: 0,
             url: 0,
+            prompt: 0,
+            image_prompt: 0,
             scope_all: 0,
             scope_feed: 0,
             scope_folder: 0,
@@ -2950,6 +3803,7 @@ var classifier_prototype = {
                     else if (type === 'text') value = item.text || '';
                     else if (type === 'feed') value = item.feed_title || '';
                     else if (type === 'url') value = item.url || '';
+                    else if (type === 'prompt' || type === 'image_prompt') value = item.prompt || '';
                     value = value.toLowerCase();
                     search_match = value.indexOf(search_filter) !== -1 ||
                                    (feeds_matching_search && feeds_matching_search[feed_id]);
@@ -2990,6 +3844,8 @@ var classifier_prototype = {
                     countItems(classifiers.texts, 'text', feed.feed_id);
                     countItems(classifiers.feeds, 'feed', feed.feed_id);
                     countItems(classifiers.urls, 'url', feed.feed_id);
+                    countItems(classifiers.prompts, 'prompt', feed.feed_id);
+                    countItems(classifiers.image_prompts, 'image_prompt', feed.feed_id);
                 }
             });
         });
@@ -3046,6 +3902,8 @@ var classifier_prototype = {
             type_text: type_counts.text,
             type_feed: type_counts.feed,
             type_url: type_counts.url,
+            type_prompt: type_counts.prompt,
+            type_image_prompt: type_counts.image_prompt,
             // Scope control counts (filtered by sentiment + type)
             scope_all: scope_counts.scope_all,
             scope_feed: scope_counts.scope_feed,
@@ -3301,6 +4159,20 @@ var classifier_prototype = {
                     }, [
                         $.make('span', { className: 'NB-type-label' }, 'URL'),
                         $.make('span', { className: 'NB-type-count' }, counts.type_url)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-prompt' + (this.manage_filter_types === 'prompt' ? ' NB-active' : '') + (counts.type_prompt === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'prompt'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'AI Content'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_prompt)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-image_prompt' + (this.manage_filter_types === 'image_prompt' ? ' NB-active' : '') + (counts.type_image_prompt === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'image_prompt'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'AI Image'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_image_prompt)
                     ])
                 ])
             ])
@@ -3512,6 +4384,16 @@ var classifier_prototype = {
             $classifiers_list.push($item);
         });
 
+        // AI Content prompts
+        _.each(classifiers.prompts, function (c) {
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'prompt', c.prompt, c.score));
+        });
+
+        // AI Image prompts
+        _.each(classifiers.image_prompts, function (c) {
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'image_prompt', c.prompt, c.score));
+        });
+
         if (!$classifiers_list.length) return null;
 
         return $.make('div', { className: 'NB-manage-feed', 'data-feed-id': feed.feed_id }, [
@@ -3529,6 +4411,8 @@ var classifier_prototype = {
         var type_label = type.charAt(0).toUpperCase() + type.slice(1);
         if (type === 'feed') type_label = 'Site';
         if (type === 'url') type_label = 'URL';
+        if (type === 'prompt') type_label = 'AI Content';
+        if (type === 'image_prompt') type_label = 'AI Image';
 
         var effective_scope = scope || 'feed';
         var scope_svgs = {

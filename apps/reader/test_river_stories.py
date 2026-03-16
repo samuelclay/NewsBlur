@@ -768,7 +768,9 @@ class Test_RiverStories(TransactionTestCase):
 
         # Pages should not overlap (no duplicate stories)
         overlap = page1_hashes & page2_hashes
-        self.assertEqual(len(overlap), 0, f"Pages should not overlap, got {len(overlap)} duplicates: {overlap}")
+        self.assertEqual(
+            len(overlap), 0, f"Pages should not overlap, got {len(overlap)} duplicates: {overlap}"
+        )
 
         # If we have enough stories for 2 pages, page 2 should have stories
         total_stories = len(self.test_story_hashes)

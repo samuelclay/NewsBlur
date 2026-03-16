@@ -23,7 +23,6 @@
     background: none;
     background-color: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     z-index: 10;
 }
 
@@ -671,7 +670,6 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     width: 340px;
     flex-shrink: 0;
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.45);
     border: 0.5px solid rgba(255, 255, 255, 0.5);
     border-radius: 20px;

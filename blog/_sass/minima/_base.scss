@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "sass:color";
+
 /**
  * Reset some basic elements
  */
@@ -35,8 +38,7 @@ body {
  */
 h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
-ul, ol, dl, figure,
-%vertical-rhythm {
+ul, ol, dl, figure {
   margin-bottom: calc($spacing-unit / 2);
 }
 
@@ -114,7 +116,7 @@ a {
   text-decoration: none;
 
   &:visited {
-    color: darken($brand-color, 15%);
+    color: color.adjust($brand-color, $lightness: -15%);
   }
 
   &:hover {
@@ -184,17 +186,15 @@ pre {
  * Wrapper
  */
 .wrapper {
-  max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit} * 2));
-  max-width:         calc(#{$content-width} - (#{$spacing-unit} * 2));
+  max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
   margin-right: auto;
   margin-left: auto;
   padding-right: $spacing-unit;
   padding-left: $spacing-unit;
-  @extend %clearfix;
+  &:after { content: ""; display: table; clear: both; }
 
   @include media-query($on-laptop) {
-    max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit}));
-    max-width:         calc(#{$content-width} - (#{$spacing-unit}));
+    max-width: calc(#{$content-width} - (#{$spacing-unit}));
     padding-right: calc($spacing-unit / 2);
     padding-left: calc($spacing-unit / 2);
   }
@@ -203,13 +203,8 @@ pre {
 
 
 /**
- * Clearfix
+ * Clearfix (placeholder defined in _variables.scss)
  */
-%clearfix:after {
-  content: "";
-  display: table;
-  clear: both;
-}
 
 
 
@@ -241,21 +236,21 @@ table {
   margin-bottom: $spacing-unit;
   width: 100%;
   text-align: $table-text-align;
-  color: lighten($text-color, 18%);
+  color: color.adjust($text-color, $lightness: 18%);
   border-collapse: collapse;
   border: 1px solid $grey-color-light;
   tr {
     &:nth-child(even) {
-      background-color: lighten($grey-color-light, 6%);
+      background-color: color.adjust($grey-color-light, $lightness: 6%);
     }
   }
   th, td {
     padding: calc(($spacing-unit / 3)) calc($spacing-unit / 2);
   }
   th {
-    background-color: lighten($grey-color-light, 3%);
-    border: 1px solid darken($grey-color-light, 4%);
-    border-bottom-color: darken($grey-color-light, 12%);
+    background-color: color.adjust($grey-color-light, $lightness: 3%);
+    border: 1px solid color.adjust($grey-color-light, $lightness: -4%);
+    border-bottom-color: color.adjust($grey-color-light, $lightness: -12%);
   }
   td {
     border: 1px solid $grey-color-light;

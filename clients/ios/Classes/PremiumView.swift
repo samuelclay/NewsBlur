@@ -120,6 +120,7 @@ struct PremiumView: View {
         PremiumFeature(title: "Custom RSS feeds for saved stories", icon: "dot.radiowaves.up.forward", iconColor: .orange),
         PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
+        PremiumFeature(title: "Natural language text and image classifiers", icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
     ]
 
@@ -148,9 +149,7 @@ struct PremiumView: View {
             PremiumFeature(title: "Follow up to 10,000 sites", icon: "square.stack.3d.up.fill", iconColor: .green),
             PremiumFeature(title: "All feeds fetched every 5-15 minutes", icon: "bolt.fill", iconColor: PremiumColors.proOrange),
             PremiumFeature(title: "Train stories with regular expressions", icon: "textformat.abc", iconColor: .yellow),
-            PremiumFeature(title: "Priority support", icon: "headphones", iconColor: .yellow),
-            PremiumFeature(title: "Natural language filters", icon: "text.magnifyingglass", iconColor: .gray, isUpcoming: true),
-            PremiumFeature(title: "Natural language search", icon: "magnifyingglass.circle", iconColor: .gray, isUpcoming: true)
+            PremiumFeature(title: "Priority support", icon: "headphones", iconColor: .yellow)
         ]
     }
 

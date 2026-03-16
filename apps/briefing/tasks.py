@@ -239,6 +239,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     publish("start")
 
     prefs = MBriefingPreferences.get_or_create(user_id)
+    section_order = prefs.section_order  # May be None (default order)
     now = datetime.datetime.utcnow()
 
     if prefs.frequency == "weekly":
@@ -272,6 +273,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         custom_section_prompts=prefs.custom_section_prompts,
         active_sections=prefs.sections,
         exclude_hashes=exclude_hashes,
+        section_order=section_order,
     )
 
     # tasks.py: Lower minimum threshold for twice/thrice_daily since shorter windows may have fewer stories
@@ -318,6 +320,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         sections=filtered_sections or prefs.sections,
         custom_section_prompts=prefs.custom_section_prompts,
         model=prefs.briefing_model,
+        section_order=section_order,
     )
     t_summary_elapsed = time.monotonic() - t_summary_start
 
@@ -331,7 +334,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     # annotations in the story data.
     active_sections = filtered_sections or prefs.sections
     if active_sections:
-        summary_html = filter_disabled_sections(summary_html, active_sections)
+        summary_html = filter_disabled_sections(summary_html, active_sections, section_order)
 
     # tasks.py: Inject cluster member story lists into the widely_covered section
     # before embedding icons, so cluster member stories get favicons too.
@@ -367,8 +370,8 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         section_summaries = {k: v for k, v in section_summaries.items() if k in allowed}
 
     # tasks.py: Enforce exclusive section ownership — each story hash in exactly one section.
-    section_summaries = enforce_exclusive_sections(section_summaries)
-    summary_html = rebuild_summary_from_sections(section_summaries)
+    section_summaries = enforce_exclusive_sections(section_summaries, section_order)
+    summary_html = rebuild_summary_from_sections(section_summaries, section_order)
 
     # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
     summary_hashes = extract_section_story_hashes(section_summaries)
@@ -378,12 +381,25 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
             curated_sections[key] = [h for h in hashes if h in curated_hash_set]
 
     # tasks.py: Deduplicate curated_sections so no story hash appears in multiple sections.
+    # Iterate in section_order so higher-priority sections win.
+    from apps.briefing.models import DEFAULT_SECTION_ORDER
+
+    dedup_order = section_order if section_order else DEFAULT_SECTION_ORDER
     seen = set()
+    processed_keys = set()
+    for key in dedup_order:
+        if key in curated_sections:
+            curated_sections[key] = [h for h in curated_sections[key] if h not in seen]
+            seen.update(curated_sections[key])
+            processed_keys.add(key)
+            if not curated_sections[key]:
+                del curated_sections[key]
     for key in list(curated_sections.keys()):
-        curated_sections[key] = [h for h in curated_sections[key] if h not in seen]
-        seen.update(curated_sections[key])
-        if not curated_sections[key]:
-            del curated_sections[key]
+        if key not in processed_keys:
+            curated_sections[key] = [h for h in curated_sections[key] if h not in seen]
+            seen.update(curated_sections[key])
+            if not curated_sections[key]:
+                del curated_sections[key]
 
     # tasks.py: Append debug footer with model and generation stats
     if summary_meta:

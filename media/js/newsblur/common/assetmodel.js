@@ -41,7 +41,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 authors: {},
                 feeds: {},
                 urls: {},
-                url_regex: {}
+                url_regex: {},
+                prompts: {},
+                image_prompts: {}
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
@@ -959,8 +961,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     },
 
-    fetch_briefing_stories: function (callback, error_callback) {
-        this.make_request('/briefing/stories', {}, callback, error_callback, {
+    fetch_briefing_stories: function (page, callback, error_callback) {
+        this.make_request('/briefing/stories', { page: page || 1 }, callback, error_callback, {
             'ajax_group': 'feed',
             'request_type': 'GET'
         });
@@ -1484,6 +1486,30 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    get_ai_classifier_usage: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/ai_classifier_usage', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback({});
+        }
+    },
+
+    save_prompt_classifier: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save_prompt', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    test_prompt_classifier: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/test_prompt', data, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -2410,6 +2436,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, null, { request_type: 'GET' });
     },
 
+    fetch_usage_billing_history: function (callback) {
+        this.make_request('/profile/usage_billing_history', {}, callback, null, { request_type: 'GET' });
+    },
+
+    save_usage_billing_limit: function (limit, callback) {
+        this.make_request('/profile/save_usage_billing_limit', { limit: limit }, callback);
+    },
+
     upgrade_premium: function (user_id, callback, error_callback) {
         this.make_request('/profile/upgrade_premium', {
             user_id: user_id
@@ -2551,8 +2585,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
                 if (intelligence.text <= 0) {
-                    // Standard substring matching
-                    if (story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                    // Standard substring matching against RSS body and full article text
+                    var ct = classifier_text.toLowerCase();
+                    if (story.get('story_content', '').toLowerCase().indexOf(ct) != -1 ||
+                        (story.get('original_text') && story.get('original_text').toLowerCase().indexOf(ct) != -1)) {
                         intelligence.text = classifier_score;
                     }
                 }
@@ -2580,7 +2616,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     if (intelligence.text_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
-                            if (regex.test(story.get('story_content', ''))) {
+                            if (regex.test(story.get('story_content', '')) ||
+                                (story.get('original_text') && regex.test(story.get('original_text')))) {
                                 intelligence.text_regex = classifier_score;
                             }
                         } catch (e) {

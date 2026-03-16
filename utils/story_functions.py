@@ -328,9 +328,62 @@ def pre_process_story(entry, encoding):
         entry["author"] = strip_tags(entry.get("credit"))
 
     entry["story_content"] = attach_media_scripts(entry["story_content"])
+    entry["story_content"] = fix_responsive_embeds(entry["story_content"])
     entry["story_content"] = strip_non_embeddable_iframes(entry["story_content"])
 
     return entry
+
+
+def fix_responsive_embeds(content):
+    """Fix responsive video embed pattern missing position styles.
+
+    Many sites use a div with height:0 + padding-bottom to create a 16:9 aspect
+    ratio container, with an iframe inside at width/height 100%. This requires
+    position:relative on the wrapper and position:absolute on the iframe, but
+    those styles often come from the site's CSS rather than inline styles. When
+    rendered in the reader without the site's CSS, the iframe collapses to 0 height.
+    """
+    if not content or "<iframe" not in content.lower():
+        return content
+
+    def fix_wrapper(match):
+        div_tag = match.group(1)
+        inner = match.group(2)
+        # Check if wrapper has height:0 and padding-bottom (responsive embed pattern)
+        style_match = re.search(r'style=["\']([^"\']*)["\']', div_tag, re.IGNORECASE)
+        if not style_match:
+            return match.group(0)
+        style = style_match.group(1)
+        has_zero_height = re.search(r"height\s*:\s*0", style)
+        has_padding_bottom = re.search(r"padding-bottom\s*:", style)
+        if not has_zero_height or not has_padding_bottom:
+            return match.group(0)
+        # Add position:relative to wrapper if missing
+        if "position" not in style.lower():
+            new_style = style.rstrip("; ") + "; position: relative;"
+            div_tag = div_tag.replace(style_match.group(1), new_style)
+
+        # Add position:absolute to child iframes if missing
+        def fix_iframe_position(iframe_match):
+            iframe_html = iframe_match.group(0)
+            iframe_style = re.search(r'style=["\']([^"\']*)["\']', iframe_html, re.IGNORECASE)
+            if iframe_style and "position" not in iframe_style.group(1).lower():
+                new_iframe_style = (
+                    iframe_style.group(1).rstrip("; ") + "; position: absolute; top: 0; left: 0;"
+                )
+                iframe_html = iframe_html.replace(iframe_style.group(1), new_iframe_style)
+            elif not iframe_style:
+                iframe_html = iframe_html.replace(
+                    "<iframe", '<iframe style="position: absolute; top: 0; left: 0;"', 1
+                )
+            return iframe_html
+
+        inner = re.sub(
+            r"<iframe\b[^>]*>.*?</iframe>", fix_iframe_position, inner, flags=re.IGNORECASE | re.DOTALL
+        )
+        return div_tag + inner + "</div>"
+
+    return re.sub(r"(<div\b[^>]*>)(.*?)</div>", fix_wrapper, content, flags=re.IGNORECASE | re.DOTALL)
 
 
 def attach_media_scripts(content):

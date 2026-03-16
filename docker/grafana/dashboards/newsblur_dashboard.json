@@ -444,7 +444,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
+        "w": 5,
         "x": 0,
         "y": 9
       },
@@ -532,8 +532,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 6,
+        "w": 5,
+        "x": 5,
         "y": 9
       },
       "id": 264,
@@ -620,8 +620,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 12,
+        "w": 5,
+        "x": 10,
         "y": 9
       },
       "id": 230,
@@ -708,8 +708,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 18,
+        "w": 5,
+        "x": 15,
         "y": 9
       },
       "id": 231,
@@ -740,6 +740,94 @@
         }
       ],
       "title": "Premium Pro Users",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 20,
+        "y": 9
+      },
+      "id": 265,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"usage_billing\"}",
+          "legendFormat": "Usage Billing Users",
+          "refId": "A"
+        }
+      ],
+      "title": "Usage Billing Users",
       "type": "timeseries"
     },
     {
@@ -13539,6 +13627,207 @@
         "x": 0,
         "y": 572
       },
+      "id": 266,
+      "panels": [],
+      "title": "Attack Detection & Auto-Ban",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 573
+      },
+      "id": 267,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "rate(newsblur_attack_detected_total[5m]) * 60",
+          "legendFormat": "{{attack_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Attacks Detected by Type",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 573
+      },
+      "id": 268,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "rate(newsblur_attack_banned_check_total[5m]) * 60",
+          "legendFormat": "Banned IP hits/min",
+          "refId": "A"
+        }
+      ],
+      "title": "Banned IP Requests Blocked",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 581
+      },
       "id": 239,
       "panels": [],
       "title": "Story Clustering",
@@ -13605,7 +13894,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 573
+        "y": 582
       },
       "id": 240,
       "options": {
@@ -13734,7 +14023,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 573
+        "y": 582
       },
       "id": 241,
       "options": {
@@ -13863,7 +14152,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 573
+        "y": 582
       },
       "id": 242,
       "options": {
@@ -13992,7 +14281,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 581
+        "y": 590
       },
       "id": 243,
       "options": {
@@ -14066,7 +14355,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 492
+        "y": 501
       },
       "id": 249,
       "panels": [],
@@ -14101,7 +14390,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 493
+        "y": 502
       },
       "id": 250,
       "options": {
@@ -14163,7 +14452,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 493
+        "y": 502
       },
       "id": 251,
       "options": {
@@ -14225,7 +14514,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 493
+        "y": 502
       },
       "id": 252,
       "options": {
@@ -14287,7 +14576,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 501
+        "y": 510
       },
       "id": 253,
       "options": {
@@ -14349,7 +14638,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 501
+        "y": 510
       },
       "id": 254,
       "options": {
@@ -14411,7 +14700,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 501
+        "y": 510
       },
       "id": 255,
       "options": {
@@ -14503,7 +14792,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 509
+        "y": 518
       },
       "id": 256,
       "options": {
@@ -14614,7 +14903,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 509
+        "y": 518
       },
       "id": 257,
       "options": {
@@ -14673,7 +14962,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 517
+        "y": 526
       },
       "id": 258,
       "options": {
@@ -14735,7 +15024,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 517
+        "y": 526
       },
       "id": 259,
       "options": {
@@ -14797,7 +15086,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 517
+        "y": 526
       },
       "id": 260,
       "options": {
@@ -14859,7 +15148,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 517
+        "y": 526
       },
       "id": 261,
       "options": {

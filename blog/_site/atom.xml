@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-14T23:39:27-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+A new sound of an old instrument.
+</subtitle><entry><title type="html">Web Feeds: Turn any website into an RSS feed</title><link href="https://blog.newsblur.com/2026/03/13/web-feeds/" rel="alternate" type="text/html" title="Web Feeds: Turn any website into an RSS feed" /><published>2026-03-13T00:00:00-04:00</published><updated>2026-03-13T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/13/web-feeds</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/13/web-feeds/"><![CDATA[<p>Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a site didn’t offer RSS, you were out of luck.</p>
+
+<p><strong>Web Feeds</strong> is a new feature that creates RSS feeds from any website. Point it at a URL, and NewsBlur analyzes the page structure, identifies the repeating content patterns, and generates extraction rules that turn the page into a live feed. It works on news sites, blogs, job boards, product pages, or really anything with a list of items that changes over time.</p>
+
+<p>This is a huge feature and has been requested for years. I’m so thrilled to finally be able to offer it in a way that I feel comfortable with. Other solutions including having you select story titles on a re-hosted version of the page, but it was clumsy and error-prone. This way, we use LLMs to figure out what the story titles are likely to be, present the variations to you, and then let you decide what’s right. So much better!</p>
+
+<!-- SCREENSHOT: Web Feed tab showing URL input, story hint field, and Analyze button -->
+<p><img src="/assets/web-feed-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the Add + Discover Sites page and click the <strong>Web Feed</strong> tab. Paste a URL and click Analyze. NewsBlur fetches the page, strips out navigation and boilerplate, and analyzes the HTML structure. Within a few seconds, you’ll see multiple extraction variants, each representing a different content pattern found on the page.</p>
+
+<p>Progress updates stream in real-time while the analysis runs. NewsBlur typically finds 3-5 different extraction patterns on a page. The first variant is usually the main content (article list, blog posts, product grid), but sometimes the page has multiple distinct sections worth subscribing to. Each variant shows a label, a description of what it captures, and a preview of 3 extracted stories so you can see exactly what you’d get.</p>
+
+<!-- SCREENSHOT: Real-time progress updates showing "Fetching page...", "Finding story patterns...", etc. -->
+<p><img src="/assets/web-feed-progress.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Select the variant that matches what you want to follow, pick a folder, and subscribe. NewsBlur will re-fetch and re-extract the page on a regular schedule, just like any other feed.</p>
+
+<h3 id="story-hints">Story hints</h3>
+
+<p>Sometimes the initial best guess isn’t what you’re looking for. Maybe the page has a blog section and a job listings section, and you want the jobs. Click the Refine button and type a hint like “I’m looking for the job postings.” NewsBlur re-analyzes the page with your hint in mind and reorders the variants to prioritize what you described.</p>
+
+<h3 id="what-gets-extracted">What gets extracted</h3>
+
+<p>For each story, NewsBlur extracts whatever it can find: title, link, content snippet, image, author, and date. Not every field will be available on every site, and that’s fine. At minimum you’ll get titles and links. The extraction uses XPath expressions, which means it’s precise and consistent across page refreshes as long as the site’s HTML structure stays the same.</p>
+
+<h3 id="when-things-change">When things change</h3>
+
+<p>Websites redesign. HTML structures shift. When NewsBlur detects that the extraction rules have stopped working (after 3 consecutive failures), the feed is flagged as needing re-analysis. You’ll see a feed exception indicator, and you can re-analyze the page with one click to generate updated extraction rules.</p>
+
+<h3 id="use-cases">Use cases</h3>
+
+<p>Some examples of sites that work well with Web Feeds:</p>
+
+<ul>
+  <li><strong>Company blogs without RSS</strong> — Many corporate blogs dropped their RSS feeds years ago. Web Feeds brings them back.</li>
+  <li><strong>Job boards</strong> — Track new postings on a company’s careers page.</li>
+  <li><strong>Government sites</strong> — Follow press releases, meeting agendas, or public notices.</li>
+  <li><strong>Changelog pages</strong> — Monitor when a tool or service ships updates.</li>
+  <li><strong>Event listings</strong> — Keep tabs on upcoming concerts, conferences, or local events.</li>
+  <li><strong>Product pages</strong> — Watch for new arrivals or restocks on stores that don’t offer feeds.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>Web Feeds are available to <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. The ongoing feed fetching and extraction runs on NewsBlur’s servers like any other feed.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a site didn’t offer RSS, you were out of luck.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/web-feed-input.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/web-feed-input.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more</title><link href="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/" rel="alternate" type="text/html" title="NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more" /><published>2026-03-05T00:00:00-05:00</published><updated>2026-03-05T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/"><![CDATA[<p>This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were previously web-only: Discover Related Sites, Ask AI, the Dashboard, and Premium Pro.</p>
+
+<p>Here’s what’s new:</p>
+
+<h3 id="ios-26-and-macos-tahoe">iOS 26 and macOS Tahoe</h3>
+
+<p>NewsBlur is built for the latest Apple platforms. The toolbar is transparent and fades as you scroll. The column layout has been simplified to “feeds beside” or “feeds over” the story detail. On iPad, a new draggable divider lets you resize the feeds and stories columns, and the sidebar auto-collapses when space gets tight. On Mac, the sidebar auto-hides and trackpad swipe gestures work throughout the app.</p>
+
+<p>The default theme is now Auto, so NewsBlur follows your system appearance out of the box. Dark mode correctly overrides the window style to stay consistent with whatever NewsBlur theme you’ve chosen.</p>
+
+<p><img src="/assets/ios-14-ipad-sepia.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-warmer-sepia-theme">A warmer sepia theme</h3>
+
+<p>The Sepia theme has been completely reworked with warmer tones that are easier on the eyes for long reading sessions. The theme selector itself has been rewritten across all menus, with improved contrast on the pill buttons so you can clearly see which theme is active.</p>
+
+<p><img src="/assets/ios-14-sepia-theme.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="story-titles-pill-bar">Story titles pill bar</h3>
+
+<p>The top of the story list now has a pill bar with quick access to Discover, Options, Search, and Mark Read. The search bar slides in and out instead of fading, and the mark-read button has a wider tap target with an optional confirmation step.</p>
+
+<p><img src="/assets/ios-14-pill-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="discover-related-sites">Discover related sites</h3>
+
+<p>Discover Related Sites lets you find related feeds from any feed or folder. Tap the Discover button in the new story titles pill bar, browse what’s available, and try a feed before subscribing with a preview banner.</p>
+
+<p><img src="/assets/ios-14-discover-sites.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="list-and-magazine-views">List and magazine views</h3>
+
+<p>Two new story layout options join the existing Grid view. List shows compact rows for scanning headlines quickly. Magazine shows taller rows with larger thumbnails, giving you a richer preview of each story without opening it. Switch between them from the story titles pill bar.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/ios-14-ipad-magazine.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/ios-14-ipad-grid.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<h3 id="dashboard">Dashboard</h3>
+
+<p>The Dashboard sits at the top of your feed list and shows stories from your favorite feeds, updated every five minutes. Add, remove, and rearrange feeds to build a personal front page that keeps you current throughout the day. It’s the first thing you see when you open the app, and it updates in the background so fresh stories are always waiting.</p>
+
+<p><img src="/assets/ios-14-ipad-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-login-preferences-and-upgrade">Redesigned login, preferences, and upgrade</h3>
+
+<p>The login screen now features animated Metal shader waves with a frosted glass card. Preferences have moved from the old InAppSettingsKit to a new native SwiftUI PreferencesView. The Premium upgrade screen has been redesigned to include Ask AI integration and the new Premium Pro tier.</p>
+
+<p>Share, Trainer, and Ask AI dialogs are presented as swipeable sheets on iPhone with grabber handles, replacing the old full-screen modals. The sync indicator has moved from a large HUD to a subtle top-right nav bar dot.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/ios-14-login.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/ios-14-upgrade.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/ios-14-prefs.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<h3 id="ask-ai">Ask AI</h3>
+
+<p>Ask AI brings the same AI-powered Q&amp;A from the web to your phone and Mac. Select a story, tap Ask AI, and ask questions about it. Summarize a long article in one sentence, get the backstory on a developing situation, or fact-check a claim. Pick from multiple AI models and keep the conversation going with follow-ups.</p>
+
+<p><img src="/assets/ios-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="push-notifications-with-feed-favicons">Push notifications with feed favicons</h3>
+
+<p>Push notifications now show your feed’s favicon alongside the notification using Communication Notifications. At a glance, you can tell which feed a story came from before you even open it.</p>
+
+<p><img src="/assets/ios-14-push-notifications.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes across iPhone, iPad, and Mac.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Pinch-to-zoom images to full-sized Quick Look preview in any story.</li>
+  <li>Mark Story Read options: mark read on scroll, on selection, after an interval, or manually.</li>
+  <li>Premium Pro tier added to the iOS upgrade dialog with higher limits.</li>
+  <li>Custom feed and folder icons now supported on iOS.</li>
+  <li>Unmute support for individual feeds.</li>
+  <li>Collapse-all and expand-all button on All Site Stories.</li>
+  <li>Modernized menu bar on Mac and iPad with keyboard shortcuts.</li>
+  <li>Icons added to context menus on Mac and iPad.</li>
+  <li>Redesigned story action buttons with modern styling.</li>
+  <li>Text, URL, and regex classifiers added to the iOS Intelligence Trainer.</li>
+  <li>Compact story title cells with equalized vertical spacing in list view.</li>
+  <li>Fetching/offline banner moved from bottom overlay to top of story titles.</li>
+  <li>Feed list search bar replaced with a compact text field.</li>
+  <li>Scroll-to-hide toolbar synced with swipe-back gestures.</li>
+  <li>Sidebar toggle buttons for showing and hiding the feed list.</li>
+  <li>Redesigned Add Site as a SwiftUI half-height sheet with autocomplete.</li>
+  <li>Story traverse bar and feed bar fade gradually as you scroll.</li>
+  <li>Mac Catalyst: dismiss modals via overlay tap or Escape key.</li>
+  <li>Mac Catalyst: trackpad swipe gesture support.</li>
+  <li>Improved theme selector pill contrast for medium and light themes.</li>
+  <li>Show toolbar when tapping status bar to scroll to top.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed WebSocket disconnects from EIO4 protocol and session lifecycle issues.</li>
+  <li>Fixed story width rendering wider than viewport on first load on iPhone.</li>
+  <li>Fixed memory issues with PINCache cost limits.</li>
+  <li>Fixed offline queue priority inversion.</li>
+  <li>Fixed saved stories showing incorrect read/unread status.</li>
+  <li>Fixed YouTube Error 153 with HTTPS and inlined resources.</li>
+  <li>Fixed trainer popover showing empty content on first open.</li>
+  <li>Fixed crashes with custom feed icons in story detail.</li>
+  <li>Fixed blank statistics modal by adding missing JS globals.</li>
+  <li>Fixed white flash and navbar color mismatch when opening stories in dark themes.</li>
+  <li>Fixed sepia theme yellow tint on Mac Catalyst.</li>
+  <li>Fixed (null) username and missing avatar when sharing on Mac Catalyst.</li>
+  <li>Fixed Catalyst pill bar AppKit chrome artifacts.</li>
+  <li>Fixed Mac traverse bar layout, highlights, and previous button state.</li>
+  <li>Fixed Discover popover placement on Mac and iPad.</li>
+  <li>Fixed mark-read pill confirmation.</li>
+  <li>Fixed status bar color and liquid glass gradient boundary.</li>
+  <li>Fixed stale collapsed folder unread counts on iPad.</li>
+  <li>Fixed stale story responses when switching folders quickly on iPad.</li>
+  <li>Fixed Mac Catalyst split divider limited to grab handle area.</li>
+</ul>
+
+<p>NewsBlur for iOS 26, iPadOS 26, and macOS Tahoe is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were previously web-only: Discover Related Sites, Ask AI, the Dashboard, and Premium Pro.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/ios-14-ipad-sepia.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/ios-14-ipad-sepia.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Add + Discover Sites: YouTube, Reddit, podcasts, newsletters, and thousands of feeds to explore</title><link href="https://blog.newsblur.com/2026/03/04/add-and-discover-sites/" rel="alternate" type="text/html" title="Add + Discover Sites: YouTube, Reddit, podcasts, newsletters, and thousands of feeds to explore" /><published>2026-03-04T00:00:00-05:00</published><updated>2026-03-04T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/03/04/add-and-discover-sites</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/04/add-and-discover-sites/"><![CDATA[<p>NewsBlur has always been great at reading feeds. But finding new ones? That was mostly on you. The old “Add Site” dialog was a search box and not much else. If you already had a feed URL, it worked fine. If you were looking for something new to read, you were on your own.</p>
+
+<p>The new <strong>Add + Discover Sites</strong> page changes that. It’s a full-page discovery experience with eight tabs covering YouTube channels, Reddit communities, podcasts, newsletters, Google News topics, trending sites, popular feeds, and of course the classic search-and-subscribe workflow. There are over 50,000 curated feeds to browse, all organized into dozens of categories and subcategories.</p>
+
+<p><img src="/assets/add-site-full-page.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="eight-ways-to-find-feeds">Eight ways to find feeds</h3>
+
+<p>The tab bar across the top gives you eight different lenses into the world of RSS:</p>
+
+<!-- SCREENSHOT: Tab bar showing all eight tabs with icons -->
+<p><img src="/assets/add-site-tabs.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li>
+    <p><strong>Search</strong> — The classic search bar, now with semantic search and autocomplete. Type a topic or URL and get instant suggestions. Below the search results you’ll find trending feeds ranked by a hybrid algorithm that combines subscription velocity, read engagement, and subscriber counts.</p>
+  </li>
+  <li>
+    <p><strong>Web Feed</strong> — Create RSS feeds from any website. This one gets its own blog post.</p>
+  </li>
+  <li>
+    <p><strong>Popular Sites</strong> — Thousands of curated RSS feeds organized into categories like Technology, Science, News, and Business. Each category has subcategories for drilling down further.</p>
+  </li>
+  <li>
+    <p><strong>YouTube</strong> — Over 2,000 verified YouTube channels converted to RSS feeds. Browse by category or search for specific channels. Subscribe and read YouTube in your feed reader the way it should be.</p>
+  </li>
+  <li>
+    <p><strong>Reddit</strong> — Nearly 6,000 real subreddits across 47 categories. From r/programming to r/sourdough, you can subscribe to any subreddit as an RSS feed.</p>
+  </li>
+  <li>
+    <p><strong>Newsletters</strong> — Newsletters from Substack, Medium, Ghost, Beehiiv, and other platforms. Platform pills let you filter by newsletter provider if you have a preference.</p>
+  </li>
+  <li>
+    <p><strong>Podcasts</strong> — Popular podcasts organized by genre. Search for shows or browse the curated collection.</p>
+  </li>
+  <li>
+    <p><strong>Google News</strong> — Eight preset topics (World, Business, Technology, Sports, and more) that create feeds from Google News. One click to subscribe.</p>
+  </li>
+</ul>
+
+<h3 id="categories-and-subcategories">Categories and subcategories</h3>
+
+<p>Most tabs are organized with a two-level taxonomy. Click a category pill at the top to filter, then drill into subcategories for more specific browsing. YouTube’s Technology category, for example, breaks down into Programming, AI &amp; Machine Learning, Gadgets, and more.</p>
+
+<!-- SCREENSHOT: Category pills and subcategory rows showing two-level taxonomy -->
+<p><img src="/assets/add-site-categories.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The categories are consistent across tabs where it makes sense, so you can explore Technology feeds across YouTube, Reddit, Popular Sites, and Podcasts without having to rethink the navigation each time.</p>
+
+<h3 id="grid-view-and-list-view">Grid view and list view</h3>
+
+<p>Every tab supports two viewing modes. Grid view shows feed cards with thumbnails, descriptions, subscriber counts, and freshness indicators. List view compresses things into a denser layout when you want to scan quickly.</p>
+
+<!-- SCREENSHOT: Side by side of grid view and list view showing the same feeds -->
+<p><img src="/assets/add-site-grid-list.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A style popover in the top right lets you toggle between views. Your preference is saved per tab.</p>
+
+<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+
+<p>Every feed card has a <strong>Try</strong> button that instantly fetches the feed and shows you the actual stories. No commitment, no subscribing. Just a quick look at what you’d get. If you like what you see, the subscribe button is right there with a folder picker.</p>
+
+<!-- SCREENSHOT: Try feed preview showing story cards from a YouTube channel or popular site -->
+<p><img src="/assets/add-site-try-feed.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A breadcrumb link at the top takes you back to where you were browsing when you’re done previewing.</p>
+
+<h3 id="the-new-add-site-popover">The new Add Site popover</h3>
+
+<p>If you don’t need the full discovery page, the popover that appears when you click “+” in the sidebar has been redesigned too. It still has the quick URL input for when you have a feed address handy, but now it also shows freshness indicators and has buttons to jump into any of the discovery tabs.</p>
+
+<!-- SCREENSHOT: Redesigned Add Site popover showing quick add input and discovery buttons -->
+<p><img src="/assets/add-site-popover.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="semantic-search">Semantic search</h3>
+
+<p>The search tab uses Elasticsearch to find feeds by name with fuzzy matching. Type “cooking” and you’ll get cooking blogs, YouTube cooking channels, cooking subreddits, and cooking podcasts. It searches across all feed types, not just traditional RSS. If Elasticsearch doesn’t find anything, the search falls back to a database query so you’ll always get results.</p>
+
+<h3 id="where-all-these-feeds-came-from">Where all these feeds came from</h3>
+
+<p>Building the discovery page meant curating a lot of feeds. I wrote management commands to discover and verify channels, subreddits, podcasts, and newsletters from real sources. The collection includes over 2,000 YouTube channels, 6,600 subreddits, 7,300 newsletters, 32,000 podcasts, and 14,000 RSS feeds. Over 63,000 feeds in total, all real, verified, and categorized.</p>
+
+<p>The Add + Discover Sites page is available now on the web for all users. If you have feedback or ideas for new categories, platforms, or features, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always been great at reading feeds. But finding new ones? That was mostly on you. The old “Add Site” dialog was a search box and not much else. If you already had a feed URL, it worked fine. If you were looking for something new to read, you were on your own.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/add-site-full-page.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/add-site-full-page.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A mini media player for podcasts, audio, and video</title><link href="https://blog.newsblur.com/2026/03/02/mini-media-player/" rel="alternate" type="text/html" title="A mini media player for podcasts, audio, and video" /><published>2026-03-02T00:00:00-05:00</published><updated>2026-03-02T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/03/02/mini-media-player</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/02/mini-media-player/"><![CDATA[<p>A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.</p>
+
+<p>So I built a persistent mini media player. It sits at the bottom of your screen and handles audio, video, and YouTube from any story. Play something and it stays with you as you navigate feeds, open folders, or scroll through stories.</p>
+
+<p><img src="/assets/mini-player-feed-list.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>When you open a story that contains audio, video, or a YouTube embed, you’ll see overlay buttons right on the media element: <strong>Play in Mini Media Player</strong>, <strong>Play Next</strong>, and <strong>Play Last</strong>. Click any of them and the mini player appears at the bottom of the screen. If you click the native play button on an audio or video element, it hands off to the mini player automatically.</p>
+
+<p><img src="/assets/mini-player-podcast.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The player has a three-row layout. The top row shows the feed favicon, feed name, and story title (click the title to scroll back to the story). The middle row is a full-width scrubber so you can seek precisely. The bottom row has playback controls: skip back, play/pause, skip forward, a time display, playback speed, and a volume slider that appears on hover.</p>
+
+<h3 id="build-a-queue">Build a queue</h3>
+
+<p>The real power is the queue. As you’re reading through stories, you can add media to your queue with “Play Next” (inserts at the top) or “Play Last” (appends to the end). The queue shows up right below the player with a count of upcoming items. Drag items to reorder them, or remove items you’ve changed your mind about. When the current item finishes, the next one starts automatically.</p>
+
+<p><img src="/assets/mini-player-youtube.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="playback-history">Playback history</h3>
+
+<p>Switch from the “Up Next” tab to the “History” tab to see your last 10 played items. Each entry shows where you left off, so you can pick up a podcast episode right where you stopped. Click any history item to resume it.</p>
+
+<h3 id="settings">Settings</h3>
+
+<p>Click the gear icon in the player to customize your experience:</p>
+
+<p><img src="/assets/mini-player-settings.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Skip back/forward</strong>: Choose how far to jump (5s, 10s, 15s, 30s, or 60s in each direction)</li>
+  <li><strong>Auto-play</strong>: Automatically play the next queued item when the current one finishes (on by default)</li>
+  <li><strong>Resume position</strong>: Remember where you left off in each episode (on by default)</li>
+  <li><strong>Show on load</strong>: Restore the player when you reload NewsBlur, so you can pick up right where you left off (on by default)</li>
+</ul>
+
+<h3 id="synced-across-reloads">Synced across reloads</h3>
+
+<p>Your playback state, queue, history, and settings are all saved to your NewsBlur account. Reload the page and the player comes back with your queue intact and the current episode paused where you left it. Position data syncs in real time via WebSocket so there’s no lag.</p>
+
+<h3 id="playback-speed">Playback speed</h3>
+
+<p>Click the speed indicator (next to the time display) to cycle through speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x, and 3x. Your speed preference is saved and applied to the next item in your queue automatically.</p>
+
+<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Global and folder-scoped intelligence training: Train once, apply everywhere</title><link href="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/" rel="alternate" type="text/html" title="Global and folder-scoped intelligence training: Train once, apply everywhere" /><published>2026-02-02T00:00:00-05:00</published><updated>2026-02-02T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training</id><content type="html" xml:base="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/"><![CDATA[<p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
+
+<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
+
+<h3 id="three-scope-levels">Three scope levels</h3>
+
+<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
+
+<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
+<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
+  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
+  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
+</ul>
+
+<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
+
+<h3 id="real-world-examples">Real-world examples</h3>
+
+<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
+
+<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
+
+<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
+
+<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
+
+<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
+
+<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
+<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
+
+<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
+
+<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
+
+<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Per-site classifiers (default)</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Global and folder-scoped classifiers</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Manage Training scope filter</td>
+      <td>Premium Archive</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Premium Archive: Per-feed and per-folder auto-mark-as-read settings</title><link href="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/" rel="alternate" type="text/html" title="Premium Archive: Per-feed and per-folder auto-mark-as-read settings" /><published>2026-01-23T00:00:00-05:00</published><updated>2026-01-23T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/"><![CDATA[<p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
+
+<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
+<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
+
+<h3 id="folder-inheritance">Folder inheritance</h3>
+
+<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
+
+<ul>
+  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
+  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
+  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
+  <li>Individual feeds can still override their folder’s setting</li>
+</ul>
+
+<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
+<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
+
+<h3 id="site-settings-dialog">Site settings dialog</h3>
+
+<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
+
+<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
+<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. Premium Archive subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/auto-mark-read-popover.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/auto-mark-read-popover.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place</title><link href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" rel="alternate" type="text/html" title="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" /><published>2026-01-22T00:00:00-05:00</published><updated>2026-01-22T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"><![CDATA[<p>The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.</p>
+
+<p>Today I’m launching three major improvements: URL classifiers, regex mode for power users, and a completely redesigned Manage Training tab.</p>
+
+<h3 id="train-on-urls">Train on URLs</h3>
+
+<p>You can now train on story permalink URLs, not just titles and content. This opens up new filtering possibilities based on URL patterns.</p>
+
+<p><img src="/assets/url-classifier-section.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The URL classifier matches against the full story permalink. Some use cases:</p>
+
+<ul>
+  <li><strong>Filter by URL path</strong>: Like or dislike stories that contain <code class="language-plaintext highlighter-rouge">/sponsored/</code> or <code class="language-plaintext highlighter-rouge">/opinion/</code> in their URL</li>
+  <li><strong>Domain sections</strong>: Match specific subdomains or URL segments that indicate content types</li>
+  <li><strong>Landing pages vs articles</strong>: Some feeds include both—filter by URL structure to show only what you want</li>
+</ul>
+
+<p>URL classifiers support both exact phrase matching and regex mode. The exact phrase match is available to Premium subscribers, while regex mode requires <a href="https://newsblur.com/?next=premium">Premium Pro</a>.</p>
+
+<p>When a URL classifier matches, you’ll see the matched portion highlighted directly in the story header, so you always know why a story was filtered.</p>
+
+<h3 id="regex-matching-for-power-users">Regex matching for power users</h3>
+
+<p>For years, the text classifier only supported exact phrase matching. If you wanted to match “iPhone” and “iPad” you needed two separate classifiers. Now you can use regex patterns in the Title, Text, and URL classifiers.</p>
+
+<p><img src="/assets/regex-mode-toggle.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A segmented control lets you switch between “Exact phrase” and “Regex” mode. In regex mode, you get access to the full power of regular expressions:</p>
+
+<ul>
+  <li><strong>Word boundaries</strong> (<code class="language-plaintext highlighter-rouge">\b</code>): Match <code class="language-plaintext highlighter-rouge">\bapple\b</code> to find “apple” but not “pineapple”</li>
+  <li><strong>Alternation</strong> (<code class="language-plaintext highlighter-rouge">|</code>): Match <code class="language-plaintext highlighter-rouge">iPhone|iPad|Mac</code> in a single classifier</li>
+  <li><strong>Optional characters</strong> (<code class="language-plaintext highlighter-rouge">?</code>): Match <code class="language-plaintext highlighter-rouge">colou?r</code> to find both “color” and “colour”</li>
+  <li><strong>Anchors</strong> (<code class="language-plaintext highlighter-rouge">^</code> and <code class="language-plaintext highlighter-rouge">$</code>): Match patterns at the start or end of text</li>
+  <li><strong>Character classes</strong>: Match <code class="language-plaintext highlighter-rouge">[0-9]+</code> for any number sequence</li>
+</ul>
+
+<p><img src="/assets/regex-help-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>A built-in help popover explains regex syntax with practical examples. The trainer validates your regex in real-time and shows helpful error messages if the pattern is invalid.</p>
+
+<p>Regex matching is case-insensitive, so <code class="language-plaintext highlighter-rouge">apple</code> matches “Apple”, “APPLE”, and “apple”. This mode is available to Premium Pro subscribers.</p>
+
+<h3 id="manage-all-your-training-in-one-place">Manage all your training in one place</h3>
+
+<p>Over the years you may have trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when you wanted to review what you’d trained, you had to open each feed’s trainer individually and click through them one by one.</p>
+
+<p>The new Manage Training tab provides a consolidated view of every classifier you’ve ever trained, organized by folder. You can see everything at a glance, edit inline, and save changes across multiple feeds in a single click.</p>
+
+<p><img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Open the Intelligence Trainer from the sidebar menu (or press the <code class="language-plaintext highlighter-rouge">t</code> key). You’ll now see two tabs at the top: “Site by Site” and “Manage Training”. The Manage Training tab is available everywhere you train—from the story trainer, feed trainer, or the main Intelligence Trainer dialog.</p>
+
+<p>The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That’s still the best way to train new feeds with lots of suggestions.</p>
+
+<p>The Manage Training tab shows only what you’ve already trained. Every thumbs up and thumbs down you’ve ever given, organized by folder just like your feed list. Each feed shows its trained classifiers as pills you can click to toggle.</p>
+
+<h4 id="filtering-made-easy">Filtering made easy</h4>
+
+<p>The real power comes from the filtering options. At the top of the tab you’ll find several ways to narrow down your training:</p>
+
+<p><strong>Folder/Site dropdown</strong> — Only folders and sites with training appear in this dropdown. Select a folder to see all training within it, or select a specific site to focus on just that feed’s classifiers. This is especially useful when you have hundreds of trained items and want to review just one area.</p>
+
+<p><img src="/assets/manage-training-site-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Instant search</strong> — Type in the search box and results filter as you type. Search matches against classifier names, feed titles, and folder names. Looking for everything you’ve trained about “apple”? Just type it and see all matches instantly.</p>
+
+<p><img src="/assets/manage-training-search.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Likes and Dislikes</strong> — Toggle between All, Likes only, or Dislikes only. Want to see everything you’ve marked as disliked? One click shows you all the red thumbs-down items across your entire training history.</p>
+
+<p><img src="/assets/manage-training-dislikes.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Type filters</strong> — Filter by classifier type: Title, Author, Tag, Text, URL, or Site. These are multi-select, so you can show just Authors and Tags while hiding everything else. Perfect for when you want to audit just the authors you’ve trained across all your feeds.</p>
+
+<h4 id="edit-inline-and-save-in-bulk">Edit inline and save in bulk</h4>
+
+<p>Click any classifier pill to toggle it between like, dislike, and neutral. The Save button shows exactly how many changes you’ve made, so you always know what’s pending. Made a mistake? Just click again to undo—the count updates automatically.</p>
+
+<p>When you click Save, all your changes across all feeds are saved in a single request. No more clicking through feeds one at a time to clean up old training.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Title/Author/Tag/Feed classifiers</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Manage Training tab</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>URL classifiers (exact phrase)</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <td>Text classifiers (exact phrase)</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Regex mode (Title, Text, URL)</td>
+      <td>Premium Pro</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All three features are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/url-classifier-section.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/url-classifier-section.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Ask AI to make sense of the news</title><link href="https://blog.newsblur.com/2026/01/16/ask-ai/" rel="alternate" type="text/html" title="Ask AI to make sense of the news" /><published>2026-01-16T00:00:00-05:00</published><updated>2026-01-16T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/16/ask-ai</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/16/ask-ai/"><![CDATA[<p>Sometimes I open a story and realize I’m late to the party. Maybe it’s the fourth article in a saga I haven’t followed, maybe it name-drops people I should know, or maybe it’s dense and I just want the gist. Ask AI fills in those gaps. You can ask about any story in NewsBlur and get quick answers from the model you prefer.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Select a story and click Ask AI in the story toolbar. You’ll see quick options for getting information about the story.</p>
+
+<p><img src="/assets/ask-ai-selector.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<h3 id="not-interested-turn-it-off">Not interested? Turn it off</h3>
+
+<p>I know AI features aren’t for everyone. If you’d rather not see Ask AI at all, you can hide it completely. Go to <strong>Manage → Preferences → Stories</strong> and toggle off “Show Ask AI button.” The button disappears from your toolbar and you’ll never be bothered by it again. NewsBlur has always been about giving you control over your reading experience, and this is no different.</p>
+
+<h3 id="presets-for-common-questions">Presets for common questions</h3>
+
+<p>At the top of the menu, you can summarize the story in three flavors: a single sentence, bullet points, or a full paragraph. Below that are presets I use most often:</p>
+
+<ul>
+  <li><strong>What’s the context and background?</strong> — Fills in backstory you might have missed</li>
+  <li><strong>Identify key people and relationships</strong> — Who are all these names and how do they connect?</li>
+  <li><strong>What are the main arguments?</strong> — For opinion pieces or debates, cuts to what each side is saying</li>
+  <li><strong>Fact check this story</strong> — Flags claims that look worth verifying</li>
+</ul>
+
+<p>Or just type whatever you’re curious about.</p>
+
+<h3 id="speak-your-question">Speak your question</h3>
+
+<p>See that microphone button? Click it and say your question out loud. NewsBlur uses OpenAI’s Whisper to transcribe your voice, so you can keep reading without typing. Handy when you’re on the couch and don’t want to pull out the keyboard.</p>
+
+<h3 id="pick-your-model">Pick your model</h3>
+
+<p>Different models have different strengths. NewsBlur lets you pick from:</p>
+
+<ul>
+  <li><strong>Claude Opus 4.5</strong> — The default, most capable model from Anthropic</li>
+  <li><strong>GPT 5.2</strong> — OpenAI’s latest</li>
+  <li><strong>Gemini 3 Pro</strong> — Google’s offering</li>
+  <li><strong>Grok 4.1 Fast</strong> — xAI’s speedy option</li>
+</ul>
+
+<p><img src="/assets/ask-ai-one-sentence.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<p>NewsBlur remembers your choice across sessions and devices. If a reply feels off, re-ask with a different model — they each have their own style.</p>
+
+<h3 id="keep-the-conversation-going">Keep the conversation going</h3>
+
+<p>After the first answer, ask follow-ups. NewsBlur keeps the conversation context so you can dig deeper or ask for a clarification. It’s meant to be a back-and-forth, not a one-shot.</p>
+
+<p><img src="/assets/ask-ai-followup.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<h3 id="your-data-stays-yours">Your data stays yours</h3>
+
+<p>Your stories and questions are sent to the AI provider you choose to generate a response, but that’s it. NewsBlur doesn’t use your reading data or questions to train models or for any other purpose. The AI providers’ standard privacy policies apply, but NewsBlur itself treats your Ask AI usage the same as any other part of your reading experience — it’s your data, not ours.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Ask AI is live on the web. Here’s how many questions you get:</p>
+
+<ul>
+  <li><strong>Premium Archive</strong>: 100 questions per day</li>
+  <li><strong>Premium + Free</strong>: 1 question per week</li>
+</ul>
+
+<p>Premium Archive limits reset daily at midnight in your local timezone. Premium and free limits reset weekly on Sunday.</p>
+
+<p>If you’re not yet a Premium Archive subscriber, you can <a href="https://www.newsblur.com/?next=premium">upgrade on the web</a> to get the full Ask AI experience along with unlimited story archiving and full-text search.</p>
+
+<p>As always, I’d love to hear what you think on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. If you have ideas for new preset questions or ways to make Ask AI more useful, let me know.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Sometimes I open a story and realize I’m late to the party. Maybe it’s the fourth article in a saga I haven’t followed, maybe it name-drops people I should know, or maybe it’s dense and I just want the gist. Ask AI fills in those gaps. You can ask about any story in NewsBlur and get quick answers from the model you prefer.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/ask-ai-selector.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/ask-ai-selector.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Disable social features for a distraction-free reading experience</title><link href="https://blog.newsblur.com/2026/01/09/disable-social-features/" rel="alternate" type="text/html" title="Disable social features for a distraction-free reading experience" /><published>2026-01-09T00:00:00-05:00</published><updated>2026-01-09T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/09/disable-social-features</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/09/disable-social-features/"><![CDATA[<p>A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.</p>
+
+<p><img src="/assets/disable-social-preference.png" style="width: 100%; border: 1px solid #A0A0A0; margin: 24px auto; display: block;" /></p>
+
+<p>Head to Preferences &gt; Feeds and look for the new “Sharing” option at the bottom. Choose “Disable social features” and all sharing, comments, and blurblog features will be hidden from your NewsBlur interface. The Global Shared Stories folder disappears, share buttons are removed from stories, and the sidebar is cleaned up. If you ever want to re-enable social features, just flip the preference back.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/disable-social-preference.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/disable-social-preference.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Custom icons for folders and feeds</title><link href="https://blog.newsblur.com/2026/01/07/custom-icons/" rel="alternate" type="text/html" title="Custom icons for folders and feeds" /><published>2026-01-07T00:00:00-05:00</published><updated>2026-01-07T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/07/custom-icons</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/07/custom-icons/"><![CDATA[<p>I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.</p>
+
+<p>That’s why I built custom icons for both folders and feeds. You can now personalize any folder or feed with an emoji, a preset icon in any color, or even upload your own image.</p>
+
+<p><img src="/assets/custom-icons-folder-list.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Right-click on any folder or feed in your feed list and select “Folder settings” or “Site settings”. You’ll see a new “Folder Icon” or “Feed Icon” tab where you can customize the icon.</p>
+
+<p><img src="/assets/custom-icons-colors.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are three ways to set a custom icon:</p>
+
+<p><strong>Preset icons</strong>: Pick from over 240 icons (a mix of outline and filled styles) and colorize them with any of 84 colors organized by hue. Want a red heart for your favorites folder? A blue code bracket for programming feeds? It’s all there.</p>
+
+<p><img src="/assets/custom-icons-preset.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" />
+<img src="/assets/custom-icons-preset2.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Emoji</strong>: Choose from 180 emojis organized by category. A basketball for sports feeds, a fork and knife for cooking, a newspaper for news—you get the idea.</p>
+
+<p><img src="/assets/custom-icons-emoji.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Upload your own</strong>: Have a specific image in mind? Upload any image and it will be automatically resized to fit perfectly in your feed list.</p>
+
+<p><img src="/assets/custom-icons-upload.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="great-for-feeds-without-icons">Great for feeds without icons</h3>
+
+<p>Many feeds don’t have favicons, or they have generic RSS icons that all look the same. Custom feed icons let you give these feeds distinctive icons so you can spot them instantly. I’ve been using this to add icons to older blogs and newsletters that never bothered setting up a proper favicon.</p>
+
+<p>Custom icons are available now on the web for all NewsBlur users. Folders and feeds both support the same icon options of emoji, preset icons with colors, or uploaded images.</p>
+
+<p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/custom-icons-folder-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/custom-icons-folder-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

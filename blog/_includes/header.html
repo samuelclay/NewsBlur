@@ -10,6 +10,19 @@
       <div class="site-title-text">{{ site.title | escape }}</div>
     </a>
 
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div>
+
     {%- if page_paths -%}
       <nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
@@ -32,17 +45,4 @@
       </nav>
     {%- endif -%}
   </div>
-</header>
-
-<header class="site-subheader" role="banner">
-
-  <div class="wrapper">
-    <div class="top">
-      NewsBlur is a personal news reader that brings people together to talk about the world.
-    </div>
-    <div class="bottom">
-      A new sound of an old instrument.
-    </div>
-  </div>
-
 </header>

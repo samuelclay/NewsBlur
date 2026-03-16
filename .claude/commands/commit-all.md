@@ -25,11 +25,7 @@ Review every changed file in the diff above. Group them by logical purpose:
 - Unrelated fixes, style changes, or independent modifications get their own commits
 - Test files go with the code they test
 
-Present the proposed grouping to the user before proceeding. List each group with:
-- A proposed commit message
-- The files in that group
-
-Ask the user to confirm or adjust the grouping.
+Optionally present the proposed grouping, then proceed to committing.
 
 ### Step 2: Commit each group
 

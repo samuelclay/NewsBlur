@@ -4,8 +4,11 @@
   {%- include head.html -%}
 
   <body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
 
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas>
     {%- include header.html -%}
+    {%- include subheader.html -%}
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
@@ -14,6 +17,85 @@
     </main>
 
     {%- include footer.html -%}
+
+    <script src="{{ "/assets/blog_background.js" | relative_url }}"></script>
+    <script>
+    (function() {
+      // Theme management
+      function get_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      function apply(theme) {
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(get_theme());
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(get_theme() === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(get_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
 
   </body>
 

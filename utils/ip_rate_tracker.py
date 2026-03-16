@@ -1,9 +1,10 @@
 """
 IP-based rate tracking for identifying automated/abusive request patterns.
 
-Two tracking systems:
+Three tracking systems:
 1. Reader rate tracking - counts requests to /reader/* endpoints
 2. Fail2ban-style tracking - counts 404s and suspicious paths per IP
+3. Attack payload detection - detects and auto-bans IPs sending malicious payloads
 
 See apps/profile/middleware.py for middleware integration.
 """
@@ -11,6 +12,7 @@ import datetime
 import json
 import re
 import time
+from urllib.parse import unquote_plus
 
 import redis
 from django.conf import settings
@@ -540,3 +542,209 @@ class ScannerTracker:
             return False
 
         return int(count) >= self.SCANNER_THRESHOLD
+
+
+# Prometheus metrics for attack detection
+ATTACK_DETECTED_TOTAL = Counter(
+    "newsblur_attack_detected_total",
+    "Total attack payloads detected and blocked",
+    ["attack_type"],
+)
+ATTACK_BANNED_CHECK_TOTAL = Counter(
+    "newsblur_attack_banned_check_total",
+    "Total requests blocked from already-banned IPs",
+)
+
+
+def _get_client_ip(request):
+    """
+    Extract the real client IP from a proxied request.
+
+    Relies on the known proxy chain: Client → HAProxy → Nginx → Django.
+    HAProxy's ``option forwardfor`` appends the real TCP source IP.
+    Nginx's ``$proxy_add_x_forwarded_for`` appends ``$remote_addr``.
+    Because nginx has ``set_real_ip_from 0.0.0.0/0``, its appended value
+    is the *leftmost* XFF entry (spoofable).  The real client IP is
+    therefore always second-to-last (index -2): the entry HAProxy added
+    from the TCP connection, which cannot be forged at the HTTP layer.
+
+    If XFF has fewer than 2 entries (e.g. dev without HAProxy), fall back
+    to the single entry or REMOTE_ADDR.
+    """
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded:
+        parts = [p.strip() for p in forwarded.split(",")]
+        if len(parts) >= 2:
+            return parts[-2]
+        return parts[0]
+    return request.META.get("REMOTE_ADDR", "unknown")
+
+
+class AttackDetector:
+    """
+    Detect malicious payloads in request query strings, POST bodies, and paths.
+
+    Auto-bans IPs for 24 hours on first detection. Subsequent requests from
+    banned IPs are rejected immediately without payload inspection.
+
+    Redis keys (db 3, REDIS_STATISTICS_POOL):
+    - atk:ban:{ip} -> "1" with TTL (banned IP marker)
+    - atk:log:{ip} -> hash with attack details (for investigation)
+    """
+
+    BAN_TTL_SECONDS = 86400  # 24 hours
+
+    # Content types where POST body should be scanned (text-based only).
+    # Multipart uploads (file uploads) are skipped to avoid buffering large files.
+    SCANNABLE_CONTENT_TYPES = (
+        "application/x-www-form-urlencoded",
+        "application/json",
+        "text/plain",
+        "text/xml",
+        "application/xml",
+    )
+
+    # Max POST body bytes to read for scanning
+    MAX_BODY_SCAN_BYTES = 8192
+
+    # Attack patterns grouped by type for logging
+    ATTACK_PATTERNS = {
+        "jndi": [
+            r"\$\{",  # Log4Shell / JNDI / template injection: ${jndi:, ${url:, etc.
+        ],
+        "xss": [
+            r"<\s*script",  # <script> tags
+            r"javascript\s*:",  # javascript: URIs
+            r"on(?:error|load|click|mouseover)\s*=",  # Event handler injection
+        ],
+        "sqli": [
+            r"(?:UNION\s+(?:ALL\s+)?SELECT)",  # UNION SELECT
+            r"(?:'\s*OR\s+['\d].*=)",  # ' OR '1'='1, ' OR 1=1
+            r"(?:;\s*DROP\s+TABLE)",  # ; DROP TABLE
+            r"(?:'\s*;\s*--)",  # '; --
+        ],
+        "traversal": [
+            r"\.\./\.\./",  # Path traversal (at least two levels to avoid false positives)
+        ],
+        "nullbyte": [
+            r"\x00",  # Null byte injection
+            r"%00",  # URL-encoded null byte
+        ],
+    }
+
+    def __init__(self):
+        self._redis = None
+        # Compile all patterns into a single regex for fast matching, plus keep
+        # individual type regexes for classification
+        self._type_patterns = {}
+        all_patterns = []
+        for attack_type, patterns in self.ATTACK_PATTERNS.items():
+            combined = "|".join(patterns)
+            self._type_patterns[attack_type] = re.compile(combined, re.IGNORECASE)
+            all_patterns.extend(patterns)
+        self._combined_re = re.compile("|".join(all_patterns), re.IGNORECASE)
+
+    @property
+    def redis(self):
+        if self._redis is None:
+            self._redis = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        return self._redis
+
+    def get_ip(self, request):
+        return _get_client_ip(request)
+
+    def is_banned(self, ip):
+        """Check if an IP is currently banned. Fast Redis GET."""
+        try:
+            return bool(self.redis.get(f"atk:ban:{ip}"))
+        except Exception:
+            return False
+
+    def ban_ip(self, ip, attack_type, payload_sample, request):
+        """Ban an IP and store attack details for investigation."""
+        pipe = self.redis.pipeline()
+
+        # Set ban marker with TTL
+        ban_key = f"atk:ban:{ip}"
+        pipe.set(ban_key, "1", ex=self.BAN_TTL_SECONDS)
+
+        # Store attack log for investigation
+        log_key = f"atk:log:{ip}"
+        log_data = {
+            "attack_type": attack_type,
+            "payload_sample": payload_sample[:500],
+            "path": request.path[:200],
+            "user_agent": request.META.get("HTTP_USER_AGENT", "")[:200],
+            "banned_at": str(int(time.time())),
+        }
+        pipe.hset(log_key, mapping=log_data)
+        pipe.expire(log_key, self.BAN_TTL_SECONDS)
+
+        pipe.execute()
+
+    def classify_attack(self, payload):
+        """Return the attack type if payload matches, or None."""
+        for attack_type, pattern in self._type_patterns.items():
+            if pattern.search(payload):
+                return attack_type
+        return None
+
+    def _check_payload(self, payload):
+        """Check a single payload string for attack patterns. Returns (attack_type, sample) or (None, None)."""
+        if payload and self._combined_re.search(payload):
+            attack_type = self.classify_attack(payload)
+            if attack_type:
+                return attack_type, payload[:200]
+        return None, None
+
+    def check_request(self, request):
+        """
+        Inspect request for malicious payloads.
+
+        Checks raw and URL-decoded query strings, URL path, and POST body.
+        Returns (attack_type, payload_sample) if attack detected, or (None, None).
+        """
+        # Check query string (raw first, then decoded to catch encoded payloads).
+        # unquote_plus handles both %XX encoding and + as space (form encoding).
+        query_string = request.META.get("QUERY_STRING", "")
+        if query_string:
+            result = self._check_payload(query_string)
+            if result[0]:
+                return result
+            decoded_qs = unquote_plus(query_string)
+            if decoded_qs != query_string:
+                result = self._check_payload(decoded_qs)
+                if result[0]:
+                    return result
+
+        # Check URL path
+        result = self._check_payload(request.path)
+        if result[0]:
+            return result
+
+        # Check POST body for text-based content types only.
+        # Skip multipart/form-data (file uploads) to avoid buffering large files.
+        if request.method == "POST":
+            content_type = request.META.get("CONTENT_TYPE", "").split(";")[0].strip().lower()
+            if content_type in self.SCANNABLE_CONTENT_TYPES:
+                try:
+                    # Scan first MAX_BODY_SCAN_BYTES of any text POST. Django buffers
+                    # the full body for these content types anyway (request.POST / json),
+                    # so this adds no extra memory cost. Slicing limits regex work, not I/O.
+                    body = request.body[:self.MAX_BODY_SCAN_BYTES].decode("utf-8", errors="replace")
+                    result = self._check_payload(body)
+                    if result[0]:
+                        return result
+                    # Decode form bodies with unquote_plus (+ → space, %XX → char).
+                    # jQuery $.ajax default POSTs are form-encoded, so attack payloads
+                    # like %27+OR+1%3D1 must be decoded to ' OR 1=1 for regex matching.
+                    if content_type == "application/x-www-form-urlencoded":
+                        decoded_body = unquote_plus(body)
+                        if decoded_body != body:
+                            result = self._check_payload(decoded_body)
+                            if result[0]:
+                                return result
+                except Exception:
+                    pass
+
+        return None, None

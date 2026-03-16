@@ -13,6 +13,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     className: "NB-briefing-popover",
 
+    SVG_DRAG_HANDLE: '<svg viewBox="0 0 24 24"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>',
+
     options: {
         'width': 520,
         'anchor': '.NB-briefing-preferences-icon',
@@ -37,7 +39,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-briefing-add-keyword-section": "add_custom_section",
         "click .NB-briefing-remove-custom-section": "remove_custom_section",
         "click .NB-briefing-notification-option": "toggle_notification_type",
-        "click .NB-briefing-model-option": "change_model"
+        "click .NB-briefing-model-option": "change_model",
+        "mousedown .NB-briefing-drag-handle": "start_section_drag"
     },
 
     initialize: function (options) {
@@ -125,10 +128,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('Briefing length', 'Number of stories to include in each briefing', [
                 this.make_control('story_count', [
-                    ['5', '5'],
-                    ['10', '10'],
-                    ['15', '15'],
-                    ['20', '20']
+                    ['10', 'S'],
+                    ['15', 'M'],
+                    ['20', 'L'],
+                    ['25', 'XL']
                 ])
             ]),
             this.make_section('Writing style', null, [
@@ -264,9 +267,16 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     make_sections_ui: function () {
         var sections = this.prefs.sections || {};
-        var items = _.map(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, _.bind(function (def) {
-            var is_enabled = sections.hasOwnProperty(def.key) ? sections[def.key] : true;
-            return this.make_section_item(def, is_enabled);
+        var section_order = this.prefs.section_order || _.pluck(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, 'key');
+        var def_by_key = {};
+        _.each(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, function (def) { def_by_key[def.key] = def; });
+
+        var items = [];
+        _.each(section_order, _.bind(function (key) {
+            var def = def_by_key[key];
+            if (!def) return;
+            var is_enabled = sections.hasOwnProperty(key) ? sections[key] : true;
+            items.push(this.make_section_item(def, is_enabled));
         }, this));
 
         var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
@@ -274,7 +284,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         ]);
         $section.find('.NB-popover-section-label').append(
             $.make('div', { className: 'NB-briefing-notification-hint' },
-                'Sections are only included when matching stories are found.')
+                'Drag to reorder priority. Only shown when matching stories are found.')
         );
         return $section;
     },
@@ -307,6 +317,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
             'data-section': def.key
         }, [
+            $.make('div', { className: 'NB-briefing-drag-handle', title: 'Drag to reorder' }, this.SVG_DRAG_HANDLE),
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('img', { className: 'NB-briefing-section-item-icon', src: icon_url }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
@@ -415,12 +426,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     update_story_count_labels: function () {
-        // briefing_preferences_popover.js: Show "X stories" for active option, just "X" for others
+        // briefing_preferences_popover.js: Show size label with range for active, just size for others
+        var size_labels = {
+            '10': { short: 'S', long: 'S (5-10)' },
+            '15': { short: 'M', long: 'M (10-15)' },
+            '20': { short: 'L', long: 'L (15-20)' },
+            '25': { short: 'XL', long: 'XL (20-25)' }
+        };
         this.$('.NB-briefing-control-story_count .NB-briefing-setting-option').each(function () {
             var $opt = $(this);
-            var value = $opt.data('value');
+            var value = String($opt.data('value'));
             var is_active = $opt.hasClass('NB-active');
-            $opt.text(value + (is_active ? ' stories' : ''));
+            var labels = size_labels[value] || { short: value, long: value };
+            $opt.text(is_active ? labels.long : labels.short);
         });
     },
 
@@ -485,12 +503,89 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         e.stopPropagation();
 
         var $target = $(e.target);
-        // briefing_preferences_popover.js: Don't toggle when clicking input, remove button, or hint icon
-        if ($target.is('input') || $target.closest('.NB-briefing-remove-custom-section').length) return;
+        // briefing_preferences_popover.js: Don't toggle when clicking input, remove button, drag handle, or hint icon
+        if ($target.is('input') || $target.closest('.NB-briefing-remove-custom-section').length ||
+            $target.closest('.NB-briefing-drag-handle').length) return;
 
         var $item = $(e.currentTarget);
         $item.toggleClass('NB-active');
         this.save_sections();
+    },
+
+    start_section_drag: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var self = this;
+        var $item = $(e.currentTarget).closest('.NB-briefing-section-item');
+        var $container = $item.closest('.NB-briefing-sections');
+        var items = $container.children('.NB-briefing-section-item');
+        var start_index = items.index($item);
+        var item_height = $item.outerHeight();
+        var start_y = e.pageY;
+        var current_index = start_index;
+
+        $item.addClass('NB-briefing-section-dragging');
+
+        var on_mousemove = function (move_e) {
+            var delta_y = move_e.pageY - start_y;
+            $item.css('transform', 'translateY(' + delta_y + 'px)');
+
+            var new_index = Math.max(0, Math.min(items.length - 1,
+                start_index + Math.round(delta_y / item_height)));
+
+            if (new_index !== current_index) {
+                items.each(function (i) {
+                    if (i === start_index) return;
+                    var offset = 0;
+                    if (start_index < new_index && i > start_index && i <= new_index) {
+                        offset = -item_height;
+                    } else if (start_index > new_index && i < start_index && i >= new_index) {
+                        offset = item_height;
+                    }
+                    $(this).css('transform', offset ? 'translateY(' + offset + 'px)' : '');
+                });
+                current_index = new_index;
+            }
+        };
+
+        var on_mouseup = function () {
+            $(document).off('mousemove.section_drag mouseup.section_drag');
+            $item.removeClass('NB-briefing-section-dragging');
+            items.css('transform', '');
+
+            if (current_index !== start_index) {
+                // briefing_preferences_popover.js: Build new order from DOM + drag result
+                var section_keys = [];
+                items.each(function () { section_keys.push($(this).data('section')); });
+                var moved = section_keys.splice(start_index, 1)[0];
+                section_keys.splice(current_index, 0, moved);
+
+                // Append custom section keys
+                var custom_keys = [];
+                _.each(self.prefs.custom_section_prompts || [], function (p, i) {
+                    custom_keys.push('custom_' + (i + 1));
+                });
+                self.prefs.section_order = section_keys.concat(custom_keys);
+
+                // Re-render section items in new order
+                var sections = self.prefs.sections || {};
+                var def_by_key = {};
+                _.each(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, function (def) { def_by_key[def.key] = def; });
+                $container.empty();
+                _.each(section_keys, function (key) {
+                    var def = def_by_key[key];
+                    if (!def) return;
+                    var is_enabled = sections.hasOwnProperty(key) ? sections[key] : true;
+                    $container.append(self.make_section_item(def, is_enabled));
+                });
+
+                self.save_preference({ section_order: JSON.stringify(self.prefs.section_order) });
+            }
+        };
+
+        $(document).on('mousemove.section_drag', on_mousemove);
+        $(document).on('mouseup.section_drag', on_mouseup);
     },
 
     add_custom_section: function (e) {
@@ -518,6 +613,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
         if (custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) {
             $add_btn.remove();
+        }
+
+        // briefing_preferences_popover.js: Append new custom key to section_order
+        if (this.prefs.section_order) {
+            this.prefs.section_order.push(custom_key);
+            this.save_preference({ section_order: JSON.stringify(this.prefs.section_order) });
         }
 
         this.save_sections();
@@ -573,6 +674,17 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
                 'Add keyword section'
             ]));
+        }
+
+        // briefing_preferences_popover.js: Update section_order to remove old custom keys and re-index
+        if (this.prefs.section_order) {
+            this.prefs.section_order = _.filter(this.prefs.section_order, function (k) {
+                return k.indexOf('custom_') !== 0;
+            });
+            for (var k = 0; k < custom_prompts.length; k++) {
+                this.prefs.section_order.push('custom_' + (k + 1));
+            }
+            this.save_preference({ section_order: JSON.stringify(this.prefs.section_order) });
         }
 
         // Save to backend

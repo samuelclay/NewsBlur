@@ -12,6 +12,7 @@ from django.utils.encoding import smart_str
 
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
+    DEFAULT_SECTION_ORDER,
     DEFAULT_SECTIONS,
     VALID_SECTION_KEYS,
     MBriefing,
@@ -47,6 +48,19 @@ def _normalize_section_dict(d, merge_lists=False):
     return result
 
 
+def _build_section_order(prefs):
+    """Build complete section_order list from prefs, falling back to default order."""
+    custom_keys = ["custom_%d" % (i + 1) for i in range(len(prefs.custom_section_prompts or []))]
+    if prefs.section_order:
+        # views.py: Return stored order, but ensure any new custom keys are appended
+        order = list(prefs.section_order)
+        for key in custom_keys:
+            if key not in order:
+                order.append(key)
+        return order
+    return DEFAULT_SECTION_ORDER + custom_keys
+
+
 def _get_briefing_notification_types(user_id, briefing_feed_id):
     """Return list of active notification types for the user's briefing feed."""
     notification_types = []
@@ -80,9 +94,13 @@ def load_briefing_stories(request):
         return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     profile = user.profile
     is_premium_archive = profile.is_archive or profile.is_pro
-    limit = int(request.GET.get("limit", 10))
+    per_page = min(50, max(1, int(request.GET.get("limit", 5))))
+    page = max(1, int(request.GET.get("page", 1)))
+    offset = (page - 1) * per_page
 
-    briefings = MBriefing.latest_for_user(user.pk, limit=limit)
+    briefings = list(MBriefing.latest_for_user(user.pk, limit=per_page + 1, offset=offset))
+    has_next_page = len(briefings) > per_page
+    briefings = briefings[:per_page]
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     read_stories_key = "RS:%s" % user.pk
@@ -191,6 +209,8 @@ def load_briefing_stories(request):
         "briefing_feed_id": prefs.briefing_feed_id,
         "enabled": prefs.enabled,
         "section_definitions": section_definitions,
+        "has_next_page": has_next_page,
+        "page": page,
     }
 
     # views.py: Include full preferences when not enabled so the onboarding view
@@ -219,6 +239,7 @@ def load_briefing_stories(request):
             "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
             "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
+            "section_order": _build_section_order(prefs),
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
@@ -270,7 +291,7 @@ def briefing_preferences(request):
         if story_count:
             try:
                 story_count = int(story_count)
-                if story_count in (5, 10, 15, 20):
+                if story_count in (5, 10, 15, 20, 25):
                     prefs.story_count = story_count
             except (ValueError, TypeError):
                 pass
@@ -334,6 +355,16 @@ def briefing_preferences(request):
             except (ValueError, TypeError):
                 pass
 
+        section_order_raw = request.POST.get("section_order")
+        if section_order_raw:
+            try:
+                order_list = stdlib_json.loads(section_order_raw)
+                if isinstance(order_list, list):
+                    validated = [k for k in order_list if k in VALID_SECTION_KEYS]
+                    prefs.section_order = validated if validated else None
+            except (ValueError, TypeError):
+                pass
+
         prefs.save()
 
     # Migrate old "focused" story_sources to the new read_filter field
@@ -373,6 +404,7 @@ def briefing_preferences(request):
         "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
         "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
+        "section_order": _build_section_order(prefs),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,

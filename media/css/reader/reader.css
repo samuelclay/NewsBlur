@@ -5320,6 +5320,96 @@ body {
     color: #A90103;
 }
 
+/* AI Classifier Pills */
+.NB-feed-story .NB-feed-story-ai-classifiers {
+    display: inline;
+    line-height: 22px;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {
+    margin: 0 2px;
+    color: #B0B0A0;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier {
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin: 0 4px 4px 0;
+    line-height: 14px;
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier-label {
+    font-weight: bold;
+}
+
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 9px;
+}
+
+.NB-theme-size-s .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 10px;
+}
+
+.NB-theme-size-l .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 13px;
+}
+
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-ai-classifier {
+    font-size: 14px;
+}
+
+.NB-feed-story.read .NB-feed-story-ai-classifier {
+    color: #949181;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score-1 {
+    /* Green */
+    background-color: #A3CA87;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score--1 {
+    /* Red */
+    background-color: #D58586;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier:hover {
+    /* Gray, active -> [Light] Green */
+    background-color: #9CB987;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    color: white;
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score-1:hover {
+    /* Green hover */
+    background-color: #34912E;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-feed-story .NB-feed-story-ai-classifier.NB-score--1:hover {
+    /* Red hover */
+    background-color: #A90103;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
 .NB-feed-story .NB-feed-story-title .NB-score-1 {
     color: #34912E;
 }
@@ -8682,7 +8772,6 @@ form.opml_import_form input {
     overflow: hidden;
     background: rgba(243, 245, 241, .7);
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
 }
 
 .NB-splash-info .NB-splash-title {
@@ -8890,14 +8979,14 @@ form.opml_import_form input {
 }
 
 #simplemodal-container.NB-full-container.NB-classifier-container {
-    max-height: 800px;
+    max-height: 1000px;
 }
 
 .NB-modal.NB-modal-classifiers {
     position: relative;
     overflow: hidden;
     height: 100%;
-    max-height: 800px;
+    max-height: 1000px;
     padding: 18px;
     display: flex;
     flex-direction: column;
@@ -10858,17 +10947,15 @@ form.opml_import_form input {
 .NB-add-folder-row .NB-add-folder-icon {
     width: 20px;
     height: 20px;
-    background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
     background-size: 20px;
     cursor: pointer;
     flex-shrink: 0;
-    opacity: 0.6;
+    opacity: 0.7;
     transition: opacity 0.15s ease;
 }
 
 .NB-add-folder-row .NB-add-folder-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_folder_add_dark.png') no-repeat 0 0;
-    background-size: 20px;
     opacity: 1;
 }
 
@@ -12832,6 +12919,593 @@ h5.NB-classifier-section-header {
     background: #d97706;
     color: #fff;
     font-weight: 600;
+}
+
+/* ============================ */
+/* = AI Content Filter (text) = */
+/* ============================ */
+
+.NB-content-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-content-filter-header-icon {
+    display: flex;
+    align-items: center;
+    color: #4A90D9;
+}
+
+.NB-content-filter-header-icon svg {
+    display: block;
+}
+
+.NB-classifier-staff-badge {
+    color: #8B7355;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    pointer-events: none;
+}
+
+.NB-classifier-content-prompt-input {
+    flex: 1;
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.NB-classifier-content-prompt-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+}
+
+.NB-classifier-content-prompt-input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+.NB-classifier-content-prompt-placeholder {
+    font-style: italic;
+}
+
+.NB-classifier-content-filter-section .NB-classifier-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-content-filter-test-button {
+    font-size: 11px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-content-filter-test-status {
+    min-height: 0;
+    margin-bottom: 2px;
+}
+
+.NB-content-filter-saved-list .NB-classifier-container {
+    position: relative;
+}
+
+/* ======================================= */
+/* = AI Classifier Cost Estimate          = */
+/* ======================================= */
+
+.NB-ai-cost-estimate {
+    padding: 8px 12px;
+    background: #f5f7f9;
+    border: 1px solid #e2e5e9;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.NB-ai-cost-amounts {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.NB-ai-cost-monthly {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-ai-cost-monthly small {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+    margin-left: 1px;
+}
+
+.NB-ai-cost-separator {
+    color: #ccc;
+    font-size: 12px;
+}
+
+.NB-ai-cost-daily {
+    font-size: 12px;
+    color: #666;
+}
+
+.NB-ai-cost-daily small {
+    font-size: 10px;
+    color: #999;
+    margin-left: 1px;
+}
+
+.NB-ai-cost-breakdown {
+    font-size: 10px;
+    color: #999;
+}
+
+.NB-ai-cost-preview {
+    font-size: 11px;
+    color: #888;
+}
+
+.NB-ai-cost-preview b {
+    color: #555;
+}
+
+.NB-ai-billing-action {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.NB-ai-billing-setup {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #6d5a00;
+}
+
+.NB-ai-billing-manage {
+    background: #e8f5e9;
+    border: 1px solid #81c784;
+    color: #2e7d32;
+}
+
+/* ================================= */
+/* = Spending Limit (Account Dialog) = */
+/* ================================= */
+
+.NB-usage-billing-limit-section {
+    clear: both;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.NB-usage-billing-limit-label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+
+.NB-usage-billing-limit-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.NB-usage-billing-limit-dollar {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.NB-usage-billing-limit-input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.NB-usage-billing-limit-per-month {
+    color: #666;
+    font-size: 12px;
+}
+
+.NB-usage-billing-limit-help {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Progress bar */
+.NB-usage-billing-limit-bar {
+    position: relative;
+    height: 22px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.NB-usage-billing-limit-bar-fill {
+    height: 100%;
+    background: #81c784;
+    transition: width 0.3s;
+}
+
+.NB-usage-billing-limit-bar.NB-limit-warning .NB-usage-billing-limit-bar-fill {
+    background: #ffc107;
+}
+
+.NB-usage-billing-limit-bar.NB-limit-reached .NB-usage-billing-limit-bar-fill {
+    background: #e57373;
+}
+
+.NB-usage-billing-limit-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-usage-billing-limit-nolimit {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+/* Current spend hero section */
+.NB-usage-billing-current-spend-section {
+    margin: 8px 0 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.NB-usage-billing-spend-hero {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+}
+
+.NB-usage-billing-spend-period {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.NB-usage-billing-current-spend-section .NB-usage-billing-limit-bar {
+    margin-top: 8px;
+}
+
+.NB-usage-billing-limit-reached-note {
+    font-size: 11px;
+    color: #c62828;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.NB-usage-billing-upcoming-charge {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.NB-usage-billing-upcoming-amount {
+    font-weight: 700;
+    color: #333;
+}
+
+/* Invoice line items */
+.NB-account-payment-line-items {
+    width: 100%;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.NB-account-payment-line-item {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #666;
+    padding: 2px 0;
+}
+
+.NB-account-payment-line-item-desc {
+    flex: 1;
+}
+
+.NB-account-payment-line-item-qty {
+    width: 50px;
+    text-align: right;
+    color: #999;
+    margin-right: 8px;
+}
+
+.NB-account-payment-line-item-amount {
+    width: 60px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.NB-account-usage-payments .NB-account-payment {
+    flex-wrap: wrap;
+}
+
+/* Dark theme overrides */
+.NB-dark .NB-usage-billing-current-spend-section {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.NB-dark .NB-usage-billing-spend-hero {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-usage-billing-upcoming-amount {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-usage-billing-upcoming-charge {
+    border-top-color: #444;
+}
+
+.NB-dark .NB-account-payment-line-items {
+    border-top-color: #444;
+}
+
+.NB-dark .NB-usage-billing-limit-bar {
+    background: #333;
+}
+
+/* Limit reached banner in classifier dialog */
+.NB-ai-filter-limit-reached-banner-inner {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.NB-ai-filter-limit-reached-banner-inner a {
+    color: #c62828;
+    font-weight: 700;
+}
+
+/* ======================== */
+/* = AI Image Filter (VLM) = */
+/* ======================== */
+
+.NB-image-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-image-filter-header-icon {
+    display: flex;
+    align-items: center;
+    color: #4A90D9;
+}
+
+.NB-image-filter-header-icon svg {
+    display: block;
+}
+
+/* Image thumbnail grid */
+.NB-image-filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.NB-image-filter-thumb {
+    width: 64px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f0f0f0;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.NB-image-filter-thumb img {
+    width: 100%;
+    height: 64px;
+    object-fit: cover;
+    display: block;
+}
+
+.NB-image-filter-thumb-label {
+    text-align: center;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 0;
+    background: #e0e0e0;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.NB-image-filter-thumb-label-match {
+    background: #4caf50;
+    color: #fff;
+}
+
+.NB-image-filter-thumb-testing {
+    border-color: #999;
+    animation: image-filter-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes image-filter-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.NB-image-filter-thumb-match {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 1px #4caf50, 0 0 6px rgba(76, 175, 80, 0.4);
+}
+
+.NB-image-filter-thumb-neutral {
+    border-color: #ccc;
+}
+
+/* Input row with test button */
+.NB-classifier-image-filter-section .NB-classifier-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-classifier-prompt-input {
+    flex: 1;
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.NB-classifier-prompt-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+}
+
+.NB-classifier-prompt-input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+.NB-image-filter-test-button {
+    font-size: 11px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Test result status */
+.NB-image-filter-test-status {
+    min-height: 0;
+    margin-bottom: 2px;
+}
+
+.NB-image-filter-status-badge {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 4px;
+    margin-top: 6px;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+.NB-image-filter-status-match {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.NB-image-filter-status-neutral {
+    background: #fce4ec;
+    color: #b71c1c;
+    border: 1px solid #ef9a9a;
+}
+
+.NB-image-filter-status-error {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+}
+
+.NB-classifier-prompt-placeholder {
+    font-style: italic;
+}
+
+.NB-image-filter-saved-list .NB-classifier-container {
+    position: relative;
+}
+
+.NB-image-filter-item-delete {
+    cursor: pointer;
+    color: #ccc;
+    font-size: 18px;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+    float: left;
+    margin: 2px 0 0 4px;
+}
+
+.NB-image-filter-item-delete:hover {
+    color: #c45555;
+}
+
+/* AI filter upgrade banner */
+.NB-ai-filter-upgrade-banner {
+    display: none;
+}
+
+.NB-ai-filter-upgrade-banner-inner {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #6d5a00;
+    text-align: center;
+}
+
+.NB-ai-filter-upgrade-banner-inner a {
+    color: #d68400;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.NB-ai-filter-upgrade-banner-inner a:hover {
+    color: #b36d00;
 }
 
 /* =================== */
@@ -20585,9 +21259,9 @@ h5.NB-classifier-section-header {
 }
 
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-10 .NB-premium-bullet-image {
-    background-image: url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png');
-    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);
-    /* yellow-gold */
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
 
 /* Archive tier icons with individual vivid colors */
@@ -22039,6 +22713,11 @@ h5.NB-classifier-section-header {
 /* = Account Dialog = */
 /* ================== */
 
+#simplemodal-container.NB-account-container .simplemodal-wrap {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto !important;
+}
+
 .NB-modal-account .NB-modal-title .NB-icon {
     background: transparent url('/media/embed/icons/nouns/dialog-account.svg') no-repeat 0 0;
     background-size: 28px;
@@ -22069,13 +22748,15 @@ h5.NB-classifier-section-header {
     overflow: hidden;
 }
 
-.NB-account-payments {
+.NB-account-payments,
+.NB-account-usage-payments {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.NB-account-payments .NB-account-payment {
+.NB-account-payments .NB-account-payment,
+.NB-account-usage-payments .NB-account-payment {
     display: flex;
     align-items: center;
     list-style: none;
@@ -22084,45 +22765,54 @@ h5.NB-classifier-section-header {
     border-bottom: 1px solid #E0E0E0;
 }
 
-.NB-account-payments li:last-child {
+.NB-account-payments li:last-child,
+.NB-account-usage-payments li:last-child {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-.NB-account-payments .NB-payments-loading {
+.NB-account-payments .NB-payments-loading,
+.NB-account-usage-payments .NB-payments-loading {
     padding: 0 0 0 20px;
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat left 3px top 3px;
     background-size: 16px;
 }
 
-.NB-account-payments .NB-account-payment-date {
+.NB-account-payments .NB-account-payment-date,
+.NB-account-usage-payments .NB-account-payment-date {
     width: 180px;
     font-weight: bold;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-account-payment-amount {
+.NB-account-payments .NB-account-payment-amount,
+.NB-account-usage-payments .NB-account-payment-amount {
     width: 80px;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-account-payment-provider {
+.NB-account-payments .NB-account-payment-provider,
+.NB-account-usage-payments .NB-account-payment-provider {
     width: 80px;
     flex-shrink: 0;
 }
 
-.NB-account-payments .NB-scheduled .NB-account-payment-provider {
+.NB-account-payments .NB-scheduled .NB-account-payment-provider,
+.NB-account-usage-payments .NB-scheduled .NB-account-payment-provider {
     color: darkgrey;
 }
 
 .NB-account-payments .NB-scheduled.NB-canceled .NB-account-payment-provider,
-.NB-account-payments .NB-refunded .NB-account-payment-amount {
+.NB-account-payments .NB-refunded .NB-account-payment-amount,
+.NB-account-usage-payments .NB-scheduled.NB-canceled .NB-account-payment-provider,
+.NB-account-usage-payments .NB-refunded .NB-account-payment-amount {
     text-decoration: line-through;
     color: darkred;
 }
 
-.NB-account-payments .NB-account-payment-invoice {
+.NB-account-payments .NB-account-payment-invoice,
+.NB-account-usage-payments .NB-account-payment-invoice {
     font-size: 11px;
     color: #707070;
     text-decoration: none;
@@ -22134,12 +22824,14 @@ h5.NB-classifier-section-header {
     align-items: center;
 }
 
-.NB-account-payments .NB-account-payment-invoice:hover {
+.NB-account-payments .NB-account-payment-invoice:hover,
+.NB-account-usage-payments .NB-account-payment-invoice:hover {
     background-color: #FAD961;
     color: #505050;
 }
 
-.NB-account-payments .NB-account-payment-invoice-icon {
+.NB-account-payments .NB-account-payment-invoice-icon,
+.NB-account-usage-payments .NB-account-payment-invoice-icon {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -22150,7 +22842,8 @@ h5.NB-classifier-section-header {
     margin-right: 4px;
 }
 
-.NB-account-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon {
+.NB-account-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon,
+.NB-account-usage-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon {
     opacity: 1;
 }
 
@@ -22335,7 +23028,6 @@ h5.NB-classifier-section-header {
 .NB-static .NB-splash-info {
     position: fixed;
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     background-color: rgba(36, 54, 54, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -22343,7 +23035,6 @@ h5.NB-classifier-section-header {
 .NB-static .NB-splash-info.NB-splash-bottom {
     background: rgba(36, 54, 54, 0.9);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     border-bottom: none;
 }
@@ -23756,6 +24447,121 @@ h5.NB-classifier-section-header {
 /* Icon editor container min-height for better screenshots */
 .NB-folder-icon-editor {
     min-height: 500px;
+}
+
+/* Section header with inline search */
+.NB-folder-icon-editor .NB-folder-icon-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0 6px 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-section-header .NB-folder-icon-section-label {
+    margin: 0;
+}
+
+/* Icon search filter - inline rounded rect input */
+.NB-folder-icon-editor .NB-folder-icon-search {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #FFF;
+    border: 1px solid #D0D4D8;
+    border-radius: 4px;
+    padding: 3px 8px;
+    width: 150px;
+    transition: border-color 0.15s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-icon {
+    width: 13px;
+    height: 13px;
+    opacity: 0.35;
+    flex-shrink: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input,
+.NB-modal-exception .NB-folder-icon-editor input[type=text].NB-folder-icon-search-input {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    padding: 1px 0;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input {
+    color: #333;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-input::placeholder {
+    color: #AAA;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear {
+    cursor: pointer;
+    font-size: 14px;
+    color: #999;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear:hover {
+    color: #333;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-search-clear.NB-hidden {
+    display: none;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-no-results {
+    text-align: center;
+    padding: 24px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+/* Dark mode: icon search filter */
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search {
+    background: #2A2D30;
+    border-color: #404346;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-icon {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-input {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-input::placeholder {
+    color: #666;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-clear {
+    color: #777;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-search-clear:hover {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-no-results {
+    color: #777;
 }
 
 /* Upload section margin */
@@ -25335,7 +26141,6 @@ h5.NB-classifier-section-header {
     width: 100%;
     max-width: 380px;
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.5);
     border: 0.5px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
@@ -28463,6 +29268,28 @@ h5.NB-classifier-section-header {
     border-color: #C8E6C9;
 }
 
+/* Reddit API results section */
+.NB-add-site-reddit-api-section {
+    margin-top: 16px;
+}
+
+.NB-add-site-reddit-api-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 4px 8px;
+}
+
+/* Reddit direct-add card */
+.NB-add-site-reddit-direct-card {
+    border-style: dashed;
+    border-color: #CCC;
+    background: #FAFAFA;
+    margin-bottom: 12px;
+}
+
 /* Empty State */
 .NB-add-site-empty-state {
     display: flex;
@@ -30909,6 +31736,15 @@ h5.NB-classifier-section-header {
 
 .NB-dark .NB-add-site-card-subscribed {
     border-color: #2E5930;
+}
+
+.NB-dark .NB-add-site-reddit-api-header {
+    color: #777;
+}
+
+.NB-dark .NB-add-site-reddit-direct-card {
+    border-color: #555;
+    background: #1E1E1E;
 }
 
 .NB-dark .NB-add-site-subscribed-indicator {
@@ -37205,12 +38041,46 @@ span.NB-briefing-inline-favicon {
     padding: 6px 8px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: transform 0.15s ease, background 0.15s;
     flex-wrap: wrap;
 }
 
 .NB-briefing-section-item:hover {
     background: rgba(0, 0, 0, 0.04);
+}
+
+/* reader.css: Briefing section drag handle */
+.NB-briefing-drag-handle {
+    width: 18px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: grab;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-briefing-drag-handle:hover {
+    opacity: 0.6;
+}
+
+.NB-briefing-drag-handle:active {
+    cursor: grabbing;
+}
+
+.NB-briefing-drag-handle svg {
+    width: 14px;
+    height: 14px;
+    fill: #888;
+}
+
+.NB-briefing-section-item.NB-briefing-section-dragging {
+    background: #e8eae6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    opacity: 0.9;
+    position: relative;
 }
 
 .NB-briefing-section-checkbox {
@@ -37451,6 +38321,14 @@ span.NB-briefing-inline-favicon {
     background: rgba(255, 255, 255, 0.05);
 }
 
+.NB-dark .NB-briefing-drag-handle svg {
+    fill: #999;
+}
+
+.NB-dark .NB-briefing-section-item.NB-briefing-section-dragging {
+    background: #3a3a3e;
+}
+
 .NB-dark .NB-briefing-section-checkbox {
     border-color: #555;
 }
@@ -37567,6 +38445,17 @@ span.NB-briefing-inline-favicon {
 .NB-briefing-progress-message {
     font-size: 12px;
     color: #606060;
+}
+
+/* reader.css: Loading indicator for infinite scroll pagination */
+.NB-briefing-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    background-color: #F5F6F2;
 }
 
 /* reader.css: Error state during generation */

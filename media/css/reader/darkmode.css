@@ -1703,6 +1703,14 @@ color: #a85b40;
     background-color: #585b63;
 }
 
+.NB-dark .NB-dashboard-column-control li img {
+    filter: invert(0.7);
+}
+
+.NB-dark .NB-dashboard-column-control li.NB-active img {
+    filter: invert(0.9);
+}
+
 .NB-dark #story_taskbar {
     border-top: 1px solid #303030;
 }
@@ -2055,7 +2063,8 @@ border-bottom: 1px solid #222d31;
 */
 
 /* Staff-Only Badge - Dark Mode */
-.NB-dark .NB-staff-badge {
+.NB-dark .NB-staff-badge,
+.NB-dark .NB-classifier-staff-badge {
     color: #a89880;
 }
 
@@ -3659,6 +3668,165 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-classifier-scope-notice a {
     color: #f59e0b;
+}
+
+/* ========================================== */
+/* = AI Content Filter (text) Dark Mode    = */
+/* ========================================== */
+
+.NB-dark .NB-content-filter-header-icon {
+    color: #5b9fd9;
+}
+
+.NB-dark .NB-classifier-content-prompt-input {
+    background: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-content-prompt-input:focus {
+    border-color: #4A90D9;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-classifier-content-prompt-input:disabled {
+    background: #1e2022;
+    color: #555;
+}
+
+/* ======================================= */
+/* = AI Classifier Cost Estimate Dark    = */
+/* ======================================= */
+
+.NB-dark .NB-ai-cost-estimate {
+    background: #2a2c2e;
+    border-color: #3a3c3e;
+}
+
+.NB-dark .NB-ai-cost-monthly {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-ai-cost-monthly small {
+    color: #777;
+}
+
+.NB-dark .NB-ai-cost-separator {
+    color: #555;
+}
+
+.NB-dark .NB-ai-cost-daily {
+    color: #aaa;
+}
+
+.NB-dark .NB-ai-cost-daily small {
+    color: #777;
+}
+
+.NB-dark .NB-ai-cost-breakdown {
+    color: #666;
+}
+
+.NB-dark .NB-ai-cost-preview {
+    color: #666;
+}
+
+.NB-dark .NB-ai-cost-preview b {
+    color: #999;
+}
+
+.NB-dark .NB-ai-billing-setup {
+    background: #4a3f00;
+    border-color: #7a6600;
+    color: #ffd54f;
+}
+
+.NB-dark .NB-ai-billing-manage {
+    background: #1b3a1b;
+    border-color: #2e6b2e;
+    color: #81c784;
+}
+
+/* ====================================== */
+/* = AI Image Filter (VLM) Dark Mode   = */
+/* ====================================== */
+
+.NB-dark .NB-image-filter-header-icon {
+    color: #5b9fd9;
+}
+
+.NB-dark .NB-image-filter-thumb {
+    background: #2a2c2e;
+}
+
+.NB-dark .NB-image-filter-thumb-neutral {
+    border-color: #555;
+}
+
+.NB-dark .NB-classifier-prompt-input {
+    background: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-prompt-input:focus {
+    border-color: #4A90D9;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-classifier-prompt-input:disabled {
+    background: #1e2022;
+    color: #555;
+}
+
+.NB-dark .NB-image-filter-thumb-label {
+    background: #3a3c3e;
+    color: #888;
+}
+
+.NB-dark .NB-image-filter-thumb-label-match {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.NB-dark .NB-image-filter-status-match {
+    background: #1a2e1a;
+    color: #66bb6a;
+    border-color: #2e7d32;
+}
+
+.NB-dark .NB-image-filter-status-neutral {
+    background: #2e1a1a;
+    color: #ef9a9a;
+    border-color: #6d3a3a;
+}
+
+.NB-dark .NB-image-filter-status-error {
+    background: #3a2a1a;
+    color: #e6a040;
+    border-color: #7a5a2a;
+}
+
+.NB-dark .NB-image-filter-item-delete {
+    color: #555;
+}
+
+.NB-dark .NB-image-filter-item-delete:hover {
+    color: #c45555;
+}
+
+.NB-dark .NB-ai-filter-upgrade-banner-inner {
+    background: linear-gradient(135deg, #2a2510 0%, #332a0d 100%);
+    border-color: #6d5a00;
+    color: #e6c84a;
+}
+
+.NB-dark .NB-ai-filter-upgrade-banner-inner a {
+    color: #ffc107;
+}
+
+.NB-dark .NB-ai-filter-upgrade-banner-inner a:hover {
+    color: #ffe082;
 }
 
 /* ===================================== */
@@ -5300,6 +5468,11 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-briefing-progress-message {
     color: #A0A0A0;
+}
+
+.NB-dark .NB-briefing-loading {
+    background-color: #1A1A1A;
+    border-bottom-color: #303030;
 }
 
 /* darkmode.css: Error state */

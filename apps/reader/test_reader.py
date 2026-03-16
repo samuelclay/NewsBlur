@@ -311,6 +311,14 @@ class Test_Reader(TransactionTestCase):
         deep_tech = [f for f in tech_folder["Tech"] if isinstance(f, dict) and "Deep Tech" in f][0]
         self.assertIn(1, deep_tech["Deep Tech"])
 
+    def test_add_url__missing_url_param(self):
+        """POST to add_url without 'url' should return error, not crash."""
+        self.client.login(username="conesus", password="test")
+
+        response = self.client.post("/reader/add_url", {})
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+
     def test_rename_folder_no_substring_match(self):
         """Renaming 'Tech' should not affect 'Deep Tech'."""
         self.client.login(username="conesus", password="test")

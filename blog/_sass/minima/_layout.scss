@@ -1,3 +1,21 @@
+@use "variables" as *;
+
+/**
+ * WebGL canvas - positioned absolutely, sized by JS to cover header + subheader
+ */
+.blog-header-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  // Default height covers header + subheader; JS refines to exact size
+  height: 150px;
+  z-index: 0;
+  pointer-events: none;
+  // CSS fallback gradient if WebGL fails (light mode: warm beige)
+  background: linear-gradient(180deg, #dcc8a0 0%, #c4a870 50%, #8a7048 100%);
+}
+
 /**
  * Site header
  */
@@ -9,6 +27,19 @@
   top: 0;
   background-color: $background-color;
   z-index: 100;
+  transition: background-color 0.2s ease;
+
+  // When at top of page, show WebGL through
+  &.at-top {
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  // Before JS runs, match canvas fallback gradient to prevent flash
+  body.at-top-init & {
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
 
   .wrapper {
     display: flex;
@@ -17,14 +48,18 @@
 }
 
 .site-subheader {
+  position: relative;
+  z-index: 1;
   padding: 12px 0;
-  border-bottom: 1px solid $grey-color-light;
-  background-color: rgb(245, 243, 220);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   .top {
-    color: #574621;
+    color: rgba(0, 0, 0, 0.6);
   }
   .bottom {
-    color: #887541;
+    color: rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -72,7 +107,6 @@
 }
 
 .site-nav {
-  margin-left: auto;
   line-height: $base-line-height * $base-font-size * 2.25;
 
   .nav-trigger {
@@ -172,7 +206,7 @@
   @include relative-font-size(0.9375);
   color: $grey-color;
   margin-left: calc($spacing-unit / -2);
-  @extend %clearfix;
+  &:after { content: ""; display: table; clear: both; }
 }
 
 .footer-col {
@@ -182,38 +216,32 @@
 }
 
 .footer-col-1 {
-  width: -webkit-calc(35% - (#{$spacing-unit} / 2));
-  width:         calc(35% - (#{$spacing-unit} / 2));
+  width: calc(35% - (#{$spacing-unit} / 2));
 }
 
 .footer-col-2 {
-  width: -webkit-calc(20% - (#{$spacing-unit} / 2));
-  width:         calc(20% - (#{$spacing-unit} / 2));
+  width: calc(20% - (#{$spacing-unit} / 2));
 }
 
 .footer-col-3 {
-  width: -webkit-calc(45% - (#{$spacing-unit} / 2));
-  width:         calc(45% - (#{$spacing-unit} / 2));
+  width: calc(45% - (#{$spacing-unit} / 2));
 }
 
 @include media-query($on-laptop) {
   .footer-col-1,
   .footer-col-2 {
-    width: -webkit-calc(50% - (#{$spacing-unit} / 2));
-    width:         calc(50% - (#{$spacing-unit} / 2));
+    width: calc(50% - (#{$spacing-unit} / 2));
   }
 
   .footer-col-3 {
-    width: -webkit-calc(100% - (#{$spacing-unit} / 2));
-    width:         calc(100% - (#{$spacing-unit} / 2));
+    width: calc(100% - (#{$spacing-unit} / 2));
   }
 }
 
 @include media-query($on-palm) {
   .footer-col {
     float: none;
-    width: -webkit-calc(100% - (#{$spacing-unit} / 2));
-    width:         calc(100% - (#{$spacing-unit} / 2));
+    width: calc(100% - (#{$spacing-unit} / 2));
   }
 }
 

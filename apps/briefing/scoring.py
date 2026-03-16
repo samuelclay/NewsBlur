@@ -2,6 +2,7 @@ import datetime
 import re
 import time
 import zlib
+from collections import defaultdict
 
 import redis
 from django.conf import settings
@@ -14,6 +15,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     compute_story_score,
 )
+from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils import log as logging
@@ -37,6 +39,7 @@ def select_briefing_stories(
     custom_section_prompts=None,
     active_sections=None,
     exclude_hashes=None,
+    section_order=None,
 ):
     """
     Select the most important stories for a user's briefing and categorize them
@@ -310,7 +313,7 @@ def select_briefing_stories(
         diverse_scored.append(s)
     scored = diverse_scored
 
-    top_candidates = scored[: max_stories * 2]
+    top_candidates = scored[: max_stories * 3]
 
     read_feeds_with_dates = {}
     for s in scored:
@@ -358,7 +361,34 @@ def select_briefing_stories(
             }
         )
 
-    result = enriched[:max_stories]
+    # scoring.py: Weighted section-priority allocation — higher-ranked sections
+    # get proportionally more stories instead of a flat global top-N cutoff.
+    by_section = defaultdict(list)
+    for s in enriched:
+        by_section[s["category"]].append(s)
+
+    order = section_order or DEFAULT_SECTION_ORDER
+    effective_sections = active_sections or DEFAULT_SECTIONS
+    active = [s for s in order if by_section.get(s) and effective_sections.get(s, True)]
+
+    n = len(active)
+    if n == 0:
+        result = []
+    else:
+        weights = [n - i for i in range(n)]  # [n, n-1, ..., 1]
+        total_weight = sum(weights)
+        result = []
+        budget_left = max_stories
+        for i, section in enumerate(active):
+            if budget_left <= 0:
+                break
+            if i == n - 1:
+                alloc = budget_left  # Last section gets remainder
+            else:
+                alloc = max(1, round(max_stories * weights[i] / total_weight))
+            alloc = min(alloc, budget_left, len(by_section[section]))
+            result.extend(by_section[section][:alloc])
+            budget_left -= alloc
 
     # scoring.py: Reserve slots for stories matching custom section prompts.
     # Use Elasticsearch exact phrase search across title AND content, falling

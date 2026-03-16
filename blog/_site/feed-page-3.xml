@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-05T17:46:34-05:00</updated>
+  <updated>2026-03-14T23:39:27-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,48 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Twitter’s back, baby</title>
+    <link href="https://blog.newsblur.com/2016/06/01/twitters-back-baby/" rel="alternate" type="text/html" title="Twitter’s back, baby" />
+    <published>2016-06-01T07:00:30-04:00</published>
+    <updated>2016-06-01T07:00:30-04:00</updated>
+    <id>https://blog.newsblur.com/2016/06/01/twitters-back-baby</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/06/01/twitters-back-baby/">
+      <![CDATA[<p>It’s been too long. Twitter <a href="https://blog.twitter.com/2013/api-v1-retirement-final-dates">unceremoniously knee-capped their API</a> a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_api.png" alt="" /></p>
+
+<p>You can now subscribe to <strong><a href="https://twitter.com/">https://twitter.com/</a><em>username</em></strong> to get individual Twitter accounts on NewsBlur. Put them all in a folder to recreate your tweetstream.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_add.png" alt="" /></p>
+
+<p>Not only do you get the full tweetstream for that user, but you can also filter out tweets that are replies, retweets, or contain any text in them. You can also train Twitter feeds to highlight tweets that contain photos, are retweeted or liked, or have a word you want.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_training.png" alt="" /></p>
+
+<p>YouTube also deprecated their API and NewsBlur came to the rescue with <a href="http://blog.newsblur.com/2021/06/21/2015-04-30-a-real-solution-to-the-deprecated-youtube-api.html">native YouTube API support</a>. Now Twitter joins that list of native support, giving you a better Twitter experience than ever before.</p>
+
+<p>And because this native Twitter support takes more work than normal RSS feeds do, this feature is only available to premium subscribers.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s been too long. Twitter unceremoniously knee-capped their API a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur goes dark ... on iOS</title>
@@ -1003,42 +1045,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[…S-Y-N-C-I-N-G.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Adjust the font size of feed and story titles</title>
-    <link href="https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/" rel="alternate" type="text/html" title="Adjust the font size of feed and story titles" />
-    <published>2014-07-22T06:30:26-04:00</published>
-    <updated>2014-07-22T06:30:26-04:00</updated>
-    <id>https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/">
-      <![CDATA[<p>It was only a few months ago back in April that I launched <a href="http://blog.newsblur.com/2021/06/21/2014-04-10-the-new-font-and-style-manager.html">the new font and style manager</a>. Today I’m coming back to finish the job.</p>
-
-<p>The style manager now has a new control for choosing the font size of feed titles and story titles.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_style.png" alt="" /></p>
-
-<p>Choose from extra small to extra large. These new font sizes not only give you extra customization, but they allow you to have bigger touch sizes for folks using touch screen monitors.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_xl.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_xs.png" alt="" /></p>
-
-<p>If you spot anywhere else that you’d like to see additional customization, please shout out to the <a href="http://twitter.com/newsblur">@newsblur account on Twitter</a> or post an idea on <a href="http://getsatisfaction.com/newsblur">NewsBlur’s Get Satisfaction support site</a>.</p>
-
-<p>And please continue to talk about how much you use NewsBlur. <a href="https://twitter.com/newsblur/favorites">Every tweet that talks positively about NewsBlur</a> makes all of this work worthwhile.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[It was only a few months ago back in April that I launched the new font and style manager. Today I’m coming back to finish the job.
 ]]>
     </summary>
     

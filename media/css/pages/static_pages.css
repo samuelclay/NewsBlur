@@ -271,12 +271,14 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
 /* Dropdown panel - lives in <body> (moved via JS) so backdrop-filter
    works without being blocked by the header's own backdrop-filter. */
 .NB-splash-dropdown {
-    position: absolute;
+    position: fixed;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.2s ease, visibility 0.2s ease;
     padding-top: 8px;
+    top: 0;
+    left: 0;
 }
 
 /* Constrain dropdown widths */
@@ -307,9 +309,8 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
 
 /* Inner container - the visible panel (light mode: frosted glass) */
 .NB-splash-dropdown-inner {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(40px) saturate(1.4);
-    -webkit-backdrop-filter: blur(40px) saturate(1.4);
     border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 12px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03);
@@ -1681,7 +1682,6 @@ h3.NB-pricing-faq-question {
     border-radius: 14px;
     padding: 32px 36px 28px;
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .NB-features-compare-header {
@@ -3134,14 +3134,12 @@ body.NB-static a {
 body.NB-static:not(.NB-dark) .NB-splash-info {
     background-color: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
 body.NB-static:not(.NB-dark) .NB-splash-info.NB-splash-bottom {
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-top-color: rgba(0, 0, 0, 0.08);
 }
 
@@ -3224,7 +3222,7 @@ body.NB-dark.NB-static a:hover {
 
 /* Dark mode: dark frosted glass dropdowns */
 .NB-dark .NB-splash-dropdown-inner {
-    background: rgba(16, 20, 28, 0.7);
+    background: rgba(16, 20, 28, 0.95);
     border-color: rgba(255, 255, 255, 0.12);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
@@ -3274,25 +3272,25 @@ body.NB-dark.NB-static a:hover {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training,
-.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
-.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
-.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
-.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search,
-.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive,
-.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved,
-.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
+body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training,
+body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
+body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
+body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search,
+body.NB-dark.NB-static-feature-archive .NB-splash-dropdown-item-archive,
+body.NB-dark.NB-static-feature-saved .NB-splash-dropdown-item-saved,
+body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps {
     background: rgba(255, 255, 255, 0.06);
 }
 
-.NB-dark .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
-.NB-dark .NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
+body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-archive .NB-splash-dropdown-item-archive .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-saved .NB-splash-dropdown-item-saved .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps .NB-splash-dropdown-item-name {
     color: #FBDB9B;
 }
 
