@@ -1,0 +1,28 @@
+---
+- name: "{{ 'Restart' if container_restart | default(false) else 'Start' }} NewsBlur Web Docker container"
+  become: yes
+  throttle: 3
+  docker_container:
+    name: newsblur_web
+    image: newsblur/newsblur_python3
+    container_default_behavior: no_defaults
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    restart: "{{ container_restart | default(false) }}"
+    command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+    hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "8000:8000"
+    restart_policy: unless-stopped
+    user: 1000:1001
+    volumes:
+      - /srv/newsblur:/srv/newsblur

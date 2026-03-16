@@ -1,0 +1,43 @@
+---
+- name: "{{ 'Restart' if container_restart | default(false) else 'Start' }} task-celery/task-work docker containers"
+  become: yes
+  docker_container:
+    name: "{{ item.container_name }}"
+    image: newsblur/newsblur_python3
+    state: started
+    pull: yes
+    restart: "{{ container_restart | default(false) }}"
+    hostname: "{{ inventory_hostname }}"
+    container_default_behavior: no_defaults
+    env:
+      DOCKERBUILD: ""
+    restart_policy: always
+    labels:
+      autoheal: "true"
+    networks_cli_compatible: yes
+    network_mode: host
+    command: "{{ item.command }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    healthcheck:
+      test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 600)) && exit 0 || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    user: "1000:1001"
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+      - /etc/hosts:/etc/hosts
+  with_items:
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q discover_indexer,search_indexer,new_feeds,push_feeds,update_feeds"
+      when: "{{ inventory_hostname == 'htask-celery-10' }}"
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer"
+      when: "{{ 'htask-celery' in inventory_hostname and inventory_hostname != 'htask-celery-10' }}"
+    - container_name: "task-work"
+      command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
+      when: "{{ 'htask-work' in inventory_hostname }}"
+  when: item.when|default(true)
