@@ -578,11 +578,14 @@ A new sound of an old instrument.<br />
     <script>
     (function() {
       // Theme management
-      function get_theme() {
+      function system_theme() {
         return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
       }
 
+      var current_theme = system_theme();
+
       function apply(theme) {
+        current_theme = theme;
         var isDark = (theme === 'dark');
         if (isDark) {
           document.body.classList.add('NB-dark');
@@ -594,7 +597,7 @@ A new sound of an old instrument.<br />
         }
       }
 
-      apply(get_theme());
+      apply(current_theme);
 
       // Toggle click
       var toggle = document.querySelector('.NB-theme-toggle');
@@ -602,7 +605,7 @@ A new sound of an old instrument.<br />
         toggle.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          apply(get_theme() === 'dark' ? 'light' : 'dark');
+          apply(current_theme === 'dark' ? 'light' : 'dark');
         });
       }
 
@@ -610,9 +613,9 @@ A new sound of an old instrument.<br />
       if (window.matchMedia) {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
         try {
-          mq.addEventListener('change', function() { apply(get_theme()); });
+          mq.addEventListener('change', function() { apply(system_theme()); });
         } catch (e1) {
-          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
         }
       }
 
@@ -631,7 +634,7 @@ A new sound of an old instrument.<br />
         size_canvas();
         var ok = BlogBackground.init(canvas);
         if (ok) {
-          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
           BlogBackground.start();
         }
         window.addEventListener('resize', size_canvas);
