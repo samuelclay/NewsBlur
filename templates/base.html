@@ -318,6 +318,9 @@
             <div class="NB-splash-title NB-splash-blurred-logo"></div>
           </a>
         </div>
+        <a href="{% url "index" %}" class="NB-mobile-logo-link">
+          <div class="NB-mobile-logo"></div>
+        </a>
         {% block content %}{% endblock %}
         {% block footer %}
           {% render_footer "welcome" %}

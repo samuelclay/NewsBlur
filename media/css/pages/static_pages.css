@@ -72,6 +72,7 @@ body.NB-dark.NB-static .NB-splash-top-title {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    -webkit-padding-start: 0;
     gap: 4px;
     align-items: center;
     justify-content: center;
@@ -103,11 +104,17 @@ body.NB-dark.NB-static .NB-splash-top-title {
     display: none;
 }
 
+/* Mobile-only logo link: hidden by default, shown in mobile media query */
+.NB-mobile-logo-link {
+    display: none;
+}
+
 /* Kill squares: force no list markers */
 .NB-splash-top-link {
     list-style: none;
     list-style-type: none;
     padding: 0;
+    display: block;
 }
 
 .NB-static .NB-splash-top-link,
@@ -189,6 +196,7 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
     list-style: none;
     margin: 0;
     padding: 0;
+    -webkit-padding-start: 0;
     gap: 4px;
     align-items: center;
 }
@@ -3002,6 +3010,25 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
 
     .NB-forgot-password-card {
         padding: 28px 24px;
+    }
+
+    /* NewsBlur branding above page title on mobile */
+    .NB-static .NB-mobile-logo-link {
+        display: block;
+        text-align: center;
+        margin: 0 auto 16px;
+    }
+
+    .NB-static .NB-mobile-logo {
+        width: 120px;
+        height: 24px;
+        margin: 0 auto;
+        background: url('/media/embed/logo_newsblur_blur.png') no-repeat center center;
+        background-size: contain;
+    }
+
+    body.NB-dark.NB-static .NB-mobile-logo {
+        background-image: url('/media/embed/logo_newsblur_blur_dark.png');
     }
 }
 
