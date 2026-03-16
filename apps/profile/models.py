@@ -3356,11 +3356,19 @@ zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def stripe_subscription_updated(sender, full_json, **kwargs):
     stripe_id = full_json["data"]["object"]["customer"]
-    plan_id = full_json["data"]["object"]["plan"]["id"]
+    plan = full_json["data"]["object"].get("plan")
+    if plan is None:
+        items = full_json["data"]["object"].get("items", {}).get("data", [])
+        if items:
+            plan = items[0].get("plan") or items[0].get("price")
+    if plan is None:
+        logging.debug("~BC~SB~FRStripe subscription updated but no plan found for customer %s" % stripe_id)
+        return
+    plan_id = plan["id"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = (
-            not full_json["data"]["object"]["cancel_at"] and full_json["data"]["object"]["plan"]["active"]
+            not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         )
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
