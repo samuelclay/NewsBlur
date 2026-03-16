@@ -430,6 +430,14 @@ a.NB-splash-dropdown-heading-link:hover,
     filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1);
 }
 
+.NB-splash-dropdown-icon-indigo {
+    filter: invert(30%) sepia(95%) saturate(2200%) hue-rotate(235deg) brightness(1.0);
+}
+
+.NB-splash-dropdown-icon-cyan {
+    filter: invert(55%) sepia(85%) saturate(1800%) hue-rotate(160deg) brightness(1.1);
+}
+
 a.NB-splash-dropdown-item,
 a.NB-splash-dropdown-item:link,
 a.NB-splash-dropdown-item:visited,
@@ -862,7 +870,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-search .NB-feature-detail-crosslink-search,
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved,
-.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
+.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -873,7 +882,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
-.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
+.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
     color: #8a6d1b;
 }
 
@@ -902,6 +912,70 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     .NB-feature-detail-crosslinks-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* ---- MCP Feature Detail Page ---- */
+
+/* Code blocks - terminal/code style */
+pre.NB-feature-detail-code {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    margin: 8px 0 16px;
+    line-height: 1.5;
+}
+
+/* Connect sections */
+.NB-feature-detail-connect {
+    margin-bottom: 20px;
+}
+
+.NB-feature-detail-connect h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d261a;
+    margin: 0 0 8px;
+}
+
+/* Tool groups - responsive grid */
+.NB-feature-detail-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.NB-feature-detail-tool-group h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.85);
+    margin: 0 0 10px;
+}
+
+.NB-feature-detail-tool-group ul {
+    list-style: none;
+    padding: 0 0 0 4px;
+    margin: 0;
+}
+
+.NB-feature-detail-tool-group li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.7);
+    line-height: 1.5;
+}
+
+.NB-feature-detail-tool-group code {
+    background: rgba(138, 109, 27, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
 }
 
 
@@ -3508,7 +3582,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search,
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved,
-.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
+.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
     background: rgba(251, 219, 155, 0.12);
 }
 
@@ -3519,7 +3594,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
-.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
     color: #FBDB9B;
 }
 
@@ -4142,6 +4218,29 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark .NB-testimonial-author a {
     color: #FBDB9B;
+}
+
+/* MCP feature detail - dark mode */
+.NB-dark pre.NB-feature-detail-code {
+    background: #12121f;
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-feature-detail-connect h3 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-feature-detail-tool-group h3 {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-feature-detail-tool-group li {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.NB-dark .NB-feature-detail-tool-group code {
+    background: rgba(251, 219, 155, 0.12);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* Feature detail screenshots - dark mode */
