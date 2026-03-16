@@ -644,8 +644,10 @@ class AttackBanMiddleware:
     See utils/ip_rate_tracker.py AttackDetector for pattern details.
     """
 
-    # Paths to skip (health checks, internal endpoints)
-    SKIP_PATHS = ("/haproxy", "/dbcheck")
+    # Paths to skip: health checks, and endpoints that receive third-party
+    # content by design (HTML in emails, RSS/Atom feed entries). Content on
+    # these paths is sanitized downstream by the Scrubber, not here.
+    SKIP_PATHS = ("/haproxy", "/dbcheck", "/newsletters/", "/push/")
 
     def __init__(self, get_response=None):
         self.get_response = get_response
