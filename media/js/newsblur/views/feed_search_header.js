@@ -87,12 +87,14 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             </div>');
             return $view;
         } else if (searching) {
+            var semantic_label = NEWSBLUR.reader.flags.semantic_search ? ' <span class="NB-search-semantic-badge">AI</span>' : '';
             var $view = $(_.template('<div>\
                 Searching \
-                <b><%= feed_title %></b> for "<b><%= query %></b>"\
+                <b><%= feed_title %></b> for "<b><%= query %></b>"<%= semantic_label %>\
             </div>', {
                 feed_title: feed_title,
-                query: NEWSBLUR.reader.flags.search
+                query: NEWSBLUR.reader.flags.search,
+                semantic_label: semantic_label
             }));
             return $view;
         } else if (date_filter_start || date_filter_end) {
