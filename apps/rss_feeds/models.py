@@ -1418,15 +1418,17 @@ class Feed(models.Model):
         days = defaultdict(int)
         pipeline = [
             {"$match": {"story_feed_id": self.pk}},
-            {"$group": {
-                "_id": {
-                    "year": {"$year": "$story_date"},
-                    "month": {"$month": "$story_date"},
-                    "hour": {"$hour": "$story_date"},
-                    "day": {"$dayOfWeek": "$story_date"},
-                },
-                "count": {"$sum": 1},
-            }},
+            {
+                "$group": {
+                    "_id": {
+                        "year": {"$year": "$story_date"},
+                        "month": {"$month": "$story_date"},
+                        "hour": {"$hour": "$story_date"},
+                        "day": {"$dayOfWeek": "$story_date"},
+                    },
+                    "count": {"$sum": 1},
+                }
+            },
         ]
         for result in MStory._get_collection().aggregate(pipeline):
             year = result["_id"]["year"]
@@ -1491,11 +1493,13 @@ class Feed(models.Model):
         def calculate_scores(cls, facet):
             pipeline = [
                 {"$match": {"feed_id": self.pk}},
-                {"$group": {
-                    "_id": "$" + facet,
-                    "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
-                    "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
-                }},
+                {
+                    "$group": {
+                        "_id": "$" + facet,
+                        "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
+                        "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
+                    }
+                },
             ]
             scores = []
             for r in cls._get_collection().aggregate(pipeline):

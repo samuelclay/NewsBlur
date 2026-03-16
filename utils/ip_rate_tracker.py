@@ -729,7 +729,7 @@ class AttackDetector:
                     # Scan first MAX_BODY_SCAN_BYTES of any text POST. Django buffers
                     # the full body for these content types anyway (request.POST / json),
                     # so this adds no extra memory cost. Slicing limits regex work, not I/O.
-                    body = request.body[:self.MAX_BODY_SCAN_BYTES].decode("utf-8", errors="replace")
+                    body = request.body[: self.MAX_BODY_SCAN_BYTES].decode("utf-8", errors="replace")
                     result = self._check_payload(body)
                     if result[0]:
                         return result

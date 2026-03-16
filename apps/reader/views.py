@@ -4170,7 +4170,16 @@ def all_classifiers(request):
     from collections import defaultdict
 
     classifiers_by_feed = defaultdict(
-        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": [], "prompts": [], "image_prompts": []}
+        lambda: {
+            "titles": [],
+            "authors": [],
+            "tags": [],
+            "texts": [],
+            "feeds": [],
+            "urls": [],
+            "prompts": [],
+            "image_prompts": [],
+        }
     )
 
     # Separate scoped classifiers (global/folder) from feed-scoped ones
