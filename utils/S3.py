@@ -29,7 +29,11 @@ AMAZON_HEADER_PREFIX = "x-amz-"
 
 
 # generates the aws canonical string for the given parameters
-def canonical_string(method, bucket="", key="", query_args={}, headers={}, expires=None):
+def canonical_string(method, bucket="", key="", query_args=None, headers=None, expires=None):
+    if query_args is None:
+        query_args = {}
+    if headers is None:
+        headers = {}
     interesting_headers = {}
     for header_key in headers:
         lk = header_key.lower()
@@ -165,7 +169,9 @@ class AWSAuthConnection:
         self.port = port
         self.calling_format = calling_format
 
-    def create_bucket(self, bucket, headers={}):
+    def create_bucket(self, bucket, headers=None):
+        if headers is None:
+            headers = {}
         return Response(self._make_request("PUT", bucket, "", {}, headers))
 
     def create_located_bucket(self, bucket, location=Location.DEFAULT, headers={}):
