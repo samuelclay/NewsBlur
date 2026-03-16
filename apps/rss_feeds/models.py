@@ -3684,6 +3684,8 @@ class MStory(mongo.Document):
         if story_hash:
             story_id = story_hash
         story_hash = cls.ensure_story_hash(story_id, story_feed_id)
+        if not story_hash:
+            return None, False
         if not story_feed_id:
             story_feed_id, _ = cls.split_story_hash(story_hash)
         if isinstance(story_id, ObjectId):
@@ -3749,6 +3751,10 @@ class MStory(mongo.Document):
 
     @classmethod
     def ensure_story_hash(cls, story_id, story_feed_id):
+        if not story_id:
+            return None
+        if not isinstance(story_id, str):
+            story_id = str(story_id)
         if not cls.RE_STORY_HASH.match(story_id):
             story_id = "%s:%s" % (
                 story_feed_id,
@@ -3759,6 +3765,8 @@ class MStory(mongo.Document):
 
     @classmethod
     def split_story_hash(cls, story_hash):
+        if not story_hash:
+            return None, None
         matches = cls.RE_STORY_HASH.match(story_hash)
         if matches:
             groups = matches.groups()
