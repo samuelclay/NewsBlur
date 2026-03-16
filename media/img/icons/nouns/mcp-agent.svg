@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>mcp-agent</title>
+    <g id="mcp-agent" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-mcp-agent" transform="translate(15, 15)" fill="#95968E" fill-rule="nonzero">
+            <rect x="22" y="0" width="10" height="30" rx="3"></rect>
+            <rect x="88" y="0" width="10" height="30" rx="3"></rect>
+            <path d="M15,22 L105,22 C110.523,22 115,26.477 115,32 L115,70 C115,75.523 110.523,80 105,80 L68,80 L68,92 L80,92 C82.209,92 84,93.791 84,96 L84,116 C84,118.209 82.209,120 80,120 L40,120 C37.791,120 36,118.209 36,116 L36,96 C36,93.791 37.791,92 40,92 L52,92 L52,80 L15,80 C9.477,80 5,75.523 5,70 L5,32 C5,26.477 9.477,22 15,22 Z M38,42 C33.582,42 30,45.582 30,50 C30,54.418 33.582,58 38,58 C42.418,58 46,54.418 46,50 C46,45.582 42.418,42 38,42 Z M82,42 C77.582,42 74,45.582 74,50 C74,54.418 77.582,58 82,58 C86.418,58 90,54.418 90,50 C90,45.582 86.418,42 82,42 Z"></path>
+        </g>
+    </g>
+</svg>

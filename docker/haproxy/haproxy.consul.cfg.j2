@@ -100,6 +100,8 @@ frontend public
     use_backend app_refresh if is_dashboard
     use_backend app_refresh if is_original_text
     use_backend app_refresh if is_river is_automated_river
+    acl is_mcp path_beg /mcp/
+    use_backend app_mcp if is_mcp
     use_backend app_django unless gunicorn_dead || nginx_dead
 
 backend nginx
@@ -307,6 +309,14 @@ backend consul_manager
     # option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     server db-consul-manager consul-manager.service.nyc1.consul:8500
+
+backend app_mcp
+    balance roundrobin
+    http-request replace-path /mcp(.*)     \1
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hdjango %}
+    server {{host}} {{host}}.node.nyc1.consul:8099
+    {% endfor %}
 
 backend maintenance
     option httpchk HEAD /maintenance

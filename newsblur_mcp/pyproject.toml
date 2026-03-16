@@ -1,0 +1,21 @@
+[project]
+name = "newsblur-mcp"
+version = "0.1.0"
+description = "MCP server for NewsBlur - connect AI agents to your feeds, stories, and classifiers"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=2.0.0",
+    "httpx>=0.27.0",
+    "beautifulsoup4>=4.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "respx>=0.22",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

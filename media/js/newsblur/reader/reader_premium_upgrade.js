@@ -108,6 +108,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Natural language text and image classifiers'
+                        ]),
+                        $.make('li', { className: 'NB-11' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Connect AI agents with MCP server and CLI'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

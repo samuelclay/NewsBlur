@@ -121,6 +121,7 @@ struct PremiumView: View {
         PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
         PremiumFeature(title: "Natural language text and image classifiers", icon: "pencil.line", iconColor: .purple),
+        PremiumFeature(title: "Connect AI agents with MCP server and CLI", icon: "cable.connector", iconColor: .indigo),
         PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
     ]
 

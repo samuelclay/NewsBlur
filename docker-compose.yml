@@ -173,6 +173,19 @@ services:
     environment:
       - DOCKERBUILD=True
 
+  newsblur_mcp:
+    container_name: newsblur_mcp
+    build:
+      context: ./newsblur_mcp
+    restart: unless-stopped
+    ports:
+      - 8099:8099
+    environment:
+      - NEWSBLUR_BASE_URL=http://nb.com:8000
+      - MCP_PORT=8099
+    depends_on:
+      - newsblur_web
+
   haproxy:
     container_name: newsblur_haproxy
     image: haproxy:latest
