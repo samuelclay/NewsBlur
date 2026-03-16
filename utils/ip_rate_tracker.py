@@ -630,6 +630,9 @@ class AttackDetector:
             r"\x00",  # Null byte injection
             r"%00",  # URL-encoded null byte
         ],
+        "crlf": [
+            r"(?:%0d%0a|%0D%0A|\r\n)",  # CRLF header injection
+        ],
     }
 
     def __init__(self):

@@ -476,7 +476,10 @@ def load_feeds(request):
     include_favicons = is_true(request.GET.get("include_favicons", False))
     flat = is_true(request.GET.get("flat", False))
     update_counts = is_true(request.GET.get("update_counts", True))
-    version = int(request.GET.get("v", 1))
+    try:
+        version = int(request.GET.get("v", 1))
+    except (ValueError, TypeError):
+        version = 1
 
     if include_favicons == "false":
         include_favicons = False
@@ -1575,7 +1578,10 @@ def load_starred_stories(request):
     highlights = is_true(request.GET.get("highlights", False))
     story_hashes = request.GET.getlist("h") or request.GET.getlist("h[]")
     story_hashes = story_hashes[:100]
-    version = int(request.GET.get("v", 1))
+    try:
+        version = int(request.GET.get("v", 1))
+    except (ValueError, TypeError):
+        version = 1
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     order_by = "-" if order == "newest" else ""
