@@ -1365,8 +1365,12 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     text-decoration: none;
     text-align: center;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
     margin-top: 12px;
+}
+
+.NB-pricing-cta:active {
+    transform: scale(0.96);
 }
 
 .NB-pricing-cta-premium {
@@ -1640,7 +1644,7 @@ h3.NB-pricing-faq-question {
     background: rgba(255, 255, 255, 0.4);
     color: rgba(45, 38, 26, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-feature-section-cta:hover {
@@ -1662,7 +1666,7 @@ h3.NB-pricing-faq-question {
     background: rgba(138, 109, 27, 0.08);
     color: #8a6d1b;
     border: 1px solid rgba(138, 109, 27, 0.18);
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-feature-section-blog:hover {
@@ -1749,7 +1753,7 @@ h3.NB-pricing-faq-question {
     text-decoration: none;
     color: rgba(45, 38, 26, 0.7);
     font-size: 14px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-compare-link-item:hover {
@@ -1760,7 +1764,7 @@ h3.NB-pricing-faq-question {
 .NB-compare-link-arrow {
     opacity: 0;
     transform: translateX(-6px);
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     font-size: 13px;
     color: rgba(192, 90, 14, 0.7);
 }
@@ -2155,7 +2159,7 @@ h3.NB-about-card-title {
     background: rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(0, 0, 0, 0.06);
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-about-tech-pill:hover {
@@ -2805,13 +2809,17 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-image 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
     letter-spacing: 0.2px;
 }
 
 .NB-forgot-password-submit:hover {
     background: linear-gradient(135deg, rgba(34, 197, 94, 1) 0%, rgba(22, 163, 74, 1) 100%);
     box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.NB-forgot-password-submit:active {
+    transform: scale(0.96);
 }
 
 .NB-forgot-password-back {

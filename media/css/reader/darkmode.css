@@ -661,8 +661,12 @@ color: #a85b40;
 /* Background color */
 .NB-dark #simplemodal-container {
     background-color: #2f3840;
-    box-shadow: none;
-    border: 2px solid #131617;
+    border: none;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        0 24px 48px rgba(0, 0, 0, 0.25);
 }
 
 /* Title color */

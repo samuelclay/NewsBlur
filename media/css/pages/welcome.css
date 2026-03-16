@@ -874,7 +874,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:hover {
@@ -885,6 +885,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:active {
     background: rgba(255, 255, 255, 0.5);
+    transform: scale(0.96);
 }
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout img {
@@ -1379,7 +1380,7 @@ a.NB-fgi img {
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.04),
         0 8px 24px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
@@ -1532,7 +1533,7 @@ a.NB-fgi img {
     font-size: 12px;
     font-weight: 500;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .NB-pricing-github-button:hover {
@@ -1896,11 +1897,15 @@ a.NB-fgi img {
     border-radius: 12px;
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 
 .NB-welcome-banner-button:hover {
     text-decoration: none;
+}
+
+.NB-welcome-banner-button:active {
+    transform: scale(0.96);
 }
 
 .NB-banner-arrow {
@@ -2050,7 +2055,7 @@ a.NB-fgi img {
     padding: 14px 28px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
     text-shadow: none;
     box-shadow: none;
     float: none;
@@ -2187,7 +2192,7 @@ a.NB-fgi img {
     border-radius: 6px;
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-welcome-faq-compare-link:hover {
@@ -2273,7 +2278,7 @@ a.NB-fgi img {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     padding: 0;
 }
 
@@ -2285,6 +2290,7 @@ a.NB-fgi img {
 
 .NB-testimonials-nav-btn:active {
     background: rgba(0, 0, 0, 0.12);
+    transform: scale(0.96);
 }
 
 .NB-testimonials-nav-btn svg {
@@ -2498,7 +2504,7 @@ a.NB-fgi img {
     color: #3a2e1e;
     border-bottom: 1.5px solid transparent;
     padding-bottom: 1px;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, border-bottom-color 0.15s ease;
 }
 
 .NB-compare-vs-link:hover .NB-compare-vs-name {
@@ -2857,10 +2863,7 @@ a.NB-fgi img {
     position: relative;
     bottom: -4px;
     opacity: .5;
-    -webkit-transition: all .25s ease-in-out;
-    -moz-transition: all .25s ease-in-out;
-    -o-transition: all .25s ease-in-out;
-    -ms-transition: all .25s ease-in-out;
+    transition: opacity .25s ease-in-out;
 }
 
 .NB-welcome-footer .NB-footer-icons a img:hover {
