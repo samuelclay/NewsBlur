@@ -43,9 +43,7 @@ def IndexSubscriptionsChunkForDiscover(feed_ids, user_id):
         # a single chunk failure silently breaks the chord, leaving
         # discover_indexing=True forever and causing daily re-indexing retries
         # at ~$3-10/day in embedding costs.
-        logging.debug(
-            " ---> ~FR~SBDiscover chunk failed for user %s, feeds %s: %s" % (user_id, feed_ids, e)
-        )
+        logging.debug(" ---> ~FR~SBDiscover chunk failed for user %s, feeds %s: %s" % (user_id, feed_ids, e))
 
 
 @app.task()
