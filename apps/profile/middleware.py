@@ -649,6 +649,10 @@ class AttackBanMiddleware:
     # these paths is sanitized downstream by the Scrubber, not here.
     SKIP_PATHS = ("/haproxy", "/dbcheck", "/newsletters/", "/push/")
 
+    # IPs to never ban: localhost and CGNAT range (100.64.0.0/10) used by
+    # internal proxies. Banning shared infrastructure IPs blocks many users.
+    SKIP_IP_PREFIXES = ("127.", "100.64.")
+
     def __init__(self, get_response=None):
         self.get_response = get_response
         self._detector = None
@@ -668,8 +672,18 @@ class AttackBanMiddleware:
         if getattr(settings, "TEST_DEBUG", False):
             return self.get_response(request)
 
+        # Skip attack detection for authenticated users — legitimate users
+        # regularly submit content containing code snippets, template syntax,
+        # and HTML that would trigger false positives (e.g. archived web pages).
+        if hasattr(request, "user") and request.user.is_authenticated:
+            return self.get_response(request)
+
         try:
             ip = self.detector.get_ip(request)
+
+            # Skip internal/infrastructure IPs that should never be banned
+            if any(ip.startswith(prefix) for prefix in self.SKIP_IP_PREFIXES):
+                return self.get_response(request)
 
             # Fast path: check if IP is already banned
             if self.detector.is_banned(ip):
