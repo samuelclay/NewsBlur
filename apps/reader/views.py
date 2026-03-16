@@ -3600,13 +3600,16 @@ def delete_feeds_by_folder(request):
 @ajax_login_required
 @json.json_view
 def rename_feed(request):
-    feed = get_object_or_404(Feed, pk=int(request.POST["feed_id"]))
+    feed_id = request.POST.get("feed_id")
+    feed_title = request.POST.get("feed_title")
+    if not feed_id or not feed_title:
+        return dict(code=-1, message="Missing feed_id or feed_title")
+
+    feed = get_object_or_404(Feed, pk=int(feed_id))
     try:
         user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
     except UserSubscription.DoesNotExist:
         return dict(code=-1, message=f"You are not subscribed to {feed.feed_title}")
-
-    feed_title = request.POST["feed_title"]
 
     logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (feed.feed_title, feed_title))
 
