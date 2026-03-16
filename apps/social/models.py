@@ -821,29 +821,32 @@ class MSocialProfile(mongo.Document):
         total = 0
         month_count = 0
 
-        # Count stories, aggregate by year and month. Map Reduce!
-        map_f = """
-            function() {
-                var date = (this.shared_date.getFullYear()) + "-" + (this.shared_date.getMonth()+1);
-                var hour = this.shared_date.getHours();
-                var day = this.shared_date.getDay();
-                emit(this.story_hash, {'month': date, 'hour': hour, 'day': day});
-            }
-        """
-        reduce_f = """
-            function(key, values) {
-                return values;
-            }
-        """
+        # Count stories grouped by year/month/hour/day using aggregation pipeline
         dates = defaultdict(int)
         hours = defaultdict(int)
         days = defaultdict(int)
-        results = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output="inline")
-        for result in results:
-            dates[result.value["month"]] += 1
-            hours[str(int(result.value["hour"]))] += 1
-            days[str(int(result.value["day"]))] += 1
-            year = int(re.findall(r"(\d{4})-\d{1,2}", result.value["month"])[0])
+        pipeline = [
+            {"$match": {"user_id": self.user_id}},
+            {"$group": {
+                "_id": {
+                    "year": {"$year": "$shared_date"},
+                    "month": {"$month": "$shared_date"},
+                    "hour": {"$hour": "$shared_date"},
+                    "day": {"$dayOfWeek": "$shared_date"},
+                },
+                "count": {"$sum": 1},
+            }},
+        ]
+        for result in MSharedStory._get_collection().aggregate(pipeline):
+            year = result["_id"]["year"]
+            month = result["_id"]["month"]
+            hour = result["_id"]["hour"]
+            day = result["_id"]["day"] - 1  # $dayOfWeek 1=Sun..7=Sat -> 0=Sun..6=Sat
+            count = result["count"]
+            key = "%s-%s" % (year, month)
+            dates[key] += count
+            hours[str(hour)] += count
+            days[str(day)] += count
             if year < min_year:
                 min_year = year
 
@@ -869,32 +872,19 @@ class MSocialProfile(mongo.Document):
 
     def save_classifier_counts(self):
         def calculate_scores(cls, facet):
-            map_f = """
-                function() {
-                    emit(this["%s"], {
-                        pos: this.score>0 ? this.score : 0, 
-                        neg: this.score<0 ? Math.abs(this.score) : 0
-                    });
-                }
-            """ % (
-                facet
-            )
-            reduce_f = """
-                function(key, values) {
-                    var result = {pos: 0, neg: 0};
-                    values.forEach(function(value) {
-                        result.pos += value.pos;
-                        result.neg += value.neg;
-                    });
-                    return result;
-                }
-            """
+            pipeline = [
+                {"$match": {"social_user_id": self.user_id}},
+                {"$group": {
+                    "_id": "$" + facet,
+                    "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
+                    "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
+                }},
+            ]
             scores = []
-            res = cls.objects(social_user_id=self.user_id).map_reduce(map_f, reduce_f, output="inline")
-            for r in res:
-                facet_values = dict([(k, int(v)) for k, v in list(r.value.items())])
-                facet_values[facet] = r.key
-                scores.append(facet_values)
+            for r in cls._get_collection().aggregate(pipeline):
+                pos = int(r["pos"])
+                neg = int(r["neg"])
+                scores.append({"pos": pos, "neg": neg, facet: r["_id"]})
             scores = sorted(scores, key=lambda v: v["neg"] - v["pos"])
 
             return scores
@@ -2097,44 +2087,32 @@ class MSharedStory(mongo.DynamicDocument):
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
 
-        map_f = """
-            function() {
-                emit(this.story_hash, {
-                    'story_hash': this.story_hash, 
-                    'feed_id': this.story_feed_id, 
-                    'title': this.story_title,
-                    'count': 1
-                });
+        excluded_feed_ids = [int(fid) for fid in shared_feed_ids if fid.isdigit()]
+        pipeline = [
+            {"$match": {"shared_date": {"$gte": today}}},
+            {"$group": {
+                "_id": "$story_hash",
+                "feed_id": {"$first": "$story_feed_id"},
+                "title": {"$first": "$story_title"},
+                "count": {"$sum": 1},
+            }},
+            {"$match": {"count": {"$gte": cutoff}}},
+        ]
+        if excluded_feed_ids:
+            pipeline.append({"$match": {"feed_id": {"$nin": excluded_feed_ids}}})
+        stories = {}
+        for r in cls._get_collection().aggregate(pipeline):
+            title = r.get("title", "") or ""
+            english_title = re.sub(r"[^\x32-\x7f]", "", title)
+            if len(english_title) < 5:
+                continue
+            story_hash = r["_id"]
+            stories[story_hash] = {
+                "story_hash": story_hash,
+                "feed_id": r["feed_id"],
+                "title": title,
+                "count": r["count"],
             }
-        """
-        reduce_f = """
-            function(key, values) {
-                var r = {'story_hash': key, 'count': 0};
-                for (var i=0; i < values.length; i++) {
-                    r.feed_id = values[i].feed_id;
-                    r.title = values[i].title;
-                    r.count += values[i].count;
-                }
-                return r;
-            }
-        """
-        finalize_f = """
-            function(key, value) {
-                if (value.count >= %(cutoff)s && [%(shared_feed_ids)s].indexOf(value.feed_id) == -1) {
-                    var english_title = value.title.replace(/[^\\062-\\177]/g, "");
-                    if (english_title.length < 5) return;
-            
-                    return value;
-                }
-            }
-        """ % {
-            "cutoff": cutoff,
-            "shared_feed_ids": ", ".join(shared_feed_ids),
-        }
-        res = cls.objects(shared_date__gte=today).map_reduce(
-            map_f, reduce_f, finalize_f=finalize_f, output="inline"
-        )
-        stories = dict([(r.key, r.value) for r in res if r.value])
         return stories, cutoff
 
     @classmethod
