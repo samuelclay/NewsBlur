@@ -3016,15 +3016,20 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
     .NB-static .NB-mobile-logo-link {
         display: block;
         text-align: center;
-        margin: 0 auto 16px;
+        margin: -48px auto 8px;
     }
 
     .NB-static .NB-mobile-logo {
-        width: 120px;
-        height: 24px;
+        width: 146px;
+        height: 28px;
         margin: 0 auto;
         background: url('/media/embed/logo_newsblur_blur.png') no-repeat center center;
         background-size: contain;
+    }
+
+    /* Hide tier badges on feature detail pages */
+    .NB-feature-section-badge {
+        display: none;
     }
 
     body.NB-dark.NB-static .NB-mobile-logo {

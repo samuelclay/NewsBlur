@@ -767,7 +767,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     border-radius: 12px;
     padding: 14px 16px;
     font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     color: #2d261a;
     outline: none;
     box-sizing: border-box;
@@ -1123,6 +1123,10 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 /* ======================= */
 
 @media (max-width: 900px) {
+    .NB-welcome .NB-splash-info.NB-splash-top {
+        height: auto;
+        padding: 0;
+    }
     .NB-welcome-header-hero {
         flex-direction: column;
         padding: 78px 24px 48px;
@@ -3011,9 +3015,11 @@ a.NB-fgi img {
         text-align: center;
     }
 
-    /* Footer: tighter padding */
+    /* Footer: tighter padding, prevent background tiling */
     .NB-welcome-footer {
         padding: 32px 0 0;
+        background-size: cover;
+        background-repeat: no-repeat;
     }
     .NB-welcome-footer .NB-welcome-footer-content {
         margin-bottom: 24px;
@@ -3566,7 +3572,7 @@ a.NB-fgi img {
 
 .NB-dark .NB-welcome-footer .NB-footer-icons a img {
     filter: invert(1);
-    opacity: 0.5;
+    opacity: 0.7;
 }
 
 .NB-dark .NB-welcome-footer .NB-footer-icons a img:hover {
