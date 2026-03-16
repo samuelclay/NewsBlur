@@ -29845,6 +29845,193 @@ h5.NB-classifier-section-header {
     display: block;
 }
 
+/* Sidebar Header Styling - Global Search */
+.NB-feeds-header-global-search-container {
+    display: block;
+}
+
+.NB-feeds-header-global-search {
+    cursor: pointer;
+}
+
+.NB-feeds-header-global-search .NB-feeds-header-icon {
+    opacity: .4;
+}
+
+.NB-feeds-header-global-search:hover .NB-feeds-header-icon {
+    opacity: .6;
+}
+
+.NB-feeds-header-global-search.NB-selected .NB-feeds-header-icon {
+    opacity: .9;
+}
+
+/* Global Search Banner */
+.NB-global-search-banner {
+    background: linear-gradient(135deg, #e6ecf5 0%, #dae3f0 100%);
+    border-bottom: 1px solid rgba(92, 137, 201, 0.2);
+    padding: 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.NB-global-search-banner-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.NB-global-search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #FFF;
+    border: 2px solid #C0C8D4;
+    border-radius: 12px;
+    padding: 0 0 0 14px;
+    transition: all 0.15s ease;
+    overflow: hidden;
+}
+
+.NB-global-search-input-wrapper:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.15);
+}
+
+.NB-global-search-input-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+.NB-global-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 10px;
+    font-size: 15px;
+    background: transparent;
+    color: #333;
+}
+
+.NB-global-search-input::placeholder {
+    color: #999;
+}
+
+.NB-global-search-input-clear {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0;
+    background: url('/media/img/icons/nouns/close.svg') center/14px no-repeat;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+}
+
+.NB-global-search-input:not(:placeholder-shown) ~ .NB-global-search-input-clear {
+    opacity: 0.4;
+}
+
+.NB-global-search-input-clear:hover {
+    opacity: 0.7;
+}
+
+.NB-global-search-btn {
+    padding: 14px 28px;
+    margin: 0;
+    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: stretch;
+    transition: background 0.15s ease;
+}
+
+.NB-global-search-btn:hover {
+    background: linear-gradient(135deg, #4A73B0 0%, #3D6199 100%);
+}
+
+.NB-global-search-banner-description {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #6a7a8c;
+    padding: 0 2px;
+}
+
+.NB-global-search-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 2px 0;
+}
+
+.NB-global-search-option-group {
+    display: flex;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.NB-global-search-option {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6a7a8c;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.NB-global-search-option:hover {
+    color: #4a5a6c;
+}
+
+.NB-global-search-option.NB-active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-global-search-status {
+    display: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5C89C9;
+    padding: 6px 2px 0;
+}
+
+.NB-global-search-status.NB-searching {
+    animation: nb-global-search-pulse 1.5s ease-in-out infinite;
+}
+
+.NB-global-search-status.NB-complete {
+    color: #5a9e3f;
+    animation: none;
+}
+
+@keyframes nb-global-search-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Relevance bar on story titles */
+.NB-story-search-relevance {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(to right, #a0c4ff, #0066ff);
+    transition: width 0.3s ease;
+    border-radius: 1px;
+}
+
 /* Google News Tab */
 
 .NB-add-site-google-news-unified {

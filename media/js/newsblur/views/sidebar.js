@@ -16,6 +16,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-dashboard": "show_splash_page",
         "click .NB-feeds-header-archive": "open_archive",
         "click .NB-feeds-header-add-site": "open_add_site",
+        "click .NB-feeds-header-global-search": "open_global_search",
         "click .NB-feeds-header-river-briefing .NB-feedlist-collapse-icon": "collapse_daily_briefing",
         "click .NB-feeds-header-river-briefing": "open_daily_briefing",
         "click .NB-feeds-header-river-briefing-admin": "open_briefing_admin"
@@ -365,6 +366,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_add_site: function () {
         return NEWSBLUR.reader.open_add_site();
+    },
+
+    open_global_search: function () {
+        return NEWSBLUR.reader.open_global_search();
     },
 
     open_daily_briefing: function () {

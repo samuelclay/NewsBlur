@@ -254,6 +254,12 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         NEWSBLUR.reader.flags.searching = false;
         $('.NB-search-indexing-banner').remove();
 
+        if (NEWSBLUR.reader.flags['global_search_view']) {
+            NEWSBLUR.assets.stories.reset();
+            NEWSBLUR.reader.flags.search = '';
+            return;
+        }
+
         NEWSBLUR.reader.reload_feed();
     },
 

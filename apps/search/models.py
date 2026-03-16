@@ -570,6 +570,46 @@ class SearchStory:
         return result_ids
 
     @classmethod
+    def query_with_scores(cls, feed_ids, query, order, offset, limit):
+        """Same as query() but returns list of (story_hash, score) tuples."""
+        try:
+            cls.ES().indices.flush(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        query = html.unescape(query)
+        query = cls._sanitize_query(query)
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": {"query": query, "default_operator": "AND"}},
+                        {"terms": {"feed_id": feed_ids[:2000]}},
+                    ]
+                }
+            },
+            "sort": [{"date": {"order": "desc" if order == "newest" else "asc"}}],
+            "from": offset,
+            "size": limit,
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
+            return []
+
+        try:
+            return [(r["_id"], r["_score"]) for r in results["hits"]["hits"]]
+        except Exception as e:
+            logging.info(' ---> ~FRInvalid search query "%s": %s' % (query, e))
+            return []
+
+    @classmethod
     def query_briefing_custom(cls, feed_ids, phrase, date_start, date_end, limit=10):
         """Search stories by exact phrase within a date range, for briefing custom sections.
 
@@ -630,7 +670,7 @@ class SearchStory:
             return []
 
     @classmethod
-    def global_query(cls, query, order, offset, limit, strip=False):
+    def global_query(cls, query, order, offset, limit, strip=False, exact=False, operator="AND"):
         cls.create_elasticsearch_mapping()
         cls.ES().indices.flush()
 
@@ -645,7 +685,7 @@ class SearchStory:
             "query": {
                 "bool": {
                     "must": [
-                        {"query_string": {"query": query, "default_operator": "AND"}},
+                        {"query_string": {"query": query, "default_operator": operator}},
                     ]
                 }
             },
@@ -798,7 +838,7 @@ class DiscoverStory:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_DISCOVER_HOST)
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_DISCOVER_HOST, timeout=60)
             cls.create_elasticsearch_mapping()
         return cls._es_client
 
@@ -1092,6 +1132,46 @@ class DiscoverStory:
         projected_embedding = project_vector(story_embedding)
 
         return projected_embedding.tolist()
+
+    @classmethod
+    def generate_query_vector(cls, query_text):
+        """Generate a 256-dim projected vector from a search query string."""
+        from apps.search.projection_matrix import project_vector
+
+        # Clean text (same pattern as generate_content_vector_from_text on SearchFeed)
+        text = re.sub(r"http\S+", "", query_text)
+        text = re.sub(r"[^\w\s]", "", text)
+        text = text.lower()
+        text = " ".join(text.split())
+
+        if not text.strip():
+            return None
+
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
+
+        max_tokens = 8191
+        encoded_text = encoding.encode(text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        try:
+            response = client.embeddings.create(model=model_name, input=truncated_text)
+        except Exception as e:
+            logging.debug(f" ***> ~FROpenAI API error generating query vector: {e}")
+            return None
+
+        LLMCostTracker.record_embedding(
+            model=model_name,
+            input_tokens=response.usage.total_tokens,
+            feature="global_search_query",
+            metadata={"query": query_text[:100]},
+        )
+
+        embedding = response.data[0].embedding
+        projected = project_vector(embedding)
+        return projected.tolist()
 
     @classmethod
     def debug_index(cls, show_data=True, show_source=False):
