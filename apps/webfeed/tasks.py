@@ -41,6 +41,22 @@ def extract_image_url(raw_value):
     return match.group(2).strip() if match else None
 
 
+def decode_response_text(response):
+    """Decode HTTP response text with proper UTF-8 handling.
+
+    The requests library defaults to ISO-8859-1 for text/html responses
+    without an explicit charset in Content-Type, even when the HTML has
+    <meta charset="utf-8">. This tries UTF-8 first in that case.
+    """
+    content_type = response.headers.get("Content-Type", "")
+    if "charset" not in content_type.lower():
+        try:
+            return response.content.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+    return response.text
+
+
 # Class/id substrings that indicate non-content elements
 NAV_INDICATORS = [
     "nav",
@@ -119,8 +135,9 @@ def fetch_page_html(url):
     # Try direct fetch first
     try:
         response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
-        if response.status_code == 200 and response.text:
-            return response.text
+        text = decode_response_text(response)
+        if response.status_code == 200 and text:
+            return text
     except requests.RequestException:
         pass
 
@@ -137,8 +154,9 @@ def fetch_page_html(url):
                 },
                 timeout=15,
             )
-            if response.status_code == 200 and response.text:
-                return response.text
+            text = decode_response_text(response)
+            if response.status_code == 200 and text:
+                return text
         except requests.RequestException:
             pass
 
