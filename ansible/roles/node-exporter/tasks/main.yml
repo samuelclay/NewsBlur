@@ -9,7 +9,7 @@
     network_mode: default
     networks:
       - name: newsblurnet
-    restart_policy: unless-stopped
+    restart_policy: always
     ports:
     - '9100:9100'
   notify: restart node-exporter
