@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Story clustering: automatically group duplicate stories across your feeds"
+date: 2026-03-16
 tags: ["web"]
 ---
 
