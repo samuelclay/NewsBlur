@@ -138,6 +138,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private StoryHeaderPillAppearanceResolver.Appearance discoverPillExpandedAppearance;
     @Nullable
     private StoryHeaderPillAppearanceResolver.Appearance searchPillExpandedAppearance;
+    private boolean updatingStoryHeaderPillLabels = false;
     private boolean storySearchRefreshInFlight = false;
     private boolean predictiveBackInProgress = false;
     private boolean suppressNextExitTransition = false;
@@ -509,12 +510,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void updateStoryHeaderPillLabels() {
+        if (updatingStoryHeaderPillLabels) return;
         if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
+        updatingStoryHeaderPillLabels = true;
 
         int availableWidth = binding.itemlistStoryHeaderBar.getWidth()
                 - binding.itemlistStoryHeaderBar.getPaddingLeft()
                 - binding.itemlistStoryHeaderBar.getPaddingRight();
-        if (availableWidth <= 0) return;
+        if (availableWidth <= 0) {
+            updatingStoryHeaderPillLabels = false;
+            return;
+        }
 
         int optionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
                 ? measureDesiredWidth(binding.itemlistOptionsPill)
@@ -578,6 +584,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                     searchExpandedAppearance
             );
         }
+        // Reset the guard after the next layout pass to prevent the layout change
+        // listener from re-entering this method and undoing the text we just set.
+        binding.itemlistStoryHeaderBar.post(() -> updatingStoryHeaderPillLabels = false);
     }
 
     private int measureSearchPillWidth(
@@ -618,16 +627,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance expandedAppearance
     ) {
         button.setText(showText ? title : "");
-        StoryHeaderPillAppearanceResolver.Appearance appearance = StoryHeaderPillAppearanceResolver.resolve(
-                showText,
-                expandedAppearance.paddingStart(),
-                expandedAppearance.paddingTop(),
-                expandedAppearance.paddingEnd(),
-                expandedAppearance.paddingBottom(),
-                expandedAppearance.iconPadding(),
-                UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP)
-        );
-        applyStoryHeaderPillAppearance(button, appearance);
+        if (showText) {
+            button.setIconPadding(expandedAppearance.iconPadding());
+        } else {
+            button.setIconPadding(0);
+            int compactPadding = UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP);
+            button.setPaddingRelative(compactPadding, 0, compactPadding, 0);
+        }
     }
 
     private void applyStoryHeaderPillAppearance(
@@ -635,12 +641,6 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance appearance
     ) {
         button.setIconPadding(appearance.iconPadding());
-        button.setPaddingRelative(
-                appearance.paddingStart(),
-                appearance.paddingTop(),
-                appearance.paddingEnd(),
-                appearance.paddingBottom()
-        );
     }
 
     private StoryHeaderPillAppearanceResolver.Appearance captureStoryHeaderPillAppearance(MaterialButton button) {

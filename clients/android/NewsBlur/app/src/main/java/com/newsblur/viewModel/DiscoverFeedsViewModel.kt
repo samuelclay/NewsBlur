@@ -198,7 +198,7 @@ class DiscoverFeedsViewModel
 
 data class DiscoverFeedsUiState(
     val feeds: List<DiscoverFeedPayload> = emptyList(),
-    val viewMode: DiscoverFeedViewMode = DiscoverFeedViewMode.GRID,
+    val viewMode: DiscoverFeedViewMode = DiscoverFeedViewMode.LIST,
     val isLoadingInitial: Boolean = false,
     val isLoadingMore: Boolean = false,
     val errorMessage: String? = null,
@@ -213,6 +213,6 @@ enum class DiscoverFeedViewMode(
 
     companion object {
         fun fromPrefValue(prefValue: String?): DiscoverFeedViewMode =
-            entries.firstOrNull { it.prefValue == prefValue } ?: GRID
+            entries.firstOrNull { it.prefValue == prefValue } ?: LIST
     }
 }
