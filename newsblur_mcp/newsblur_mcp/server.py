@@ -5,6 +5,7 @@ via the Model Context Protocol (MCP).
 """
 
 from fastmcp import FastMCP
+from fastmcp.server.dependencies import get_http_request
 
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import NewsBlurClient, PremiumRequiredError
@@ -22,26 +23,27 @@ mcp = FastMCP(
 )
 
 
-def get_client(context) -> NewsBlurClient:
+def get_client() -> NewsBlurClient:
     """Extract the bearer token from the MCP request context and create a client.
 
-    With OAuth proxy enabled, the auth middleware validates the FastMCP JWT
-    and resolves it to the upstream Django access token. The validated
-    AccessToken (with .token set to the Django token) is stored in
-    request.scope["auth"] by the middleware.
+    With OAuth proxy enabled, the auth middleware validates the bearer token
+    via NewsBlurTokenVerifier and stores the result as an AuthenticatedUser
+    in request.scope["user"]. The AccessToken on that user object holds
+    the upstream Django OAuth token in its .token attribute.
     """
+    request = get_http_request()
     token = None
-    if hasattr(context, "request") and context.request:
-        # Primary: get the upstream Django token from the auth middleware
-        auth_context = context.request.scope.get("auth")
-        if auth_context and hasattr(auth_context, "token"):
-            token = auth_context.token
 
-        # Fallback: direct bearer token (e.g., for testing)
-        if not token:
-            auth_header = context.request.headers.get("authorization", "")
-            if auth_header.startswith("Bearer "):
-                token = auth_header[7:]
+    # Primary: get the upstream Django token from the authenticated user
+    user = request.scope.get("user")
+    if user and hasattr(user, "access_token"):
+        token = user.access_token.token
+
+    # Fallback: direct bearer token from Authorization header (e.g., for testing)
+    if not token:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
 
     if not token:
         raise ValueError(

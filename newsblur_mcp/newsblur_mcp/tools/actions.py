@@ -5,7 +5,6 @@ from newsblur_mcp.server import mcp, get_client
 
 @mcp.tool()
 async def newsblur_mark_stories_read(
-    context,
     story_hashes: list[str] | None = None,
     feed_id: int | None = None,
     folder: str | None = None,
@@ -22,7 +21,7 @@ async def newsblur_mark_stories_read(
         folder: Mark all stories in this folder as read.
         older_than_days: Only mark stories older than N days.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         if story_hashes:
             resp = await client.post(
@@ -51,7 +50,6 @@ async def newsblur_mark_stories_read(
 
 @mcp.tool()
 async def newsblur_save_story(
-    context,
     story_hash: str,
     tags: list[str] | None = None,
     notes: str | None = None,
@@ -68,7 +66,7 @@ async def newsblur_save_story(
         notes: Personal notes about the story.
         highlights: Text snippets to highlight in the story.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         data = {"story_hash": story_hash}
         if tags:
@@ -88,13 +86,13 @@ async def newsblur_save_story(
 
 
 @mcp.tool()
-async def newsblur_unsave_story(context, story_hash: str) -> dict:
+async def newsblur_unsave_story(story_hash: str) -> dict:
     """Remove a story from saved/starred stories.
 
     Args:
         story_hash: Story hash to unsave.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         resp = await client.post(
             "/reader/mark_story_hash_as_unstarred",
@@ -107,7 +105,6 @@ async def newsblur_unsave_story(context, story_hash: str) -> dict:
 
 @mcp.tool()
 async def newsblur_share_story(
-    context,
     story_hash: str,
     feed_id: int,
     comments: str | None = None,
@@ -122,7 +119,7 @@ async def newsblur_share_story(
         feed_id: Feed ID the story belongs to.
         comments: Comments to include with the share.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         data = {
             "story_id": story_hash,

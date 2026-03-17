@@ -7,7 +7,6 @@ from newsblur_mcp.settings import DEFAULT_STORIES_PER_PAGE, MAX_STORIES_PER_PAGE
 
 @mcp.tool()
 async def newsblur_get_stories(
-    context,
     feed_ids: list[int] | None = None,
     folder: str | None = None,
     include_read: bool = False,
@@ -30,7 +29,7 @@ async def newsblur_get_stories(
         page: Page number for pagination (starts at 1).
         limit: Stories per page (default 12, max 50).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         limit = min(limit, MAX_STORIES_PER_PAGE)
 
@@ -63,7 +62,6 @@ async def newsblur_get_stories(
 
 @mcp.tool()
 async def newsblur_get_saved_stories(
-    context,
     tag: str | None = None,
     query: str | None = None,
     order: str = "newest",
@@ -81,7 +79,7 @@ async def newsblur_get_saved_stories(
         page: Page number for pagination (starts at 1).
         limit: Stories per page (default 12, max 50).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         limit = min(limit, MAX_STORIES_PER_PAGE)
         params = {"page": page, "order": order}
@@ -106,7 +104,6 @@ async def newsblur_get_saved_stories(
 
 @mcp.tool()
 async def newsblur_search_stories(
-    context,
     query: str,
     feed_ids: list[int] | None = None,
     folder: str | None = None,
@@ -124,7 +121,7 @@ async def newsblur_search_stories(
         page: Page number for pagination.
         limit: Results per page (default 12, max 50).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         limit = min(limit, MAX_STORIES_PER_PAGE)
 
@@ -146,7 +143,7 @@ async def newsblur_search_stories(
 
 
 @mcp.tool()
-async def newsblur_get_original_text(context, story_hash: str) -> dict:
+async def newsblur_get_original_text(story_hash: str) -> dict:
     """Fetch the full original text of a story from the source website.
 
     Use this when story content is truncated or you need the complete article.
@@ -154,7 +151,7 @@ async def newsblur_get_original_text(context, story_hash: str) -> dict:
     Args:
         story_hash: The story hash identifier (e.g. "123:abcdef").
     """
-    client = get_client(context)
+    client = get_client()
     try:
         resp = await client.get("/rss_feeds/original_text", params={"story_hash": story_hash})
         from newsblur_mcp.transforms import html_to_text

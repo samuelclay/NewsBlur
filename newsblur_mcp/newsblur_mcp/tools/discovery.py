@@ -6,7 +6,6 @@ from newsblur_mcp.transforms import transform_feed
 
 @mcp.tool()
 async def newsblur_discover_feeds(
-    context,
     action: str,
     query: str | None = None,
     feed_id: int | None = None,
@@ -22,7 +21,7 @@ async def newsblur_discover_feeds(
         feed_id: Find feeds similar to this one (required for "similar" action).
         page: Page number for pagination.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         if action == "search":
             if not query:

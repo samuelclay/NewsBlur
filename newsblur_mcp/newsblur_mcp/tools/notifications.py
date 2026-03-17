@@ -5,7 +5,6 @@ from newsblur_mcp.server import mcp, get_client
 
 @mcp.tool()
 async def newsblur_manage_notifications(
-    context,
     action: str,
     feed_id: int | None = None,
     notification_types: list[str] | None = None,
@@ -19,7 +18,7 @@ async def newsblur_manage_notifications(
         notification_types: List of types to enable: "web", "email", "ios", "android".
         notification_filter: Filter level: "unread" or "focus".
     """
-    client = get_client(context)
+    client = get_client()
     try:
         if action == "list":
             resp = await client.get("/notifications/")

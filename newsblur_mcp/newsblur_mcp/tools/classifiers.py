@@ -5,7 +5,6 @@ from newsblur_mcp.server import mcp, get_client
 
 @mcp.tool()
 async def newsblur_train_classifier(
-    context,
     feed_id: int,
     like_title: list[str] | None = None,
     dislike_title: list[str] | None = None,
@@ -32,7 +31,7 @@ async def newsblur_train_classifier(
         like_feed: Like the entire feed (boost all its stories).
         dislike_feed: Dislike the entire feed (suppress all its stories).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         data = {"feed_id": feed_id}
 
@@ -61,7 +60,6 @@ async def newsblur_train_classifier(
 
 @mcp.tool()
 async def newsblur_get_classifiers(
-    context,
     feed_id: int | None = None,
 ) -> dict:
     """View all trained intelligence classifiers.
@@ -72,7 +70,7 @@ async def newsblur_get_classifiers(
     Args:
         feed_id: Get classifiers for a specific feed only. Omit for all feeds.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         if feed_id:
             resp = await client.get(f"/classifier/{feed_id}")

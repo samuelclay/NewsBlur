@@ -6,7 +6,6 @@ from newsblur_mcp.transforms import transform_feed
 
 @mcp.tool()
 async def newsblur_list_feeds(
-    context,
     flat: bool = True,
     include_favicons: bool = False,
 ) -> dict:
@@ -19,7 +18,7 @@ async def newsblur_list_feeds(
         flat: Return flat folder->feeds structure (default: True).
         include_favicons: Include base64 favicon data (default: False).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         params = {"flat": "true" if flat else "false"}
         if include_favicons:
@@ -42,7 +41,7 @@ async def newsblur_list_feeds(
 
 
 @mcp.tool()
-async def newsblur_get_feed_info(context, feed_id: int) -> dict:
+async def newsblur_get_feed_info(feed_id: int) -> dict:
     """Get detailed information about a specific feed.
 
     Includes title, URL, subscriber count, update frequency, and statistics.
@@ -51,7 +50,7 @@ async def newsblur_get_feed_info(context, feed_id: int) -> dict:
     Args:
         feed_id: The feed ID to look up.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         resp = await client.get(f"/reader/feed/{feed_id}")
         feed = resp.get("feed", {})
@@ -76,7 +75,6 @@ async def newsblur_get_feed_info(context, feed_id: int) -> dict:
 
 @mcp.tool()
 async def newsblur_subscribe(
-    context,
     url: str,
     folder: str | None = None,
 ) -> dict:
@@ -89,7 +87,7 @@ async def newsblur_subscribe(
         url: Website or feed URL to subscribe to.
         folder: Folder to add the feed to (created if it doesn't exist).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         data = {"url": url}
         if folder:
@@ -107,7 +105,6 @@ async def newsblur_subscribe(
 
 @mcp.tool()
 async def newsblur_unsubscribe(
-    context,
     feed_id: int,
     folder: str | None = None,
 ) -> dict:
@@ -117,7 +114,7 @@ async def newsblur_unsubscribe(
         feed_id: Feed ID to unsubscribe from.
         folder: Folder the feed is in (needed if the feed appears in multiple folders).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         data = {"feed_id": feed_id}
         if folder:
@@ -131,7 +128,6 @@ async def newsblur_unsubscribe(
 
 @mcp.tool()
 async def newsblur_organize_feed(
-    context,
     action: str,
     feed_id: int | None = None,
     from_folder: str | None = None,
@@ -147,7 +143,7 @@ async def newsblur_organize_feed(
         to_folder: Destination folder (for move_feed, created if doesn't exist).
         new_name: New name (required for rename_feed and rename_folder).
     """
-    client = get_client(context)
+    client = get_client()
     try:
         if action == "move_feed":
             data = {"feed_id": feed_id, "in_folder": from_folder or "", "to_folder": to_folder or ""}

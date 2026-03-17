@@ -4,14 +4,14 @@ from newsblur_mcp.server import mcp, get_client
 
 
 @mcp.tool()
-async def newsblur_get_account_info(context) -> dict:
+async def newsblur_get_account_info() -> dict:
     """Get information about the authenticated user's account.
 
     Returns username, subscription tier (free/premium/archive/pro),
     feed count limits, and subscription stats. Use this to understand
     what features are available to the user.
     """
-    client = get_client(context)
+    client = get_client()
     try:
         # Bypass premium check for account info - users need to see their status
         client._is_premium = True
