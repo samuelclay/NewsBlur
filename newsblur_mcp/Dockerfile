@@ -10,4 +10,4 @@ RUN uv pip install --system --no-cache .
 
 EXPOSE 8099
 
-CMD ["python", "-m", "newsblur_mcp.server"]
+CMD ["python", "-m", "newsblur_mcp"]

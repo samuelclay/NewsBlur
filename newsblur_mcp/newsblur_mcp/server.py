@@ -75,7 +75,3 @@ def main():
         port=MCP_PORT,
         path="/",
     )
-
-
-if __name__ == "__main__":
-    main()
