@@ -32,7 +32,7 @@ class NewsBlurClient:
         """Check and cache whether the authenticated user has a premium subscription."""
         if self._is_premium is not None:
             return self._is_premium
-        resp = await self._http.get("/profile/is_premium")
+        resp = await self._http.get("/profile/is_premium", params={"retries": 0})
         resp.raise_for_status()
         data = resp.json()
         self._is_premium = bool(data.get("is_premium"))
