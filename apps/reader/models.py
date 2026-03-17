@@ -1160,7 +1160,7 @@ class UserSubscription(models.Model):
 
         if not self.needs_unread_recalc:
             self.needs_unread_recalc = True
-            self.save(update_fields=["needs_unread_recalc"])
+            UserSubscription.objects.filter(pk=self.pk).update(needs_unread_recalc=True)
 
         if len(story_hashes) > 1:
             logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
@@ -1179,7 +1179,7 @@ class UserSubscription(models.Model):
         r.publish(self.user.username, "feed:%s" % self.feed_id)
 
         self.last_read_date = datetime.datetime.now()
-        self.save(update_fields=["last_read_date"])
+        UserSubscription.objects.filter(pk=self.pk).update(last_read_date=self.last_read_date)
 
         return data
 
@@ -1620,7 +1620,9 @@ class UserSubscription(models.Model):
         if self.is_trained != oit:
             update_fields.append("is_trained")
         if len(update_fields):
-            self.save(update_fields=update_fields)
+            update_dict = {field: getattr(self, field) for field in update_fields}
+            if not UserSubscription.objects.filter(pk=self.pk).update(**update_dict):
+                return None
 
         if self.unread_count_positive == 0 and self.unread_count_neutral == 0:
             self.mark_feed_read()
