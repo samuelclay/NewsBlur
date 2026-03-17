@@ -1,11 +1,13 @@
 """MCP Resources - read-only data at stable URIs."""
 
+from fastmcp import Context
+
 from newsblur_mcp.server import mcp, get_client
 from newsblur_mcp.transforms import transform_feed
 
 
 @mcp.resource("newsblur://feeds")
-async def feeds_resource(context) -> dict:
+async def feeds_resource(context: Context) -> dict:
     """All subscribed feeds with unread counts, organized by folder."""
     client = get_client(context)
     try:
@@ -17,7 +19,7 @@ async def feeds_resource(context) -> dict:
 
 
 @mcp.resource("newsblur://feeds/{feed_id}")
-async def feed_resource(context, feed_id: int) -> dict:
+async def feed_resource(context: Context, feed_id: int) -> dict:
     """Single feed metadata and statistics."""
     client = get_client(context)
     try:
@@ -28,7 +30,7 @@ async def feed_resource(context, feed_id: int) -> dict:
 
 
 @mcp.resource("newsblur://folders")
-async def folders_resource(context) -> dict:
+async def folders_resource(context: Context) -> dict:
     """Folder tree structure."""
     client = get_client(context)
     try:
@@ -39,7 +41,7 @@ async def folders_resource(context) -> dict:
 
 
 @mcp.resource("newsblur://saved/tags")
-async def saved_tags_resource(context) -> dict:
+async def saved_tags_resource(context: Context) -> dict:
     """List of all saved story tags with counts."""
     client = get_client(context)
     try:
@@ -50,7 +52,7 @@ async def saved_tags_resource(context) -> dict:
 
 
 @mcp.resource("newsblur://classifiers")
-async def classifiers_resource(context) -> dict:
+async def classifiers_resource(context: Context) -> dict:
     """All trained classifiers organized by feed."""
     client = get_client(context)
     try:
@@ -61,7 +63,7 @@ async def classifiers_resource(context) -> dict:
 
 
 @mcp.resource("newsblur://profile")
-async def profile_resource(context) -> dict:
+async def profile_resource(context: Context) -> dict:
     """Current user profile, tier, and preferences."""
     client = get_client(context)
     try:

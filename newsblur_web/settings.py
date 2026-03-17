@@ -175,6 +175,9 @@ OAUTH2_PROVIDER = {
     "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
 }
 
+# MCP OAuth - secret for the MCP server's upstream OAuth application
+MCP_OAUTH_CLIENT_SECRET = "newsblur-mcp-dev-secret"
+
 # ===========
 # = Logging =
 # ===========
@@ -370,6 +373,7 @@ INSTALLED_APPS = (
     "apps.ask_ai",
     "apps.webfeed",
     "apps.archive_extension",
+    "apps.mcp",
     "apps.archive_assistant",
     "apps.monitor",
     "utils",  # missing models so no migrations

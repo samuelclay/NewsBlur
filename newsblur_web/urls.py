@@ -6,6 +6,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import RedirectView
 
+from apps.mcp import views as mcp_views
 from apps.profile import views as profile_views
 from apps.reader import views as reader_views
 from apps.social import views as social_views
@@ -108,6 +109,17 @@ urlpatterns = [
     url(r"^privacy/?", static_views.privacy, name="privacy"),
     url(r"^tos/?", static_views.tos, name="tos"),
     url(r"^manifest.webmanifest", static_views.webmanifest, name="webmanifest"),
+    # MCP OAuth discovery (RFC 8414 / RFC 9728)
+    url(
+        r"^\.well-known/oauth-authorization-server/mcp/?$",
+        mcp_views.oauth_authorization_server_metadata,
+        name="mcp-oauth-metadata",
+    ),
+    url(
+        r"^\.well-known/oauth-protected-resource/mcp/?$",
+        mcp_views.oauth_protected_resource_metadata,
+        name="mcp-oauth-protected-resource",
+    ),
     url(
         r"^.well-known/apple-app-site-association",
         static_views.apple_app_site_assoc,

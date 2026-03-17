@@ -912,6 +912,17 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     .NB-feature-detail-crosslinks-grid {
         grid-template-columns: 1fr;
     }
+    .NB-mcp-tool {
+        flex-wrap: wrap;
+        gap: 4px 10px;
+    }
+    .NB-mcp-tool-desc {
+        flex-basis: 100%;
+        padding-left: 0;
+    }
+    .NB-mcp-tool-desc::before {
+        content: none;
+    }
 }
 
 
@@ -943,39 +954,70 @@ pre.NB-feature-detail-code {
     margin: 0 0 8px;
 }
 
-/* Tool groups - responsive grid */
-.NB-feature-detail-tools {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-}
-
-.NB-feature-detail-tool-group h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(45, 38, 26, 0.85);
-    margin: 0 0 10px;
-}
-
-.NB-feature-detail-tool-group ul {
+/* MCP Tools list - single column */
+.NB-mcp-tools-list {
     list-style: none;
-    padding: 0 0 0 4px;
+    padding: 0;
     margin: 0;
 }
 
-.NB-feature-detail-tool-group li {
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: rgba(45, 38, 26, 0.7);
-    line-height: 1.5;
+.NB-mcp-tool {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.NB-feature-detail-tool-group code {
+.NB-mcp-tool:last-child {
+    border-bottom: none;
+}
+
+.NB-mcp-tool-category {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    min-width: 72px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+[data-category="reading"] .NB-mcp-tool-category {
+    background: rgba(58, 118, 166, 0.1);
+    color: rgba(40, 90, 130, 0.85);
+}
+
+[data-category="actions"] .NB-mcp-tool-category {
     background: rgba(138, 109, 27, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
+    color: rgba(120, 95, 20, 0.85);
+}
+
+[data-category="intelligence"] .NB-mcp-tool-category {
+    background: rgba(76, 141, 72, 0.1);
+    color: rgba(50, 110, 48, 0.85);
+}
+
+.NB-mcp-tool code {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(45, 38, 26, 0.85);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-mcp-tool-desc {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.5);
+    line-height: 1.4;
+}
+
+.NB-mcp-tool-desc::before {
+    content: "\2014\00a0";
 }
 
 
@@ -4230,17 +4272,31 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
     color: rgba(255, 255, 255, 0.9);
 }
 
-.NB-dark .NB-feature-detail-tool-group h3 {
+.NB-dark .NB-mcp-tool {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark [data-category="reading"] .NB-mcp-tool-category {
+    background: rgba(100, 170, 220, 0.15);
+    color: rgba(140, 195, 235, 0.9);
+}
+
+.NB-dark [data-category="actions"] .NB-mcp-tool-category {
+    background: rgba(251, 219, 155, 0.12);
+    color: rgba(251, 219, 155, 0.85);
+}
+
+.NB-dark [data-category="intelligence"] .NB-mcp-tool-category {
+    background: rgba(120, 200, 120, 0.12);
+    color: rgba(140, 210, 140, 0.85);
+}
+
+.NB-dark .NB-mcp-tool code {
     color: rgba(255, 255, 255, 0.85);
 }
 
-.NB-dark .NB-feature-detail-tool-group li {
-    color: rgba(255, 255, 255, 0.65);
-}
-
-.NB-dark .NB-feature-detail-tool-group code {
-    background: rgba(251, 219, 155, 0.12);
-    color: rgba(255, 255, 255, 0.8);
+.NB-dark .NB-mcp-tool-desc {
+    color: rgba(255, 255, 255, 0.45);
 }
 
 /* Feature detail screenshots - dark mode */

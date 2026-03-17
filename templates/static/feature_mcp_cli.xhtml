@@ -58,41 +58,98 @@ url = "https://newsblur.com/mcp"</pre>
 
     <div class="NB-feature-detail-how">
         <h2>18 tools available</h2>
-        <div class="NB-feature-detail-tools">
-            <div class="NB-feature-detail-tool-group">
-                <h3>Reading</h3>
-                <ul>
-                    <li><code>newsblur_list_feeds</code> &mdash; All feeds with folders and unread counts</li>
-                    <li><code>newsblur_get_stories</code> &mdash; Load stories from feeds, folders, or all</li>
-                    <li><code>newsblur_get_saved_stories</code> &mdash; Saved stories by tag</li>
-                    <li><code>newsblur_search_stories</code> &mdash; Full-text search</li>
-                    <li><code>newsblur_get_original_text</code> &mdash; Full article from source</li>
-                    <li><code>newsblur_get_feed_info</code> &mdash; Feed metadata and stats</li>
-                    <li><code>newsblur_get_account_info</code> &mdash; Account and tier info</li>
-                </ul>
-            </div>
-            <div class="NB-feature-detail-tool-group">
-                <h3>Actions</h3>
-                <ul>
-                    <li><code>newsblur_mark_stories_read</code> &mdash; By hash, feed, or folder</li>
-                    <li><code>newsblur_save_story</code> &mdash; Save with tags, notes, highlights</li>
-                    <li><code>newsblur_unsave_story</code> &mdash; Remove from saved</li>
-                    <li><code>newsblur_subscribe</code> &mdash; Subscribe by URL</li>
-                    <li><code>newsblur_unsubscribe</code> &mdash; Remove subscription</li>
-                    <li><code>newsblur_organize_feed</code> &mdash; Move and rename</li>
-                    <li><code>newsblur_share_story</code> &mdash; Share to blurblog</li>
-                </ul>
-            </div>
-            <div class="NB-feature-detail-tool-group">
-                <h3>Intelligence &amp; Discovery</h3>
-                <ul>
-                    <li><code>newsblur_train_classifier</code> &mdash; Train like/dislike</li>
-                    <li><code>newsblur_get_classifiers</code> &mdash; View all training</li>
-                    <li><code>newsblur_discover_feeds</code> &mdash; Search and trending</li>
-                    <li><code>newsblur_manage_notifications</code> &mdash; Per-feed alerts</li>
-                </ul>
-            </div>
-        </div>
+        <ul class="NB-mcp-tools-list">
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_list_feeds</code>
+                <span class="NB-mcp-tool-desc">All feeds with folders and unread counts</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_get_stories</code>
+                <span class="NB-mcp-tool-desc">Load stories from feeds, folders, or all</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_get_saved_stories</code>
+                <span class="NB-mcp-tool-desc">Saved stories by tag</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_search_stories</code>
+                <span class="NB-mcp-tool-desc">Full-text search</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_get_original_text</code>
+                <span class="NB-mcp-tool-desc">Full article from source</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_get_feed_info</code>
+                <span class="NB-mcp-tool-desc">Feed metadata and stats</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="reading">
+                <span class="NB-mcp-tool-category">Reading</span>
+                <code>newsblur_get_account_info</code>
+                <span class="NB-mcp-tool-desc">Account and tier info</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_mark_stories_read</code>
+                <span class="NB-mcp-tool-desc">Mark read by hash, feed, or folder</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_save_story</code>
+                <span class="NB-mcp-tool-desc">Save with tags, notes, highlights</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_unsave_story</code>
+                <span class="NB-mcp-tool-desc">Remove from saved</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_subscribe</code>
+                <span class="NB-mcp-tool-desc">Subscribe by URL</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_unsubscribe</code>
+                <span class="NB-mcp-tool-desc">Remove subscription</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_organize_feed</code>
+                <span class="NB-mcp-tool-desc">Move and rename feeds</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="actions">
+                <span class="NB-mcp-tool-category">Actions</span>
+                <code>newsblur_share_story</code>
+                <span class="NB-mcp-tool-desc">Share to blurblog</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="intelligence">
+                <span class="NB-mcp-tool-category">Intelligence</span>
+                <code>newsblur_train_classifier</code>
+                <span class="NB-mcp-tool-desc">Train like/dislike by author, tag, title, feed</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="intelligence">
+                <span class="NB-mcp-tool-category">Intelligence</span>
+                <code>newsblur_get_classifiers</code>
+                <span class="NB-mcp-tool-desc">View all training data</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="intelligence">
+                <span class="NB-mcp-tool-category">Intelligence</span>
+                <code>newsblur_discover_feeds</code>
+                <span class="NB-mcp-tool-desc">Search and trending feeds</span>
+            </li>
+            <li class="NB-mcp-tool" data-category="intelligence">
+                <span class="NB-mcp-tool-category">Intelligence</span>
+                <code>newsblur_manage_notifications</code>
+                <span class="NB-mcp-tool-desc">Per-feed alerts</span>
+            </li>
+        </ul>
     </div>
 
     <div class="NB-feature-detail-faq">
@@ -111,6 +168,10 @@ url = "https://newsblur.com/mcp"</pre>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
             <p class="NB-feature-detail-faq-a">MCP server and CLI access requires any Premium subscription ($36/year and up).</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Want more MCP features?</h3>
+            <p class="NB-feature-detail-faq-a">Have an idea for a new tool or workflow? Post it on the <a href="https://forum.newsblur.com">NewsBlur support forum</a> and we'll consider it for a future release.</p>
         </div>
     </div>
 
