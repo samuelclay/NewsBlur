@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Mute feeds for a set amount of time
+date: 2026-03-16
 tags: ["web"]
 ---
 
