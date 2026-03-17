@@ -129,6 +129,10 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Leave no TODOs or placeholders**
 - **Always reference file names in comments**
 
+## Blog
+- Posts live in `blog/_posts/`, drafts in `blog/_drafts/`
+- `blog/_site/` contains generated output and **must be committed** — it's how the blog gets deployed
+
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
