@@ -12,8 +12,8 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-16T20:08:07-04:00</updated>
-  <id>https://blog.newsblur.com/feed.xml</id>
+  <updated>2026-03-17T18:06:28-04:00</updated>
+  <id>http://localhost:4000/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
   <subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
@@ -24,12 +24,70 @@ A new sound of an old instrument.
 
   
   <entry>
+    <title type="html">A Downtime Irony</title>
+    <link href="http://localhost:4000/2014/08/21/a-downtime-irony/" rel="alternate" type="text/html" title="A Downtime Irony" />
+    <published>2014-08-21T21:08:24-04:00</published>
+    <updated>2014-08-21T21:08:24-04:00</updated>
+    <id>http://localhost:4000/2014/08/21/a-downtime-irony</id>
+    <content type="html" xml:base="http://localhost:4000/2014/08/21/a-downtime-irony/">
+      <![CDATA[<p>So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.</p>
+
+<p>Here’s what happened: At approximately 4:30pm PT feed fetching ceased. The feed fetchers were still working, which is why my monitors didn’t fire and alert anybody. But I have a second large Mongo database server used exclusively for collecting data about feeds being fetched. There are approximately 75 servers dedicated to feed fetching. These analytics look at average fetch times on a per task server basis. I use these analytics to ensure that my task servers are humming along, as they each use a ton of network, cpu, and memory.</p>
+
+<p>This Mongo analytics servers works in a curious way. If you right-click on a feed and go to Statistics you’ll see the feed fetch history for a feed, stretching back a hundred fetches if the feed has had any issues in fetching. I keep these statistics on an analytics server separate from the regular Mongo server. I do this so that if the mongo analytics server goes down, everything will operate normally.</p>
+
+<p>But the mongo server didn’t go down. It merely gave this error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OperationError: Could not save document (Can't take a write lock while out of disk space)
+</code></pre></div></div>
+
+<p>Mongo continues serving read queries while not allowing write queries. I didn’t plan for that! And it gets worse. The way MongoDB stores data is that is just keeps growing, even as you delete data. NewsBlur only saves the last few fetches, but deleting old fetches doesn’t give you back any disk space. Every other database server I use has an autovacuum process that takes care of this maintenance work (PostgreSQL, Redis, Elasticsearch, but not MongoDB). It’s unfortunate that this is yet another instance of MongoDB being the cause of downtime, even though the fault lies with me.</p>
+
+<p>The server that is meant to only be used to ensure things are working correctly was itself the culprit for feeds no longer being fetched. This is the ironic part.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="newsblurs-developer-during-happier-times-wearing-the-2013-newsblur-t-shirt-in-big-sur">NewsBlur’s developer during happier times wearing the 2013 NewsBlur t-shirt in Big Sur</h6>
+
+<p>Now comes the painful part. On Wednesday morning (yesterday) I packed my car and headed down to Big Sur to go backpack camping for the first time. I’ve car camped plenty of times, but I felt confident enough to pack my sleeping bag and tent into a big bag and head ten miles into the woods of coastal California.</p>
+
+<p>I headed out, away from cellular service, at 4pm PT, half an hour before the analytics server ran out of disk space. And then returned nearly 24 hours later to a bevy of alarmed tweets, emails, direct messages, and a voicemail letting me know that things were haywire.</p>
+
+<p>But the real problem is that I set a vacation reply on both my personal and work email accounts to say that I’d be out until September 3rd. Now, I hired a firm to watch the servers while I’m at Burning Man starting this Saturday. But I figured I could get away with leaving the servers for twenty four hours. And I neglected to tweet out that I’d be gone for a day, so theories cropped up that I was injured, dead, or worse, ignoring the service.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Brittany%20in%20Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="brittany-newsblurs-developers-girlfriend-can-handle-any-situation-including-driving-a-hysterical-developer-three-hours-back-to-san-francisco-without-breaking-a-sweat">Brittany, NewsBlur’s developer’s girlfriend, can handle any situation, including driving a hysterical developer three hours back to San Francisco without breaking a sweat.</h6>
+
+<p>If you’re wondering, I think about NewsBlur first thing in the morning and last thing at night when I check Twitter for mentions. It’s my life and I would never just give up on it. I just got cocky after a year and a half of nearly uninterrupted service. NewsBlur requires next to no maintenance, apart from handling support requests and building new features (and occasionally fixing old ones). So I figured what harm could 24 hours of away time be? Boy was I wrong.</p>
+
+<p>If you made it this far then you probably care about NewsBlur’s future. I want to not only assure you that I will be building better monitoring to ensure this never happens again, but to also offer anybody who feels that they are not getting their money’s worth a refund. Even if you are months away from payment, if you aren’t completely satisfied and think NewsBlur’s just about the best thing to happen to RSS since Brent Simmons released NetNewsWire back in 2004, then I want to give you your money back and let you keep your premium account until it expires.</p>
+
+<p>I would like to also mention how much I appreciate the more light-hearted tweets that I read while on the frenetic three hour drive back to San Francisco from Big Sur. I do this for all of your happiness. If I did it for the money I’d probably find a way to juice the data so that I could at least afford to hire an employee. This is a labor of love and your payment goes directly into supporting it.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Tent%20in%20Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="big-sur-is-where-a-good-many-new-ideas-are-thought">Big Sur is where a good many new ideas are thought.</h6>
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title type="html">Reeder and NewsBlur, sitting in a tree...</title>
-    <link href="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/" rel="alternate" type="text/html" title="Reeder and NewsBlur, sitting in a tree..." />
+    <link href="http://localhost:4000/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/" rel="alternate" type="text/html" title="Reeder and NewsBlur, sitting in a tree..." />
     <published>2014-07-23T12:45:57-04:00</published>
     <updated>2014-07-23T12:45:57-04:00</updated>
-    <id>https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/">
+    <id>http://localhost:4000/2014/07/23/reeder-and-newsblur-sitting-in-a-tree</id>
+    <content type="html" xml:base="http://localhost:4000/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/">
       <![CDATA[<p>…S-Y-N-C-I-N-G.</p>
 
 <p>First comes feeds, then comes training, then comes social for those days when its raining.</p>
@@ -59,11 +117,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Adjust the font size of feed and story titles</title>
-    <link href="https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/" rel="alternate" type="text/html" title="Adjust the font size of feed and story titles" />
+    <link href="http://localhost:4000/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/" rel="alternate" type="text/html" title="Adjust the font size of feed and story titles" />
     <published>2014-07-22T06:30:26-04:00</published>
     <updated>2014-07-22T06:30:26-04:00</updated>
-    <id>https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/">
+    <id>http://localhost:4000/2014/07/22/adjust-the-font-size-of-feed-and-story-titles</id>
+    <content type="html" xml:base="http://localhost:4000/2014/07/22/adjust-the-font-size-of-feed-and-story-titles/">
       <![CDATA[<p>It was only a few months ago back in April that I launched <a href="http://blog.newsblur.com/2021/06/21/2014-04-10-the-new-font-and-style-manager.html">the new font and style manager</a>. Today I’m coming back to finish the job.</p>
 
 <p>The style manager now has a new control for choosing the font size of feed titles and story titles.</p>
@@ -95,11 +153,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Read what you&apos;ve read recently with the new recently read stories feed</title>
-    <link href="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/" rel="alternate" type="text/html" title="Read what you&apos;ve read recently with the new recently read stories feed" />
+    <link href="http://localhost:4000/2014/06/27/read-what-youve-read-recently-with-the-new/" rel="alternate" type="text/html" title="Read what you&apos;ve read recently with the new recently read stories feed" />
     <published>2014-06-27T07:00:36-04:00</published>
     <updated>2014-06-27T07:00:36-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/27/read-what-youve-read-recently-with-the-new/">
+    <id>http://localhost:4000/2014/06/27/read-what-youve-read-recently-with-the-new</id>
+    <content type="html" xml:base="http://localhost:4000/2014/06/27/read-what-youve-read-recently-with-the-new/">
       <![CDATA[<p>Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/read%20stories.png" alt="" /></p>
@@ -123,11 +181,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Temporarily mute sites</title>
-    <link href="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/" rel="alternate" type="text/html" title="Temporarily mute sites" />
+    <link href="http://localhost:4000/2014/06/17/temporarily-mute-sites/" rel="alternate" type="text/html" title="Temporarily mute sites" />
     <published>2014-06-17T12:09:59-04:00</published>
     <updated>2014-06-17T12:09:59-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/17/temporarily-mute-sites</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/">
+    <id>http://localhost:4000/2014/06/17/temporarily-mute-sites</id>
+    <content type="html" xml:base="http://localhost:4000/2014/06/17/temporarily-mute-sites/">
       <![CDATA[<p>You can now temporarily turn off sites by going to Manage &gt; Mute Sites. This is for those feeds you want to keep but ignore for a while.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/mute_sites.png" alt="" /></p>
@@ -153,11 +211,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Use the new Saved Stories view to find saved stories by site</title>
-    <link href="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/" rel="alternate" type="text/html" title="Use the new Saved Stories view to find saved stories by site" />
+    <link href="http://localhost:4000/2014/06/03/use-the-new-saved-stories-view-to-find-saved/" rel="alternate" type="text/html" title="Use the new Saved Stories view to find saved stories by site" />
     <published>2014-06-03T15:40:00-04:00</published>
     <updated>2014-06-03T15:40:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/">
+    <id>http://localhost:4000/2014/06/03/use-the-new-saved-stories-view-to-find-saved</id>
+    <content type="html" xml:base="http://localhost:4000/2014/06/03/use-the-new-saved-stories-view-to-find-saved/">
       <![CDATA[<p>After launching <a href="http://blog.newsblur.com/2021/06/21/2014-01-14-saved-story-tagging.html">Saved Story Tagging</a> earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved_stories_view.png" alt="" /></p>
@@ -183,11 +241,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Full text search across all of your subscriptions and folders </title>
-    <link href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" rel="alternate" type="text/html" title="Full text search across all of your subscriptions and folders " />
+    <link href="http://localhost:4000/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" rel="alternate" type="text/html" title="Full text search across all of your subscriptions and folders " />
     <published>2014-04-29T04:45:28-04:00</published>
     <updated>2014-04-29T04:45:28-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
+    <id>http://localhost:4000/2014/04/29/full-text-search-across-all-of-your-subscriptions-and</id>
+    <content type="html" xml:base="http://localhost:4000/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
       <![CDATA[<p>Last Summer <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">Simple Search was launched</a>, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.</p>
 
 <p>Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.</p>
@@ -214,11 +272,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Unread is a new iOS app with NewsBlur support</title>
-    <link href="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/" rel="alternate" type="text/html" title="Unread is a new iOS app with NewsBlur support" />
+    <link href="http://localhost:4000/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/" rel="alternate" type="text/html" title="Unread is a new iOS app with NewsBlur support" />
     <published>2014-04-24T11:56:00-04:00</published>
     <updated>2014-04-24T11:56:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
+    <id>http://localhost:4000/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support</id>
+    <content type="html" xml:base="http://localhost:4000/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
       <![CDATA[<p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
 
 <p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
@@ -260,11 +318,11 @@ color: #606060;
   
   <entry>
     <title type="html">The new font and style manager</title>
-    <link href="https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager/" rel="alternate" type="text/html" title="The new font and style manager" />
+    <link href="http://localhost:4000/2014/04/10/the-new-font-and-style-manager/" rel="alternate" type="text/html" title="The new font and style manager" />
     <published>2014-04-10T11:53:11-04:00</published>
     <updated>2014-04-10T11:53:11-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/10/the-new-font-and-style-manager/">
+    <id>http://localhost:4000/2014/04/10/the-new-font-and-style-manager</id>
+    <content type="html" xml:base="http://localhost:4000/2014/04/10/the-new-font-and-style-manager/">
       <![CDATA[<p>This is not just any font and style manager. You now have control over font size, line spacing, story layout, and type faces directly in the reading view. This nifty popover gives you quick access to all of these customizable features.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/style%20popover.png" alt="" /></p>
@@ -308,11 +366,11 @@ color: #606060;
   
   <entry>
     <title type="html">Google Reader announced its shutdown exactly a year ago</title>
-    <link href="https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/" rel="alternate" type="text/html" title="Google Reader announced its shutdown exactly a year ago" />
+    <link href="http://localhost:4000/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/" rel="alternate" type="text/html" title="Google Reader announced its shutdown exactly a year ago" />
     <published>2014-03-13T14:27:00-04:00</published>
     <updated>2014-03-13T14:27:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/">
+    <id>http://localhost:4000/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago</id>
+    <content type="html" xml:base="http://localhost:4000/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/">
       <![CDATA[<p>In this industry, you gotta be tough.</p>
 
 <p>I’m just kidding. We’re a bunch of literates who enjoy reading so much that we built our own news readers. But when a behemoth like Google makes a call that places you at the business end of 100,000 frantic power users, reminding yourself how tough you are is one way of dealing with the madness.</p>
@@ -366,11 +424,11 @@ color: #606060;
   
   <entry>
     <title type="html">NewsBlur iOS 4.0 features a new dashboard, gestures and sharing controls</title>
-    <link href="https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard/" rel="alternate" type="text/html" title="NewsBlur iOS 4.0 features a new dashboard, gestures and sharing controls" />
+    <link href="http://localhost:4000/2014/03/10/newsblur-ios-40-features-a-new-dashboard/" rel="alternate" type="text/html" title="NewsBlur iOS 4.0 features a new dashboard, gestures and sharing controls" />
     <published>2014-03-10T10:48:08-04:00</published>
     <updated>2014-03-10T10:48:08-04:00</updated>
-    <id>https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard/">
+    <id>http://localhost:4000/2014/03/10/newsblur-ios-40-features-a-new-dashboard</id>
+    <content type="html" xml:base="http://localhost:4000/2014/03/10/newsblur-ios-40-features-a-new-dashboard/">
       <![CDATA[<p>Today marks <a href="http://www.newsblur.com/ios">the release of version 4.0 of the NewsBlur iOS app</a>. To illustrate the significance of this release I’d like to talk about where the app has been.</p>
 
 <p>The first version of the NewsBlur iOS app was actually just an iPhone app. It <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">launched in October 2011</a> and only allowed you to read your feeds individually. Within months the river of news (reading by folder) was added, along with better sharing controls, intelligence training, sharing to your blurblog, and the May 2013 re-design.</p>
@@ -417,11 +475,11 @@ color: #606060;
   
   <entry>
     <title type="html">Connect NewsBlur to dozens of web services with IFTTT</title>
-    <link href="https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/" rel="alternate" type="text/html" title="Connect NewsBlur to dozens of web services with IFTTT" />
+    <link href="http://localhost:4000/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/" rel="alternate" type="text/html" title="Connect NewsBlur to dozens of web services with IFTTT" />
     <published>2014-02-20T09:11:28-05:00</published>
     <updated>2014-02-20T09:11:28-05:00</updated>
-    <id>https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/">
+    <id>http://localhost:4000/2014/02/20/connect-newsblur-to-dozens-of-web-services-with</id>
+    <content type="html" xml:base="http://localhost:4000/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/">
       <![CDATA[<p>Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?</p>
 
 <p><a href="https://ifttt.com/newsblur"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-logo-large.png" alt="" /></a></p>
@@ -479,11 +537,11 @@ color: #606060;
   
   <entry>
     <title type="html">Saved story tagging </title>
-    <link href="https://blog.newsblur.com/2014/01/14/saved-story-tagging/" rel="alternate" type="text/html" title="Saved story tagging " />
+    <link href="http://localhost:4000/2014/01/14/saved-story-tagging/" rel="alternate" type="text/html" title="Saved story tagging " />
     <published>2014-01-14T10:39:00-05:00</published>
     <updated>2014-01-14T10:39:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/14/saved-story-tagging</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/14/saved-story-tagging/">
+    <id>http://localhost:4000/2014/01/14/saved-story-tagging</id>
+    <content type="html" xml:base="http://localhost:4000/2014/01/14/saved-story-tagging/">
       <![CDATA[<p>It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down your saved story list to find the story, or use the <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">new search feature</a> to find it by title or author.</p>
 
 <p>Today I would like to introduce a big new feature: saved story tagging. It works like this. When you save a story, it is automatically tagged with all of the folders that the site is part of.</p>
@@ -516,11 +574,11 @@ color: #606060;
   
   <entry>
     <title type="html">Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes</title>
-    <link href="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/" rel="alternate" type="text/html" title="Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes" />
+    <link href="http://localhost:4000/2014/01/06/three-new-features-for-the-web-syntax/" rel="alternate" type="text/html" title="Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes" />
     <published>2014-01-06T12:46:00-05:00</published>
     <updated>2014-01-06T12:46:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/">
+    <id>http://localhost:4000/2014/01/06/three-new-features-for-the-web-syntax</id>
+    <content type="html" xml:base="http://localhost:4000/2014/01/06/three-new-features-for-the-web-syntax/">
       <![CDATA[<p>A few small new features to get your first full week of the new year started off right.</p>
 
 <h3 id="syntax-highlight-for-source-code">Syntax highlight for source code</h3>
@@ -562,11 +620,11 @@ color: #606060;
   
   <entry>
     <title type="html">Faster parallel network requests for version 3.5 of the NewsBlur Android app</title>
-    <link href="https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35/" rel="alternate" type="text/html" title="Faster parallel network requests for version 3.5 of the NewsBlur Android app" />
+    <link href="http://localhost:4000/2014/01/03/faster-parallel-network-requests-for-version-35/" rel="alternate" type="text/html" title="Faster parallel network requests for version 3.5 of the NewsBlur Android app" />
     <published>2014-01-03T11:35:00-05:00</published>
     <updated>2014-01-03T11:35:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35/">
+    <id>http://localhost:4000/2014/01/03/faster-parallel-network-requests-for-version-35</id>
+    <content type="html" xml:base="http://localhost:4000/2014/01/03/faster-parallel-network-requests-for-version-35/">
       <![CDATA[<p>The single biggest criticism I’ve heard of the Android app is that it can be slow when loading feeds and then loading stories. That changes today with the release of version 3.5 of the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Android%20v3.5.png" alt="" /></p>
@@ -608,11 +666,11 @@ color: #606060;
   
   <entry>
     <title type="html">Background updates and dynamic font sizing on the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/" rel="alternate" type="text/html" title="Background updates and dynamic font sizing on the NewsBlur iOS app" />
+    <link href="http://localhost:4000/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/" rel="alternate" type="text/html" title="Background updates and dynamic font sizing on the NewsBlur iOS app" />
     <published>2013-12-19T10:38:00-05:00</published>
     <updated>2013-12-19T10:38:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/">
+    <id>http://localhost:4000/2013/12/19/background-updates-and-dynamic-font-sizing-on-the</id>
+    <content type="html" xml:base="http://localhost:4000/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/">
       <![CDATA[<p>This week brings us a minor, but major, update for <a href="http://www.newsblur.com/ios">the NewsBlur iOS app</a>. Several new features, some due to new APIs in iOS 7, have made it into the app.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios3.6.png" alt="" /></p>
@@ -649,11 +707,11 @@ color: #606060;
   
   <entry>
     <title type="html">Version 3.0 of the NewsBlur Android App</title>
-    <link href="https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app/" rel="alternate" type="text/html" title="Version 3.0 of the NewsBlur Android App" />
+    <link href="http://localhost:4000/2013/11/18/version-3-0-of-the-newsblur-android-app/" rel="alternate" type="text/html" title="Version 3.0 of the NewsBlur Android App" />
     <published>2013-11-18T16:51:00-05:00</published>
     <updated>2013-11-18T16:51:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app/">
+    <id>http://localhost:4000/2013/11/18/version-3-0-of-the-newsblur-android-app</id>
+    <content type="html" xml:base="http://localhost:4000/2013/11/18/version-3-0-of-the-newsblur-android-app/">
       <![CDATA[<p>Hot on the heels of <a href="http://blog.newsblur.com/2021/06/21/2013-10-28-the-newsblur-iphone-and-ipad-app-meets-ios-7.html">version 3.0 of the NewsBlur iOS app</a> comes <a href="http://www.newsblur.com/android">the next version of the Android app</a>. A bunch of new features have made it into this release, including the new story navigation pane and the text view.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Android%20v3.png" alt="" /></p>
@@ -688,11 +746,11 @@ color: #606060;
   
   <entry>
     <title type="html">The NewsBlur iPhone and iPad app meets iOS 7</title>
-    <link href="https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/" rel="alternate" type="text/html" title="The NewsBlur iPhone and iPad app meets iOS 7" />
+    <link href="http://localhost:4000/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/" rel="alternate" type="text/html" title="The NewsBlur iPhone and iPad app meets iOS 7" />
     <published>2013-10-28T09:53:00-04:00</published>
     <updated>2013-10-28T09:53:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/">
+    <id>http://localhost:4000/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7</id>
+    <content type="html" xml:base="http://localhost:4000/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/">
       <![CDATA[<p>Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give <a href="http://www.newsblur.com/ios">the NewsBlur iOS app</a> a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v3.5.png" alt="" /></p>
@@ -732,11 +790,11 @@ color: #606060;
   
   <entry>
     <title type="html">Offline reading with the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Offline reading with the NewsBlur iOS app" />
+    <link href="http://localhost:4000/2013/09/17/offline-reading-with-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Offline reading with the NewsBlur iOS app" />
     <published>2013-09-17T12:46:00-04:00</published>
     <updated>2013-09-17T12:46:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app/">
+    <id>http://localhost:4000/2013/09/17/offline-reading-with-the-newsblur-ios-app</id>
+    <content type="html" xml:base="http://localhost:4000/2013/09/17/offline-reading-with-the-newsblur-ios-app/">
       <![CDATA[<p>Today I’m launching <a href="http://www.newsblur.com/ios">version 3.0 of the iPhone and iPad app for NewsBlur</a>. This major update brings loads of big features that combine to make the world’s best iOS news reader with the fastest sync in town.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_offline.png" alt="" /></p>
@@ -770,11 +828,11 @@ color: #606060;
   
   <entry>
     <title type="html">Upping unread stories to 30 days for premium accounts</title>
-    <link href="https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium/" rel="alternate" type="text/html" title="Upping unread stories to 30 days for premium accounts" />
+    <link href="http://localhost:4000/2013/09/16/upping-unread-stories-to-30-days-for-premium/" rel="alternate" type="text/html" title="Upping unread stories to 30 days for premium accounts" />
     <published>2013-09-16T17:09:14-04:00</published>
     <updated>2013-09-16T17:09:14-04:00</updated>
-    <id>https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium/">
+    <id>http://localhost:4000/2013/09/16/upping-unread-stories-to-30-days-for-premium</id>
+    <content type="html" xml:base="http://localhost:4000/2013/09/16/upping-unread-stories-to-30-days-for-premium/">
       <![CDATA[<p>While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this was simple: you have a week to read a story, and have a second week as a grace period.</p>
 
 <p>But after scaling out to tens of thousands of users, a new pattern emerged. Some users would go on vacation for two weeks at a time and then want to catch up on everything they missed. Some users only check RSS once a month. Some users just want to leave lightly updated feeds alone until they have free time to read them, and that can take a few weeks to get to.</p>
@@ -799,11 +857,11 @@ color: #606060;
   
   <entry>
     <title type="html">Mark as read by number of days and other improvements</title>
-    <link href="https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other/" rel="alternate" type="text/html" title="Mark as read by number of days and other improvements" />
+    <link href="http://localhost:4000/2013/09/13/mark-as-read-by-number-of-days-and-other/" rel="alternate" type="text/html" title="Mark as read by number of days and other improvements" />
     <published>2013-09-13T17:05:55-04:00</published>
     <updated>2013-09-13T17:05:55-04:00</updated>
-    <id>https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other/">
+    <id>http://localhost:4000/2013/09/13/mark-as-read-by-number-of-days-and-other</id>
+    <content type="html" xml:base="http://localhost:4000/2013/09/13/mark-as-read-by-number-of-days-and-other/">
       <![CDATA[<p>Here’s a few big improvements for the NewsBlur website.</p>
 
 <ul>
@@ -834,11 +892,11 @@ color: #606060;
   
   <entry>
     <title type="html">Simple Search for Feeds, Saved Stories, and Blurblogs</title>
-    <link href="https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/" rel="alternate" type="text/html" title="Simple Search for Feeds, Saved Stories, and Blurblogs" />
+    <link href="http://localhost:4000/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/" rel="alternate" type="text/html" title="Simple Search for Feeds, Saved Stories, and Blurblogs" />
     <published>2013-07-30T12:38:23-04:00</published>
     <updated>2013-07-30T12:38:23-04:00</updated>
-    <id>https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/">
+    <id>http://localhost:4000/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs</id>
+    <content type="html" xml:base="http://localhost:4000/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/">
       <![CDATA[<p>Search, which can easily be considered one of the most important features of a world-class news reader, is also one of the most difficult features to build.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search2.png" alt="" /></p>
@@ -870,11 +928,11 @@ color: #606060;
   
   <entry>
     <title type="html">NewsBlur Puzzle T-shirt 2013</title>
-    <link href="https://blog.newsblur.com/2013/07/24/newsblur-puzzle-t-shirt-2013/" rel="alternate" type="text/html" title="NewsBlur Puzzle T-shirt 2013" />
+    <link href="http://localhost:4000/2013/07/24/newsblur-puzzle-t-shirt-2013/" rel="alternate" type="text/html" title="NewsBlur Puzzle T-shirt 2013" />
     <published>2013-07-24T15:49:00-04:00</published>
     <updated>2013-07-24T15:49:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/07/24/newsblur-puzzle-t-shirt-2013</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/07/24/newsblur-puzzle-t-shirt-2013/">
+    <id>http://localhost:4000/2013/07/24/newsblur-puzzle-t-shirt-2013</id>
+    <content type="html" xml:base="http://localhost:4000/2013/07/24/newsblur-puzzle-t-shirt-2013/">
       <![CDATA[<p>Last year I was proud to be able to send a free t-shirt and handwritten note to every single user who requested one. It took a few days of writing, stuffing, and mailing to send out a couple hundred t-shirts.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/tshirt%202012.JPG" alt="" /></p>
@@ -900,11 +958,11 @@ color: #606060;
   
   <entry>
     <title type="html">Text view comes to the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Text view comes to the NewsBlur iOS app" />
+    <link href="http://localhost:4000/2013/06/04/text-view-comes-to-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Text view comes to the NewsBlur iOS app" />
     <published>2013-06-04T08:31:18-04:00</published>
     <updated>2013-06-04T08:31:18-04:00</updated>
-    <id>https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/">
+    <id>http://localhost:4000/2013/06/04/text-view-comes-to-the-newsblur-ios-app</id>
+    <content type="html" xml:base="http://localhost:4000/2013/06/04/text-view-comes-to-the-newsblur-ios-app/">
       <![CDATA[<p>The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.</p>
 
 <p>You can already use the Text view on the web. It’s great for extracting the story’s content on demand and helps you stay on a single tab to do all of your reading.</p>
@@ -932,11 +990,11 @@ color: #606060;
   
   <entry>
     <title type="html">Read NewsBlur on your Mac with the new ReadKit</title>
-    <link href="https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/" rel="alternate" type="text/html" title="Read NewsBlur on your Mac with the new ReadKit" />
+    <link href="http://localhost:4000/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/" rel="alternate" type="text/html" title="Read NewsBlur on your Mac with the new ReadKit" />
     <published>2013-05-30T12:12:16-04:00</published>
     <updated>2013-05-30T12:12:16-04:00</updated>
-    <id>https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/">
+    <id>http://localhost:4000/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit</id>
+    <content type="html" xml:base="http://localhost:4000/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/">
       <![CDATA[<p><a href="http://readkitapp.com">ReadKit</a>, a native Mac app for reading Instapaper, Pocket, and NewsBlur on your desktop, completes the RSS reading trifecta. NewsBlur has a web app, native iOS app, and now a native Mac app.</p>
 
 <p><a href="http://readkitapp.com"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/readkit.jpg" alt="" /></a></p>
@@ -955,42 +1013,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[ReadKit, a native Mac app for reading Instapaper, Pocket, and NewsBlur on your desktop, completes the RSS reading trifecta. NewsBlur has a web app, native iOS app, and now a native Mac app.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Keyboard Shortcuts Manager</title>
-    <link href="https://blog.newsblur.com/2013/05/23/keyboard-shortcuts-manager/" rel="alternate" type="text/html" title="Keyboard Shortcuts Manager" />
-    <published>2013-05-23T09:01:00-04:00</published>
-    <updated>2013-05-23T09:01:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/05/23/keyboard-shortcuts-manager</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/05/23/keyboard-shortcuts-manager/">
-      <![CDATA[<p>Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.</p>
-
-<p>After looking into the common refrain of customizable keyboard shortcuts, I identified the five keys that folks are talking about 99% of the time: the four arrow keys and the space bar. These keys can now be configured well beyond what you would expect.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/preferences_keyboard.png" alt="image" /></p>
-
-<ul>
-  <li>By default, the horizontal arrow keys control the view in which you are reading a site or folder. But there are a few keyboard shortcuts that allow you to temporarily read a story in the Text view (shift+enter) or the Story view (enter). So having other dedicated keys may not be necessary. And navigating between sites requires a two-key combination (shift+up and shift+down or shift+j and shift+k). You can now choose to make the left and right arrow keys navigate between sites.</li>
-  <li>The vertical arrow keys navigates between stories, but some users want them to scroll up and down by a small amount. You can customize exactly how much of a scroll distance you want to use.</li>
-  <li>The space bar, like the new up and down arrow keys, scrolls the page, but it does so by screen-load. So instead of scrolling by a set amount like the arrow keys, it works on a percentage of the screen. It’s a subtle difference that will allow you to more easily navigate the longer stories and the shorter stories with ease.</li>
-</ul>
-
-<p>These features are only available to premium subscribers and I hope you like them. If you have additional customization suggestions, hop on <a href="http://getsatisfaction.com/newsblur">the support forum</a> and let me know.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.
 ]]>
     </summary>
     

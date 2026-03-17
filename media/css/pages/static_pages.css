@@ -430,6 +430,10 @@ a.NB-splash-dropdown-heading-link:hover,
     filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1);
 }
 
+.NB-splash-dropdown-icon-indigo {
+    filter: invert(25%) sepia(90%) saturate(2500%) hue-rotate(235deg) brightness(0.9);
+}
+
 a.NB-splash-dropdown-item,
 a.NB-splash-dropdown-item:link,
 a.NB-splash-dropdown-item:visited,
@@ -1633,10 +1637,24 @@ h3.NB-pricing-faq-question {
     margin: 0;
 }
 
-.NB-feature-section-cta {
-    display: inline-block;
+.NB-feature-section-links {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
     margin-top: 16px;
-    padding: 8px 18px;
+    flex-wrap: wrap;
+}
+
+.NB-feature-section-links .NB-feature-section-blog,
+.NB-feature-section-links .NB-feature-section-cta {
+    margin-top: 0;
+}
+
+.NB-feature-section-cta {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 16px;
+    padding: 7px 14px;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;

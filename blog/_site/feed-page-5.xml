@@ -10,8 +10,8 @@
   
   
 
-  <updated>2026-03-16T20:08:07-04:00</updated>
-  <id>https://blog.newsblur.com/feed.xml</id>
+  <updated>2026-03-17T18:06:28-04:00</updated>
+  <id>http://localhost:4000/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
   <subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
@@ -22,12 +22,48 @@ A new sound of an old instrument.
 
   
   <entry>
+    <title type="html">Keyboard Shortcuts Manager</title>
+    <link href="http://localhost:4000/2013/05/23/keyboard-shortcuts-manager/" rel="alternate" type="text/html" title="Keyboard Shortcuts Manager" />
+    <published>2013-05-23T09:01:00-04:00</published>
+    <updated>2013-05-23T09:01:00-04:00</updated>
+    <id>http://localhost:4000/2013/05/23/keyboard-shortcuts-manager</id>
+    <content type="html" xml:base="http://localhost:4000/2013/05/23/keyboard-shortcuts-manager/">
+      <![CDATA[<p>Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.</p>
+
+<p>After looking into the common refrain of customizable keyboard shortcuts, I identified the five keys that folks are talking about 99% of the time: the four arrow keys and the space bar. These keys can now be configured well beyond what you would expect.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/preferences_keyboard.png" alt="image" /></p>
+
+<ul>
+  <li>By default, the horizontal arrow keys control the view in which you are reading a site or folder. But there are a few keyboard shortcuts that allow you to temporarily read a story in the Text view (shift+enter) or the Story view (enter). So having other dedicated keys may not be necessary. And navigating between sites requires a two-key combination (shift+up and shift+down or shift+j and shift+k). You can now choose to make the left and right arrow keys navigate between sites.</li>
+  <li>The vertical arrow keys navigates between stories, but some users want them to scroll up and down by a small amount. You can customize exactly how much of a scroll distance you want to use.</li>
+  <li>The space bar, like the new up and down arrow keys, scrolls the page, but it does so by screen-load. So instead of scrolling by a set amount like the arrow keys, it works on a percentage of the screen. It’s a subtle difference that will allow you to more easily navigate the longer stories and the shorter stories with ease.</li>
+</ul>
+
+<p>These features are only available to premium subscribers and I hope you like them. If you have additional customization suggestions, hop on <a href="http://getsatisfaction.com/newsblur">the support forum</a> and let me know.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title type="html">The NewsBlur Redesign</title>
-    <link href="https://blog.newsblur.com/2013/05/20/the-newsblur-redesign/" rel="alternate" type="text/html" title="The NewsBlur Redesign" />
+    <link href="http://localhost:4000/2013/05/20/the-newsblur-redesign/" rel="alternate" type="text/html" title="The NewsBlur Redesign" />
     <published>2013-05-20T22:47:00-04:00</published>
     <updated>2013-05-20T22:47:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/05/20/the-newsblur-redesign</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/05/20/the-newsblur-redesign/">
+    <id>http://localhost:4000/2013/05/20/the-newsblur-redesign</id>
+    <content type="html" xml:base="http://localhost:4000/2013/05/20/the-newsblur-redesign/">
       <![CDATA[<p>Not to say that NewsBlur was <em>ugly</em> before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.</p>
 
 <p><img src="http://dev.newsblur.com/media/img/welcome/header-web.png" alt="image" /></p>
@@ -105,11 +141,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Three Months to Scale NewsBlur</title>
-    <link href="https://blog.newsblur.com/2013/03/17/three-months-to-scale-newsblur/" rel="alternate" type="text/html" title="Three Months to Scale NewsBlur" />
+    <link href="http://localhost:4000/2013/03/17/three-months-to-scale-newsblur/" rel="alternate" type="text/html" title="Three Months to Scale NewsBlur" />
     <published>2013-03-17T17:24:00-04:00</published>
     <updated>2013-03-17T17:24:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/03/17/three-months-to-scale-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/03/17/three-months-to-scale-newsblur/">
+    <id>http://localhost:4000/2013/03/17/three-months-to-scale-newsblur</id>
+    <content type="html" xml:base="http://localhost:4000/2013/03/17/three-months-to-scale-newsblur/">
       <![CDATA[<p>At 4:16pm last Wednesday I got a short and to-the-point email from Nilay Patel at The Verge with only a link that started with the host “googlereader.blogspot.com”. The sudden spike in NewsBlur’s visitors immediately confirmed — Google was shutting down Reader.</p>
 
 <figure class="tmblr-full" data-orig-height="800" data-orig-width="600" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Late%20night%20at%20the%20office.jpeg"><img width="500" style="margin: 0 auto;" data-orig-height="800" data-orig-width="600" src="https://s3.amazonaws.com/static.newsblur.com/blog/Late%20night%20at%20the%20office.jpeg" /></figure>
@@ -200,11 +236,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">A blurblog of one&apos;s own: new privacy controls</title>
-    <link href="https://blog.newsblur.com/2013/01/03/privacy-controls/" rel="alternate" type="text/html" title="A blurblog of one&apos;s own: new privacy controls" />
+    <link href="http://localhost:4000/2013/01/03/privacy-controls/" rel="alternate" type="text/html" title="A blurblog of one&apos;s own: new privacy controls" />
     <published>2013-01-03T00:00:00-05:00</published>
     <updated>2013-01-03T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/01/03/privacy-controls</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/01/03/privacy-controls/">
+    <id>http://localhost:4000/2013/01/03/privacy-controls</id>
+    <content type="html" xml:base="http://localhost:4000/2013/01/03/privacy-controls/">
       <![CDATA[<p>Here at NewsBlur HQ, we love greeting each new day by seeing what everyone posts on their blurblogs, but we understand that not everyone might want to have their reading preferences broadcast to the public (or have the public broadcast its opinions on said preferences). So we’re introducing a special new service for premium account holders that allows you to protect your posts from prying eyes.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2012.17.51%20PM.png" alt="image" /></p>
@@ -235,11 +271,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">The sharing bookmarklet: bringing your online explorations to NewsBlur</title>
-    <link href="https://blog.newsblur.com/2012/12/17/sharing-bookmarklet/" rel="alternate" type="text/html" title="The sharing bookmarklet: bringing your online explorations to NewsBlur" />
+    <link href="http://localhost:4000/2012/12/17/sharing-bookmarklet/" rel="alternate" type="text/html" title="The sharing bookmarklet: bringing your online explorations to NewsBlur" />
     <published>2012-12-17T12:04:00-05:00</published>
     <updated>2012-12-17T12:04:00-05:00</updated>
-    <id>https://blog.newsblur.com/2012/12/17/sharing-bookmarklet</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/12/17/sharing-bookmarklet/">
+    <id>http://localhost:4000/2012/12/17/sharing-bookmarklet</id>
+    <content type="html" xml:base="http://localhost:4000/2012/12/17/sharing-bookmarklet/">
       <![CDATA[<p>There are lots of reasons not to post a cool article you’ve seen to your blurblog. Maybe you already follow too many blogs, and don’t have room to add any more to your feed (in which case, may we humbly recommend a Premium account?) Maybe you don’t want everyone to know just how crazy you’ve gotten about jai-alai or aerotrekking or My Little Pony: Friendship Is Magic. Or maybe you found a cool article on Facebook or Twitter or through an e-mail from a friend, and don’t want to go through the hassle of adding the site’s whole feed to your NewsBlur dashboard just to post one piece.</p>
 
 <p>That’s what the <a href="http://www.newsblur.com/?next=goodies">NewsBlur bookmarklet tool</a> is for. Whether it’s a great article from a site that you don’t like enough to follow regularly, or a first glimpse at an intriguing new site, the bookmarklet makes it easy to post anything you find around the Web to your blurblog.</p>
@@ -272,11 +308,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Time for some free NewsBlur swag!</title>
-    <link href="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/" rel="alternate" type="text/html" title="Time for some free NewsBlur swag!" />
+    <link href="http://localhost:4000/2012/10/29/free-newsblur-swag-time/" rel="alternate" type="text/html" title="Time for some free NewsBlur swag!" />
     <published>2012-10-29T15:38:00-04:00</published>
     <updated>2012-10-29T15:38:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/">
+    <id>http://localhost:4000/2012/10/29/free-newsblur-swag-time</id>
+    <content type="html" xml:base="http://localhost:4000/2012/10/29/free-newsblur-swag-time/">
       <![CDATA[<p>That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.</p>
 
 <p><strong>The t-shirt entry form has been taken down as of Thursday, November 29th. Hopefully you’ve ordered your t-shirt by now.</strong></p>
@@ -296,11 +332,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Extreme makeover: NewsBlur iOS app edition</title>
-    <link href="https://blog.newsblur.com/2012/10/26/ios-update-1-6/" rel="alternate" type="text/html" title="Extreme makeover: NewsBlur iOS app edition" />
+    <link href="http://localhost:4000/2012/10/26/ios-update-1-6/" rel="alternate" type="text/html" title="Extreme makeover: NewsBlur iOS app edition" />
     <published>2012-10-26T14:37:00-04:00</published>
     <updated>2012-10-26T14:37:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/26/ios-update-1-6</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/26/ios-update-1-6/">
+    <id>http://localhost:4000/2012/10/26/ios-update-1-6</id>
+    <content type="html" xml:base="http://localhost:4000/2012/10/26/ios-update-1-6/">
       <![CDATA[<p>Now that NewsBlur has joined the wonderful world of Android, we’re turning our attention back to the iOS app, with a full-scale feature parity push for the new iPhone 5 and iOS 6. It’s perfect for catching up on your reading when you realize that Apple Maps has sent you to the wrong address. Again.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Folders.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Menus.png" alt="image" /></p>
@@ -335,11 +371,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Do the robot: the official NewsBlur Android app is here</title>
-    <link href="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/" rel="alternate" type="text/html" title="Do the robot: the official NewsBlur Android app is here" />
+    <link href="http://localhost:4000/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/" rel="alternate" type="text/html" title="Do the robot: the official NewsBlur Android app is here" />
     <published>2012-10-18T11:47:00-04:00</published>
     <updated>2012-10-18T11:47:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/">
+    <id>http://localhost:4000/2012/10/18/do-the-robot-the-official-newsblur-android-app-is</id>
+    <content type="html" xml:base="http://localhost:4000/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/">
       <![CDATA[<p>You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever <a href="http://www.newsblur.com/android">official Android app</a> ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator Ryan Bateman (otherwise known as <a href="http://twitter.com/secretsquirrel">@secretsquirrel</a>), you can now join your iOS brethren on the couch with your daily dose of RSS goodness. Level of accompanying smugness is up to you.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%201.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%204.png" alt="image" /></p>
@@ -372,11 +408,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Giving Life to &quot;The People Have Spoken&quot;</title>
-    <link href="https://blog.newsblur.com/2012/10/01/giving-life-to-popular/" rel="alternate" type="text/html" title="Giving Life to &quot;The People Have Spoken&quot;" />
+    <link href="http://localhost:4000/2012/10/01/giving-life-to-popular/" rel="alternate" type="text/html" title="Giving Life to &quot;The People Have Spoken&quot;" />
     <published>2012-10-01T17:52:00-04:00</published>
     <updated>2012-10-01T17:52:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/01/giving-life-to-popular</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/01/giving-life-to-popular/">
+    <id>http://localhost:4000/2012/10/01/giving-life-to-popular</id>
+    <content type="html" xml:base="http://localhost:4000/2012/10/01/giving-life-to-popular/">
       <![CDATA[<p>For a long time, we’ve maintained <a href="http://popular.newsblur.com">The People Have Spoken</a>, the blog of what’s popular on NewsBlur, with a simple algorithm that measured how often something was shared. While that’s a great way to see the stuff our users really like (<a href="http://xkcd.com/">Randall Munroe</a> would probably win the NewsBlur equivalent of the Oscar), it makes it harder for everyone to find new stuff that they might not have seen or heard of before. So we’ve decided to throw a human into the mix. I’ll let Allie introduce herself in her own words:</p>
 
 <p><a href="http://alliepape.com"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/BigShot.jpg" alt="image" /></a></p>
@@ -405,11 +441,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Take it to the couch with the NewsBlur iPad app</title>
-    <link href="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/" rel="alternate" type="text/html" title="Take it to the couch with the NewsBlur iPad app" />
+    <link href="http://localhost:4000/2012/09/05/newsblur-ipad-app/" rel="alternate" type="text/html" title="Take it to the couch with the NewsBlur iPad app" />
     <published>2012-09-05T08:21:00-04:00</published>
     <updated>2012-09-05T08:21:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/09/05/newsblur-ipad-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/">
+    <id>http://localhost:4000/2012/09/05/newsblur-ipad-app</id>
+    <content type="html" xml:base="http://localhost:4000/2012/09/05/newsblur-ipad-app/">
       <![CDATA[<p>There’s no wrong way to hold an iPad loaded with <a href="http://www.newsblur.com/ipad">the brand new NewsBlur iPad app</a>, provided it’s facing you and turned on.</p>
 
 <p><a href="http://www.newsblur.com/ipad"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iPad.png" alt="image" title="The NewsBlur iPad app in revealing positions" /></a></p>
@@ -450,11 +486,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Introducing Blurblogs, Roy, and Y Combinator</title>
-    <link href="https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/" rel="alternate" type="text/html" title="Introducing Blurblogs, Roy, and Y Combinator" />
+    <link href="http://localhost:4000/2012/07/30/introducing-blurblogs-roy-and-y-combinator/" rel="alternate" type="text/html" title="Introducing Blurblogs, Roy, and Y Combinator" />
     <published>2012-07-30T11:22:00-04:00</published>
     <updated>2012-07-30T11:22:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/">
+    <id>http://localhost:4000/2012/07/30/introducing-blurblogs-roy-and-y-combinator</id>
+    <content type="html" xml:base="http://localhost:4000/2012/07/30/introducing-blurblogs-roy-and-y-combinator/">
       <![CDATA[<p>What a difference a few months make. NewsBlur was a side-project of mine for two years. In March of this year, <a href="[http://blog.newsblur.com/2021/06/21/2012-03-01-going-full-time.html](http://blog.newsblur.com/2021/06/21/2012-03-01-going-full-time.html)">I committed myself full-time</a> and went from developing NewsBlur almost entirely on the NYC subway to writing code every waking minute of the day. And now there are three big announcements to make. # 1. NewsBlur is now a *social* news reader The big news of the day is that you can now share stories on NewsBlur. When you share a story, your comments and the original story are posted to your blurblog. Your blurblog is a simple and customizable website. People can comment and reply directly on your blurblog, and you can follow your friends to read the news stories and blog posts that they care about.<figure class="tmblr-full" data-orig-height="869" data-orig-width="600" data-orig-src="http://f.cl.ly/items/3e1r202n3I232M473J2b/blurblog%20screenshot.png"><img style="margin: 0 auto;width: 600px; height: 869px; border: 1px solid #A0A0A0" data-orig-height="869" data-orig-width="600" src="http://f.cl.ly/items/3e1r202n3I232M473J2b/blurblog%20screenshot.png" /></figure>Since you’re good at picking your friends, and your friends are good at picking their friends, you will see friends of friends show up, expanding your network with shared stories that you will enjoy. It’s a new way of sharing the news. And because NewsBlur is already an easy to use news reader, it’s simple to find and share stories that your friends will care about. Every NewsBlur user has their own blurblog. All you have to do is signup for an account on <a href="[http://www.newsblur.com](http://www.newsblur.com)">www.newsblur.com</a> and share interesting stories. # 2. Y Combinator For those of you who work with computer science, you may know that a Y-combinator generalizes recursion, abstracting its implementation, and thereby separating it from the actual work of the function in question.[^1] <a href="http://www.ycombinator.com"><figure class="tmblr-full" data-orig-height="81" data-orig-width="500"><img src="https://64.media.tumblr.com/97d36e865086575a3b131e7ec928534e/c3a0661d97716fb7-14/s540x810/172c7f8b8367a623b61a3f26e3d95ff5214b5e2c.png" style="margin: 12px auto;width: 200px;border: none" data-orig-height="81" data-orig-width="500" /></figure></a>I’m pleased as punch to announce an investment in NewsBlur by Y Combinator, the investment firm. Over the past two months, we’ve been humbled by the roster of experienced partners giving us candid advice. It’s their tough love that is the catalyst for the next few months of transitioning NewsBlur from side project to world-class news reader. Expect NewsBlur to become simpler and more refined. # 3. Introducing Roy Yang When Y Combinator accepted me as a solo founder, their first piece of advice was to find a co-founder. Looking at every successful startup, a common pattern emerges. Every great startup has multiple people carrying the load when the company takes off. There is one person on this planet that I would trust as a co-founder. His name is Roy Yang and we have been friends since we met in New York four years ago. We worked together for nearly two years at Daylife, another news startup. I attended his wedding last year in Mexico, and he was the only person I called when I knew I needed somebody talented, focused, and able to complement me on a project that demands enormous time and effort.<a href="http://roy.newsblur.com"><figure class="tmblr-full" data-orig-height="334" data-orig-width="500"><img src="https://64.media.tumblr.com/88d3942183371de8e848da2416f28e29/c3a0661d97716fb7-c9/s540x810/028ee543cc6fd18a9daff3b46fbaaf1408994f25.jpg" style="margin: 12px auto;border: none" data-orig-height="334" data-orig-width="500" /></figure></a>Roy is now responsible for both iOS apps and is instrumental in challenging me when I think I’m right and am clearly not. He’s got the patience of a monk and the determination of a true New Yorker. <a href="[http://roy.newsblur.com](http://roy.newsblur.com)">Follow Roy’s blurblog</a> to keep up with him. # A glimpse into the future of NewsBlur This summer marks the beginning of NewsBlur as a full-time startup. Look forward to new mobile apps, new designs, and new features. Here’s a quick idea of what we’re working on for the next few weeks:</p>
 
 <figure data-orig-height="216" data-orig-width="284"><img src="https://64.media.tumblr.com/976b01805af2f28072b5fda19b03553e/c3a0661d97716fb7-2e/s540x810/3d07b12c76cc63bfcb21cee6d866c27dacd129f0.png" style="clear: none; float: left;margin: 0 24px 24px 0;border: 1px solid #A0A0A0;" data-orig-height="216" data-orig-width="284" /></figure>
@@ -484,11 +520,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Building real-time feed updates for NewsBlur with Redis and WebSockets</title>
-    <link href="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/" rel="alternate" type="text/html" title="Building real-time feed updates for NewsBlur with Redis and WebSockets" />
+    <link href="http://localhost:4000/2012/04/02/building-real-time-feed-updates-for-newsblur/" rel="alternate" type="text/html" title="Building real-time feed updates for NewsBlur with Redis and WebSockets" />
     <published>2012-04-02T17:52:00-04:00</published>
     <updated>2012-04-02T17:52:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/">
+    <id>http://localhost:4000/2012/04/02/building-real-time-feed-updates-for-newsblur</id>
+    <content type="html" xml:base="http://localhost:4000/2012/04/02/building-real-time-feed-updates-for-newsblur/">
       <![CDATA[<p>Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.</p>
 
 <p>Every user, both premium and standard, will now receive instantaneous updates. I’ve been beta-testing this feature for the past few weeks, and I’ve been quite pleased in knowing that I’m now reading on the bleeding-edge.</p>
@@ -653,11 +689,11 @@ io.sockets.on 'connection', (socket) -&gt;
   
   <entry>
     <title type="html">Knight News Challenge: NewsBlur</title>
-    <link href="https://blog.newsblur.com/2012/03/16/knight-news-challenge/" rel="alternate" type="text/html" title="Knight News Challenge: NewsBlur" />
+    <link href="http://localhost:4000/2012/03/16/knight-news-challenge/" rel="alternate" type="text/html" title="Knight News Challenge: NewsBlur" />
     <published>2012-03-16T11:29:00-04:00</published>
     <updated>2012-03-16T11:29:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/03/16/knight-news-challenge</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/03/16/knight-news-challenge/">
+    <id>http://localhost:4000/2012/03/16/knight-news-challenge</id>
+    <content type="html" xml:base="http://localhost:4000/2012/03/16/knight-news-challenge/">
       <![CDATA[<p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge: NewsBlur</a></p>
 
 <p>Hey NewsBlurians, I’m applying for a grant from the Knight Foundation. In a previous life I worked on DocumentCloud, a successful Knight grantee, building <a href="http://www.documentcloud.org/opensource">open-source libraries</a>. I’m looking to continue the fine tradition of building for both users and for other developers.</p>
@@ -714,11 +750,11 @@ Expected amount of time required to complete project: 1 year</p>
   
   <entry>
     <title type="html">New mobile app for NewsBlur: Web Feeds for Nokia MeeGo</title>
-    <link href="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/" rel="alternate" type="text/html" title="New mobile app for NewsBlur: Web Feeds for Nokia MeeGo" />
+    <link href="http://localhost:4000/2012/03/14/mobile-app-web-feeds-nokia-meego/" rel="alternate" type="text/html" title="New mobile app for NewsBlur: Web Feeds for Nokia MeeGo" />
     <published>2012-03-14T13:14:00-04:00</published>
     <updated>2012-03-14T13:14:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/">
+    <id>http://localhost:4000/2012/03/14/mobile-app-web-feeds-nokia-meego</id>
+    <content type="html" xml:base="http://localhost:4000/2012/03/14/mobile-app-web-feeds-nokia-meego/">
       <![CDATA[<p>And what a gorgeous mobile app it is. App developer Róbert Márki just released <a href="http://store.ovi.com/content/261063">Web Feeds</a>, the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:</p>
 
 <style>
@@ -760,11 +796,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">From project to profession: going indie on NewsBlur</title>
-    <link href="https://blog.newsblur.com/2012/03/01/going-full-time/" rel="alternate" type="text/html" title="From project to profession: going indie on NewsBlur" />
+    <link href="http://localhost:4000/2012/03/01/going-full-time/" rel="alternate" type="text/html" title="From project to profession: going indie on NewsBlur" />
     <published>2012-03-01T11:48:00-05:00</published>
     <updated>2012-03-01T11:48:00-05:00</updated>
-    <id>https://blog.newsblur.com/2012/03/01/going-full-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/03/01/going-full-time/">
+    <id>http://localhost:4000/2012/03/01/going-full-time</id>
+    <content type="html" xml:base="http://localhost:4000/2012/03/01/going-full-time/">
       <![CDATA[<p>Exactly four months ago, Jason Kottke found my project, <a href="http://www.newsblur.com">NewsBlur</a>, and tweeted:</p>
 
 <blockquote>
@@ -860,11 +896,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">SSL &amp; Stripe.js</title>
-    <link href="https://blog.newsblur.com/2012/02/29/ssl-stripejs/" rel="alternate" type="text/html" title="SSL &amp; Stripe.js" />
+    <link href="http://localhost:4000/2012/02/29/ssl-stripejs/" rel="alternate" type="text/html" title="SSL &amp; Stripe.js" />
     <published>2012-02-29T15:45:00-05:00</published>
     <updated>2012-02-29T15:45:00-05:00</updated>
-    <id>https://blog.newsblur.com/2012/02/29/ssl-stripejs</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/02/29/ssl-stripejs/">
+    <id>http://localhost:4000/2012/02/29/ssl-stripejs</id>
+    <content type="html" xml:base="http://localhost:4000/2012/02/29/ssl-stripejs/">
       <![CDATA[<p>Two big announcements today:</p>
 
 <ol>
@@ -899,11 +935,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">2011: Year in Review</title>
-    <link href="https://blog.newsblur.com/2012/01/16/2011-year-in-review/" rel="alternate" type="text/html" title="2011: Year in Review" />
+    <link href="http://localhost:4000/2012/01/16/2011-year-in-review/" rel="alternate" type="text/html" title="2011: Year in Review" />
     <published>2012-01-16T20:47:00-05:00</published>
     <updated>2012-01-16T20:47:00-05:00</updated>
-    <id>https://blog.newsblur.com/2012/01/16/2011-year-in-review</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/01/16/2011-year-in-review/">
+    <id>http://localhost:4000/2012/01/16/2011-year-in-review</id>
+    <content type="html" xml:base="http://localhost:4000/2012/01/16/2011-year-in-review/">
       <![CDATA[<p>Twelve months can be a quick flyby if you don’t stop to write everything down. Luckily, a habit I’ve kept since July 2009, when I started recording monthly goals for my project, is still going strong.</p>
 
 <p>This gives me the opportunity to review everything that we’ve accomplished in the past year. There were numerous new features, about half of which were created as a result of feedback from the community. You asked for it, I found the time.</p>
@@ -1045,11 +1081,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">A Social Feed Reader</title>
-    <link href="https://blog.newsblur.com/2011/10/26/a-social-feed-reader/" rel="alternate" type="text/html" title="A Social Feed Reader" />
+    <link href="http://localhost:4000/2011/10/26/a-social-feed-reader/" rel="alternate" type="text/html" title="A Social Feed Reader" />
     <published>2011-10-26T11:41:23-04:00</published>
     <updated>2011-10-26T11:41:23-04:00</updated>
-    <id>https://blog.newsblur.com/2011/10/26/a-social-feed-reader</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/10/26/a-social-feed-reader/">
+    <id>http://localhost:4000/2011/10/26/a-social-feed-reader</id>
+    <content type="html" xml:base="http://localhost:4000/2011/10/26/a-social-feed-reader/">
       <![CDATA[<p>NewsBlur was released exactly one year ago. You can read the initial reaction on Hacker News: <a href="http://news.ycombinator.com/item?id=1834305.">http://news.ycombinator.com/item?id=1834305.</a> Since then, so much has changed and all for the better. Usage is up—way, way up. Premium users are helping the site run. Load times are approaching the goal of less than 100 ms (0.10 sec) per page. In short, things couldn’t be better.</p>
 
 <p>Recently, my main competitor, Google Reader, announced plans to decommission the social features of the site and integrate them into Google+. While Google is busy refocusing on what’s important to them, many users feel left behind. My goal with NewsBlur is to make a better, complete experience for reading sites. This includes social features that make reading a social experience.</p>
@@ -1080,11 +1116,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">Customizing the reader, step 1: story titles</title>
-    <link href="https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles/" rel="alternate" type="text/html" title="Customizing the reader, step 1: story titles" />
+    <link href="http://localhost:4000/2011/09/30/customizing-the-reader-step-1-story-titles/" rel="alternate" type="text/html" title="Customizing the reader, step 1: story titles" />
     <published>2011-09-30T09:40:30-04:00</published>
     <updated>2011-09-30T09:40:30-04:00</updated>
-    <id>https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles/">
+    <id>http://localhost:4000/2011/09/30/customizing-the-reader-step-1-story-titles</id>
+    <content type="html" xml:base="http://localhost:4000/2011/09/30/customizing-the-reader-step-1-story-titles/">
       <![CDATA[<p>The iPhone app is now only a few days away from launching. But it took 3 weeks of sitting around in the App Store approval queue before getting here. During that time, I started working on the new customizations that folks have been asking for.</p>
 
 <p>The first of these customizations is the story title pane. Most other readers allow you to position it wherever you like, and NewsBlur is now joining them in giving you that freedom.</p>
@@ -1126,11 +1162,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">Blar: A new Android app for NewsBlur</title>
-    <link href="https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur/" rel="alternate" type="text/html" title="Blar: A new Android app for NewsBlur" />
+    <link href="http://localhost:4000/2011/08/09/blar-a-new-android-app-for-newsblur/" rel="alternate" type="text/html" title="Blar: A new Android app for NewsBlur" />
     <published>2011-08-09T09:44:00-04:00</published>
     <updated>2011-08-09T09:44:00-04:00</updated>
-    <id>https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur/">
+    <id>http://localhost:4000/2011/08/09/blar-a-new-android-app-for-newsblur</id>
+    <content type="html" xml:base="http://localhost:4000/2011/08/09/blar-a-new-android-app-for-newsblur/">
       <![CDATA[<p>This Summer is shaping up to be the season for mobile apps. Blar, a new Android client for NewsBlur, has just been released. It’s available on the Android Market here: <a href="https://market.android.com/details?id=bitwrit.Blar">https://market.android.com/details?id=bitwrit.Blar</a>. It is created by Harris Munir, who you can contact <a href="http://harrism.com/">through his site</a>.</p>
 
 <figure class="tmblr-full" data-orig-height="700" data-orig-width="420"><img src="https://64.media.tumblr.com/5022e90b07be6d54d1798dc7036e72fa/e520a0dc9c3b17fb-4e/s540x810/11513499eba16ad5eb2bc3af9dc6e36b853218ae.png" data-orig-height="700" data-orig-width="420" /></figure>
@@ -1156,11 +1192,11 @@ margin-right: 24px;
   
   <entry>
     <title type="html">Make your own feed reader with NewsBlur&apos;s new API</title>
-    <link href="https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/" rel="alternate" type="text/html" title="Make your own feed reader with NewsBlur&apos;s new API" />
+    <link href="http://localhost:4000/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/" rel="alternate" type="text/html" title="Make your own feed reader with NewsBlur&apos;s new API" />
     <published>2011-04-26T06:41:00-04:00</published>
     <updated>2011-04-26T06:41:00-04:00</updated>
-    <id>https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/">
+    <id>http://localhost:4000/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api</id>
+    <content type="html" xml:base="http://localhost:4000/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/">
       <![CDATA[<p><em>Please vote for this blog post on Hacker News: <a href="http://news.ycombinator.com/item?id=2485377">http://news.ycombinator.com/item?id=2485377</a>.</em></p>
 
 <p>It’s a big news day here at NewsBlur HQ. For those of you who don’t know, NewsBlur HQ is a comfy seat on the A train, part of the NYC subway system, since that’s where most of the code gets written anyhow.</p>
@@ -1341,11 +1377,11 @@ $ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
   
   <entry>
     <title type="html">Where We Are in April</title>
-    <link href="https://blog.newsblur.com/2011/04/23/where-we-are-in-april/" rel="alternate" type="text/html" title="Where We Are in April" />
+    <link href="http://localhost:4000/2011/04/23/where-we-are-in-april/" rel="alternate" type="text/html" title="Where We Are in April" />
     <published>2011-04-23T14:57:02-04:00</published>
     <updated>2011-04-23T14:57:02-04:00</updated>
-    <id>https://blog.newsblur.com/2011/04/23/where-we-are-in-april</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/04/23/where-we-are-in-april/">
+    <id>http://localhost:4000/2011/04/23/where-we-are-in-april</id>
+    <content type="html" xml:base="http://localhost:4000/2011/04/23/where-we-are-in-april/">
       <![CDATA[<p>Hi readers, I want to take a moment to share what I’m working on for the month of April:</p>
 
 <ul>
@@ -1385,11 +1421,11 @@ $ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
   
   <entry>
     <title type="html">Explaining Intelligence</title>
-    <link href="https://blog.newsblur.com/2011/04/01/explaining-intelligence/" rel="alternate" type="text/html" title="Explaining Intelligence" />
+    <link href="http://localhost:4000/2011/04/01/explaining-intelligence/" rel="alternate" type="text/html" title="Explaining Intelligence" />
     <published>2011-04-01T11:11:33-04:00</published>
     <updated>2011-04-01T11:11:33-04:00</updated>
-    <id>https://blog.newsblur.com/2011/04/01/explaining-intelligence</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/04/01/explaining-intelligence/">
+    <id>http://localhost:4000/2011/04/01/explaining-intelligence</id>
+    <content type="html" xml:base="http://localhost:4000/2011/04/01/explaining-intelligence/">
       <![CDATA[<p>If you’re not using intelligence classifiers, you’re only getting half the value out of NewsBlur. </p>
 
 <p>Intelligence classifiers are the phrases, tags, and authors that you like and dislike. Training your sites by choosing classifiers for each feed will automatically highlight the stories you want to read and hide the stories you don’t want to see.</p>
@@ -1448,11 +1484,11 @@ $ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
   
   <entry>
     <title type="html">A New Logo for a New Blog</title>
-    <link href="https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog/" rel="alternate" type="text/html" title="A New Logo for a New Blog" />
+    <link href="http://localhost:4000/2011/03/15/a-new-logo-for-a-new-blog/" rel="alternate" type="text/html" title="A New Logo for a New Blog" />
     <published>2011-03-15T08:39:00-04:00</published>
     <updated>2011-03-15T08:39:00-04:00</updated>
-    <id>https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog/">
+    <id>http://localhost:4000/2011/03/15/a-new-logo-for-a-new-blog</id>
+    <content type="html" xml:base="http://localhost:4000/2011/03/15/a-new-logo-for-a-new-blog/">
       <![CDATA[<p>We’ve come a long way, readers. What started as a fun project to scratch an itch has become a fun project that pays for its ever-increasing self. This week I’m going to show how motivated I am about turning NewsBlur into a serious blog reader. And it starts with a collection of a circles:</p>
 
 <figure class="tmblr-full" data-orig-height="500" data-orig-width="500"><img src="https://64.media.tumblr.com/7bc39090e65c93d25c183d34feef0697/9acad7bd3a38ca12-aa/s540x810/af26a4e5fc93ac78867704956f89508c2bfc3a3d.png" data-orig-height="500" data-orig-width="500" /></figure>

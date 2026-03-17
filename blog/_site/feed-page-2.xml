@@ -12,8 +12,8 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-16T20:08:07-04:00</updated>
-  <id>https://blog.newsblur.com/feed.xml</id>
+  <updated>2026-03-17T18:06:28-04:00</updated>
+  <id>http://localhost:4000/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
   <subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
@@ -24,12 +24,60 @@ A new sound of an old instrument.
 
   
   <entry>
+    <title type="html">Customizable grid view story layout</title>
+    <link href="http://localhost:4000/2020/10/28/customizable-grid-view-story-layout/" rel="alternate" type="text/html" title="Customizable grid view story layout" />
+    <published>2020-10-28T09:01:38-04:00</published>
+    <updated>2020-10-28T09:01:38-04:00</updated>
+    <id>http://localhost:4000/2020/10/28/customizable-grid-view-story-layout</id>
+    <content type="html" xml:base="http://localhost:4000/2020/10/28/customizable-grid-view-story-layout/">
+      <![CDATA[<p>The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.</p>
+
+<p>Starting today, you can now change the height of stories in the grid view. You have five options to choose from: XS, Small, Medium, Large, and XL.</p>
+
+<figure class="tmblr-full" data-orig-height="761" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="761" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png" /></figure>
+
+<p>Here are a few examples of how you can customize the grid view.</p>
+
+<p>With the single column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="966" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="966" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png" /></figure>
+
+<p>With the 2 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="938" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="938" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png" /></figure>
+
+<p>With the 3 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="715" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="715" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png" /></figure>
+
+<p>With the 4 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="957" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="957" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png" /></figure>
+
+<p>Don’t forget you can also adjust the font size and even turn off image previews.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title type="html">Highlight passages and add private notes to saved stories</title>
-    <link href="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/" rel="alternate" type="text/html" title="Highlight passages and add private notes to saved stories" />
+    <link href="http://localhost:4000/2020/07/17/highlight-passages-and-add-private-notes-on-saved/" rel="alternate" type="text/html" title="Highlight passages and add private notes to saved stories" />
     <published>2020-07-17T08:30:05-04:00</published>
     <updated>2020-07-17T08:30:05-04:00</updated>
-    <id>https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/">
+    <id>http://localhost:4000/2020/07/17/highlight-passages-and-add-private-notes-on-saved</id>
+    <content type="html" xml:base="http://localhost:4000/2020/07/17/highlight-passages-and-add-private-notes-on-saved/">
       <![CDATA[<p>When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.</p>
 
 <figure class="tmblr-full" data-orig-height="1128" data-orig-width="1492" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png"><img width="650" height="auto" data-orig-height="1128" data-orig-width="1492" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png" /></figure>
@@ -64,11 +112,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Turn the lights down, dark mode has come to NewsBlur</title>
-    <link href="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/" rel="alternate" type="text/html" title="Turn the lights down, dark mode has come to NewsBlur" />
+    <link href="http://localhost:4000/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/" rel="alternate" type="text/html" title="Turn the lights down, dark mode has come to NewsBlur" />
     <published>2020-06-24T11:29:59-04:00</published>
     <updated>2020-06-24T11:29:59-04:00</updated>
-    <id>https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/">
+    <id>http://localhost:4000/2020/06/24/turn-the-lights-down-dark-mode-has-come-to</id>
+    <content type="html" xml:base="http://localhost:4000/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/">
       <![CDATA[<p>We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.</p>
 
 <figure class="tmblr-full" data-orig-height="1441" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"><img data-orig-height="1441" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png" /></figure>
@@ -118,11 +166,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">See the news on your Android dashboard with the new home screen widget</title>
-    <link href="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/" rel="alternate" type="text/html" title="See the news on your Android dashboard with the new home screen widget" />
+    <link href="http://localhost:4000/2020/06/18/see-the-news-on-your-android-dashboard-with-the/" rel="alternate" type="text/html" title="See the news on your Android dashboard with the new home screen widget" />
     <published>2020-06-18T16:06:04-04:00</published>
     <updated>2020-06-18T16:06:04-04:00</updated>
-    <id>https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/">
+    <id>http://localhost:4000/2020/06/18/see-the-news-on-your-android-dashboard-with-the</id>
+    <content type="html" xml:base="http://localhost:4000/2020/06/18/see-the-news-on-your-android-dashboard-with-the/">
       <![CDATA[<p>Hot on the heels of the <a href="https://blog.newsblur.com/2021/06/21/2020-02-26-catch-the-news-in-a-glimpse-with-the-new-newsblur.html">iOS widget release</a> a few months ago, the Android widget is now ready to go!</p>
 
 <p>Check it out:</p>
@@ -160,11 +208,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Catch the news in a glimpse with the new NewsBlur Today View widget on iOS</title>
-    <link href="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/" rel="alternate" type="text/html" title="Catch the news in a glimpse with the new NewsBlur Today View widget on iOS" />
+    <link href="http://localhost:4000/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/" rel="alternate" type="text/html" title="Catch the news in a glimpse with the new NewsBlur Today View widget on iOS" />
     <published>2020-02-26T08:53:22-05:00</published>
     <updated>2020-02-26T08:53:22-05:00</updated>
-    <id>https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/">
+    <id>http://localhost:4000/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur</id>
+    <content type="html" xml:base="http://localhost:4000/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/">
       <![CDATA[<p>Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</p>
 
 <p>Today, I’m pleased to announce the launch of our new Today View widget on iOS.</p>
@@ -216,11 +264,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Secure images for everybody</title>
-    <link href="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/" rel="alternate" type="text/html" title="Secure images for everybody" />
+    <link href="http://localhost:4000/2019/08/15/secure-images-for-everybody/" rel="alternate" type="text/html" title="Secure images for everybody" />
     <published>2019-08-15T10:59:11-04:00</published>
     <updated>2019-08-15T10:59:11-04:00</updated>
-    <id>https://blog.newsblur.com/2019/08/15/secure-images-for-everybody</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/">
+    <id>http://localhost:4000/2019/08/15/secure-images-for-everybody</id>
+    <content type="html" xml:base="http://localhost:4000/2019/08/15/secure-images-for-everybody/">
       <![CDATA[<p>There are two ways to connect to the NewsBlur website. The first is <em>http</em>://www.newsblur.com. The second is <em>https</em>://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</p>
 
 <p>Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.</p>
@@ -258,11 +306,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title>
-    <link href="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" />
+    <link href="http://localhost:4000/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" />
     <published>2019-07-01T09:29:07-04:00</published>
     <updated>2019-07-01T09:29:07-04:00</updated>
-    <id>https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
+    <id>http://localhost:4000/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id>
+    <content type="html" xml:base="http://localhost:4000/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
       <![CDATA[<p>A whopper of a release with many, many new features!</p>
 
 <ul>
@@ -311,11 +359,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Updates to the Android app and a new addition to the team</title>
-    <link href="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/" rel="alternate" type="text/html" title="Updates to the Android app and a new addition to the team" />
+    <link href="http://localhost:4000/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/" rel="alternate" type="text/html" title="Updates to the Android app and a new addition to the team" />
     <published>2019-06-01T08:51:21-04:00</published>
     <updated>2019-06-01T08:51:21-04:00</updated>
-    <id>https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
+    <id>http://localhost:4000/2019/06/01/updates-to-the-android-app-and-a-new-addition-to</id>
+    <content type="html" xml:base="http://localhost:4000/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
       <![CDATA[<p>Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</p>
 
 <figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png" /></figure>
@@ -354,11 +402,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">The NewsBlur iOS app also hits version 8.0</title>
-    <link href="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" />
+    <link href="http://localhost:4000/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" />
     <published>2018-10-31T09:16:24-04:00</published>
     <updated>2018-10-31T09:16:24-04:00</updated>
-    <id>https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
+    <id>http://localhost:4000/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id>
+    <content type="html" xml:base="http://localhost:4000/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
       <![CDATA[<p>Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.</p>
 
 <p>Here’s what’s new:</p>
@@ -401,11 +449,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">The NewsBlur Android app hits version 8.0 with a new Grid view</title>
-    <link href="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/" rel="alternate" type="text/html" title="The NewsBlur Android app hits version 8.0 with a new Grid view" />
+    <link href="http://localhost:4000/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/" rel="alternate" type="text/html" title="The NewsBlur Android app hits version 8.0 with a new Grid view" />
     <published>2018-07-20T06:14:29-04:00</published>
     <updated>2018-07-20T06:14:29-04:00</updated>
-    <id>https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/">
+    <id>http://localhost:4000/2018/07/20/the-newsblur-android-app-hits-version-80-with-a</id>
+    <content type="html" xml:base="http://localhost:4000/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/">
       <![CDATA[<p>Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…</p>
 
 <figure class="tmblr-full" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"><img style="width: 350px; margin: 0 auto;" data-orig-height="1270" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png" /></figure>
@@ -448,11 +496,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Moving to a better support forum at forum.newsblur.com</title>
-    <link href="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
+    <link href="http://localhost:4000/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
     <published>2018-04-17T17:22:11-04:00</published>
     <updated>2018-04-17T17:22:11-04:00</updated>
-    <id>https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/">
+    <id>http://localhost:4000/2018/04/17/moving-to-a-better-support-forum-at</id>
+    <content type="html" xml:base="http://localhost:4000/2018/04/17/moving-to-a-better-support-forum-at/">
       <![CDATA[<p>It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.</p>
 
 <p>In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at <a href="https://forum.newsblur.com">https://forum.newsblur.com</a>.</p>
@@ -488,11 +536,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Intelligence training comes to NewsBlur’s Android app</title>
-    <link href="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/" rel="alternate" type="text/html" title="Intelligence training comes to NewsBlur’s Android app" />
+    <link href="http://localhost:4000/2017/12/11/intelligence-training-comes-to-newsblurs-android/" rel="alternate" type="text/html" title="Intelligence training comes to NewsBlur’s Android app" />
     <published>2017-12-11T08:00:13-05:00</published>
     <updated>2017-12-11T08:00:13-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/">
+    <id>http://localhost:4000/2017/12/11/intelligence-training-comes-to-newsblurs-android</id>
+    <content type="html" xml:base="http://localhost:4000/2017/12/11/intelligence-training-comes-to-newsblurs-android/">
       <![CDATA[<p>This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.</p>
 
 <p><img src="http://s3.amazonaws.com/static.newsblur.com/blog/android-training.png" alt="" /></p>
@@ -527,11 +575,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">NewsBlur for iPhone X</title>
-    <link href="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/" rel="alternate" type="text/html" title="NewsBlur for iPhone X" />
+    <link href="http://localhost:4000/2017/12/11/newsblur-for-iphone-x/" rel="alternate" type="text/html" title="NewsBlur for iPhone X" />
     <published>2017-12-11T07:00:14-05:00</published>
     <updated>2017-12-11T07:00:14-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/">
+    <id>http://localhost:4000/2017/12/11/newsblur-for-iphone-x</id>
+    <content type="html" xml:base="http://localhost:4000/2017/12/11/newsblur-for-iphone-x/">
       <![CDATA[<p>I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.</p>
 
 <figure class="tmblr-full" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"><img width="450" style="margin: 0 auto;" data-orig-height="1928" data-orig-width="1090" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png" /></figure>
@@ -579,11 +627,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Infrequent Site Stories is the blog reader we need</title>
-    <link href="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/" rel="alternate" type="text/html" title="Infrequent Site Stories is the blog reader we need" />
+    <link href="http://localhost:4000/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/" rel="alternate" type="text/html" title="Infrequent Site Stories is the blog reader we need" />
     <published>2017-12-11T06:00:15-05:00</published>
     <updated>2017-12-11T06:00:15-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
+    <id>http://localhost:4000/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need</id>
+    <content type="html" xml:base="http://localhost:4000/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
       <![CDATA[<p>Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.</p>
 
 <p>Most of what you see in your day-to-day feed is news that’s up to the minute and is probably stale within a day. Even 8 hour old news can be a problem. But sometimes what you want is an overview of the news that isn’t exactly news. It’s stories from the blogs who have individual authors, or blogs that publish only a few times a month. And missing out on those stories is a tragedy because it is those blogs that pushed you to invest in an RSS reader in the first place.</p>
@@ -625,11 +673,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Improved Text view story extraction</title>
-    <link href="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/" rel="alternate" type="text/html" title="Improved Text view story extraction" />
+    <link href="http://localhost:4000/2017/10/24/improved-text-view-story-extraction/" rel="alternate" type="text/html" title="Improved Text view story extraction" />
     <published>2017-10-24T16:17:25-04:00</published>
     <updated>2017-10-24T16:17:25-04:00</updated>
-    <id>https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/">
+    <id>http://localhost:4000/2017/10/24/improved-text-view-story-extraction</id>
+    <content type="html" xml:base="http://localhost:4000/2017/10/24/improved-text-view-story-extraction/">
       <![CDATA[<p>The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.</p>
 
 <p>Starting today, all stories will be run through <a href="https://mercury.postlight.com/web-parser/">Postlight Labs’ Mercury Parser</a>. That means that not only will the full text be more likely to correctly pull the entire article, but it will also do a much better job with extracting full size images in stories.</p>
@@ -661,11 +709,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Launching real-time filterable push notifications for iOS, Android, web, and email</title>
-    <link href="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/" rel="alternate" type="text/html" title="Launching real-time filterable push notifications for iOS, Android, web, and email" />
+    <link href="http://localhost:4000/2017/06/14/launching-real-time-filterable-push-notifications/" rel="alternate" type="text/html" title="Launching real-time filterable push notifications for iOS, Android, web, and email" />
     <published>2017-06-14T05:00:17-04:00</published>
     <updated>2017-06-14T05:00:17-04:00</updated>
-    <id>https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/">
+    <id>http://localhost:4000/2017/06/14/launching-real-time-filterable-push-notifications</id>
+    <content type="html" xml:base="http://localhost:4000/2017/06/14/launching-real-time-filterable-push-notifications/">
       <![CDATA[<p>For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.</p>
 
 <p><img src="http://www.newsblur.com/media/blog/notifications-announcement.png" alt="" /></p>
@@ -755,11 +803,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">NewsBlur now supports the new JSON Feed spec</title>
-    <link href="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/" rel="alternate" type="text/html" title="NewsBlur now supports the new JSON Feed spec" />
+    <link href="http://localhost:4000/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/" rel="alternate" type="text/html" title="NewsBlur now supports the new JSON Feed spec" />
     <published>2017-05-23T05:00:11-04:00</published>
     <updated>2017-05-23T05:00:11-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/">
+    <id>http://localhost:4000/2017/05/23/newsblur-now-supports-the-new-json-feed-spec</id>
+    <content type="html" xml:base="http://localhost:4000/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/">
       <![CDATA[<p>Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.</p>
 
 <p>From the <a href="https://jsonfeed.org">JSON Feed spec</a> authors:</p>
@@ -793,11 +841,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Add your own Custom CSS and Custom JavaScript to NewsBlur on the web</title>
-    <link href="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/" rel="alternate" type="text/html" title="Add your own Custom CSS and Custom JavaScript to NewsBlur on the web" />
+    <link href="http://localhost:4000/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/" rel="alternate" type="text/html" title="Add your own Custom CSS and Custom JavaScript to NewsBlur on the web" />
     <published>2017-05-22T05:00:41-04:00</published>
     <updated>2017-05-22T05:00:41-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
+    <id>http://localhost:4000/2017/05/22/add-your-own-custom-css-and-custom-javascript-to</id>
+    <content type="html" xml:base="http://localhost:4000/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
       <![CDATA[<p>Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two new fields: Custom CSS and Custom Javascript.</p>
 
 <p>Head to <em>Manage &gt; Account &gt; Custom CSS/JS</em>. And here’s what you can do with this new feature.</p>
@@ -845,11 +893,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">NewsBlur’s Twitter support just got a whole lot better</title>
-    <link href="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/" rel="alternate" type="text/html" title="NewsBlur’s Twitter support just got a whole lot better" />
+    <link href="http://localhost:4000/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/" rel="alternate" type="text/html" title="NewsBlur’s Twitter support just got a whole lot better" />
     <published>2017-05-09T05:30:03-04:00</published>
     <updated>2017-05-09T05:30:03-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/">
+    <id>http://localhost:4000/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot</id>
+    <content type="html" xml:base="http://localhost:4000/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/">
       <![CDATA[<p>It was a little under a year ago that I declared <a href="http://blog.newsblur.com/2021/06/21/2016-06-01-twitters-back-baby.html">Twitter back, baby</a> on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole lot better.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_upgrade.png" alt="" /></p>
@@ -884,11 +932,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Saved searches make it easy to create custom feeds</title>
-    <link href="https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/" rel="alternate" type="text/html" title="Saved searches make it easy to create custom feeds" />
+    <link href="http://localhost:4000/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/" rel="alternate" type="text/html" title="Saved searches make it easy to create custom feeds" />
     <published>2017-03-28T05:00:28-04:00</published>
     <updated>2017-03-28T05:00:28-04:00</updated>
-    <id>https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/">
+    <id>http://localhost:4000/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds</id>
+    <content type="html" xml:base="http://localhost:4000/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/">
       <![CDATA[<p>You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved-search-list.png" alt="" /></p>
@@ -916,11 +964,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Last day to back Turn Touch: NewsBlur’s beautiful remote</title>
-    <link href="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/" rel="alternate" type="text/html" title="Last day to back Turn Touch: NewsBlur’s beautiful remote" />
+    <link href="http://localhost:4000/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/" rel="alternate" type="text/html" title="Last day to back Turn Touch: NewsBlur’s beautiful remote" />
     <published>2017-03-09T05:00:33-05:00</published>
     <updated>2017-03-09T05:00:33-05:00</updated>
-    <id>https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/">
+    <id>http://localhost:4000/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful</id>
+    <content type="html" xml:base="http://localhost:4000/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/">
       <![CDATA[<p><strong>This is it, the final countdown!</strong></p>
 
 <p>Tonight at 8pm PT the <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">Turn Touch campaign</a> will end and the project will be successfully funded. Judging from the $50,000 raised already, I think Turn Touch has a long life ahead of it.</p>
@@ -954,11 +1002,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur</title>
-    <link href="https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/" rel="alternate" type="text/html" title="Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur" />
+    <link href="http://localhost:4000/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/" rel="alternate" type="text/html" title="Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur" />
     <published>2017-02-07T09:32:32-05:00</published>
     <updated>2017-02-07T09:32:32-05:00</updated>
-    <id>https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/">
+    <id>http://localhost:4000/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote</id>
+    <content type="html" xml:base="http://localhost:4000/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/">
       <![CDATA[<figure class="tmblr-full" data-orig-height="1333" data-orig-width="2000" data-orig-src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg"><img style="width: 650px;border: 1px solid #909090;" data-orig-height="1333" data-orig-width="2000" src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg" /></figure>
 
 <p><a href="https://turntouch.com/kickstarter">Turn Touch</a> is a solid wood remote… and it’s about to change the way you use NewsBlur.</p>
@@ -1000,11 +1048,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Preview NewsBlur&apos;s upcoming hardware device, Turn Touch</title>
-    <link href="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/" rel="alternate" type="text/html" title="Preview NewsBlur&apos;s upcoming hardware device, Turn Touch" />
+    <link href="http://localhost:4000/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/" rel="alternate" type="text/html" title="Preview NewsBlur&apos;s upcoming hardware device, Turn Touch" />
     <published>2017-02-02T05:00:24-05:00</published>
     <updated>2017-02-02T05:00:24-05:00</updated>
-    <id>https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/">
+    <id>http://localhost:4000/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn</id>
+    <content type="html" xml:base="http://localhost:4000/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/">
       <![CDATA[<p>I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. <a href="https://www.turntouch.com">Signup on turntouch.com</a> to find out.</p>
 
 <p><a href="https://www.turntouch.com"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/blog-preview-blur.jpg" alt="" /></a></p>
@@ -1034,11 +1082,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">A new NewsBlur Android release for the new year</title>
-    <link href="https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year/" rel="alternate" type="text/html" title="A new NewsBlur Android release for the new year" />
+    <link href="http://localhost:4000/2017/01/25/a-new-newsblur-android-release-for-the-new-year/" rel="alternate" type="text/html" title="A new NewsBlur Android release for the new year" />
     <published>2017-01-25T14:01:15-05:00</published>
     <updated>2017-01-25T14:01:15-05:00</updated>
-    <id>https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year/">
+    <id>http://localhost:4000/2017/01/25/a-new-newsblur-android-release-for-the-new-year</id>
+    <content type="html" xml:base="http://localhost:4000/2017/01/25/a-new-newsblur-android-release-for-the-new-year/">
       <![CDATA[<p>Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.</p>
 
 <p>Take a look:</p>
@@ -1079,11 +1127,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">The dashboard river will keep you up-to-date in real-time</title>
-    <link href="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/" rel="alternate" type="text/html" title="The dashboard river will keep you up-to-date in real-time" />
+    <link href="http://localhost:4000/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/" rel="alternate" type="text/html" title="The dashboard river will keep you up-to-date in real-time" />
     <published>2017-01-11T06:00:21-05:00</published>
     <updated>2017-01-11T06:00:21-05:00</updated>
-    <id>https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
+    <id>http://localhost:4000/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in</id>
+    <content type="html" xml:base="http://localhost:4000/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
       <![CDATA[<p>This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.</p>
 
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png" alt="" /></p>
@@ -1108,44 +1156,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Newsreel is a NewsBlur app for tv</title>
-    <link href="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/" rel="alternate" type="text/html" title="Newsreel is a NewsBlur app for tv" />
-    <published>2016-07-14T07:00:39-04:00</published>
-    <updated>2016-07-14T07:00:39-04:00</updated>
-    <id>https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/">
-      <![CDATA[<p>Check it out, David Berlin built <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">Newsreel</a>, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel.png" alt="" /></p>
-
-<p>You can read your subscriptions as well as subscribe to new sites, right from your television.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-add.png" alt="" /></p>
-
-<p>Not only does it look polished, but it’s smooth and seamless. Take a look at how it works in practice.</p>
-
-<p>&lt;</p>
-
-<p>video src=“https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-780.mp4” style=“width: 650px; margin: 0 auto; border: 1px solid #606060” autoplay=“true” muted=“true” loop=“true”&gt;</p>
-
-<p>You can download <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">download Newsreel on the App Store</a>. What a beautiful app and it goes to show how nice it is to be able to read your news on a big screen.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="tv" />
-    
-    
-    <summary type="html">
-      <![CDATA[Check it out, David Berlin built Newsreel, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.
 ]]>
     </summary>
     

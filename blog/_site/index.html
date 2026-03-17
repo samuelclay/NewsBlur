@@ -15,15 +15,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." />
 <meta property="og:description" content="NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." />
-<link rel="canonical" href="https://blog.newsblur.com/" />
-<meta property="og:url" content="https://blog.newsblur.com/" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="The NewsBlur Blog" />
 <meta property="og:type" content="website" />
-<link rel="next" href="https://blog.newsblur.com/page2" />
+<link rel="next" href="http://localhost:4000/page2" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="The NewsBlur Blog" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","headline":"The NewsBlur Blog","name":"The NewsBlur Blog","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/"}</script>
+{"@context":"https://schema.org","@type":"WebSite","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","headline":"The NewsBlur Blog","name":"The NewsBlur Blog","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/newsblur_logo_512.png"}},"url":"http://localhost:4000/"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -80,6 +80,71 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 18, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/18/story-clustering/">
+              Story clustering: automatically group duplicate stories across your feeds
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
+
+<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
+
+<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
+<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
+
+<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
+<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="two-layers-of-detection">Two layers of detection</h3>
+
+<p>Clustering uses two complementary approaches to catch duplicates:</p>
+
+<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
+
+<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
+
+<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
+
+<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
+
+<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
+
+<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
+<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are two controls:</p>
+
+<ul>
+  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
+  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
+</ul>
+
+<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
+
+<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
+<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed.</p>
+
+<p><strong>Premium Archive subscribers</strong> get full control over clustering: toggle it on or off, choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story. Clustering is enabled by default for archive subscribers.</p>
+
+<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Mar 16, 2026</span>
           <h3>
             <a class="post-link" href="/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
@@ -792,22 +857,6 @@
 <p>If you’re not yet a Premium Archive subscriber, you can <a href="https://www.newsblur.com/?next=premium">upgrade on the web</a> to get the full Ask AI experience along with unlimited story archiving and full-text search.</p>
 
 <p>As always, I’d love to hear what you think on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. If you have ideas for new preset questions or ways to make Ask AI more useful, let me know.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jan 9, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/01/09/disable-social-features/">
-              Disable social features for a distraction-free reading experience
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.</p>
-
-<p><img src="/assets/disable-social-preference.png" style="width: 100%; border: 1px solid #A0A0A0; margin: 24px auto; display: block;" /></p>
-
-<p>Head to Preferences &gt; Feeds and look for the new “Sharing” option at the bottom. Choose “Disable social features” and all sharing, comments, and blurblog features will be hidden from your NewsBlur interface. The Global Shared Stories folder disappears, share buttons are removed from stories, and the sidebar is cleaned up. If you ever want to re-enable social features, just flip the preference back.</p>
 
         </div>
       </li></ul>

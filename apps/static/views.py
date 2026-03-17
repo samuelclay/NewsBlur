@@ -97,6 +97,10 @@ def feature_native_apps(request):
     return render(request, "static/feature_native_apps.xhtml")
 
 
+def feature_story_clustering(request):
+    return render(request, "static/feature_story_clustering.xhtml")
+
+
 def pricing_premium(request):
     return render(request, "static/pricing_premium.xhtml", {"current_plan": "premium"})
 
