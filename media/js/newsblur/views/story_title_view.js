@@ -765,10 +765,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var show_image = image_pref && image_pref !== 'none';
 
         var $container = $('<div class="NB-story-cluster-sources"></div>');
+        cluster_stories = _.sortBy(cluster_stories, function (cs) {
+            return -parseInt(cs.story_timestamp, 10);
+        });
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';
-            var title = cs.story_title || '';
+            var title = cs.story_title ? $('<div/>').html(cs.story_title).text() : '';
             var date = '';
             if (cs.story_timestamp) {
                 var d = new Date(parseInt(cs.story_timestamp, 10) * 1000);
