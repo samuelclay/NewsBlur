@@ -22,6 +22,10 @@ from newsblur_mcp.settings import (
     MCP_OAUTH_INTERNAL_URL,
     MCP_OAUTH_UPSTREAM_URL,
 )
+from newsblur_mcp.ui import patch_fastmcp_ui
+
+# Replace FastMCP's generic OAuth pages with NewsBlur-branded ones
+patch_fastmcp_ui()
 
 
 class NewsBlurTokenVerifier(TokenVerifier):
