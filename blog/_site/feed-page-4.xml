@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-16T00:16:29-04:00</updated>
+  <updated>2026-03-16T20:08:07-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,40 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Reeder and NewsBlur, sitting in a tree...</title>
+    <link href="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/" rel="alternate" type="text/html" title="Reeder and NewsBlur, sitting in a tree..." />
+    <published>2014-07-23T12:45:57-04:00</published>
+    <updated>2014-07-23T12:45:57-04:00</updated>
+    <id>https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/">
+      <![CDATA[<p>…S-Y-N-C-I-N-G.</p>
+
+<p>First comes feeds, then comes training, then comes social for those days when its raining.</p>
+
+<p>That’s not it! That’s not all! Runs on <a href="http://reederapp.com/ios/">iOS</a> and <a href="http://reederapp.com/mac/">Mac</a>, so have a ball!</p>
+
+<p><a href="http://reederapp.com/mac/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/reeder-mac.png" alt="" /></a><a href="http://reederapp.com/ios/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/reeder-ios.png" alt="" /></a></p>
+
+<p>The world’s most popular RSS feed reader now supports the world’s best RSS feed reader backend. <a href="http://reederapp.com/">Download Reeder 2 for Mac and iOS</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="mac" />
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[…S-Y-N-C-I-N-G.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Adjust the font size of feed and story titles</title>
@@ -957,88 +991,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">The NewsBlur Redesign</title>
-    <link href="https://blog.newsblur.com/2013/05/20/the-newsblur-redesign/" rel="alternate" type="text/html" title="The NewsBlur Redesign" />
-    <published>2013-05-20T22:47:00-04:00</published>
-    <updated>2013-05-20T22:47:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/05/20/the-newsblur-redesign</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/05/20/the-newsblur-redesign/">
-      <![CDATA[<p>Not to say that NewsBlur was <em>ugly</em> before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.</p>
-
-<p><img src="http://dev.newsblur.com/media/img/welcome/header-web.png" alt="image" /></p>
-
-<p>It’s a full scale redesign, too. And not just one of those redesigns where the icons get glossier and fonts, bolder. Every moving piece of machinery got more than a coat of paint. A number of new crucial reading features have been added. Some features were merged, some were repaired, and some were scrapped.</p>
-
-<p>Dashboard before &amp; after:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/before_dashboard.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/after_dashboard.png" alt="image" /></p>
-
-<p>Reading before &amp; after:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/before_feed.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/after_feed.png" alt="image" /></p>
-
-<p>In no particular order, here’s what’s new:</p>
-
-<ul>
-  <li>Unified interactions/activities popover. Gets out of your way and gives the dashboard more room to breath.</li>
-  <li>Rewritten feed loader, offering incredible performance, even at the 20x scale of today vs 2 months ago before the Google Reader announcement.</li>
-  <li>Custom vector graphics, retina-fying the entire site.</li>
-  <li>Increased transparency of sites by showing more detail in feed fetching/statistics.</li>
-  <li>A new List view to complement the Split view for stories.</li>
-</ul>
-
-<p>And that’s just for the website. The iOS app, Android app, and blurblogs all got the update goodness that has graced the web app.</p>
-
-<p><img src="http://dev.newsblur.com/media/img/welcome/header-ios.png" alt="image" /></p>
-
-<p>As for what’s happening these days, post-Reader:</p>
-
-<ul>
-  <li>Took some extra time to scale out my backend, now completed.</li>
-  <li>Running on 48 servers, serving 20x traffic</li>
-  <li>Because I had the foresight to charge users for premium service, I’m now confident that NewsBlur will be standing tall a few years from now.</li>
-  <li>Working on the next few big ticket features: saved story search and tagging, batch editing organizer, keyboard shortcut manager, and more.</li>
-</ul>
-
-<blockquote>
-  <p>Biggest unanticipated consequence of the Reader shutdown – I no longer have to wear a jacket in SF because my core temperature has risen.</p>
-
-  <p>— Samuel Clay (@samuelclay)</p>
-
-  <p><a href="https://twitter.com/samuelclay/status/317111582817660929">March 28, 2013</a></p>
-</blockquote>
-
-<script src="//platform.twitter.com/widgets.js" charset="utf-8" type="text/javascript"></script>
-
-<p>And if you’re new to NewsBlur, here’s the six core benefits to using the one with the Sun:</p>
-
-<ol>
-  <li><strong>Training</strong> - hide the stories you don’t like and highlight the stories you do. Make mincemeat out of heavy feeds and make sure to never miss stories from the feeds you love.</li>
-  <li><strong>Original site</strong> - read a publisher’s stories the way they wanted you to read it - on the original website. NewsBlur embeds the publisher’s site in an iframe, and marks what you read as read as you scroll.</li>
-  <li><strong>Text view</strong> - conveniently extracts the story text from articles, necessary for reading truncated rss feeds.</li>
-  <li><strong>Blurblogs / sharing</strong> - a social community where you can share and discuss stories with friends.</li>
-  <li><strong>Speed</strong> - A dedication to fast load times, graphed on your dashboard.</li>
-  <li><strong>Mobile</strong> - native, first-class iOS and Android apps, with all of the functionality of the website.</li>
-</ol>
-
-<p>Now that the redesign has launched, I plan to blog about how to best use the intelligence trainer efficiently, all new [future] features, and how I was able to successfully scale out the four databases (count ‘em: postgresql, mongodb, redis, elasticsearch) to handle more than 10,000 users and 4 million site updates a day. It’s no Tumblr, but it’s still way more traffic than you can fit on a single machine.</p>
-
-<p>Thanks for using NewsBlur and turning my passion project (four years running) into a full-time dream.</p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[Not to say that NewsBlur was ugly before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.
 ]]>
     </summary>
     
