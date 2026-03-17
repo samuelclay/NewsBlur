@@ -332,10 +332,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         ])
                     ])
                 ]),
-                ((is_feed || is_river) && NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
+                ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
                     $.make('div', { className: 'NB-clustering-title-row' }, [
-                        $.make('div', { className: 'NB-popover-section-title' }, 'Story clustering'),
-                        $.make('span', { className: 'NB-staff-only-badge' }, 'STAFF ONLY')
+                        $.make('div', { className: 'NB-popover-section-title' }, 'Story clustering')
                     ]),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
                         $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),
@@ -354,7 +353,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'Mark all as read'),
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Keep others unread')
                         ])
-                    ])
+                    ]),
+                    (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-clustering-upgrade-notice' }, [
+                        'Clustering controls require ',
+                        $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive')
+                    ]))
                 ]))
             ])
         ]));
@@ -951,9 +954,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var cluster_mark_read = NEWSBLUR.assets.preference('cluster_mark_read');
         var cluster_preview_style = NEWSBLUR.assets.preference('cluster_preview_style') || 'single_line';
 
-        // Default to true for archive users, false for non-archive
+        // Default to true for all users
         if (clustering_enabled === undefined || clustering_enabled === null) {
-            clustering_enabled = NEWSBLUR.Globals.is_archive;
+            clustering_enabled = true;
         }
         if (cluster_mark_read === undefined || cluster_mark_read === null) {
             cluster_mark_read = false;

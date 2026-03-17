@@ -759,15 +759,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (!cluster_stories || !cluster_stories.length) return;
         if (this.options.is_cluster_detail) return;
 
-        if (!NEWSBLUR.Globals.is_staff) return;
-
         var preview_style = NEWSBLUR.assets.preference('cluster_preview_style') || 'single_line';
         var is_expanded = preview_style === 'expanded';
         var image_pref = NEWSBLUR.assets.preference('image_preview') || 'none';
         var show_image = image_pref && image_pref !== 'none';
 
         var $container = $('<div class="NB-story-cluster-sources"></div>');
-        $container.append('<span class="NB-staff-only-badge">STAFF ONLY</span>');
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';

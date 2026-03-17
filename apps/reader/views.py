@@ -1416,8 +1416,8 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         user_prefs = json.decode(user.profile.preferences)
         if user_prefs.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
@@ -2588,8 +2588,8 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         if user_preferences.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
@@ -5254,8 +5254,8 @@ def load_cluster_stories(request):
     user = get_user(request)
     cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
 
-    if not user.profile.is_archive:
-        return {"code": 0, "message": "Story clustering is an archive feature.", "stories": []}
+    if not request.user.is_authenticated:
+        return {"code": 0, "message": "Please log in to view story clusters.", "stories": []}
 
     if not cluster_id:
         return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
@@ -5277,6 +5277,18 @@ def load_cluster_stories(request):
     if not member_hashes:
         return {"code": 1, "stories": []}
 
+    # Look up read status from Redis
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_stories_key = "RS:%s" % user.pk
+    if member_hashes:
+        pipeline = r.pipeline()
+        for sh in member_hashes:
+            pipeline.sismember(read_stories_key, sh)
+        read_results = pipeline.execute()
+        read_hashes = {sh for sh, is_read in zip(member_hashes, read_results) if is_read}
+    else:
+        read_hashes = set()
+
     stories = []
     mstories = MStory.objects(story_hash__in=member_hashes).order_by()
     for story in mstories:
@@ -5285,6 +5297,7 @@ def load_cluster_stories(request):
             continue
         story_dict = Feed.format_story(story)
         story_dict["feed_title"] = feed.feed_title
+        story_dict["read_status"] = 1 if story.story_hash in read_hashes else 0
         stories.append(story_dict)
 
     stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)

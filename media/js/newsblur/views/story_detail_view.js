@@ -44,7 +44,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-search-site-selection": "search_selected_text_site",
         "click .NB-search-folder-selection": "search_selected_text_folder",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
-        "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
+        "click .NB-feed-story-ask-ai": "show_ask_ai_menu",
+        "click .NB-clustering-detail-upgrade-pill": "open_clustering_upgrade"
     },
 
     initialize: function () {
@@ -539,7 +540,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     render_cluster_stories: function () {
-        if (!NEWSBLUR.Globals.is_staff) return;
         if (!this.model.has_cluster()) return;
 
         var cluster_stories = this.model.get('cluster_stories');
@@ -590,12 +590,26 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this._cluster_title_views = [];
 
         var $container = $('<div class="NB-story-cluster-detail"></div>');
-        $container.append(
-            '<div class="NB-story-cluster-detail-header">' +
-            '<span class="NB-staff-only-badge">STAFF ONLY</span>' +
-            '<span class="NB-story-cluster-detail-title">Also reported by ' + stories.length + ' source' + (stories.length !== 1 ? 's' : '') + '</span>' +
-            '</div>'
-        );
+        var $header = $.make('div', { className: 'NB-story-cluster-detail-header' }, [
+            $.make('span', { className: 'NB-story-cluster-detail-title' },
+                'Also published by ' + stories.length + ' site' + (stories.length !== 1 ? 's' : '')),
+            (!NEWSBLUR.Globals.is_archive && $.make('span', {
+                className: 'NB-clustering-detail-upgrade'
+            }, [
+                $.make('span', { className: 'NB-clustering-detail-info' }, [
+                    $.make('span', { className: 'NB-clustering-detail-info-icon', title: '' }, '\u24D8'),
+                    $.make('span', { className: 'NB-clustering-detail-info-tooltip' },
+                        'These clusters were found because other subscribers share these feeds. ' +
+                        'Premium Archive scans all your feeds for duplicates, so you never miss a cluster.')
+                ]),
+                'Cluster across more feeds with ',
+                $.make('a', {
+                    href: '#',
+                    className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
+                }, 'Premium Archive')
+            ]))
+        ]);
+        $container.append($header);
 
         var self = this;
         var parent_read = this.model.get('read_status');
@@ -630,6 +644,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         });
 
         return $container;
+    },
+
+    open_clustering_upgrade: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.reader.open_premium_upgrade_modal();
     },
 
     render_story_content: function () {
