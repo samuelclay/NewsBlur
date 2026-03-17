@@ -213,7 +213,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: "NB-premium-renewal-details-container" }, this.make_premium_renewal_details()),
                             $.make('div', { className: 'NB-block NB-premium-expire-container' }, this.make_premium_expire()),
-                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Change your credit card')
+                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Change your credit card'),
+                            (NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block NB-renewal-notify-container' }, [
+                                $.make('input', { id: 'NB-preference-renewal-notify', type: 'checkbox', name: 'notify_before_renewal' }),
+                                $.make('label', { 'for': 'NB-preference-renewal-notify', className: 'NB-renewal-notify-label' },
+                                    'Email me 3 days before my subscription renews')
+                            ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Premium details'
@@ -713,6 +718,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 return false;
             }
         });
+        $('#NB-preference-renewal-notify', this.$modal).prop('checked', !!pref('notify_before_renewal'));
     },
 
     serialize_preferences: function () {
@@ -739,6 +745,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
+        this.model.preference('notify_before_renewal', form['notify_before_renewal']);
 
         // Save usage billing limit if changed
         if (NEWSBLUR.Globals.can_use_ai_classifiers) {

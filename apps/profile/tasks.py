@@ -169,6 +169,32 @@ def ReimportStripeHistory():
     Profile.reimport_stripe_history(limit=10, days=1)
 
 
+@app.task(name="email-premium-renewal-notice")
+def EmailPremiumRenewalNotice():
+    """Daily task to email users who opted in to renewal notifications 3 days before charge."""
+    logging.debug(" ---> Checking for premium renewal notice emails...")
+    now = datetime.datetime.now()
+    three_days = now + datetime.timedelta(days=3)
+    four_days = now + datetime.timedelta(days=4)
+
+    profiles = (
+        Profile.objects.filter(
+            is_premium=True,
+            premium_renewal=True,
+            premium_expire__gte=three_days,
+            premium_expire__lt=four_days,
+        )
+        .exclude(is_premium_trial=True)
+        .select_related("user")
+    )
+
+    logging.debug(" ---> %s users renewing in ~3 days, checking preferences..." % profiles.count())
+    for profile in profiles:
+        if not profile.preference_value("notify_before_renewal", default=False):
+            continue
+        profile.send_premium_renewal_notice_email()
+
+
 @app.task(name="email-feed-limit-notifications")
 def EmailFeedLimitNotifications():
     """

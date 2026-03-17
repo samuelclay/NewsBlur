@@ -750,6 +750,15 @@ color: #a85b40;
     border: solid 1px #505050;
 }
 
+.NB-dark .NB-modal-account .NB-renewal-notify-container {
+    background: #3a3a38;
+    border-color: #4a4a46;
+}
+
+.NB-dark .NB-modal-account .NB-renewal-notify-label {
+    color: #999;
+}
+
 .NB-dark .NB-modal-profile .NB-profile-followers {
     background-color: #464646;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);

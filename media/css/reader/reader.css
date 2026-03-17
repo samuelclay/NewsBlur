@@ -22852,6 +22852,36 @@ h5.NB-classifier-section-header {
     margin-top: 0;
 }
 
+.NB-modal-account .NB-renewal-notify-container {
+    clear: both;
+    margin-top: 16px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f0;
+    border-radius: 4px;
+    border: 1px solid #e0e0d8;
+}
+
+.NB-modal-account .NB-renewal-notify-container input[type=checkbox] {
+    margin: 0;
+    flex-shrink: 0;
+    float: none;
+}
+
+.NB-modal-account .NB-renewal-notify-container label {
+    margin: 0;
+    padding: 0;
+}
+
+.NB-modal-account .NB-renewal-notify-label {
+    font-size: 12px;
+    color: #606060;
+    cursor: pointer;
+    line-height: 1.3;
+}
+
 .NB-modal-account .NB-preference-saved-stories-date,
 .NB-modal-account .NB-preference-shared-stories-date {
     margin-bottom: 8px;

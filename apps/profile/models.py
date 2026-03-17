@@ -3046,6 +3046,64 @@ class Profile(models.Model):
         MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
         logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
 
+    def send_premium_renewal_notice_email(self, force=False):
+        if not self.user.email:
+            logging.user(
+                self.user,
+                "~FM~SB~FRNot~FM sending renewal notice for user: %s" % (self.user),
+            )
+            return
+
+        emails_sent = MSentEmail.objects.filter(
+            receiver_user_id=self.user.pk, email_type="premium_renewal_notice"
+        )
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=300)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(
+                    self.user,
+                    "~FM~SBNot sending renewal notice email, already sent recently.",
+                )
+                return
+
+        if self.is_pro:
+            tier_name = "Premium Pro"
+            amount = "$29/month"
+        elif self.is_archive:
+            tier_name = "Premium Archive"
+            amount = "$99/year"
+        else:
+            tier_name = "Premium"
+            amount = "$36/year"
+
+        user = self.user
+        renewal_date = self.premium_expire
+        data = dict(
+            user=user,
+            renewal_date=renewal_date,
+            tier_name=tier_name,
+            amount=amount,
+            is_pro=self.is_pro,
+            is_archive=self.is_archive,
+        )
+        text = render_to_string("mail/email_premium_renewal_notice.txt", data)
+        html = render_to_string("mail/email_premium_renewal_notice.xhtml", data)
+        subject = "Your %s subscription renews soon" % tier_name
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_renewal_notice")
+        logging.user(
+            self.user,
+            "~BB~FM~SBSending renewal notice email for %s: %s" % (tier_name, self.user.email),
+        )
+
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
