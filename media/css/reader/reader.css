@@ -3448,6 +3448,25 @@ img.feed_favicon {
     color: #909090;
 }
 
+/* Favicon in cluster detail story titles */
+.NB-story-cluster-detail .NB-story-cluster-detail-item .NB-story-title {
+    padding-left: 66px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed {
+    display: block;
+    left: -47px;
+    top: 14px;
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed .feed_favicon {
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed .feed_title {
+    display: none;
+}
+
 /* Clustering upgrade prompt in story detail (inline with header) */
 .NB-clustering-detail-upgrade {
     margin-left: auto;
