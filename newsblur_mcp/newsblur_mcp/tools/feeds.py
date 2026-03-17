@@ -41,6 +41,83 @@ async def newsblur_list_feeds(
 
 
 @mcp.tool()
+async def newsblur_list_folders(
+    include_counts: bool = True,
+) -> dict:
+    """List all folder names in the user's subscription structure.
+
+    Returns a compact list of folders. Use this to understand how feeds are organized
+    before loading stories from a specific folder.
+
+    Args:
+        include_counts: Include unread story counts per folder (default: True).
+    """
+    client = get_client()
+    try:
+        resp = await client.get("/reader/feeds", params={"flat": "true"})
+        flat_folders = resp.get("flat_folders", {})
+        feeds_data = resp.get("feeds", {})
+
+        folders = []
+        for folder_name, feed_ids in flat_folders.items():
+            display_name = "Top Level" if folder_name.strip() == "" else folder_name
+            folder_info = {"name": display_name, "feed_count": len(feed_ids)}
+
+            if include_counts:
+                unread_neutral = 0
+                unread_positive = 0
+                for fid in feed_ids:
+                    feed = feeds_data.get(str(fid), {})
+                    unread_neutral += feed.get("nt", 0)
+                    unread_positive += feed.get("ps", 0)
+                folder_info["unread_count"] = unread_neutral + unread_positive
+                folder_info["focus_count"] = unread_positive
+
+            folders.append(folder_info)
+
+        return {"folders": folders, "folder_count": len(folders)}
+    finally:
+        await client.close()
+
+
+@mcp.tool()
+async def newsblur_list_folders_with_feeds(
+    include_favicons: bool = False,
+) -> dict:
+    """List all folders with their feeds and unread counts.
+
+    Returns the full subscription structure: each folder mapped to its feeds
+    with titles, IDs, and unread counts. Use this for a complete overview.
+
+    Args:
+        include_favicons: Include base64 favicon data per feed (default: False).
+    """
+    client = get_client()
+    try:
+        params = {"flat": "true"}
+        if include_favicons:
+            params["include_favicons"] = "true"
+
+        resp = await client.get("/reader/feeds", params=params)
+        flat_folders = resp.get("flat_folders", {})
+        feeds_data = resp.get("feeds", {})
+
+        folders = {}
+        for folder_name, feed_ids in flat_folders.items():
+            display_name = "Top Level" if folder_name.strip() == "" else folder_name
+            folder_feeds = []
+            for fid in feed_ids:
+                feed = feeds_data.get(str(fid), {})
+                if feed:
+                    folder_feeds.append(transform_feed(feed))
+            folders[display_name] = folder_feeds
+
+        return {"folders": folders, "folder_count": len(folders)}
+    finally:
+        await client.close()
+
+
+@mcp.tool()
 async def newsblur_get_feed_info(feed_id: int) -> dict:
     """Get detailed information about a specific feed.
 

@@ -9,7 +9,8 @@ from newsblur_mcp.settings import DEFAULT_STORIES_PER_PAGE, MAX_STORIES_PER_PAGE
 async def newsblur_get_stories(
     feed_ids: list[int] | None = None,
     folder: str | None = None,
-    include_read: bool = False,
+    read_filter: str = "unread",
+    include_hidden: bool = False,
     query: str | None = None,
     order: str = "newest",
     page: int = 1,
@@ -23,7 +24,12 @@ async def newsblur_get_stories(
     Args:
         feed_ids: Specific feed IDs to load stories from. Omit for all feeds.
         folder: Folder name to load all stories from (e.g. "Tech").
-        include_read: Include already-read stories (default: only unread).
+        read_filter: Filter stories by read/intelligence state. Options:
+            "unread" (default) - only unread stories,
+            "all" - include already-read stories,
+            "focus" - only stories with positive intelligence scores,
+            "starred" - only saved/starred stories.
+        include_hidden: Include stories scored negatively by classifiers (default: False).
         query: Full-text search query to filter stories.
         order: Sort order - "newest" or "oldest".
         page: Page number for pagination (starts at 1).
@@ -44,14 +50,15 @@ async def newsblur_get_stories(
         params = {
             "page": page,
             "order": order,
-            "read_filter": "all" if include_read else "unread",
+            "read_filter": read_filter,
         }
+        if include_hidden:
+            params["include_hidden"] = "true"
         if query:
             params["query"] = query
         if resolved_feed_ids:
             params["feeds"] = resolved_feed_ids
 
-        data = {"feeds": resolved_feed_ids} if resolved_feed_ids else {}
         resp = await client.post("/reader/river_stories", data=params)
 
         stories = [transform_story(s) for s in resp.get("stories", [])]
@@ -136,6 +143,59 @@ async def newsblur_search_stories(
             params["feeds"] = resolved_feed_ids
 
         resp = await client.post("/reader/river_stories", data=params)
+        stories = [transform_story(s) for s in resp.get("stories", [])]
+        return paginate(stories, page, has_more=len(stories) >= limit)
+    finally:
+        await client.close()
+
+
+@mcp.tool()
+async def newsblur_get_infrequent_stories(
+    stories_per_month: int = 30,
+    read_filter: str = "unread",
+    include_hidden: bool = False,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+) -> dict:
+    """Load stories from infrequently-publishing feeds.
+
+    Filters to only show stories from feeds that publish below a threshold,
+    surfacing content from low-volume sites you might otherwise miss.
+
+    Args:
+        stories_per_month: Maximum average stories/month for a feed to qualify (default: 30).
+        read_filter: Filter by read state - "unread", "all", "focus", or "starred".
+        include_hidden: Include stories scored negatively by classifiers (default: False).
+        order: Sort order - "newest" or "oldest".
+        page: Page number for pagination (starts at 1).
+        limit: Stories per page (default 12, max 50).
+    """
+    client = get_client()
+    try:
+        limit = min(limit, MAX_STORIES_PER_PAGE)
+
+        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        flat_folders = feeds_resp.get("flat_folders", {})
+        all_feed_ids = []
+        for feed_ids_in_folder in flat_folders.values():
+            all_feed_ids.extend(feed_ids_in_folder)
+
+        if not all_feed_ids:
+            return paginate([], page, has_more=False)
+
+        params = {
+            "feeds": all_feed_ids,
+            "infrequent": stories_per_month,
+            "page": page,
+            "order": order,
+            "read_filter": read_filter,
+        }
+        if include_hidden:
+            params["include_hidden"] = "true"
+
+        resp = await client.post("/reader/river_stories", data=params)
+
         stories = [transform_story(s) for s in resp.get("stories", [])]
         return paginate(stories, page, has_more=len(stories) >= limit)
     finally:

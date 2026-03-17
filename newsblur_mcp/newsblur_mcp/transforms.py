@@ -82,6 +82,42 @@ def transform_feed(feed: dict) -> dict:
     }
 
 
+def transform_briefing(briefing: dict, section_definitions: dict | None = None) -> dict:
+    """Transform a raw briefing object into an AI-friendly format."""
+    curated_stories = [transform_story(s) for s in briefing.get("curated_stories", [])]
+
+    # Add feed_title from briefing story data (briefing stories carry it)
+    for story, raw in zip(curated_stories, briefing.get("curated_stories", [])):
+        if raw.get("feed_title"):
+            story["feed_title"] = raw["feed_title"]
+
+    # Convert section summaries from HTML to text
+    section_summaries = {}
+    for key, html in (briefing.get("section_summaries") or {}).items():
+        display_name = (section_definitions or {}).get(key, key)
+        section_summaries[display_name] = html_to_text(html) if html else ""
+
+    # Map curated sections (section_key -> story_hashes) to display names
+    curated_sections = {}
+    for key, hashes in (briefing.get("curated_sections") or {}).items():
+        display_name = (section_definitions or {}).get(key, key)
+        curated_sections[display_name] = hashes
+
+    result = {
+        "briefing_date": briefing.get("briefing_date", ""),
+        "period_start": briefing.get("period_start", ""),
+        "frequency": briefing.get("frequency", ""),
+        "curated_stories": curated_stories,
+        "sections": curated_sections,
+        "section_summaries": section_summaries,
+    }
+
+    if briefing.get("summary_story"):
+        result["summary_story"] = transform_story(briefing["summary_story"])
+
+    return result
+
+
 def paginate(items: list, page: int, has_more: bool) -> dict:
     """Wrap items with pagination metadata."""
     return {

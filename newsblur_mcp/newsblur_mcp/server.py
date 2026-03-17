@@ -62,6 +62,7 @@ import newsblur_mcp.tools.actions  # noqa: F401, E402
 import newsblur_mcp.tools.classifiers  # noqa: F401, E402
 import newsblur_mcp.tools.discovery  # noqa: F401, E402
 import newsblur_mcp.tools.notifications  # noqa: F401, E402
+import newsblur_mcp.tools.briefing  # noqa: F401, E402
 
 # Import resources and prompts
 import newsblur_mcp.resources.resources  # noqa: F401, E402
