@@ -1,13 +1,23 @@
 [project]
-name = "newsblur-mcp"
+name = "newsblur"
 version = "0.1.0"
-description = "MCP server for NewsBlur - connect AI agents to your feeds, stories, and classifiers"
+description = "NewsBlur CLI and MCP server - manage feeds, stories, and classifiers"
 requires-python = ">=3.11"
 dependencies = [
     "fastmcp>=2.0.0",
     "httpx>=0.27.0",
     "beautifulsoup4>=4.12.0",
+    "typer>=0.15.0",
+    "rich>=13.0.0",
 ]
+
+[project.scripts]
+newsblur = "newsblur_mcp.cli:app"
+
+[project.urls]
+Homepage = "https://newsblur.com/features/mcp-cli"
+Repository = "https://github.com/samuelclay/NewsBlur"
+Issues = "https://github.com/samuelclay/NewsBlur/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -15,6 +25,9 @@ dev = [
     "pytest-asyncio>=0.24",
     "respx>=0.22",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["newsblur_mcp"]
 
 [build-system]
 requires = ["hatchling"]

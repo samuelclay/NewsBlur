@@ -40,7 +40,7 @@
     </div>
 
     <div class="NB-feature-detail-how">
-        <h2>20 tools available</h2>
+        <h2>22 tools available</h2>
         <div class="NB-mcp-tools-grid">
             <div class="NB-mcp-tools-column">
                 <h3 class="NB-mcp-tools-column-heading" data-category="reading">Reading</h3>
@@ -80,6 +80,14 @@
                     <li class="NB-mcp-tool" data-category="reading">
                         <code>newsblur_get_infrequent_stories</code>
                         <span class="NB-mcp-tool-desc">Stories from rarely-publishing feeds</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_list_folders</code>
+                        <span class="NB-mcp-tool-desc">Folder tree with unread counts</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_list_folders_with_feeds</code>
+                        <span class="NB-mcp-tool-desc">Complete folder-feed hierarchy</span>
                     </li>
                 </ul>
             </div>
@@ -242,6 +250,39 @@ url = "https://newsblur.com/mcp"</pre>
         </div>
 
         <p class="NB-mcp-setup-note">On first use, a browser window opens for you to log in and authorize access.</p>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-section">
+        <h2>Command-line interface</h2>
+        <p class="NB-feature-detail-subtitle">Everything the MCP server can do, from your terminal. Pipe to jq, script your workflows, or just browse your feeds.</p>
+
+        <div class="NB-cli-steps">
+            <div class="NB-cli-step">
+                <h3>Install</h3>
+                <pre class="NB-feature-detail-code">pip install newsblur</pre>
+            </div>
+
+            <div class="NB-cli-step">
+                <h3>Login</h3>
+                <pre class="NB-feature-detail-code">newsblur auth login</pre>
+                <p class="NB-cli-step-note">Opens your browser to authorize. Token stored locally at <code>~/.config/newsblur/</code>.</p>
+            </div>
+
+            <div class="NB-cli-step">
+                <h3>Use</h3>
+                <pre class="NB-feature-detail-code">newsblur stories list                          # unread stories
+newsblur stories list --folder Tech --limit 5  # filter by folder
+newsblur stories search "machine learning"     # full-text search
+newsblur stories saved --tag research          # saved stories by tag
+newsblur briefing                              # AI daily briefing
+newsblur feeds list                            # all subscriptions
+newsblur feeds add https://example.com         # subscribe
+newsblur save 123:abc --tag ai                 # save with tags
+newsblur train like --feed 42 --author "Name"  # train classifier
+newsblur discover trending                     # trending feeds
+newsblur stories list --json | jq '.items[].title'  # pipe to jq</pre>
+            </div>
+        </div>
     </div>
 
     <div class="NB-feature-detail-faq">

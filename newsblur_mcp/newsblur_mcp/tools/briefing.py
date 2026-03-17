@@ -1,7 +1,36 @@
 """Daily briefing tools."""
 
+from newsblur_mcp.client import NewsBlurClient
 from newsblur_mcp.server import mcp, get_client
 from newsblur_mcp.transforms import transform_briefing, paginate
+
+
+async def _get_daily_briefing(
+    client: NewsBlurClient,
+    limit: int = 5,
+    page: int = 1,
+) -> dict:
+    """Get daily briefing with AI-curated story summaries and sections."""
+    limit = min(limit, 50)
+    resp = await client.get("/briefing/stories", params={
+        "limit": limit,
+        "page": page,
+    })
+
+    if resp.get("code") == -1:
+        return {"error": resp.get("message", "Daily Briefing is not available.")}
+
+    section_definitions = resp.get("section_definitions", {})
+    briefings = [
+        transform_briefing(b, section_definitions)
+        for b in resp.get("briefings", [])
+    ]
+
+    result = paginate(briefings, page, has_more=resp.get("has_next_page", False))
+    result["enabled"] = resp.get("enabled", False)
+    result["is_preview"] = resp.get("is_preview", False)
+    result["section_definitions"] = section_definitions
+    return result
 
 
 @mcp.tool()
@@ -21,25 +50,6 @@ async def newsblur_get_daily_briefing(
     """
     client = get_client()
     try:
-        limit = min(limit, 50)
-        resp = await client.get("/briefing/stories", params={
-            "limit": limit,
-            "page": page,
-        })
-
-        if resp.get("code") == -1:
-            return {"error": resp.get("message", "Daily Briefing is not available.")}
-
-        section_definitions = resp.get("section_definitions", {})
-        briefings = [
-            transform_briefing(b, section_definitions)
-            for b in resp.get("briefings", [])
-        ]
-
-        result = paginate(briefings, page, has_more=resp.get("has_next_page", False))
-        result["enabled"] = resp.get("enabled", False)
-        result["is_preview"] = resp.get("is_preview", False)
-        result["section_definitions"] = section_definitions
-        return result
+        return await _get_daily_briefing(client, limit, page)
     finally:
         await client.close()

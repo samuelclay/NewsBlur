@@ -1120,6 +1120,40 @@ pre.NB-feature-detail-code {
     font-style: italic;
 }
 
+/* CLI Section */
+.NB-cli-section {
+    margin-top: 48px;
+}
+
+.NB-cli-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.NB-cli-step h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #707070;
+    margin-bottom: 8px;
+}
+
+.NB-cli-step-note {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #808080;
+}
+
+.NB-cli-step-note code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
 
 /* ---- Pricing Tier Detail Pages ---- */
 
@@ -4446,6 +4480,19 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark .NB-mcp-setup-note {
     color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-cli-step h3 {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-cli-step-note {
+    color: #808080;
+}
+
+.NB-dark .NB-cli-step-note code {
+    background: #2a2a2a;
+    color: #c0c0c0;
 }
 
 /* Feature detail screenshots - dark mode */

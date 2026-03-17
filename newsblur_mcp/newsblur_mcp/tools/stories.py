@@ -1,8 +1,49 @@
 """Story loading and search tools."""
 
+from newsblur_mcp.client import NewsBlurClient
 from newsblur_mcp.server import mcp, get_client
-from newsblur_mcp.transforms import transform_story, paginate
+from newsblur_mcp.transforms import transform_story, paginate, html_to_text
 from newsblur_mcp.settings import DEFAULT_STORIES_PER_PAGE, MAX_STORIES_PER_PAGE
+
+
+async def _get_stories(
+    client: NewsBlurClient,
+    feed_ids: list[int] | None = None,
+    folder: str | None = None,
+    read_filter: str = "unread",
+    include_hidden: bool = False,
+    query: str | None = None,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+) -> dict:
+    """Load stories from feeds, folders, or all subscriptions."""
+    limit = min(limit, MAX_STORIES_PER_PAGE)
+
+    resolved_feed_ids = feed_ids
+    if folder and not feed_ids:
+        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        flat_folders = feeds_resp.get("flat_folders", {})
+        resolved_feed_ids = flat_folders.get(folder, [])
+        if not resolved_feed_ids:
+            return {"error": f"Folder '{folder}' not found or empty"}
+
+    params = {
+        "page": page,
+        "order": order,
+        "read_filter": read_filter,
+    }
+    if include_hidden:
+        params["include_hidden"] = "true"
+    if query:
+        params["query"] = query
+    if resolved_feed_ids:
+        params["feeds"] = resolved_feed_ids
+
+    resp = await client.post("/reader/river_stories", data=params)
+
+    stories = [transform_story(s) for s in resp.get("stories", [])]
+    return paginate(stories, page, has_more=len(stories) >= limit)
 
 
 @mcp.tool()
@@ -37,34 +78,37 @@ async def newsblur_get_stories(
     """
     client = get_client()
     try:
-        limit = min(limit, MAX_STORIES_PER_PAGE)
-
-        resolved_feed_ids = feed_ids
-        if folder and not feed_ids:
-            feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
-            flat_folders = feeds_resp.get("flat_folders", {})
-            resolved_feed_ids = flat_folders.get(folder, [])
-            if not resolved_feed_ids:
-                return {"error": f"Folder '{folder}' not found or empty"}
-
-        params = {
-            "page": page,
-            "order": order,
-            "read_filter": read_filter,
-        }
-        if include_hidden:
-            params["include_hidden"] = "true"
-        if query:
-            params["query"] = query
-        if resolved_feed_ids:
-            params["feeds"] = resolved_feed_ids
-
-        resp = await client.post("/reader/river_stories", data=params)
-
-        stories = [transform_story(s) for s in resp.get("stories", [])]
-        return paginate(stories, page, has_more=len(stories) >= limit)
+        return await _get_stories(client, feed_ids, folder, read_filter, include_hidden, query, order, page, limit)
     finally:
         await client.close()
+
+
+async def _get_saved_stories(
+    client: NewsBlurClient,
+    tag: str | None = None,
+    query: str | None = None,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+) -> dict:
+    """Retrieve saved/starred stories, optionally filtered by tag."""
+    limit = min(limit, MAX_STORIES_PER_PAGE)
+    params = {"page": page, "order": order}
+    if tag:
+        params["tag"] = tag
+    if query:
+        params["query"] = query
+
+    resp = await client.get("/reader/starred_stories", params=params)
+
+    stories = [transform_story(s) for s in resp.get("stories", [])]
+    result = paginate(stories, page, has_more=len(stories) >= limit)
+
+    if page == 1:
+        counts_resp = await client.get("/reader/starred_counts")
+        result["tags"] = counts_resp.get("starred_counts", [])
+
+    return result
 
 
 @mcp.tool()
@@ -88,25 +132,35 @@ async def newsblur_get_saved_stories(
     """
     client = get_client()
     try:
-        limit = min(limit, MAX_STORIES_PER_PAGE)
-        params = {"page": page, "order": order}
-        if tag:
-            params["tag"] = tag
-        if query:
-            params["query"] = query
-
-        resp = await client.get("/reader/starred_stories", params=params)
-
-        stories = [transform_story(s) for s in resp.get("stories", [])]
-        result = paginate(stories, page, has_more=len(stories) >= limit)
-
-        if page == 1:
-            counts_resp = await client.get("/reader/starred_counts")
-            result["tags"] = counts_resp.get("starred_counts", [])
-
-        return result
+        return await _get_saved_stories(client, tag, query, order, page, limit)
     finally:
         await client.close()
+
+
+async def _search_stories(
+    client: NewsBlurClient,
+    query: str,
+    feed_ids: list[int] | None = None,
+    folder: str | None = None,
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+) -> dict:
+    """Search across all stories in subscribed feeds by keyword."""
+    limit = min(limit, MAX_STORIES_PER_PAGE)
+
+    resolved_feed_ids = feed_ids
+    if folder and not feed_ids:
+        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        flat_folders = feeds_resp.get("flat_folders", {})
+        resolved_feed_ids = flat_folders.get(folder, [])
+
+    params = {"query": query, "page": page, "order": "newest"}
+    if resolved_feed_ids:
+        params["feeds"] = resolved_feed_ids
+
+    resp = await client.post("/reader/river_stories", data=params)
+    stories = [transform_story(s) for s in resp.get("stories", [])]
+    return paginate(stories, page, has_more=len(stories) >= limit)
 
 
 @mcp.tool()
@@ -130,23 +184,46 @@ async def newsblur_search_stories(
     """
     client = get_client()
     try:
-        limit = min(limit, MAX_STORIES_PER_PAGE)
-
-        resolved_feed_ids = feed_ids
-        if folder and not feed_ids:
-            feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
-            flat_folders = feeds_resp.get("flat_folders", {})
-            resolved_feed_ids = flat_folders.get(folder, [])
-
-        params = {"query": query, "page": page, "order": "newest"}
-        if resolved_feed_ids:
-            params["feeds"] = resolved_feed_ids
-
-        resp = await client.post("/reader/river_stories", data=params)
-        stories = [transform_story(s) for s in resp.get("stories", [])]
-        return paginate(stories, page, has_more=len(stories) >= limit)
+        return await _search_stories(client, query, feed_ids, folder, page, limit)
     finally:
         await client.close()
+
+
+async def _get_infrequent_stories(
+    client: NewsBlurClient,
+    stories_per_month: int = 30,
+    read_filter: str = "unread",
+    include_hidden: bool = False,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+) -> dict:
+    """Load stories from infrequently-publishing feeds."""
+    limit = min(limit, MAX_STORIES_PER_PAGE)
+
+    feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+    flat_folders = feeds_resp.get("flat_folders", {})
+    all_feed_ids = []
+    for feed_ids_in_folder in flat_folders.values():
+        all_feed_ids.extend(feed_ids_in_folder)
+
+    if not all_feed_ids:
+        return paginate([], page, has_more=False)
+
+    params = {
+        "feeds": all_feed_ids,
+        "infrequent": stories_per_month,
+        "page": page,
+        "order": order,
+        "read_filter": read_filter,
+    }
+    if include_hidden:
+        params["include_hidden"] = "true"
+
+    resp = await client.post("/reader/river_stories", data=params)
+
+    stories = [transform_story(s) for s in resp.get("stories", [])]
+    return paginate(stories, page, has_more=len(stories) >= limit)
 
 
 @mcp.tool()
@@ -173,33 +250,20 @@ async def newsblur_get_infrequent_stories(
     """
     client = get_client()
     try:
-        limit = min(limit, MAX_STORIES_PER_PAGE)
-
-        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
-        flat_folders = feeds_resp.get("flat_folders", {})
-        all_feed_ids = []
-        for feed_ids_in_folder in flat_folders.values():
-            all_feed_ids.extend(feed_ids_in_folder)
-
-        if not all_feed_ids:
-            return paginate([], page, has_more=False)
-
-        params = {
-            "feeds": all_feed_ids,
-            "infrequent": stories_per_month,
-            "page": page,
-            "order": order,
-            "read_filter": read_filter,
-        }
-        if include_hidden:
-            params["include_hidden"] = "true"
-
-        resp = await client.post("/reader/river_stories", data=params)
-
-        stories = [transform_story(s) for s in resp.get("stories", [])]
-        return paginate(stories, page, has_more=len(stories) >= limit)
+        return await _get_infrequent_stories(client, stories_per_month, read_filter, include_hidden, order, page, limit)
     finally:
         await client.close()
+
+
+async def _get_original_text(client: NewsBlurClient, story_hash: str) -> dict:
+    """Fetch the full original text of a story from the source website."""
+    resp = await client.get("/rss_feeds/original_text", params={"story_hash": story_hash})
+
+    original_html = resp.get("original_text", "")
+    return {
+        "story_hash": story_hash,
+        "original_text": html_to_text(original_html),
+    }
 
 
 @mcp.tool()
@@ -213,13 +277,6 @@ async def newsblur_get_original_text(story_hash: str) -> dict:
     """
     client = get_client()
     try:
-        resp = await client.get("/rss_feeds/original_text", params={"story_hash": story_hash})
-        from newsblur_mcp.transforms import html_to_text
-
-        original_html = resp.get("original_text", "")
-        return {
-            "story_hash": story_hash,
-            "original_text": html_to_text(original_html),
-        }
+        return await _get_original_text(client, story_hash)
     finally:
         await client.close()
