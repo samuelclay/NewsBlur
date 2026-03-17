@@ -912,16 +912,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     .NB-feature-detail-crosslinks-grid {
         grid-template-columns: 1fr;
     }
-    .NB-mcp-tool {
-        flex-wrap: wrap;
-        gap: 4px 10px;
-    }
-    .NB-mcp-tool-desc {
-        flex-basis: 100%;
-        padding-left: 0;
-    }
-    .NB-mcp-tool-desc::before {
-        content: none;
+    .NB-mcp-tools-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -942,19 +934,43 @@ pre.NB-feature-detail-code {
     line-height: 1.5;
 }
 
-/* Connect sections */
-.NB-feature-detail-connect {
-    margin-bottom: 20px;
+/* Tools grid - two columns */
+.NB-mcp-tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 36px;
 }
 
-.NB-feature-detail-connect h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d261a;
+.NB-mcp-tools-column-heading {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    border-radius: 4px;
     margin: 0 0 8px;
+    display: inline-block;
 }
 
-/* MCP Tools list - single column */
+.NB-mcp-tools-column-heading-intelligence {
+    margin-top: 20px;
+}
+
+.NB-mcp-tools-column-heading[data-category="reading"] {
+    background: rgba(58, 118, 166, 0.1);
+    color: rgba(40, 90, 130, 0.85);
+}
+
+.NB-mcp-tools-column-heading[data-category="actions"] {
+    background: rgba(138, 109, 27, 0.1);
+    color: rgba(120, 95, 20, 0.85);
+}
+
+.NB-mcp-tools-column-heading[data-category="intelligence"] {
+    background: rgba(76, 141, 72, 0.1);
+    color: rgba(50, 110, 48, 0.85);
+}
+
 .NB-mcp-tools-list {
     list-style: none;
     padding: 0;
@@ -963,42 +979,14 @@ pre.NB-feature-detail-code {
 
 .NB-mcp-tool {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 10px 0;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .NB-mcp-tool:last-child {
     border-bottom: none;
-}
-
-.NB-mcp-tool-category {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 3px 8px;
-    border-radius: 3px;
-    white-space: nowrap;
-    min-width: 72px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-[data-category="reading"] .NB-mcp-tool-category {
-    background: rgba(58, 118, 166, 0.1);
-    color: rgba(40, 90, 130, 0.85);
-}
-
-[data-category="actions"] .NB-mcp-tool-category {
-    background: rgba(138, 109, 27, 0.1);
-    color: rgba(120, 95, 20, 0.85);
-}
-
-[data-category="intelligence"] .NB-mcp-tool-category {
-    background: rgba(76, 141, 72, 0.1);
-    color: rgba(50, 110, 48, 0.85);
 }
 
 .NB-mcp-tool code {
@@ -1007,17 +995,129 @@ pre.NB-feature-detail-code {
     font-weight: 500;
     color: rgba(45, 38, 26, 0.85);
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .NB-mcp-tool-desc {
-    font-size: 14px;
-    color: rgba(45, 38, 26, 0.5);
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.45);
     line-height: 1.4;
 }
 
-.NB-mcp-tool-desc::before {
-    content: "\2014\00a0";
+/* MCP conversation examples */
+.NB-feature-detail-examples-intro {
+    font-size: 15px;
+    color: rgba(45, 38, 26, 0.6);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.NB-mcp-example {
+    margin-bottom: 28px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-mcp-example:last-child {
+    margin-bottom: 0;
+}
+
+.NB-mcp-example-prompt {
+    background: #1a1a2e;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 20px;
+    font-style: italic;
+}
+
+.NB-mcp-example-prompt::before {
+    content: "> ";
+    color: rgba(130, 180, 255, 0.7);
+    font-style: normal;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+
+.NB-mcp-example-tool {
+    background: #14142a;
+    color: rgba(130, 180, 255, 0.85);
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    padding: 6px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-mcp-example-tool::before {
+    content: "\25B6\00a0\00a0";
+    font-size: 8px;
+    vertical-align: 1px;
+    opacity: 0.5;
+}
+
+.NB-mcp-example-tool-args {
+    color: rgba(180, 160, 220, 0.7);
+    margin-left: 4px;
+}
+
+.NB-mcp-example-response {
+    background: #fafaf8;
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(45, 38, 26, 0.8);
+}
+
+.NB-mcp-example-response p {
+    margin: 0 0 10px 0;
+}
+
+.NB-mcp-example-response p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-mcp-example-response strong {
+    color: rgba(45, 38, 26, 0.95);
+}
+
+.NB-mcp-example-response em {
+    font-style: normal;
+    color: rgba(45, 38, 26, 0.65);
+}
+
+.NB-mcp-example-response code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Setup section */
+.NB-mcp-setup-options {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.NB-mcp-setup-option h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d261a;
+    margin: 0 0 8px;
+}
+
+.NB-mcp-setup-option p {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.6);
+    margin: 0 0 6px;
+}
+
+.NB-mcp-setup-note {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.5);
+    font-style: italic;
 }
 
 
@@ -4276,17 +4376,17 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
     border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 
-.NB-dark [data-category="reading"] .NB-mcp-tool-category {
+.NB-dark .NB-mcp-tools-column-heading[data-category="reading"] {
     background: rgba(100, 170, 220, 0.15);
     color: rgba(140, 195, 235, 0.9);
 }
 
-.NB-dark [data-category="actions"] .NB-mcp-tool-category {
+.NB-dark .NB-mcp-tools-column-heading[data-category="actions"] {
     background: rgba(251, 219, 155, 0.12);
     color: rgba(251, 219, 155, 0.85);
 }
 
-.NB-dark [data-category="intelligence"] .NB-mcp-tool-category {
+.NB-dark .NB-mcp-tools-column-heading[data-category="intelligence"] {
     background: rgba(120, 200, 120, 0.12);
     color: rgba(140, 210, 140, 0.85);
 }
@@ -4296,7 +4396,56 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 }
 
 .NB-dark .NB-mcp-tool-desc {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* MCP examples - dark mode */
+.NB-dark .NB-feature-detail-examples-intro {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-example {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-mcp-example-prompt {
+    background: #12121f;
+}
+
+.NB-dark .NB-mcp-example-tool {
+    background: #0e0e1a;
+}
+
+.NB-dark .NB-mcp-example-response {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-dark .NB-mcp-example-response strong {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-mcp-example-response em {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-example-response code {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(251, 219, 155, 0.85);
+}
+
+/* MCP setup section - dark mode */
+.NB-dark .NB-mcp-setup-option h3 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-mcp-setup-option p {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-setup-note {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 /* Feature detail screenshots - dark mode */
