@@ -7,6 +7,7 @@ standard OAuth flows without any manual token setup.
 
 from __future__ import annotations
 
+import logging
 import time
 
 import httpx
@@ -14,6 +15,8 @@ from fastmcp.server.auth import TokenVerifier
 from fastmcp.server.auth.auth import AccessToken
 from fastmcp.server.auth.oauth_proxy import OAuthProxy
 from pydantic import AnyHttpUrl
+
+logger = logging.getLogger(__name__)
 
 from newsblur_mcp.settings import (
     MCP_OAUTH_BASE_URL,
@@ -46,9 +49,11 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 )
 
                 if response.status_code != 200:
+                    logger.warning("Django token verification failed: status=%d url=%s", response.status_code, self.upstream_base_url)
                     return None
 
                 user_info = response.json()
+                logger.info("Token verified for user=%s", user_info.get("user_name", "unknown"))
 
                 return AccessToken(
                     token=token,
@@ -60,7 +65,8 @@ class NewsBlurTokenVerifier(TokenVerifier):
                         "username": user_info.get("user_name", ""),
                     },
                 )
-        except Exception:
+        except Exception as e:
+            logger.error("Django token verification error: %s", e)
             return None
 
 

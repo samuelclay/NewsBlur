@@ -107,9 +107,12 @@ backend nginx
     server nginx newsblur_nginx_{{ workspace_name }}:81 check inter 60000ms resolvers docker init-addr last,libc,none
 
 backend mcp
+    timeout client 1h
+    timeout server 1h
+    timeout tunnel 1h
     http-request replace-path /mcp$      /
     http-request replace-path /mcp/(.*)  /\1
-    server newsblur_mcp host.docker.internal:8099 check inter 3000ms
+    server newsblur_mcp newsblur_mcp_{{ workspace_name }}:8099 check inter 3000ms resolvers docker init-addr last,libc,none
 
 backend gunicorn
     balance roundrobin
