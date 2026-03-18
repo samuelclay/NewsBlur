@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-18T10:56:06-04:00</updated>
+  <updated>2026-03-18T14:19:44-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -75,9 +75,9 @@ A new sound of an old instrument.
 
 <h3 id="availability">Availability</h3>
 
-<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed.</p>
+<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.</p>
 
-<p><strong>Premium Archive subscribers</strong> get full control over clustering: toggle it on or off, choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story. Clustering is enabled by default for archive subscribers.</p>
+<p><strong>Premium Archive subscribers</strong> get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.</p>
 
 <p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
 
