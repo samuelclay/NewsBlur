@@ -5437,12 +5437,13 @@ body {
 
 /* AI Classifier Pills */
 .NB-feed-story .NB-feed-story-ai-classifiers {
-    display: inline;
-    line-height: 22px;
+    display: flex;
+    align-items: center;
+    margin: 5px 0 0;
 }
 
 .NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {
-    margin: 0 2px;
+    margin: 0 6px 0 2px;
     color: #B0B0A0;
 }
 
@@ -5453,7 +5454,7 @@ body {
     font-size: 12px;
     border-radius: 4px;
     padding: 1px 5px;
-    margin: 0 4px 4px 0;
+    margin: 0 4px 0 0;
     line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
