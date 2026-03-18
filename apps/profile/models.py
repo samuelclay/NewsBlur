@@ -3186,6 +3186,8 @@ def paypal_signup(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.custom:
         try:
@@ -3246,6 +3248,8 @@ def paypal_payment_history_sync(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.subscr_id:
         try:
@@ -3290,6 +3294,8 @@ def paypal_payment_was_flagged(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.subscr_id:
         try:
