@@ -209,7 +209,11 @@ def ComputeStoryClusters(feed_id):
             story_title_map=story_title_map,
             feed_title_map=feed_title_map,
         )
-        store_clusters_to_redis(combined, candidate_cluster_map=candidate_cluster_map)
+        store_clusters_to_redis(
+            combined,
+            candidate_cluster_map=candidate_cluster_map,
+            story_title_map=story_title_map,
+        )
         logging.debug(
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
             % (len(title_clusters), len(semantic_clusters), len(combined), feed_id)

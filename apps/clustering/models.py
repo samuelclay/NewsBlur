@@ -57,9 +57,15 @@ def _simple_stem(word):
 
 
 def title_significant_words(title):
-    """Extract significant (non-stopword) words from a normalized title."""
+    """Extract significant (non-stopword) words from a normalized title.
+
+    Filters out purely numeric tokens (e.g. '2026', '17') which cause
+    date-based false matches across unrelated stories.
+    """
     norm = normalize_title(title)
-    return frozenset(_simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1)
+    return frozenset(
+        _simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1 and not w.isdigit()
+    )
 
 
 def title_words_excluding_feed(story_title, feed_title):
@@ -545,13 +551,19 @@ def merge_clusters(
     return {root: members[:CLUSTER_MAX_SIZE] for root, members in groups.items() if len(members) >= 2}
 
 
-def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None):
+def store_clusters_to_redis(
+    clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None, story_title_map=None
+):
     """Write cluster memberships to Redis.
 
     When candidate_cluster_map is provided, detects when a newly computed cluster
     contains stories that already belong to an existing cluster. In that case,
     new stories are merged into the existing cluster (ZADD without DELETE) rather
     than creating a duplicate cluster.
+
+    Merge validation: new members must share >= FUZZY_MIN_INTERSECTION significant
+    title words with at least one existing cluster member. This prevents unrelated
+    stories from accumulating in a cluster through transitive chains across runs.
 
     Keys:
         sCL:{story_hash} -> cluster_id (STRING with TTL)
@@ -564,6 +576,7 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
     pipe = r.pipeline()
     merged_count = 0
     new_count = 0
+    skipped_validation = 0
 
     for cluster_id, members in clusters.items():
         # Check if any member already belongs to an existing cluster
@@ -577,13 +590,49 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
         if existing_cluster_id:
             # Merge new stories into the existing cluster. Don't delete the
             # existing zCL: — just add new members and update sCL: pointers.
-            merged_count += 1
             target_cluster_id = existing_cluster_id
+
+            # Enforce CLUSTER_MAX_SIZE: check how many members the existing
+            # cluster already has before adding more.
+            existing_members = r.zrange("zCL:%s" % target_cluster_id, 0, -1)
+            existing_size = len(existing_members) if existing_members else 0
+
+            # Build title-word sets for existing cluster members (for merge validation)
+            existing_title_words = []
+            if story_title_map and existing_members:
+                for em in existing_members:
+                    em_str = em.decode() if isinstance(em, bytes) else em
+                    em_title = story_title_map.get(em_str, "")
+                    if em_title:
+                        existing_title_words.append(title_significant_words(em_title))
+
+            added_count = 0
+            merged_count += 1
             for story_hash in members:
                 if story_hash not in candidate_cluster_map:
+                    # Enforce max size — skip new additions but keep processing
+                    # existing members below to refresh their TTLs.
+                    if existing_size + added_count >= CLUSTER_MAX_SIZE:
+                        continue
+
+                    # Validate title-word overlap with existing cluster members.
+                    # If title data is available, require >= FUZZY_MIN_INTERSECTION
+                    # shared words with at least one existing member.
+                    if story_title_map and existing_title_words:
+                        new_title = story_title_map.get(story_hash, "")
+                        if new_title:
+                            new_words = title_significant_words(new_title)
+                            has_overlap = any(
+                                len(new_words & ew) >= FUZZY_MIN_INTERSECTION for ew in existing_title_words
+                            )
+                            if not has_overlap:
+                                skipped_validation += 1
+                                continue
+
                     # New story joining existing cluster
                     pipe.set("sCL:%s" % story_hash, target_cluster_id, ex=ttl)
                     pipe.zadd("zCL:%s" % target_cluster_id, {story_hash: 0})
+                    added_count += 1
                 else:
                     # Already in a cluster — refresh TTL on its sCL: key
                     pipe.expire("sCL:%s" % story_hash, ttl)
@@ -599,6 +648,12 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
             pipe.expire("zCL:%s" % cluster_id, ttl)
 
     pipe.execute()
+
+    if skipped_validation:
+        logging.debug(
+            " ---> ~FBClustering: skipped %s stories that failed merge title-word validation"
+            % skipped_validation
+        )
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
