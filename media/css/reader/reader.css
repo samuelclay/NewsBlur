@@ -3961,7 +3961,9 @@ img.feed_favicon {
     grid-column-end: -1;
 }
 
-.NB-layout-grid .NB-story-title-container {}
+.NB-layout-grid .NB-story-title-container {
+    min-width: 0;
+}
 
 .NB-layout-grid .NB-story-title-container.NB-selected {
     margin: 0 -2rem;
