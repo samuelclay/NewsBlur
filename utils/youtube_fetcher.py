@@ -134,6 +134,55 @@ class YoutubeFetcher:
 
         return rss.writeString("utf-8")
 
+    def fetch_channel_icon_url(self):
+        """Fetch the YouTube channel thumbnail URL for use as a feed favicon."""
+        channel_id = self.extract_channel_id(self.address)
+        username = self.extract_username(self.address)
+
+        if channel_id:
+            channel = self._fetch_channel_snippet(channel_id=channel_id)
+        elif username:
+            channel = self._fetch_channel_snippet(username=username)
+        else:
+            return None
+
+        if not channel:
+            return None
+
+        try:
+            thumbnails = channel["items"][0]["snippet"]["thumbnails"]
+            for size in ("medium", "default"):
+                if size in thumbnails:
+                    return thumbnails[size]["url"]
+        except (IndexError, KeyError):
+            pass
+
+        return None
+
+    def _fetch_channel_snippet(self, channel_id=None, username=None):
+        """Fetch channel snippet from YouTube API by channel_id or username."""
+        if channel_id:
+            url = (
+                "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s"
+                % (channel_id, settings.YOUTUBE_API_KEY)
+            )
+        elif username:
+            url = (
+                "https://www.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%s&key=%s"
+                % (username, settings.YOUTUBE_API_KEY)
+            )
+        else:
+            return None
+
+        try:
+            response = requests.get(url)
+            channel = json.decode(response.content)
+            if "error" in channel or not channel.get("items"):
+                return None
+            return channel
+        except Exception:
+            return None
+
     def extract_username(self, url):
         if "gdata.youtube.com" in url:
             try:

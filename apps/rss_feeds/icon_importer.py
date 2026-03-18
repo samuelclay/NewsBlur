@@ -32,6 +32,7 @@ from apps.rss_feeds.models import MFeedIcon, MFeedPage
 from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import TimeoutError, timelimit
+from utils.youtube_fetcher import YoutubeFetcher
 
 
 class IconImporter(object):
@@ -55,6 +56,8 @@ class IconImporter(object):
             return
         if "facebook.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_facebook_image()
+        elif "youtube.com" in self.feed.feed_address:
+            image, image_file, icon_url = self.fetch_youtube_image()
         else:
             image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
@@ -312,6 +315,17 @@ class IconImporter(object):
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
+
+    def fetch_youtube_image(self):
+        youtube_fetcher = YoutubeFetcher(self.feed)
+        url = youtube_fetcher.fetch_channel_icon_url()
+        if url:
+            image, image_file = self.get_image_from_url(url)
+            if image:
+                if max(image.size) > 256:
+                    image = image.resize((256, 256), Image.LANCZOS)
+                return image, image_file, url
+        return None, None, None
 
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url

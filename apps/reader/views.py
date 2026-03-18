@@ -1480,6 +1480,10 @@ def load_single_feed(request, feed_id):
         data["not_yet_fetched"] = True
         data["fetched_once"] = False
         data["stories"] = []
+    # Always include fetched_once when insta_fetch is requested so the frontend
+    # poll_for_fetch_completion can terminate for subscribed feeds too
+    elif insta_fetch:
+        data["fetched_once"] = feed.fetched_once
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
 
