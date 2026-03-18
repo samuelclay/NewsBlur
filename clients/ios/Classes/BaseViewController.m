@@ -208,11 +208,13 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
+
     BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-    
+
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
     [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
+
+    [self addKeyCommandWithInput:@"/" modifierFlags:UIKeyModifierShift action:@selector(showKeyboardShortcuts:) discoverabilityTitle:@"Keyboard Shortcuts"];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -791,6 +793,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (IBAction)openInBrowser:(id)sender {
     [self.appDelegate.storyPagesViewController showOriginalSubview:sender];
+}
+
+- (IBAction)showKeyboardShortcuts:(id)sender {
+    [self.appDelegate showKeyboardShortcuts];
 }
 
 @end

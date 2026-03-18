@@ -99,6 +99,7 @@
 - (IBAction)previousStory:(id)sender;
 - (IBAction)toggleTextStory:(id)sender;
 - (IBAction)openInBrowser:(id)sender;
+- (IBAction)showKeyboardShortcuts:(id)sender;
 
 @end
 

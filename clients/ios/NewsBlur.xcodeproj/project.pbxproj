@@ -1044,6 +1044,7 @@
 		43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F6A79C15B0CDC60092EE91 /* ActivityCell.m */; };
 		43F6A7A915B0E1ED0092EE91 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F6A7A815B0E1ED0092EE91 /* CoreText.framework */; };
 		460E62F59D39774A840EB951 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
+		KBSH0RTC9D39774A840EB900 /* KeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */; };
 		505076AD492EB9AC13DA142F /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = 590BE55851A65E0B7E5FE56D /* Icons */; };
 		58EE12AF7C78A34873A6A6CB /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
 		5C325D54A81ED657B7137B6E /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
@@ -1428,6 +1429,7 @@
 		FFF8B3AF1F847505001AB95E /* ActivitiesNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
+		KBSH0RTC5W1FT000000000 /* KeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */; };
 		PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 		PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 /* End PBXBuildFile section */
@@ -1937,6 +1939,7 @@
 		7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTraverseBar.swift; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadTimeTracker.swift; sourceTree = "<group>"; };
 		9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsView.swift; sourceTree = "<group>"; };
 		A388F989D14990BF30BBDBFF /* AskAIView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIView.swift; sourceTree = "<group>"; };
@@ -2914,6 +2917,7 @@
 			children = (
 				170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */,
 				8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */,
+				KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */,
 				28D7ACF60DDB3853001CB0EB /* FeedsObjCViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* FeedsObjCViewController.m */,
 				FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */,
@@ -5162,6 +5166,7 @@
 				175792612930605500490924 /* ActivitiesViewController.m in Sources */,
 				175792622930605500490924 /* FeedsViewController.swift in Sources */,
 				460E62F59D39774A840EB951 /* PreferencesView.swift in Sources */,
+				KBSH0RTC9D39774A840EB900 /* KeyboardShortcutsView.swift in Sources */,
 				175792632930605500490924 /* ActivityModule.m in Sources */,
 				175792642930605500490924 /* InteractionsModule.m in Sources */,
 				175792652930605500490924 /* SplitViewController.swift in Sources */,
@@ -5486,6 +5491,7 @@
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
 				PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */,
 				PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */,
+				KBSH0RTC5W1FT000000000 /* KeyboardShortcutsView.swift in Sources */,
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
 				17A0518A2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,

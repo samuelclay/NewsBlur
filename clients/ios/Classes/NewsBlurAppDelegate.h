@@ -334,6 +334,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
+- (void)showKeyboardShortcuts;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;

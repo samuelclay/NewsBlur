@@ -1057,6 +1057,25 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
 }
 
+- (void)showKeyboardShortcuts {
+    [self hidePopover];
+
+    if (@available(iOS 15.0, *)) {
+        KeyboardShortcutsHostingController *shortcutsVC = [[KeyboardShortcutsHostingController alloc] init];
+
+        shortcutsVC.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (shortcutsVC.sheetPresentationController) {
+            shortcutsVC.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+            shortcutsVC.sheetPresentationController.prefersGrabberVisible = YES;
+            shortcutsVC.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
+
+        [feedsNavigationController presentViewController:shortcutsVC animated:YES completion:^{
+            [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
+        }];
+    }
+}
+
 - (void)showFeedChooserForOperation:(FeedChooserOperation)operation dashboardRiverId:(NSString *)dashboardRiverId {
     [self hidePopover];
     
