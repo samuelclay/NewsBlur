@@ -52,8 +52,14 @@ class IconImporter(object):
             and self.feed_icon.icon_url
             and self.feed.s3_icon
         ):
-            # print 'Found, but skipping...'
-            return
+            # YouTube feeds: skip only if we already have the channel avatar
+            # (from yt3.ggpht.com), not the generic youtube.com favicon
+            if "youtube.com" in self.feed.feed_address and "yt3.ggpht.com" not in (
+                self.feed_icon.icon_url or ""
+            ):
+                pass  # Fall through to fetch channel avatar
+            else:
+                return
         if "facebook.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_facebook_image()
         elif "youtube.com" in self.feed.feed_address:
