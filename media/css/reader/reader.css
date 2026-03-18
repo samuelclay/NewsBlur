@@ -27173,6 +27173,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-filter-popover .NB-clustering-read-label {
+    display: flex;
+    align-items: center;
     font-size: 11px;
     color: #808080;
     margin-bottom: 4px;
@@ -27189,17 +27191,9 @@ h5.NB-classifier-section-header {
 
 /* Clustering upgrade notice in feed options popover */
 .NB-filter-popover .NB-clustering-upgrade-notice {
-    font-size: 11px;
-    color: #707070;
-    margin-top: 8px;
-    padding: 6px 8px;
-    background: #f5f5f5;
-    border: 1px solid #e8e8e8;
-    border-radius: 4px;
-    cursor: pointer;
-}
-.NB-filter-popover .NB-clustering-upgrade-notice .NB-clustering-upgrade-notice-link {
+    margin-left: auto;
     text-decoration: none;
+    cursor: pointer;
 }
 .NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
     display: inline-block;
@@ -27211,20 +27205,16 @@ h5.NB-classifier-section-header {
     letter-spacing: 0.5px;
     padding: 2px 6px;
     border-radius: 3px;
+    transition: filter 0.3s;
 }
-.NB-filter-popover .NB-clustering-upgrade-notice.NB-flash {
-    background: #fff3cd;
-    border-color: #ffc107;
-    transition: background 0.3s, border-color 0.3s;
+.NB-filter-popover .NB-clustering-upgrade-notice.NB-flash .NB-archive-badge {
+    filter: brightness(1.3);
 }
-.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice {
-    color: #909090;
-    background: #2a2a2a;
-    border-color: #444;
+.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+    filter: brightness(0.85);
 }
-.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice.NB-flash {
-    background: #3d3520;
-    border-color: #665a30;
+.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice.NB-flash .NB-archive-badge {
+    filter: brightness(1.2);
 }
 
 /* Staff Only badge */

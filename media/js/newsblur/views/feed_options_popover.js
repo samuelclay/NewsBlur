@@ -348,17 +348,16 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         ])
                     ]),
                     $.make('div', { className: 'NB-clustering-read-section' }, [
-                        $.make('div', { className: 'NB-clustering-read-label' }, 'When reading a clustered story:'),
+                        $.make('div', { className: 'NB-clustering-read-label' }, [
+                            'When reading a clustered story:',
+                            (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-clustering-upgrade-notice NB-premium-link' }, [
+                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                            ]))
+                        ]),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'Mark all as read'),
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Keep others unread')
-                        ]),
-                        (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-clustering-upgrade-notice' }, [
-                            'Marking clustered stories as read requires ',
-                            $.make('a', { href: '#', className: 'NB-clustering-upgrade-notice-link NB-premium-link' }, [
-                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
-                            ])
-                        ]))
+                        ])
                     ])
                 ]))
             ])
