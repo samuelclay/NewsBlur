@@ -3466,20 +3466,12 @@ img.feed_favicon {
 .NB-story-cluster-detail-item .NB-story-title .NB-story-feed .feed_title {
     display: none;
 }
-
-/* Clustering upgrade prompt in story detail (inline with header) */
-.NB-clustering-detail-upgrade {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: #a0a0a0;
-    white-space: nowrap;
-    letter-spacing: 0;
-    text-transform: none;
-    font-weight: normal;
+.NB-story-cluster-detail-item .NB-story-title-list.NB-story-title .story_date {
+    position: static;
+    width: auto;
 }
+
+/* Clustering upgrade pill in header (shown when only 1 cluster site) */
 .NB-clustering-detail-upgrade-pill {
     display: inline-block;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -3492,14 +3484,12 @@ img.feed_favicon {
     border-radius: 4px;
     text-decoration: none;
     cursor: pointer;
+    margin-left: 6px;
     transition: filter 0.15s;
 }
 .NB-clustering-detail-upgrade-pill:hover {
     filter: brightness(1.15);
     color: white;
-}
-.NB-dark .NB-clustering-detail-upgrade {
-    color: #666;
 }
 
 /* Info icon + tooltip for clustering explanation */
@@ -3507,6 +3497,7 @@ img.feed_favicon {
     position: relative;
     display: inline-flex;
     align-items: center;
+    margin-left: auto;
 }
 .NB-clustering-detail-info-icon {
     font-size: 13px;
@@ -3516,9 +3507,7 @@ img.feed_favicon {
 }
 .NB-clustering-detail-info-tooltip {
     display: none;
-    position: absolute;
-    left: -4px;
-    bottom: calc(100% + 8px);
+    position: fixed;
     width: 260px;
     padding: 10px 12px;
     background: #333;
@@ -3531,21 +3520,18 @@ img.feed_favicon {
     letter-spacing: 0;
     font-weight: normal;
     box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-    z-index: 100;
+    z-index: 10000;
     pointer-events: none;
 }
 .NB-clustering-detail-info-tooltip::after {
     content: '';
     position: absolute;
     bottom: -5px;
-    left: 6px;
+    right: 6px;
     width: 10px;
     height: 10px;
     background: #333;
     transform: rotate(45deg);
-}
-.NB-clustering-detail-info:hover .NB-clustering-detail-info-tooltip {
-    display: block;
 }
 .NB-dark .NB-clustering-detail-info-icon {
     color: #666;
@@ -3558,6 +3544,38 @@ img.feed_favicon {
     background: #1a1a1a;
     border-right: 1px solid #333;
     border-bottom: 1px solid #333;
+}
+
+/* Cluster locked upsell row (non-archive tier) */
+.NB-cluster-locked-upsell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 10px 66px;
+    cursor: pointer;
+    font-size: 12px;
+    border-top: 1px solid #E8EDF0;
+    transition: filter 0.15s ease;
+}
+.NB-cluster-locked-text {
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.NB-cluster-locked-upsell:hover {
+    filter: brightness(1.15);
+}
+.NB-dark .NB-cluster-locked-upsell {
+    border-top-color: #3a3a3a;
+}
+.NB-dark .NB-cluster-locked-text {
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .NB-story-title .NB-story-feed {
