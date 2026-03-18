@@ -207,10 +207,7 @@ header {
 }
 .NB-header .NB-title-logo .NB-hover-on {
     opacity: 0;
-    -webkit-transition: all .22s ease-out;
-    -moz-transition: all .22s ease-out;
-    -o-transition: all .22s ease-out;
-    -ms-transition: all .22s ease-out;
+    transition: opacity .22s ease-out;
 }
 .NB-header .NB-title-logo:hover .NB-hover-on {
     opacity: 1;
@@ -942,10 +939,7 @@ header {
     font-size: 10px;
     padding: 2px 28px;
     overflow: hidden;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    transition: background-color .12s ease-out, background-image .12s ease-out, text-shadow .12s ease-out;
 }
 .NB-story-comments-public-header {
     background-color: #A0A0A0;
@@ -982,10 +976,7 @@ header {
     position: relative;
     overflow: hidden;
     height: 26px;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    transition: background-color .12s ease-out, background-image .12s ease-out, text-shadow .12s ease-out;
 
     background-image: url('/media/embed/reader/background-control-light.png'), -webkit-gradient(
       linear,
@@ -1105,10 +1096,7 @@ header {
     height: 100%;
     float: right;
     background: #EBF6DA url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    transition: background-color .12s ease-out, color .12s ease-out, opacity .12s ease-out, text-shadow .12s ease-out;
 }
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
     background-image: url('/media/embed/icons/silk/bricks.png');
@@ -1122,10 +1110,7 @@ header {
     padding: 4px 36px 4px 6px;
     color: #FAFAFA;
     text-shadow: none;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    transition: background-color .12s ease-out, color .12s ease-out, opacity .12s ease-out, text-shadow .12s ease-out;
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
@@ -1240,10 +1225,7 @@ header {
     height: 20px;
     position: relative;
     cursor: pointer;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    transition: background-color .12s ease-out, background-image .12s ease-out, text-shadow .12s ease-out;
 }
 .NB-page-controls-end {
     background-color: #3B3E49;

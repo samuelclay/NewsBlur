@@ -92,7 +92,13 @@ def subscribe(request):
     if not URL_RE.match(url):
         return {"code": -1, "message": "Invalid URL"}
 
-    if not story_container_xpath or not title_xpath or not link_xpath:
+    if not story_container_xpath or not title_xpath:
+        logging.user(
+            request.user,
+            "~BB~FWWeb Feed: ~FR~SBMissing XPaths~SN~FW - "
+            "story_container=%s title=%s link=%s POST keys=%s"
+            % (repr(story_container_xpath), repr(title_xpath), repr(link_xpath), list(request.POST.keys())),
+        )
         return {"code": -1, "message": "Missing XPath expressions for story extraction"}
 
     feed_address = f"webfeed:{url}"

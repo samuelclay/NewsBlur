@@ -67,6 +67,17 @@ def EmailNewPremiumTrial(user_id):
 
 @app.task(name="email-staff-premium-upgrade")
 def EmailStaffPremiumUpgrade(user_id, tier, previous_tier):
+    from django.core.cache import cache
+
+    # Deduplicate: only send one staff upgrade email per user+tier within 1 hour
+    cache_key = f"staff_premium_upgrade_email:{user_id}:{tier}"
+    if cache.get(cache_key):
+        logging.debug(
+            " ---> Skipping duplicate staff premium upgrade email for user_id=%s tier=%s" % (user_id, tier)
+        )
+        return
+    cache.set(cache_key, True, timeout=3600)
+
     user_profile = Profile.objects.get(user__pk=user_id)
     user_profile.send_staff_premium_upgrade_email(tier=tier, previous_tier=previous_tier)
 
@@ -158,6 +169,32 @@ def ReimportStripeHistory():
     Profile.reimport_stripe_history(limit=10, days=1)
 
 
+@app.task(name="email-premium-renewal-notice")
+def EmailPremiumRenewalNotice():
+    """Daily task to email users who opted in to renewal notifications 3 days before charge."""
+    logging.debug(" ---> Checking for premium renewal notice emails...")
+    now = datetime.datetime.now()
+    three_days = now + datetime.timedelta(days=3)
+    four_days = now + datetime.timedelta(days=4)
+
+    profiles = (
+        Profile.objects.filter(
+            is_premium=True,
+            premium_renewal=True,
+            premium_expire__gte=three_days,
+            premium_expire__lt=four_days,
+        )
+        .exclude(is_premium_trial=True)
+        .select_related("user")
+    )
+
+    logging.debug(" ---> %s users renewing in ~3 days, checking preferences..." % profiles.count())
+    for profile in profiles:
+        if not profile.preference_value("notify_before_renewal", default=False):
+            continue
+        profile.send_premium_renewal_notice_email()
+
+
 @app.task(name="email-feed-limit-notifications")
 def EmailFeedLimitNotifications():
     """
@@ -203,7 +240,10 @@ def EmailFeedLimitNotifications():
             continue
 
         # Skip if already sent
-        if MSentEmail.objects.filter(receiver_user_id=user.pk, email_type="feed_limit_notification").exists():
+        if (
+            MSentEmail.objects.filter(receiver_user_id=user.pk, email_type="feed_limit_notification").count()
+            > 0
+        ):
             continue
 
         deadline = profile.grandfather_expires

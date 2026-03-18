@@ -476,7 +476,10 @@ def load_feeds(request):
     include_favicons = is_true(request.GET.get("include_favicons", False))
     flat = is_true(request.GET.get("flat", False))
     update_counts = is_true(request.GET.get("update_counts", True))
-    version = int(request.GET.get("v", 1))
+    try:
+        version = int(request.GET.get("v", 1))
+    except (ValueError, TypeError):
+        version = 1
 
     if include_favicons == "false":
         include_favicons = False
@@ -1413,8 +1416,8 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         user_prefs = json.decode(user.profile.preferences)
         if user_prefs.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
@@ -1575,7 +1578,10 @@ def load_starred_stories(request):
     highlights = is_true(request.GET.get("highlights", False))
     story_hashes = request.GET.getlist("h") or request.GET.getlist("h[]")
     story_hashes = story_hashes[:100]
-    version = int(request.GET.get("v", 1))
+    try:
+        version = int(request.GET.get("v", 1))
+    except (ValueError, TypeError):
+        version = 1
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     order_by = "-" if order == "newest" else ""
@@ -1887,6 +1893,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=user)
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
+    if not folder_title:
+        raise Http404
 
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
     if feed_ids and ((user.profile.is_archive and date_hack_2023) or (not date_hack_2023)):
@@ -2580,8 +2588,8 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         if user_preferences.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
@@ -3600,13 +3608,16 @@ def delete_feeds_by_folder(request):
 @ajax_login_required
 @json.json_view
 def rename_feed(request):
-    feed = get_object_or_404(Feed, pk=int(request.POST["feed_id"]))
+    feed_id = request.POST.get("feed_id")
+    feed_title = request.POST.get("feed_title")
+    if not feed_id or not feed_title:
+        return dict(code=-1, message="Missing feed_id or feed_title")
+
+    feed = get_object_or_404(Feed, pk=int(feed_id))
     try:
         user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
     except UserSubscription.DoesNotExist:
         return dict(code=-1, message=f"You are not subscribed to {feed.feed_title}")
-
-    feed_title = request.POST["feed_title"]
 
     logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (feed.feed_title, feed_title))
 
@@ -4159,7 +4170,16 @@ def all_classifiers(request):
     from collections import defaultdict
 
     classifiers_by_feed = defaultdict(
-        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": [], "prompts": [], "image_prompts": []}
+        lambda: {
+            "titles": [],
+            "authors": [],
+            "tags": [],
+            "texts": [],
+            "feeds": [],
+            "urls": [],
+            "prompts": [],
+            "image_prompts": [],
+        }
     )
 
     # Separate scoped classifiers (global/folder) from feed-scoped ones
@@ -5234,8 +5254,8 @@ def load_cluster_stories(request):
     user = get_user(request)
     cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
 
-    if not user.profile.is_archive:
-        return {"code": 0, "message": "Story clustering is an archive feature.", "stories": []}
+    if not request.user.is_authenticated:
+        return {"code": 0, "message": "Please log in to view story clusters.", "stories": []}
 
     if not cluster_id:
         return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
@@ -5257,6 +5277,18 @@ def load_cluster_stories(request):
     if not member_hashes:
         return {"code": 1, "stories": []}
 
+    # Look up read status from Redis
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_stories_key = "RS:%s" % user.pk
+    if member_hashes:
+        pipeline = r.pipeline()
+        for sh in member_hashes:
+            pipeline.sismember(read_stories_key, sh)
+        read_results = pipeline.execute()
+        read_hashes = {sh for sh, is_read in zip(member_hashes, read_results) if is_read}
+    else:
+        read_hashes = set()
+
     stories = []
     mstories = MStory.objects(story_hash__in=member_hashes).order_by()
     for story in mstories:
@@ -5265,6 +5297,7 @@ def load_cluster_stories(request):
             continue
         story_dict = Feed.format_story(story)
         story_dict["feed_title"] = feed.feed_title
+        story_dict["read_status"] = 1 if story.story_hash in read_hashes else 0
         stories.append(story_dict)
 
     stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)

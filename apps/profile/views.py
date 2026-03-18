@@ -1140,6 +1140,27 @@ def manage_usage_billing(request):
 @json.json_view
 def usage_billing_history(request):
     user = request.user
+
+    # Self-hosted: return local spend data without Stripe
+    if user.profile.is_self_hosted_ai and not user.profile.is_usage_billing:
+        import calendar
+
+        current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
+        now = datetime.datetime.utcnow()
+        cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
+        last_day = calendar.monthrange(now.year, now.month)[1]
+        cycle_end = now.replace(day=last_day).strftime("%Y-%m-%d")
+        return {
+            "invoices": [],
+            "upcoming_invoice": None,
+            "current_cycle_spend": round(current_spend, 2),
+            "usage_billing_limit": float(limit) if limit else None,
+            "is_limit_reached": is_limit_reached,
+            "is_self_hosted": True,
+            "cycle_start": cycle_start,
+            "cycle_end": cycle_end,
+        }
+
     if not user.profile.stripe_id or not user.profile.is_usage_billing:
         return {"invoices": [], "upcoming_invoice": None}
 
@@ -1235,7 +1256,7 @@ def save_usage_billing_limit(request):
     from utils.llm_costs import LLMCostTracker
 
     user = request.user
-    if not user.profile.is_usage_billing:
+    if not user.profile.can_use_ai_classifiers:
         return {"code": -1, "message": "Usage billing not enabled"}
 
     limit_str = request.POST.get("limit", "").strip()

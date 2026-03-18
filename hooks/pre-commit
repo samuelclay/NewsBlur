@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Prevent committing blog/_site/ with localhost URLs
+# This catches builds done with `jekyll serve` instead of `JEKYLL_ENV=production jekyll build`
+
+if git diff --cached --name-only | grep -q '^blog/_site/'; then
+    if git diff --cached -S'localhost:4000' -- blog/_site/ | grep -q 'localhost:4000'; then
+        echo ""
+        echo "ERROR: blog/_site/ contains localhost:4000 URLs."
+        echo "The site was built in development mode instead of production."
+        echo ""
+        echo "Fix: cd blog && JEKYLL_ENV=production bundle exec jekyll build"
+        echo ""
+        exit 1
+    fi
+fi

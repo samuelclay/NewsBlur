@@ -1,0 +1,27 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        Hey {{ user.username }}, just a heads up
+    </h2>
+
+    <p style="line-height: 20px;">Your <b>{{ tier_name }}</b> subscription renews on <b>{{ renewal_date|date:"F j, Y" }}</b>.</p>
+    <p style="line-height: 20px;">You'll be charged <b>{{ amount }}</b> to continue your {{ tier_name }} account on NewsBlur. No action needed on your part.</p>
+
+    {% if not is_pro and is_archive %}
+    <p style="line-height: 20px; margin-top: 16px; padding: 12px 16px; background-color: #f0f7f0; border-radius: 6px;">
+        <b>Ready to take your reading to the next level?</b><br>
+        <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites, and priority support.
+    </p>
+    {% elif not is_archive %}
+    <p style="line-height: 20px; margin-top: 16px; padding: 12px 16px; background-color: #f0f7f0; border-radius: 6px;">
+        <b>Want to unlock even more?</b><br>
+        <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Archive</a> ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, up to 4,096 sites, and custom auto-read settings.
+    </p>
+    {% endif %}
+
+    <p style="line-height: 20px; font-size: 12px; color: #909090; margin-top: 16px;">You're receiving this because you opted into renewal notifications. You can turn this off in Account &gt; Payments.</p>
+    <p style="line-height: 20px;">- Sam</p>
+{% endblock %}

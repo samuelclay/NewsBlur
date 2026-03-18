@@ -10,9 +10,14 @@ import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
 import okhttp3.FormBody
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.tls.HandshakeCertificates
+import java.io.ByteArrayInputStream
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -20,10 +25,19 @@ class NetworkClientImpl(
     private val context: Context,
     @param:ApiOkHttpClient
     private val client: OkHttpClient,
+    private val prefsRepo: PrefsRepo,
     initialUserAgent: String,
-    prefsRepo: PrefsRepo,
 ) : NetworkClient {
     private var customUserAgent: String = initialUserAgent
+
+    @Volatile
+    private var selfHostedClient: OkHttpClient? = null
+
+    @Volatile
+    private var selfHostedHost: String? = null
+
+    @Volatile
+    private var selfHostedPemHash: Int? = null
 
     init {
         APIConstants.setCustomServer(prefsRepo.getCustomServer())
@@ -111,7 +125,8 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
 
-        return APIResponse(client, requestBuilder.build())
+        val chosenClient = clientForUrl(urlString)
+        return APIResponse(chosenClient, requestBuilder.build())
     }
 
     private fun postSingle(
@@ -139,7 +154,8 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
 
-        return APIResponse(client, requestBuilder.build())
+        val chosenClient = clientForUrl(urlString)
+        return APIResponse(chosenClient, requestBuilder.build())
     }
 
     /**
@@ -155,6 +171,66 @@ class NetworkClientImpl(
             Thread.sleep(AppConstants.API_BACKOFF_BASE_MILLIS * factor)
         } catch (_: InterruptedException) {
             Log.w(this.javaClass.name, "Abandoning API backoff due to interrupt.")
+        }
+    }
+
+    private fun parsePemCert(pem: String): X509Certificate {
+        val clean =
+            pem
+                .replace("-----BEGIN CERTIFICATE-----", "")
+                .replace("-----END CERTIFICATE-----", "")
+                .replace("\\s".toRegex(), "")
+        val decoded = android.util.Base64.decode(clean, android.util.Base64.DEFAULT)
+        val cf = CertificateFactory.getInstance("X.509")
+        return cf.generateCertificate(ByteArrayInputStream(decoded)) as X509Certificate
+    }
+
+    fun buildClientWithCustomCa(
+        base: OkHttpClient,
+        customCaPem: String,
+    ): OkHttpClient {
+        val cert = parsePemCert(customCaPem)
+
+        val handshakeCertificates =
+            HandshakeCertificates
+                .Builder()
+                .addPlatformTrustedCertificates()
+                .addTrustedCertificate(cert)
+                .build()
+
+        return base
+            .newBuilder()
+            .sslSocketFactory(
+                handshakeCertificates.sslSocketFactory(),
+                handshakeCertificates.trustManager,
+            ).build()
+    }
+
+    private fun clientForUrl(urlString: String): OkHttpClient {
+        val url = urlString.toHttpUrlOrNull() ?: return client
+
+        val customServer = prefsRepo.getCustomServer()?.toHttpUrlOrNull()
+        val customHost = customServer?.host ?: return client
+        if (url.host != customHost) return client
+
+        val pem = prefsRepo.getCustomServerCaPem()
+        if (pem.isNullOrBlank()) return client
+
+        val pemHash = pem.hashCode()
+        val cached = selfHostedClient
+        if (cached != null && selfHostedHost == customHost && selfHostedPemHash == pemHash) {
+            return cached
+        }
+
+        return try {
+            val built = buildClientWithCustomCa(client, pem)
+            selfHostedHost = customHost
+            selfHostedPemHash = pemHash
+            selfHostedClient = built
+            built
+        } catch (_: Exception) {
+            // fallback
+            client
         }
     }
 }

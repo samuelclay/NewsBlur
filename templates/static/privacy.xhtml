@@ -6,6 +6,20 @@
 
 {% block title %}Privacy Policy{% endblock %}
 
+{% block head %}
+    <meta name="description" content="NewsBlur Privacy Policy. How we handle your data and protect your privacy.">
+    <meta property="og:title" content="NewsBlur Privacy Policy">
+    <meta property="og:description" content="NewsBlur Privacy Policy. How we handle your data and protect your privacy.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/logo_newsblur_512.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="NewsBlur Privacy Policy">
+    <meta name="twitter:description" content="NewsBlur Privacy Policy. How we handle your data and protect your privacy.">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/logo_newsblur_512.png">
+{% endblock %}
+
 {% block content %}
 
   <div class="NB-static-title">

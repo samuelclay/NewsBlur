@@ -1011,7 +1011,7 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
+        var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
         var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
 
@@ -1212,7 +1212,7 @@ var classifier_prototype = {
 
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
+        if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
                 $.make('b', 'AI filters are saved but won\'t run until you '),
                 $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
@@ -1247,7 +1247,7 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var can_use_ai = NEWSBLUR.Globals.is_usage_billing;
+        var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
         // SVG icon for the header
         var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1612,6 +1612,8 @@ var classifier_prototype = {
             $billing_btn = $.make('a', {
                 href: '#', className: 'NB-ai-billing-manage NB-modal-submit-button NB-modal-submit-green'
             }, 'Manage billing and limits');
+        } else if (NEWSBLUR.Globals.is_self_hosted_ai) {
+            $billing_btn = '';
         } else {
             $billing_btn = $.make('a', {
                 href: '#', className: 'NB-ai-billing-setup NB-modal-submit-button NB-modal-submit-green'
@@ -1759,7 +1761,7 @@ var classifier_prototype = {
 
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.is_usage_billing) {
+        if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
                 $.make('b', 'AI filters are saved but won\'t run until you '),
                 $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
@@ -3078,6 +3080,12 @@ var classifier_prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-ai-billing-setup, .NB-ai-billing-setup-link' }, function ($t, $p) {
             e.preventDefault();
+            if (NEWSBLUR.Globals.is_self_hosted_ai) {
+                self.close(function () {
+                    NEWSBLUR.reader.open_account_modal({ 'tab': 'premium' });
+                });
+                return;
+            }
             var $form = $('<form method="POST" action="/profile/setup_usage_billing/"></form>');
             $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
             $('body').append($form);

@@ -422,10 +422,10 @@ class Feed(models.Model):
             logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
             return
 
-        stories = MStory.objects(story_feed_id=self.pk)
+        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date")[:1000]
         for index, story in enumerate(stories):
             if index % 100 == 0:
-                logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
+                logging.debug(f" ---> ~FBIndexing discover story {index} in {self}")
             story.index_story_for_discover()
 
         self.discover_indexed = True
@@ -1418,15 +1418,17 @@ class Feed(models.Model):
         days = defaultdict(int)
         pipeline = [
             {"$match": {"story_feed_id": self.pk}},
-            {"$group": {
-                "_id": {
-                    "year": {"$year": "$story_date"},
-                    "month": {"$month": "$story_date"},
-                    "hour": {"$hour": "$story_date"},
-                    "day": {"$dayOfWeek": "$story_date"},
-                },
-                "count": {"$sum": 1},
-            }},
+            {
+                "$group": {
+                    "_id": {
+                        "year": {"$year": "$story_date"},
+                        "month": {"$month": "$story_date"},
+                        "hour": {"$hour": "$story_date"},
+                        "day": {"$dayOfWeek": "$story_date"},
+                    },
+                    "count": {"$sum": 1},
+                }
+            },
         ]
         for result in MStory._get_collection().aggregate(pipeline):
             year = result["_id"]["year"]
@@ -1491,11 +1493,13 @@ class Feed(models.Model):
         def calculate_scores(cls, facet):
             pipeline = [
                 {"$match": {"feed_id": self.pk}},
-                {"$group": {
-                    "_id": "$" + facet,
-                    "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
-                    "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
-                }},
+                {
+                    "$group": {
+                        "_id": "$" + facet,
+                        "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
+                        "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
+                    }
+                },
             ]
             scores = []
             for r in cls._get_collection().aggregate(pipeline):
@@ -3680,6 +3684,8 @@ class MStory(mongo.Document):
         if story_hash:
             story_id = story_hash
         story_hash = cls.ensure_story_hash(story_id, story_feed_id)
+        if not story_hash:
+            return None, False
         if not story_feed_id:
             story_feed_id, _ = cls.split_story_hash(story_hash)
         if isinstance(story_id, ObjectId):
@@ -3745,6 +3751,10 @@ class MStory(mongo.Document):
 
     @classmethod
     def ensure_story_hash(cls, story_id, story_feed_id):
+        if not story_id:
+            return None
+        if not isinstance(story_id, str):
+            story_id = str(story_id)
         if not cls.RE_STORY_HASH.match(story_id):
             story_id = "%s:%s" % (
                 story_feed_id,
@@ -3755,6 +3765,8 @@ class MStory(mongo.Document):
 
     @classmethod
     def split_story_hash(cls, story_hash):
+        if not story_hash:
+            return None, None
         matches = cls.RE_STORY_HASH.match(story_hash)
         if matches:
             groups = matches.groups()

@@ -661,8 +661,12 @@ color: #a85b40;
 /* Background color */
 .NB-dark #simplemodal-container {
     background-color: #2f3840;
-    box-shadow: none;
-    border: 2px solid #131617;
+    border: none;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        0 24px 48px rgba(0, 0, 0, 0.25);
 }
 
 /* Title color */
@@ -744,6 +748,15 @@ color: #a85b40;
     color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
+}
+
+.NB-dark .NB-modal-account .NB-renewal-notify-container {
+    background: #3a3a38;
+    border-color: #4a4a46;
+}
+
+.NB-dark .NB-modal-account .NB-renewal-notify-label {
+    color: #999;
 }
 
 .NB-dark .NB-modal-profile .NB-profile-followers {

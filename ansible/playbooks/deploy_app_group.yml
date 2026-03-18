@@ -8,6 +8,9 @@
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state maint" | socat stdio /var/run/haproxy.sock'
   register: haproxy_disable
+  retries: 5
+  delay: 3
+  until: haproxy_disable is not failed
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Show HAProxy disable result
@@ -19,7 +22,9 @@
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
   register: server_state
-  failed_when: server_state.stdout != "1"
+  retries: 5
+  delay: 3
+  until: server_state is not failed and server_state.stdout == "1"
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Wait for connections to drain
@@ -69,31 +74,9 @@
     version: "{{ git_branch }}"
   register: pulled
 
-- name: Restart newsblur_web container
-  docker_container:
-    name: newsblur_web
-    image: newsblur/newsblur_python3
-    container_default_behavior: no_defaults
-    pull: yes
-    env:
-      DOCKERBUILD: ""
-    state: started
-    restart: yes
-    command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
-    hostname: "{{ inventory_hostname }}"
-    log_driver: json-file
-    log_options:
-      max-size: 100m
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-    ports:
-      - "8000:8000"
-    restart_policy: unless-stopped
-    user: 1000:1001
-    volumes:
-      - /srv/newsblur:/srv/newsblur
+- include_tasks: ../roles/web/tasks/container.yml
+  vars:
+    container_restart: true
 
 - name: Wait for container to be healthy
   uri:
@@ -108,6 +91,9 @@
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
   register: haproxy_enable
+  retries: 5
+  delay: 3
+  until: haproxy_enable is not failed
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Show HAProxy enable result
@@ -119,7 +105,9 @@
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
   register: server_state_enabled
-  failed_when: server_state_enabled.stdout == "1"
+  retries: 5
+  delay: 3
+  until: server_state_enabled is not failed and server_state_enabled.stdout != "1"
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Start Consul

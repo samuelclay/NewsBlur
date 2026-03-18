@@ -195,7 +195,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun setFeedMute(feedId: String, mute: Boolean): NewsBlurResponse? {
+    override suspend fun setFeedMute(
+        feedId: String,
+        mute: Boolean,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_MUTE, if (mute) "true" else "false")

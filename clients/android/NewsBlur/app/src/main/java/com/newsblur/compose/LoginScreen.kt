@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,11 +81,14 @@ fun LoginScreen(
     var regEmail by rememberSaveable { mutableStateOf("") }
 
     val initialCustomServer =
-        remember {
-            viewModel.getCustomServer().orEmpty()
-        }
+        remember { viewModel.getCustomServer().orEmpty() }
+
+    val initialCustomServerCaPem =
+        remember { viewModel.getCustomServerCaPem().orEmpty() }
+
     var customServerEnabled by rememberSaveable { mutableStateOf(initialCustomServer.isNotEmpty()) }
     var customServerValue by rememberSaveable { mutableStateOf(initialCustomServer) }
+    var customServerCaPem by rememberSaveable { mutableStateOf(initialCustomServerCaPem) }
 
     LaunchedEffect(uiState) {
         when (val s = uiState) {
@@ -99,9 +105,12 @@ fun LoginScreen(
                 onAuthCompleted()
             }
 
-            is SignedUp -> onAuthCompleted
+            is SignedUp -> {
+                onAuthCompleted()
+            }
 
-            else -> Unit
+            else -> {
+            }
         }
     }
 
@@ -118,16 +127,27 @@ fun LoginScreen(
             if (value.isNotEmpty()) {
                 if (value.startsWith("https://")) {
                     viewModel.saveCustomServer(value)
+                    val pem = customServerCaPem.trim()
+                    if (pem.isNotEmpty()) {
+                        viewModel.saveCustomServerCaPem(pem)
+                    } else {
+                        viewModel.clearCustomServerCaPem()
+                    }
                 } else {
                     Toast
-                        .makeText(context, R.string.login_custom_server_scheme_error, Toast.LENGTH_LONG)
-                        .show()
+                        .makeText(
+                            context,
+                            R.string.login_custom_server_scheme_error,
+                            Toast.LENGTH_LONG,
+                        ).show()
                     return false
                 }
             }
         } else {
             customServerValue = ""
+            customServerCaPem = ""
             viewModel.clearCustomServer()
+            viewModel.clearCustomServerCaPem()
         }
         return true
     }
@@ -147,17 +167,26 @@ fun LoginScreen(
     fun resetCustomServer() {
         customServerEnabled = false
         customServerValue = ""
+        customServerCaPem = ""
         viewModel.clearCustomServer()
+        viewModel.clearCustomServerCaPem()
     }
 
-    Scaffold(
-        containerColor = cs.background,
-    ) { padding ->
+    fun clearCustomServerCert() {
+        customServerCaPem = ""
+        viewModel.clearCustomServerCaPem()
+    }
+
+    val scrollState = rememberScrollState()
+
+    Scaffold(containerColor = cs.background) { padding ->
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .imePadding()
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 20.dp),
         ) {
             Image(
@@ -185,9 +214,12 @@ fun LoginScreen(
                         CustomServerSection(
                             enabled = customServerEnabled,
                             onEnabledChange = { customServerEnabled = it },
-                            value = customServerValue,
-                            onValueChange = { customServerValue = it },
+                            url = customServerValue,
+                            onUrlChange = { customServerValue = it },
+                            caPem = customServerCaPem,
+                            onCaPemChange = { customServerCaPem = it },
                             onReset = ::resetCustomServer,
+                            onClearCert = ::clearCustomServerCert,
                         )
                     }
                 }
@@ -212,17 +244,30 @@ fun LoginScreen(
                         CustomServerSection(
                             enabled = customServerEnabled,
                             onEnabledChange = { customServerEnabled = it },
-                            value = customServerValue,
-                            onValueChange = { customServerValue = it },
+                            url = customServerValue,
+                            onUrlChange = { customServerValue = it },
+                            caPem = customServerCaPem,
+                            onCaPemChange = { customServerCaPem = it },
                             onReset = ::resetCustomServer,
+                            onClearCert = ::clearCustomServerCert,
                         )
                     }
                 }
 
-                is SignedIn -> SignedInUi(userImage = s.userImage)
-                SigningIn -> AuthInProgress(text = stringResource(R.string.login_logging_in))
-                SigningUp -> AuthInProgress(text = stringResource(R.string.registering))
-                else -> Unit
+                is SignedIn -> {
+                    SignedInUi(userImage = s.userImage)
+                }
+
+                SigningIn -> {
+                    AuthInProgress(text = stringResource(R.string.login_logging_in))
+                }
+
+                SigningUp -> {
+                    AuthInProgress(text = stringResource(R.string.registering))
+                }
+
+                else -> {
+                }
             }
         }
     }
@@ -383,9 +428,12 @@ private fun CustomServerSection(
     modifier: Modifier = Modifier,
     enabled: Boolean,
     onEnabledChange: (Boolean) -> Unit,
-    value: String,
-    onValueChange: (String) -> Unit,
+    url: String,
+    onUrlChange: (String) -> Unit,
+    caPem: String,
+    onCaPemChange: (String) -> Unit,
     onReset: () -> Unit,
+    onClearCert: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         if (!enabled) {
@@ -412,17 +460,35 @@ private fun CustomServerSection(
                 Modifier
                     .fillMaxWidth()
                     .height(62.dp),
-            value = value,
-            onValueChange = onValueChange,
+            value = url,
+            onValueChange = onUrlChange,
             label = { Text(stringResource(R.string.login_custom_server_hint)) },
             singleLine = true,
             keyboardOptions =
                 KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
-                    imeAction = ImeAction.Done,
+                    imeAction = ImeAction.Next,
                 ),
-            keyboardActions = KeyboardActions(onDone = { defaultKeyboardAction(ImeAction.Done) }),
         )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = caPem,
+            onValueChange = onCaPemChange,
+            label = { Text("Custom CA / certificate (PEM)") },
+            minLines = 4,
+            maxLines = 8,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+        )
+
+        Spacer(Modifier.height(6.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = onClearCert, enabled = caPem.isNotBlank()) {
+                Text("Clear Certificate")
+            }
+        }
 
         Spacer(Modifier.height(6.dp))
         TextButton(

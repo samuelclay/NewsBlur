@@ -922,7 +922,11 @@ class MClassifierPrompt(mongo.Document):
                         for feed_id, feed_stories in stories_by_feed.items():
                             ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
                             results = cls._run_classifier(
-                                prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+                                prompt,
+                                feed_stories,
+                                user_id=user_id,
+                                feed_id=feed_id,
+                                ttl_seconds=ttl_seconds,
                             )
                             cls._update_classifications(classifications, results, prompt.classifier_type)
 

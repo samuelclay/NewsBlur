@@ -9,7 +9,7 @@ from lxml import html as lxml_html
 
 from apps.rss_feeds.models import Feed
 from apps.webfeed.models import MWebFeedConfig
-from apps.webfeed.tasks import extract_image_url
+from apps.webfeed.tasks import decode_response_text, extract_image_url
 from utils import log as logging
 
 USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
@@ -85,8 +85,9 @@ class WebFeedFetcher:
         # Try direct fetch first
         try:
             response = requests.get(self.url, headers=headers, timeout=15, allow_redirects=True)
-            if response.status_code == 200 and response.text:
-                return response.text
+            text = decode_response_text(response)
+            if response.status_code == 200 and text:
+                return text
         except requests.RequestException:
             pass
 
@@ -103,8 +104,9 @@ class WebFeedFetcher:
                     },
                     timeout=15,
                 )
-                if response.status_code == 200 and response.text:
-                    return response.text
+                text = decode_response_text(response)
+                if response.status_code == 200 and text:
+                    return text
             except requests.RequestException:
                 pass
 

@@ -69,13 +69,13 @@
         - never
         - start
 
-    - name: Restart celery
-      become: yes
-      command: "docker restart --time 120 {{ item.service_name }}"
-      when: item.service_name in inventory_hostname
-      with_items:
-        - service_name: task-celery
-        - service_name: task-work
+    - include_tasks:
+        file: ../roles/celery_task/tasks/container.yml
+        apply:
+          tags:
+            - restart
+      vars:
+        container_restart: true
       tags:
         - never
         - restart

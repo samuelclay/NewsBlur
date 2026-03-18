@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
-import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -37,6 +36,7 @@ class FeedItemsList : ItemsList() {
 
     private lateinit var feed: Feed
     private lateinit var folderName: String
+    private lateinit var reviewBackCallback: OnBackPressedCallback
 
     private var reviewManager: ReviewManager? = null
     private var reviewInfo: ReviewInfo? = null
@@ -51,12 +51,12 @@ class FeedItemsList : ItemsList() {
 
         checkInAppReview()
 
-        val backCallback =
-            object : OnBackPressedCallback(true) {
+        reviewBackCallback =
+            object : OnBackPressedCallback(false) {
                 override fun handleOnBackPressed() {
                     if (reviewInfo != null) {
                         val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
-                        flow.addOnCompleteListener { task: Task<Void?>? ->
+                        flow.addOnCompleteListener { task ->
                             prefsRepo.setInAppReviewed()
                             finish()
                         }
@@ -68,7 +68,7 @@ class FeedItemsList : ItemsList() {
                 }
             }
 
-        onBackPressedDispatcher.addCallback(this, backCallback)
+        onBackPressedDispatcher.addCallback(this, reviewBackCallback)
     }
 
     fun showDeleteFeedDialog() {
@@ -126,7 +126,9 @@ class FeedItemsList : ItemsList() {
                 true
             }
 
-            else -> false
+            else -> {
+                false
+            }
         }
     }
 
@@ -202,6 +204,10 @@ class FeedItemsList : ItemsList() {
                 ?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         reviewInfo = task.getResult()
+                        // Now that we have reviewInfo, enable the back callback
+                        if (::reviewBackCallback.isInitialized) {
+                            reviewBackCallback.isEnabled = true
+                        }
                     }
                 }
         }

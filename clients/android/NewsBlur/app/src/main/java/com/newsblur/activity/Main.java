@@ -14,9 +14,9 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.PopupMenu;
@@ -65,6 +65,21 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
 
+    private final OnBackPressedCallback searchBackCallback =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (binding.inputSearchQuery.getVisibility() == View.VISIBLE) {
+                        binding.inputSearchQuery.setVisibility(View.GONE);
+                        binding.inputSearchQuery.setText("");
+                        checkSearchQuery();
+
+                        // allow system to own back again
+                        setEnabled(false);
+                    }
+                }
+            };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Trace.beginSection("MainOnCreate");
@@ -95,20 +110,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         setUserImageAndName();
 
-        binding.inputSearchQuery.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.inputSearchQuery.setVisibility(View.GONE);
-                    binding.inputSearchQuery.setText("");
-                    checkSearchQuery();
-                    return true;
-                }
-                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    checkSearchQuery();
-                    return true;
-                }
-                return false;
+        binding.inputSearchQuery.setOnKeyListener((v, keyCode, event) -> {
+            if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                checkSearchQuery();
+                return true;
             }
+            return false;
         });
         binding.inputSearchQuery.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -136,6 +143,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             openAllStories(isAllStoriesSearch);
         }
 
+        getOnBackPressedDispatcher().addCallback(this, searchBackCallback);
         Trace.endSection();
         reportFullyDrawn();
     }
@@ -165,6 +173,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if (folderFeedList.getSearchQuery() != null) {
             binding.inputSearchQuery.setText(folderFeedList.getSearchQuery());
             binding.inputSearchQuery.setVisibility(View.VISIBLE);
+            searchBackCallback.setEnabled(true);
         }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
@@ -195,6 +204,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 (state == StateFilter.BEST))) {
             binding.inputSearchQuery.setText("");
             binding.inputSearchQuery.setVisibility(View.GONE);
+            searchBackCallback.setEnabled(false);
             checkSearchQuery();
         }
 
@@ -332,10 +342,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void onClickSearchFeedsButton() {
         if (binding.inputSearchQuery.getVisibility() != View.VISIBLE) {
             binding.inputSearchQuery.setVisibility(View.VISIBLE);
+            searchBackCallback.setEnabled(true);
             binding.inputSearchQuery.requestFocus();
         } else {
             binding.inputSearchQuery.setText("");
             binding.inputSearchQuery.setVisibility(View.GONE);
+            searchBackCallback.setEnabled(false);
             checkSearchQuery();
         }
     }

@@ -13,6 +13,7 @@
 
     <application
         android:name=".NbApplication"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backupscheme"
@@ -119,7 +120,8 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".widget.WidgetRemoteViewsService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false"/>
         <service
             android:name=".service.SubscriptionSyncService"
             android:exported="false"
@@ -173,7 +175,7 @@
         <receiver
             android:name=".widget.WidgetUpdateReceiver"
             android:enabled="true"
-            android:exported="false"></receiver>
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

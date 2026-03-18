@@ -827,15 +827,17 @@ class MSocialProfile(mongo.Document):
         days = defaultdict(int)
         pipeline = [
             {"$match": {"user_id": self.user_id}},
-            {"$group": {
-                "_id": {
-                    "year": {"$year": "$shared_date"},
-                    "month": {"$month": "$shared_date"},
-                    "hour": {"$hour": "$shared_date"},
-                    "day": {"$dayOfWeek": "$shared_date"},
-                },
-                "count": {"$sum": 1},
-            }},
+            {
+                "$group": {
+                    "_id": {
+                        "year": {"$year": "$shared_date"},
+                        "month": {"$month": "$shared_date"},
+                        "hour": {"$hour": "$shared_date"},
+                        "day": {"$dayOfWeek": "$shared_date"},
+                    },
+                    "count": {"$sum": 1},
+                }
+            },
         ]
         for result in MSharedStory._get_collection().aggregate(pipeline):
             year = result["_id"]["year"]
@@ -874,11 +876,13 @@ class MSocialProfile(mongo.Document):
         def calculate_scores(cls, facet):
             pipeline = [
                 {"$match": {"social_user_id": self.user_id}},
-                {"$group": {
-                    "_id": "$" + facet,
-                    "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
-                    "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
-                }},
+                {
+                    "$group": {
+                        "_id": "$" + facet,
+                        "pos": {"$sum": {"$cond": [{"$gt": ["$score", 0]}, "$score", 0]}},
+                        "neg": {"$sum": {"$cond": [{"$lt": ["$score", 0]}, {"$abs": "$score"}, 0]}},
+                    }
+                },
             ]
             scores = []
             for r in cls._get_collection().aggregate(pipeline):
@@ -2090,12 +2094,14 @@ class MSharedStory(mongo.DynamicDocument):
         excluded_feed_ids = [int(fid) for fid in shared_feed_ids if fid.isdigit()]
         pipeline = [
             {"$match": {"shared_date": {"$gte": today}}},
-            {"$group": {
-                "_id": "$story_hash",
-                "feed_id": {"$first": "$story_feed_id"},
-                "title": {"$first": "$story_title"},
-                "count": {"$sum": 1},
-            }},
+            {
+                "$group": {
+                    "_id": "$story_hash",
+                    "feed_id": {"$first": "$story_feed_id"},
+                    "title": {"$first": "$story_title"},
+                    "count": {"$sum": 1},
+                }
+            },
             {"$match": {"count": {"$gte": cutoff}}},
         ]
         if excluded_feed_ids:

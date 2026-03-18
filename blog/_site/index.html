@@ -80,6 +80,103 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 18, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/18/story-clustering/">
+              Story clustering: automatically group duplicate stories across your feeds
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
+
+<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
+
+<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
+<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
+
+<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
+<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="two-layers-of-detection">Two layers of detection</h3>
+
+<p>Clustering uses two complementary approaches to catch duplicates:</p>
+
+<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
+
+<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
+
+<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
+
+<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
+
+<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
+
+<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
+<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are two controls:</p>
+
+<ul>
+  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
+  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
+</ul>
+
+<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
+
+<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
+<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed.</p>
+
+<p><strong>Premium Archive subscribers</strong> get full control over clustering: toggle it on or off, choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story. Clustering is enabled by default for archive subscribers.</p>
+
+<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 16, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
+              Mute feeds for a set amount of time
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
+
+<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
+
+<h3 id="two-ways-to-mute">Two ways to mute</h3>
+
+<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
+
+<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
+
+<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
+
+<h3 id="auto-unmute">Auto-unmute</h3>
+
+<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
+
+<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Mar 13, 2026</span>
           <h3>
             <a class="post-link" href="/2026/03/13/web-feeds/">
@@ -762,67 +859,6 @@
 <p>As always, I’d love to hear what you think on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. If you have ideas for new preset questions or ways to make Ask AI more useful, let me know.</p>
 
         </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jan 9, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/01/09/disable-social-features/">
-              Disable social features for a distraction-free reading experience
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.</p>
-
-<p><img src="/assets/disable-social-preference.png" style="width: 100%; border: 1px solid #A0A0A0; margin: 24px auto; display: block;" /></p>
-
-<p>Head to Preferences &gt; Feeds and look for the new “Sharing” option at the bottom. Choose “Disable social features” and all sharing, comments, and blurblog features will be hidden from your NewsBlur interface. The Global Shared Stories folder disappears, share buttons are removed from stories, and the sidebar is cleaned up. If you ever want to re-enable social features, just flip the preference back.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jan 7, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/01/07/custom-icons/">
-              Custom icons for folders and feeds
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.</p>
-
-<p>That’s why I built custom icons for both folders and feeds. You can now personalize any folder or feed with an emoji, a preset icon in any color, or even upload your own image.</p>
-
-<p><img src="/assets/custom-icons-folder-list.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Right-click on any folder or feed in your feed list and select “Folder settings” or “Site settings”. You’ll see a new “Folder Icon” or “Feed Icon” tab where you can customize the icon.</p>
-
-<p><img src="/assets/custom-icons-colors.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are three ways to set a custom icon:</p>
-
-<p><strong>Preset icons</strong>: Pick from over 240 icons (a mix of outline and filled styles) and colorize them with any of 84 colors organized by hue. Want a red heart for your favorites folder? A blue code bracket for programming feeds? It’s all there.</p>
-
-<p><img src="/assets/custom-icons-preset.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" />
-<img src="/assets/custom-icons-preset2.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Emoji</strong>: Choose from 180 emojis organized by category. A basketball for sports feeds, a fork and knife for cooking, a newspaper for news—you get the idea.</p>
-
-<p><img src="/assets/custom-icons-emoji.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Upload your own</strong>: Have a specific image in mind? Upload any image and it will be automatically resized to fit perfectly in your feed list.</p>
-
-<p><img src="/assets/custom-icons-upload.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="great-for-feeds-without-icons">Great for feeds without icons</h3>
-
-<p>Many feeds don’t have favicons, or they have generic RSS icons that all look the same. Custom feed icons let you give these feeds distinctive icons so you can spot them instantly. I’ve been using this to add icons to older blogs and newsletters that never bothered setting up a proper favicon.</p>
-
-<p>Custom icons are available now on the web for all NewsBlur users. Folders and feeds both support the same icon options of emoji, preset icons with colors, or uploaded images.</p>
-
-<p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
       </li></ul>
 
     <!-- Pagination links -->
@@ -868,11 +904,14 @@ A new sound of an old instrument.<br />
     <script>
     (function() {
       // Theme management
-      function get_theme() {
+      function system_theme() {
         return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
       }
 
+      var current_theme = system_theme();
+
       function apply(theme) {
+        current_theme = theme;
         var isDark = (theme === 'dark');
         if (isDark) {
           document.body.classList.add('NB-dark');
@@ -884,7 +923,7 @@ A new sound of an old instrument.<br />
         }
       }
 
-      apply(get_theme());
+      apply(current_theme);
 
       // Toggle click
       var toggle = document.querySelector('.NB-theme-toggle');
@@ -892,7 +931,7 @@ A new sound of an old instrument.<br />
         toggle.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          apply(get_theme() === 'dark' ? 'light' : 'dark');
+          apply(current_theme === 'dark' ? 'light' : 'dark');
         });
       }
 
@@ -900,9 +939,9 @@ A new sound of an old instrument.<br />
       if (window.matchMedia) {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
         try {
-          mq.addEventListener('change', function() { apply(get_theme()); });
+          mq.addEventListener('change', function() { apply(system_theme()); });
         } catch (e1) {
-          try { mq.addListener(function() { apply(get_theme()); }); } catch (e2) {}
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
         }
       }
 
@@ -921,7 +960,7 @@ A new sound of an old instrument.<br />
         size_canvas();
         var ok = BlogBackground.init(canvas);
         if (ok) {
-          BlogBackground.setThemeImmediate(get_theme() === 'dark');
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
           BlogBackground.start();
         }
         window.addEventListener('resize', size_canvas);

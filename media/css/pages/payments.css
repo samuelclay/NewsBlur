@@ -8,10 +8,7 @@
     border-top: 1px solid #A0A0A0;
     border-bottom: 1px solid #A0A0A0;
     padding: 24px 0;
-    background-image: linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -moz-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -ms-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: linear-gradient(to top, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
     text-align: center;
 }
 
@@ -58,17 +55,16 @@
 .NB-static-form input,
 .NB-static-form select {
     font-size: 14px;
-    padding: 2px;
+    padding: 4px 6px;
     margin: 6px 4px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
+    border-radius: 6px;
     box-shadow: none;
     background: rgba(255, 255, 255, 0.1);
     color: white;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
     width: 200px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
@@ -80,8 +76,6 @@
 .NB-static-form .NB-label-right {
     margin: 0 0 24px 206px;
     width: 200px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 

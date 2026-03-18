@@ -84,7 +84,10 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - Example (worktree): `docker exec -t newsblur_web_search-by-phrase python manage.py test apps`
 
 ## Deployment Commands
-- `aps` - Alias for `ansible-playbook ansible/setup.yml`
+- `aps` - Alias for `ansible-playbook ansible/setup.yml` - Used only for setting up new servers or making global config changes (e.g., installing new packages). While it does deploy code changes, use apd for deployment
+- `apd` - Alias for `ansible-playbook ansible/deploy.yml` - Used for regular code deployments. This is the command to run after merging a PR to main. It deploys code changes and restarts services without making global config changes. 
+
+Unless asked, don't run either of these. Assume I will deploy or ask you to deploy when ready.
 
 ## SSH Access to Servers
 To SSH into NewsBlur servers non-interactively:
@@ -125,6 +128,10 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Prioritize readability over performance**
 - **Leave no TODOs or placeholders**
 - **Always reference file names in comments**
+
+## Blog
+- Posts live in `blog/_posts/`, drafts in `blog/_drafts/`
+- `blog/_site/` contains generated output and **must be committed** — it's how the blog gets deployed
 
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`

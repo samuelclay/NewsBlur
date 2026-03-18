@@ -9,12 +9,12 @@
     <meta property="og:description" content="Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily briefing. $99/year.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
-    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/archive.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@newsblur">
     <meta name="twitter:title" content="Premium Archive - NewsBlur Pricing">
     <meta name="twitter:description" content="Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily briefing. $99/year.">
-    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/archive.png">
 {% endblock %}
 
 {% block content %}
@@ -35,6 +35,23 @@
             <div class="NB-pricing-tier-detail-feature-text">
                 <h3 class="NB-pricing-tier-detail-feature-name">Follow up to 4,096 sites</h3>
                 <p class="NB-pricing-tier-detail-feature-desc">Four times the Premium limit. Follow every source you need.</p>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Web Feeds from any website, even without RSS</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and delivers new content automatically.</p>
+            </div>
+        </div>
+
+        <div class="NB-pricing-tier-detail-feature">
+            <div class="NB-pricing-tier-detail-feature-text">
+                <h3 class="NB-pricing-tier-detail-feature-name">Story Clustering</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip duplicates.</p>
+            </div>
+            <div class="NB-pricing-tier-detail-feature-img">
+                <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="Story Clustering">
             </div>
         </div>
 
@@ -82,16 +99,6 @@
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
                 <img src="{{ MEDIA_URL }}img/features/briefing.png" alt="Daily Briefing">
-            </div>
-        </div>
-
-        <div class="NB-pricing-tier-detail-feature">
-            <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Story Clustering</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip duplicates.</p>
-            </div>
-            <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="Story Clustering">
             </div>
         </div>
 

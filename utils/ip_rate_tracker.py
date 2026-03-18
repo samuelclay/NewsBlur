@@ -607,24 +607,22 @@ class AttackDetector:
     # Max POST body bytes to read for scanning
     MAX_BODY_SCAN_BYTES = 8192
 
-    # Attack patterns grouped by type for logging
+    # Attack patterns grouped by type for logging.
+    # Keep these tight to avoid false positives on legitimate content
+    # (archived web pages, RSS feeds, user comments often contain code snippets).
     ATTACK_PATTERNS = {
         "jndi": [
-            r"\$\{",  # Log4Shell / JNDI / template injection: ${jndi:, ${url:, etc.
+            r"\$\{jndi:",  # Log4Shell: ${jndi:ldap://...} (was \$\{ which matched JS template literals)
         ],
         "xss": [
-            r"<\s*script",  # <script> tags
-            r"javascript\s*:",  # javascript: URIs
-            r"on(?:error|load|click|mouseover)\s*=",  # Event handler injection
+            r"<\s*script[^a-zA-Z]",  # <script> tags (require non-alpha after to avoid <scriptName)
         ],
         "sqli": [
             r"(?:UNION\s+(?:ALL\s+)?SELECT)",  # UNION SELECT
-            r"(?:'\s*OR\s+['\d].*=)",  # ' OR '1'='1, ' OR 1=1
             r"(?:;\s*DROP\s+TABLE)",  # ; DROP TABLE
-            r"(?:'\s*;\s*--)",  # '; --
         ],
         "traversal": [
-            r"\.\./\.\./",  # Path traversal (at least two levels to avoid false positives)
+            r"\.\./\.\./\.\./",  # Path traversal (require 3+ levels to reduce false positives)
         ],
         "nullbyte": [
             r"\x00",  # Null byte injection
@@ -731,7 +729,7 @@ class AttackDetector:
                     # Scan first MAX_BODY_SCAN_BYTES of any text POST. Django buffers
                     # the full body for these content types anyway (request.POST / json),
                     # so this adds no extra memory cost. Slicing limits regex work, not I/O.
-                    body = request.body[:self.MAX_BODY_SCAN_BYTES].decode("utf-8", errors="replace")
+                    body = request.body[: self.MAX_BODY_SCAN_BYTES].decode("utf-8", errors="replace")
                     result = self._check_payload(body)
                     if result[0]:
                         return result

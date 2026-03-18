@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-14T23:39:27-04:00</updated>
+  <updated>2026-03-18T10:56:06-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,123 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Story clustering: automatically group duplicate stories across your feeds</title>
+    <link href="https://blog.newsblur.com/2026/03/18/story-clustering/" rel="alternate" type="text/html" title="Story clustering: automatically group duplicate stories across your feeds" />
+    <published>2026-03-18T00:00:00-04:00</published>
+    <updated>2026-03-18T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/03/18/story-clustering</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/18/story-clustering/">
+      <![CDATA[<p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
+
+<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
+
+<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
+<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
+
+<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
+<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="two-layers-of-detection">Two layers of detection</h3>
+
+<p>Clustering uses two complementary approaches to catch duplicates:</p>
+
+<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
+
+<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
+
+<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
+
+<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
+
+<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
+
+<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
+<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are two controls:</p>
+
+<ul>
+  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
+  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
+</ul>
+
+<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
+
+<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
+<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed.</p>
+
+<p><strong>Premium Archive subscribers</strong> get full control over clustering: toggle it on or off, choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story. Clustering is enabled by default for archive subscribers.</p>
+
+<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Mute feeds for a set amount of time</title>
+    <link href="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/" rel="alternate" type="text/html" title="Mute feeds for a set amount of time" />
+    <published>2026-03-16T00:00:00-04:00</published>
+    <updated>2026-03-16T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
+      <![CDATA[<p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
+
+<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
+
+<h3 id="two-ways-to-mute">Two ways to mute</h3>
+
+<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
+
+<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
+
+<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
+
+<h3 id="auto-unmute">Auto-unmute</h3>
+
+<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
+
+<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Web Feeds: Turn any website into an RSS feed</title>
@@ -1606,93 +1723,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     <summary type="html">
       <![CDATA[For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Customizable grid view story layout</title>
-    <link href="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/" rel="alternate" type="text/html" title="Customizable grid view story layout" />
-    <published>2020-10-28T09:01:38-04:00</published>
-    <updated>2020-10-28T09:01:38-04:00</updated>
-    <id>https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/">
-      <![CDATA[<p>The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.</p>
-
-<p>Starting today, you can now change the height of stories in the grid view. You have five options to choose from: XS, Small, Medium, Large, and XL.</p>
-
-<figure class="tmblr-full" data-orig-height="761" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="761" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png" /></figure>
-
-<p>Here are a few examples of how you can customize the grid view.</p>
-
-<p>With the single column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="966" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="966" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png" /></figure>
-
-<p>With the 2 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="938" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="938" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png" /></figure>
-
-<p>With the 3 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="715" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="715" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png" /></figure>
-
-<p>With the 4 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="957" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="957" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png" /></figure>
-
-<p>Don’t forget you can also adjust the font size and even turn off image previews.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Highlight passages and add private notes to saved stories</title>
-    <link href="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/" rel="alternate" type="text/html" title="Highlight passages and add private notes to saved stories" />
-    <published>2020-07-17T08:30:05-04:00</published>
-    <updated>2020-07-17T08:30:05-04:00</updated>
-    <id>https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/">
-      <![CDATA[<p>When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.</p>
-
-<figure class="tmblr-full" data-orig-height="1128" data-orig-width="1492" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png"><img width="650" height="auto" data-orig-height="1128" data-orig-width="1492" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png" /></figure>
-
-<p>You can enrich your reading experience with highlights and come back to passages you want to remember. All stories with highlights are tagged as “Highlights” in your Saved Story tags list. That way you can immediately come back to your highlights.</p>
-
-<figure class="tmblr-full" data-orig-height="398" data-orig-width="1958" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png"><img width="650" height="auto" data-orig-height="398" data-orig-width="1958" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png" /></figure>
-
-<p>Second, you can now also write private notes to yourself. If you’re doing research and want to remember why a particular story is being saved, the private notes text box can save your thoughts without having to share them with the world.</p>
-
-<figure class="tmblr-full" data-orig-height="1048" data-orig-width="1792" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png"><img width="650" height="auto" data-orig-height="1048" data-orig-width="1792" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png" /></figure>
-
-<p>A few other small changes have been added to this feature. You can also save stories and tag them from any website using the bookmarklet (which you can install under Manage &gt; Goodies &gt; Bookmarklet).</p>
-
-<figure class="tmblr-full" data-orig-height="985" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg"><img width="650" height="auto" data-orig-height="985" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg" /></figure>
-
-<p>Lots to love in this release! Keep <a href="https://forum.newsblur.com">posting good ideas to the forum</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a...]]>
     </summary>
     
   </entry>

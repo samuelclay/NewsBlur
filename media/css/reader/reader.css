@@ -14,6 +14,8 @@ body {
     height: 100%;
     overflow: hidden;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-color: white;
     -webkit-overflow-scrolling: touch;
     scrollbar-color: #C2C2C2 #FAFAFA;
@@ -864,7 +866,7 @@ hr {
     transform: translateY(-1px);
 }
 .NB-webfeed-paused-button:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.96);
 }
 
 .NB-feedlist .feed .NB-feed-highlight {
@@ -941,7 +943,7 @@ img.feed_favicon {
     left: 6px;
     width: 16px;
     height: 16px;
-    transition: all 0.36s ease-out;
+    transition: opacity 0.36s ease-out, transform 0.36s ease-out;
 }
 
 .NB-density-compact .NB-feedlist img.feed_favicon {
@@ -1325,8 +1327,8 @@ img.feed_favicon {
     display: none;
     line-height: 14px;
     border-radius: 4px;
-
-    transition: all 0.36s ease-out;
+    font-variant-numeric: tabular-nums;
+    transition: background-color 0.36s ease-out, opacity 0.36s ease-out;
     /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     /* border-bottom: 1px solid rgba(0, 0, 0, .1); */
 }
@@ -2340,7 +2342,7 @@ img.feed_favicon {
 }
 
 .NB-discover-popover .NB-discover-index-button:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.96);
 }
 
 .NB-discover-popover .NB-discover-index-button.NB-disabled {
@@ -2775,11 +2777,10 @@ img.feed_favicon {
     padding: 12px 4px 12px 4px;
     position: relative;
     width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     overflow-wrap: break-word;
     word-break: break-word;
+    text-wrap: pretty;
     transition: padding 0.36s ease-out, margin 0.36s ease-out, top 0.36s ease-out;
 }
 
@@ -3447,6 +3448,118 @@ img.feed_favicon {
     color: #909090;
 }
 
+/* Favicon in cluster detail story titles */
+.NB-story-cluster-detail .NB-story-cluster-detail-item .NB-story-title {
+    padding-left: 66px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed {
+    display: block;
+    left: -47px;
+    top: 14px;
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed .feed_favicon {
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-detail-item .NB-story-title .NB-story-feed .feed_title {
+    display: none;
+}
+
+/* Clustering upgrade prompt in story detail (inline with header) */
+.NB-clustering-detail-upgrade {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #a0a0a0;
+    white-space: nowrap;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: normal;
+}
+.NB-clustering-detail-upgrade-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 0.15s;
+}
+.NB-clustering-detail-upgrade-pill:hover {
+    filter: brightness(1.15);
+    color: white;
+}
+.NB-dark .NB-clustering-detail-upgrade {
+    color: #666;
+}
+
+/* Info icon + tooltip for clustering explanation */
+.NB-clustering-detail-info {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+.NB-clustering-detail-info-icon {
+    font-size: 13px;
+    color: #b0b0b0;
+    cursor: default;
+    line-height: 1;
+}
+.NB-clustering-detail-info-tooltip {
+    display: none;
+    position: absolute;
+    left: -4px;
+    bottom: calc(100% + 8px);
+    width: 260px;
+    padding: 10px 12px;
+    background: #333;
+    color: #e0e0e0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    border-radius: 6px;
+    white-space: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: normal;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    z-index: 100;
+    pointer-events: none;
+}
+.NB-clustering-detail-info-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 6px;
+    width: 10px;
+    height: 10px;
+    background: #333;
+    transform: rotate(45deg);
+}
+.NB-clustering-detail-info:hover .NB-clustering-detail-info-tooltip {
+    display: block;
+}
+.NB-dark .NB-clustering-detail-info-icon {
+    color: #666;
+}
+.NB-dark .NB-clustering-detail-info-tooltip {
+    background: #1a1a1a;
+    border: 1px solid #333;
+}
+.NB-dark .NB-clustering-detail-info-tooltip::after {
+    background: #1a1a1a;
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
 .NB-story-title .NB-story-feed {
     display: none;
     left: -150px;
@@ -3625,6 +3738,7 @@ img.feed_favicon {
     color: #888785;
     font-weight: normal;
     font-size: 12px;
+    font-variant-numeric: tabular-nums;
 }
 
 .NB-story-title-list.NB-story-title .story_date {
@@ -3699,13 +3813,12 @@ img.feed_favicon {
     /* background-color: #e8f3ff; */
     border-top: 1px solid rgb(255 254 237);
     border-bottom: 1px solid rgb(249 248 222);
-    transform: scale(0.97);
+    transform: scale(0.96);
     border-radius: 8px;
 }
 
 .NB-story-title:hover:not(.NB-selected) {
     background-color: #F7F7F6;
-    /*    border-top: 1px solid transparent;*/
 
     transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out, background-color 0s ease-out;
 
@@ -3848,7 +3961,9 @@ img.feed_favicon {
     grid-column-end: -1;
 }
 
-.NB-layout-grid .NB-story-title-container {}
+.NB-layout-grid .NB-story-title-container {
+    min-width: 0;
+}
 
 .NB-layout-grid .NB-story-title-container.NB-selected {
     margin: 0 -2rem;
@@ -4841,6 +4956,8 @@ body {
     width: auto !important;
     height: auto;
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
+    outline: 1px solid rgba(0, 0, 0, 0.06);
+    outline-offset: -1px;
 }
 
 .NB-feed-story .NB-feed-story-content img.NB-medium-image {
@@ -4977,7 +5094,7 @@ body {
     font-weight: bold;
     font-size: 1.4em;
     line-height: 1.2em;
-    /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
+    text-wrap: balance;
 }
 
 .NB-feed-story.read a.NB-feed-story-title {
@@ -5322,12 +5439,13 @@ body {
 
 /* AI Classifier Pills */
 .NB-feed-story .NB-feed-story-ai-classifiers {
-    display: inline;
-    line-height: 22px;
+    display: flex;
+    align-items: center;
+    margin: 5px 0 0;
 }
 
 .NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {
-    margin: 0 2px;
+    margin: 0 6px 0 2px;
     color: #B0B0A0;
 }
 
@@ -5338,7 +5456,7 @@ body {
     font-size: 12px;
     border-radius: 4px;
     padding: 1px 5px;
-    margin: 0 4px 4px 0;
+    margin: 0 4px 0 0;
     line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
@@ -5564,6 +5682,7 @@ body {
 .NB-feed-story .NB-feed-story-content {
     padding: 24px 0 0;
     min-height: 12px;
+    text-wrap: pretty;
 }
 
 .NB-pref-story-position-center .NB-feed-story .NB-story-content-positioning-wrapper {
@@ -6400,7 +6519,11 @@ body {
     background-color: white;
     border-radius: 3px;
     user-select: none;
-    transition: background-color 0.36s ease-out;
+    transition: background-color 0.36s ease-out, transform 0.1s ease;
+}
+
+.NB-sideoption:active {
+    transform: scale(0.96);
 }
 
 .NB-narrow-content .NB-sideoption {
@@ -8821,10 +8944,7 @@ form.opml_import_form input {
     margin: 0;
     padding: 12px 12px 12px 20px;
     display: block;
-    -webkit-transition: all 0.36s ease-out;
-    -moz-transition: all 0.36s ease-out;
-    -o-transition: all 0.36s ease-out;
-    -ms-transition: all 0.36s ease-out;
+    transition: background 0.36s ease-out;
     background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 0 -17px;
     background-size: 16px;
     font-weight: bold;
@@ -11107,7 +11227,7 @@ form.opml_import_form input {
     border: 1px solid #E0E0E0;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-add-discover-source:hover {
@@ -11155,7 +11275,7 @@ form.opml_import_form input {
     padding: 11px 14px;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease;
     border: 1px solid;
     background: transparent;
 }
@@ -12591,7 +12711,7 @@ form.opml_import_form input {
     color: #666;
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     user-select: none;
 }
 
@@ -14331,7 +14451,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #ddd;
     border-radius: 12px;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-module-hide:hover {
@@ -14477,6 +14597,7 @@ h5.NB-classifier-section-header {
     font-size: 18px;
     color: #0D003C;
     text-shadow: 1px 1px 0 #E8E8E8;
+    font-variant-numeric: tabular-nums;
     font-weight: bold;
 }
 
@@ -16229,7 +16350,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #D0D2CC;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .NB-menu-ask-ai-segment:hover {
@@ -16322,7 +16443,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px 0 0 4px;
     color: white;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-custom-submit:hover {
@@ -16339,7 +16460,7 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-submit-dropdown-trigger:hover {
@@ -16378,7 +16499,7 @@ h5.NB-classifier-section-header {
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
     z-index: 100;
 }
 
@@ -16398,7 +16519,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #D0D2CC;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     flex-shrink: 0;
 }
 
@@ -16518,7 +16639,7 @@ h5.NB-classifier-section-header {
     color: #808080;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     user-select: none;
 }
 
@@ -16672,7 +16793,7 @@ h5.NB-classifier-section-header {
     align-items: center;
     gap: 6px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     box-sizing: border-box;
 }
 
@@ -16703,7 +16824,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px 0 0 4px;
     color: white;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
     margin: 0;
     box-shadow: none;
     box-sizing: border-box;
@@ -16723,7 +16844,7 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
     box-sizing: border-box;
 }
 
@@ -16764,7 +16885,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px 0 0 4px;
     color: white;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
     margin: 0;
     box-shadow: none;
     box-sizing: border-box;
@@ -16784,7 +16905,7 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
     box-sizing: border-box;
 }
 
@@ -16823,7 +16944,7 @@ h5.NB-classifier-section-header {
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
     z-index: 100;
 }
 
@@ -16911,7 +17032,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #D0D2CC;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     flex-shrink: 0;
     box-sizing: border-box;
 }
@@ -17478,7 +17599,7 @@ h5.NB-classifier-section-header {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, transform 0.15s ease;
     background-color: rgba(0, 0, 0, 0.06);
     position: absolute;
     top: 12px;
@@ -19414,11 +19535,7 @@ h5.NB-classifier-section-header {
 .carousel .item {
     display: none;
     position: relative;
-    -webkit-transition: 0.6s ease-in-out left;
-    -moz-transition: 0.6s ease-in-out left;
-    -ms-transition: 0.6s ease-in-out left;
-    -o-transition: 0.6s ease-in-out left;
-    transition: 0.6s ease-in-out left;
+    transition: left 0.6s ease-in-out;
 }
 
 .carousel .item>img {
@@ -19948,7 +20065,7 @@ h5.NB-classifier-section-header {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     color: #505050;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info-reset:hover {
@@ -20109,7 +20226,7 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     margin-bottom: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-inline:hover {
@@ -20273,10 +20390,7 @@ h5.NB-classifier-section-header {
     color: #9BA6CC;
     display: none;
 
-    -webkit-transition: all .24s ease-out;
-    -moz-transition: all .24s ease-out;
-    -o-transition: all .24s ease-out;
-    -ms-transition: all .24s ease-out;
+    transition: color .24s ease-out;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected {
@@ -20298,10 +20412,7 @@ h5.NB-classifier-section-header {
     display: block;
     opacity: 0.1;
 
-    -webkit-transition: all .24s ease-out;
-    -moz-transition: all .24s ease-out;
-    -o-transition: all .24s ease-out;
-    -ms-transition: all .24s ease-out;
+    transition: opacity .24s ease-out;
 
 }
 
@@ -20758,7 +20869,7 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner:hover {
@@ -20871,7 +20982,7 @@ h5.NB-classifier-section-header {
     box-shadow:
         0 1px 3px rgba(0, 0, 0, 0.04),
         0 4px 12px rgba(0, 0, 0, 0.03);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
@@ -21272,81 +21383,87 @@ h5.NB-classifier-section-header {
 }
 
 .NB-premium-tier-features-archive li.NB-2 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/web-feed.svg');
+    filter: invert(35%) sepia(80%) saturate(2000%) hue-rotate(220deg) brightness(90%) contrast(100%);
+    /* indigo-purple */
+}
+
+.NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/stack.svg');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
+}
+
+.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-relax-with-book-100.png');
     filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
     /* green */
 }
 
-.NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/mark-read.svg');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
     /* cyan */
 }
 
-.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
     /* violet */
 }
 
-.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-10 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
     /* orange */
 }
 
-.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-11 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/history.svg');
     filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(330deg) brightness(95%) contrast(95%);
     /* pink/magenta */
 }
 
-.NB-premium-tier-features-archive li.NB-10 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-12 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
     filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
     /* purple */
 }
 
-.NB-premium-tier-features-archive li.NB-11 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-13 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
     /* cyan */
 }
 
-.NB-premium-tier-features-archive li.NB-12 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-14 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/folder-open.svg');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-premium-tier-features-archive li.NB-13 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-15 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/world.svg');
     filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
     /* red */
-}
-
-.NB-premium-tier-features-archive li.NB-14 .NB-premium-bullet-image {
-    background-image: url('/media/embed/icons/nouns/web-feed.svg');
-    filter: invert(35%) sepia(80%) saturate(2000%) hue-rotate(220deg) brightness(90%) contrast(100%);
-    /* indigo-purple */
 }
 
 /* Pro tier icons with individual vivid colors */
@@ -21518,7 +21635,7 @@ h5.NB-classifier-section-header {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     letter-spacing: -0.01em;
 }
 
@@ -22394,39 +22511,54 @@ h5.NB-classifier-section-header {
     font-weight: 600;
 }
 
-/* Days of Unread Upgrade notice */
-.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice {
+/* Premium Archive upgrade notice (shared style for preferences) */
+.NB-modal-preferences .NB-premium-archive-upgrade-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 11px;
     text-decoration: none;
-    color: #707070;
-    padding: 3px 8px;
-    border-radius: 4px;
-    transition: background-color 0.15s ease, color 0.15s ease;
-    display: inline-block;
-    margin-top: 0;
+    color: #808080;
+    padding: 4px 10px 4px 4px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    margin-top: 4px;
+    cursor: pointer;
 }
-
-.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice:hover {
-    background-color: rgba(74, 144, 217, 0.1);
-    color: #4a90d9;
+.NB-modal-preferences .NB-premium-archive-upgrade-notice:hover {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: #c4b5fd;
+    color: #6366f1;
 }
-
-.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice .NB-archive-badge {
+.NB-modal-preferences .NB-premium-archive-upgrade-notice .NB-archive-badge {
     display: inline-block;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
     font-size: 9px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
 }
-
-.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice.NB-flash {
+.NB-modal-preferences .NB-premium-archive-upgrade-notice.NB-flash {
     animation: flash-upgrade 0.6s ease;
-    background-color: rgba(99, 102, 241, 0.15);
+    background: rgba(99, 102, 241, 0.15);
+    border-color: #8b5cf6;
     color: #6366f1;
+}
+.NB-dark .NB-modal-preferences .NB-premium-archive-upgrade-notice {
+    color: #888;
+    background: #2a2a2a;
+    border-color: #444;
+}
+.NB-dark .NB-modal-preferences .NB-premium-archive-upgrade-notice:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
+    color: #a78bfa;
 }
 
 .NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,
@@ -22856,6 +22988,36 @@ h5.NB-classifier-section-header {
     margin-top: 0;
 }
 
+.NB-modal-account .NB-renewal-notify-container {
+    clear: both;
+    margin-top: 16px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f0;
+    border-radius: 4px;
+    border: 1px solid #e0e0d8;
+}
+
+.NB-modal-account .NB-renewal-notify-container input[type=checkbox] {
+    margin: 0;
+    flex-shrink: 0;
+    float: none;
+}
+
+.NB-modal-account .NB-renewal-notify-container label {
+    margin: 0;
+    padding: 0;
+}
+
+.NB-modal-account .NB-renewal-notify-label {
+    font-size: 12px;
+    color: #606060;
+    cursor: pointer;
+    line-height: 1.3;
+}
+
 .NB-modal-account .NB-preference-saved-stories-date,
 .NB-modal-account .NB-preference-shared-stories-date {
     margin-bottom: 8px;
@@ -22941,7 +23103,7 @@ h5.NB-classifier-section-header {
     background: #fff;
     cursor: pointer;
     user-select: none;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
@@ -22984,7 +23146,7 @@ h5.NB-classifier-section-header {
     line-height: 1;
     background: rgba(0, 0, 0, 0.08);
     color: #707070;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .NB-modal-account .NB-classifier-pill-count:empty {
@@ -23639,10 +23801,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-static-iphone .NB-ios-main .NB-ios-feature {
-    -webkit-transition: all .32s ease-out;
-    -moz-transition: all .32s ease-out;
-    -o-transition: all .32s ease-out;
-    -ms-transition: all .32s ease-out;
+    transition: border-color .32s ease-out;
     border-radius: 4px;
     border: 2px solid transparent;
 }
@@ -24628,7 +24787,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all 0.1s ease;
+    transition: background 0.1s ease, border-color 0.1s ease;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-preset:hover,
@@ -24714,7 +24873,7 @@ h5.NB-classifier-section-header {
     border-radius: 3px;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all 0.1s ease;
+    transition: transform 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-color:hover {
@@ -24754,7 +24913,7 @@ h5.NB-classifier-section-header {
     border: 2px dashed #D0D5DA;
     border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 }
 
@@ -24798,7 +24957,7 @@ h5.NB-classifier-section-header {
     border-radius: 10px;
     position: relative;
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-upload-icon::after {
@@ -24964,7 +25123,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .NB-folder-icon-editor .NB-modal-submit-remove:hover {
@@ -25086,7 +25245,7 @@ h5.NB-classifier-section-header {
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
@@ -25963,12 +26122,8 @@ h5.NB-classifier-section-header {
     background-size: 10px;
     cursor: pointer;
     opacity: .7;
-    -webkit-transition: all .22s ease-in-out;
-    -moz-transition: all .22s ease-in-out;
-    -o-transition: all .22s ease-in-out;
-    -ms-transition: all .22s ease-in-out;
+    transition: opacity .22s ease-in-out;
 }
-
 
 .NB-search-close:hover {
     opacity: 1;
@@ -25990,7 +26145,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-title-search-input {
-    transition: all .22s ease-in-out;
+    transition: width .22s ease-in-out;
 
     width: 24px;
     margin: 0;
@@ -27018,6 +27173,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-filter-popover .NB-clustering-read-label {
+    display: flex;
+    align-items: center;
     font-size: 11px;
     color: #808080;
     margin-bottom: 4px;
@@ -27030,6 +27187,34 @@ h5.NB-classifier-section-header {
 .NB-filter-popover .NB-clustering-read-section.NB-disabled {
     opacity: 0.35;
     pointer-events: none;
+}
+
+/* Clustering upgrade notice in feed options popover */
+.NB-filter-popover .NB-clustering-upgrade-notice {
+    margin-left: auto;
+    text-decoration: none;
+    cursor: pointer;
+}
+.NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: filter 0.3s;
+}
+.NB-filter-popover .NB-clustering-upgrade-notice.NB-flash .NB-archive-badge {
+    filter: brightness(1.3);
+}
+.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+    filter: brightness(0.85);
+}
+.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice.NB-flash .NB-archive-badge {
+    filter: brightness(1.2);
 }
 
 /* Staff Only badge */
@@ -27045,11 +27230,6 @@ h5.NB-classifier-section-header {
     border-radius: 3px;
     line-height: 1.2;
     vertical-align: middle;
-}
-
-.NB-story-cluster-sources .NB-staff-only-badge {
-    margin-right: 6px;
-    margin-bottom: 2px;
 }
 
 /* =========== */
@@ -27136,8 +27316,12 @@ h5.NB-classifier-section-header {
     text-align: left;
     background-color: #ffffff;
     background-clip: padding-box;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.04),
+        0 2px 4px rgba(0, 0, 0, 0.04),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        0 16px 32px rgba(0, 0, 0, 0.06);
     white-space: normal;
 }
 
@@ -27283,9 +27467,6 @@ h5.NB-classifier-section-header {
 
 .fade {
     opacity: 0;
-    -webkit-transition: opacity 0.22s ease-in-out;
-    -moz-transition: opacity 0.22s ease-in-out;
-    -o-transition: opacity 0.22s ease-in-out;
     transition: opacity 0.22s ease-in-out;
 }
 
@@ -27294,11 +27475,6 @@ h5.NB-classifier-section-header {
 }
 
 .NB-overlay {
-    background: rgba(16, 16, 48, 0);
-    background: -webkit-linear-gradient(rgba(16, 16, 28, 0.3), rgba(16, 16, 28, 0.3) 60%, rgba(16, 16, 28, 0.01));
-    background: -moz-linear-gradient(rgba(16, 16, 28, 0.3), rgba(16, 16, 28, 0.3) 60%, rgba(16, 16, 28, 0.01));
-    background: -ms-linear-gradient(rgba(16, 16, 28, 0.3), rgba(16, 16, 28, 0.3) 60%, rgba(16, 16, 28, 0.01));
-    background: -o-linear-gradient(rgba(16, 16, 28, 0.3), rgba(16, 16, 28, 0.3) 60%, rgba(16, 16, 28, 0.01));
     background: linear-gradient(rgba(16, 16, 28, 0.3), rgba(16, 16, 28, 0.3) 60%, rgba(16, 16, 28, 0.01));
     position: fixed;
     top: 0;
@@ -27307,17 +27483,10 @@ h5.NB-classifier-section-header {
     left: 0;
     z-index: 100;
     opacity: 0.0;
-    -webkit-transition: opacity 400ms ease, -webkit-transform 0s ease;
-    -moz-transition: opacity 400ms ease, -moz-transform 0s ease;
-    -o-transition: opacity 400ms ease, -o-transform 0s ease;
     transition: opacity 400ms ease, transform 0s ease;
 }
 
 .NB-overlay.NB-top {
-    background: -webkit-linear-gradient(rgba(16, 16, 28, 0.01), rgba(16, 16, 28, 0.3) 40%, rgba(16, 16, 28, 0.3));
-    background: -moz-linear-gradient(rgba(16, 16, 28, 0.01), rgba(16, 16, 28, 0.3) 40%, rgba(16, 16, 28, 0.3));
-    background: -ms-linear-gradient(rgba(16, 16, 28, 0.01), rgba(16, 16, 28, 0.3) 40%, rgba(16, 16, 28, 0.3));
-    background: -o-linear-gradient(rgba(16, 16, 28, 0.01), rgba(16, 16, 28, 0.3) 40%, rgba(16, 16, 28, 0.3));
     background: linear-gradient(rgba(16, 16, 28, 0.01), rgba(16, 16, 28, 0.3) 40%, rgba(16, 16, 28, 0.3));
 }
 
@@ -27570,7 +27739,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #d0d0d0;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
     background: #f8f8f8;
 }
 
@@ -27704,8 +27873,26 @@ h5.NB-classifier-section-header {
     color: #555;
 }
 
-.NB-clustering-mark-read-option label {
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-clustering-mark-read-option label {
     cursor: pointer;
+    margin: 0;
+}
+.NB-clustering-mark-read-option.NB-disabled label {
+    cursor: default;
+    opacity: 0.4;
+}
+.NB-clustering-mark-read-option.NB-disabled input[type=checkbox] {
+    opacity: 0.4;
+}
+.NB-clustering-mark-read-option .NB-premium-archive-upgrade-notice {
+    margin-left: auto;
+    margin-top: 0;
+    padding: 2px 8px 2px 3px;
+    font-size: 10px;
+}
+.NB-clustering-mark-read-option .NB-premium-archive-upgrade-notice .NB-archive-badge {
+    font-size: 8px;
+    padding: 2px 6px;
 }
 
 .NB-dark .NB-clustering-mark-read-option {
@@ -28379,7 +28566,7 @@ h5.NB-classifier-section-header {
     border: 2px solid #D0D4D8;
     border-radius: 12px;
     padding: 0 16px;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-add-site-search-wrapper:focus-within {
@@ -28418,7 +28605,7 @@ h5.NB-classifier-section-header {
     color: #999;
     font-size: 18px;
     border-radius: 50%;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-add-site-search-clear:hover {
@@ -28470,7 +28657,7 @@ h5.NB-classifier-section-header {
     height: 36px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
     user-select: none;
 }
 
@@ -28531,7 +28718,7 @@ h5.NB-classifier-section-header {
     background: #E8E8E8;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
     user-select: none;
 }
 
@@ -28627,7 +28814,7 @@ h5.NB-classifier-section-header {
     color: rgba(0, 0, 0, 0.6);
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
     white-space: nowrap;
     min-width: 0;
     overflow: hidden;
@@ -28750,7 +28937,7 @@ h5.NB-classifier-section-header {
     font-size: 13px;
     font-weight: 500;
     color: #666;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
 }
 
@@ -28814,7 +29001,7 @@ h5.NB-classifier-section-header {
     font-size: 13px;
     font-weight: 500;
     color: #666;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
     flex-shrink: 0;
     user-select: none;
@@ -28966,7 +29153,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 12px;
     padding: 16px;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -29636,7 +29823,7 @@ h5.NB-classifier-section-header {
     border-radius: 12px;
     font-size: 15px;
     outline: none;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     background: #FFF;
     color: #333;
 }
@@ -29672,7 +29859,7 @@ h5.NB-classifier-section-header {
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease;
 }
 
 .NB-add-site-tab-search-btn:hover {
@@ -29704,7 +29891,7 @@ h5.NB-classifier-section-header {
     font-weight: 500;
     color: #666;
     white-space: nowrap;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 .NB-add-site-trending-pill:hover {
     border-color: #5C89C9;
@@ -29743,7 +29930,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .NB-add-site-category-card:hover {
@@ -29797,7 +29984,7 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     font-size: 13px;
     color: #666;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-add-site-category-back:hover {
@@ -29959,7 +30146,7 @@ h5.NB-classifier-section-header {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease;
     white-space: nowrap;
     align-self: flex-end;
 }
@@ -30022,7 +30209,7 @@ h5.NB-classifier-section-header {
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
     line-height: 1;
     box-sizing: border-box;
 }
@@ -30548,7 +30735,7 @@ h5.NB-classifier-section-header {
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
     line-height: 1;
 }
 .NB-add-site-webfeed-folder-add-icon:hover {
@@ -30973,7 +31160,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
     font-size: 14px;
     font-weight: 500;
     color: #333;
@@ -31029,7 +31216,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
     font-size: 14px;
     font-weight: 500;
     color: #333;
@@ -31084,7 +31271,7 @@ h5.NB-classifier-section-header {
     font-size: 12px;
     font-weight: 500;
     color: #666;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-add-site-cat-pill:hover {
@@ -31180,7 +31367,7 @@ h5.NB-classifier-section-header {
     font-size: 11px;
     font-weight: 500;
     color: #555;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-add-site-subcat-pill:hover {
@@ -31299,7 +31486,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 20px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
     font-size: 13px;
     font-weight: 500;
     color: #666;
@@ -32086,7 +32273,7 @@ h5.NB-classifier-section-header {
     font-size: 14px;
     font-weight: 500;
     color: #666;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-archive-tab:hover {
@@ -32258,7 +32445,7 @@ h5.NB-classifier-section-header {
     border-radius: 20px;
     font-size: 13px;
     color: #333;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-blocklist-item:hover {
@@ -32285,7 +32472,7 @@ h5.NB-classifier-section-header {
     border-radius: 50%;
     cursor: pointer;
     opacity: 0.5;
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .NB-blocklist-remove:hover {
@@ -32316,7 +32503,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #DDD;
     border-radius: 8px;
     font-size: 14px;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-blocklist-input:focus {
@@ -32354,7 +32541,7 @@ h5.NB-classifier-section-header {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .NB-blocklist-add-btn:hover {
@@ -32407,7 +32594,7 @@ h5.NB-classifier-section-header {
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-blocklist-save.NB-disabled {
@@ -32639,7 +32826,7 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     color: #666;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-block-dialog-cancel:hover {
@@ -32656,7 +32843,7 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     color: #fff;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-block-dialog-confirm:hover {
@@ -32714,7 +32901,7 @@ h5.NB-classifier-section-header {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-archive-new-conversation:hover {
@@ -32745,7 +32932,7 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-archive-sidebar-toggle:hover {
@@ -33059,7 +33246,7 @@ h5.NB-classifier-section-header {
     border-radius: 0;
     font-size: 11px;
     color: #999;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .NB-tool-spinner {
@@ -33216,7 +33403,7 @@ h5.NB-classifier-section-header {
     font-size: 13px;
     color: #555;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-archive-suggestion:hover {
@@ -33775,7 +33962,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-archive-item:hover {
@@ -33878,7 +34065,7 @@ h5.NB-classifier-section-header {
     border: 1px solid rgba(217, 92, 51, 0.25);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
     align-self: flex-start;
 }
 
@@ -33998,7 +34185,7 @@ h5.NB-classifier-section-header {
     border: 1px solid #E0E0E0;
     border-radius: 6px;
     padding: 6px 10px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-archive-search-wrapper:focus-within {
@@ -34149,7 +34336,7 @@ h5.NB-classifier-section-header {
     border-radius: 12px;
     text-decoration: none;
     color: inherit;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     min-width: 180px;
 }
 
@@ -34229,7 +34416,7 @@ h5.NB-classifier-section-header {
     font-size: 13px;
     font-weight: 500;
     color: #666;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-archive-extensions-button:hover {
@@ -34258,7 +34445,7 @@ h5.NB-classifier-section-header {
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
     z-index: 1000;
 }
 
@@ -34382,7 +34569,7 @@ h5.NB-classifier-section-header {
     color: #333;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .NB-archive-assistant-ext-link:hover {
@@ -34537,7 +34724,7 @@ h5.NB-classifier-section-header {
     color: #FFF;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-category-manager-actions .NB-button:hover {
@@ -34765,7 +34952,7 @@ h5.NB-classifier-section-header {
     background: #FFF;
     border: 1px solid #E8E8E8;
     border-radius: 6px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-category-item:hover {
@@ -34851,7 +35038,7 @@ h5.NB-classifier-section-header {
     cursor: pointer;
     background: transparent;
     border: none;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease;
     border-radius: 6px 6px 0 0;
     position: relative;
 }
@@ -34931,7 +35118,7 @@ h5.NB-classifier-section-header {
     border: none;
     border-radius: 12px;
     margin-bottom: 20px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-merge-group.NB-drag-over {
@@ -35020,7 +35207,7 @@ h5.NB-classifier-section-header {
     border: none;
     border-radius: 6px;
     cursor: grab;
-    transition: all 0.15s ease;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -35094,7 +35281,7 @@ h5.NB-classifier-section-header {
     background: #F5F6F7;
     border: none;
     border-radius: 10px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-merge-unassigned-list.NB-drop-target {
@@ -35127,7 +35314,7 @@ h5.NB-classifier-section-header {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     box-shadow: 0 2px 6px rgba(92, 137, 201, 0.3);
 }
 
@@ -35147,7 +35334,7 @@ button.NB-merge-group-apply.NB-button {
     border: none !important;
     border-radius: 5px !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    transition: background-color 0.15s ease !important;
     box-shadow: none !important;
     text-transform: none !important;
     margin: 0 !important;
@@ -35185,7 +35372,7 @@ button.NB-merge-group-apply.NB-button:hover {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-split-candidate:hover {
@@ -35324,7 +35511,7 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #F8F9FA;
     border: none;
     border-radius: 8px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-all-category-item:hover {
@@ -36479,7 +36666,7 @@ button.NB-merge-group-apply.NB-button:hover {
     border: 1px solid #E0E0E0;
     border-radius: 16px;
     cursor: grab;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-merge-pill:hover {
@@ -36574,7 +36761,7 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #FAFAFA;
     border: 2px dashed #E0E0E0;
     border-radius: 8px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-unassigned-drop-zone.NB-drop-target {
@@ -36844,7 +37031,7 @@ button.NB-merge-group-apply.NB-button:hover {
     color: #999;
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .NB-modal-category-manager .NB-merge-group-remove:hover {
@@ -36874,7 +37061,7 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #FFF;
     border-radius: 6px;
     cursor: grab;
-    transition: all 0.15s ease;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -36976,7 +37163,7 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #F8F9FA;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .NB-modal-category-manager .NB-split-item:hover {
@@ -37947,7 +38134,7 @@ span.NB-briefing-inline-favicon {
     flex-shrink: 0;
     margin-top: 2px;
     position: relative;
-    transition: all 0.15s;
+    transition: border-color 0.15s;
 }
 
 .NB-briefing-style-option.NB-active .NB-briefing-style-radio {
@@ -38091,7 +38278,7 @@ span.NB-briefing-inline-favicon {
     flex-shrink: 0;
     margin-top: 2px;
     position: relative;
-    transition: all 0.15s;
+    transition: background-color 0.15s, border-color 0.15s;
 }
 
 .NB-briefing-section-item.NB-active .NB-briefing-section-checkbox {
@@ -38202,7 +38389,7 @@ span.NB-briefing-inline-favicon {
     cursor: pointer;
     vertical-align: middle;
     opacity: 0.3;
-    transition: all 0.15s;
+    transition: opacity 0.15s;
 }
 
 .NB-briefing-remove-custom-section:hover {

@@ -20,6 +20,10 @@ class Classifier : Serializable {
     val tags: MutableMap<String, Int> = mutableMapOf()
 
     @JvmField
+    @SerializedName("texts")
+    val texts: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
     @SerializedName("feeds")
     val feeds: MutableMap<String, Int> = mutableMapOf()
 
@@ -38,6 +42,9 @@ class Classifier : Serializable {
         }
         tags.forEach { (key, value) ->
             values.put(buildAPITupleKey(value, TAG_POSTFIX), key)
+        }
+        texts.forEach { (key, value) ->
+            values.put(buildAPITupleKey(value, TEXT_POSTFIX), key)
         }
         feeds.forEach { (key, value) ->
             values.put(buildAPITupleKey(value, FEED_POSTFIX), key)
@@ -94,6 +101,17 @@ class Classifier : Serializable {
             valuesList.add(tagValues)
         }
 
+        texts.forEach { (key, value) ->
+            val tagValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, TEXT)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(tagValues)
+        }
+
         feeds.forEach { (key, value) ->
             val feedValues =
                 ContentValues().apply {
@@ -113,6 +131,7 @@ class Classifier : Serializable {
         const val FEED: Int = 1
         const val TITLE: Int = 2
         const val TAG: Int = 3
+        const val TEXT: Int = 4
 
         const val LIKE: Int = 1
         const val DISLIKE: Int = -1
@@ -123,6 +142,7 @@ class Classifier : Serializable {
         private const val AUTHOR_POSTFIX = "author"
         private const val FEED_POSTFIX = "feed"
         private const val TITLE_POSTFIX = "title"
+        private const val TEXT_POSTFIX = "text"
         private const val TAG_POSTFIX = "tag"
         private const val LIKE_PREFIX = "like_"
         private const val DISLIKE_PREFIX = "dislike_"
@@ -145,6 +165,7 @@ class Classifier : Serializable {
                     AUTHOR -> classifier.authors[key] = value
                     TITLE -> classifier.title[key] = value
                     FEED -> classifier.feeds[key] = value
+                    TEXT -> classifier.texts[key] = value
                     TAG -> classifier.tags[key] = value
                 }
             }

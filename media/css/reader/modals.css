@@ -9,9 +9,12 @@
 #simplemodal-container {
     background-color: white;
     padding: 8px;
-    -moz-box-shadow: 8px 8px 15px #505050;
-    -webkit-box-shadow: 8px 8px 15px #505050;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px, rgba(255, 255, 255, 0.4) 0px 0px 300px 0px;
+    border-radius: 12px;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.04),
+        0 2px 4px rgba(0, 0, 0, 0.04),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        0 24px 48px rgba(0, 0, 0, 0.12);
     min-height: 150px;
     overflow: auto;
 }
@@ -24,10 +27,16 @@
     font-size: 14px;
     padding: 6px 8px;
     margin: 2px 4px 2px;
-    border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: 1px;
-    -moz-box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
-    box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-input:focus {
+    border-color: rgba(0, 0, 0, .3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(66, 133, 244, 0.15);
+    outline: none;
 }
 
 /* ========== */
@@ -37,9 +46,8 @@
 .NB-modal {
     padding: 12px;
     position: relative;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
+    border-radius: 4px;
 }
 
 #simplemodal-container.NB-full-container {
@@ -67,6 +75,7 @@ fieldset legend {
     font-size: 12px;
     color: #151775;
     border: 1px solid #E6E6E6;
+    border-radius: 4px;
     background-color: #F7F7F5;
 }
 
@@ -110,6 +119,7 @@ fieldset legend {
     margin: 0;
     padding: 0;
     font-size: 22px;
+    text-wrap: balance;
 }
 
 .NB-modal-title .NB-icon {
@@ -169,13 +179,18 @@ fieldset legend {
 .NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
-    font-size: 14px;
-    padding: 4px 6px;
+    padding: 6px 8px;
     margin: 0px 4px 6px;
-    border: 1px solid #606060;
-    -moz-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
-    -webkit-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
-    box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-modal-field input[type=text]:focus {
+    border-color: rgba(0, 0, 0, .3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(66, 133, 244, 0.15);
+    outline: none;
 }
 
 .NB-modal .NB-modal-field input[type=checkbox] {
@@ -223,7 +238,6 @@ fieldset legend {
     padding: 0 4px;
     text-transform: uppercase;
     border-radius: 3px;
-    -moz-border-radius: 3px;
     text-shadow: none;
     float: left;
     white-space: nowrap;
@@ -258,8 +272,6 @@ fieldset legend {
 
 .NB-modal-submit-bottom {
     width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     border-radius: 6px;
     border-bottom-left-radius: 6px;
@@ -282,8 +294,13 @@ fieldset legend {
     text-decoration: none;
     background: #DCDCDC;
     background: linear-gradient(to top, #DCDCDC, #D2D2D2);
-    border-radius: 3px;
+    border-radius: 6px;
     border: none;
+    transition: background-color 0.15s ease, background-image 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.NB-modal-submit-button:active:not(.NB-disabled) {
+    transform: scale(0.96);
 }
 
 .NB-modal-submit-green {
@@ -560,8 +577,8 @@ fieldset legend {
     padding: 6px 8px;
     font-size: 11px;
     font-weight: 500;
-    border-radius: 4px;
-    transition: all 0.15s ease;
+    border-radius: 3px;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-modal-tag-settings .segmented-control li img {
@@ -718,8 +735,8 @@ fieldset legend {
     padding: 6px 10px;
     font-size: 11px;
     font-weight: 500;
-    border-radius: 4px;
-    transition: all 0.15s ease;
+    border-radius: 3px;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-modal-exception .NB-exception-option-view .segmented-control li img {

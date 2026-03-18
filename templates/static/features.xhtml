@@ -9,12 +9,12 @@
     <meta property="og:description" content="Discover everything NewsBlur can do. From AI-powered story analysis to regex classifiers, from real-time feed monitoring to email newsletters. The most feature-rich RSS reader.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
-    <meta property="og:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/training.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@newsblur">
     <meta name="twitter:title" content="NewsBlur Features - Every Feature, Explained">
     <meta name="twitter:description" content="Discover everything NewsBlur can do. Intelligence training, AI, full-text search, regex classifiers, real-time feeds, dark mode, and more.">
-    <meta name="twitter:image" content="{{ MEDIA_URL }}img/logo_512.png">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/training.png">
 {% endblock %}
 
 {% block content %}
@@ -34,7 +34,10 @@
             <p class="NB-feature-section-description">
                 Train NewsBlur to show you what you want and hide what you don't. Thumbs up an author, tag, or title keyword to highlight matching stories in green. Thumbs down to fade them away. The more you train, the smarter your feeds become. No algorithm decides for you &mdash; you're in control.
             </p>
-            <a href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-intelligence-training" %}" class="NB-feature-section-cta">See Intelligence Training</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/training.png" alt="Intelligence training dialog showing thumbs up and thumbs down on authors, tags, and titles">
@@ -64,8 +67,10 @@
             <p class="NB-feature-section-description">
                 For power users who need precision. Write regular expressions that match against story titles, body text, and URLs. Build complex filters that catch exactly what you're looking for, from CVE numbers to stock ticker patterns to specific phrase combinations.
             </p>
-            <a href="{% url "pricing" %}" class="NB-feature-section-cta">Available on Premium Pro</a>
-            <a href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="{% url "pricing" %}" class="NB-feature-section-cta">Available on Premium Pro</a>
+                <a href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/regex.png" alt="Regex mode toggle for intelligence classifiers">
@@ -95,6 +100,10 @@
             <p class="NB-feature-section-description">
                 Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, job boards &mdash; if it's on the web, you can follow it.
             </p>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/03/13/web-feeds/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-web-feeds" %}" class="NB-feature-section-cta">See Web Feeds</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/web-feeds.png" alt="Web feed creation showing a page being converted to a feed">
@@ -123,7 +132,10 @@
             <p class="NB-feature-section-description">
                 Search across all your subscriptions with Elasticsearch-powered full-text search. Find stories by keyword, phrase, or combination. Search within a single feed, a folder, or across everything. Save searches as feeds for ongoing monitoring.
             </p>
-            <a href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-search" %}" class="NB-feature-section-cta">See Full-Text Search</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/search.jpg" alt="Full-text search results across subscriptions">
@@ -138,7 +150,10 @@
             <p class="NB-feature-section-description">
                 Every story archived and searchable forever. When you subscribe to a new feed, NewsBlur back-fills its entire history so you have the complete archive from day one. Stories never expire. Your reading history becomes a searchable personal knowledge base.
             </p>
-            <a href="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-archive" %}" class="NB-feature-section-cta">See Story Archive</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/archive.png" alt="Premium Archive showing unread stories going back months">
@@ -153,7 +168,10 @@
             <p class="NB-feature-section-description">
                 Ask questions about any story and get answers powered by your choice of AI model: Claude, GPT, Gemini, or Grok. Get summaries, key points, or ask follow-up questions in a conversation. Even transcribe audio and video content and ask questions about it.
             </p>
-            <a href="https://blog.newsblur.com/2026/01/16/ask-ai/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/01/16/ask-ai/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-ask-ai" %}" class="NB-feature-section-cta">See Ask AI</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/ask-ai.png" alt="Ask AI dialog with model selector showing Claude, GPT, Gemini, and Grok">
@@ -182,6 +200,10 @@
             <p class="NB-feature-section-description">
                 When multiple feeds cover the same story, NewsBlur groups them together so you only see it once. Semantic duplicate detection uses fuzzy title matching to catch stories that are similar but not identical. Read the version you prefer and skip the rest.
             </p>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/03/18/story-clustering/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-story-clustering" %}" class="NB-feature-section-cta">See Story Clustering</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="Story clustering grouping duplicate stories from multiple feeds">
@@ -240,7 +262,10 @@
             <p class="NB-feature-section-description">
                 Save stories for later and organize them with custom tags. Tags are searchable, so you can quickly find saved stories by topic. Each tag gets its own RSS feed, so you can pipe your curated collections into other tools or share them.
             </p>
-            <a href="https://blog.newsblur.com/2014/01/14/saved-story-tagging/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2014/01/14/saved-story-tagging/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-saved-stories" %}" class="NB-feature-section-cta">See Saved Stories</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/saved.png" alt="Saved stories organized with custom tags">
@@ -255,7 +280,10 @@
             <p class="NB-feature-section-description">
                 Read your email newsletters where they belong: in a news reader. Forward newsletters to your unique NewsBlur email address and they appear as a feed. Train, tag, search, and organize newsletters just like any other feed. No more cluttered inbox.
             </p>
-            <a href="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-newsletters" %}" class="NB-feature-section-cta">See Email Newsletters</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/newsletters.png" alt="Email newsletters appearing as feeds in NewsBlur">
@@ -374,7 +402,10 @@
             <p class="NB-feature-section-description">
                 First-class native apps built for each platform, not web wrappers. The iOS app supports offline reading, background refresh, widgets, and all the same training, search, and sharing features as the web. The Android app matches feature-for-feature. Both apps are open source and actively developed.
             </p>
-            <a href="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> Read more on the NewsBlur Blog</a>
+                <a href="{% url "feature-native-apps" %}" class="NB-feature-section-cta">See Native Apps</a>
+            </div>
         </div>
         <div class="NB-feature-section-screenshot">
             <img src="{{ MEDIA_URL }}img/features/native-apps.png" alt="NewsBlur iOS app on iPad showing the dashboard">

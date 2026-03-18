@@ -579,6 +579,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
+    "email-premium-renewal-notice": {
+        "task": "email-premium-renewal-notice",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
     "generate-briefings": {
         "task": "generate-briefings",
         "schedule": datetime.timedelta(minutes=1),

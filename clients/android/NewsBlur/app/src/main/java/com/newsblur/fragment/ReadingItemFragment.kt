@@ -40,7 +40,6 @@ import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
-import com.newsblur.util.CustomIconRenderer
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
@@ -51,6 +50,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.util.AppConstants.READING_BASE_URL
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
@@ -348,6 +348,7 @@ class ReadingItemFragment :
     private fun handleReadingItemState(readingPayload: ReadingItemViewModel.ReadingPayload) {
         when (readingPayload) {
             ReadingItemViewModel.Idle -> {}
+
             ReadingItemViewModel.NoStoryContent -> {
                 com.newsblur.util.Log
                     .w(this, "Couldn't find story content for existing story.")
@@ -614,8 +615,8 @@ class ReadingItemFragment :
             ?: updateStoryReadTitleState.invoke()
     }
 
-    fun openStoryTrainer() {
-        val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+    fun openStoryTrainer(selectedText: String? = null) {
+        val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, selectedText)
         intelFrag.show(requireActivity().supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
     }
 
@@ -723,14 +724,14 @@ class ReadingItemFragment :
         binding.readingItemAuthors.setOnClickListener(
             View.OnClickListener {
                 if (story!!.feedId == "0") return@OnClickListener // cannot train on feedless stories
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                 intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
             },
         )
         binding.readingFeedTitle.setOnClickListener(
             View.OnClickListener {
                 if (story!!.feedId == "0") return@OnClickListener // cannot train on feedless stories
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                 intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
             },
         )
@@ -767,7 +768,7 @@ class ReadingItemFragment :
             if (!(fs!!.isAllSaved || fs!!.singleSavedTag != null)) {
                 v.setOnClickListener {
                     if (story!!.feedId == "0") return@setOnClickListener // cannot train on feedless stories
-                    val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                    val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                     intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 }
             }
@@ -781,16 +782,21 @@ class ReadingItemFragment :
             binding.readingItemAuthors.text = "•   " + story!!.authors
             if (classifier != null && classifier!!.authors.containsKey(story!!.authors)) {
                 when (classifier!!.authors[story!!.authors]) {
-                    Classifier.LIKE -> binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
-                    Classifier.DISLIKE ->
+                    Classifier.LIKE -> {
+                        binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
+                    }
+
+                    Classifier.DISLIKE -> {
                         binding.readingItemAuthors.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.negative),
                         )
+                    }
 
-                    else ->
+                    else -> {
                         binding.readingItemAuthors.setTextColor(
                             UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
                         )
+                    }
                 }
             }
         }
@@ -1085,7 +1091,7 @@ class ReadingItemFragment :
     /** The webview has finished loading our desired content.  */
     fun onWebLoadFinished() {
         if (!isWebLoadFinished.getAndSet(true)) {
-            binding.readingWebview.evaluateJavascript("loadImages();", null)
+            binding.readingWebview.evaluateJavascript("normalizeMedia();", null)
         }
         checkLoadStatus()
     }
@@ -1211,8 +1217,16 @@ class ReadingItemFragment :
                     viewModel.updateHighlights(selectedText, it.storyHash, storyHighlights)
                 }
             }
+
+            WebviewActionType.TRAIN -> {
+                if (selectedText.isNotEmpty()) {
+                    openStoryTrainer(selectedText)
+                }
+            }
         }
     }
+
+    fun handleBackPressed(): Boolean = if (::binding.isInitialized) binding.readingWebview.handleBackPressed() else false
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"

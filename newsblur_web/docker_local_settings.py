@@ -143,6 +143,10 @@ BACKED_BY_AWS = {
     "icons_on_s3": False,
 }
 
+# AI Provider API Keys
+# Replace placeholders with real keys to enable AI features.
+# AI classifiers (content + image filters) work automatically when
+# a real Anthropic key is configured -- no billing setup needed.
 OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"

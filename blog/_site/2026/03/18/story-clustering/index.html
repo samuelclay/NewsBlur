@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Story clustering: automatically group duplicate stories across your feeds | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Story clustering: automatically group duplicate stories across your feeds" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried." />
+<meta property="og:description" content="If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/03/18/story-clustering/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/03/18/story-clustering/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/story-clustering-titles.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-18T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/story-clustering-titles.png" />
+<meta property="twitter:title" content="Story clustering: automatically group duplicate stories across your feeds" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-18T00:00:00-04:00","datePublished":"2026-03-18T00:00:00-04:00","description":"If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.","headline":"Story clustering: automatically group duplicate stories across your feeds","image":"https://blog.newsblur.com/assets/story-clustering-titles.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/03/18/story-clustering/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/03/18/story-clustering/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-03-18T00:00:00-04:00" itemprop="datePublished">Mar 18, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">Story clustering: automatically group duplicate stories across your feeds</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
+
+<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
+
+<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
+<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
+
+<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
+<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="two-layers-of-detection">Two layers of detection</h3>
+
+<p>Clustering uses two complementary approaches to catch duplicates:</p>
+
+<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
+
+<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
+
+<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
+
+<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
+
+<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
+
+<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
+<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are two controls:</p>
+
+<ul>
+  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
+  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
+</ul>
+
+<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
+
+<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
+<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed.</p>
+
+<p><strong>Premium Archive subscribers</strong> get full control over clustering: toggle it on or off, choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story. Clustering is enabled by default for archive subscribers.</p>
+
+<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/03/18/story-clustering/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>

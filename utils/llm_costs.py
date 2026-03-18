@@ -270,7 +270,6 @@ class LLMCostTracker:
         """Invalidate the Redis spending limit cache for a user."""
         try:
             import redis as redis_lib
-
             from django.conf import settings
 
             r = redis_lib.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
