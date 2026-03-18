@@ -352,12 +352,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'Mark all as read'),
                             $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Keep others unread')
-                        ])
-                    ]),
-                    (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-clustering-upgrade-notice' }, [
-                        'Clustering controls require ',
-                        $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive')
-                    ]))
+                        ]),
+                        (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-clustering-upgrade-notice' }, [
+                            'Marking clustered stories as read requires ',
+                            $.make('a', { href: '#', className: 'NB-clustering-upgrade-notice-link NB-premium-link' }, [
+                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                            ])
+                        ]))
+                    ])
                 ]))
             ])
         ]));
@@ -982,7 +984,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var setting = $target.data('setting');
         var value = $target.data('value');
 
-        if (!NEWSBLUR.Globals.is_archive) {
+        if (!NEWSBLUR.Globals.is_archive && setting === 'cluster_mark_read') {
             this.flash_clustering_upgrade_notice();
             return;
         }

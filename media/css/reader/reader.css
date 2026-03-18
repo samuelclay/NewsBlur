@@ -27198,13 +27198,19 @@ h5.NB-classifier-section-header {
     border-radius: 4px;
     cursor: pointer;
 }
-.NB-filter-popover .NB-clustering-upgrade-notice .NB-premium-link {
-    color: #5c89c9;
-    font-weight: 600;
+.NB-filter-popover .NB-clustering-upgrade-notice .NB-clustering-upgrade-notice-link {
     text-decoration: none;
 }
-.NB-filter-popover .NB-clustering-upgrade-notice .NB-premium-link:hover {
-    text-decoration: underline;
+.NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
 }
 .NB-filter-popover .NB-clustering-upgrade-notice.NB-flash {
     background: #fff3cd;
