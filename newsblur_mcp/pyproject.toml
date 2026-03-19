@@ -1,5 +1,5 @@
 [project]
-name = "newsblur"
+name = "newsblur-cli"
 version = "0.1.0"
 description = "NewsBlur CLI and MCP server - manage feeds, stories, and classifiers"
 readme = "README.md"

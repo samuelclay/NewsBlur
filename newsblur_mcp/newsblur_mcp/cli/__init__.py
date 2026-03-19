@@ -33,7 +33,7 @@ def main(
         try:
             from importlib.metadata import version as get_version
 
-            typer.echo(f"newsblur {get_version('newsblur')}")
+            typer.echo(f"newsblur {get_version('newsblur-cli')}")
         except Exception:
             typer.echo("newsblur 0.1.0")
         raise typer.Exit()

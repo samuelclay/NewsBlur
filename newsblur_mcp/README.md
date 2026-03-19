@@ -5,7 +5,7 @@ A command-line interface for [NewsBlur](https://newsblur.com), the visual intell
 ## Install
 
 ```bash
-pip install newsblur
+pip install newsblur-cli
 ```
 
 ## Quick Start
