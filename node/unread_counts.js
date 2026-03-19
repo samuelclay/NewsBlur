@@ -146,6 +146,24 @@
         if (!username) return;
 
         var redis_key = `media:playback:${data.user_id || username}`;
+
+        // Handle close event: clear Redis and broadcast to other tabs/instances
+        if (data.closed) {
+          var close_client = redis.createClient(redis_opts);
+          close_client.on('error', function(err) {
+            log.debug(`Media close Redis error: ${err}`);
+          });
+          close_client.on('connect', function() {
+            close_client.del(redis_key, function() {
+              var media_msg = 'media:' + JSON.stringify(data);
+              close_client.publish(username, media_msg, function() {
+                close_client.quit();
+              });
+            });
+          });
+          return;
+        }
+
         var redis_data = {};
         if (data.position != null) redis_data.position = String(data.position);
         if (data.duration != null) redis_data.duration = String(data.duration);
