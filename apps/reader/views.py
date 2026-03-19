@@ -4121,10 +4121,45 @@ def feeds_trainer(request):
         usersubs = usersubs.filter(feed=feed)
     usersubs = usersubs.select_related("feed").order_by("-feed__stories_last_month")
 
+    # Load scoped classifiers once for archive users with folder/global classifiers
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
+    scoped = None
+    folder_feed_ids = None
+    if has_scoped:
+        scoped = load_scoped_classifiers(user.pk)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
+        except UserSubscriptionFolders.DoesNotExist:
+            folder_feed_ids = {}
+
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier["classifiers"] = get_classifiers_for_user(user, feed_id=us.feed.pk)
+            if scoped:
+                classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_titles.extend(scoped["titles"])
+                classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_texts.extend(scoped["texts"])
+                classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_urls.extend(scoped["urls"])
+                classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_authors.extend(scoped["authors"])
+                classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_tags.extend(scoped["tags"])
+                classifier["classifiers"] = get_classifiers_for_user(
+                    user,
+                    feed_id=us.feed.pk,
+                    classifier_authors=classifier_authors,
+                    classifier_titles=classifier_titles,
+                    classifier_tags=classifier_tags,
+                    classifier_texts=classifier_texts,
+                    classifier_urls=classifier_urls,
+                    folder_feed_ids=folder_feed_ids,
+                )
+            else:
+                classifier["classifiers"] = get_classifiers_for_user(user, feed_id=us.feed.pk)
             classifier["feed_id"] = us.feed_id
             classifier["stories_last_month"] = us.feed.stories_last_month
             classifier["num_subscribers"] = us.feed.num_subscribers
