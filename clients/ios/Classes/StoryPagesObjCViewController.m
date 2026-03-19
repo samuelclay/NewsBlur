@@ -300,6 +300,12 @@
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(nextSite:) discoverabilityTitle:@"Next Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(previousSite:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

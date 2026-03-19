@@ -105,7 +105,6 @@ private func shortcutSections() -> [ShortcutSection] {
     [
         ShortcutSection(title: "General", icon: "keyboard", shortcuts: [
             KeyboardShortcut(keys: ["?"], description: "Keyboard shortcuts"),
-            KeyboardShortcut(keys: ["\u{2190}", "\u{2192}"], description: "Switch views"),
             KeyboardShortcut(keys: ["\u{21E7}", "D"], description: "Open Dashboard"),
             KeyboardShortcut(keys: ["\u{21E7}", "E"], description: "Open All Stories"),
             KeyboardShortcut(keys: ["\u{2318}", "F"], description: "Find in feed"),

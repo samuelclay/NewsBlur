@@ -705,7 +705,18 @@ class DetailViewController: BaseViewController {
 
     private func performStoryAutoCollapseIfNeeded() {
         guard storyTitlesOnLeft else {
-            dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+            let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+            let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
+                isPhone: isPhone,
+                isCompact: isCompact,
+                hasActiveStory: hasVisibleStoryForSidebarLayout,
+                behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
+                size: size,
+                isMac: appDelegate.isMac
+            )
+            if shouldCollapse {
+                dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+            }
             return
         }
 

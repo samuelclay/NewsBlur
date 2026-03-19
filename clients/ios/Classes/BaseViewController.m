@@ -799,4 +799,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [self.appDelegate showKeyboardShortcuts];
 }
 
+- (void)noopKeyCommand:(id)sender {
+}
+
 @end
