@@ -28,7 +28,6 @@ interface UserApi {
     suspend fun saveReceipt(
         orderId: String?,
         productId: String?,
-        purchaseToken: String?,
     ): NewsBlurResponse?
 
     suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse?

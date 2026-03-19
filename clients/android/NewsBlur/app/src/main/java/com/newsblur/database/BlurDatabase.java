@@ -1,7 +1,5 @@
 package com.newsblur.database;
 
-import static com.newsblur.database.DatabaseConstants.MIGRATE_V3_TO_V4_SQL;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	private final static int VERSION = 4;
+	private final static int VERSION = 3;
 
 	public BlurDatabase(Context context) {
 		super(context, DB_NAME, null, VERSION);
@@ -76,9 +74,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
         if (previousVersion < 3) {
             // Add custom icons table in version 3
             db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
-        }
-        if (previousVersion < 4) {
-            db.execSQL(MIGRATE_V3_TO_V4_SQL);
         }
     }
 

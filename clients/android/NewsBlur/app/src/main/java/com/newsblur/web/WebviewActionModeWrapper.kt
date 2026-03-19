@@ -36,7 +36,6 @@ class WebviewActionModeWrapper(
             when (item.itemId) {
                 ID_MENU_WEB_SEARCH -> WebviewActionType.WEB_SEARCH
                 ID_MENU_HIGHLIGHT -> WebviewActionType.HIGHLIGHT
-                ID_MENU_TRAIN -> WebviewActionType.TRAIN
                 else -> null
             } ?: return wrapped?.onActionItemClicked(mode, item) ?: false
 
@@ -62,16 +61,10 @@ class WebviewActionModeWrapper(
                 .add(Menu.NONE, ID_MENU_WEB_SEARCH, Menu.NONE, R.string.menu_web_search)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         }
-        if (menu.findItem(ID_MENU_TRAIN) == null) {
-            menu
-                .add(Menu.NONE, ID_MENU_TRAIN, Menu.NONE, R.string.menu_train)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        }
     }
 
     companion object {
         const val ID_MENU_WEB_SEARCH: Int = 0xA11CE001.toInt()
         const val ID_MENU_HIGHLIGHT: Int = 0xA11CE002.toInt()
-        const val ID_MENU_TRAIN: Int = 0xA11CE003.toInt()
     }
 }

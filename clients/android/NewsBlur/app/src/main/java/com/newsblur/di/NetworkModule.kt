@@ -34,7 +34,6 @@ import com.newsblur.util.AppConstants.READING_IMAGES_PATH
 import com.newsblur.util.AppConstants.READING_RES_PATH
 import com.newsblur.util.FileCache
 import com.newsblur.util.NetworkUtils
-import com.newsblur.util.ReadTimeTracker
 import com.newsblur.web.WebImagesPathHandler
 import dagger.Module
 import dagger.Provides
@@ -105,8 +104,8 @@ object NetworkModule {
         NetworkClientImpl(
             context = context,
             client = apiOkHttpClient,
-            prefsRepo = prefsRepo,
             initialUserAgent = customUserAgent,
+            prefsRepo = prefsRepo,
         )
 
     @Singleton
@@ -142,16 +141,10 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideReadTimeTracker(networkClient: NetworkClient): ReadTimeTracker =
-        ReadTimeTracker(networkClient)
-
-    @Singleton
-    @Provides
     fun provideStoryApi(
         gson: Gson,
         networkClient: NetworkClient,
-        readTimeTracker: ReadTimeTracker,
-    ): StoryApi = StoryApiImpl(gson, networkClient, readTimeTracker)
+    ): StoryApi = StoryApiImpl(gson, networkClient)
 
     @Singleton
     @Provides

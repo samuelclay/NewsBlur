@@ -224,4 +224,4 @@ class Test_AndroidSubscriptionActivation(TestCase):
             )
 
         self.assertEqual(response.status_code, 200)
-        mock_activate.assert_called_once_with("GPA.1000-0000-0000-00003", "nb.premium.pro.299")
+        mock_activate.assert_called_once_with("GPA.1000-0000-0000-00003", product_id="nb.premium.pro.299")

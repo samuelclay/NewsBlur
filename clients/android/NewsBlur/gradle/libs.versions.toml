@@ -6,13 +6,13 @@ material3 = "1.4.0"
 minSdk = "26"
 targetSdk = "36"
 
-agp = "9.0.1"
+agp = "8.13.0"
 billing = "8.0.0"
 coil2 = "2.7.0"
 coreKtxVersion = "1.7.0"
 kotlin = "2.2.20"
 kotlinxCoroutinesTest = "1.10.2"
-ksp = "2.3.2"
+ksp = "2.2.20-2.0.3"
 kotlinSerialization = "1.9.0"
 gson = "2.12.1"
 playReview = "2.0.2"
@@ -84,7 +84,6 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-okhttp-tls = { group = "com.squareup.okhttp3", name = "okhttp-tls", version.ref = "okhttp"}
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 play-review = { module = "com.google.android.play:review", version.ref = "playReview" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }

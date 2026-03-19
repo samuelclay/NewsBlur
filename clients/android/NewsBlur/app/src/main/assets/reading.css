@@ -1,11 +1,9 @@
 html {
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
 }
 
 body {
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
     line-height: 1.5em;
     width: auto;
     max-width: 100%;
@@ -15,6 +13,8 @@ body {
 
 .NB-story, .NB-youtube-player {
     max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
     margin: 0;
 }
 
@@ -35,7 +35,7 @@ p, div, table {
     line-height: 1.5em;
 }
 
-p, a, table, div, figure, dl, dt, center {
+p, a, table, video, embed, object, iframe, div, figure, dl, dt, center {
     width: auto !important;
     max-width: 100% !important;
     margin: 0px !important;
@@ -53,16 +53,19 @@ p {
     margin-bottom: 0.9em !important;
 }
 
+iframe {
+    width: 100% !important;
+}
+
 a {
     text-decoration: none;
 }
 
 code {
     word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
 }
 
-blockquote {
+pre, blockquote {
     border-left: 1px solid #C2C5BE;
     padding: 0.6em;
     margin: 0.6em;
@@ -70,23 +73,6 @@ blockquote {
     overflow-wrap: break-word !important;
     white-space: normal !important;
     text-wrap: pretty;
-}
-
-pre {
-    border-left: 1px solid #C2C5BE;
-    padding: 0.6em;
-    margin: 0.6em;
-
-    white-space: pre-wrap !important;
-    overflow-x: hidden !important;
-    word-wrap: break-word !important;
-    overflow-wrap: anywhere !important;
-}
-
-pre code {
-    white-space: inherit !important;
-    word-wrap: inherit !important;
-    overflow-wrap: inherit !important;
 }
 
 figure.wp-block-embed,
@@ -112,15 +98,9 @@ figure iframe,
     display: block;
 }
 
-video {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
+iframe:not([width]) {
+    width: 100%;
 }
-
-iframe, embed, object {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
+iframe:not([height]) {
+    height: auto;
 }

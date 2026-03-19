@@ -24,8 +24,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 259
-        versionName = "14.0.0"
+        versionCode = 254
+        versionName = "13.11.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -34,7 +34,6 @@ android {
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         maybeCreate("benchmark")
         getByName("benchmark") {
@@ -56,7 +55,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-
+    kotlinOptions {
+        jvmTarget = "21"
+    }
     buildFeatures {
         compose = true
         viewBinding = true
@@ -82,7 +83,6 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.material)
     implementation(libs.okhttp)
-    implementation(libs.okhttp.tls)
     implementation(libs.gson)
     implementation(libs.billing.ktx)
     implementation(libs.play.review)

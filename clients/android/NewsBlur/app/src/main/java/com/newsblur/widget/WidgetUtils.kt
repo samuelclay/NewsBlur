@@ -28,15 +28,10 @@ object WidgetUtils {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val intent = getUpdateIntent(context)
         val pendingIntent = getImmutableBroadcast(context, RC_WIDGET_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val widgetUpdateInterval = 1000 * 60 * 5L
-        val startAlarmAt = SystemClock.elapsedRealtime() + widgetUpdateInterval
+        val widgetUpdateInterval = 1000 * 60 * 5
+        val startAlarmAt = SystemClock.currentThreadTimeMillis() + widgetUpdateInterval
         pendingIntent?.let {
-            alarmManager.setInexactRepeating(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                startAlarmAt,
-                widgetUpdateInterval,
-                it,
-            )
+            alarmManager.setInexactRepeating(AlarmManager.RTC, startAlarmAt, widgetUpdateInterval.toLong(), it)
         }
     }
 

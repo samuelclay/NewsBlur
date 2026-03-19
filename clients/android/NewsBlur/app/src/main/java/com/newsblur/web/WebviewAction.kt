@@ -3,7 +3,6 @@ package com.newsblur.web
 enum class WebviewActionType {
     WEB_SEARCH,
     HIGHLIGHT,
-    TRAIN,
 }
 
 fun interface WebviewActionDelegate {

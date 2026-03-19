@@ -17,8 +17,6 @@ public class SelectOnlyEditText extends AppCompatEditText {
     private boolean forceSelection = false;
     private String selection;
 
-    private long lastToastMs = 0;
-
     public SelectOnlyEditText(Context context) {
         super(context);
         this.context = context;
@@ -60,30 +58,18 @@ public class SelectOnlyEditText extends AppCompatEditText {
     @Override
     protected void onSelectionChanged(int start, int end) {
         super.onSelectionChanged(start, end);
-
-        if (forceSelection && start == end) {
-            // prevent re-entrant selection changes causing repeated toasts
-            if (!isSelectingAll) {
-                isSelectingAll = true;
-                selectAll();
-                isSelectingAll = false;
-            }
-
-            long now = android.os.SystemClock.uptimeMillis();
-            if (context != null && now - lastToastMs > 1500) {
-                lastToastMs = now;
+        if (forceSelection && (start == end)) {
+            selectAll();
+            if (context != null) {
                 Toast.makeText(context, R.string.toast_hold_to_select, Toast.LENGTH_SHORT).show();
             }
         }
-
-        if (end > start && getText() != null) {
+        if (end > start) {
             this.selection = getText().toString().substring(start, end);
         } else {
             this.selection = null;
         }
     }
-
-    private boolean isSelectingAll = false;
 
     public String getSelection() {
         return this.selection;

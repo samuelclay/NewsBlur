@@ -2,123 +2,95 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom|center_horizontal">
+    android:layout_gravity="bottom|center_horizontal" >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/intel_title_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_title_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_title_intel_container"
+        android:layout_below="@id/intel_title_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
+    
+    <TextView
+        android:id="@+id/intel_tag_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_title_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_tag_header"
+    />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/intel_loading"
-            style="?circleProgressIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:visibility="gone" />
+    <LinearLayout
+        android:id="@+id/existing_tag_intel_container"
+        android:layout_below="@id/intel_tag_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
 
-        <RelativeLayout
-            android:id="@+id/intel_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/intel_author_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_tag_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_author_header"
+    />
 
-            <TextView
-                android:id="@+id/intel_title_header"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:text="@string/feed_intel_title_header"
-                android:textSize="16sp" />
+    <LinearLayout
+        android:id="@+id/existing_author_intel_container"
+        android:layout_below="@id/intel_author_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
 
-            <LinearLayout
-                android:id="@+id/existing_title_intel_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/intel_title_header"
-                android:layout_marginStart="14dp"
-                android:orientation="vertical" />
+    <TextView
+        android:id="@+id/intel_feed_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_author_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/intel_feed_header"
+    />
 
-            <TextView
-                android:id="@+id/intel_text_header"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/existing_title_intel_container"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:text="@string/feed_intel_text_header"
-                android:textSize="16sp" />
+    <LinearLayout
+        android:id="@+id/existing_feed_intel_container"
+        android:layout_below="@id/intel_feed_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
 
-            <LinearLayout
-                android:id="@+id/existing_text_intel_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/intel_text_header"
-                android:layout_marginStart="14dp"
-                android:orientation="vertical" />
-
-            <TextView
-                android:id="@+id/intel_tag_header"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/existing_text_intel_container"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:text="@string/feed_intel_tag_header"
-                android:textSize="16sp" />
-
-            <LinearLayout
-                android:id="@+id/existing_tag_intel_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/intel_tag_header"
-                android:layout_marginStart="14dp"
-                android:orientation="vertical" />
-
-            <TextView
-                android:id="@+id/intel_author_header"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/existing_tag_intel_container"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:text="@string/feed_intel_author_header"
-                android:textSize="16sp" />
-
-            <LinearLayout
-                android:id="@+id/existing_author_intel_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/intel_author_header"
-                android:layout_marginStart="14dp"
-                android:orientation="vertical" />
-
-            <TextView
-                android:id="@+id/intel_feed_header"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/existing_author_intel_container"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:text="@string/intel_feed_header"
-                android:textSize="16sp" />
-
-            <LinearLayout
-                android:id="@+id/existing_feed_intel_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/intel_feed_header"
-                android:layout_marginStart="14dp"
-                android:orientation="vertical" />
-
-        </RelativeLayout>
-
-    </FrameLayout>
+</RelativeLayout>
 
 </ScrollView>

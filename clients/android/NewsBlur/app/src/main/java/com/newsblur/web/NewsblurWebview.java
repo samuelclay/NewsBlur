@@ -184,11 +184,6 @@ public class NewsblurWebview extends WebView {
                 return;
             }
             isCustomViewShowing = true;
-
-            if (activity != null) {
-                activity.setReadingBackCallbackEnabled(true);
-            }
-
             customView = view;
             webviewWrapperLayout.setVisibility(View.GONE);
             customViewLayout.setVisibility(View.VISIBLE);
@@ -212,10 +207,6 @@ public class NewsblurWebview extends WebView {
             }
             customView = null;
             isCustomViewShowing = false;
-
-            if (activity != null) {
-                activity.setReadingBackCallbackEnabled(false);
-            }
         }
 
         @Override
@@ -224,11 +215,16 @@ public class NewsblurWebview extends WebView {
         }
     }
 
-    public boolean handleBackPressed() {
-        if (isCustomViewShowing) {
-            webChromeClient.onHideCustomView();
-            return true;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // if we are showing HTML5 custom content, the back key should exit that first
+        // before exiting the entire activity.
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (isCustomViewShowing) {
+                webChromeClient.onHideCustomView();
+                return true;
+            }
         }
-        return false;
+        return super.onKeyDown(keyCode, event);
     }
 }

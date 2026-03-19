@@ -150,7 +150,6 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligence.intelligenceFeed);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, intelligence.intelligenceTags);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligence.intelligenceTitle);
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_TEXT, intelligence.intelligenceText);
         values.put(DatabaseConstants.STORY_INTELLIGENCE_TOTAL, intelligence.calcTotalIntel());
 		values.put(DatabaseConstants.STORY_TAGS, StoryUtil.nullSafeJoin(",", tags));
 		values.put(DatabaseConstants.STORY_USER_TAGS, StoryUtil.nullSafeJoin(",", userTags));
@@ -188,7 +187,6 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-		story.intelligence.intelligenceText = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TEXT));
 		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ)) > 0;
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
 		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
@@ -230,22 +228,17 @@ public class Story implements Serializable {
 		@SerializedName("title")
 		public int intelligenceTitle = 0;
 
-        @SerializedName("text")
-        public int intelligenceText = 0;
-
         public int calcTotalIntel() {
             int max = 0;
             max = Math.max(max, intelligenceAuthors);
             max = Math.max(max, intelligenceTags);
             max = Math.max(max, intelligenceTitle);
-            max = Math.max(max, intelligenceText);
             if (max > 0) return max;
 
             int min = 0;
             min = Math.min(min, intelligenceAuthors);
             min = Math.min(min, intelligenceTags);
             min = Math.min(min, intelligenceTitle);
-            min = Math.min(min, intelligenceText);
             if (min < 0) return min;
 
             return intelligenceFeed;

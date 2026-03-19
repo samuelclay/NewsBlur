@@ -104,12 +104,10 @@ class UserApiImpl(
     override suspend fun saveReceipt(
         orderId: String?,
         productId: String?,
-        purchaseToken: String?,
     ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_ORDER_ID, orderId)
         values.put(APIConstants.PARAMETER_PRODUCT_ID, productId)
-        values.put(APIConstants.PARAMETER_PURCHASE_TOKEN, purchaseToken)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_RECEIPT)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
