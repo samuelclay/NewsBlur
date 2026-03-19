@@ -52,13 +52,12 @@ class IconImporter(object):
             and self.feed_icon.icon_url
             and self.feed.s3_icon
         ):
-            # YouTube feeds: skip only if we already have the channel avatar
-            # (from yt3.ggpht.com), not the generic youtube.com favicon
-            if "youtube.com" in self.feed.feed_address and "yt3.ggpht.com" not in (
-                self.feed_icon.icon_url or ""
-            ):
-                pass  # Fall through to fetch channel avatar
-            else:
+            # YouTube feeds should only refetch while they still point at the
+            # generic YouTube favicon. Real channel avatars and playlist art
+            # should be treated as valid cached icons.
+            if "youtube.com" not in self.feed.feed_address:
+                return
+            if not self.is_generic_youtube_icon(self.feed_icon.icon_url):
                 return
         if "facebook.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_facebook_image()
@@ -122,6 +121,17 @@ class IconImporter(object):
             self.feed.save(update_fields=["favicon_color", "favicon_not_found"])
 
         return not self.feed.favicon_not_found
+
+    def is_generic_youtube_icon(self, icon_url):
+        if not icon_url:
+            return True
+
+        generic_markers = (
+            "youtube.com/favicon.ico",
+            "youtube.com/s/desktop/",
+            "youtube.com/s/desktop",
+        )
+        return any(marker in icon_url for marker in generic_markers)
 
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
