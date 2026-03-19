@@ -1,3 +1,5 @@
+import datetime
+import zlib
 from unittest.mock import MagicMock, patch
 
 import redis
@@ -828,3 +830,40 @@ class Test_YouTubeFavicons(TestCase):
             self.feed.favicon_url,
             reverse("feed-favicon", kwargs={"feed_id": self.feed.pk}),
         )
+
+
+class Test_StoryImageInjection(TestCase):
+    """Tests for prepending discovered story images into rendered content."""
+
+    def test_format_story_prepends_discovered_image_when_story_has_no_inline_image(self):
+        story = MStory(
+            story_feed_id=1,
+            story_title="Google News story",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+            image_urls=["https://example.com/hero.jpg"],
+        )
+        story.story_content_z = zlib.compress(b"<p>Story body without image.</p>")
+
+        rendered = Feed.format_story(story)
+
+        self.assertTrue(rendered["story_content"].startswith('<img src="https://example.com/hero.jpg">'))
+        self.assertIn("<p>Story body without image.</p>", rendered["story_content"])
+
+    def test_format_story_does_not_prepend_image_when_story_already_has_inline_image(self):
+        story = MStory(
+            story_feed_id=1,
+            story_title="Story with image",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+            image_urls=["https://example.com/hero.jpg"],
+        )
+        story.story_content_z = zlib.compress(
+            b'<p><img src="https://example.com/already-there.jpg"></p><p>Story body.</p>'
+        )
+
+        rendered = Feed.format_story(story)
+
+        self.assertEqual(rendered["story_content"].count("<img"), 1)
+        self.assertIn("already-there.jpg", rendered["story_content"])
+        self.assertNotIn('src="https://example.com/hero.jpg"', rendered["story_content"])

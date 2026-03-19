@@ -2582,6 +2582,17 @@ class Feed(models.Model):
         return stories
 
     @classmethod
+    def prepend_story_image(cls, story_content, image_urls):
+        if not image_urls:
+            return story_content
+
+        story_content = story_content or ""
+        if "<img" in story_content.lower():
+            return story_content
+
+        return f'<img src="{image_urls[0]}">\n{story_content}'
+
+    @classmethod
     def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False, show_changes=False):
         if isinstance(story_db.story_content_z, str):
             story_db.story_content_z = base64.b64decode(story_db.story_content_z)
@@ -2605,6 +2616,7 @@ class Feed(models.Model):
             has_changes = True
         if not show_changes and latest_story_content:
             story_content = latest_story_content
+        story_content = cls.prepend_story_image(story_content, story_db.image_urls)
 
         story_title = story_db.story_title
         blank_story_title = False
