@@ -1850,16 +1850,16 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
 
         if (storyChanged && storiesCollection.storyLocationsCount > 0) {
-            // Server data changed the story list. Select the first story and
-            // reset pages so the detail pane stays in sync.
-            NSInteger firstIndex = [storiesCollection indexFromLocation:0];
-            if (firstIndex >= 0) {
-                appDelegate.activeStory = [storiesCollection.activeFeedStories objectAtIndex:firstIndex];
+            NSInteger targetLocation = [StoryRefreshSelectionDecision targetLocationWithActiveStoryLocation:storiesCollection.locationOfActiveStory
+                                                                                         storyLocationsCount:storiesCollection.storyLocationsCount];
+            NSInteger targetIndex = [storiesCollection indexFromLocation:targetLocation];
+            if (targetIndex >= 0) {
+                appDelegate.activeStory = [storiesCollection.activeFeedStories objectAtIndex:targetIndex];
             }
             appDelegate.storyPagesViewController.currentPage.pageIndex = -2;
             appDelegate.storyPagesViewController.nextPage.pageIndex = -2;
             appDelegate.storyPagesViewController.previousPage.pageIndex = -2;
-            [appDelegate.storyPagesViewController changePage:0 animated:NO];
+            [appDelegate.storyPagesViewController changePage:targetLocation animated:NO];
         } else {
             [appDelegate.storyPagesViewController resizeScrollView];
             [appDelegate.storyPagesViewController setStoryFromScroll:YES];
@@ -1992,12 +1992,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
+            BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
             
-            if (!self.isPhone && feedOpening == nil) {
-                feedOpening = @"story";
-            }
-            
-            if ([feedOpening isEqualToString:@"story"] && !self.isDashboard) {
+            if ([StoryInitialSelectionDecision shouldAutomaticallyOpenFirstStoryWithFeedOpeningPreference:feedOpening
+                                                                                                   isPhone:self.isPhone
+                                                                                               isDashboard:self.isDashboard
+                                                                                                 usesOverlay:usesOverlay]) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 [appDelegate loadStoryDetailView];
             }
@@ -2738,8 +2738,20 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
-    [appDelegate loadStoryDetailView];
-    [self redrawUnreadStory];
+    BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldUseExplicitLocation = [StorySelectionNavigationDecision shouldUseExplicitLocationWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                    presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                               presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    if (shouldUseExplicitLocation) {
+        [appDelegate loadStoryDetailViewAtLocation:row animated:shouldAnimateSelection];
+    } else {
+        [appDelegate loadStoryDetailViewAnimated:shouldAnimateSelection];
+    }
+    if (shouldRefreshStoryTitlesSidebar) {
+        [self redrawUnreadStory];
+    }
 
     NSString *storyHash = [appDelegate.activeStory objectForKey:@"story_hash"];
     if (storyHash) {
@@ -2945,7 +2957,6 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
         BOOL isGridView = appDelegate.detailViewController.storyTitlesInGridView;
-        
         if (!self.isPhoneOrCompact &&
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
@@ -2968,7 +2979,11 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         [self loadStoryAtRow:location];
-        [self reload];
+        BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                                   presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+        if (shouldRefreshStoryTitlesSidebar) {
+            [self reload];
+        }
         [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if (location == storiesCollection.storyLocationsCount) {

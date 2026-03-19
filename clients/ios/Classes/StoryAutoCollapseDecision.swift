@@ -144,6 +144,13 @@ public enum StoryAutoCollapseBehavior: String {
         }
     }
 
+    public class func needsNativeDisplayModeUpdate(
+        for presentation: FullscreenSidebarPresentation,
+        currentDisplayMode: StorySplitPreferredDisplayMode
+    ) -> Bool {
+        self.presentation(for: currentDisplayMode) != presentation
+    }
+
     public class func presentationAfterSidebarTap(
         _ currentPresentation: FullscreenSidebarPresentation
     ) -> FullscreenSidebarPresentation {
@@ -165,10 +172,11 @@ public enum StoryAutoCollapseBehavior: String {
     }
 
     public class func presentationAfterFeedSelection(
-        _ currentPresentation: FullscreenSidebarPresentation
+        _ currentPresentation: FullscreenSidebarPresentation,
+        usesNativeFullscreenSidebar: Bool
     ) -> FullscreenSidebarPresentation {
         let _ = currentPresentation
-        return .storyTitles
+        return usesNativeFullscreenSidebar ? .fullscreen : .storyTitles
     }
 
     public class func presentationAfterFullscreenButtonTap(
@@ -199,6 +207,86 @@ public enum StoryAutoCollapseBehavior: String {
         }
 
         return height >= width
+    }
+}
+
+@objcMembers public final class StoryInitialSelectionDecision: NSObject {
+    public class func shouldAutomaticallyOpenFirstStory(
+        feedOpeningPreference: String?,
+        isPhone: Bool,
+        isDashboard: Bool,
+        usesOverlay: Bool
+    ) -> Bool {
+        guard !isDashboard else {
+            return false
+        }
+
+        if usesOverlay && !isPhone {
+            return true
+        }
+
+        if let feedOpeningPreference {
+            return feedOpeningPreference == "story"
+        }
+
+        return !isPhone
+    }
+}
+
+@objcMembers public final class StorySelectionAnimationDecision: NSObject {
+    public class func shouldAnimateSelection(
+        usesNativeFullscreenSidebar: Bool,
+        presentation: FullscreenSidebarPresentation
+    ) -> Bool {
+        let _ = usesNativeFullscreenSidebar
+        return presentation == .fullscreen
+    }
+}
+
+@objcMembers public final class StorySelectionNavigationDecision: NSObject {
+    public class func shouldUseExplicitLocation(
+        usesNativeFullscreenSidebar: Bool,
+        presentation: FullscreenSidebarPresentation
+    ) -> Bool {
+        let _ = usesNativeFullscreenSidebar
+        return presentation != .fullscreen
+    }
+}
+
+@objcMembers public final class StoryPageChangeDecision: NSObject {
+    public class func shouldImmediatelyRealignPages(
+        currentPageIndex: Int,
+        targetPageIndex: Int,
+        animated: Bool
+    ) -> Bool {
+        !animated && currentPageIndex != targetPageIndex
+    }
+}
+
+@objcMembers public final class StorySelectionSidebarRefreshDecision: NSObject {
+    public class func shouldRefreshStoryTitlesSidebar(
+        usesNativeFullscreenSidebar: Bool,
+        presentation: FullscreenSidebarPresentation
+    ) -> Bool {
+        let _ = usesNativeFullscreenSidebar
+        return presentation == .fullscreen
+    }
+}
+
+@objcMembers public final class StoryRefreshSelectionDecision: NSObject {
+    public class func targetLocation(
+        activeStoryLocation: Int,
+        storyLocationsCount: Int
+    ) -> Int {
+        guard storyLocationsCount > 0 else {
+            return -1
+        }
+
+        if activeStoryLocation >= 0 {
+            return activeStoryLocation
+        }
+
+        return 0
     }
 }
 

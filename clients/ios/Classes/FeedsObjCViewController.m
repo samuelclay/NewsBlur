@@ -2056,9 +2056,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else {
         [appDelegate loadFolder:folderName feedID:feedIdStr];
     }
-
-    [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
-    
     if (searchQuery != nil) {
         appDelegate.storiesCollection.inSearch = YES;
         appDelegate.storiesCollection.searchQuery = searchQuery;

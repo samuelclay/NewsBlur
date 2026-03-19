@@ -627,13 +627,20 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        let prefersNativeFullscreenSidebarOverlay = shouldPreferNativeFullscreenSidebarOverlay
         let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
-            fullscreenSidebarPresentationState
+            fullscreenSidebarPresentationState,
+            usesNativeFullscreenSidebar: prefersNativeFullscreenSidebarOverlay
         )
+
+        guard prefersNativeFullscreenSidebarOverlay else {
+            fullscreenSidebarPresentationState = nextPresentation
+            setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
+            return
+        }
 
         guard shouldUseNativeFullscreenSidebarOverlay else {
             fullscreenSidebarPresentationState = nextPresentation
-            setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
             return
         }
 
@@ -732,6 +739,17 @@ class DetailViewController: BaseViewController {
         }
 
         if shouldUseNativeFullscreenSidebarOverlay {
+            if let splitViewController,
+               FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(
+                for: fullscreenSidebarPresentationState,
+                currentDisplayMode: splitPreferredDisplayMode(for: splitViewController.displayMode)
+               ) {
+                if fullscreenSidebarPresentationState == .fullscreen {
+                    dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+                } else {
+                    applyFullscreenSidebarPresentation(fullscreenSidebarPresentationState, sender: nil)
+                }
+            }
             setStoryTitlesCollapsed(true, animated: false)
             return
         }
@@ -957,8 +975,8 @@ class DetailViewController: BaseViewController {
 }
 
 private extension DetailViewController {
-    var shouldUseNativeFullscreenSidebarOverlay: Bool {
-        guard storyTitlesOnLeft, !isPhoneOrCompact, hasVisibleStoryForSidebarLayout else {
+    var shouldPreferNativeFullscreenSidebarOverlay: Bool {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
             return false
         }
 
@@ -973,6 +991,10 @@ private extension DetailViewController {
             height: size.height,
             isMac: appDelegate.isMac
         ) == .overlay
+    }
+
+    var shouldUseNativeFullscreenSidebarOverlay: Bool {
+        shouldPreferNativeFullscreenSidebarOverlay && hasVisibleStoryForSidebarLayout
     }
 
     func splitPreferredDisplayMode(
@@ -1014,9 +1036,8 @@ private extension DetailViewController {
             return nil
         }
 
-        _ = controller.view
-        controller.resetFeedDetail()
         controller.storiesCollection = appDelegate.storiesCollection
+        _ = controller.view
         controller.changedLayout()
         controller.reload()
 
@@ -1066,8 +1087,11 @@ private extension DetailViewController {
     }
 
     func dismissFullscreenSidebarOverlayIfNeeded(animated: Bool) {
+        let shouldDismissNativeOverlay = shouldUseNativeFullscreenSidebarOverlay
+            && splitViewController?.displayMode != .secondaryOnly
         guard fullscreenSidebarPresentationState != .fullscreen
-                || fullscreenSidebarSupplementaryNavigationController != nil else {
+                || fullscreenSidebarSupplementaryNavigationController != nil
+                || shouldDismissNativeOverlay else {
             return
         }
 

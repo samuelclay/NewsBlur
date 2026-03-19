@@ -1733,6 +1733,16 @@
     [self changePage:pageIndex animated:YES];
 }
 
+- (void)immediatelyRealignPagesForPageIndex:(NSInteger)pageIndex {
+    NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:pageIndex];
+    if (storyIndex < 0 || storyIndex >= [appDelegate.storiesCollection.activeFeedStories count]) {
+        return;
+    }
+
+    appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
+    [self updatePageWithActiveStory:pageIndex updateFeedDetail:YES];
+}
+
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
 //    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
     
@@ -1755,6 +1765,9 @@
     }
     
     self.scrollingToPage = pageIndex;
+    BOOL shouldImmediatelyRealignPages = [StoryPageChangeDecision shouldImmediatelyRealignPagesWithCurrentPageIndex:currentPage.pageIndex
+                                                                                                      targetPageIndex:pageIndex
+                                                                                                             animated:animated];
     
     if (pageIndex >= 0) {
         [self.currentPage hideNoStoryMessage];
@@ -1765,10 +1778,16 @@
     // Check if already on the selected page
     if (self.isHorizontal ? offset.x == frame.origin.x : offset.y == frame.origin.y) {
         [self applyNewIndex:pageIndex pageController:currentPage];
-        [self setStoryFromScroll];
+        if (shouldImmediatelyRealignPages) {
+            [self immediatelyRealignPagesForPageIndex:pageIndex];
+        } else {
+            [self setStoryFromScroll];
+        }
     } else {
         [self.scrollView scrollRectToVisible:frame animated:animated && self.currentPage.pageIndex > -2];
-        if (!animated) {
+        if (shouldImmediatelyRealignPages) {
+            [self immediatelyRealignPagesForPageIndex:pageIndex];
+        } else if (!animated) {
             [self setStoryFromScroll];
         }
     }
@@ -1806,6 +1825,7 @@
             [self refreshPages];
         });
     }
+
 }
 
 - (void)changeToNextPage:(id)sender {

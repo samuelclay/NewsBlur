@@ -203,6 +203,30 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_native_overlay_detects_when_pending_fullscreen_has_not_been_applied_yet() {
+        XCTAssertTrue(
+            FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(
+                for: .fullscreen,
+                currentDisplayMode: .twoOverSecondary
+            )
+        )
+    }
+
+    func test_native_overlay_detects_when_current_display_mode_already_matches_pending_state() {
+        XCTAssertFalse(
+            FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(
+                for: .fullscreen,
+                currentDisplayMode: .secondaryOnly
+            )
+        )
+        XCTAssertFalse(
+            FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(
+                for: .storyTitles,
+                currentDisplayMode: .oneOverSecondary
+            )
+        )
+    }
+
     func test_story_selection_dismisses_the_sidebar_popover() {
         XCTAssertEqual(
             FullscreenSidebarPresentationDecision.presentationAfterStorySelection(.storyTitles),
@@ -214,14 +238,37 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_feed_selection_returns_to_story_titles_overlay() {
+    func test_non_native_feed_selection_returns_to_story_titles_overlay() {
         XCTAssertEqual(
-            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(.storyTitles),
+            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
+                .storyTitles,
+                usesNativeFullscreenSidebar: false
+            ),
             .storyTitles
         )
         XCTAssertEqual(
-            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(.feeds),
+            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
+                .feeds,
+                usesNativeFullscreenSidebar: false
+            ),
             .storyTitles
+        )
+    }
+
+    func test_native_feed_selection_returns_to_fullscreen() {
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
+                .storyTitles,
+                usesNativeFullscreenSidebar: true
+            ),
+            .fullscreen
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
+                .feeds,
+                usesNativeFullscreenSidebar: true
+            ),
+            .fullscreen
         )
     }
 
@@ -302,6 +349,237 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 width: 1376,
                 height: 1032
             )
+        )
+    }
+
+    func test_overlay_always_opens_first_story_on_ipad_even_when_preference_is_list() {
+        XCTAssertTrue(
+            StoryInitialSelectionDecision.shouldAutomaticallyOpenFirstStory(
+                feedOpeningPreference: "list",
+                isPhone: false,
+                isDashboard: false,
+                usesOverlay: true
+            )
+        )
+    }
+
+    func test_non_overlay_respects_story_opening_preference() {
+        XCTAssertFalse(
+            StoryInitialSelectionDecision.shouldAutomaticallyOpenFirstStory(
+                feedOpeningPreference: "list",
+                isPhone: false,
+                isDashboard: false,
+                usesOverlay: false
+            )
+        )
+        XCTAssertTrue(
+            StoryInitialSelectionDecision.shouldAutomaticallyOpenFirstStory(
+                feedOpeningPreference: "story",
+                isPhone: false,
+                isDashboard: false,
+                usesOverlay: false
+            )
+        )
+    }
+
+    func test_dashboard_never_auto_opens_first_story() {
+        XCTAssertFalse(
+            StoryInitialSelectionDecision.shouldAutomaticallyOpenFirstStory(
+                feedOpeningPreference: "story",
+                isPhone: false,
+                isDashboard: true,
+                usesOverlay: true
+            )
+        )
+    }
+
+    func test_overlay_story_selection_disables_animation_while_sidebar_is_visible() {
+        XCTAssertFalse(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: true,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: true,
+                presentation: .feeds
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
+            )
+        )
+    }
+
+    func test_fullscreen_story_selection_keeps_animation() {
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: false,
+                presentation: .fullscreen
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                usesNativeFullscreenSidebar: true,
+                presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_overlay_story_selection_uses_tapped_location_while_sidebar_is_visible() {
+        XCTAssertTrue(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: true,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: true,
+                presentation: .feeds
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
+            )
+        )
+    }
+
+    func test_fullscreen_story_selection_keeps_active_story_based_navigation() {
+        XCTAssertFalse(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: false,
+                presentation: .fullscreen
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                usesNativeFullscreenSidebar: true,
+                presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_non_animated_story_page_jump_realigns_the_page_controllers_immediately() {
+        XCTAssertTrue(
+            StoryPageChangeDecision.shouldImmediatelyRealignPages(
+                currentPageIndex: 0,
+                targetPageIndex: 5,
+                animated: false
+            )
+        )
+        XCTAssertTrue(
+            StoryPageChangeDecision.shouldImmediatelyRealignPages(
+                currentPageIndex: -2,
+                targetPageIndex: 0,
+                animated: false
+            )
+        )
+    }
+
+    func test_animated_or_no_op_story_page_changes_skip_immediate_realignment() {
+        XCTAssertFalse(
+            StoryPageChangeDecision.shouldImmediatelyRealignPages(
+                currentPageIndex: 0,
+                targetPageIndex: 5,
+                animated: true
+            )
+        )
+        XCTAssertFalse(
+            StoryPageChangeDecision.shouldImmediatelyRealignPages(
+                currentPageIndex: 3,
+                targetPageIndex: 3,
+                animated: false
+            )
+        )
+    }
+
+    func test_overlay_story_selection_skips_sidebar_refresh_while_overlay_is_visible() {
+        XCTAssertFalse(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: true,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: true,
+                presentation: .feeds
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
+            )
+        )
+    }
+
+    func test_fullscreen_story_selection_keeps_sidebar_refresh() {
+        XCTAssertTrue(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: false,
+                presentation: .fullscreen
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                usesNativeFullscreenSidebar: true,
+                presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_story_refresh_keeps_the_selected_story_when_it_is_still_visible() {
+        XCTAssertEqual(
+            StoryRefreshSelectionDecision.targetLocation(
+                activeStoryLocation: 4,
+                storyLocationsCount: 10
+            ),
+            4
+        )
+    }
+
+    func test_story_refresh_falls_back_to_the_first_story_when_selection_is_gone() {
+        XCTAssertEqual(
+            StoryRefreshSelectionDecision.targetLocation(
+                activeStoryLocation: -1,
+                storyLocationsCount: 10
+            ),
+            0
+        )
+    }
+
+    func test_story_refresh_returns_no_target_when_there_are_no_stories() {
+        XCTAssertEqual(
+            StoryRefreshSelectionDecision.targetLocation(
+                activeStoryLocation: 2,
+                storyLocationsCount: 0
+            ),
+            -1
         )
     }
 

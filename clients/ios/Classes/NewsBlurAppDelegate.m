@@ -2073,6 +2073,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         [self.feedDetailViewController loadingFeed];
         
         [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
+        [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -2625,6 +2626,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
+    [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
@@ -2723,6 +2725,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (void)loadStoryDetailView {
+    [self loadStoryDetailViewAnimated:YES];
+}
+
+- (void)loadStoryDetailViewAnimated:(BOOL)animated {
     //    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
     //        [self showDetailViewController:detailViewController sender:self];
     //        feedsNavigationController.navigationItem.hidesBackButton = YES;
@@ -2737,27 +2743,30 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
-    if (activeStoryLocation >= 0) {
+    [self loadStoryDetailViewAtLocation:activeStoryLocation animated:animated];
+}
+
+- (void)loadStoryDetailViewAtLocation:(NSInteger)location animated:(BOOL)animated {
+    if (location >= 0) {
         if (self.storyPagesViewController == nil) {
             [self.detailViewController checkLayout];
         }
-        
-        BOOL animated = !self.tryFeedCategory;
+
+        animated = animated && !self.tryFeedCategory;
         [self.storyPagesViewController view];
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
-        
+
         self.feedDetailViewController.cameFromFeedsList = NO;
-        
-        NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
-        
+        NSDictionary *params = @{@"location" : @(location), @"animated" : @(animated)};
+
         if (self.isCompactWidth) {
             [self performSelector:@selector(deferredChangePage:) withObject:params afterDelay:0.0];
         } else {
             [self deferredChangePage:params];
         }
     }
-    
+
     [MBProgressHUD hideHUDForView:self.storyPagesViewController.view animated:YES];
 }
 
