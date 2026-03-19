@@ -12618,7 +12618,8 @@ form.opml_import_form input {
     margin-top: 4px;
 }
 
-.NB-classifier-this-story+.NB-classifier-feed-items::before {
+.NB-classifier-this-story+.NB-classifier-feed-items::before,
+.NB-classifier-feed-items:first-child::before {
     content: 'More from this site';
     display: block;
     font-size: 9px;
@@ -12645,7 +12646,8 @@ form.opml_import_form input {
 }
 
 .NB-classifier-this-story+.NB-classifier-folder-items::before,
-.NB-classifier-feed-items+.NB-classifier-folder-items::before {
+.NB-classifier-feed-items+.NB-classifier-folder-items::before,
+.NB-classifier-folder-items:first-child::before {
     content: 'More from this folder';
     display: block;
     font-size: 9px;
@@ -12666,7 +12668,8 @@ form.opml_import_form input {
 
 .NB-classifier-this-story+.NB-classifier-global-items::before,
 .NB-classifier-feed-items+.NB-classifier-global-items::before,
-.NB-classifier-folder-items+.NB-classifier-global-items::before {
+.NB-classifier-folder-items+.NB-classifier-global-items::before,
+.NB-classifier-global-items:first-child::before {
     content: 'More from global filters';
     display: block;
     font-size: 9px;
