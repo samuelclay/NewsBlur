@@ -375,11 +375,13 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
-        if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeOneBesideSecondary) {
-            command.title = @"Show Sidebar";
-        } else {
-            command.title = @"Hide Sidebar";
-        }
+        UISplitViewControllerDisplayMode preferredDisplayMode = splitViewController.preferredDisplayMode;
+        BOOL isSidebarVisible = preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoBesideSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];

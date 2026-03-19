@@ -404,6 +404,7 @@ class DetailViewController: BaseViewController {
         return StoryTitlesHeaderButtonDecision.showsFullscreenButton(
             for: fullscreenSidebarPresentationState,
             storyTitlesOnLeft: storyTitlesOnLeft,
+            usesNativeFullscreenSidebar: shouldUseNativeFullscreenSidebarOverlay,
             isPhoneOrCompact: isPhoneOrCompact,
             width: size.width,
             height: size.height
@@ -545,6 +546,16 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func resetStoryTitlesRevealOverride() {
+        let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+        guard StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+            for: behaviorString,
+            width: size.width,
+            height: size.height,
+            isMac: appDelegate.isMac
+        ) else {
+            return
+        }
+
         dismissFullscreenSidebarOverlayIfNeeded(animated: false)
     }
 

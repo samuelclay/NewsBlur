@@ -1983,7 +1983,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
-        if (appDelegate.activeStory == nil && self.cameFromFeedsList && ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay)) {
+        if (appDelegate.activeStory == nil && self.cameFromFeedsList) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
             if (storyIndex == -1 || self.deferredLoadStoryCount > 0) {

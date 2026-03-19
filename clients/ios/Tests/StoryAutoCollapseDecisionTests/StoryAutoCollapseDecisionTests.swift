@@ -25,7 +25,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_auto_in_landscape_prefers_tiled_sidebar_layout() {
+    func test_auto_in_landscape_prefers_three_column_tiled_sidebar_layout() {
         XCTAssertTrue(
             StorySplitBehaviorDecision.usesTiledSidebarLayout(
                 for: "auto",
@@ -33,6 +33,15 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 height: 1032,
                 isMac: false
             )
+        )
+        XCTAssertEqual(
+            StorySplitBehaviorDecision.preferredDisplayMode(
+                for: "auto",
+                width: 1376,
+                height: 1032,
+                isMac: false
+            ),
+            .twoBesideSecondary
         )
     }
 
@@ -60,20 +69,58 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_sidebar_toggle_for_tiled_layout_switches_between_hidden_and_beside() {
+    func test_sidebar_toggle_for_tiled_layout_switches_between_hidden_and_three_columns() {
         XCTAssertEqual(
             StorySplitBehaviorDecision.sidebarDisplayMode(
                 forTiledLayout: true,
                 currentDisplayMode: .secondaryOnly
             ),
-            .oneBesideSecondary
+            .twoBesideSecondary
         )
         XCTAssertEqual(
             StorySplitBehaviorDecision.sidebarDisplayMode(
                 forTiledLayout: true,
-                currentDisplayMode: .oneOverSecondary
+                currentDisplayMode: .twoBesideSecondary
             ),
             .secondaryOnly
+        )
+    }
+
+    func test_tiled_layout_keeps_temporary_sidebar_reveal_between_folder_switches() {
+        XCTAssertFalse(
+            StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+                for: "auto",
+                width: 1376,
+                height: 1032,
+                isMac: false
+            )
+        )
+        XCTAssertFalse(
+            StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+                for: "tile",
+                width: 1376,
+                height: 1032,
+                isMac: false
+            )
+        )
+    }
+
+    func test_non_tiled_layout_resets_temporary_sidebar_reveal() {
+        XCTAssertTrue(
+            StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+                for: "auto",
+                width: 1032,
+                height: 1376,
+                isMac: false
+            )
+        )
+        XCTAssertTrue(
+            StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+                for: "overlay",
+                width: 1376,
+                height: 1032,
+                isMac: false
+            )
         )
     }
 
@@ -194,6 +241,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StoryTitlesHeaderButtonDecision.showsFullscreenButton(
                 for: .storyTitles,
                 storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: false,
                 isPhoneOrCompact: false,
                 width: 1032,
                 height: 1376
@@ -203,6 +251,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StoryTitlesHeaderButtonDecision.showsFullscreenButton(
                 for: .feeds,
                 storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: false,
                 isPhoneOrCompact: false,
                 width: 1032,
                 height: 1376
@@ -215,6 +264,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StoryTitlesHeaderButtonDecision.showsFullscreenButton(
                 for: .fullscreen,
                 storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: false,
                 isPhoneOrCompact: false,
                 width: 1032,
                 height: 1376
@@ -224,6 +274,30 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StoryTitlesHeaderButtonDecision.showsFullscreenButton(
                 for: .storyTitles,
                 storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: false,
+                isPhoneOrCompact: false,
+                width: 1376,
+                height: 1032
+            )
+        )
+    }
+
+    func test_story_titles_header_shows_fullscreen_button_for_native_overlay_in_landscape() {
+        XCTAssertTrue(
+            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
+                for: .storyTitles,
+                storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: true,
+                isPhoneOrCompact: false,
+                width: 1376,
+                height: 1032
+            )
+        )
+        XCTAssertTrue(
+            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
+                for: .feeds,
+                storyTitlesOnLeft: true,
+                usesNativeFullscreenSidebar: true,
                 isPhoneOrCompact: false,
                 width: 1376,
                 height: 1032

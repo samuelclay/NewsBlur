@@ -60,7 +60,7 @@ public enum StoryAutoCollapseBehavior: String {
         isMac: Bool
     ) -> StorySplitPreferredDisplayMode {
         usesTiledSidebarLayout(for: behaviorValue, width: width, height: height, isMac: isMac)
-            ? .oneBesideSecondary
+            ? .twoBesideSecondary
             : .secondaryOnly
     }
 
@@ -78,10 +78,19 @@ public enum StoryAutoCollapseBehavior: String {
         currentDisplayMode: StorySplitPreferredDisplayMode
     ) -> StorySplitPreferredDisplayMode {
         if isTiledLayout {
-            return currentDisplayMode == .secondaryOnly ? .oneBesideSecondary : .secondaryOnly
+            return currentDisplayMode == .secondaryOnly ? .twoBesideSecondary : .secondaryOnly
         }
 
         return currentDisplayMode == .secondaryOnly ? .oneOverSecondary : .secondaryOnly
+    }
+
+    public class func shouldResetTemporarySidebarReveal(
+        for behaviorValue: String?,
+        width: CGFloat,
+        height: CGFloat,
+        isMac: Bool
+    ) -> Bool {
+        !usesTiledSidebarLayout(for: behaviorValue, width: width, height: height, isMac: isMac)
     }
 
     private class func resolvedBehavior(
@@ -174,15 +183,22 @@ public enum StoryAutoCollapseBehavior: String {
     public class func showsFullscreenButton(
         for presentation: FullscreenSidebarPresentation,
         storyTitlesOnLeft: Bool,
+        usesNativeFullscreenSidebar: Bool,
         isPhoneOrCompact: Bool,
         width: CGFloat,
         height: CGFloat
     ) -> Bool {
-        guard storyTitlesOnLeft, !isPhoneOrCompact, height >= width else {
+        let _ = width
+
+        guard storyTitlesOnLeft, !isPhoneOrCompact, presentation != .fullscreen else {
             return false
         }
 
-        return presentation != .fullscreen
+        if usesNativeFullscreenSidebar {
+            return true
+        }
+
+        return height >= width
     }
 }
 

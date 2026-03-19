@@ -987,7 +987,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
         self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
 
-        if (preferredDisplayMode == StorySplitPreferredDisplayModeOneBesideSecondary &&
+        if (preferredDisplayMode == StorySplitPreferredDisplayModeTwoBesideSecondary &&
             !self.splitViewController.isCollapsed) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
