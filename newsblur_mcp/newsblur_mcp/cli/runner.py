@@ -36,9 +36,10 @@ def async_command(f):
 def get_authenticated_client() -> NewsBlurClient:
     """Load the stored OAuth token and create an authenticated NewsBlurClient.
 
+    Uses the server URL from config (set via --server or `newsblur auth login --server`).
     Prints an error and exits if no token is found.
     """
-    from newsblur_mcp.cli.auth import load_token
+    from newsblur_mcp.cli.auth import get_server_url, load_token
 
     token = load_token()
     if not token:
@@ -46,4 +47,4 @@ def get_authenticated_client() -> NewsBlurClient:
             "[red]Not logged in.[/red] Run [bold]newsblur auth login[/bold] to authenticate."
         )
         raise typer.Exit(1)
-    return NewsBlurClient(bearer_token=token)
+    return NewsBlurClient(bearer_token=token, base_url=get_server_url())

@@ -12,15 +12,23 @@ app = typer.Typer()
 
 
 @app.command("login")
-def login():
+def login(
+    server: str = typer.Option(
+        None, "--server", "-s",
+        help="NewsBlur server URL (e.g. https://newsblur.com or https://nb.example.com for self-hosted)",
+    ),
+):
     """Log in to NewsBlur via OAuth (opens your browser)."""
-    console.print("[bold]Logging in to NewsBlur...[/bold]")
+    from newsblur_mcp.cli.auth import get_server_url
+
+    target = server or get_server_url()
+    console.print(f"[bold]Logging in to {target}...[/bold]")
     console.print("Opening your browser for authentication.\n")
     try:
-        token_data = login_flow()
+        token_data = login_flow(server=server)
         console.print("[green]Login successful![/green]")
         if token_data.get("access_token"):
-            console.print("[dim]Token stored securely.[/dim]")
+            console.print(f"[dim]Token stored securely. Server: {target}[/dim]")
     except RuntimeError as e:
         console.print(f"[red]Login failed:[/red] {e}")
         raise typer.Exit(1)
@@ -50,6 +58,8 @@ def status():
         console.print("[green]Authenticated[/green]")
         if info.get("username"):
             console.print(f"  Username: [bold]{info['username']}[/bold]")
+        if info.get("server"):
+            console.print(f"  Server:   {info['server']}")
         if info.get("expires_at"):
             from datetime import datetime
 

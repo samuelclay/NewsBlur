@@ -17,11 +17,18 @@ def main(
     json_output: bool = typer.Option(False, "--json", help="Output as JSON"),
     raw_output: bool = typer.Option(False, "--raw", help="Output unformatted text"),
     version: bool = typer.Option(False, "--version", "-v", help="Show version"),
+    server: str = typer.Option(
+        None, "--server", "-s",
+        help="NewsBlur server URL (default: https://newsblur.com). Persisted to config.",
+    ),
 ):
     """NewsBlur CLI - read feeds, manage stories, and train classifiers."""
     ctx.ensure_object(dict)
     ctx.obj["json"] = json_output
     ctx.obj["raw"] = raw_output
+    if server:
+        from newsblur_mcp.cli.auth import set_server_url
+        set_server_url(server)
     if version:
         try:
             from importlib.metadata import version as get_version

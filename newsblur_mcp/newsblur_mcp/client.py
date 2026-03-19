@@ -16,11 +16,11 @@ class PremiumRequiredError(Exception):
 class NewsBlurClient:
     """Stateless async client that proxies requests to NewsBlur's REST API."""
 
-    def __init__(self, bearer_token: str):
+    def __init__(self, bearer_token: str, base_url: str | None = None):
         self.bearer_token = bearer_token
         self._is_premium: bool | None = None
         self._http = httpx.AsyncClient(
-            base_url=NEWSBLUR_BASE_URL,
+            base_url=base_url or NEWSBLUR_BASE_URL,
             headers={"Authorization": f"Bearer {bearer_token}"},
             timeout=REQUEST_TIMEOUT,
         )

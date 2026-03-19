@@ -22,10 +22,9 @@ from urllib.parse import parse_qs, urlparse
 
 import httpx
 
-from newsblur_mcp.settings import NEWSBLUR_PUBLIC_URL
-
 CLI_OAUTH_CLIENT_ID = "newsblur-cli"
 TOKEN_EXCHANGE_TIMEOUT = 30
+DEFAULT_SERVER = "https://newsblur.com"
 
 
 def get_config_dir() -> Path:
@@ -35,9 +34,42 @@ def get_config_dir() -> Path:
     return config_dir
 
 
+def get_config_path() -> Path:
+    """Return the path to the CLI config file."""
+    return get_config_dir() / "config.json"
+
+
 def get_token_path() -> Path:
     """Return the path to the stored auth token file."""
     return get_config_dir() / "auth.json"
+
+
+def get_server_url() -> str:
+    """Return the configured server URL, or the default."""
+    config_path = get_config_path()
+    if config_path.exists():
+        try:
+            data = json.loads(config_path.read_text())
+            server = data.get("server")
+            if server:
+                return server.rstrip("/")
+        except (json.JSONDecodeError, OSError):
+            pass
+    return DEFAULT_SERVER
+
+
+def set_server_url(server: str) -> None:
+    """Persist the server URL to config."""
+    config_path = get_config_path()
+    data = {}
+    if config_path.exists():
+        try:
+            data = json.loads(config_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    data["server"] = server.rstrip("/")
+    config_path.write_text(json.dumps(data, indent=2))
+    os.chmod(config_path, stat.S_IRUSR | stat.S_IWUSR)
 
 
 def load_token() -> str | None:
@@ -91,7 +123,7 @@ def refresh_access_token(refresh_token: str) -> dict | None:
     """
     try:
         resp = httpx.post(
-            f"{NEWSBLUR_PUBLIC_URL}/oauth/token/",
+            f"{get_server_url()}/oauth/token/",
             data={
                 "grant_type": "refresh_token",
                 "refresh_token": refresh_token,
@@ -110,15 +142,20 @@ def refresh_access_token(refresh_token: str) -> dict | None:
     return None
 
 
-def login_flow() -> dict:
+def login_flow(server: str | None = None) -> dict:
     """Run the full OAuth local callback flow.
 
     Opens the browser, waits for the authorization code callback,
     exchanges it for a token, and stores it.
 
+    Args:
+        server: Server URL to authenticate against. Persisted to config if provided.
+
     Returns the token data dict on success.
     Raises RuntimeError on failure.
     """
+    if server:
+        set_server_url(server)
     code_holder: dict = {}
     code_event = threading.Event()
 
@@ -163,7 +200,7 @@ def login_flow() -> dict:
     redirect_uri = f"http://localhost:{port}/callback"
 
     authorize_url = (
-        f"{NEWSBLUR_PUBLIC_URL}/oauth/authorize/"
+        f"{get_server_url()}/oauth/authorize/"
         f"?client_id={CLI_OAUTH_CLIENT_ID}"
         f"&redirect_uri={redirect_uri}"
         f"&response_type=code"
@@ -188,7 +225,7 @@ def login_flow() -> dict:
 
         # Exchange the code for a token
         resp = httpx.post(
-            f"{NEWSBLUR_PUBLIC_URL}/oauth/token/",
+            f"{get_server_url()}/oauth/token/",
             data={
                 "grant_type": "authorization_code",
                 "code": code,
@@ -271,7 +308,7 @@ def get_auth_status() -> dict:
     username = None
     try:
         resp = httpx.get(
-            f"{NEWSBLUR_PUBLIC_URL}/oauth/user/info/",
+            f"{get_server_url()}/oauth/user/info/",
             headers={"Authorization": f"Bearer {data.get('access_token', '')}"},
             timeout=10,
         )
@@ -284,6 +321,7 @@ def get_auth_status() -> dict:
     return {
         "authenticated": True,
         "username": username,
+        "server": get_server_url(),
         "token_path": str(token_path),
         "expires_at": data.get("expires_at"),
     }

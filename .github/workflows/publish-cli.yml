@@ -3,6 +3,12 @@ name: Publish NewsBlur CLI to PyPI
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (build only, skip upload)"
+        type: boolean
+        default: true
 
 jobs:
   publish:
@@ -10,6 +16,7 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +32,12 @@ jobs:
         working-directory: newsblur_mcp
         run: python -m build
 
+      - name: List built artifacts
+        run: ls -la newsblur_mcp/dist/
+
       - name: Publish to PyPI
+        if: ${{ github.event_name == 'release' || !inputs.dry_run }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: newsblur_mcp/dist/
+          verbose: true

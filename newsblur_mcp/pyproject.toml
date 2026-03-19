@@ -2,7 +2,21 @@
 name = "newsblur"
 version = "0.1.0"
 description = "NewsBlur CLI and MCP server - manage feeds, stories, and classifiers"
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11"
+keywords = ["newsblur", "rss", "cli", "mcp", "feeds", "news"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+]
 dependencies = [
     "fastmcp>=2.0.0",
     "httpx>=0.27.0",
