@@ -61,8 +61,8 @@ class StoryThumbnailView
         override fun setVisibility(visibility: Int) {
             (layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
                 if (visibility == VISIBLE) {
-                    if (expandedWidth > 0) params.width = expandedWidth
-                    if (expandedHeight > 0) params.height = expandedHeight
+                    if (expandedWidth != 0) params.width = expandedWidth
+                    if (expandedHeight != 0) params.height = expandedHeight
                     params.setMargins(
                         expandedLeftMargin,
                         expandedTopMargin,
@@ -70,8 +70,8 @@ class StoryThumbnailView
                         expandedBottomMargin,
                     )
                 } else {
-                    if (params.width > 0) expandedWidth = params.width
-                    if (params.height > 0) expandedHeight = params.height
+                    if (params.width != 0) expandedWidth = params.width
+                    if (params.height != 0) expandedHeight = params.height
                     expandedLeftMargin = params.leftMargin
                     expandedTopMargin = params.topMargin
                     expandedRightMargin = params.rightMargin

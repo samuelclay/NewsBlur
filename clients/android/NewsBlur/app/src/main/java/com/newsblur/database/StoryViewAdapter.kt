@@ -42,6 +42,7 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
 import com.newsblur.util.SpacingStyle
+import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
@@ -51,6 +52,7 @@ import com.newsblur.util.StoryUtil.getStoryHashes
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
+import com.newsblur.util.storyRowLayout
 import com.newsblur.view.StoryThumbnailView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -817,15 +819,32 @@ class StoryViewAdapter(
             thumbView = vh.thumbViewRight
             params = vh.thumbViewRight.layoutParams as RelativeLayout.LayoutParams
         }
-        if (params != null && thumbnailStyle.isSmall()) {
+        if (params != null) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
-            val leftMargin = if (thumbnailStyle.isLeft()) UIUtils.dp2px(context, 8) else 0
-            val rightMargin = if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 8) else 0
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.id)
-            thumbView?.setExpandedLayout(sizeDp, sizeDp, leftMargin, verticalMargin, rightMargin, verticalMargin)
-        } else if (params != null) {
+            val sideMargin = UIUtils.dp2px(context, 8)
+            val layout = thumbnailStyle.storyRowLayout(sizeDp, verticalMargin, sideMargin)
+
             params.removeRule(RelativeLayout.ALIGN_BOTTOM)
-            thumbView?.setExpandedLayout(sizeDp, sizeDp, 0, 0, 0, 0)
+            params.removeRule(RelativeLayout.CENTER_VERTICAL)
+            params.removeRule(RelativeLayout.ALIGN_PARENT_TOP)
+            params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+
+            when (layout.verticalMode) {
+                StoryRowThumbnailVerticalMode.CENTERED -> params.addRule(RelativeLayout.CENTER_VERTICAL)
+                StoryRowThumbnailVerticalMode.FILL_ROW_HEIGHT -> {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                }
+            }
+
+            thumbView?.setExpandedLayout(
+                layout.widthPx,
+                layout.fixedHeightPx ?: ViewGroup.LayoutParams.MATCH_PARENT,
+                layout.leftMarginPx,
+                layout.topMarginPx,
+                layout.rightMarginPx,
+                layout.bottomMarginPx,
+            )
         }
 
         if (this.ignoreReadStatus || !story.read) {
