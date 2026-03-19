@@ -1,0 +1,10 @@
+{
+    "service": {
+        "name": "app-mcp",
+        "id": "{{ inventory_hostname }}-mcp",
+        "tags": [
+            "mcp"
+        ],
+        "port": 8099
+    }
+}

@@ -357,6 +357,7 @@ pull:
 	docker pull newsblur/newsblur_python3
 	docker pull newsblur/newsblur_node
 	docker pull newsblur/newsblur_monitor
+	docker pull newsblur/newsblur_mcp
 
 local_build_web:
 	# docker buildx build --load . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
@@ -385,7 +386,9 @@ build_monitor: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 build_deploy: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
-build: build_web build_node build_monitor build_deploy
+build_mcp: buildx_setup
+	docker buildx build ./newsblur_mcp --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+build: build_web build_node build_monitor build_deploy build_mcp
 push_web: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 push_node: buildx_setup
@@ -394,7 +397,9 @@ push_monitor: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 push_deploy: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
-push_images: push_web push_node push_monitor push_deploy
+push_mcp: buildx_setup
+	docker buildx build ./newsblur_mcp --push --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+push_images: push_web push_node push_monitor push_deploy push_mcp
 push: push_images
 
 # Tasks

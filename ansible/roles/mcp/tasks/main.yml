@@ -1,0 +1,35 @@
+---
+- name: Allow MCP server port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "8099"
+
+- name: Read MCP OAuth secret from app_env.py
+  shell: python3 -c "exec(open('/srv/newsblur/newsblur_web/app_env.py').read()); print(MCP_OAUTH_CLIENT_SECRET)"
+  register: mcp_secret_result
+  changed_when: false
+
+- name: Set MCP OAuth secret fact
+  set_fact:
+    mcp_oauth_client_id: "newsblur-mcp-server"
+    mcp_oauth_client_secret: "{{ mcp_secret_result.stdout }}"
+
+- name: Update to latest NewsBlur MCP Docker image
+  become: yes
+  docker_image:
+    name: newsblur/newsblur_mcp
+    source: pull
+
+- include_tasks: container.yml
+
+- name: Register MCP server in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_mcp_service.json
+    dest: /etc/consul.d/newsblur_mcp.json
+  when: disable_consul_services_ie_staging is not defined
+  notify:
+    - reload consul

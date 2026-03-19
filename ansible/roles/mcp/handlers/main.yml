@@ -1,0 +1,12 @@
+---
+- name: reload consul configuration
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul
+
+- name: restart mcp
+  become: yes
+  command: docker restart newsblur_mcp
+  listen: restart mcp

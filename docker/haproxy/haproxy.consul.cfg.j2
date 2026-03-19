@@ -312,10 +312,13 @@ backend consul_manager
 
 backend app_mcp
     balance roundrobin
+    option allbackups
     http-request replace-path /mcp(.*)     \1
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.hdjango %}
-    server {{host}} {{host}}.node.nyc1.consul:8099
+    timeout server 3600s
+    timeout tunnel 3600s
+    default-server check inter 2000ms fall 3 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hcount %}
+    server {{host}}-mcp {{host}}.node.nyc1.consul:8099
     {% endfor %}
 
 backend maintenance

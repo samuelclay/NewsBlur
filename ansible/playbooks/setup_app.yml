@@ -18,5 +18,6 @@
     - { role: "consul-client", tags: "consul" }
 
     - { role: "web", tags: "web" }
+    - { role: "mcp", tags: "mcp", when: "'mcp' in group_names" }
     - { role: "nginx", tags: "nginx" }
     - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
