@@ -317,7 +317,7 @@ backend app_mcp
     timeout server 3600s
     timeout tunnel 3600s
     default-server check inter 2000ms fall 3 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.hcount %}
+    {% for host in groups.hmcp %}
     server {{host}}-mcp {{host}}.node.nyc1.consul:8099
     {% endfor %}
 
