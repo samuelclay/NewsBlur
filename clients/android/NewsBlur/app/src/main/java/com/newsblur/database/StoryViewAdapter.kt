@@ -23,6 +23,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
@@ -64,6 +65,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * Story list adapter, RecyclerView style.
@@ -802,11 +804,9 @@ class StoryViewAdapter(
             vh.thumbViewLeft.visibility = View.GONE
         }
 
-        var sizeRes = R.dimen.thumbnails_size
-        if (thumbnailStyle.isSmall()) {
-            sizeRes = R.dimen.thumbnails_small_size
-        }
-        val sizeDp = context.resources.getDimensionPixelSize(sizeRes)
+        val largeWidthPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_size)
+        val smallWidthPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_small_width)
+        val smallMinHeightPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_small_min_height)
 
         var params: RelativeLayout.LayoutParams? = null
         var thumbView: StoryThumbnailView? = null
@@ -822,7 +822,7 @@ class StoryViewAdapter(
         if (params != null) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
             val sideMargin = UIUtils.dp2px(context, 8)
-            val layout = thumbnailStyle.storyRowLayout(sizeDp, verticalMargin, sideMargin)
+            val layout = thumbnailStyle.storyRowLayout(largeWidthPx, smallWidthPx, verticalMargin, sideMargin)
 
             params.removeRule(RelativeLayout.ALIGN_BOTTOM)
             params.removeRule(RelativeLayout.CENTER_VERTICAL)
@@ -830,21 +830,76 @@ class StoryViewAdapter(
             params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
 
             when (layout.verticalMode) {
-                StoryRowThumbnailVerticalMode.CENTERED -> params.addRule(RelativeLayout.CENTER_VERTICAL)
-                StoryRowThumbnailVerticalMode.FILL_ROW_HEIGHT -> {
+                StoryRowThumbnailVerticalMode.CENTERED -> {
+                    params.addRule(RelativeLayout.CENTER_VERTICAL)
+                    val targetThumbView = thumbView
+                    if (targetThumbView != null) {
+                        val boundStoryHash = story.storyHash
+                        val boundThumbnailStyle = thumbnailStyle
+                        val verticalInsetPx = UIUtils.dp2px(context, 8)
+
+                        targetThumbView.setExpandedLayout(
+                            layout.widthPx,
+                            layout.fixedHeightPx ?: 1,
+                            layout.leftMarginPx,
+                            layout.topMarginPx,
+                            layout.rightMarginPx,
+                            layout.bottomMarginPx,
+                        )
+                        vh.itemView.doOnLayout { itemView ->
+                            if (vh.story?.storyHash != boundStoryHash) return@doOnLayout
+                            if (thumbnailStyle != boundThumbnailStyle) return@doOnLayout
+                            val maxAllowedHeight = (itemView.height - verticalInsetPx).coerceAtLeast(1)
+                            val scaledHeight = (itemView.height * layout.rowHeightFraction).roundToInt()
+                            val targetHeight =
+                                if (maxAllowedHeight >= smallMinHeightPx) {
+                                    scaledHeight.coerceAtLeast(smallMinHeightPx).coerceAtMost(maxAllowedHeight)
+                                } else {
+                                    maxAllowedHeight
+                                }
+                            targetThumbView.setExpandedLayout(
+                                layout.widthPx,
+                                targetHeight,
+                                layout.leftMarginPx,
+                                layout.topMarginPx,
+                                layout.rightMarginPx,
+                                layout.bottomMarginPx,
+                            )
+                        }
+                    }
+                }
+                StoryRowThumbnailVerticalMode.MATCH_ROW_HEIGHT -> {
                     params.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                    val targetThumbView = thumbView
+                    if (targetThumbView != null) {
+                        val boundStoryHash = story.storyHash
+                        val boundThumbnailStyle = thumbnailStyle
+
+                        // Keep the large image from influencing measurement; once the text lays out,
+                        // resize the image to the row's established height.
+                        targetThumbView.setExpandedLayout(
+                            layout.widthPx,
+                            1,
+                            layout.leftMarginPx,
+                            layout.topMarginPx,
+                            layout.rightMarginPx,
+                            layout.bottomMarginPx,
+                        )
+                        vh.itemView.doOnLayout { itemView ->
+                            if (vh.story?.storyHash != boundStoryHash) return@doOnLayout
+                            if (thumbnailStyle != boundThumbnailStyle) return@doOnLayout
+                            targetThumbView.setExpandedLayout(
+                                layout.widthPx,
+                                itemView.height.coerceAtLeast(1),
+                                layout.leftMarginPx,
+                                layout.topMarginPx,
+                                layout.rightMarginPx,
+                                layout.bottomMarginPx,
+                            )
+                        }
+                    }
                 }
             }
-
-            thumbView?.setExpandedLayout(
-                layout.widthPx,
-                layout.fixedHeightPx ?: ViewGroup.LayoutParams.MATCH_PARENT,
-                layout.leftMarginPx,
-                layout.topMarginPx,
-                layout.rightMarginPx,
-                layout.bottomMarginPx,
-            )
         }
 
         if (this.ignoreReadStatus || !story.read) {
