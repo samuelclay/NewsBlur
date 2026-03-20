@@ -233,6 +233,18 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_reentrant_story_page_refresh_is_blocked() {
+        XCTAssertFalse(
+            StoryPageRefreshDecision.shouldBeginRefresh(isRefreshInProgress: true)
+        )
+    }
+
+    func test_initial_story_page_refresh_is_allowed() {
+        XCTAssertTrue(
+            StoryPageRefreshDecision.shouldBeginRefresh(isRefreshInProgress: false)
+        )
+    }
+
     func test_native_overlay_detects_when_pending_fullscreen_has_not_been_applied_yet() {
         XCTAssertTrue(
             FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(

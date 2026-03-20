@@ -325,6 +325,12 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class StoryPageRefreshDecision: NSObject {
+    public class func shouldBeginRefresh(isRefreshInProgress: Bool) -> Bool {
+        !isRefreshInProgress
+    }
+}
+
 public struct StoryAutoCollapseDecision {
     public static func shouldCollapse(
         isPhone: Bool,

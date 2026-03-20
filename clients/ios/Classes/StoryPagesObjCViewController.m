@@ -32,6 +32,7 @@
 @property (nonatomic) BOOL isUpdatingNavigationBarFade;
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
+@property (nonatomic) BOOL isRefreshingPages;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -1129,16 +1130,25 @@
 }
 
 - (void)refreshPages {
-    NSInteger pageIndex = currentPage.pageIndex;
-    [self resizeScrollView];
-    [appDelegate adjustStoryDetailWebView];
-    currentPage.pageIndex = -2;
-    nextPage.pageIndex = -2;
-    previousPage.pageIndex = -2;
-    [self changePage:pageIndex animated:NO];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.notifier hide];
-    //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
+    if (![StoryPageRefreshDecision shouldBeginRefreshWithIsRefreshInProgress:self.isRefreshingPages]) {
+        return;
+    }
+
+    self.isRefreshingPages = YES;
+    @try {
+        NSInteger pageIndex = currentPage.pageIndex;
+        [self resizeScrollView];
+        [appDelegate adjustStoryDetailWebView];
+        currentPage.pageIndex = -2;
+        nextPage.pageIndex = -2;
+        previousPage.pageIndex = -2;
+        [self changePage:pageIndex animated:NO];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [self.notifier hide];
+        //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
+    } @finally {
+        self.isRefreshingPages = NO;
+    }
 }
 
 - (void)reorientPages {
