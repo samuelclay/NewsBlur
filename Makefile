@@ -449,6 +449,8 @@ celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 deploy_sentry:
 	ansible-playbook ansible/setup.yml -l sentry -t sentry
+enable:
+	ansible-playbook ansible/playbooks/enable_app.yml
 maintenance_on:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
 maintenance_off:
