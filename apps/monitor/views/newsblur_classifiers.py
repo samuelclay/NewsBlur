@@ -18,7 +18,7 @@ class Classifiers(View):
         # MClassifierFeed has no scope field - O(1) metadata lookup
         data["feeds"] = MClassifierFeed.objects._collection.estimated_document_count()
 
-        # Classifiers without is_regex: single aggregation groups by scope
+        # Classifiers without is_regex
         scope_only_classifiers = [
             ("authors", MClassifierAuthor),
             ("tags", MClassifierTag),
@@ -27,12 +27,11 @@ class Classifiers(View):
         scopes = ["feed", "folder", "global"]
 
         for name, cls in scope_only_classifiers:
-            # One aggregation per collection instead of 3 separate count queries
             scope_counts = self._count_by_scope(cls)
             for scope in scopes:
                 data[f"{name}_{scope}"] = scope_counts.get(scope, 0)
 
-        # Classifiers with is_regex: single aggregation groups by scope + is_regex
+        # Classifiers with is_regex
         regex_classifiers = [
             ("texts", MClassifierText),
             ("titles", MClassifierTitle),
@@ -40,10 +39,11 @@ class Classifiers(View):
         ]
 
         for name, cls in regex_classifiers:
-            counts = self._count_by_scope_and_regex(cls)
+            scope_counts = self._count_by_scope(cls)
+            regex_counts = self._count_regex_by_scope(cls)
             for scope in scopes:
-                data[f"{name}_{scope}"] = counts.get((scope, False), 0) + counts.get((scope, True), 0)
-                data[f"{name}_regex_{scope}"] = counts.get((scope, True), 0)
+                data[f"{name}_{scope}"] = scope_counts.get(scope, 0)
+                data[f"{name}_regex_{scope}"] = regex_counts.get(scope, 0)
 
         chart_name = "classifiers"
         chart_type = "counter"
@@ -74,34 +74,30 @@ class Classifiers(View):
         return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
 
     def _count_by_scope(self, cls):
-        """Single aggregation to count documents grouped by scope.
+        """Count documents by scope using estimated total and indexed minority counts.
 
-        Documents without a scope field are counted as "feed" (the default).
+        Uses estimated_document_count() for O(1) total, then fast indexed counts
+        for the small "folder" and "global" subsets. Feed count is derived by
+        subtraction to avoid scanning millions of feed-scoped documents.
         """
-        pipeline = [
-            {"$group": {"_id": "$scope", "count": {"$sum": 1}}},
-        ]
-        results = cls.objects._collection.aggregate(pipeline)
-        counts = {}
-        for row in results:
-            scope = row["_id"] or "feed"
-            counts[scope] = counts.get(scope, 0) + row["count"]
-        return counts
+        coll = cls.objects._collection
+        total = coll.estimated_document_count()
+        folder = coll.count_documents({"scope": "folder"})
+        global_ = coll.count_documents({"scope": "global"})
+        return {
+            "feed": total - folder - global_,
+            "folder": folder,
+            "global": global_,
+        }
 
-    def _count_by_scope_and_regex(self, cls):
-        """Single aggregation to count documents grouped by scope and is_regex.
-
-        Documents without a scope field are counted as "feed".
-        Returns dict keyed by (scope, is_regex) tuples.
-        """
-        pipeline = [
-            {"$group": {"_id": {"scope": "$scope", "is_regex": "$is_regex"}, "count": {"$sum": 1}}},
-        ]
-        results = cls.objects._collection.aggregate(pipeline)
-        counts = {}
-        for row in results:
-            scope = row["_id"].get("scope") or "feed"
-            is_regex = bool(row["_id"].get("is_regex"))
-            key = (scope, is_regex)
-            counts[key] = counts.get(key, 0) + row["count"]
-        return counts
+    def _count_regex_by_scope(self, cls):
+        """Count regex classifiers by scope. Very few regex docs exist so all counts are fast."""
+        coll = cls.objects._collection
+        total_regex = coll.count_documents({"is_regex": True})
+        folder = coll.count_documents({"is_regex": True, "scope": "folder"})
+        global_ = coll.count_documents({"is_regex": True, "scope": "global"})
+        return {
+            "feed": total_regex - folder - global_,
+            "folder": folder,
+            "global": global_,
+        }
