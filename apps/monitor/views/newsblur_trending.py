@@ -140,30 +140,6 @@ class TrendingFeeds(View):
                         f'story_date="{story_date}",reader_count="{reader_count}"}} {total_seconds}'
                     )
 
-        # Top feeds for both 1-day and 7-day windows
-        for days in [1, 7]:
-            top_feeds = RTrendingStory.get_trending_feeds_detailed(days=days, limit=20)
-
-            if top_feeds:
-                feed_ids = [f["feed_id"] for f in top_feeds]
-                feeds_by_id = {}
-                for feed in Feed.objects.filter(pk__in=feed_ids).values("pk", "feed_title"):
-                    feeds_by_id[feed["pk"]] = feed["feed_title"]
-
-                for rank, feed_data in enumerate(top_feeds, 1):
-                    feed_id = feed_data["feed_id"]
-                    total_seconds = feed_data["total_seconds"]
-                    reader_count = feed_data["reader_count"]
-                    feed_title = feeds_by_id.get(feed_id, "Unknown Feed")
-                    feed_title_safe = self._sanitize_label(feed_title)
-
-                    key = f"top_feed_{days}d_{rank}"
-                    formatted_data[key] = (
-                        f'{chart_name}{{metric="top_feed",days="{days}",rank="{rank}",'
-                        f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
-                        f'reader_count="{reader_count}"}} {total_seconds}'
-                    )
-
         # Long Reads (stories with ≥3 readers, sorted by avg read time)
         for days in [1, 7]:
             long_reads = RTrendingStory.get_long_reads(days=days, limit=20, min_readers=3)
