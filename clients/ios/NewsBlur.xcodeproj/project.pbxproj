@@ -753,8 +753,6 @@
 		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		177D076B2F29B80900B66376 /* DividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D076A2F29B80900B66376 /* DividerView.swift */; };
 		177D076C2F29B80900B66376 /* DividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D076A2F29B80900B66376 /* DividerView.swift */; };
-		C0D3C0DE2F2A4A0100000002 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
-		C0D3C0DE2F2A4A0100000003 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		1781B97F2C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
 		1781B9802C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
@@ -1044,7 +1042,6 @@
 		43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F6A79C15B0CDC60092EE91 /* ActivityCell.m */; };
 		43F6A7A915B0E1ED0092EE91 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F6A7A815B0E1ED0092EE91 /* CoreText.framework */; };
 		460E62F59D39774A840EB951 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
-		KBSH0RTC9D39774A840EB900 /* KeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */; };
 		505076AD492EB9AC13DA142F /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = 590BE55851A65E0B7E5FE56D /* Icons */; };
 		58EE12AF7C78A34873A6A6CB /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
 		5C325D54A81ED657B7137B6E /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
@@ -1080,6 +1077,8 @@
 		B1CC4CA96C214E4BA724EBD6 /* web-feed-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CF /* web-feed-100.png */; };
 		BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
 		C0C15ADF4471C3F68691B131 /* AskAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408612AC60C1A227BEA502A6 /* AskAIViewModel.swift */; };
+		C0D3C0DE2F2A4A0100000002 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
+		C0D3C0DE2F2A4A0100000003 /* StoryAutoCollapseDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */; };
 		CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		D5E6F708192A3B4C5D6E7F80 /* CatalystModalDismissal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */; };
 		DD4E5F6A7B8C9D0E1F2A3B4C /* AddSiteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E1F /* AddSiteViewModel.swift */; };
@@ -1428,8 +1427,9 @@
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFF8B3AF1F847505001AB95E /* ActivitiesNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
-		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
 		KBSH0RTC5W1FT000000000 /* KeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */; };
+		KBSH0RTC9D39774A840EB900 /* KeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */; };
+		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
 		PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 		PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 /* End PBXBuildFile section */
@@ -1623,7 +1623,6 @@
 		17760B3E2E8C9CF0005641E9 /* drag_icon_v.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = drag_icon_v.png; sourceTree = "<group>"; };
 		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
 		177D076A2F29B80900B66376 /* DividerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerView.swift; sourceTree = "<group>"; };
-		C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAutoCollapseDecision.swift; sourceTree = "<group>"; };
 		1781B97E2C9D332B00C8F344 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
 		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
@@ -1939,7 +1938,6 @@
 		7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTraverseBar.swift; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
-		KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadTimeTracker.swift; sourceTree = "<group>"; };
 		9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsView.swift; sourceTree = "<group>"; };
 		A388F989D14990BF30BBDBFF /* AskAIView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIView.swift; sourceTree = "<group>"; };
@@ -1950,6 +1948,7 @@
 		B5C6D7E8F9A01B2C3D4E5F60 /* StoryToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryToolbar.swift; sourceTree = "<group>"; };
 		B5C6D7E8F9A01B2C3D4E5F61 /* StoryToolbarScrollHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryToolbarScrollHandler.swift; sourceTree = "<group>"; };
 		BB2C3D4E5F6A7B8C9D0E1F2A /* AddSiteView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSiteView.swift; sourceTree = "<group>"; };
+		C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAutoCollapseDecision.swift; sourceTree = "<group>"; };
 		CC3D4E5F6A7B8C9D0E1F2A3B /* AddSiteSheetViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSiteSheetViewController.swift; sourceTree = "<group>"; };
 		DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-prompt-100.png"; sourceTree = "<group>"; };
 		DA5B929B2C1F40819E9A88CF /* web-feed-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "web-feed-100.png"; sourceTree = "<group>"; };
@@ -2401,6 +2400,7 @@
 		FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivitiesNavigationBar.m; sourceTree = "<group>"; };
 		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
+		KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		PREM1EW5W1FT000000000001 /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5614,7 +5614,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5634,7 +5634,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
@@ -5667,7 +5667,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5681,7 +5681,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
@@ -5716,7 +5716,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5740,7 +5740,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5772,7 +5772,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5790,7 +5790,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5812,7 +5812,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5843,7 +5843,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
@@ -5875,7 +5875,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5905,7 +5905,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
@@ -5946,7 +5946,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5965,7 +5965,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha.widget";
@@ -5998,7 +5998,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -6011,7 +6011,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha.widget";
@@ -6046,7 +6046,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6065,7 +6065,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
@@ -6099,7 +6099,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6112,7 +6112,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
@@ -6134,7 +6134,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6156,7 +6156,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
@@ -6186,7 +6186,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6207,7 +6207,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
@@ -6357,7 +6357,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6376,7 +6376,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6404,7 +6404,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 319;
+				CURRENT_PROJECT_VERSION = 320;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6417,7 +6417,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.1;
+				MARKETING_VERSION = 14.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
