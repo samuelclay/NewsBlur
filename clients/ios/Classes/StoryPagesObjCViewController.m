@@ -37,6 +37,7 @@
 @property (nonatomic, strong) NSString *restoringStoryId;
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
 @property (nonatomic, strong) UIBarButtonItem *fullscreenStoryTitlesButton;
+@property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
 
 @end
 
@@ -117,6 +118,35 @@
     self.appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = items;
 }
 
+- (void)setupStoryTitlesEdgeRevealGesture {
+    if (self.storyTitlesEdgeRevealGesture || self.isPhoneOrCompact || !appDelegate.detailViewController.storyTitlesOnLeft) {
+        return;
+    }
+
+    self.storyTitlesEdgeRevealGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
+                                                                                          action:@selector(handleStoryTitlesEdgeReveal:)];
+    self.storyTitlesEdgeRevealGesture.edges = UIRectEdgeLeft;
+    self.storyTitlesEdgeRevealGesture.maximumNumberOfTouches = 1;
+    self.storyTitlesEdgeRevealGesture.delegate = self;
+    [self.view addGestureRecognizer:self.storyTitlesEdgeRevealGesture];
+
+    [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.storyTitlesEdgeRevealGesture];
+    NSArray *pageControllers = @[self.currentPage, self.nextPage, self.previousPage];
+    for (StoryDetailViewController *pageController in pageControllers) {
+        if (pageController.webView.scrollView.panGestureRecognizer) {
+            [pageController.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.storyTitlesEdgeRevealGesture];
+        }
+    }
+}
+
+- (void)handleStoryTitlesEdgeReveal:(UIScreenEdgePanGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    [appDelegate.detailViewController revealStoryTitlesFromLeadingEdgeGesture:gestureRecognizer];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -173,6 +203,7 @@
     // Ensure paging is edge-to-edge on iPhone (avoid safe-area inset offsets).
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     self.scrollView.contentInset = UIEdgeInsetsZero;
+    [self setupStoryTitlesEdgeRevealGesture];
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
@@ -304,8 +335,8 @@
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(nextSite:) discoverabilityTitle:@"Next Site" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(previousSite:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
-    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
-    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(hideStoryTitlesSidebar:) discoverabilityTitle:@"Hide Story Titles" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(showStoryTitlesSidebar:) discoverabilityTitle:@"Show Story Titles" wantPriority:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -995,6 +1026,20 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == self.storyTitlesEdgeRevealGesture) {
+        UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint velocity = [pan velocityInView:self.view];
+        BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
+        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+            return NO;
+        }
+
+        return [StorySidebarRevealGestureDecision shouldBeginLeadingEdgeStoryTitlesRevealWithUsesOverlay:usesOverlay
+                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation
+                                                                                         storyTitlesOnLeft:appDelegate.detailViewController.storyTitlesOnLeft
+                                                                                         isPhoneOrCompact:self.isPhoneOrCompact];
+    }
+
     if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
         return navController.viewControllers.count > 1;
     }

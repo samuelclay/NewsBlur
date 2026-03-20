@@ -71,6 +71,8 @@
 - (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
 - (IBAction)toggleFeeds:(id)sender;
+- (IBAction)hideStoryTitlesSidebar:(id)sender;
+- (IBAction)showStoryTitlesSidebar:(id)sender;
 
 - (IBAction)moveSite:(id)sender;
 - (IBAction)openRenameSite:(id)sender;
@@ -102,4 +104,3 @@
 - (IBAction)showKeyboardShortcuts:(id)sender;
 
 @end
-

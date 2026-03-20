@@ -576,6 +576,49 @@ class DetailViewController: BaseViewController {
         setStoryTitlesCollapsed(false, animated: true)
     }
 
+    @objc(showStoryTitlesFromKeyboard:) func showStoryTitlesFromKeyboard(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterKeyboardReveal(
+            fullscreenSidebarPresentationState
+        )
+        applyKeyboardSidebarPresentation(nextPresentation, sender: sender)
+    }
+
+    @objc(hideStoryTitlesFromKeyboard:) func hideStoryTitlesFromKeyboard(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterKeyboardHide(
+            fullscreenSidebarPresentationState
+        )
+        applyKeyboardSidebarPresentation(nextPresentation, sender: sender)
+    }
+
+    @objc(revealStoryTitlesFromLeadingEdgeGesture:) func revealStoryTitlesFromLeadingEdgeGesture(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterLeadingEdgeReveal(
+            fullscreenSidebarPresentationState
+        )
+        guard nextPresentation != fullscreenSidebarPresentationState else {
+            return
+        }
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            applyFullscreenSidebarPresentation(nextPresentation, sender: sender)
+            return
+        }
+
+        fullscreenSidebarPresentationState = nextPresentation
+        setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
+    }
+
     @objc(showFullscreenStoryDetail:) func showFullscreenStoryDetail(_ sender: Any?) {
         guard storyTitlesOnLeft, !isPhoneOrCompact else {
             return
@@ -624,6 +667,16 @@ class DetailViewController: BaseViewController {
         }
 
         applyFullscreenSidebarPresentation(nextPresentation, sender: nil)
+    }
+
+    @objc func restoreStoryKeyboardFocusIfNeeded() {
+        guard hasVisibleStoryForSidebarLayout else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            _ = self.storyPagesViewController?.becomeFirstResponder()
+        }
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
@@ -771,6 +824,42 @@ class DetailViewController: BaseViewController {
         )
 
         setStoryTitlesCollapsed(shouldCollapse, animated: true)
+    }
+
+    private func applyKeyboardSidebarPresentation(
+        _ presentation: FullscreenSidebarPresentation,
+        sender: Any?
+    ) {
+        if shouldUseNativeFullscreenSidebarOverlay {
+            if presentation != fullscreenSidebarPresentationState {
+                applyFullscreenSidebarPresentation(presentation, sender: sender)
+            }
+            restoreStoryKeyboardFocusIfNeeded()
+            return
+        }
+
+        fullscreenSidebarPresentationState = presentation
+
+        switch presentation {
+        case .fullscreen:
+            dismissFullscreenSidebarOverlayIfNeeded(animated: true)
+        case .storyTitles:
+            if let splitViewController {
+                if splitViewController.displayMode == .secondaryOnly {
+                    splitViewController.show(.supplementary)
+                } else if splitViewController.displayMode != .oneBesideSecondary
+                            && splitViewController.displayMode != .oneOverSecondary {
+                    splitViewController.hide(.primary)
+                }
+                appDelegate.feedDetailViewController.updateSidebarButton(for: splitViewController.displayMode)
+            }
+            setStoryTitlesCollapsed(false, animated: true)
+        case .feeds:
+            break
+        }
+
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+        restoreStoryKeyboardFocusIfNeeded()
     }
 
     private func setStoryTitlesCollapsed(_ shouldCollapse: Bool, animated: Bool) {

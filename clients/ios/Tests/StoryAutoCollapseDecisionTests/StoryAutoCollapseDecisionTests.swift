@@ -168,6 +168,36 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_left_arrow_hides_sidebar_without_cycling_into_feeds() {
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardHide(.fullscreen),
+            .fullscreen
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardHide(.storyTitles),
+            .fullscreen
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardHide(.feeds),
+            .fullscreen
+        )
+    }
+
+    func test_right_arrow_only_reveals_story_titles() {
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardReveal(.fullscreen),
+            .storyTitles
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardReveal(.storyTitles),
+            .storyTitles
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterKeyboardReveal(.feeds),
+            .storyTitles
+        )
+    }
+
     func test_native_display_mode_for_story_titles_is_one_over_secondary() {
         XCTAssertEqual(
             FullscreenSidebarPresentationDecision.nativeDisplayMode(for: .storyTitles),
@@ -280,6 +310,64 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         XCTAssertEqual(
             FullscreenSidebarPresentationDecision.presentationAfterFullscreenButtonTap(.feeds),
             .fullscreen
+        )
+    }
+
+    func test_leading_edge_reveal_opens_story_titles_without_cycling_to_feeds() {
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterLeadingEdgeReveal(.fullscreen),
+            .storyTitles
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterLeadingEdgeReveal(.storyTitles),
+            .storyTitles
+        )
+        XCTAssertEqual(
+            FullscreenSidebarPresentationDecision.presentationAfterLeadingEdgeReveal(.feeds),
+            .storyTitles
+        )
+    }
+
+    func test_leading_edge_reveal_only_begins_in_fullscreen_overlay_on_ipad() {
+        XCTAssertTrue(
+            StorySidebarRevealGestureDecision.shouldBeginLeadingEdgeStoryTitlesReveal(
+                usesOverlay: true,
+                presentation: .fullscreen,
+                storyTitlesOnLeft: true,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            StorySidebarRevealGestureDecision.shouldBeginLeadingEdgeStoryTitlesReveal(
+                usesOverlay: false,
+                presentation: .fullscreen,
+                storyTitlesOnLeft: true,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            StorySidebarRevealGestureDecision.shouldBeginLeadingEdgeStoryTitlesReveal(
+                usesOverlay: true,
+                presentation: .storyTitles,
+                storyTitlesOnLeft: true,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            StorySidebarRevealGestureDecision.shouldBeginLeadingEdgeStoryTitlesReveal(
+                usesOverlay: true,
+                presentation: .fullscreen,
+                storyTitlesOnLeft: false,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            StorySidebarRevealGestureDecision.shouldBeginLeadingEdgeStoryTitlesReveal(
+                usesOverlay: true,
+                presentation: .fullscreen,
+                storyTitlesOnLeft: true,
+                isPhoneOrCompact: true
+            )
         )
     }
 

@@ -252,12 +252,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
     
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(nextSite:) discoverabilityTitle:@"Next Site" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(previousSite:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
-    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
-    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(toggleFeeds:) discoverabilityTitle:@"Toggle Sidebar" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(hideStoryTitlesSidebar:) discoverabilityTitle:@"Hide Story Titles" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(showStoryTitlesSidebar:) discoverabilityTitle:@"Show Story Titles" wantPriority:YES];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -2974,6 +2976,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             if (!isGridView) {
                 [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
+                [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
                 return;
             }
         }
@@ -2985,6 +2988,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             [self reload];
         }
         [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
+        [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if (location == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {

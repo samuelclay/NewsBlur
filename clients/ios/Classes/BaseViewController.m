@@ -668,6 +668,14 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }];
 }
 
+- (IBAction)hideStoryTitlesSidebar:(id)sender {
+    [self.appDelegate.detailViewController hideStoryTitlesFromKeyboard:sender];
+}
+
+- (IBAction)showStoryTitlesSidebar:(id)sender {
+    [self.appDelegate.detailViewController showStoryTitlesFromKeyboard:sender];
+}
+
 #pragma mark -
 #pragma mark Site menu
 

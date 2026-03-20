@@ -164,6 +164,20 @@ public enum StoryAutoCollapseBehavior: String {
         }
     }
 
+    public class func presentationAfterKeyboardHide(
+        _ currentPresentation: FullscreenSidebarPresentation
+    ) -> FullscreenSidebarPresentation {
+        let _ = currentPresentation
+        return .fullscreen
+    }
+
+    public class func presentationAfterKeyboardReveal(
+        _ currentPresentation: FullscreenSidebarPresentation
+    ) -> FullscreenSidebarPresentation {
+        let _ = currentPresentation
+        return .storyTitles
+    }
+
     public class func presentationAfterStorySelection(
         _ currentPresentation: FullscreenSidebarPresentation
     ) -> FullscreenSidebarPresentation {
@@ -184,6 +198,27 @@ public enum StoryAutoCollapseBehavior: String {
     ) -> FullscreenSidebarPresentation {
         let _ = currentPresentation
         return .fullscreen
+    }
+
+    public class func presentationAfterLeadingEdgeReveal(
+        _ currentPresentation: FullscreenSidebarPresentation
+    ) -> FullscreenSidebarPresentation {
+        presentationAfterKeyboardReveal(currentPresentation)
+    }
+}
+
+@objcMembers public final class StorySidebarRevealGestureDecision: NSObject {
+    public class func shouldBeginLeadingEdgeStoryTitlesReveal(
+        usesOverlay: Bool,
+        presentation: FullscreenSidebarPresentation,
+        storyTitlesOnLeft: Bool,
+        isPhoneOrCompact: Bool
+    ) -> Bool {
+        guard usesOverlay, storyTitlesOnLeft, !isPhoneOrCompact else {
+            return false
+        }
+
+        return presentation == .fullscreen
     }
 }
 
