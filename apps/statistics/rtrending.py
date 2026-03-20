@@ -21,16 +21,14 @@ class RTrendingStory:
 
     MIN_READ_TIME_SECONDS = 3
     TTL_DAYS = 8
-    CACHE_TTL_SECONDS = 60  # Cache aggregated results for 60 seconds
 
     @classmethod
-    def _get_cached_union(cls, r, prefix, days):
+    def _get_union(cls, r, prefix, days):
         """
-        Get or create a cached ZUNIONSTORE result for multi-day aggregation.
+        Compute a ZUNIONSTORE result for multi-day aggregation.
 
-        Uses a deterministic cache key based on prefix, days, and today's date.
-        Returns the cache key name which can be used for ZREVRANGE etc.
-        The caller should NOT delete this key - it will expire automatically.
+        Passes all daily keys directly — Redis treats missing keys as empty sets.
+        No cache; fast enough to compute on every request for these small sets.
 
         Args:
             r: Redis connection
@@ -40,24 +38,17 @@ class RTrendingStory:
         Returns:
             Cache key name containing the aggregated sorted set
         """
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        cache_key = f"{prefix}:cache:{days}d:{today}"
+        tmp_key = f"{prefix}:tmp:{days}d"
 
-        # Check if cache exists
-        if r.exists(cache_key):
-            return cache_key
-
-        # Build list of daily keys
         keys = []
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
             keys.append(f"{prefix}:{day}")
 
-        # Create the aggregated set
-        r.zunionstore(cache_key, keys, aggregate="SUM")
-        r.expire(cache_key, cls.CACHE_TTL_SECONDS)
+        r.zunionstore(tmp_key, keys, aggregate="SUM")
+        r.expire(tmp_key, 10)
 
-        return cache_key
+        return tmp_key
 
     @classmethod
     def add_read_time(cls, story_hash, read_time_seconds):
@@ -104,6 +95,14 @@ class RTrendingStory:
         feed_count_key = f"fRTc:{today}"
         pipe.zincrby(feed_count_key, 1, str(feed_id))
         pipe.expire(feed_count_key, ttl_seconds)
+
+        # Running counters for aggregate totals (avoid full zrange scans)
+        pipe.incrby(f"fRT:total:{today}", int(read_time_seconds))
+        pipe.expire(f"fRT:total:{today}", ttl_seconds)
+        pipe.incr(f"sRTc:total:{today}")
+        pipe.expire(f"sRTc:total:{today}", ttl_seconds)
+        pipe.incr(f"fRTc:total:{today}")
+        pipe.expire(f"fRTc:total:{today}", ttl_seconds)
 
         pipe.execute()
 
@@ -153,7 +152,7 @@ class RTrendingStory:
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
         if days > 1:
-            cache_key = cls._get_cached_union(r, "fRT", days)
+            cache_key = cls._get_union(r, "fRT", days)
             result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
         else:
             today = datetime.date.today().strftime("%Y-%m-%d")
@@ -207,7 +206,7 @@ class RTrendingStory:
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
         if days > 1:
-            cache_key = cls._get_cached_union(r, "sRTi", days)
+            cache_key = cls._get_union(r, "sRTi", days)
             result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
         else:
             today = datetime.date.today().strftime("%Y-%m-%d")
@@ -290,7 +289,7 @@ class RTrendingStory:
 
         # Get time data
         if days > 1:
-            time_cache_key = cls._get_cached_union(r, "sRTi", days)
+            time_cache_key = cls._get_union(r, "sRTi", days)
             time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
         else:
             time_result = r.zrevrange(f"sRTi:{today}", 0, limit - 1, withscores=True)
@@ -304,7 +303,7 @@ class RTrendingStory:
 
         # Get count data
         if days > 1:
-            count_cache_key = cls._get_cached_union(r, "sRTc", days)
+            count_cache_key = cls._get_union(r, "sRTc", days)
         else:
             count_cache_key = f"sRTc:{today}"
 
@@ -359,7 +358,7 @@ class RTrendingStory:
 
         # Get time data
         if days > 1:
-            time_cache_key = cls._get_cached_union(r, "fRT", days)
+            time_cache_key = cls._get_union(r, "fRT", days)
             time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
         else:
             time_result = r.zrevrange(f"fRT:{today}", 0, limit - 1, withscores=True)
@@ -374,7 +373,7 @@ class RTrendingStory:
 
         # Get count data
         if days > 1:
-            count_cache_key = cls._get_cached_union(r, "fRTc", days)
+            count_cache_key = cls._get_union(r, "fRTc", days)
         else:
             count_cache_key = f"fRTc:{today}"
 

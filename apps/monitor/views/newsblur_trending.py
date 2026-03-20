@@ -25,7 +25,6 @@ class TrendingFeeds(View):
         Metrics exported:
         - Aggregate totals (total seconds, story/feed reads, unique counts)
         - Top 20 stories with full details (for Grafana table)
-        - Top 20 feeds by read time
         - Top 20 long reads (stories with ≥3 readers, by avg read time)
         - Read time distribution buckets
         """
@@ -39,33 +38,19 @@ class TrendingFeeds(View):
         chart_name = "trending"
         chart_type = "gauge"
 
-        # Get aggregate metrics for today
-        feed_time_key = f"fRT:{today}"
-        story_time_key = f"sRTi:{today}"
-        story_count_key = f"sRTc:{today}"
-        feed_count_key = f"fRTc:{today}"
+        # Get aggregate metrics for today using running counters + ZCARD
+        pipe = r.pipeline()
+        pipe.get(f"fRT:total:{today}")
+        pipe.get(f"sRTc:total:{today}")
+        pipe.get(f"fRTc:total:{today}")
+        pipe.zcard(f"sRTi:{today}")
+        pipe.zcard(f"fRT:{today}")
+        total_read_seconds, total_story_reads, total_feed_reads, unique_stories, unique_feeds = pipe.execute()
 
-        # Total seconds read today (sum of all feed read times)
-        feed_times = r.zrange(feed_time_key, 0, -1, withscores=True)
-        total_read_seconds = sum(int(score) for _, score in feed_times)
-        data["total_read_seconds"] = total_read_seconds
-
-        # Total story reads today (sum of all story reader counts)
-        story_counts = r.zrange(story_count_key, 0, -1, withscores=True)
-        total_story_reads = sum(int(score) for _, score in story_counts)
-        data["total_story_reads"] = total_story_reads
-
-        # Total feed reads today (sum of all feed reader counts)
-        feed_counts = r.zrange(feed_count_key, 0, -1, withscores=True)
-        total_feed_reads = sum(int(score) for _, score in feed_counts)
-        data["total_feed_reads"] = total_feed_reads
-
-        # Unique stories read today
-        unique_stories = r.zcard(story_time_key)
+        data["total_read_seconds"] = int(total_read_seconds) if total_read_seconds else 0
+        data["total_story_reads"] = int(total_story_reads) if total_story_reads else 0
+        data["total_feed_reads"] = int(total_feed_reads) if total_feed_reads else 0
         data["unique_stories_read"] = unique_stories
-
-        # Unique feeds read today
-        unique_feeds = r.zcard(feed_time_key)
         data["unique_feeds_read"] = unique_feeds
 
         # Format aggregate metrics
