@@ -334,6 +334,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
+- (void)showKeyboardShortcuts;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
@@ -370,6 +371,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
 
 - (void)loadStoryDetailView;
+- (void)loadStoryDetailViewAnimated:(BOOL)animated;
+- (void)loadStoryDetailViewAtLocation:(NSInteger)location animated:(BOOL)animated;
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
@@ -566,4 +569,3 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)addCounts:(UnreadCounts *)counts;
 
 @end
-

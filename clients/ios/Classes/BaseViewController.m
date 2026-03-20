@@ -2,6 +2,51 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
 
+static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplitPreferredBehavior behavior) {
+    switch (behavior) {
+        case StorySplitPreferredBehaviorTile:
+            return UISplitViewControllerSplitBehaviorTile;
+        case StorySplitPreferredBehaviorOverlay:
+            return UISplitViewControllerSplitBehaviorOverlay;
+        default:
+            return UISplitViewControllerSplitBehaviorDisplace;
+    }
+}
+
+static StorySplitPreferredDisplayMode NBDecisionDisplayModeFromSplitDisplayMode(UISplitViewControllerDisplayMode displayMode) {
+    switch (displayMode) {
+        case UISplitViewControllerDisplayModeOneBesideSecondary:
+            return StorySplitPreferredDisplayModeOneBesideSecondary;
+        case UISplitViewControllerDisplayModeOneOverSecondary:
+            return StorySplitPreferredDisplayModeOneOverSecondary;
+        case UISplitViewControllerDisplayModeTwoBesideSecondary:
+            return StorySplitPreferredDisplayModeTwoBesideSecondary;
+        case UISplitViewControllerDisplayModeTwoOverSecondary:
+            return StorySplitPreferredDisplayModeTwoOverSecondary;
+        case UISplitViewControllerDisplayModeTwoDisplaceSecondary:
+            return StorySplitPreferredDisplayModeTwoDisplaceSecondary;
+        default:
+            return StorySplitPreferredDisplayModeSecondaryOnly;
+    }
+}
+
+static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySplitPreferredDisplayMode displayMode) {
+    switch (displayMode) {
+        case StorySplitPreferredDisplayModeOneBesideSecondary:
+            return UISplitViewControllerDisplayModeOneBesideSecondary;
+        case StorySplitPreferredDisplayModeOneOverSecondary:
+            return UISplitViewControllerDisplayModeOneOverSecondary;
+        case StorySplitPreferredDisplayModeTwoBesideSecondary:
+            return UISplitViewControllerDisplayModeTwoBesideSecondary;
+        case StorySplitPreferredDisplayModeTwoOverSecondary:
+            return UISplitViewControllerDisplayModeTwoOverSecondary;
+        case StorySplitPreferredDisplayModeTwoDisplaceSecondary:
+            return UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        default:
+            return UISplitViewControllerDisplayModeSecondaryOnly;
+    }
+}
+
 @implementation BaseViewController
 
 @synthesize appDelegate;
@@ -163,11 +208,13 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
+
     BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-    
+
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
     [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
+
+    [self addKeyCommandWithInput:@"/" modifierFlags:UIKeyModifierShift action:@selector(showKeyboardShortcuts:) discoverabilityTitle:@"Keyboard Shortcuts"];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -328,11 +375,13 @@
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
-        if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeOneBesideSecondary) {
-            command.title = @"Show Sidebar";
-        } else {
-            command.title = @"Hide Sidebar";
-        }
+        UISplitViewControllerDisplayMode preferredDisplayMode = splitViewController.preferredDisplayMode;
+        BOOL isSidebarVisible = preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoBesideSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
+                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -583,96 +632,48 @@
 }
 
 - (IBAction)toggleFeeds:(id)sender {
+    if (self.appDelegate.detailViewController.isUsingNativeFullscreenSidebar &&
+        self.appDelegate.detailViewController.fullscreenSidebarPresentation != FullscreenSidebarPresentationFullscreen) {
+        FullscreenSidebarPresentation currentPresentation = self.appDelegate.detailViewController.fullscreenSidebarPresentation;
+        FullscreenSidebarPresentation nextPresentation = [FullscreenSidebarPresentationDecision presentationAfterSidebarTap:currentPresentation];
+        [self.appDelegate.detailViewController applyFullscreenSidebarPresentation:nextPresentation sender:sender];
+        return;
+    }
+
     UISplitViewController *splitViewController = self.appDelegate.splitViewController;
     
     NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; splitBehavior: %@", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(splitViewController.splitBehavior));  // log
 
-    // Determine if we should use tile-mode toggling based on user preference + orientation
-    NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"];
+    NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"] ?: @"auto";
     CGSize size = splitViewController.view.bounds.size;
     if (size.width <= 0) {
         size = UIScreen.mainScreen.bounds.size;
     }
-    BOOL isLandscape = size.width > size.height;
-    BOOL isAuto = (!behavior || [behavior isEqualToString:@"auto"]);
-
-#if TARGET_OS_MACCATALYST
-    BOOL isTooNarrow = size.width < 900;
-#else
-    BOOL isTooNarrow = NO;
-#endif
-
-    BOOL shouldTile = [behavior isEqualToString:@"tile"];
-    if (isAuto) {
-        shouldTile = isTooNarrow ? NO : isLandscape;
-    }
-
-    BOOL shouldOverlay = [behavior isEqualToString:@"overlay"];
-    if (isAuto) {
-        shouldOverlay = isTooNarrow ? YES : !isLandscape;
-    }
-
-    BOOL forceOverlayInLandscape = isLandscape && !isTooNarrow && (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoBesideSecondary);
-    if (forceOverlayInLandscape) {
-        shouldOverlay = YES;
-        shouldTile = NO;
-    }
-
-    // Tile: toggle feeds sidebar beside detail with no overlay
-    if (shouldTile) {
-        BOOL isFeedListVisible = (splitViewController.displayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
-                                  splitViewController.displayMode == UISplitViewControllerDisplayModeTwoBesideSecondary);
-        NSLog(@"toggleSidebar tile: splitBehavior=%@, displayMode=%@, feedListVisible=%@", @(splitViewController.splitBehavior), @(splitViewController.displayMode), isFeedListVisible ? @"YES" : @"NO");
-        [UIView animateWithDuration:0.3 animations:^{
-            if (isFeedListVisible) {
-                // Feed list visible. Hide it.
-                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
-            } else {
-                // Feed list hidden. Show it tiled beside detail.
-                splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-            }
-        }];
-        return;
-    }
-
-    if (shouldOverlay) {
-        [UIView animateWithDuration:0.2 animations:^{
-            splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary
-                                                        ? UISplitViewControllerDisplayModeOneOverSecondary
-                                                        : UISplitViewControllerDisplayModeOneBesideSecondary);
-        }];
-        return;
-    }
+    
+    StorySplitPreferredBehavior preferredBehavior = [StorySplitBehaviorDecision preferredBehaviorFor:behavior
+                                                                                               width:size.width
+                                                                                              height:size.height
+                                                                                               isMac:self.isMac];
+    BOOL usesTiledSidebarLayout = [StorySplitBehaviorDecision usesTiledSidebarLayoutFor:behavior
+                                                                                  width:size.width
+                                                                                 height:size.height
+                                                                                  isMac:self.isMac];
+    StorySplitPreferredDisplayMode currentDisplayMode = NBDecisionDisplayModeFromSplitDisplayMode(splitViewController.displayMode);
+    StorySplitPreferredDisplayMode nextDisplayMode = [StorySplitBehaviorDecision sidebarDisplayModeForTiledLayout:usesTiledSidebarLayout
+                                                                                              currentDisplayMode:currentDisplayMode];
 
     [UIView animateWithDuration:0.2 animations:^{
-        if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay) {
-            splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
-        } else if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorDisplace) {
-            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary &&
-                splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
-                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-                });
-            } else {
-                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
-            }
-        } else {
-            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary &&
-                splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
-                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-                });
-            } else {
-                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
-            }
-        }
+        splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+        splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(nextDisplayMode);
     }];
+}
+
+- (IBAction)hideStoryTitlesSidebar:(id)sender {
+    [self.appDelegate.detailViewController hideStoryTitlesFromKeyboard:sender];
+}
+
+- (IBAction)showStoryTitlesSidebar:(id)sender {
+    [self.appDelegate.detailViewController showStoryTitlesFromKeyboard:sender];
 }
 
 #pragma mark -
@@ -802,6 +803,13 @@
 
 - (IBAction)openInBrowser:(id)sender {
     [self.appDelegate.storyPagesViewController showOriginalSubview:sender];
+}
+
+- (IBAction)showKeyboardShortcuts:(id)sender {
+    [self.appDelegate showKeyboardShortcuts];
+}
+
+- (void)noopKeyCommand:(id)sender {
 }
 
 @end
