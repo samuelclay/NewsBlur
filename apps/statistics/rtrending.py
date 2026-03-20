@@ -13,6 +13,7 @@ class RTrendingStory:
     - Feed read time sorted set by day: "fRT:{date}" -> sorted set {feed_id: total_seconds}
     - Story reader count by day: "sRTc:{date}" -> sorted set {story_hash: reader_count}
     - Feed reader count by day: "fRTc:{date}" -> sorted set {feed_id: reader_count}
+    - Running counters: "fRT:total:{date}", "sRTc:total:{date}", "fRTc:total:{date}"
 
     All data is stored in date-partitioned sorted sets for efficient aggregation.
     Reader counts (sRTc/fRTc) track unique read events to measure reach vs depth.
@@ -23,47 +24,74 @@ class RTrendingStory:
     TTL_DAYS = 8
 
     @classmethod
-    def _get_union(cls, r, prefix, days):
+    def _get_top_merged(cls, r, prefix, days, limit):
+        """Get top items by reading top-N from each daily key and merging in Python.
+
+        No ZUNIONSTORE — just pipelined ZREVRANGE reads. O(days * fetch_limit).
+        Overfetches from each day to minimize ranking errors from fragmentation.
         """
-        Compute a ZUNIONSTORE result for multi-day aggregation.
+        today = datetime.date.today().strftime("%Y-%m-%d")
 
-        Passes all daily keys directly — Redis treats missing keys as empty sets.
-        No cache; fast enough to compute on every request for these small sets.
+        if days == 1:
+            return r.zrevrange(f"{prefix}:{today}", 0, limit - 1, withscores=True)
 
-        Args:
-            r: Redis connection
-            prefix: Key prefix (e.g., "sRTi", "sRTc", "fRT", "fRTc")
-            days: Number of days to aggregate
-
-        Returns:
-            Cache key name containing the aggregated sorted set
-        """
-        tmp_key = f"{prefix}:tmp:{days}d"
-
-        keys = []
+        fetch_limit = max(limit * 3, 100)
+        pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            keys.append(f"{prefix}:{day}")
+            pipe.zrevrange(f"{prefix}:{day}", 0, fetch_limit - 1, withscores=True)
+        daily_results = pipe.execute()
 
-        r.zunionstore(tmp_key, keys, aggregate="SUM")
-        r.expire(tmp_key, 10)
+        merged = {}
+        for results in daily_results:
+            for member, score in results:
+                key = member.decode() if isinstance(member, bytes) else member
+                merged[key] = merged.get(key, 0) + score
 
-        return tmp_key
+        sorted_results = sorted(merged.items(), key=lambda x: -x[1])
+        return [(member, score) for member, score in sorted_results[:limit]]
+
+    @classmethod
+    def _get_scores_for_members(cls, r, prefix, days, members):
+        """Get summed scores for specific members across daily sorted sets.
+
+        Single pipelined call for all members across all days.
+        """
+        today = datetime.date.today().strftime("%Y-%m-%d")
+
+        if days == 1:
+            pipe = r.pipeline()
+            for m in members:
+                pipe.zscore(f"{prefix}:{today}", m)
+            values = pipe.execute()
+            return {m: int(v) if v else 0 for m, v in zip(members, values)}
+
+        pipe = r.pipeline()
+        for i in range(days):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+            for m in members:
+                pipe.zscore(f"{prefix}:{day}", m)
+        all_values = pipe.execute()
+
+        scores = {m: 0 for m in members}
+        idx = 0
+        for i in range(days):
+            for m in members:
+                val = all_values[idx]
+                if val:
+                    scores[m] += int(val)
+                idx += 1
+        return scores
 
     @classmethod
     def add_read_time(cls, story_hash, read_time_seconds):
         """
         Add read time for a story. Filters out reads < 3 seconds.
         Updates story-level, feed-level, and story index aggregates.
-
-        Args:
-            story_hash: Story hash in format "feed_id:guid_hash"
-            read_time_seconds: Number of seconds spent reading
         """
         if read_time_seconds < cls.MIN_READ_TIME_SECONDS:
             return
 
-        # Extract feed_id from story_hash (format: "feed_id:guid_hash")
         try:
             feed_id = story_hash.split(":")[0]
             feed_id = int(feed_id)
@@ -76,27 +104,17 @@ class RTrendingStory:
 
         pipe = r.pipeline()
 
-        # Increment feed read time in daily sorted set
-        feed_day_key = f"fRT:{today}"
-        pipe.zincrby(feed_day_key, int(read_time_seconds), str(feed_id))
-        pipe.expire(feed_day_key, ttl_seconds)
+        # Daily sorted sets
+        pipe.zincrby(f"fRT:{today}", int(read_time_seconds), str(feed_id))
+        pipe.expire(f"fRT:{today}", ttl_seconds)
+        pipe.zincrby(f"sRTi:{today}", int(read_time_seconds), story_hash)
+        pipe.expire(f"sRTi:{today}", ttl_seconds)
+        pipe.zincrby(f"sRTc:{today}", 1, story_hash)
+        pipe.expire(f"sRTc:{today}", ttl_seconds)
+        pipe.zincrby(f"fRTc:{today}", 1, str(feed_id))
+        pipe.expire(f"fRTc:{today}", ttl_seconds)
 
-        # Add to story index sorted set for the day (enables top stories query)
-        story_index_key = f"sRTi:{today}"
-        pipe.zincrby(story_index_key, int(read_time_seconds), story_hash)
-        pipe.expire(story_index_key, ttl_seconds)
-
-        # Increment reader count for story (each call = one read event)
-        story_count_key = f"sRTc:{today}"
-        pipe.zincrby(story_count_key, 1, story_hash)
-        pipe.expire(story_count_key, ttl_seconds)
-
-        # Increment reader count for feed
-        feed_count_key = f"fRTc:{today}"
-        pipe.zincrby(feed_count_key, 1, str(feed_id))
-        pipe.expire(feed_count_key, ttl_seconds)
-
-        # Running counters for aggregate totals (avoid full zrange scans)
+        # Running counters for aggregate totals
         pipe.incrby(f"fRT:total:{today}", int(read_time_seconds))
         pipe.expire(f"fRT:total:{today}", ttl_seconds)
         pipe.incr(f"sRTc:total:{today}")
@@ -108,110 +126,54 @@ class RTrendingStory:
 
     @classmethod
     def get_story_read_time(cls, story_hash, days=7):
-        """
-        Get total read time for a story over the past N days.
-
-        Args:
-            story_hash: Story hash in format "feed_id:guid_hash"
-            days: Number of days to aggregate (default 7)
-
-        Returns:
-            Total seconds spent reading this story
-        """
+        """Get total read time for a story over the past N days."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        total = 0
 
         pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"sRTi:{day}"
-            pipe.zscore(key, story_hash)
+            pipe.zscore(f"sRTi:{day}", story_hash)
 
-        values = pipe.execute()
-        for val in values:
+        total = 0
+        for val in pipe.execute():
             if val:
                 try:
                     total += int(val)
                 except (ValueError, TypeError):
                     pass
-
         return total
 
     @classmethod
     def get_trending_feeds(cls, days=7, limit=50):
-        """
-        Get top trending feeds based on accumulated read time over past N days.
-
-        Args:
-            days: Number of days to aggregate (default 7, max 30)
-            limit: Maximum feeds to return (default 50, max 200)
-
-        Returns:
-            List of (feed_id, total_seconds) tuples sorted by seconds desc
-        """
+        """Get top trending feeds based on accumulated read time over past N days."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-
-        if days > 1:
-            cache_key = cls._get_union(r, "fRT", days)
-            result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
-        else:
-            today = datetime.date.today().strftime("%Y-%m-%d")
-            result = r.zrevrange(f"fRT:{today}", 0, limit - 1, withscores=True)
-
+        result = cls._get_top_merged(r, "fRT", days, limit)
         return [(int(feed_id), int(score)) for feed_id, score in result]
 
     @classmethod
     def get_feed_read_time(cls, feed_id, days=7):
-        """
-        Get total read time for a specific feed over the past N days.
-
-        Args:
-            feed_id: Feed ID
-            days: Number of days to aggregate (default 7)
-
-        Returns:
-            Total seconds spent reading stories from this feed
-        """
+        """Get total read time for a specific feed over the past N days."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        total = 0
 
         pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"fRT:{day}"
-            pipe.zscore(key, str(feed_id))
+            pipe.zscore(f"fRT:{day}", str(feed_id))
 
-        values = pipe.execute()
-        for val in values:
+        total = 0
+        for val in pipe.execute():
             if val:
                 try:
                     total += int(val)
                 except (ValueError, TypeError):
                     pass
-
         return total
 
     @classmethod
     def get_trending_stories(cls, days=7, limit=50):
-        """
-        Get top trending stories based on accumulated read time over past N days.
-
-        Args:
-            days: Number of days to aggregate (default 7, max 30)
-            limit: Maximum stories to return (default 50, max 200)
-
-        Returns:
-            List of (story_hash, total_seconds) tuples sorted by seconds desc
-        """
+        """Get top trending stories based on accumulated read time over past N days."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-
-        if days > 1:
-            cache_key = cls._get_union(r, "sRTi", days)
-            result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
-        else:
-            today = datetime.date.today().strftime("%Y-%m-%d")
-            result = r.zrevrange(f"sRTi:{today}", 0, limit - 1, withscores=True)
-
+        result = cls._get_top_merged(r, "sRTi", days, limit)
         return [
             (story_hash.decode() if isinstance(story_hash, bytes) else story_hash, int(score))
             for story_hash, score in result
@@ -219,17 +181,7 @@ class RTrendingStory:
 
     @classmethod
     def get_stories_for_feed(cls, feed_id, days=7, limit=20):
-        """
-        Get top stories for a specific feed based on read time.
-
-        Args:
-            feed_id: Feed ID to filter by
-            days: Number of days to aggregate (default 7)
-            limit: Maximum stories to return (default 20)
-
-        Returns:
-            List of (story_hash, total_seconds) tuples for stories from this feed
-        """
+        """Get top stories for a specific feed based on read time."""
         all_stories = cls.get_trending_stories(days=days, limit=500)
         feed_prefix = f"{feed_id}:"
         feed_stories = [(h, s) for h, s in all_stories if h.startswith(feed_prefix)]
@@ -237,87 +189,45 @@ class RTrendingStory:
 
     @classmethod
     def get_story_reader_count(cls, story_hash, days=7):
-        """
-        Get total reader count for a story over the past N days.
-
-        Args:
-            story_hash: Story hash in format "feed_id:guid_hash"
-            days: Number of days to aggregate (default 7)
-
-        Returns:
-            Total number of readers for this story
-        """
+        """Get total reader count for a story over the past N days."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        total = 0
 
         pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"sRTc:{day}"
-            pipe.zscore(key, story_hash)
+            pipe.zscore(f"sRTc:{day}", story_hash)
 
-        values = pipe.execute()
-        for val in values:
+        total = 0
+        for val in pipe.execute():
             if val:
                 try:
                     total += int(val)
                 except (ValueError, TypeError):
                     pass
-
         return total
 
     @classmethod
     def get_trending_stories_detailed(cls, days=7, limit=50):
-        """
-        Get trending stories with full metrics: total seconds, reader count, and avg per reader.
-
-        This enables different views of "trending":
-        - Sort by total_seconds: raw engagement (current default)
-        - Sort by reader_count: popularity/reach
-        - Sort by avg_seconds_per_reader: captivating content (deep reads)
-
-        Args:
-            days: Number of days to aggregate (default 7)
-            limit: Maximum stories to return (default 50)
-
-        Returns:
-            List of dicts with story_hash, feed_id, total_seconds, reader_count, avg_seconds_per_reader
-            sorted by total_seconds desc
-        """
+        """Get trending stories with full metrics: total seconds, reader count, and avg per reader."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        today = datetime.date.today().strftime("%Y-%m-%d")
 
-        # Get time data
-        if days > 1:
-            time_cache_key = cls._get_union(r, "sRTi", days)
-            time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
-        else:
-            time_result = r.zrevrange(f"sRTi:{today}", 0, limit - 1, withscores=True)
+        # Get top stories by read time (merged across days)
+        time_results = cls._get_top_merged(r, "sRTi", days, limit)
 
-        if not time_result:
+        if not time_results:
             return []
 
-        # Get the story hashes we care about
-        story_hashes = [(sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_result]
-        time_map = {(sh.decode() if isinstance(sh, bytes) else sh): int(score) for sh, score in time_result}
+        story_hashes = [
+            (sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_results
+        ]
+        time_map = {
+            (sh.decode() if isinstance(sh, bytes) else sh): int(score)
+            for sh, score in time_results
+        }
 
-        # Get count data
-        if days > 1:
-            count_cache_key = cls._get_union(r, "sRTc", days)
-        else:
-            count_cache_key = f"sRTc:{today}"
+        # Get reader counts for those stories (pipelined across days)
+        count_map = cls._get_scores_for_members(r, "sRTc", days, story_hashes)
 
-        # Get counts for our specific stories
-        pipe = r.pipeline()
-        for sh in story_hashes:
-            pipe.zscore(count_cache_key, sh)
-        count_values = pipe.execute()
-
-        count_map = {}
-        for sh, val in zip(story_hashes, count_values):
-            count_map[sh] = int(val) if val else 0
-
-        # Build results
         results = []
         for story_hash in story_hashes:
             total_seconds = time_map.get(story_hash, 0)
@@ -342,49 +252,25 @@ class RTrendingStory:
 
     @classmethod
     def get_trending_feeds_detailed(cls, days=7, limit=50):
-        """
-        Get trending feeds with full metrics: total seconds, reader count, and avg per reader.
-
-        Args:
-            days: Number of days to aggregate (default 7)
-            limit: Maximum feeds to return (default 50)
-
-        Returns:
-            List of dicts with feed_id, total_seconds, reader_count, avg_seconds_per_reader
-            sorted by total_seconds desc
-        """
+        """Get trending feeds with full metrics: total seconds, reader count, and avg per reader."""
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        today = datetime.date.today().strftime("%Y-%m-%d")
 
-        # Get time data
-        if days > 1:
-            time_cache_key = cls._get_union(r, "fRT", days)
-            time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
-        else:
-            time_result = r.zrevrange(f"fRT:{today}", 0, limit - 1, withscores=True)
+        # Get top feeds by read time (merged across days)
+        time_results = cls._get_top_merged(r, "fRT", days, limit)
 
-        if not time_result:
+        if not time_results:
             return []
 
-        feed_ids = [(fid.decode() if isinstance(fid, bytes) else fid) for fid, _ in time_result]
+        feed_ids = [
+            (fid.decode() if isinstance(fid, bytes) else fid) for fid, _ in time_results
+        ]
         time_map = {
-            (fid.decode() if isinstance(fid, bytes) else fid): int(score) for fid, score in time_result
+            (fid.decode() if isinstance(fid, bytes) else fid): int(score)
+            for fid, score in time_results
         }
 
-        # Get count data
-        if days > 1:
-            count_cache_key = cls._get_union(r, "fRTc", days)
-        else:
-            count_cache_key = f"fRTc:{today}"
-
-        pipe = r.pipeline()
-        for fid in feed_ids:
-            pipe.zscore(count_cache_key, fid)
-        count_values = pipe.execute()
-
-        count_map = {}
-        for fid, val in zip(feed_ids, count_values):
-            count_map[fid] = int(val) if val else 0
+        # Get reader counts for those feeds (pipelined across days)
+        count_map = cls._get_scores_for_members(r, "fRTc", days, feed_ids)
 
         results = []
         for feed_id_str in feed_ids:
@@ -409,22 +295,7 @@ class RTrendingStory:
 
     @classmethod
     def get_trending_feeds_normalized(cls, days=7, limit=50, min_subscribers=1, max_subscribers=None):
-        """
-        Get trending feeds normalized by subscriber count to surface "hidden gems".
-
-        This helps find feeds that may have few subscribers but high engagement per reader,
-        rather than popular feeds that dominate due to sheer volume.
-
-        Args:
-            days: Number of days to aggregate (default 7)
-            limit: Maximum feeds to return (default 50)
-            min_subscribers: Minimum subscribers to include (default 1, avoids division issues)
-            max_subscribers: Maximum subscribers to include (default None = no max)
-
-        Returns:
-            List of dicts with feed_id, total_seconds, num_subscribers, seconds_per_subscriber
-            sorted by seconds_per_subscriber desc
-        """
+        """Get trending feeds normalized by subscriber count to surface hidden gems."""
         from apps.rss_feeds.models import Feed
 
         trending = cls.get_trending_feeds(days=days, limit=500)
@@ -457,26 +328,8 @@ class RTrendingStory:
 
     @classmethod
     def get_long_reads(cls, days=7, limit=50, min_readers=3):
-        """
-        Get stories sorted by average read time, filtered by minimum reader count.
-        This finds "long reads" - captivating content that multiple people spend time on.
-
-        Args:
-            days: Number of days to aggregate (default 7)
-            limit: Maximum stories to return (default 50)
-            min_readers: Minimum reader count to include (default 3)
-
-        Returns:
-            List of dicts with story_hash, feed_id, total_seconds, reader_count, avg_seconds_per_reader
-            sorted by avg_seconds_per_reader desc
-        """
-        # Get more stories than limit to account for filtering
+        """Get stories sorted by average read time, filtered by minimum reader count."""
         all_stories = cls.get_trending_stories_detailed(days=days, limit=limit * 5)
-
-        # Filter by minimum readers
         filtered = [s for s in all_stories if s["reader_count"] >= min_readers]
-
-        # Sort by average seconds per reader (descending)
         filtered.sort(key=lambda x: x["avg_seconds_per_reader"], reverse=True)
-
         return filtered[:limit]

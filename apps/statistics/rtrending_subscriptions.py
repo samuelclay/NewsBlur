@@ -85,30 +85,29 @@ class RTrendingSubscription:
         return [max(0.03, 1.0 - (i * 0.97 / max(days - 1, 1))) for i in range(days)]
 
     @classmethod
-    def _get_weighted_union(cls, r, days):
-        """
-        Compute a weighted aggregation across multiple days.
+    def _get_top_weighted(cls, r, days, limit):
+        """Get top items by reading each daily key and applying decay weights in Python.
 
-        Passes all daily keys to ZUNIONSTORE directly (Redis treats missing keys
-        as empty sets). No cache — fast enough to compute on every request.
+        No ZUNIONSTORE — just pipelined ZREVRANGE reads.
         """
         weights = cls._get_decay_weights(days)
+        fetch_limit = max(limit * 3, 100)
 
-        keys = []
-        weight_list = []
+        pipe = r.pipeline()
         for i in range(min(days, len(weights))):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            keys.append(f"fSub:{day}")
-            weight_list.append(weights[i])
+            pipe.zrevrange(f"fSub:{day}", 0, fetch_limit - 1, withscores=True)
+        daily_results = pipe.execute()
 
-        if not keys:
-            return None
+        merged = {}
+        for i, results in enumerate(daily_results):
+            weight = weights[i]
+            for member, score in results:
+                key = member.decode() if isinstance(member, bytes) else member
+                merged[key] = merged.get(key, 0) + score * weight
 
-        tmp_key = f"fSub:tmp:{days}d"
-        r.zunionstore(tmp_key, dict(zip(keys, weight_list)), aggregate="SUM")
-        r.expire(tmp_key, 10)
-
-        return tmp_key
+        sorted_results = sorted(merged.items(), key=lambda x: -x[1])
+        return sorted_results[:limit]
 
     @classmethod
     def get_trending_feeds(cls, days=7, limit=50, min_subscribers=None):
@@ -122,21 +121,17 @@ class RTrendingSubscription:
 
         if days == 1:
             today = datetime.date.today().strftime("%Y-%m-%d")
-            cache_key = f"fSub:{today}"
+            results = r.zrevrange(f"fSub:{today}", 0, limit * 3, withscores=True)
+            results = [
+                (m.decode() if isinstance(m, bytes) else m, s) for m, s in results
+            ]
         else:
-            cache_key = cls._get_weighted_union(r, days)
-
-        if not cache_key:
-            return []
-
-        # Get more results than needed to filter by threshold
-        results = r.zrevrange(cache_key, 0, limit * 3, withscores=True)
+            results = cls._get_top_weighted(r, days, limit * 3)
 
         filtered = []
-        for feed_id, score in results:
+        for feed_id_str, score in results:
             if score >= min_subscribers:
                 try:
-                    feed_id_str = feed_id.decode() if isinstance(feed_id, bytes) else feed_id
                     filtered.append((int(feed_id_str), score))
                 except ValueError:
                     continue
