@@ -15,50 +15,35 @@ class Classifiers(View):
     def get(self, request):
         data = {}
 
-        # MClassifierFeed has no scope field - it's always feed-scoped
-        data["feeds"] = MClassifierFeed.objects._collection.count()
+        # MClassifierFeed has no scope field - O(1) metadata lookup
+        data["feeds"] = MClassifierFeed.objects._collection.estimated_document_count()
 
-        # Classifier types that support scope
-        scoped_classifiers = [
+        # Classifiers without is_regex: single aggregation groups by scope
+        scope_only_classifiers = [
             ("authors", MClassifierAuthor),
             ("tags", MClassifierTag),
-            ("texts", MClassifierText),
-            ("titles", MClassifierTitle),
-            ("urls", MClassifierUrl),
         ]
 
         scopes = ["feed", "folder", "global"]
 
-        for name, cls in scoped_classifiers:
+        for name, cls in scope_only_classifiers:
+            # One aggregation per collection instead of 3 separate count queries
+            scope_counts = self._count_by_scope(cls)
             for scope in scopes:
-                # Count classifiers by scope
-                # Note: Documents without scope field default to "feed"
-                if scope == "feed":
-                    # Include docs where scope is "feed" OR scope field doesn't exist
-                    count = cls.objects(
-                        __raw__={"$or": [{"scope": "feed"}, {"scope": {"$exists": False}}]}
-                    ).count()
-                else:
-                    count = cls.objects(scope=scope).count()
-                data[f"{name}_{scope}"] = count
+                data[f"{name}_{scope}"] = scope_counts.get(scope, 0)
 
-        # Regex counts by scope (only titles, texts, urls support is_regex)
+        # Classifiers with is_regex: single aggregation groups by scope + is_regex
         regex_classifiers = [
-            ("titles", MClassifierTitle),
             ("texts", MClassifierText),
+            ("titles", MClassifierTitle),
             ("urls", MClassifierUrl),
         ]
 
         for name, cls in regex_classifiers:
+            counts = self._count_by_scope_and_regex(cls)
             for scope in scopes:
-                if scope == "feed":
-                    count = cls.objects(
-                        is_regex=True,
-                        __raw__={"$or": [{"scope": "feed"}, {"scope": {"$exists": False}}]},
-                    ).count()
-                else:
-                    count = cls.objects(is_regex=True, scope=scope).count()
-                data[f"{name}_regex_{scope}"] = count
+                data[f"{name}_{scope}"] = counts.get((scope, False), 0) + counts.get((scope, True), 0)
+                data[f"{name}_regex_{scope}"] = counts.get((scope, True), 0)
 
         chart_name = "classifiers"
         chart_type = "counter"
@@ -69,7 +54,8 @@ class Classifiers(View):
         formatted_data["feeds"] = f'{chart_name}{{classifier="feeds"}} {data["feeds"]}'
 
         # Format scoped classifiers
-        for name, _ in scoped_classifiers:
+        all_classifiers = scope_only_classifiers + regex_classifiers
+        for name, _ in all_classifiers:
             for scope in scopes:
                 key = f"{name}_{scope}"
                 formatted_data[key] = f'{chart_name}{{classifier="{name}",scope="{scope}"}} {data[key]}'
@@ -86,3 +72,36 @@ class Classifiers(View):
             "chart_type": chart_type,
         }
         return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+
+    def _count_by_scope(self, cls):
+        """Single aggregation to count documents grouped by scope.
+
+        Documents without a scope field are counted as "feed" (the default).
+        """
+        pipeline = [
+            {"$group": {"_id": "$scope", "count": {"$sum": 1}}},
+        ]
+        results = cls.objects._collection.aggregate(pipeline)
+        counts = {}
+        for row in results:
+            scope = row["_id"] or "feed"
+            counts[scope] = counts.get(scope, 0) + row["count"]
+        return counts
+
+    def _count_by_scope_and_regex(self, cls):
+        """Single aggregation to count documents grouped by scope and is_regex.
+
+        Documents without a scope field are counted as "feed".
+        Returns dict keyed by (scope, is_regex) tuples.
+        """
+        pipeline = [
+            {"$group": {"_id": {"scope": "$scope", "is_regex": "$is_regex"}, "count": {"$sum": 1}}},
+        ]
+        results = cls.objects._collection.aggregate(pipeline)
+        counts = {}
+        for row in results:
+            scope = row["_id"].get("scope") or "feed"
+            is_regex = bool(row["_id"].get("is_regex"))
+            key = (scope, is_regex)
+            counts[key] = counts.get(key, 0) + row["count"]
+        return counts
