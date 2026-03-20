@@ -818,6 +818,111 @@ class Test_RiverStories(TransactionTestCase):
 
         print(f">>> ✓ Lazy merge used: {counts['redis_total']} Redis ops for {len(self.test_feeds)} feeds")
 
+    def test_lazy_merge__pagination_stable_after_mark_read(self):
+        """
+        Test that marking stories as read between page loads doesn't cause
+        stories to be skipped on subsequent pages (read_filter='unread').
+
+        Compares paginated-with-mark-read results against a ground truth
+        (single-pass fetch of all stories). The bug causes page 2 to skip
+        stories because the offset is applied to a shifted unread list.
+        """
+        import redis
+
+        from django.conf import settings
+
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        test_limit = 4
+
+        usersubs = UserSubscription.subs_for_feeds(self.user.pk, feed_ids=self.test_feeds, read_filter="all")
+        feed_ids = [sub.feed_id for sub in usersubs]
+        self.assertGreater(len(feed_ids), 0, "Need subscriptions")
+
+        def clean_state():
+            """Reset all caches and recalc flags for a clean query."""
+            UserSubscription.objects.filter(user=self.user, feed_id__in=feed_ids).update(
+                needs_unread_recalc=True
+            )
+            for fid in feed_ids:
+                r.delete(f"zU:{self.user.pk}:{fid}")
+            ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, "")
+            r.delete(ranked_key)
+            r.delete(unread_key)
+
+        # Ground truth: fetch top 2*test_limit stories in a single pass (no mark-as-read)
+        clean_state()
+        truth_hashes, _ = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=feed_ids,
+            offset=0,
+            limit=test_limit * 2,
+            order="newest",
+            read_filter="unread",
+            usersubs=usersubs,
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        truth = [h.decode() if isinstance(h, bytes) else h for h in truth_hashes[: test_limit * 2]]
+        self.assertGreaterEqual(len(truth), test_limit * 2, "Need enough stories for the test")
+        truth_p1 = set(truth[:test_limit])
+        truth_p2 = set(truth[test_limit : test_limit * 2])
+
+        # Now do the paginated flow: page 1, mark as read, page 2
+        clean_state()
+
+        # Page 1
+        p1_hashes, _ = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=feed_ids,
+            offset=0,
+            limit=test_limit,
+            order="newest",
+            read_filter="unread",
+            usersubs=usersubs,
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        p1 = {h.decode() if isinstance(h, bytes) else h for h in p1_hashes[:test_limit]}
+        self.assertEqual(p1, truth_p1, "Page 1 should match ground truth")
+
+        # Mark page 1 stories as read
+        for story_hash in p1:
+            fid = int(story_hash.split(":")[0])
+            r.sadd(f"RS:{self.user.pk}", story_hash)
+            r.sadd(f"RS:{self.user.pk}:{fid}", story_hash)
+
+        # Trigger unread recalc (mimics mark_story_hashes_as_read)
+        for fid in feed_ids:
+            UserSubscription.objects.filter(user=self.user, feed_id=fid).update(needs_unread_recalc=True)
+            r.delete(f"zU:{self.user.pk}:{fid}")
+
+        # Page 2: the drift bug causes this to skip stories
+        p2_hashes, _ = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=feed_ids,
+            offset=test_limit,
+            limit=test_limit,
+            order="newest",
+            read_filter="unread",
+            usersubs=usersubs,
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        p2 = {h.decode() if isinstance(h, bytes) else h for h in p2_hashes[:test_limit]}
+
+        # THE KEY ASSERTION: page 2 should return the same stories as ground truth page 2.
+        # Without the fix, the offset is applied to the shifted unread list,
+        # causing stories from truth_p2 to be skipped entirely.
+        self.assertEqual(
+            p2,
+            truth_p2,
+            f"Page 2 should match ground truth.\n"
+            f"  Expected: {truth_p2}\n"
+            f"  Got:      {p2}\n"
+            f"  Missing:  {truth_p2 - p2}\n"
+            f"  Extra:    {p2 - truth_p2}\n"
+            f"  This indicates pagination drift from mark-as-read shifting the offset.",
+        )
+
+        print(f">>> Pagination stable after mark-read: " f"p1={len(p1)}, p2={len(p2)}, ground truth matched")
+
     def test_lazy_merge__single_feed_folder(self):
         """
         Test that lazy merge works correctly even for a single-feed river.
