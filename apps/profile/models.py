@@ -3238,11 +3238,13 @@ def paypal_signup(sender, **kwargs):
             user.save()
     except:
         pass
+    # Store the PayPal subscription ID so setup_premium_history can query PayPal for payments.
+    # IPN recurring payments use recurring_payment_id; older ones use subscr_id.
+    paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+    if paypal_sub_id:
+        user.profile.store_paypal_sub_id(paypal_sub_id)
     user.profile.setup_premium_history()
     user.profile.cancel_premium_stripe()
-    # user.profile.cancel_premium_paypal(second_most_recent_only=True)
-
-    # assert False, "Shouldn't be here anymore as the new Paypal REST API uses webhooks"
 
 
 valid_ipn_received.connect(paypal_signup)
@@ -3286,6 +3288,9 @@ def paypal_payment_history_sync(sender, **kwargs):
 
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
+        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+        if paypal_sub_id:
+            user.profile.store_paypal_sub_id(paypal_sub_id)
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
@@ -3331,6 +3336,9 @@ def paypal_payment_was_flagged(sender, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}
 
     try:
+        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+        if paypal_sub_id:
+            user.profile.store_paypal_sub_id(paypal_sub_id)
         user.profile.setup_premium_history()
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:

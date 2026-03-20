@@ -553,6 +553,10 @@ class AppMenuHelper: NSObject {
         // ===== HELP =====
         builder.insertChild(
             UIMenu(title: "", options: .displayInline, children: [
+                UIKeyCommand(title: "Keyboard Shortcuts",
+                             image: UIImage(systemName: "keyboard"),
+                             action: #selector(BaseViewController.showKeyboardShortcuts(_:)),
+                             input: "/", modifierFlags: [.shift]),
                 UICommand(title: "Support Forum",
                           image: UIImage(systemName: "questionmark.circle"),
                           action: #selector(BaseViewController.showSupportForum(_:))),

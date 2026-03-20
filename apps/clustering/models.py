@@ -57,9 +57,15 @@ def _simple_stem(word):
 
 
 def title_significant_words(title):
-    """Extract significant (non-stopword) words from a normalized title."""
+    """Extract significant (non-stopword) words from a normalized title.
+
+    Filters out purely numeric tokens (e.g. '2026', '17') which cause
+    date-based false matches across unrelated stories.
+    """
     norm = normalize_title(title)
-    return frozenset(_simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1)
+    return frozenset(
+        _simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1 and not w.isdigit()
+    )
 
 
 def title_words_excluding_feed(story_title, feed_title):
@@ -267,6 +273,8 @@ def find_semantic_clusters(
     original_feed_map=None,
     story_title_map=None,
     feed_title_map=None,
+    max_es_queries=10,
+    deadline=None,
 ):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
@@ -282,16 +290,31 @@ def find_semantic_clusters(
         feed_ids: list of all feed IDs to search across
         lookback_date: datetime for the oldest stories to match (limits ES results)
         min_score: minimum ES relevance score to consider a match
+        max_es_queries: max number of ES queries per invocation (bounds ES load)
+        deadline: absolute time.time() value after which no new ES queries are issued
 
     Returns:
-        dict of {cluster_id: [story_hash, ...]}
+        tuple of (dict of {cluster_id: [story_hash, ...]}, dict of ES stats)
     """
     import elasticsearch
 
     from apps.search.models import SearchStory
 
+    es_stats = {
+        "query_count": 0,
+        "total_ms": 0,
+        "max_ms": 0,
+        "stories_compared": len(stories) if stories else 0,
+        "skipped_short_title": 0,
+        "skipped_no_feeds": 0,
+        "skipped_deadline": 0,
+        "skipped_max_queries": 0,
+        "hits_found": 0,
+        "hits_matched": 0,
+    }
+
     if not stories or not feed_ids:
-        return {}
+        return {}, es_stats
 
     story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
 
@@ -314,9 +337,17 @@ def find_semantic_clusters(
         index_name = SearchStory.index_name()
     except Exception as e:
         logging.debug(" ---> ~FRClustering: ES not available: %s" % e)
-        return {}
+        return {}, es_stats
 
     for story in stories:
+        # clustering/models.py: Check budget limits before issuing ES queries
+        if es_stats["query_count"] >= max_es_queries:
+            es_stats["skipped_max_queries"] += 1
+            continue
+        if deadline and time.time() >= deadline:
+            es_stats["skipped_deadline"] += 1
+            continue
+
         story_hash = story["story_hash"]
         # Use only title as query text (not content) to avoid topical noise.
         # ES still searches both title and content fields in the index, so
@@ -324,12 +355,14 @@ def find_semantic_clusters(
         query_text = story.get("story_title") or ""
 
         if not query_text or len(query_text.strip()) < 10:
+            es_stats["skipped_short_title"] += 1
             continue
 
         # Search across related feeds, excluding this story's own feed and its branches
         story_rfid = resolve_feed_id(story["story_feed_id"], original_feed_map)
         search_feed_ids = [fid for fid in feed_ids if resolve_feed_id(fid, original_feed_map) != story_rfid]
         if not search_feed_ids:
+            es_stats["skipped_no_feeds"] += 1
             continue
 
         body = {
@@ -364,13 +397,19 @@ def find_semantic_clusters(
         }
 
         try:
-            results = es.search(body=body, index=index_name)
+            query_start = time.time()
+            results = es.search(body=body, index=index_name, request_timeout=5)
+            query_ms = (time.time() - query_start) * 1000
+            es_stats["query_count"] += 1
+            es_stats["total_ms"] += query_ms
+            es_stats["max_ms"] = max(es_stats["max_ms"], query_ms)
             hits = results.get("hits", {}).get("hits", [])
+            es_stats["hits_found"] += len(hits)
         except elasticsearch.exceptions.NotFoundError:
             continue
         except elasticsearch.exceptions.ConnectionError as e:
             logging.debug(" ---> ~FRClustering: ES connection error: %s" % e)
-            return {}
+            return {}, es_stats
         except Exception as e:
             logging.debug(" ---> ~FRClustering semantic search error for %s: %s" % (story_hash, e))
             continue
@@ -412,6 +451,7 @@ def find_semantic_clusters(
             if sim_hash not in parent:
                 parent[sim_hash] = sim_hash
             union(story_hash, sim_hash)
+            es_stats["hits_matched"] += 1
 
     # Collect clusters
     groups = {}
@@ -436,7 +476,13 @@ def find_semantic_clusters(
             continue
         clusters[root] = members[:CLUSTER_MAX_SIZE]
 
-    return clusters
+    # Compute average for stats
+    if es_stats["query_count"] > 0:
+        es_stats["avg_ms"] = round(es_stats["total_ms"] / es_stats["query_count"], 1)
+    else:
+        es_stats["avg_ms"] = 0
+
+    return clusters, es_stats
 
 
 def merge_clusters(
@@ -545,13 +591,19 @@ def merge_clusters(
     return {root: members[:CLUSTER_MAX_SIZE] for root, members in groups.items() if len(members) >= 2}
 
 
-def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None):
+def store_clusters_to_redis(
+    clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None, story_title_map=None
+):
     """Write cluster memberships to Redis.
 
     When candidate_cluster_map is provided, detects when a newly computed cluster
     contains stories that already belong to an existing cluster. In that case,
     new stories are merged into the existing cluster (ZADD without DELETE) rather
     than creating a duplicate cluster.
+
+    Merge validation: new members must share >= FUZZY_MIN_INTERSECTION significant
+    title words with at least one existing cluster member. This prevents unrelated
+    stories from accumulating in a cluster through transitive chains across runs.
 
     Keys:
         sCL:{story_hash} -> cluster_id (STRING with TTL)
@@ -564,6 +616,7 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
     pipe = r.pipeline()
     merged_count = 0
     new_count = 0
+    skipped_validation = 0
 
     for cluster_id, members in clusters.items():
         # Check if any member already belongs to an existing cluster
@@ -577,13 +630,49 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
         if existing_cluster_id:
             # Merge new stories into the existing cluster. Don't delete the
             # existing zCL: — just add new members and update sCL: pointers.
-            merged_count += 1
             target_cluster_id = existing_cluster_id
+
+            # Enforce CLUSTER_MAX_SIZE: check how many members the existing
+            # cluster already has before adding more.
+            existing_members = r.zrange("zCL:%s" % target_cluster_id, 0, -1)
+            existing_size = len(existing_members) if existing_members else 0
+
+            # Build title-word sets for existing cluster members (for merge validation)
+            existing_title_words = []
+            if story_title_map and existing_members:
+                for em in existing_members:
+                    em_str = em.decode() if isinstance(em, bytes) else em
+                    em_title = story_title_map.get(em_str, "")
+                    if em_title:
+                        existing_title_words.append(title_significant_words(em_title))
+
+            added_count = 0
+            merged_count += 1
             for story_hash in members:
                 if story_hash not in candidate_cluster_map:
+                    # Enforce max size — skip new additions but keep processing
+                    # existing members below to refresh their TTLs.
+                    if existing_size + added_count >= CLUSTER_MAX_SIZE:
+                        continue
+
+                    # Validate title-word overlap with existing cluster members.
+                    # If title data is available, require >= FUZZY_MIN_INTERSECTION
+                    # shared words with at least one existing member.
+                    if story_title_map and existing_title_words:
+                        new_title = story_title_map.get(story_hash, "")
+                        if new_title:
+                            new_words = title_significant_words(new_title)
+                            has_overlap = any(
+                                len(new_words & ew) >= FUZZY_MIN_INTERSECTION for ew in existing_title_words
+                            )
+                            if not has_overlap:
+                                skipped_validation += 1
+                                continue
+
                     # New story joining existing cluster
                     pipe.set("sCL:%s" % story_hash, target_cluster_id, ex=ttl)
                     pipe.zadd("zCL:%s" % target_cluster_id, {story_hash: 0})
+                    added_count += 1
                 else:
                     # Already in a cluster — refresh TTL on its sCL: key
                     pipe.expire("sCL:%s" % story_hash, ttl)
@@ -599,6 +688,12 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
             pipe.expire("zCL:%s" % cluster_id, ttl)
 
     pipe.execute()
+
+    if skipped_validation:
+        logging.debug(
+            " ---> ~FBClustering: skipped %s stories that failed merge title-word validation"
+            % skipped_validation
+        )
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(

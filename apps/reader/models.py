@@ -495,6 +495,19 @@ class UserSubscription(models.Model):
             When cache_key is provided, writes merged results to Redis so that
             page 2+ can reuse the cache instead of re-merging from scratch.
             """
+            # When extending an existing cache (page 2+), skip already-cached
+            # stories instead of using target_offset. This prevents pagination
+            # drift when stories marked as read cause zdiffstore to recompute
+            # the per-feed unread sets, shifting the merged list and causing
+            # the offset to skip stories the user hasn't seen yet.
+            already_cached = set()
+            extending_cache = False
+            if cache_key:
+                cached_entries = rt.zrange(cache_key, 0, -1)
+                if cached_entries:
+                    already_cached = set(cached_entries)
+                    extending_cache = True
+
             per_feed_chunk = 25
             per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
             per_feed_indices = {feed_id: 0 for feed_id in feed_ids}
@@ -564,11 +577,24 @@ class UserSubscription(models.Model):
             merged_story_hashes = []
             merged_with_scores = []
             total_seen = 0
-            while heap and len(merged_story_hashes) < target_offset + target_limit:
+            merge_target = target_limit if extending_cache else target_offset + target_limit
+            while heap and len(merged_story_hashes) < merge_target:
                 transformed_score, feed_id, story_hash = heapq.heappop(heap)
                 original_score = -transformed_score if order == "newest" else transformed_score
-                if total_seen >= target_offset:
-                    merged_story_hashes.append(story_hash)
+                if extending_cache and story_hash in already_cached:
+                    # Skip stories from previous pages — anchors pagination to
+                    # what was already shown, not to a shifting offset.
+                    push_next_from_feed(feed_id)
+                    continue
+                if not extending_cache and total_seen < target_offset:
+                    # Fresh merge (page 1 or expired cache): traditional offset skip,
+                    # but still cache skipped stories for future page extensions.
+                    if cache_key:
+                        merged_with_scores.append((story_hash, original_score))
+                    total_seen += 1
+                    push_next_from_feed(feed_id)
+                    continue
+                merged_story_hashes.append(story_hash)
                 if cache_key:
                     merged_with_scores.append((story_hash, original_score))
                 total_seen += 1

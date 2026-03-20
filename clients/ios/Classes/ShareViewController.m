@@ -347,13 +347,22 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/social/save_comment_reply",
                            self.appDelegate.url];
 
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+    id feedId = [appDelegate.activeStory objectForKey:@"story_feed_id"];
+    id storyId = [appDelegate.activeStory objectForKey:@"id"];
+    id commentUserId = [appDelegate.activeComment objectForKey:@"user_id"];
+
+    if (!feedId || !storyId || !commentUserId) {
+        [appDelegate.storyPagesViewController showShareHUD:@"Cannot reply to this story"];
+        return;
+    }
+
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    NSString *storyIdStr = [NSString stringWithFormat:@"%@", storyId];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedIdStr forKey:@"story_feed_id"];
     [params setObject:storyIdStr forKey:@"story_id"];
-    [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
+    [params setObject:commentUserId forKey:@"comment_user_id"];
     [params setObject:commentField.text forKey:@"reply_comments"];
 
     if (self.activeReplyId) {

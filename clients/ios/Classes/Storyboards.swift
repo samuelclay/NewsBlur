@@ -19,6 +19,7 @@ import UIKit
     
     /// Main storyboard identifiers.
     enum Main: String {
+        case feeds = "FeedsViewController"
         case feedDetail = "FeedDetailViewController"
         case horizontalPages = "HorizontalPageViewController"
         case verticalPages = "VerticalPageViewController"

@@ -3525,7 +3525,8 @@ a.mention, a.mention-group {
     border-top-color: #444;
 }
 
-.NB-dark .NB-classifier-this-story + .NB-classifier-feed-items::before {
+.NB-dark .NB-classifier-this-story + .NB-classifier-feed-items::before,
+.NB-dark .NB-classifier-feed-items:first-child::before {
     color: #777;
 }
 

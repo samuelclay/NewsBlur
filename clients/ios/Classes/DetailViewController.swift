@@ -374,6 +374,46 @@ class DetailViewController: BaseViewController {
     @objc var currentStoryController: StoryDetailViewController? {
         return storyPagesViewController?.currentPage
     }
+
+    private var fullscreenSidebarPresentationState = FullscreenSidebarPresentation.fullscreen
+    private var fullscreenSidebarSupplementaryNavigationController: UINavigationController?
+    private weak var fullscreenSidebarOverlayFeedDetailController: FeedDetailViewController?
+
+    @objc var areStoryTitlesCollapsed: Bool {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return false
+        }
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            return fullscreenSidebarPresentationState == .fullscreen
+        }
+
+        return leftContainerView.isHidden || verticalDividerViewLeadingConstraint.constant <= 0
+    }
+
+    @objc var isUsingNativeFullscreenSidebar: Bool {
+        shouldUseNativeFullscreenSidebarOverlay
+    }
+
+    @objc var fullscreenSidebarPresentation: FullscreenSidebarPresentation {
+        fullscreenSidebarPresentationState
+    }
+
+    @objc var shouldShowStoryTitlesFullscreenButton: Bool {
+        let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+        return StoryTitlesHeaderButtonDecision.showsFullscreenButton(
+            for: fullscreenSidebarPresentationState,
+            storyTitlesOnLeft: storyTitlesOnLeft,
+            usesNativeFullscreenSidebar: shouldUseNativeFullscreenSidebarOverlay,
+            isPhoneOrCompact: isPhoneOrCompact,
+            width: size.width,
+            height: size.height
+        )
+    }
+
+    private var hasVisibleStoryForSidebarLayout: Bool {
+        appDelegate.activeStory != nil || currentStoryController?.activeStory != nil
+    }
     
     /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
     func collapseToSingleColumn() {
@@ -418,6 +458,7 @@ class DetailViewController: BaseViewController {
         }
         
         manager.update(navigationController)
+        manager.update(fullscreenSidebarSupplementaryNavigationController)
         manager.updateBackground(of: view)
         
         view.backgroundColor = navigationController?.navigationBar.barTintColor
@@ -504,46 +545,365 @@ class DetailViewController: BaseViewController {
         }
     }
 
-    private func performStoryAutoCollapseIfNeeded() {
-        guard !isPhone, !isCompact, appDelegate.activeStory != nil else {
-            return
-        }
-        guard let splitViewController = splitViewController as? SplitViewController else {
-            return
-        }
-        if splitViewController.displayMode == .secondaryOnly {
-            return
-        }
-        if splitViewController.displayMode != .oneBesideSecondary {
+    @objc func resetStoryTitlesRevealOverride() {
+        let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+        guard StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
+            for: behaviorString,
+            width: size.width,
+            height: size.height,
+            isMac: appDelegate.isMac
+        ) else {
             return
         }
 
-        splitViewController.view.layoutIfNeeded()
+        dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+    }
+
+    @objc(toggleStoryTitles:) func toggleStoryTitles(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterSidebarTap(
+                fullscreenSidebarPresentationState
+            )
+            applyFullscreenSidebarPresentation(nextPresentation, sender: sender)
+            return
+        }
+
+        fullscreenSidebarPresentationState = .storyTitles
+        setStoryTitlesCollapsed(false, animated: true)
+    }
+
+    @objc(showStoryTitlesFromKeyboard:) func showStoryTitlesFromKeyboard(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterKeyboardReveal(
+            fullscreenSidebarPresentationState
+        )
+        applyKeyboardSidebarPresentation(nextPresentation, sender: sender)
+    }
+
+    @objc(hideStoryTitlesFromKeyboard:) func hideStoryTitlesFromKeyboard(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterKeyboardHide(
+            fullscreenSidebarPresentationState
+        )
+        applyKeyboardSidebarPresentation(nextPresentation, sender: sender)
+    }
+
+    @objc(revealStoryTitlesFromLeadingEdgeGesture:) func revealStoryTitlesFromLeadingEdgeGesture(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterLeadingEdgeReveal(
+            fullscreenSidebarPresentationState
+        )
+        guard nextPresentation != fullscreenSidebarPresentationState else {
+            return
+        }
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            applyFullscreenSidebarPresentation(nextPresentation, sender: sender)
+            return
+        }
+
+        fullscreenSidebarPresentationState = nextPresentation
+        setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
+    }
+
+    @objc(showFullscreenStoryDetail:) func showFullscreenStoryDetail(_ sender: Any?) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterFullscreenButtonTap(
+            fullscreenSidebarPresentationState
+        )
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            applyFullscreenSidebarPresentation(nextPresentation, sender: sender)
+            return
+        }
+
+        fullscreenSidebarPresentationState = nextPresentation
+
+        if let splitViewController = appDelegate.splitViewController {
+            UIView.animate(withDuration: 0.2) {
+                splitViewController.preferredDisplayMode = .secondaryOnly
+            }
+        }
+
+        setStoryTitlesCollapsed(true, animated: true)
+    }
+
+    @objc func dismissFullscreenSidebarOverlayAfterStorySelection() {
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterStorySelection(
+            fullscreenSidebarPresentationState
+        )
+
+        guard shouldUseNativeFullscreenSidebarOverlay else {
+            let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+            let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
+                isPhone: isPhone,
+                isCompact: isCompact,
+                hasActiveStory: hasVisibleStoryForSidebarLayout,
+                behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
+                size: size,
+                isMac: appDelegate.isMac
+            )
+            if shouldCollapse {
+                fullscreenSidebarPresentationState = nextPresentation
+                setStoryTitlesCollapsed(true, animated: true)
+            }
+            return
+        }
+
+        applyFullscreenSidebarPresentation(nextPresentation, sender: nil)
+    }
+
+    @objc func restoreStoryKeyboardFocusIfNeeded() {
+        guard hasVisibleStoryForSidebarLayout else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            _ = self.storyPagesViewController?.becomeFirstResponder()
+        }
+    }
+
+    @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        let prefersNativeFullscreenSidebarOverlay = shouldPreferNativeFullscreenSidebarOverlay
+        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
+            fullscreenSidebarPresentationState,
+            usesNativeFullscreenSidebar: prefersNativeFullscreenSidebarOverlay
+        )
+
+        guard prefersNativeFullscreenSidebarOverlay else {
+            fullscreenSidebarPresentationState = nextPresentation
+            setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
+            return
+        }
+
+        guard shouldUseNativeFullscreenSidebarOverlay else {
+            fullscreenSidebarPresentationState = nextPresentation
+            return
+        }
+
+        applyFullscreenSidebarPresentation(nextPresentation, sender: nil)
+    }
+
+    @objc(syncFullscreenSidebarPresentationForDisplayMode:)
+    func syncFullscreenSidebarPresentation(for displayMode: UISplitViewController.DisplayMode) {
+        if !shouldUseNativeFullscreenSidebarOverlay {
+            clearFullscreenSidebarSupplementaryControllerIfNeeded()
+            switch displayMode {
+            case .oneBesideSecondary, .oneOverSecondary, .twoBesideSecondary, .twoOverSecondary, .twoDisplaceSecondary:
+                fullscreenSidebarPresentationState = .feeds
+            default:
+                fullscreenSidebarPresentationState = areStoryTitlesCollapsed ? .fullscreen : .storyTitles
+            }
+            fullscreenSidebarOverlayFeedDetailController?.updateSidebarButton(for: displayMode)
+            appDelegate.feedDetailViewController.updateSidebarButton(for: displayMode)
+            storyPagesViewController?.updateStoryTitleNavigationButtons()
+            return
+        }
+
+        let presentation = FullscreenSidebarPresentationDecision.presentation(
+            for: splitPreferredDisplayMode(for: displayMode)
+        )
+        fullscreenSidebarPresentationState = presentation
+
+        if presentation == .fullscreen {
+            scheduleFullscreenSidebarSupplementaryCleanup()
+        } else {
+            _ = ensureFullscreenSidebarSupplementaryController()
+        }
+
+        fullscreenSidebarOverlayFeedDetailController?.updateSidebarButton(for: displayMode)
+        appDelegate.feedDetailViewController.updateSidebarButton(for: displayMode)
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+    }
+
+    @objc(applyFullscreenSidebarPresentation:sender:)
+    func applyFullscreenSidebarPresentation(
+        _ presentation: FullscreenSidebarPresentation,
+        sender: Any?
+    ) {
+        let _ = sender
+
+        guard shouldUseNativeFullscreenSidebarOverlay,
+              let splitViewController = appDelegate.splitViewController else {
+            if presentation == .fullscreen {
+                dismissFullscreenSidebarOverlayIfNeeded(animated: true)
+            }
+            return
+        }
+
+        let previousPresentation = fullscreenSidebarPresentationState
+        if presentation != .fullscreen {
+            guard ensureFullscreenSidebarSupplementaryController() != nil else {
+                return
+            }
+        }
+
+        switch presentation {
+        case .fullscreen:
+            dismissFullscreenSidebarOverlayIfNeeded(animated: true)
+        case .storyTitles:
+            fullscreenSidebarPresentationState = .storyTitles
+            if previousPresentation == .feeds {
+                splitViewController.hide(.primary)
+            } else {
+                splitViewController.show(.supplementary)
+            }
+        case .feeds:
+            fullscreenSidebarPresentationState = .feeds
+            splitViewController.show(.primary)
+        }
+
+        fullscreenSidebarOverlayFeedDetailController?.updateSidebarButton(for: splitViewController.displayMode)
+        appDelegate.feedDetailViewController.updateSidebarButton(for: splitViewController.displayMode)
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+    }
+
+    private func performStoryAutoCollapseIfNeeded() {
+        guard storyTitlesOnLeft else {
+            let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+            let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
+                isPhone: isPhone,
+                isCompact: isCompact,
+                hasActiveStory: hasVisibleStoryForSidebarLayout,
+                behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
+                size: size,
+                isMac: appDelegate.isMac
+            )
+            if shouldCollapse {
+                dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+            }
+            return
+        }
+
+        if shouldUseNativeFullscreenSidebarOverlay {
+            if let splitViewController,
+               FullscreenSidebarPresentationDecision.needsNativeDisplayModeUpdate(
+                for: fullscreenSidebarPresentationState,
+                currentDisplayMode: splitPreferredDisplayMode(for: splitViewController.displayMode)
+               ) {
+                if fullscreenSidebarPresentationState == .fullscreen {
+                    dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+                } else {
+                    applyFullscreenSidebarPresentation(fullscreenSidebarPresentationState, sender: nil)
+                }
+            }
+            setStoryTitlesCollapsed(true, animated: false)
+            return
+        }
+
+        clearFullscreenSidebarSupplementaryControllerIfNeeded()
+
+        let baseShouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
+            isPhone: isPhone,
+            isCompact: isCompact,
+            hasActiveStory: hasVisibleStoryForSidebarLayout,
+            behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
+            size: view.bounds.size,
+            isMac: appDelegate.isMac
+        )
+        let shouldCollapse = StoryAutoCollapseDecision.resolvedShouldCollapse(
+            baseShouldCollapse: baseShouldCollapse,
+            fullscreenSidebarPresentation: fullscreenSidebarPresentationState,
+            usesNativeFullscreenSidebar: false
+        )
+
+        setStoryTitlesCollapsed(shouldCollapse, animated: true)
+    }
+
+    private func applyKeyboardSidebarPresentation(
+        _ presentation: FullscreenSidebarPresentation,
+        sender: Any?
+    ) {
+        if shouldUseNativeFullscreenSidebarOverlay {
+            if presentation != fullscreenSidebarPresentationState {
+                applyFullscreenSidebarPresentation(presentation, sender: sender)
+            }
+            restoreStoryKeyboardFocusIfNeeded()
+            return
+        }
+
+        fullscreenSidebarPresentationState = presentation
+
+        switch presentation {
+        case .fullscreen:
+            dismissFullscreenSidebarOverlayIfNeeded(animated: true)
+        case .storyTitles:
+            if let splitViewController {
+                if splitViewController.displayMode == .secondaryOnly {
+                    splitViewController.show(.supplementary)
+                } else if splitViewController.displayMode != .oneBesideSecondary
+                            && splitViewController.displayMode != .oneOverSecondary {
+                    splitViewController.hide(.primary)
+                }
+                appDelegate.feedDetailViewController.updateSidebarButton(for: splitViewController.displayMode)
+            }
+            setStoryTitlesCollapsed(false, animated: true)
+        case .feeds:
+            break
+        }
+
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+        restoreStoryKeyboardFocusIfNeeded()
+    }
+
+    private func setStoryTitlesCollapsed(_ shouldCollapse: Bool, animated: Bool) {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        let collapsedLeadingConstant: CGFloat = 0
+        let targetLeadingConstant = shouldCollapse ? collapsedLeadingConstant : verticalDividerPosition
+        let targetAlpha: CGFloat = shouldCollapse ? 0 : 1
+
+        guard verticalDividerViewLeadingConstraint.constant != targetLeadingConstant
+                || leftContainerView.isHidden == shouldCollapse
+                || leftContainerView.alpha != targetAlpha else {
+            return
+        }
+
+        if !shouldCollapse {
+            leftContainerView.isHidden = false
+            verticalDividerView.isHidden = false
+        }
+
         view.layoutIfNeeded()
 
-        if behavior == .tile {
-            return
+        let animations = {
+            self.verticalDividerViewLeadingConstraint.constant = targetLeadingConstant
+            self.leftContainerView.alpha = targetAlpha
+            self.verticalDividerView.alpha = targetAlpha
+            self.view.layoutIfNeeded()
         }
 
-        if behavior == .auto {
-            let size = splitViewController.view.bounds.size
-            #if targetEnvironment(macCatalyst)
-            // On Mac, only skip auto-collapse if window is wide enough for tiled layout
-            if size.width >= 900 {
-                return
-            }
-            #else
-            let isLandscape = size.width > size.height
-            if isLandscape {
-                return
-            }
-            #endif
+        let completion: (Bool) -> Void = { _ in
+            self.leftContainerView.isHidden = shouldCollapse
+            self.verticalDividerView.isHidden = shouldCollapse
+            self.appDelegate.feedDetailViewController.updateSidebarButton(for: self.appDelegate.splitViewController.displayMode)
+            self.storyPagesViewController?.updateStoryTitleNavigationButtons()
         }
 
-        UIView.animate(withDuration: 0.2) {
-            splitViewController.preferredDisplayMode = .oneOverSecondary
+        if animated {
+            UIView.animate(withDuration: 0.2, animations: animations, completion: completion)
+        } else {
+            animations()
+            completion(true)
         }
-        splitViewController.show(.secondary)
     }
     
     override func viewDidLoad() {
@@ -551,6 +911,7 @@ class DetailViewController: BaseViewController {
 
         (verticalDividerView as? DividerView)?.handleOffset = -6
 
+        leftContainerView.clipsToBounds = true
         updateLayout(reload: false, fetchFeeds: false)
     }
     
@@ -594,8 +955,8 @@ class DetailViewController: BaseViewController {
         if currentFeedsWidth != feedsWidth {
             feedsWidth = currentFeedsWidth
         }
-
         performStoryAutoCollapseIfNeeded()
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
     }
     
     private func adjustTopConstraint() {
@@ -703,6 +1064,174 @@ class DetailViewController: BaseViewController {
 }
 
 private extension DetailViewController {
+    var shouldPreferNativeFullscreenSidebarOverlay: Bool {
+        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return false
+        }
+
+        guard splitViewController?.style == .tripleColumn else {
+            return false
+        }
+
+        let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
+        return StorySplitBehaviorDecision.preferredBehavior(
+            for: behaviorString,
+            width: size.width,
+            height: size.height,
+            isMac: appDelegate.isMac
+        ) == .overlay
+    }
+
+    var shouldUseNativeFullscreenSidebarOverlay: Bool {
+        shouldPreferNativeFullscreenSidebarOverlay && hasVisibleStoryForSidebarLayout
+    }
+
+    func splitPreferredDisplayMode(
+        for displayMode: UISplitViewController.DisplayMode
+    ) -> StorySplitPreferredDisplayMode {
+        switch displayMode {
+        case .oneBesideSecondary:
+            return .oneBesideSecondary
+        case .oneOverSecondary:
+            return .oneOverSecondary
+        case .twoBesideSecondary:
+            return .twoBesideSecondary
+        case .twoOverSecondary:
+            return .twoOverSecondary
+        case .twoDisplaceSecondary:
+            return .twoDisplaceSecondary
+        default:
+            return .secondaryOnly
+        }
+    }
+
+    @discardableResult
+    func ensureFullscreenSidebarSupplementaryController() -> FeedDetailViewController? {
+        guard shouldUseNativeFullscreenSidebarOverlay,
+              let splitViewController else {
+            return nil
+        }
+
+        if let controller = fullscreenSidebarOverlayFeedDetailController,
+           let navigationController = fullscreenSidebarSupplementaryNavigationController {
+            controller.storiesCollection = appDelegate.storiesCollection
+            controller.changedLayout()
+            controller.reload()
+            splitViewController.setViewController(navigationController, for: .supplementary)
+            return controller
+        }
+
+        guard let controller = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController else {
+            return nil
+        }
+
+        controller.storiesCollection = appDelegate.storiesCollection
+        _ = controller.view
+        controller.changedLayout()
+        controller.reload()
+
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.navigationBar.prefersLargeTitles = false
+        ThemeManager.shared?.update(navigationController)
+
+        splitViewController.setViewController(navigationController, for: .supplementary)
+
+        fullscreenSidebarOverlayFeedDetailController = controller
+        fullscreenSidebarSupplementaryNavigationController = navigationController
+
+        return controller
+    }
+
+    func clearFullscreenSidebarSupplementaryControllerIfNeeded() {
+        guard fullscreenSidebarSupplementaryNavigationController != nil
+                || fullscreenSidebarOverlayFeedDetailController != nil else {
+            return
+        }
+
+        splitViewController?.setViewController(nil, for: .supplementary)
+        fullscreenSidebarSupplementaryNavigationController = nil
+        fullscreenSidebarOverlayFeedDetailController = nil
+    }
+
+    func scheduleFullscreenSidebarSupplementaryCleanup() {
+        guard fullscreenSidebarPresentationState == .fullscreen else {
+            return
+        }
+
+        if let coordinator = splitViewController?.transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { _ in
+                guard self.fullscreenSidebarPresentationState == .fullscreen else {
+                    return
+                }
+                self.clearFullscreenSidebarSupplementaryControllerIfNeeded()
+            }
+        } else {
+            DispatchQueue.main.async {
+                guard self.fullscreenSidebarPresentationState == .fullscreen else {
+                    return
+                }
+                self.clearFullscreenSidebarSupplementaryControllerIfNeeded()
+            }
+        }
+    }
+
+    func dismissFullscreenSidebarOverlayIfNeeded(animated: Bool) {
+        let shouldDismissNativeOverlay = shouldUseNativeFullscreenSidebarOverlay
+            && splitViewController?.displayMode != .secondaryOnly
+        guard fullscreenSidebarPresentationState != .fullscreen
+                || fullscreenSidebarSupplementaryNavigationController != nil
+                || shouldDismissNativeOverlay else {
+            return
+        }
+
+        if !shouldUseNativeFullscreenSidebarOverlay {
+            fullscreenSidebarPresentationState = .fullscreen
+
+            if let splitViewController, splitViewController.displayMode != .secondaryOnly {
+                let dismissFeeds = {
+                    splitViewController.hide(.primary)
+                }
+
+                if animated {
+                    dismissFeeds()
+                } else {
+                    UIView.performWithoutAnimation {
+                        dismissFeeds()
+                    }
+                }
+            }
+
+            setStoryTitlesCollapsed(true, animated: animated)
+            return
+        }
+
+        fullscreenSidebarPresentationState = .fullscreen
+
+        guard let splitViewController else {
+            clearFullscreenSidebarSupplementaryControllerIfNeeded()
+            return
+        }
+
+        let dismissOverlay = {
+            splitViewController.hide(.supplementary)
+        }
+
+        if splitViewController.displayMode == .secondaryOnly {
+            clearFullscreenSidebarSupplementaryControllerIfNeeded()
+        } else if animated {
+            dismissOverlay()
+            scheduleFullscreenSidebarSupplementaryCleanup()
+        } else {
+            UIView.performWithoutAnimation {
+                dismissOverlay()
+            }
+            clearFullscreenSidebarSupplementaryControllerIfNeeded()
+        }
+
+        fullscreenSidebarOverlayFeedDetailController?.updateSidebarButton(for: splitViewController.displayMode)
+        appDelegate.feedDetailViewController.updateSidebarButton(for: splitViewController.displayMode)
+    }
+
     func checkViewControllers() {
         let isTop = layout == .top
         
@@ -724,6 +1253,10 @@ private extension DetailViewController {
         }
         
         resetControllersIfCompactStateChanged()
+
+        if storyTitlesInGridView || layout != .left {
+            dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+        }
         
         if !storyTitlesInGridView {
             storyPagesViewController = listStoryPagesViewController
@@ -770,6 +1303,7 @@ private extension DetailViewController {
             
             verticalDividerViewLeadingConstraint.constant = verticalDividerPosition
             horizontalDividerViewBottomConstraint.constant = -13
+            appDelegate.updateSplitBehavior(true)
             wasGridView = false
         } else {
             let appropriateContainerView: UIView = isTop ? topContainerView : bottomContainerView
@@ -821,8 +1355,14 @@ private extension DetailViewController {
             return
         }
         
-        addChild(viewController)
-        
+        if viewController.parent !== self {
+            addChild(viewController)
+        } else if viewController.view.superview === containerView {
+            return
+        } else {
+            viewController.view.removeFromSuperview()
+        }
+
         containerView.addSubview(viewController.view)
         
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -830,8 +1370,10 @@ private extension DetailViewController {
         viewController.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
         viewController.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         viewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
-        
-        viewController.didMove(toParent: self)
+
+        if viewController.parent === self {
+            viewController.didMove(toParent: self)
+        }
     }
     
     func remove(viewController: UIViewController?) {

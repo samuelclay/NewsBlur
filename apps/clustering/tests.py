@@ -391,3 +391,114 @@ class Test_FeedTitleStripping(TestCase):
         cluster = list(clusters.values())[0]
         self.assertIn("111:aaa", cluster)
         self.assertIn("222:bbb", cluster)
+
+
+class Test_NumericTokenFiltering(TestCase):
+    def test_numeric_tokens_excluded(self):
+        """Pure numeric tokens like years and dates should not be significant words."""
+        words = title_significant_words("March 17, 2026 Breaking News")
+        self.assertNotIn("17", words)
+        self.assertNotIn("2026", words)
+        self.assertIn("march", words)
+        self.assertIn("breaking", words)
+        # "news" is stemmed to "new" by _simple_stem
+        self.assertIn("new", words)
+
+    def test_alphanumeric_tokens_kept(self):
+        """Tokens mixing letters and numbers should still be included."""
+        words = title_significant_words("iPhone 17 Pro vs Galaxy S26")
+        self.assertIn("iphone", words)
+        # "17" is purely numeric — should be filtered
+        self.assertNotIn("17", words)
+        # "s26" is alphanumeric — should be kept
+        self.assertIn("s26", words)
+
+    def test_date_stories_not_falsely_matched(self):
+        """Stories sharing only a date should not cluster."""
+        stories = [
+            {
+                "story_hash": "111:aaa",
+                "story_feed_id": 1,
+                "story_title": "Daily Cartoon: Tuesday, March 17, 2026",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "222:bbb",
+                "story_feed_id": 2,
+                "story_title": "NYT Mini crossword answers for March 17, 2026",
+                "story_date": 999,
+            },
+        ]
+        clusters = find_title_clusters(stories)
+        self.assertEqual(len(clusters), 0)
+
+    def test_non_date_cluster_still_works(self):
+        """Legitimate clusters should not be affected by numeric filtering."""
+        stories = [
+            {
+                "story_hash": "111:aaa",
+                "story_feed_id": 1,
+                "story_title": "UK government withdraws AI copyright training proposal after artist backlash",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "222:bbb",
+                "story_feed_id": 2,
+                "story_title": "UK government drops AI copyright training proposal following backlash from artists",
+                "story_date": 999,
+            },
+        ]
+        clusters = find_title_clusters(stories)
+        self.assertEqual(len(clusters), 1)
+
+
+class Test_NewAIToolFalsePositive(TestCase):
+    """Test that generic short titles don't create false-positive hub clusters."""
+
+    def test_short_generic_title_does_not_cluster_unrelated(self):
+        """'Rolling Out Our New A.I. Tools' should not cluster with
+        'New font-rendering trick hides malicious commands from AI tools'
+        — they share only generic words {new, ai, tool}."""
+        stories = [
+            {
+                "story_hash": "111:aaa",
+                "story_feed_id": 1,
+                "story_title": "Rolling Out Our New A.I. Tools",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "222:bbb",
+                "story_feed_id": 2,
+                "story_title": "New font-rendering trick hides malicious commands from AI tools",
+                "story_date": 999,
+            },
+            {
+                "story_hash": "333:ccc",
+                "story_feed_id": 3,
+                "story_title": "UK government withdraws AI copyright proposal after backlash from artists like Dua Lipa",
+                "story_date": 998,
+            },
+            {
+                "story_hash": "444:ddd",
+                "story_feed_id": 4,
+                "story_title": "UK government withdraws AI copyright proposal after artist backlash",
+                "story_date": 997,
+            },
+        ]
+        clusters = find_title_clusters(stories)
+        # The UK copyright stories should cluster together
+        uk_clustered = any("333:ccc" in members and "444:ddd" in members for members in clusters.values())
+        self.assertTrue(uk_clustered, "UK copyright stories should cluster")
+        # The UK copyright stories should NOT be in the same cluster as the AI tool stories
+        for members in clusters.values():
+            if "333:ccc" in members or "444:ddd" in members:
+                self.assertNotIn(
+                    "111:aaa",
+                    members,
+                    "Rolling Out should not be in the same cluster as UK copyright",
+                )
+                self.assertNotIn(
+                    "222:bbb",
+                    members,
+                    "Font-rendering should not be in the same cluster as UK copyright",
+                )

@@ -8,23 +8,18 @@ class RTrendingSubscription:
     """
     Tracks feed subscription events to identify trending feeds by subscription velocity.
 
-    Unlike RTrendingStory (which tracks read engagement), this class tracks
-    how quickly feeds are gaining new subscribers - a leading indicator of
-    feed popularity.
-
     Redis Key Structure:
     - fSub:{date} -> sorted set {feed_id: subscription_count}
+    - fSub:total:{date} -> counter (total subscriptions for the day)
 
     All data is stored in date-partitioned sorted sets for efficient aggregation.
     All keys expire after 35 days (to support 30-day trending window).
     """
 
     TTL_DAYS = 35
-    CACHE_TTL_SECONDS = 60
     MIN_SUBSCRIBERS_THRESHOLD = 4
 
     # Decay weights for multi-day aggregation (today=1.0, progressively lower)
-    # More recent subscriptions count more heavily toward trending
     DECAY_WEIGHTS = {
         1: [1.0],
         7: [1.0, 0.85, 0.7, 0.55, 0.4, 0.3, 0.2],
@@ -66,9 +61,6 @@ class RTrendingSubscription:
     def add_subscription(cls, feed_id):
         """
         Record a subscription event for a feed.
-
-        Args:
-            feed_id: The feed ID being subscribed to
         """
         if not feed_id:
             return
@@ -78,75 +70,49 @@ class RTrendingSubscription:
         ttl_seconds = cls.TTL_DAYS * 24 * 60 * 60
 
         key = f"fSub:{today}"
+        total_key = f"fSub:total:{today}"
         pipe = r.pipeline()
         pipe.zincrby(key, 1, str(feed_id))
         pipe.expire(key, ttl_seconds)
+        pipe.incr(total_key)
+        pipe.expire(total_key, ttl_seconds)
         pipe.execute()
 
     @classmethod
     def _get_decay_weights(cls, days):
-        """
-        Get decay weights for the specified number of days.
-        Uses predefined weights for common windows, interpolates for others.
-        """
         if days in cls.DECAY_WEIGHTS:
             return cls.DECAY_WEIGHTS[days]
-
-        # Interpolate for non-standard day counts
         return [max(0.03, 1.0 - (i * 0.97 / max(days - 1, 1))) for i in range(days)]
 
     @classmethod
-    def _get_cached_weighted_union(cls, r, days):
+    def _get_top_weighted(cls, r, days, limit):
+        """Get top items by reading each daily key and applying decay weights in Python.
+
+        No ZUNIONSTORE — just pipelined ZREVRANGE reads.
         """
-        Get or create a cached weighted aggregation across multiple days.
-
-        Uses decay weights so recent subscriptions count more than older ones.
-        Returns the cache key name which can be used for ZREVRANGE etc.
-
-        Args:
-            r: Redis connection
-            days: Number of days to aggregate
-
-        Returns:
-            Cache key name containing the aggregated sorted set
-        """
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        cache_key = f"fSub:cache:{days}d:{today}"
-
-        # Check if cache exists
-        if r.exists(cache_key):
-            return cache_key
-
         weights = cls._get_decay_weights(days)
+        fetch_limit = max(limit * 3, 100)
 
-        # Build weighted union
-        keys = []
-        weight_list = []
+        pipe = r.pipeline()
         for i in range(min(days, len(weights))):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"fSub:{day}"
-            if r.exists(key):
-                keys.append(key)
-                weight_list.append(weights[i])
+            pipe.zrevrange(f"fSub:{day}", 0, fetch_limit - 1, withscores=True)
+        daily_results = pipe.execute()
 
-        if keys:
-            r.zunionstore(cache_key, dict(zip(keys, weight_list)), aggregate="SUM")
-            r.expire(cache_key, cls.CACHE_TTL_SECONDS)
+        merged = {}
+        for i, results in enumerate(daily_results):
+            weight = weights[i]
+            for member, score in results:
+                key = member.decode() if isinstance(member, bytes) else member
+                merged[key] = merged.get(key, 0) + score * weight
 
-        return cache_key
+        sorted_results = sorted(merged.items(), key=lambda x: -x[1])
+        return sorted_results[:limit]
 
     @classmethod
     def get_trending_feeds(cls, days=7, limit=50, min_subscribers=None):
         """
         Get feeds trending by subscription velocity.
-
-        Args:
-            days: Number of days to aggregate (1, 7, or 30 recommended)
-            limit: Maximum feeds to return (default 50, max 200)
-            min_subscribers: Minimum raw subscriptions to include (default: MIN_SUBSCRIBERS_THRESHOLD)
-
-        Returns:
-            List of (feed_id, weighted_score) tuples sorted by score desc
         """
         if min_subscribers is None:
             min_subscribers = cls.MIN_SUBSCRIBERS_THRESHOLD
@@ -155,19 +121,17 @@ class RTrendingSubscription:
 
         if days == 1:
             today = datetime.date.today().strftime("%Y-%m-%d")
-            cache_key = f"fSub:{today}"
+            results = r.zrevrange(f"fSub:{today}", 0, limit * 3, withscores=True)
+            results = [
+                (m.decode() if isinstance(m, bytes) else m, s) for m, s in results
+            ]
         else:
-            cache_key = cls._get_cached_weighted_union(r, days)
+            results = cls._get_top_weighted(r, days, limit * 3)
 
-        # Get more results than needed to filter by threshold
-        results = r.zrevrange(cache_key, 0, limit * 3, withscores=True)
-
-        # Filter by minimum threshold and limit
         filtered = []
-        for feed_id, score in results:
+        for feed_id_str, score in results:
             if score >= min_subscribers:
                 try:
-                    feed_id_str = feed_id.decode() if isinstance(feed_id, bytes) else feed_id
                     filtered.append((int(feed_id_str), score))
                 except ValueError:
                     continue
@@ -180,26 +144,16 @@ class RTrendingSubscription:
     def get_feed_subscription_count(cls, feed_id, days=7):
         """
         Get raw subscription count for a specific feed over N days.
-        Does NOT apply decay weights - returns actual subscription count.
-
-        Args:
-            feed_id: Feed ID
-            days: Number of days to aggregate
-
-        Returns:
-            Raw subscription count (not weighted)
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        total = 0
 
         pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"fSub:{day}"
-            pipe.zscore(key, str(feed_id))
+            pipe.zscore(f"fSub:{day}", str(feed_id))
 
-        values = pipe.execute()
-        for val in values:
+        total = 0
+        for val in pipe.execute():
             if val:
                 try:
                     total += int(val)
@@ -211,16 +165,8 @@ class RTrendingSubscription:
     @classmethod
     def get_trending_feeds_detailed(cls, days=7, limit=50, min_subscribers=None):
         """
-        Get trending feeds with full details including raw counts and weighted scores.
-
-        Args:
-            days: Number of days to aggregate (1, 7, or 30 recommended)
-            limit: Maximum feeds to return (default 50)
-            min_subscribers: Minimum to include (default: MIN_SUBSCRIBERS_THRESHOLD)
-
-        Returns:
-            List of dicts with feed_id, weighted_score, raw_subscriptions,
-            subscriptions_today, avg_per_day
+        Get trending feeds with full details. Batches all Redis lookups into
+        a single pipeline instead of per-feed calls.
         """
         if min_subscribers is None:
             min_subscribers = cls.MIN_SUBSCRIBERS_THRESHOLD
@@ -228,7 +174,6 @@ class RTrendingSubscription:
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         today = datetime.date.today().strftime("%Y-%m-%d")
 
-        # Get weighted results
         trending = cls.get_trending_feeds(days=days, limit=limit, min_subscribers=min_subscribers)
 
         if not trending:
@@ -237,17 +182,46 @@ class RTrendingSubscription:
         feed_ids = [str(fid) for fid, _ in trending]
         weighted_scores = {str(fid): score for fid, score in trending}
 
-        # Get today's counts
+        # Batch all lookups into a single pipeline:
+        # - today's counts for each feed
+        # - raw totals (zscore per day per feed)
         pipe = r.pipeline()
+
+        # Today's counts
         for fid in feed_ids:
             pipe.zscore(f"fSub:{today}", fid)
-        today_counts = pipe.execute()
-        today_map = {fid: int(c) if c else 0 for fid, c in zip(feed_ids, today_counts)}
 
-        # Get raw totals
-        raw_totals = {}
+        # Raw totals: for each feed, get zscore for each of the N days
+        day_keys = []
+        for i in range(days):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+            day_keys.append(f"fSub:{day}")
+
         for fid in feed_ids:
-            raw_totals[fid] = cls.get_feed_subscription_count(int(fid), days=days)
+            for day_key in day_keys:
+                pipe.zscore(day_key, fid)
+
+        all_results = pipe.execute()
+
+        # Parse today's counts (first len(feed_ids) results)
+        today_map = {}
+        for i, fid in enumerate(feed_ids):
+            c = all_results[i]
+            today_map[fid] = int(c) if c else 0
+
+        # Parse raw totals (remaining results, grouped by feed then day)
+        offset = len(feed_ids)
+        raw_totals = {}
+        for i, fid in enumerate(feed_ids):
+            total = 0
+            for j in range(days):
+                val = all_results[offset + i * days + j]
+                if val:
+                    try:
+                        total += int(val)
+                    except (ValueError, TypeError):
+                        pass
+            raw_totals[fid] = total
 
         results = []
         for feed_id_str in feed_ids:
@@ -269,45 +243,61 @@ class RTrendingSubscription:
     @classmethod
     def get_daily_totals(cls, days=7):
         """
-        Get total subscriptions per day for the past N days.
-
-        Useful for charting subscription activity over time.
-
-        Args:
-            days: Number of days to retrieve
-
-        Returns:
-            List of (date_str, total_subscriptions) tuples, most recent first
+        Get total subscriptions per day using running counters.
+        Falls back to sorted set scan if counter doesn't exist yet.
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
-        results = []
+        # Batch all lookups in a single pipeline
+        pipe = r.pipeline()
+        day_strs = []
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"fSub:{day}"
+            day_strs.append(day)
+            pipe.get(f"fSub:total:{day}")
 
-            # Sum all scores in the sorted set for this day
-            all_scores = r.zrange(key, 0, -1, withscores=True)
-            total = sum(int(score) for _, score in all_scores)
-            results.append((day, total))
+        counter_values = pipe.execute()
+
+        results = []
+        # For days without a counter, fall back to sorted set scan
+        fallback_days = []
+        for i, (day, counter_val) in enumerate(zip(day_strs, counter_values)):
+            if counter_val is not None:
+                results.append((day, int(counter_val)))
+            else:
+                fallback_days.append((i, day))
+
+        if fallback_days:
+            pipe = r.pipeline()
+            for _, day in fallback_days:
+                pipe.zrange(f"fSub:{day}", 0, -1, withscores=True)
+            fallback_results = pipe.execute()
+
+            for (idx, day), scores in zip(fallback_days, fallback_results):
+                total = sum(int(score) for _, score in scores)
+                results.insert(idx, (day, total))
 
         return results
 
     @classmethod
     def get_stats_for_prometheus(cls):
         """
-        Get aggregate statistics for Prometheus metrics.
-
-        Returns:
-            Dict with total_subscriptions_today, unique_feeds_today
+        Get aggregate statistics using running counter for total and ZCARD for unique feeds.
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         today = datetime.date.today().strftime("%Y-%m-%d")
-        key = f"fSub:{today}"
 
-        all_subs = r.zrange(key, 0, -1, withscores=True)
-        total_subscriptions = sum(int(score) for _, score in all_subs)
-        unique_feeds = r.zcard(key)
+        pipe = r.pipeline()
+        pipe.get(f"fSub:total:{today}")
+        pipe.zcard(f"fSub:{today}")
+        counter_val, unique_feeds = pipe.execute()
+
+        if counter_val is not None:
+            total_subscriptions = int(counter_val)
+        else:
+            # Fallback: sum sorted set scores if counter doesn't exist yet
+            all_subs = r.zrange(f"fSub:{today}", 0, -1, withscores=True)
+            total_subscriptions = sum(int(score) for _, score in all_subs)
 
         return {
             "total_subscriptions_today": total_subscriptions,

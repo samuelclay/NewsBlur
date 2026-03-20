@@ -768,6 +768,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         cluster_stories = _.sortBy(cluster_stories, function (cs) {
             return -parseInt(cs.story_timestamp, 10);
         });
+        if (!NEWSBLUR.Globals.is_archive) {
+            cluster_stories = cluster_stories.slice(0, 1);
+        }
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';

@@ -39,16 +39,16 @@ class Clustering(View):
                 f"{metric}_alltime"
             ] = f'{chart_name}{{metric="{metric}",period="alltime"}} {alltime_stats[metric]}'
 
-        timing_metric = "cluster_time_avg_ms"
-        for period, stats in [
-            ("daily", daily_stats),
-            ("weekly", weekly_stats),
-            ("monthly", monthly_stats),
-            ("alltime", alltime_stats),
-        ]:
-            formatted_data[
-                f"{timing_metric}_{period}"
-            ] = f'{chart_name}{{metric="{timing_metric}",period="{period}"}} {stats[timing_metric]}'
+        for timing_metric in ["cluster_time_avg_ms", "es_query_avg_ms", "es_query_count", "es_stories_compared"]:
+            for period, stats in [
+                ("daily", daily_stats),
+                ("weekly", weekly_stats),
+                ("monthly", monthly_stats),
+                ("alltime", alltime_stats),
+            ]:
+                formatted_data[
+                    f"{timing_metric}_{period}"
+                ] = f'{chart_name}{{metric="{timing_metric}",period="{period}"}} {stats.get(timing_metric, 0)}'
 
         context = {
             "data": formatted_data,

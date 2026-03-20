@@ -25,7 +25,6 @@ class TrendingFeeds(View):
         Metrics exported:
         - Aggregate totals (total seconds, story/feed reads, unique counts)
         - Top 20 stories with full details (for Grafana table)
-        - Top 20 feeds by read time
         - Top 20 long reads (stories with ≥3 readers, by avg read time)
         - Read time distribution buckets
         """
@@ -39,33 +38,19 @@ class TrendingFeeds(View):
         chart_name = "trending"
         chart_type = "gauge"
 
-        # Get aggregate metrics for today
-        feed_time_key = f"fRT:{today}"
-        story_time_key = f"sRTi:{today}"
-        story_count_key = f"sRTc:{today}"
-        feed_count_key = f"fRTc:{today}"
+        # Get aggregate metrics for today using running counters + ZCARD
+        pipe = r.pipeline()
+        pipe.get(f"fRT:total:{today}")
+        pipe.get(f"sRTc:total:{today}")
+        pipe.get(f"fRTc:total:{today}")
+        pipe.zcard(f"sRTi:{today}")
+        pipe.zcard(f"fRT:{today}")
+        total_read_seconds, total_story_reads, total_feed_reads, unique_stories, unique_feeds = pipe.execute()
 
-        # Total seconds read today (sum of all feed read times)
-        feed_times = r.zrange(feed_time_key, 0, -1, withscores=True)
-        total_read_seconds = sum(int(score) for _, score in feed_times)
-        data["total_read_seconds"] = total_read_seconds
-
-        # Total story reads today (sum of all story reader counts)
-        story_counts = r.zrange(story_count_key, 0, -1, withscores=True)
-        total_story_reads = sum(int(score) for _, score in story_counts)
-        data["total_story_reads"] = total_story_reads
-
-        # Total feed reads today (sum of all feed reader counts)
-        feed_counts = r.zrange(feed_count_key, 0, -1, withscores=True)
-        total_feed_reads = sum(int(score) for _, score in feed_counts)
-        data["total_feed_reads"] = total_feed_reads
-
-        # Unique stories read today
-        unique_stories = r.zcard(story_time_key)
+        data["total_read_seconds"] = int(total_read_seconds) if total_read_seconds else 0
+        data["total_story_reads"] = int(total_story_reads) if total_story_reads else 0
+        data["total_feed_reads"] = int(total_feed_reads) if total_feed_reads else 0
         data["unique_stories_read"] = unique_stories
-
-        # Unique feeds read today
-        unique_feeds = r.zcard(feed_time_key)
         data["unique_feeds_read"] = unique_feeds
 
         # Format aggregate metrics
@@ -138,30 +123,6 @@ class TrendingFeeds(View):
                         f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
                         f'story_hash="{story_hash_safe}",story_title="{story_title_safe}",'
                         f'story_date="{story_date}",reader_count="{reader_count}"}} {total_seconds}'
-                    )
-
-        # Top feeds for both 1-day and 7-day windows
-        for days in [1, 7]:
-            top_feeds = RTrendingStory.get_trending_feeds_detailed(days=days, limit=20)
-
-            if top_feeds:
-                feed_ids = [f["feed_id"] for f in top_feeds]
-                feeds_by_id = {}
-                for feed in Feed.objects.filter(pk__in=feed_ids).values("pk", "feed_title"):
-                    feeds_by_id[feed["pk"]] = feed["feed_title"]
-
-                for rank, feed_data in enumerate(top_feeds, 1):
-                    feed_id = feed_data["feed_id"]
-                    total_seconds = feed_data["total_seconds"]
-                    reader_count = feed_data["reader_count"]
-                    feed_title = feeds_by_id.get(feed_id, "Unknown Feed")
-                    feed_title_safe = self._sanitize_label(feed_title)
-
-                    key = f"top_feed_{days}d_{rank}"
-                    formatted_data[key] = (
-                        f'{chart_name}{{metric="top_feed",days="{days}",rank="{rank}",'
-                        f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
-                        f'reader_count="{reader_count}"}} {total_seconds}'
                     )
 
         # Long Reads (stories with ≥3 readers, sorted by avg read time)
