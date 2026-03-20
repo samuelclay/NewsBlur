@@ -1794,7 +1794,7 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
-                if self.is_google_news_feed and s and not s.image_urls:
+                if self.is_google_news_feed and s:
                     s.fetch_og_image()
                     if s.image_urls:
                         s.save()
@@ -2574,23 +2574,11 @@ class Feed(models.Model):
     @classmethod
     def format_stories(cls, stories_db, feed_id=None, include_permalinks=False):
         stories = []
-
         for story_db in stories_db:
             story = cls.format_story(story_db, feed_id, include_permalinks=include_permalinks)
             stories.append(story)
 
         return stories
-
-    @classmethod
-    def prepend_story_image(cls, story_content, image_urls):
-        if not image_urls:
-            return story_content
-
-        story_content = story_content or ""
-        if "<img" in story_content.lower():
-            return story_content
-
-        return f'<img src="{image_urls[0]}">\n{story_content}'
 
     @classmethod
     def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False, show_changes=False):
@@ -2616,8 +2604,6 @@ class Feed(models.Model):
             has_changes = True
         if not show_changes and latest_story_content:
             story_content = latest_story_content
-        story_content = cls.prepend_story_image(story_content, story_db.image_urls)
-
         story_title = story_db.story_title
         blank_story_title = False
         if not story_title:
@@ -4088,6 +4074,24 @@ class MStory(mongo.Document):
             logging.debug(
                 "   ---> Fetched og:image for Google News story: %s" % image_url[:80]
             )
+
+        self.prepend_image_to_content(image_url)
+
+    def prepend_image_to_content(self, image_url):
+        """Prepend an image tag to the story content, replacing any previously prepended image."""
+        img_tag = f'<img src="{image_url}">'
+        story_content = ""
+        if self.story_content_z:
+            story_content = smart_str(zlib.decompress(self.story_content_z))
+
+        # Strip any previously prepended image tag
+        if story_content.startswith("<img"):
+            newline_idx = story_content.find("\n")
+            if newline_idx != -1:
+                story_content = story_content[newline_idx + 1:]
+
+        story_content = f'{img_tag}\n{story_content}'
+        self.story_content_z = zlib.compress(smart_bytes(story_content))
 
     @staticmethod
     def _decode_google_news_url(source_url):

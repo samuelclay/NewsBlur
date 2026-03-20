@@ -9,6 +9,8 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
+from django.utils.encoding import smart_str
+
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
@@ -833,37 +835,52 @@ class Test_YouTubeFavicons(TestCase):
 
 
 class Test_StoryImageInjection(TestCase):
-    """Tests for prepending discovered story images into rendered content."""
+    """Tests for prepending og:image into Google News story content at fetch time."""
 
-    def test_format_story_prepends_discovered_image_when_story_has_no_inline_image(self):
+    def test_prepend_image_to_content(self):
         story = MStory(
             story_feed_id=1,
             story_title="Google News story",
             story_permalink="https://example.com/story",
             story_date=datetime.datetime.utcnow(),
-            image_urls=["https://example.com/hero.jpg"],
         )
         story.story_content_z = zlib.compress(b"<p>Story body without image.</p>")
 
-        rendered = Feed.format_story(story)
+        story.prepend_image_to_content("https://example.com/hero.jpg")
 
-        self.assertTrue(rendered["story_content"].startswith('<img src="https://example.com/hero.jpg">'))
-        self.assertIn("<p>Story body without image.</p>", rendered["story_content"])
+        content = smart_str(zlib.decompress(story.story_content_z))
+        self.assertTrue(content.startswith('<img src="https://example.com/hero.jpg">'))
+        self.assertIn("<p>Story body without image.</p>", content)
 
-    def test_format_story_does_not_prepend_image_when_story_already_has_inline_image(self):
+    def test_prepend_image_replaces_previously_prepended_image(self):
         story = MStory(
             story_feed_id=1,
-            story_title="Story with image",
+            story_title="Google News story",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.story_content_z = zlib.compress(b"<p>Story body.</p>")
+
+        story.prepend_image_to_content("https://example.com/old.jpg")
+        story.prepend_image_to_content("https://example.com/new.jpg")
+
+        content = smart_str(zlib.decompress(story.story_content_z))
+        self.assertTrue(content.startswith('<img src="https://example.com/new.jpg">'))
+        self.assertNotIn("old.jpg", content)
+        self.assertEqual(content.count("<img"), 1)
+
+    def test_prepend_image_does_not_affect_format_story(self):
+        """format_story should not inject images — they're already in the content."""
+        story = MStory(
+            story_feed_id=1,
+            story_title="Regular feed story",
             story_permalink="https://example.com/story",
             story_date=datetime.datetime.utcnow(),
             image_urls=["https://example.com/hero.jpg"],
         )
-        story.story_content_z = zlib.compress(
-            b'<p><img src="https://example.com/already-there.jpg"></p><p>Story body.</p>'
-        )
+        story.story_content_z = zlib.compress(b"<p>No inline image.</p>")
 
         rendered = Feed.format_story(story)
 
-        self.assertEqual(rendered["story_content"].count("<img"), 1)
-        self.assertIn("already-there.jpg", rendered["story_content"])
-        self.assertNotIn('src="https://example.com/hero.jpg"', rendered["story_content"])
+        self.assertNotIn("hero.jpg", rendered["story_content"])
+        self.assertIn("<p>No inline image.</p>", rendered["story_content"])
