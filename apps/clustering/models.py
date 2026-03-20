@@ -273,6 +273,8 @@ def find_semantic_clusters(
     original_feed_map=None,
     story_title_map=None,
     feed_title_map=None,
+    max_es_queries=10,
+    deadline=None,
 ):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
@@ -288,16 +290,31 @@ def find_semantic_clusters(
         feed_ids: list of all feed IDs to search across
         lookback_date: datetime for the oldest stories to match (limits ES results)
         min_score: minimum ES relevance score to consider a match
+        max_es_queries: max number of ES queries per invocation (bounds ES load)
+        deadline: absolute time.time() value after which no new ES queries are issued
 
     Returns:
-        dict of {cluster_id: [story_hash, ...]}
+        tuple of (dict of {cluster_id: [story_hash, ...]}, dict of ES stats)
     """
     import elasticsearch
 
     from apps.search.models import SearchStory
 
+    es_stats = {
+        "query_count": 0,
+        "total_ms": 0,
+        "max_ms": 0,
+        "stories_compared": len(stories) if stories else 0,
+        "skipped_short_title": 0,
+        "skipped_no_feeds": 0,
+        "skipped_deadline": 0,
+        "skipped_max_queries": 0,
+        "hits_found": 0,
+        "hits_matched": 0,
+    }
+
     if not stories or not feed_ids:
-        return {}
+        return {}, es_stats
 
     story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
 
@@ -320,9 +337,17 @@ def find_semantic_clusters(
         index_name = SearchStory.index_name()
     except Exception as e:
         logging.debug(" ---> ~FRClustering: ES not available: %s" % e)
-        return {}
+        return {}, es_stats
 
     for story in stories:
+        # clustering/models.py: Check budget limits before issuing ES queries
+        if es_stats["query_count"] >= max_es_queries:
+            es_stats["skipped_max_queries"] += 1
+            continue
+        if deadline and time.time() >= deadline:
+            es_stats["skipped_deadline"] += 1
+            continue
+
         story_hash = story["story_hash"]
         # Use only title as query text (not content) to avoid topical noise.
         # ES still searches both title and content fields in the index, so
@@ -330,12 +355,14 @@ def find_semantic_clusters(
         query_text = story.get("story_title") or ""
 
         if not query_text or len(query_text.strip()) < 10:
+            es_stats["skipped_short_title"] += 1
             continue
 
         # Search across related feeds, excluding this story's own feed and its branches
         story_rfid = resolve_feed_id(story["story_feed_id"], original_feed_map)
         search_feed_ids = [fid for fid in feed_ids if resolve_feed_id(fid, original_feed_map) != story_rfid]
         if not search_feed_ids:
+            es_stats["skipped_no_feeds"] += 1
             continue
 
         body = {
@@ -370,13 +397,19 @@ def find_semantic_clusters(
         }
 
         try:
-            results = es.search(body=body, index=index_name)
+            query_start = time.time()
+            results = es.search(body=body, index=index_name, request_timeout=5)
+            query_ms = (time.time() - query_start) * 1000
+            es_stats["query_count"] += 1
+            es_stats["total_ms"] += query_ms
+            es_stats["max_ms"] = max(es_stats["max_ms"], query_ms)
             hits = results.get("hits", {}).get("hits", [])
+            es_stats["hits_found"] += len(hits)
         except elasticsearch.exceptions.NotFoundError:
             continue
         except elasticsearch.exceptions.ConnectionError as e:
             logging.debug(" ---> ~FRClustering: ES connection error: %s" % e)
-            return {}
+            return {}, es_stats
         except Exception as e:
             logging.debug(" ---> ~FRClustering semantic search error for %s: %s" % (story_hash, e))
             continue
@@ -418,6 +451,7 @@ def find_semantic_clusters(
             if sim_hash not in parent:
                 parent[sim_hash] = sim_hash
             union(story_hash, sim_hash)
+            es_stats["hits_matched"] += 1
 
     # Collect clusters
     groups = {}
@@ -442,7 +476,13 @@ def find_semantic_clusters(
             continue
         clusters[root] = members[:CLUSTER_MAX_SIZE]
 
-    return clusters
+    # Compute average for stats
+    if es_stats["query_count"] > 0:
+        es_stats["avg_ms"] = round(es_stats["total_ms"] / es_stats["query_count"], 1)
+    else:
+        es_stats["avg_ms"] = 0
+
+    return clusters, es_stats
 
 
 def merge_clusters(

@@ -35,6 +35,7 @@ class RClusteringUsage:
     KEY_PREFIX = "clustering"
     METRICS = ["unique_clusters", "unique_stories", "mark_read_expanded"]
     TIMING_KEYS = ["cluster_time_total_ms", "cluster_time_count"]
+    ES_KEYS = ["es_query_count", "es_query_total_ms", "es_stories_compared"]
 
     @classmethod
     def _get_redis(cls):
@@ -85,6 +86,28 @@ class RClusteringUsage:
         pipe.execute()
 
     @classmethod
+    def record_es_stats(cls, es_stats):
+        """Record per-invocation ES query stats for Grafana."""
+        if not es_stats or es_stats.get("query_count", 0) == 0 and es_stats.get("stories_compared", 0) == 0:
+            return
+        r = cls._get_redis()
+        date_key = cls._date_key()
+        pipe = r.pipeline()
+
+        qc = es_stats.get("query_count", 0)
+        total_ms = int(es_stats.get("total_ms", 0))
+        stories = es_stats.get("stories_compared", 0)
+
+        pipe.incrby(f"{cls.KEY_PREFIX}:{date_key}:es_query_count", qc)
+        pipe.incrby(f"{cls.KEY_PREFIX}:{date_key}:es_query_total_ms", total_ms)
+        pipe.incrby(f"{cls.KEY_PREFIX}:{date_key}:es_stories_compared", stories)
+        pipe.incrby(f"{cls.KEY_PREFIX}:alltime:es_query_count", qc)
+        pipe.incrby(f"{cls.KEY_PREFIX}:alltime:es_query_total_ms", total_ms)
+        pipe.incrby(f"{cls.KEY_PREFIX}:alltime:es_stories_compared", stories)
+
+        pipe.execute()
+
+    @classmethod
     def record_timing(cls, duration_ms):
         """Record clustering task duration for Grafana timing panel."""
         r = cls._get_redis()
@@ -126,7 +149,7 @@ class RClusteringUsage:
         sid_keys = []
         counter_keys = []
         counter_metadata = []
-        counter_metrics = ["mark_read_expanded"] + cls.TIMING_KEYS
+        counter_metrics = ["mark_read_expanded"] + cls.TIMING_KEYS + cls.ES_KEYS
 
         for day_offset in range(days):
             date = today - datetime.timedelta(days=day_offset)
@@ -156,6 +179,11 @@ class RClusteringUsage:
         else:
             stats["cluster_time_avg_ms"] = 0
 
+        if stats.get("es_query_count", 0) > 0:
+            stats["es_query_avg_ms"] = round(stats["es_query_total_ms"] / stats["es_query_count"])
+        else:
+            stats["es_query_avg_ms"] = 0
+
         return stats
 
     @classmethod
@@ -179,8 +207,8 @@ class RClusteringUsage:
             "unique_stories": cls._sunioncard(r, sid_keys),
         }
 
-        # Cumulative counters for mark_read and timing
-        alltime_metrics = ["mark_read_expanded"] + cls.TIMING_KEYS
+        # Cumulative counters for mark_read, timing, and ES stats
+        alltime_metrics = ["mark_read_expanded"] + cls.TIMING_KEYS + cls.ES_KEYS
         keys = [f"{cls.KEY_PREFIX}:alltime:{m}" for m in alltime_metrics]
         values = r.mget(keys)
         for i, metric in enumerate(alltime_metrics):
@@ -190,5 +218,10 @@ class RClusteringUsage:
             stats["cluster_time_avg_ms"] = round(stats["cluster_time_total_ms"] / stats["cluster_time_count"])
         else:
             stats["cluster_time_avg_ms"] = 0
+
+        if stats.get("es_query_count", 0) > 0:
+            stats["es_query_avg_ms"] = round(stats["es_query_total_ms"] / stats["es_query_count"])
+        else:
+            stats["es_query_avg_ms"] = 0
 
         return stats
