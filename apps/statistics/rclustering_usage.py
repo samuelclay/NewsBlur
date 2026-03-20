@@ -2,14 +2,14 @@
 Redis-based story clustering usage tracking.
 
 Provides fast aggregation for Prometheus metrics by maintaining
-SETs and counters in Redis that are updated in real-time when
-clustering operations occur.
+HyperLogLogs and counters in Redis that are updated in real-time
+when clustering operations occur.
 
-Key structure (unique tracking via SETs):
-- clustering:cids:{date} - SET of unique cluster IDs seen that day
-- clustering:sids:{date} - SET of unique story hashes clustered that day
-  Both have 35-day TTL. For multi-day ranges, SUNIONSTORE + SCARD gives
-  deduplicated counts across days.
+Key structure (unique tracking via HyperLogLog):
+- clustering:hcids:{date} - HLL of unique cluster IDs seen that day
+- clustering:hsids:{date} - HLL of unique story hashes clustered that day
+  Both have 35-day TTL. PFCOUNT across multiple keys gives deduplicated
+  counts in O(N) with ~0.81% error, using 12KB/day instead of 5MB/day.
 
 Key structure (operation counters):
 - clustering:{date}:mark_read_expanded - daily extra stories marked read via clusters
@@ -21,14 +21,13 @@ Key structure (operation counters):
 """
 
 import datetime
-import uuid
 
 import redis
 from django.conf import settings
 
 # rclustering_usage.py: 14-day cluster TTL means "alltime" = last 14 days
 CLUSTER_TTL_DAYS = 14
-SET_TTL_SECONDS = 35 * 24 * 60 * 60
+HLL_TTL_SECONDS = 35 * 24 * 60 * 60
 
 
 class RClusteringUsage:
@@ -49,26 +48,24 @@ class RClusteringUsage:
 
     @classmethod
     def record_cluster_ids(cls, cluster_ids, story_hashes):
-        """Record unique cluster IDs and story hashes into daily SETs.
+        """Record unique cluster IDs and story hashes into daily HyperLogLogs.
 
-        SADD naturally deduplicates, so re-discovering the same cluster
-        across multiple feed updates only counts it once per day.
+        PFADD naturally deduplicates, so re-discovering the same cluster
+        across multiple feed updates only counts it once per day (~0.81% error).
+        Uses 12KB per key instead of ~5MB for 130K-member SETs.
         """
         if not cluster_ids:
             return
         r = cls._get_redis()
         date_key = cls._date_key()
-        cid_key = f"{cls.KEY_PREFIX}:cids:{date_key}"
-        sid_key = f"{cls.KEY_PREFIX}:sids:{date_key}"
+        cid_key = f"{cls.KEY_PREFIX}:hcids:{date_key}"
+        sid_key = f"{cls.KEY_PREFIX}:hsids:{date_key}"
         pipe = r.pipeline()
 
-        for cid in cluster_ids:
-            pipe.sadd(cid_key, cid)
-        for sh in story_hashes:
-            pipe.sadd(sid_key, sh)
-
-        pipe.expire(cid_key, SET_TTL_SECONDS)
-        pipe.expire(sid_key, SET_TTL_SECONDS)
+        pipe.pfadd(cid_key, *cluster_ids)
+        pipe.pfadd(sid_key, *story_hashes)
+        pipe.expire(cid_key, HLL_TTL_SECONDS)
+        pipe.expire(sid_key, HLL_TTL_SECONDS)
         pipe.execute()
 
     @classmethod
@@ -122,29 +119,16 @@ class RClusteringUsage:
         pipe.execute()
 
     @classmethod
-    def _sunioncard(cls, r, keys):
-        """SUNIONSTORE to a temp key, SCARD it, then delete. Returns unique count."""
-        if not keys:
-            return 0
-        if len(keys) == 1:
-            return r.scard(keys[0])
-        tmp_key = f"{cls.KEY_PREFIX}:_tmp:{uuid.uuid4().hex[:8]}"
-        r.sunionstore(tmp_key, *keys)
-        count = r.scard(tmp_key)
-        r.delete(tmp_key)
-        return count
-
-    @classmethod
     def get_period_stats(cls, days=1):
         """Get aggregated counts for the last N days.
 
-        unique_clusters and unique_stories come from SUNION of daily SETs.
+        unique_clusters and unique_stories use PFCOUNT across daily HyperLogLogs,
+        which is O(N) in keys and returns deduplicated counts (~0.81% error).
         mark_read_expanded and timing come from summing daily counters.
         """
         r = cls._get_redis()
         today = datetime.date.today()
 
-        # Collect daily SET keys for unique counting
         cid_keys = []
         sid_keys = []
         counter_keys = []
@@ -154,16 +138,16 @@ class RClusteringUsage:
         for day_offset in range(days):
             date = today - datetime.timedelta(days=day_offset)
             date_key = cls._date_key(date)
-            cid_keys.append(f"{cls.KEY_PREFIX}:cids:{date_key}")
-            sid_keys.append(f"{cls.KEY_PREFIX}:sids:{date_key}")
+            cid_keys.append(f"{cls.KEY_PREFIX}:hcids:{date_key}")
+            sid_keys.append(f"{cls.KEY_PREFIX}:hsids:{date_key}")
             for metric in counter_metrics:
                 counter_keys.append(f"{cls.KEY_PREFIX}:{date_key}:{metric}")
                 counter_metadata.append(metric)
 
-        # Unique counts from SETs
+        # rclustering_usage.py: PFCOUNT handles multi-key union natively in O(N)
         stats = {
-            "unique_clusters": cls._sunioncard(r, cid_keys),
-            "unique_stories": cls._sunioncard(r, sid_keys),
+            "unique_clusters": r.pfcount(*cid_keys) if cid_keys else 0,
+            "unique_stories": r.pfcount(*sid_keys) if sid_keys else 0,
         }
 
         # Sum counters for mark_read and timing
@@ -189,22 +173,22 @@ class RClusteringUsage:
     @classmethod
     def get_alltime_stats(cls):
         """Get all-time stats. Since clusters expire after 14 days,
-        'alltime' for unique counts = union of last 14 days."""
+        'alltime' for unique counts = PFCOUNT of last 14 days of HLLs."""
         r = cls._get_redis()
-
-        # Unique counts: union of last CLUSTER_TTL_DAYS daily sets
         today = datetime.date.today()
+
         cid_keys = []
         sid_keys = []
         for day_offset in range(CLUSTER_TTL_DAYS):
             date = today - datetime.timedelta(days=day_offset)
             date_key = cls._date_key(date)
-            cid_keys.append(f"{cls.KEY_PREFIX}:cids:{date_key}")
-            sid_keys.append(f"{cls.KEY_PREFIX}:sids:{date_key}")
+            cid_keys.append(f"{cls.KEY_PREFIX}:hcids:{date_key}")
+            sid_keys.append(f"{cls.KEY_PREFIX}:hsids:{date_key}")
 
+        # rclustering_usage.py: PFCOUNT handles multi-key union natively in O(N)
         stats = {
-            "unique_clusters": cls._sunioncard(r, cid_keys),
-            "unique_stories": cls._sunioncard(r, sid_keys),
+            "unique_clusters": r.pfcount(*cid_keys) if cid_keys else 0,
+            "unique_stories": r.pfcount(*sid_keys) if sid_keys else 0,
         }
 
         # Cumulative counters for mark_read, timing, and ES stats
