@@ -273,7 +273,7 @@ def find_semantic_clusters(
     original_feed_map=None,
     story_title_map=None,
     feed_title_map=None,
-    max_es_queries=200,
+    max_es_queries=10,
     deadline=None,
 ):
     """Find semantically similar stories using Elasticsearch more_like_this.
@@ -290,12 +290,11 @@ def find_semantic_clusters(
         feed_ids: list of all feed IDs to search across
         lookback_date: datetime for the oldest stories to match (limits ES results)
         min_score: minimum ES relevance score to consider a match
-        max_es_queries: max number of ES queries per invocation (safety cap, default 200)
+        max_es_queries: max number of ES queries per invocation (bounds ES load)
         deadline: absolute time.time() value after which no new ES queries are issued
 
     Returns:
-        tuple of (dict of {cluster_id: [story_hash, ...]}, dict of ES stats,
-                  set of story_hashes that were checked)
+        tuple of (dict of {cluster_id: [story_hash, ...]}, dict of ES stats)
     """
     import elasticsearch
 
@@ -313,13 +312,9 @@ def find_semantic_clusters(
         "hits_found": 0,
         "hits_matched": 0,
     }
-    # clustering/models.py: Track which stories were actually checked (had ES
-    # query run, or skipped for legitimate reasons like short title / no feeds).
-    # Stories skipped due to cap/deadline are NOT included — they need re-checking.
-    checked_hashes = set()
 
     if not stories or not feed_ids:
-        return {}, es_stats, checked_hashes
+        return {}, es_stats
 
     story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
 
@@ -342,7 +337,7 @@ def find_semantic_clusters(
         index_name = SearchStory.index_name()
     except Exception as e:
         logging.debug(" ---> ~FRClustering: ES not available: %s" % e)
-        return {}, es_stats, checked_hashes
+        return {}, es_stats
 
     for story in stories:
         # clustering/models.py: Check budget limits before issuing ES queries
@@ -361,8 +356,6 @@ def find_semantic_clusters(
 
         if not query_text or len(query_text.strip()) < 10:
             es_stats["skipped_short_title"] += 1
-            # Story was evaluated — short title won't change, mark as checked
-            checked_hashes.add(story_hash)
             continue
 
         # Search across related feeds, excluding this story's own feed and its branches
@@ -370,8 +363,6 @@ def find_semantic_clusters(
         search_feed_ids = [fid for fid in feed_ids if resolve_feed_id(fid, original_feed_map) != story_rfid]
         if not search_feed_ids:
             es_stats["skipped_no_feeds"] += 1
-            # No feeds to search won't change for this story, mark as checked
-            checked_hashes.add(story_hash)
             continue
 
         body = {
@@ -415,18 +406,13 @@ def find_semantic_clusters(
             hits = results.get("hits", {}).get("hits", [])
             es_stats["hits_found"] += len(hits)
         except elasticsearch.exceptions.NotFoundError:
-            checked_hashes.add(story_hash)
             continue
         except elasticsearch.exceptions.ConnectionError as e:
             logging.debug(" ---> ~FRClustering: ES connection error: %s" % e)
-            return {}, es_stats, checked_hashes
+            return {}, es_stats
         except Exception as e:
             logging.debug(" ---> ~FRClustering semantic search error for %s: %s" % (story_hash, e))
-            checked_hashes.add(story_hash)
             continue
-
-        # ES query ran successfully — mark as checked regardless of hits
-        checked_hashes.add(story_hash)
 
         for hit in hits:
             sim_hash = hit["_id"]
@@ -496,7 +482,7 @@ def find_semantic_clusters(
     else:
         es_stats["avg_ms"] = 0
 
-    return clusters, es_stats, checked_hashes
+    return clusters, es_stats
 
 
 def merge_clusters(
