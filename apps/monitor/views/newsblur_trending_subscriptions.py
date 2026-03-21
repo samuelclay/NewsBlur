@@ -24,7 +24,7 @@ class TrendingSubscriptions(View):
 
         cached = r.get(CACHE_KEY)
         if cached:
-            return HttpResponse(cached.decode(), content_type="text/plain")
+            return HttpResponse(cached, content_type="text/plain")
 
         start_time = time.time()
 
