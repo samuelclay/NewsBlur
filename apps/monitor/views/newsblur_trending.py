@@ -4,33 +4,30 @@ import time
 
 import redis
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
 from apps.rss_feeds.models import Feed, MStory
 from apps.statistics.rtrending import RTrendingStory
 
+CACHE_KEY = "monitor:trending_feeds:cache"
+CACHE_TTL = 60 * 60  # 1 hour
+
 
 class TrendingFeeds(View):
     def get(self, request):
         """
         Metrics endpoint for trending feeds and stories tracking.
-
-        Exposes data from the 4 daily Redis keys:
-        - fRT:{date} - Feed read time (feed_id -> total_seconds)
-        - sRTi:{date} - Story read time index (story_hash -> total_seconds)
-        - sRTc:{date} - Story reader count (story_hash -> reader_count)
-        - fRTc:{date} - Feed reader count (feed_id -> reader_count)
-
-        Metrics exported:
-        - Aggregate totals (total seconds, story/feed reads, unique counts)
-        - Top 20 stories with full details (for Grafana table)
-        - Top 20 long reads (stories with ≥3 readers, by avg read time)
-        - Read time distribution buckets
+        Results are cached for 1 hour since these Grafana graphs don't need real-time data.
         """
-        start_time = time.time()
-
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+
+        cached = r.get(CACHE_KEY)
+        if cached:
+            return HttpResponse(cached.decode(), content_type="text/plain")
+
+        start_time = time.time()
         today = datetime.date.today().strftime("%Y-%m-%d")
 
         data = {}
@@ -243,7 +240,9 @@ class TrendingFeeds(View):
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+        response = render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+        r.set(CACHE_KEY, response.content, ex=CACHE_TTL)
+        return response
 
     def _sanitize_label(self, value):
         """Sanitize a string for use as a Prometheus label value."""
