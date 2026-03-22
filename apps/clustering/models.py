@@ -852,6 +852,20 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
             read_results = read_pipe.execute()
             off_page_read_hashes = {h for h, is_read in zip(off_page_hashes, read_results) if is_read}
 
+    # Batch-fetch all feeds referenced by cluster members in one SQL query.
+    # Must be outside the off_page_hashes block since on-page members also need it.
+    all_cluster_feed_ids = set()
+    for h in off_page_hashes:
+        fid = int(h.split(":", 1)[0]) if ":" in h else None
+        if fid:
+            all_cluster_feed_ids.add(fid)
+    for s in stories:
+        if s["story_hash"] in hash_to_cluster:
+            all_cluster_feed_ids.add(s["story_feed_id"])
+    feeds_by_id = {}
+    if all_cluster_feed_ids:
+        feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_cluster_feed_ids)}
+
     off_page_metadata = {}
     if off_page_hashes:
         # Build the list of fields to fetch from MongoDB
@@ -866,20 +880,6 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         ]
         if include_expanded_data:
             only_fields.append("story_content_z")
-
-        # Batch-fetch all feeds in one SQL query instead of N+1 Feed.get_by_id() calls.
-        # Includes both off-page and on-page cluster member feeds.
-        all_cluster_feed_ids = set()
-        for h in off_page_hashes:
-            fid = int(h.split(":", 1)[0]) if ":" in h else None
-            if fid:
-                all_cluster_feed_ids.add(fid)
-        for s in stories:
-            if s["story_hash"] in hash_to_cluster:
-                all_cluster_feed_ids.add(s["story_feed_id"])
-        feeds_by_id = {}
-        if all_cluster_feed_ids:
-            feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_cluster_feed_ids)}
 
         off_page_list = list(off_page_hashes)
         for batch_start in range(0, len(off_page_list), 100):
