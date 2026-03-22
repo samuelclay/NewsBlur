@@ -496,24 +496,28 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_overlay_story_selection_disables_animation_while_sidebar_is_visible() {
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .storyTitles
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .feeds
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .storyTitles
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .feeds
             )
@@ -523,14 +527,33 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_fullscreen_story_selection_keeps_animation() {
         XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .fullscreen
             )
         )
         XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_phone_story_selection_keeps_animation_even_if_sidebar_state_is_visible() {
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
             )
         )
     }
@@ -538,24 +561,28 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_overlay_story_selection_uses_tapped_location_while_sidebar_is_visible() {
         XCTAssertTrue(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .storyTitles
             )
         )
         XCTAssertTrue(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .feeds
             )
         )
         XCTAssertTrue(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .storyTitles
             )
         )
         XCTAssertTrue(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .feeds
             )
@@ -565,14 +592,33 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_fullscreen_story_selection_keeps_active_story_based_navigation() {
         XCTAssertFalse(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .fullscreen
             )
         )
         XCTAssertFalse(
             StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_phone_story_selection_keeps_active_story_navigation() {
+        XCTAssertFalse(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertFalse(
+            StorySelectionNavigationDecision.shouldUseExplicitLocation(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
             )
         )
     }
@@ -614,24 +660,28 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_overlay_story_selection_skips_sidebar_refresh_while_overlay_is_visible() {
         XCTAssertFalse(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .storyTitles
             )
         )
         XCTAssertFalse(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .feeds
             )
         )
         XCTAssertFalse(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .storyTitles
             )
         )
         XCTAssertFalse(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .feeds
             )
@@ -641,14 +691,33 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
     func test_fullscreen_story_selection_keeps_sidebar_refresh() {
         XCTAssertTrue(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
                 presentation: .fullscreen
             )
         )
         XCTAssertTrue(
             StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
                 presentation: .fullscreen
+            )
+        )
+    }
+
+    func test_phone_story_selection_keeps_story_titles_sidebar_refresh() {
+        XCTAssertTrue(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionSidebarRefreshDecision.shouldRefreshStoryTitlesSidebar(
+                isPhoneOrCompact: true,
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds
             )
         )
     }

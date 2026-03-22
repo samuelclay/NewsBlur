@@ -2740,12 +2740,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
-    BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
-                                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
-    BOOL shouldUseExplicitLocation = [StorySelectionNavigationDecision shouldUseExplicitLocationWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
-                                                                                                                    presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
-    BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
-                                                                                                                               presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithIsPhoneOrCompact:self.isPhoneOrCompact
+                                                                                   usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                     presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldUseExplicitLocation = [StorySelectionNavigationDecision shouldUseExplicitLocationWithIsPhoneOrCompact:self.isPhoneOrCompact
+                                                                                      usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                            presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithIsPhoneOrCompact:self.isPhoneOrCompact
+                                                                                                         usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                           presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
     if (shouldUseExplicitLocation) {
         [appDelegate loadStoryDetailViewAtLocation:row animated:shouldAnimateSelection];
     } else {
@@ -2982,8 +2985,9 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         [self loadStoryAtRow:location];
-        BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
-                                                                                                                                   presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+        BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithIsPhoneOrCompact:self.isPhoneOrCompact
+                                                                                                             usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                               presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
         if (shouldRefreshStoryTitlesSidebar) {
             [self reload];
         }
