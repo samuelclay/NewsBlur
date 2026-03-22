@@ -3462,6 +3462,7 @@ class MStory(mongo.Document):
     comment_user_ids = mongo.ListField(mongo.IntField())
     share_count = mongo.IntField()
     share_user_ids = mongo.ListField(mongo.IntField())
+    cluster_checked = mongo.BooleanField(default=False)
 
     meta = {
         "collection": "stories",
@@ -4071,9 +4072,7 @@ class MStory(mongo.Document):
             self.image_urls = []
         if image_url not in self.image_urls:
             self.image_urls.insert(0, image_url)
-            logging.debug(
-                "   ---> Fetched og:image for Google News story: %s" % image_url[:80]
-            )
+            logging.debug("   ---> Fetched og:image for Google News story: %s" % image_url[:80])
 
         self.prepend_image_to_content(image_url)
 
@@ -4088,9 +4087,9 @@ class MStory(mongo.Document):
         if story_content.startswith("<img"):
             newline_idx = story_content.find("\n")
             if newline_idx != -1:
-                story_content = story_content[newline_idx + 1:]
+                story_content = story_content[newline_idx + 1 :]
 
-        story_content = f'{img_tag}\n{story_content}'
+        story_content = f"{img_tag}\n{story_content}"
         self.story_content_z = zlib.compress(smart_bytes(story_content))
 
     @staticmethod

@@ -49,9 +49,7 @@ def ComputeStoryClusters(feed_id):
     cluster_start = time.time()
 
     try:
-        _compute_story_clusters_inner(
-            feed_id, feed, cluster_start, r_replica, r_primary
-        )
+        _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_primary)
     except SoftTimeLimitExceeded:
         elapsed = time.time() - cluster_start
         logging.debug(
@@ -159,7 +157,7 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
         batch = all_hashes_list[batch_start : batch_start + 100]
         for story in (
             MStory.objects(story_hash__in=batch)
-            .only("story_hash", "story_feed_id", "story_title", "story_date")
+            .only("story_hash", "story_feed_id", "story_title", "story_date", "cluster_checked")
             .order_by()
         ):
             stories.append(
@@ -168,6 +166,7 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
                     "story_date": time.mktime(story.story_date.timetuple()) if story.story_date else 0,
+                    "cluster_checked": getattr(story, "cluster_checked", False),
                 }
             )
 
@@ -175,10 +174,20 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
         return
 
     story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+    unclustered_set = set(unclustered)
 
+    already_checked = sum(
+        1 for s in stories if s["story_hash"] in unclustered_set and s.get("cluster_checked")
+    )
     logging.debug(
-        " ---> ~FBClustering: computing clusters for feed %s (%s stories, %s candidates, %s already clustered)"
-        % (feed_id, len(unclustered), len(unclustered_candidates), len(candidate_cluster_map))
+        " ---> ~FBClustering: computing clusters for feed %s (%s stories, %s already checked, %s candidates, %s already clustered)"
+        % (
+            feed_id,
+            len(unclustered),
+            already_checked,
+            len(unclustered_candidates),
+            len(candidate_cluster_map),
+        )
     )
 
     # Build original_feed_map and feed_title_map for branched feed resolution
@@ -201,24 +210,36 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
     # Tier 2: Semantic clustering via Elasticsearch MLT on new stories only.
     # Use story titles as query text, searching both title and content fields
     # in the ES index to find similar stories across related feeds.
-    unclustered_stories = [s for s in stories if s["story_hash"] in set(unclustered)]
+    # Skip stories already checked for semantic clusters (cluster_checked=True
+    # in MongoDB) to avoid re-querying stories that had no ES matches before.
+    unclustered_stories = [
+        s for s in stories if s["story_hash"] in unclustered_set and not s.get("cluster_checked")
+    ]
 
     # clustering/tasks.py: Budget 60s for ES queries (soft limit is 120s),
-    # and cap at 10 ES queries per task to bound load on the single ES node.
+    # cap at 200 as safety net (cluster_checked flag is the primary limiter).
     es_deadline = cluster_start + 60
     semantic_clusters = {}
     es_stats = {}
+    checked_hashes = set()
     if unclustered_stories:
-        semantic_clusters, es_stats = find_semantic_clusters(
+        semantic_clusters, es_stats, checked_hashes = find_semantic_clusters(
             unclustered_stories,
             all_feed_ids,
             lookback_date=lookback,
             original_feed_map=original_feed_map,
             story_title_map=story_title_map,
             feed_title_map=feed_title_map,
-            max_es_queries=10,
+            max_es_queries=200,
             deadline=es_deadline,
         )
+
+    # Mark checked stories in MongoDB so they aren't re-queried next run
+    if checked_hashes:
+        checked_list = list(checked_hashes)
+        for batch_start in range(0, len(checked_list), 500):
+            batch = checked_list[batch_start : batch_start + 500]
+            MStory.objects(story_hash__in=batch).update(set__cluster_checked=True)
 
     # Merge title and semantic clusters
     if title_clusters or semantic_clusters:
