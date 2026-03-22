@@ -47,6 +47,11 @@ frontend public
     http-request set-header X-Request-Start %[date()]%[date_us()]
     option http-server-close
 
+    # Block vulnerability scanners before they reach Gunicorn workers
+    acl is_scanner_path path_end .php .cgi .asp .aspx .env
+    acl is_scanner_path path_beg /wp-admin /wp-login /wp-content /wp-includes
+    http-request deny deny_status 403 if is_scanner_path
+
     acl gunicorn_dead nbsrv(app_django) lt 1
     acl nginx_dead nbsrv(nginx) lt 1
     acl mx_mode nbsrv(maintenance) lt 1
