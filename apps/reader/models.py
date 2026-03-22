@@ -1053,7 +1053,7 @@ class UserSubscription(models.Model):
             return
 
         key = "RS:%s" % user_id
-        feeds = [f.feed_id for f in subs]
+        feeds = set(f.feed_id for f in subs)
         old_rs = r.smembers(key)
         old_count = len(old_rs)
         if not old_count:
@@ -1062,7 +1062,7 @@ class UserSubscription(models.Model):
 
         # Batch the SUNIONSTORE to avoid blocking Redis for 1+ seconds
         # when users have 1000+ feeds. Each batch blocks for ~80ms max.
-        feed_keys = ["%s:%s" % (key, f) for f in feeds]
+        feed_keys = ["%s:%s" % (key, f) for f in sorted(feeds)]
         batch_size = 100
         if len(feed_keys) <= batch_size:
             r.sunionstore(key, *feed_keys)
@@ -1075,7 +1075,7 @@ class UserSubscription(models.Model):
                 else:
                     r.sunionstore(temp_key, temp_key, *batch)
             r.rename(temp_key, key)
-        new_rs = r.smembers(key)
+        new_count = r.scard(key)
 
         missing_rs = []
         missing_count = 0
@@ -1097,7 +1097,6 @@ class UserSubscription(models.Model):
         if missing_rs:
             r.sadd(key, *missing_rs)
         missing_count += len(missing_rs)
-        new_count = len(new_rs)
         new_total = new_count + missing_count
         logging.user(
             user,

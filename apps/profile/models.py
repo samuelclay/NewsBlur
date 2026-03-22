@@ -2319,7 +2319,7 @@ class Profile(models.Model):
             % (len(active_feed_ids), len(muted_feed_ids)),
         )
         for feed_ids in [active_feed_ids, muted_feed_ids]:
-            for feeds_group in chunks(feed_ids, 20):
+            for feeds_group in chunks(feed_ids, 200):
                 pipeline = r.pipeline()
                 for feed_id in feeds_group:
                     key = "s:%s" % feed_id
