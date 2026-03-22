@@ -572,7 +572,15 @@ class ServerTimingMiddleware:
         haproxy_start = request.META.get("HTTP_X_REQUEST_START")
         if haproxy_start:
             try:
-                haproxy_ts = float(haproxy_start)
+                # HAProxy sends %[date()]%[date_us()] = epoch_seconds + microseconds
+                # e.g. "1711152000123456" where 1711152000 is epoch and 123456 is microseconds
+                raw = haproxy_start.strip()
+                if len(raw) > 10:
+                    epoch_s = int(raw[:10])
+                    us = int(raw[10:])
+                    haproxy_ts = epoch_s + us / 1_000_000.0
+                else:
+                    haproxy_ts = float(raw)
                 queue_time = request._server_timing_start - haproxy_ts
                 if queue_time >= 0:
                     metrics.append("queue;dur=%.1f" % (queue_time * 1000))
