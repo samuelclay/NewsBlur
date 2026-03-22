@@ -4,16 +4,29 @@ $(document).ready(function () {
     var $toggle = $('.NB-theme-toggle');
     if (!$toggle.length) return;
 
-    function get_theme() {
-        var stored;
-        try { stored = localStorage.getItem('newsblur:theme'); } catch (e) {}
-        if (stored && stored !== 'auto') return stored;
+    var TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
-        var pref = (window.NEWSBLUR && NEWSBLUR.Preferences) ? NEWSBLUR.Preferences.theme : 'auto';
-        if (pref === 'auto' || !pref) {
-            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    function read_override() {
+        try {
+            var raw = localStorage.getItem('newsblur:theme');
+            if (!raw) return null;
+            var obj = JSON.parse(raw);
+            if (obj && obj.theme && obj.ts && (Date.now() - obj.ts < TTL_MS)) {
+                return obj.theme;
+            }
+            localStorage.removeItem('newsblur:theme');
+        } catch (e) {
+            try { localStorage.removeItem('newsblur:theme'); } catch (e2) {}
         }
-        return pref;
+        return null;
+    }
+
+    function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+
+    function get_theme() {
+        return read_override() || system_theme();
     }
 
     function apply(theme) {
@@ -32,7 +45,9 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         var next = (get_theme() === 'dark') ? 'light' : 'dark';
-        try { localStorage.setItem('newsblur:theme', next); } catch (e) {}
+        try {
+            localStorage.setItem('newsblur:theme', JSON.stringify({theme: next, ts: Date.now()}));
+        } catch (e) {}
         apply(next);
 
         // Sync with reader if it exists (welcome page)
@@ -41,14 +56,12 @@ $(document).ready(function () {
         }
     });
 
-    // Listen for system theme changes when no explicit override is set
+    // Listen for system theme changes when no manual override is active
     if (window.matchMedia) {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
         var on_system_change = function () {
-            var stored;
-            try { stored = localStorage.getItem('newsblur:theme'); } catch (e) {}
-            if (!stored || stored === 'auto') {
-                apply(get_theme());
+            if (!read_override()) {
+                apply(system_theme());
             }
         };
         try {

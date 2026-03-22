@@ -183,7 +183,7 @@
       {% endif %}
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
-      <script>(function(){var t;try{t=localStorage.getItem('newsblur:theme')}catch(e){}if(!t)t='auto';if(t==='auto')t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
+      <script>(function(){var t=null;try{var r=localStorage.getItem('newsblur:theme');if(r){var o=JSON.parse(r);if(o&&o.theme&&o.ts&&(Date.now()-o.ts<216e5))t=o.theme;else localStorage.removeItem('newsblur:theme')}}catch(e){try{localStorage.removeItem('newsblur:theme')}catch(e2){}}if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
       {% block header %}{% endblock %}
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
