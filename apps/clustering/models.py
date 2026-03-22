@@ -808,17 +808,31 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
 
     # For each cluster, fetch metadata for members NOT on this page from MongoDB.
     # Only include members from feeds the user is subscribed to.
+    # Non-archive users only see 1 cluster member in the UI, so cap the backend
+    # to avoid computing metadata for stories that get discarded on the client.
+    is_archive = user.profile.is_archive
+    off_page_limit = None if is_archive else 1
     off_page_hashes = set()
     for cid, members in cluster_all_members.items():
+        cid_count = 0
         for h in members:
             if h not in page_hashes:
-                # Extract feed_id from story_hash (format: feed_id:guid_hash)
                 member_feed_id = int(h.split(":", 1)[0]) if ":" in h else None
                 if member_feed_id and member_feed_id in user_feed_ids:
                     off_page_hashes.add(h)
+                    cid_count += 1
+                    if off_page_limit and cid_count >= off_page_limit:
+                        break
 
     import zlib
 
+    from apps.analyzer.models import (
+        apply_classifier_authors,
+        apply_classifier_feeds,
+        apply_classifier_tags,
+        apply_classifier_titles,
+    )
+    from apps.reader.models import UserSubscription
     from apps.rss_feeds.models import Feed, MStory
 
     # Determine read status for off-page members via Redis.
@@ -853,11 +867,25 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         if include_expanded_data:
             only_fields.append("story_content_z")
 
+        # Batch-fetch all feeds in one SQL query instead of N+1 Feed.get_by_id() calls.
+        # Includes both off-page and on-page cluster member feeds.
+        all_cluster_feed_ids = set()
+        for h in off_page_hashes:
+            fid = int(h.split(":", 1)[0]) if ":" in h else None
+            if fid:
+                all_cluster_feed_ids.add(fid)
+        for s in stories:
+            if s["story_hash"] in hash_to_cluster:
+                all_cluster_feed_ids.add(s["story_feed_id"])
+        feeds_by_id = {}
+        if all_cluster_feed_ids:
+            feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_cluster_feed_ids)}
+
         off_page_list = list(off_page_hashes)
         for batch_start in range(0, len(off_page_list), 100):
             batch = off_page_list[batch_start : batch_start + 100]
             for story in MStory.objects(story_hash__in=batch).only(*only_fields).order_by():
-                feed = Feed.get_by_id(story.story_feed_id)
+                feed = feeds_by_id.get(story.story_feed_id)
                 meta = {
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
@@ -870,14 +898,6 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
 
                 # Compute intelligence score if classifiers are available
                 if classifiers_context:
-                    from apps.analyzer.models import (
-                        apply_classifier_authors,
-                        apply_classifier_feeds,
-                        apply_classifier_tags,
-                        apply_classifier_titles,
-                    )
-                    from apps.reader.models import UserSubscription
-
                     cf = classifiers_context
                     story_dict = {
                         "story_feed_id": story.story_feed_id,
@@ -970,7 +990,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
             if member_hash in page_stories_by_hash:
                 # On-page member — already has intelligence, score, read_status
                 s = page_stories_by_hash[member_hash]
-                feed = Feed.get_by_id(s["story_feed_id"])
+                feed = feeds_by_id.get(s["story_feed_id"])
                 entry = {
                     "story_hash": s["story_hash"],
                     "story_feed_id": s["story_feed_id"],
