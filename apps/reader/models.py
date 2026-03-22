@@ -232,7 +232,7 @@ class UserSubscription(models.Model):
                 if read_filter == "unread" and not results[i * 2 + 1]:  # user_unread_ranked_stories_key
                     needs_unread_recalc[us.feed_id] = True
 
-        for feed_id_group in chunks(feed_ids, 500):
+        for feed_id_group in chunks(feed_ids, 50):
             pipeline = r.pipeline()
             for feed_id in feed_id_group:
                 stories_key = "F:%s" % feed_id
