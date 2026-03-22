@@ -314,6 +314,9 @@ p.save()
 ## Downtime Investigation
 When the user reports downtime, read `DOWNTIME.md` for the full investigation playbook, then run `./utils/check_health.sh`.
 
+## Slow Load Times Investigation
+When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` for the full investigation playbook. Start with the Quick Assessment commands to check per-minute and hourly load times.
+
 ## Writing Emails
 - Never use em dashes
 - Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)

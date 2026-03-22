@@ -546,41 +546,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!this.model.has_cluster()) return;
 
         var cluster_stories = this.model.get('cluster_stories');
-        var current_hash = this.model.get('story_hash');
         var $wrapper = this.$('.NB-story-content-cluster-wrapper');
 
-        // Render initial story title views from cluster data
+        // Cluster metadata (title, feed_title, read_status, images) is already
+        // included in the story payload from the feed/page response — no extra
+        // request needed.
         var $section = this.build_cluster_section(cluster_stories);
         $wrapper.html($section);
-
-        // Fetch full story data to get additional stories and full content
-        var self = this;
-        this.cluster_request = $.ajax({
-            url: '/reader/cluster_stories',
-            data: { cluster_id: current_hash },
-            success: function (data) {
-                self.cluster_request = null;
-                if (data.code <= 0 || !data.stories || !data.stories.length) return;
-
-                // Register feeds for favicon rendering
-                if (data.feeds) {
-                    _.each(data.feeds, function (feed_data, feed_id) {
-                        NEWSBLUR.assets.set_temp_feed(feed_id, feed_data);
-                    });
-                }
-
-                // Filter out the current story
-                var stories = _.filter(data.stories, function (s) {
-                    return s.story_hash !== current_hash;
-                });
-
-                if (!stories.length) return;
-
-                // Re-render with full data
-                var $section = self.build_cluster_section(stories);
-                $wrapper.html($section);
-            }
-        });
     },
 
     build_cluster_section: function (stories) {
@@ -697,7 +669,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
-        if (this.cluster_request) this.cluster_request.abort();
         if (this._cluster_title_views) {
             _.each(this._cluster_title_views, function (view) { view.remove(); });
             this._cluster_title_views = null;

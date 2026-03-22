@@ -5287,66 +5287,16 @@ def get_auto_mark_read_settings(request):
 def load_cluster_stories(request):
     """Load full story data for all members of a story cluster.
 
-    Parameters:
-        cluster_id: The story_hash of the representative story
+    Deprecated: cluster data is now included inline in the feed/page response.
+    This endpoint returns early with empty data. Kept for backwards compatibility
+    with clients that haven't updated yet.
     """
     user = get_user(request)
     cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
 
-    if not request.user.is_authenticated:
-        return {"code": 0, "message": "Please log in to view story clusters.", "stories": []}
-
-    if not cluster_id:
-        return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
-
-    from apps.clustering.models import get_cluster_for_story, get_cluster_members
-
-    # The frontend passes a story_hash as cluster_id. Look up the actual
-    # cluster_id first, then get all members for that cluster.
-    actual_cluster_id = get_cluster_for_story(cluster_id)
-    member_hashes = get_cluster_members(actual_cluster_id or cluster_id)
-    if not member_hashes:
-        return {"code": 1, "stories": []}
-
-    # Only include cluster members from feeds the user is subscribed to
-    user_feed_ids = set(
-        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    logging.user(
+        request,
+        "~FRDeprecated cluster_stories call~FR for %s (should be inline)" % cluster_id,
     )
-    member_hashes = [h for h in member_hashes if int(h.split(":", 1)[0]) in user_feed_ids]
-    if not member_hashes:
-        return {"code": 1, "stories": []}
 
-    # Look up read status from Redis
-    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    read_stories_key = "RS:%s" % user.pk
-    if member_hashes:
-        pipeline = r.pipeline()
-        for sh in member_hashes:
-            pipeline.sismember(read_stories_key, sh)
-        read_results = pipeline.execute()
-        read_hashes = {sh for sh, is_read in zip(member_hashes, read_results) if is_read}
-    else:
-        read_hashes = set()
-
-    stories = []
-    mstories = MStory.objects(story_hash__in=member_hashes).order_by()
-    for story in mstories:
-        feed = Feed.get_by_id(story.story_feed_id)
-        if not feed:
-            continue
-        story_dict = Feed.format_story(story)
-        story_dict["feed_title"] = feed.feed_title
-        story_dict["read_status"] = 1 if story.story_hash in read_hashes else 0
-        stories.append(story_dict)
-
-    stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)
-
-    feeds = {}
-    for story_dict in stories:
-        fid = story_dict.get("story_feed_id")
-        if fid and fid not in feeds:
-            f = Feed.get_by_id(fid)
-            if f:
-                feeds[fid] = f.canonical(include_favicon=True)
-
-    return {"code": 1, "stories": stories, "feeds": feeds}
+    return {"code": 1, "stories": [], "feeds": {}}
