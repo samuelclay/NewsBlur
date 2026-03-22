@@ -1420,27 +1420,31 @@ def load_single_feed(request, feed_id):
     if request.user.is_authenticated:
         user_prefs = json.decode(user.profile.preferences)
         if user_prefs.get("story_clustering", True):
-            from apps.clustering.models import apply_clustering_to_stories
+            from apps.statistics.models import MStatistics
 
-            classifiers_context = {
-                "classifier_feeds": classifier_feeds,
-                "classifier_authors": classifier_authors,
-                "classifier_titles": classifier_titles,
-                "classifier_tags": classifier_tags,
-                "classifier_texts": classifier_texts,
-                "classifier_urls": classifier_urls,
-                "folder_feed_ids": folder_feed_ids,
-                "user_is_pro": user_is_pro,
-                "unread_feed_story_hashes": unread_story_hashes,
-                "read_filter": read_filter,
-            }
-            include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
-            stories = apply_clustering_to_stories(
-                stories,
-                user,
-                classifiers_context=classifiers_context,
-                include_expanded_data=include_expanded,
-            )
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import apply_clustering_to_stories
+
+                classifiers_context = {
+                    "classifier_feeds": classifier_feeds,
+                    "classifier_authors": classifier_authors,
+                    "classifier_titles": classifier_titles,
+                    "classifier_tags": classifier_tags,
+                    "classifier_texts": classifier_texts,
+                    "classifier_urls": classifier_urls,
+                    "folder_feed_ids": folder_feed_ids,
+                    "user_is_pro": user_is_pro,
+                    "unread_feed_story_hashes": unread_story_hashes,
+                    "read_filter": read_filter,
+                }
+                include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
+                stories = apply_clustering_to_stories(
+                    stories,
+                    user,
+                    classifiers_context=classifiers_context,
+                    include_expanded_data=include_expanded,
+                )
 
     data = dict(
         stories=stories,
@@ -2595,27 +2599,31 @@ def load_river_stories__redis(request):
     # Apply story clustering for authenticated users who have it enabled
     if request.user.is_authenticated:
         if user_preferences.get("story_clustering", True):
-            from apps.clustering.models import apply_clustering_to_stories
+            from apps.statistics.models import MStatistics
 
-            classifiers_context = {
-                "classifier_feeds": classifier_feeds,
-                "classifier_authors": classifier_authors,
-                "classifier_titles": classifier_titles,
-                "classifier_tags": classifier_tags,
-                "classifier_texts": classifier_texts,
-                "classifier_urls": classifier_urls,
-                "folder_feed_ids": folder_feed_ids,
-                "user_is_pro": user_is_pro,
-                "unread_feed_story_hashes": unread_feed_story_hashes,
-                "read_filter": read_filter,
-            }
-            include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
-            stories = apply_clustering_to_stories(
-                stories,
-                user,
-                classifiers_context=classifiers_context,
-                include_expanded_data=include_expanded,
-            )
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import apply_clustering_to_stories
+
+                classifiers_context = {
+                    "classifier_feeds": classifier_feeds,
+                    "classifier_authors": classifier_authors,
+                    "classifier_titles": classifier_titles,
+                    "classifier_tags": classifier_tags,
+                    "classifier_texts": classifier_texts,
+                    "classifier_urls": classifier_urls,
+                    "folder_feed_ids": folder_feed_ids,
+                    "user_is_pro": user_is_pro,
+                    "unread_feed_story_hashes": unread_feed_story_hashes,
+                    "read_filter": read_filter,
+                }
+                include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
+                stories = apply_clustering_to_stories(
+                    stories,
+                    user,
+                    classifiers_context=classifiers_context,
+                    include_expanded_data=include_expanded,
+                )
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
@@ -3031,30 +3039,34 @@ def mark_story_hashes_as_read(request):
     if request.user.profile.is_archive:
         user_prefs = json.decode(request.user.profile.preferences or "{}")
         if user_prefs.get("cluster_mark_read", False):
-            from apps.clustering.models import (
-                get_cluster_for_story,
-                get_cluster_members,
-            )
+            from apps.statistics.models import MStatistics
 
-            seen = set(story_hashes)
-            for story_hash in list(story_hashes):
-                cluster_id = get_cluster_for_story(story_hash)
-                if cluster_id:
-                    for member_hash in get_cluster_members(cluster_id):
-                        if member_hash not in seen:
-                            cluster_hashes.append(member_hash)
-                            seen.add(member_hash)
-            if cluster_hashes:
-                story_hashes = list(seen)
-                logging.user(
-                    request,
-                    "~FBCluster mark read: added %s duplicate%s"
-                    % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import (
+                    get_cluster_for_story,
+                    get_cluster_members,
                 )
-                # reader/views.py: Record cluster mark-read metrics for Grafana
-                from apps.statistics.rclustering_usage import RClusteringUsage
 
-                RClusteringUsage.record_mark_read(len(cluster_hashes))
+                seen = set(story_hashes)
+                for story_hash in list(story_hashes):
+                    cluster_id = get_cluster_for_story(story_hash)
+                    if cluster_id:
+                        for member_hash in get_cluster_members(cluster_id):
+                            if member_hash not in seen:
+                                cluster_hashes.append(member_hash)
+                                seen.add(member_hash)
+                if cluster_hashes:
+                    story_hashes = list(seen)
+                    logging.user(
+                        request,
+                        "~FBCluster mark read: added %s duplicate%s"
+                        % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+                    )
+                    # reader/views.py: Record cluster mark-read metrics for Grafana
+                    from apps.statistics.rclustering_usage import RClusteringUsage
+
+                    RClusteringUsage.record_mark_read(len(cluster_hashes))
 
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
