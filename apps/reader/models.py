@@ -1060,9 +1060,21 @@ class UserSubscription(models.Model):
             logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN.")
             return
 
-        # r.sunionstore("%s:backup" % key, key)
-        # r.expire("%s:backup" % key, 60*60*24)
-        r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
+        # Batch the SUNIONSTORE to avoid blocking Redis for 1+ seconds
+        # when users have 1000+ feeds. Each batch blocks for ~80ms max.
+        feed_keys = ["%s:%s" % (key, f) for f in feeds]
+        batch_size = 100
+        if len(feed_keys) <= batch_size:
+            r.sunionstore(key, *feed_keys)
+        else:
+            temp_key = "%s:trim_temp" % key
+            for i in range(0, len(feed_keys), batch_size):
+                batch = feed_keys[i : i + batch_size]
+                if i == 0:
+                    r.sunionstore(temp_key, *batch)
+                else:
+                    r.sunionstore(temp_key, temp_key, *batch)
+            r.rename(temp_key, key)
         new_rs = r.smembers(key)
 
         missing_rs = []
