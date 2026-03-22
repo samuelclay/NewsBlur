@@ -70,29 +70,34 @@ class DumpRequestMiddleware:
                 ),
             )
 
-        if hasattr(request, "start_time"):
+        if hasattr(request, "_server_timing_start"):
+            seconds = time.time() - request._server_timing_start
+        elif hasattr(request, "start_time"):
             seconds = time.time() - request.start_time
-            if seconds > RECORD_SLOW_REQUESTS_ABOVE_SECONDS:
-                r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-                pipe = r.pipeline()
-                minute = round_time(round_to=60)
-                name = f"SLOW:{minute.strftime('%s')}"
-                user_id = request.user.pk if request.user.is_authenticated else "0"
-                data_string = None
-                if request.method == "GET":
-                    data_string = " ".join([f"{key}={value}" for key, value in request.GET.items()])
-                elif request.method == "GET":
-                    data_string = " ".join([f"{key}={value}" for key, value in request.POST.items()])
-                data = {
-                    "user_id": user_id,
-                    "time": round(seconds, 2),
-                    "path": request.path,
-                    "method": request.method,
-                    "data": data_string,
-                }
-                pipe.lpush(name, base64.b64encode(pickle.dumps(data)).decode("utf-8"))
-                pipe.expire(name, 60 * 60 * 12)  # 12 hours
-                pipe.execute()
+        else:
+            seconds = 0
+
+        if seconds > RECORD_SLOW_REQUESTS_ABOVE_SECONDS:
+            r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+            pipe = r.pipeline()
+            minute = round_time(round_to=60)
+            name = f"SLOW:{minute.strftime('%s')}"
+            user_id = request.user.pk if request.user.is_authenticated else "0"
+            data_string = None
+            if request.method == "GET":
+                data_string = " ".join([f"{key}={value}" for key, value in request.GET.items()])
+            elif request.method == "POST":
+                data_string = " ".join([f"{key}={value}" for key, value in request.POST.items()])
+            data = {
+                "user_id": user_id,
+                "time": round(seconds, 2),
+                "path": request.path,
+                "method": request.method,
+                "data": data_string,
+            }
+            pipe.lpush(name, base64.b64encode(pickle.dumps(data)).decode("utf-8"))
+            pipe.expire(name, 60 * 60 * 12)  # 12 hours
+            pipe.execute()
 
         return response
 

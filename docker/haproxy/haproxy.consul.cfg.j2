@@ -47,6 +47,7 @@ frontend public
     bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem alpn h2,http/1.1
 
     http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    http-request set-header X-Request-Start %[date()]
     option http-server-close
 
     acl gunicorn_dead nbsrv(app_django) lt 1

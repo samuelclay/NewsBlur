@@ -126,6 +126,7 @@ SHELL_PLUS_IMPORTS = [
 # SHELL_PLUS_PRINT_SQL = True
 
 MIDDLEWARE = (
+    "apps.profile.middleware.ServerTimingMiddleware",
     "utils.prometheus_middleware.PrometheusBeforeMiddlewareWrapper",
     "django.middleware.gzip.GZipMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

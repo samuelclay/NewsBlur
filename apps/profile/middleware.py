@@ -541,6 +541,54 @@ class ServerHostnameMiddleware:
         return response
 
 
+class ServerTimingMiddleware:
+    """Adds Server-Timing header for full request lifecycle visibility.
+
+    Must be first in MIDDLEWARE to capture total time including all middleware.
+    Measures three phases:
+      - haproxy_queue: HAProxy accept to Gunicorn worker pickup (requires X-Request-Start header)
+      - middleware: Gunicorn worker pickup to TimingMiddleware (Session, Auth, etc.)
+      - app: TimingMiddleware to response (view processing + DB queries)
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request._server_timing_start = time.time()
+        response = self.get_response(request)
+
+        now = time.time()
+        total = now - request._server_timing_start
+        metrics = []
+        metrics.append("total;dur=%.1f" % (total * 1000))
+
+        if hasattr(request, "start_time"):
+            middleware_time = request.start_time - request._server_timing_start
+            app_time = now - request.start_time
+            metrics.append("middleware;dur=%.1f" % (middleware_time * 1000))
+            metrics.append("app;dur=%.1f" % (app_time * 1000))
+
+        haproxy_start = request.META.get("HTTP_X_REQUEST_START")
+        if haproxy_start:
+            try:
+                haproxy_ts = float(haproxy_start)
+                queue_time = request._server_timing_start - haproxy_ts
+                if queue_time >= 0:
+                    metrics.append("queue;dur=%.1f" % (queue_time * 1000))
+            except (ValueError, TypeError):
+                pass
+
+        if hasattr(request, "sql_times_elapsed"):
+            times = request.sql_times_elapsed
+            for key in ["sql", "mongo"]:
+                if key in times and times[key] > 0:
+                    metrics.append("%s;dur=%.1f" % (key, times[key] * 1000))
+
+        response["Server-Timing"] = ", ".join(metrics)
+        return response
+
+
 class TimingMiddleware:
     def __init__(self, get_response=None):
         self.get_response = get_response
