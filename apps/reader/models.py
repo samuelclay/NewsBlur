@@ -42,6 +42,16 @@ from apps.analyzer.models import (
     apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
+from apps.reader.metrics import (
+    STORY_HASHES_DURATION,
+    UNREAD_CACHE_FAST_PATH,
+    UNREAD_CACHE_FEED_STATE,
+    UNREAD_CACHE_REBUILD_CALLS,
+    UNREAD_CACHE_REBUILD_FEEDS_PER_CALL,
+    UNREAD_CACHE_REBUILT_FEEDS,
+    normalize_reader_metrics_read_filter,
+    normalize_reader_metrics_source,
+)
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
@@ -163,7 +173,11 @@ class UserSubscription(models.Model):
         store_stories_key=None,
         offset=0,
         limit=500,
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
+        metrics_read_filter = normalize_reader_metrics_read_filter(read_filter)
+        story_hashes_start = time.time()
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         user = User.objects.get(pk=user_id)
@@ -189,6 +203,12 @@ class UserSubscription(models.Model):
 
         read_dates = dict()
         needs_unread_recalc = dict()
+        unread_cache_state_counts = {
+            "cached": 0,
+            "dirty": 0,
+            "missing": 0,
+            "dirty_missing": 0,
+        }
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
@@ -223,13 +243,24 @@ class UserSubscription(models.Model):
         if read_filter == "unread":
             results = manual_unread_pipeline.execute()
             for i, us in enumerate(usersubs):
+                cache_exists = bool(results[i * 2 + 1])
+                cache_dirty = bool(us.needs_unread_recalc)
                 if results[i * 2]:  # user_manual_unread_stories_feed_key
                     user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
                     oldest_manual_unread = r.zrevrange(
                         user_manual_unread_stories_feed_key, -1, -1, withscores=True
                     )
                     manual_unread_feed_oldest_date[us.feed_id] = int(oldest_manual_unread[0][1])
-                if read_filter == "unread" and not results[i * 2 + 1]:  # user_unread_ranked_stories_key
+                if cache_dirty and cache_exists:
+                    unread_cache_state_counts["dirty"] += 1
+                elif cache_dirty and not cache_exists:
+                    unread_cache_state_counts["dirty_missing"] += 1
+                elif not cache_exists:
+                    unread_cache_state_counts["missing"] += 1
+                else:
+                    unread_cache_state_counts["cached"] += 1
+
+                if not cache_exists:
                     needs_unread_recalc[us.feed_id] = True
 
         for feed_id_group in chunks(feed_ids, 50):
@@ -354,6 +385,40 @@ class UserSubscription(models.Model):
                         story_hashes.extend(hashes)
 
         if not store_stories_key:
+            story_hashes_duration = time.time() - story_hashes_start
+            STORY_HASHES_DURATION.labels(source=metrics_source, read_filter=metrics_read_filter).observe(
+                story_hashes_duration
+            )
+            if read_filter == "unread" and usersubs:
+                for state, count in unread_cache_state_counts.items():
+                    if count:
+                        UNREAD_CACHE_FEED_STATE.labels(source=metrics_source, state=state).inc(count)
+
+                rebuild_count = (
+                    unread_cache_state_counts["dirty"]
+                    + unread_cache_state_counts["missing"]
+                    + unread_cache_state_counts["dirty_missing"]
+                )
+                if rebuild_count:
+                    UNREAD_CACHE_REBUILD_CALLS.labels(source=metrics_source).inc()
+                    UNREAD_CACHE_REBUILD_FEEDS_PER_CALL.labels(source=metrics_source).observe(rebuild_count)
+                    for reason in ("dirty", "missing", "dirty_missing"):
+                        if unread_cache_state_counts[reason]:
+                            UNREAD_CACHE_REBUILT_FEEDS.labels(source=metrics_source, reason=reason).inc(
+                                unread_cache_state_counts[reason]
+                            )
+
+                if rebuild_count >= 25 or story_hashes_duration >= 0.25:
+                    logging.info(
+                        "reader_story_hashes "
+                        f"source={metrics_source} read_filter={metrics_read_filter} "
+                        f"feeds={len(feed_ids or [])} rebuild={rebuild_count} "
+                        f"cached={unread_cache_state_counts['cached']} "
+                        f"dirty={unread_cache_state_counts['dirty']} "
+                        f"missing={unread_cache_state_counts['missing']} "
+                        f"dirty_missing={unread_cache_state_counts['dirty_missing']} "
+                        f"duration_ms={int(story_hashes_duration * 1000)}"
+                    )
             return story_hashes
 
         chunk_count = 0
@@ -389,11 +454,21 @@ class UserSubscription(models.Model):
         cutoff_date=None,
         date_filter_start=None,
         date_filter_end=None,
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
 
         if offset and r.exists(unread_ranked_stories_key):
+            fast_path_dirty = "dirty" if self.needs_unread_recalc else "clean"
+            UNREAD_CACHE_FAST_PATH.labels(source=metrics_source, dirty=fast_path_dirty).inc()
+            if self.needs_unread_recalc:
+                logging.info(
+                    "reader_unread_fast_path_dirty "
+                    f"source={metrics_source} feed_id={self.feed_id} "
+                    f"offset={offset} order={order}"
+                )
             byscorefunc = r.zrevrange
             if order == "oldest":
                 byscorefunc = r.zrange
@@ -409,6 +484,7 @@ class UserSubscription(models.Model):
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
+                metrics_source=metrics_source,
             )
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -451,7 +527,9 @@ class UserSubscription(models.Model):
         date_filter_start=None,
         date_filter_end=None,
         use_lazy_merge=False,  # Deprecated: lazy merge is now always used
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
 
@@ -527,6 +605,7 @@ class UserSubscription(models.Model):
                 limit=per_feed_chunk,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
+                metrics_source=metrics_source,
             )
 
             per_feed_has_more = {
@@ -558,6 +637,7 @@ class UserSubscription(models.Model):
                         limit=per_feed_chunk,
                         date_filter_start=date_filter_start,
                         date_filter_end=date_filter_end,
+                        metrics_source=metrics_source,
                     )
                     buffer = next_chunk.get(feed_id, [])
                     per_feed_buffers[feed_id] = buffer
@@ -1445,6 +1525,7 @@ class UserSubscription(models.Model):
                 usersubs=[self],
                 read_filter="unread",
                 cutoff_date=date_delta,
+                metrics_source="score_recalc",
             )
 
             if not stories:
@@ -1612,6 +1693,7 @@ class UserSubscription(models.Model):
                 read_filter="unread",
                 include_timestamps=True,
                 cutoff_date=date_delta,
+                metrics_source="score_recalc",
             )
 
             feed_scores["neutral"] = len(unread_story_hashes)

@@ -76,6 +76,12 @@ from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
 from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
+from apps.reader.metrics import (
+    READER_LOAD_PHASE_DURATION,
+    READER_LOAD_REQUESTS,
+    READER_LOAD_SLOW_REQUESTS,
+    normalize_reader_metrics_read_filter,
+)
 from apps.reader.models import (
     Feature,
     MCustomFeedIcon,
@@ -1153,6 +1159,7 @@ def load_single_feed(request, feed_id):
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
+                metrics_source="feed_request",
             )
         else:
             stories = feed.get_stories(
@@ -1244,6 +1251,7 @@ def load_single_feed(request, feed_id):
                 feed_ids=[usersub.feed_id],
                 usersubs=[usersub],
                 cutoff_date=unread_cutoff_date,
+                metrics_source="feed_request",
             )
         story_hashes = [story["story_hash"] for story in stories if story["story_hash"]]
         starred_stories = MStarredStory.objects(
@@ -1367,15 +1375,20 @@ def load_single_feed(request, feed_id):
         except DatabaseError as e:
             logging.user(request, f"~BR~FK~SBNo changes in usersub, ignoring... {e}")
 
-    diff1 = checkpoint1 - start
-    diff2 = checkpoint2 - start
-    diff3 = checkpoint3 - start
-    diff4 = checkpoint4 - start
+    phase_load_stories = checkpoint1 - start
+    phase_shared = checkpoint2 - checkpoint1
+    phase_classifiers = checkpoint3 - checkpoint2
+    phase_story_meta = checkpoint4 - checkpoint3
     timediff = time.time() - start
     last_update = relative_timesince(feed.last_update)
     time_breakdown = ""
     if timediff > 1 or settings.DEBUG:
-        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (diff1, diff2, diff3, diff4)
+        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
+            phase_load_stories,
+            phase_shared,
+            phase_classifiers,
+            phase_story_meta,
+        )
 
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     date_filter_log = ""
@@ -1400,6 +1413,35 @@ def load_single_feed(request, feed_id):
             time_breakdown,
         ),
     )
+
+    metrics_read_filter = normalize_reader_metrics_read_filter(read_filter, query=bool(query))
+    READER_LOAD_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="load_stories", read_filter=metrics_read_filter
+    ).observe(phase_load_stories)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="shared_profiles", read_filter=metrics_read_filter
+    ).observe(phase_shared)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="classifiers", read_filter=metrics_read_filter
+    ).observe(phase_classifiers)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="story_meta", read_filter=metrics_read_filter
+    ).observe(phase_story_meta)
+    READER_LOAD_PHASE_DURATION.labels(endpoint="feed", phase="total", read_filter=metrics_read_filter).observe(
+        timediff
+    )
+    if timediff >= 0.25:
+        READER_LOAD_SLOW_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
+        logging.info(
+            "reader_load "
+            f"endpoint=feed read_filter={metrics_read_filter} page={page} "
+            f"total_ms={int(timediff * 1000)} "
+            f"load_ms={int(phase_load_stories * 1000)} "
+            f"shared_ms={int(phase_shared * 1000)} "
+            f"classifiers_ms={int(phase_classifiers * 1000)} "
+            f"story_meta_ms={int(phase_story_meta * 1000)}"
+        )
 
     MAnalyticsLoader.add(page_load=timediff)
     if hasattr(request, "start_time"):
@@ -2328,6 +2370,7 @@ def load_river_stories__redis(request):
                 read_filter="unread",
                 order=order,
                 cutoff_date=user.profile.unread_cutoff,
+                metrics_source="river_request",
             )
         else:
             stories = []
@@ -2379,6 +2422,7 @@ def load_river_stories__redis(request):
                     "date_filter_start": date_filter_start_utc,
                     "date_filter_end": date_filter_end_utc,
                     "use_lazy_merge": user.pk in RIVER_SLOWDOWN_USERS,
+                    "metrics_source": "river_request",
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
             else:
@@ -2388,8 +2432,10 @@ def load_river_stories__redis(request):
             mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
 
+    checkpoint1 = time.time()
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
+    checkpoint2 = time.time()
 
     if not usersubs:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=found_feed_ids, read_filter=read_filter)
@@ -2487,6 +2533,7 @@ def load_river_stories__redis(request):
         classifier_urls=classifier_urls,
         folder_feed_ids=folder_feed_ids,
     )
+    checkpoint3 = time.time()
 
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
@@ -2625,8 +2672,13 @@ def load_river_stories__redis(request):
                     include_expanded_data=include_expanded,
                 )
 
+    checkpoint4 = time.time()
     diff = time.time() - start
     timediff = round(float(diff), 2)
+    phase_load_stories = checkpoint1 - start
+    phase_shared = checkpoint2 - checkpoint1
+    phase_classifiers = checkpoint3 - checkpoint2
+    phase_finalize = checkpoint4 - checkpoint3
     if requested_hashes and story_hashes:
         logging.user(
             request,
@@ -2664,6 +2716,36 @@ def load_river_stories__redis(request):
                 read_filter,
                 date_filter_str,
             ),
+        )
+
+    metrics_read_filter = normalize_reader_metrics_read_filter(read_filter, query=bool(query))
+    READER_LOAD_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="load_stories", read_filter=metrics_read_filter
+    ).observe(phase_load_stories)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="shared_profiles", read_filter=metrics_read_filter
+    ).observe(phase_shared)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="classifiers", read_filter=metrics_read_filter
+    ).observe(phase_classifiers)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="finalize", read_filter=metrics_read_filter
+    ).observe(phase_finalize)
+    READER_LOAD_PHASE_DURATION.labels(endpoint="river", phase="total", read_filter=metrics_read_filter).observe(
+        diff
+    )
+    if diff >= 0.25:
+        READER_LOAD_SLOW_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
+        logging.info(
+            "reader_load "
+            f"endpoint=river read_filter={metrics_read_filter} page={page} "
+            f"total_ms={int(diff * 1000)} "
+            f"load_ms={int(phase_load_stories * 1000)} "
+            f"shared_ms={int(phase_shared * 1000)} "
+            f"classifiers_ms={int(phase_classifiers * 1000)} "
+            f"finalize_ms={int(phase_finalize * 1000)} "
+            f"feeds_requested={len(original_feed_ids)} feeds_found={len(found_feed_ids)}"
         )
 
     if not on_dashboard and not (requested_hashes and story_hashes):
