@@ -249,13 +249,22 @@ scrape_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
     - job_name: 'django'
+      {% if disable_consul_services_ie_staging is defined %}
       static_configs:
         - targets: ['{{ monitor_server }}']
-      metrics_path: /metrics
       scheme: https
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+      {% else %}
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['app-web']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      {% endif %}
+      metrics_path: /metrics
 
     #- job_name: 'mongo heap usage'
     #  consul_sd_configs:
