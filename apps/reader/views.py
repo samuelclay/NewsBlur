@@ -2380,11 +2380,46 @@ def load_river_stories__redis(request):
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+    infrequent = is_true(get_post.get("infrequent", False))
+    if infrequent:
+        infrequent = get_post.get("infrequent")
     is_free_river_user = user.is_authenticated and not user.profile.is_premium
+    requested_limit = limit
+
+    def log_free_river_access(action, effective_limit):
+        sample_feed_ids = original_feed_ids[:10]
+        feed_sample = ",".join(str(feed_id) for feed_id in sample_feed_ids)
+        if len(original_feed_ids) > len(sample_feed_ids):
+            feed_sample = f"{feed_sample},...(+{len(original_feed_ids) - len(sample_feed_ids)})"
+        logging.user(
+            request,
+            "~FRFree user river %s~SN: page=%s read_filter=%s order=%s requested_limit=%s effective_limit=%s "
+            "feeds_requested=%s [%s] include_feeds=%s include_hidden=%s query=%s requested_hashes=%s "
+            "on_dashboard=%s infrequent=%s date_start=%s date_end=%s"
+            % (
+                action,
+                page,
+                read_filter,
+                order,
+                requested_limit,
+                effective_limit,
+                len(original_feed_ids),
+                feed_sample,
+                include_feeds,
+                include_hidden,
+                bool(query),
+                requested_hashes,
+                on_dashboard,
+                infrequent,
+                date_filter_start or "-",
+                date_filter_end or "-",
+            ),
+        )
 
     if is_free_river_user:
         message = "The full River of News is a premium feature."
         if page > 1:
+            log_free_river_access("blocked", effective_limit=0)
             data = dict(
                 code=0,
                 message=message,
@@ -2400,6 +2435,7 @@ def load_river_stories__redis(request):
                 data["hidden_stories_removed"] = 0
             return data
         limit = min(limit, 3)
+        log_free_river_access("limited", effective_limit=limit)
 
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
@@ -2407,9 +2443,6 @@ def load_river_stories__redis(request):
             request,
             f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
         )
-    infrequent = is_true(get_post.get("infrequent", False))
-    if infrequent:
-        infrequent = get_post.get("infrequent")
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs = []
     code = 0 if is_free_river_user else 1

@@ -260,24 +260,38 @@ class Test_RiverStories(TransactionTestCase):
         self.user.profile.is_pro = False
         self.user.profile.save()
 
-        with patch("apps.reader.views.UserSubscription.feed_stories", wraps=UserSubscription.feed_stories) as feed_stories:
-            response = self.client.post(
-                reverse("load-river-stories"),
-                {
-                    "feeds": self.test_feeds,
-                    "read_filter": "all",
-                    "page": 1,
-                    "include_hidden": "true",
-                },
-            )
+        with patch("apps.reader.views.logging.user") as user_log:
+            with patch(
+                "apps.reader.views.UserSubscription.feed_stories", wraps=UserSubscription.feed_stories
+            ) as feed_stories:
+                response = self.client.post(
+                    reverse("load-river-stories"),
+                    {
+                        "feeds": self.test_feeds,
+                        "read_filter": "all",
+                        "page": 1,
+                        "include_hidden": "true",
+                    },
+                )
 
         content = json.decode(response.content)
+        logged_messages = [call.args[1] for call in user_log.call_args_list if len(call.args) > 1]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["code"], 0)
         self.assertEqual(content["message"], "The full River of News is a premium feature.")
         self.assertEqual(len(content["stories"]), 3)
         self.assertEqual(feed_stories.call_args.kwargs["limit"], 3)
+        self.assertTrue(
+            any(
+                "Free user river limited" in message
+                and "page=1" in message
+                and "read_filter=all" in message
+                and "requested_limit=12" in message
+                and "effective_limit=3" in message
+                for message in logged_messages
+            )
+        )
 
     def test_river_stories__free_user_later_pages_return_empty_without_aggregation(self):
         """Free users should be blocked before river aggregation on page two and beyond."""
@@ -288,24 +302,35 @@ class Test_RiverStories(TransactionTestCase):
         self.user.profile.is_pro = False
         self.user.profile.save()
 
-        with patch("apps.reader.views.UserSubscription.feed_stories") as feed_stories:
-            response = self.client.post(
-                reverse("load-river-stories"),
-                {
-                    "feeds": self.test_feeds,
-                    "read_filter": "unread",
-                    "page": 2,
-                    "include_hidden": "true",
-                },
-            )
+        with patch("apps.reader.views.logging.user") as user_log:
+            with patch("apps.reader.views.UserSubscription.feed_stories") as feed_stories:
+                response = self.client.post(
+                    reverse("load-river-stories"),
+                    {
+                        "feeds": self.test_feeds,
+                        "read_filter": "unread",
+                        "page": 2,
+                        "include_hidden": "true",
+                    },
+                )
 
         content = json.decode(response.content)
+        logged_messages = [call.args[1] for call in user_log.call_args_list if len(call.args) > 1]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["code"], 0)
         self.assertEqual(content["message"], "The full River of News is a premium feature.")
         self.assertEqual(content["stories"], [])
         self.assertFalse(feed_stories.called)
+        self.assertTrue(
+            any(
+                "Free user river blocked" in message
+                and "page=2" in message
+                and "read_filter=unread" in message
+                and "requested_limit=12" in message
+                for message in logged_messages
+            )
+        )
 
 
     def test_river_stories__specific_story_hashes(self):
