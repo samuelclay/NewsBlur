@@ -41,6 +41,7 @@ public class FeedFolderResponse {
 	public boolean isAuthenticated;
     public boolean isPremium;
     public boolean isArchive;
+    public boolean isPro;
     public long premiumExpire;
     public boolean isStaff;
 	public int starredCount;
@@ -65,8 +66,11 @@ public class FeedFolderResponse {
             JsonObject profile = (JsonObject) userProfile;
             this.isPremium = profile.get("is_premium").getAsBoolean();
             this.premiumExpire = profile.get("premium_expire").getAsLong();
-            if (asJsonObject.has("is_archive")) {
+            if (profile.has("is_archive")) {
                 this.isArchive = profile.get("is_archive").getAsBoolean();
+            }
+            if (profile.has("is_pro")) {
+                this.isPro = profile.get("is_pro").getAsBoolean();
             }
         }
 

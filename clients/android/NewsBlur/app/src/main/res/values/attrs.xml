@@ -4,15 +4,18 @@
     <attr name="selectorFeedAlmostRedBackground" format="string" />
     <attr name="selectorFeedAlmostGreenBackground" format="string" />
     <attr name="selectorFolderBackground" format="string" />
+    <attr name="selectorTopLevelBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
     <attr name="feedRowNeutCountText" format="string" />
     <attr name="actionbarBackground" format="string" />
+    <attr name="feedListToolbarBackground" format="string" />
     <attr name="listBackground" format="string" />
     <attr name="layoutBackground" format="string" />
     <attr name="layoutRoundedBackground" format="string" />
     <attr name="readingBackground" format="string" />
     <attr name="defaultText" format="string" />
     <attr name="linkText" format="string" />
+    <attr name="storyTitleText" format="string" />
     <attr name="storySnippetText" format="string" />
     <attr name="storyFeedTitleText" format="string" />
     <attr name="selectorStoryBackground" format="string" />
@@ -40,10 +43,22 @@
     <attr name="selectorOverlayBackgroundText" format="string" />
     <attr name="muteicon" format="string" />
     <attr name="circleProgressIndicator" format="string" />
+    <attr name="linearProgressIndicator" format="string" />
     <attr name="delimiter" format="string" />
     <attr name="subscriptionHeader" format="string" />
     <attr name="subscriptionIcon" format="string" />
     <attr name="toggleButton" format="string" />
+    <attr name="syncStatusBackgroundColor" format="reference|color" />
+    <attr name="syncStatusDoneBackgroundColor" format="reference|color" />
+    <attr name="storyStatusFetchingBackgroundColor" format="reference|color" />
+    <attr name="storyStatusFetchingTextColor" format="reference|color" />
+    <attr name="storyStatusFetchingBorderColor" format="reference|color" />
+    <attr name="storyStatusOfflineBackgroundColor" format="reference|color" />
+    <attr name="storyStatusOfflineTextColor" format="reference|color" />
+    <attr name="storyStatusOfflineBorderColor" format="reference|color" />
+    <attr name="feedListSearchBackground" format="reference|color" />
+    <attr name="feedListSearchTextColor" format="reference|color" />
+    <attr name="feedListSearchHintColor" format="reference|color" />
 
     <attr name="flow" format="string" />
     <attr name="imageViewSize" format="integer" />

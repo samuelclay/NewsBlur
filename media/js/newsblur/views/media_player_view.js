@@ -1357,6 +1357,12 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // Ignore our own echo from the websocket relay
         if (data.tab_id === this.tab_id) return;
 
+        // Another instance closed the player - close here too
+        if (data.closed) {
+            this.close_player(null, { from_remote: true });
+            return;
+        }
+
         // Another tab is playing - pause this one
         if (data.is_playing && this.is_playing) {
             this.pause();
@@ -1412,7 +1418,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         return height;
     },
 
-    close_player: function (e) {
+    close_player: function (e, options) {
+        options = options || {};
         if (e) e.stopPropagation();
         this.pause();
         this.destroy_media_element();
@@ -1431,7 +1438,17 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         }
         this.hide_player();
 
-        NEWSBLUR.assets.clear_playback_state();
+        if (!options.from_remote) {
+            NEWSBLUR.assets.clear_playback_state();
+            // Broadcast close to other tabs/instances via WebSocket
+            if (NEWSBLUR.reader && NEWSBLUR.reader.socket) {
+                NEWSBLUR.reader.socket.emit('media:sync', {
+                    user_id: NEWSBLUR.Globals.user_id,
+                    tab_id: this.tab_id,
+                    closed: true
+                });
+            }
+        }
     },
 
     _resize_south_pane: function (height) {

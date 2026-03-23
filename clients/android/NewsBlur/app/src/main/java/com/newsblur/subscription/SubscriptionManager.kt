@@ -82,6 +82,7 @@ interface SubscriptionsListener {
         renewalMessage: String?,
         isPremium: Boolean,
         isArchive: Boolean,
+        isPro: Boolean,
     ) {}
 
     fun onAvailableSubscriptions(productDetails: List<ProductDetails>) {}
@@ -219,12 +220,6 @@ class SubscriptionManagerImpl(
                     .newBuilder()
                     .setProductDetailsParamsList(productDetailsParamsList)
 
-            // Set obfuscated account ID for server-side user mapping via RTDN
-            val userId = prefRepository.getUserId()
-            if (!userId.isNullOrEmpty()) {
-                billingFlowParamsBuilder.setObfuscatedAccountId(userId)
-            }
-
             // check if there is an active subscription
             val activeSubscription = getActiveSubscriptionAsync().await()
             activeSubscription?.let {
@@ -250,22 +245,33 @@ class SubscriptionManagerImpl(
         scope.launch(Dispatchers.Default) {
             val isPremium = prefRepository.getIsPremium()
             val isArchive = prefRepository.getIsArchive()
+            val isPro = prefRepository.getIsPro()
             val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
+            val activeProductId = activePlayStoreSubscription?.products?.firstOrNull()
+            val hasPremiumProduct = activeProductId == AppConstants.PREMIUM_SUB_ID
+            val hasArchiveProduct = activeProductId == AppConstants.PREMIUM_ARCHIVE_SUB_ID
+            val hasProProduct = activeProductId == AppConstants.PREMIUM_PRO_SUB_ID
+            val activeIsPro = isPro || hasProProduct
+            val activeIsArchive = isArchive || hasArchiveProduct || activeIsPro
+            val activeIsPremium = isPremium || hasPremiumProduct || activeIsArchive
 
-            if (isPremium || isArchive || activePlayStoreSubscription != null) {
+            if (activeIsPremium || activeIsArchive || activeIsPro || activePlayStoreSubscription != null) {
                 listener?.let {
                     val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
                     withContext(Dispatchers.Main) {
-                        it.onActiveSubscription(renewalString, isPremium, isArchive)
+                        it.onActiveSubscription(renewalString, activeIsPremium, activeIsArchive, activeIsPro)
                     }
                 }
             }
 
-            // Always send receipt to server for active Play Store subscriptions.
-            // Server deduplicates by order_id, so this safely handles renewals
-            // that the server missed (e.g. user didn't open app after renewal).
             activePlayStoreSubscription?.let { purchase ->
-                saveReceipt(purchase)
+                if (purchase.isPremiumSub() && !isPremium) {
+                    saveReceipt(purchase)
+                } else if (purchase.isArchiveSub() && !isArchive) {
+                    saveReceipt(purchase)
+                } else if (purchase.isProSub() && !isPro) {
+                    saveReceipt(purchase)
+                }
             }
         }
 
@@ -275,7 +281,7 @@ class SubscriptionManagerImpl(
         Log.d(this, "saveReceipt: ${purchase.orderId}")
         scope.executeAsyncTask(
             doInBackground = {
-                userApi.saveReceipt(purchase.orderId, purchase.products.first(), purchase.purchaseToken)
+                userApi.saveReceipt(purchase.orderId, purchase.products.first())
             },
             onPostExecute = {
                 if (it != null && !it.isError) {
@@ -305,6 +311,11 @@ class SubscriptionManagerImpl(
                                 .setProductId(AppConstants.PREMIUM_ARCHIVE_SUB_ID)
                                 .setProductType(BillingClient.ProductType.SUBS)
                                 .build(),
+                            QueryProductDetailsParams.Product
+                                .newBuilder()
+                                .setProductId(AppConstants.PREMIUM_PRO_SUB_ID)
+                                .setProductType(BillingClient.ProductType.SUBS)
+                                .build(),
                         ),
                     )
                 }.build()
@@ -315,7 +326,8 @@ class SubscriptionManagerImpl(
             val productDetails =
                 productDetailsList.filter {
                     it.productId == AppConstants.PREMIUM_SUB_ID ||
-                        it.productId == AppConstants.PREMIUM_ARCHIVE_SUB_ID
+                        it.productId == AppConstants.PREMIUM_ARCHIVE_SUB_ID ||
+                        it.productId == AppConstants.PREMIUM_PRO_SUB_ID
                 }
             deferred.complete(productDetails)
         }
@@ -334,7 +346,8 @@ class SubscriptionManagerImpl(
             val purchases =
                 purchasesList.filter { purchase ->
                     purchase.products.contains(AppConstants.PREMIUM_SUB_ID) ||
-                        purchase.products.contains(AppConstants.PREMIUM_ARCHIVE_SUB_ID)
+                        purchase.products.contains(AppConstants.PREMIUM_ARCHIVE_SUB_ID) ||
+                        purchase.products.contains(AppConstants.PREMIUM_PRO_SUB_ID)
                 }
             deferred.complete(purchases.firstOrNull())
         }
@@ -391,4 +404,6 @@ class SubscriptionManagerImpl(
     private fun Purchase.isPremiumSub() = this.products.firstOrNull() == AppConstants.PREMIUM_SUB_ID
 
     private fun Purchase.isArchiveSub() = this.products.firstOrNull() == AppConstants.PREMIUM_ARCHIVE_SUB_ID
+
+    private fun Purchase.isProSub() = this.products.firstOrNull() == AppConstants.PREMIUM_PRO_SUB_ID
 }

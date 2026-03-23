@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Story clustering: automatically group duplicate stories across your feeds"
-date: 2026-03-16
+date: 2026-03-18
 tags: ["web"]
 ---
 
@@ -50,6 +50,10 @@ The same options are available in the global Preferences dialog under the Storie
 
 ### Availability
 
-Story clustering is a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. It's enabled by default for archive subscribers, but you can turn it off at any time from the feed options popover or Preferences.
+Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you'll see grouped stories automatically -- no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.
+
+**Premium Archive subscribers** get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.
+
+**Premium and free users** see clustered stories on popular feeds where cluster data already exists. You'll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.
 
 If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.

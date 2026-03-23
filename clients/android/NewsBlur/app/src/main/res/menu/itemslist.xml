@@ -7,6 +7,10 @@
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           app:showAsAction="ifRoom" android:icon="@drawable/ic_search" />
+    <item android:id="@+id/menu_discover_related_sites"
+          android:title="@string/discover_related_sites_title"
+          app:showAsAction="never"
+          android:icon="@drawable/ic_discover" />
     <item android:id="@+id/menu_story_order"
           android:title="@string/menu_story_order">
         <menu>
@@ -129,6 +133,8 @@
                     android:title="@string/auto" />
                 <item android:id="@+id/menu_theme_light"
                       android:title="@string/light" />
+                <item android:id="@+id/menu_theme_sepia"
+                      android:title="@string/sepia" />
                 <item android:id="@+id/menu_theme_dark"
                       android:title="@string/dark" />
                 <item android:id="@+id/menu_theme_black"
@@ -138,6 +144,18 @@
     </item>
     <item android:id="@+id/menu_intel"
           android:title="@string/menu_intel" />
+    <item android:id="@+id/menu_rename_folder"
+          android:title="@string/menu_rename_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_mute_folder"
+          android:title="@string/menu_mute_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_unmute_folder"
+          android:title="@string/menu_unmute_folder"
+          android:visible="false" />
+    <item android:id="@+id/menu_delete_folder"
+          android:title="@string/menu_delete_folder"
+          android:visible="false" />
     <item android:id="@+id/menu_notifications"
           android:title="@string/menu_notifications_choose" >
         <menu>

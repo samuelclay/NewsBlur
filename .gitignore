@@ -24,6 +24,7 @@ data/
 api/ip_addresses.txt
 .prom_cache
 config/certificates
+clients/ios/.build/
 **/*.xcuserstate
 UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate
@@ -77,7 +78,9 @@ media/safari/NewsBlur.safariextz
 apps/discover/fixtures/*_cache.json
 
 # IDE files
+.idea/
 /docker/volumes/*
+clients/android/NewsBlur/.kotlin/
 
 **/node_modules
 *.tfstate*

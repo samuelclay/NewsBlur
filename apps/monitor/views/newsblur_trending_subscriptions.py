@@ -1,26 +1,31 @@
 import re
 import time
 
+import redis
+from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
 from apps.rss_feeds.models import Feed
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 
+CACHE_KEY = "monitor:trending_subs:cache"
+CACHE_TTL = 60 * 60  # 1 hour
+
 
 class TrendingSubscriptions(View):
     def get(self, request):
         """
         Prometheus metrics endpoint for trending feed subscriptions.
-
-        Tracks which feeds are being added most frequently to identify
-        trending/hot new feeds. Exposes 3 time windows: daily, weekly, monthly.
-
-        Metrics exported:
-        - Aggregate totals (total subscriptions today, unique feeds)
-        - Top 10 trending feeds for each window (1d, 7d, 30d)
-        - Daily subscription totals for charting
+        Results are cached for 1 hour since these Grafana graphs don't need real-time data.
         """
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+
+        cached = r.get(CACHE_KEY)
+        if cached:
+            return HttpResponse(cached, content_type="text/plain")
+
         start_time = time.time()
 
         formatted_data = {}
@@ -82,7 +87,9 @@ class TrendingSubscriptions(View):
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+        response = render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+        r.set(CACHE_KEY, response.content, ex=CACHE_TTL)
+        return response
 
     def _sanitize_label(self, value):
         """Sanitize a string for use as a Prometheus label value."""

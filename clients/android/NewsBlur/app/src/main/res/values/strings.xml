@@ -3,18 +3,29 @@
     <string name="newsblur">NewsBlur</string>
 
     <string name="login_username_hint">username</string>
+    <string name="login_username_or_email_hint">username or email</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Login</string>
-    <string name="login_forgot_password"><u>Forgot password</u></string>
-    <string name="login_custom_server"><u>Self-hosted custom server</u></string>
+    <string name="login_segment_sign_in">Log In</string>
+    <string name="login_segment_sign_up">Sign Up</string>
+    <string name="login_forgot_password">Forgot password</string>
+    <string name="login_custom_server">Self-hosted custom server</string>
     <string name="login_custom_server_hint">https://www.newsblur.com</string>
+    <string name="login_custom_server_subtitle">Use your own NewsBlur installation</string>
+    <string name="login_custom_server_active">Custom server: %1$s</string>
+    <string name="login_custom_server_edit">Tap to edit or reset your server URL</string>
+    <string name="login_custom_server_dialog_title">Custom server</string>
+    <string name="login_custom_server_dialog_body">Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup.</string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Reticulating splines…</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     <string name="login_custom_server_scheme_error">Expected \'https://\' in custom server URL</string>
+    <string name="login_custom_server_invalid">Enter a valid custom server URL.</string>
+    <string name="login_tagline">A personal news reader bringing
+people together to talk about the world.</string>
     <string name="user_profile_picture">User profile picture</string>
 
     <string name="search_for_feed">Search for feeds</string>
@@ -36,12 +47,13 @@
     <string name="description_comment_user">Comment user image</string>
     <string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
+    <string name="story_settings">Story settings</string>
 
     <string name="title_choose_folders">Choose folders for feed %s</string>
     <string name="title_rename_feed">Rename feed %s</string>
     <string name="title_rename_folder">Rename folder %s</string>
 
-    <string name="all_stories_title">All Stories</string>
+    <string name="all_stories_title">All Site Stories</string>
     <string name="infrequent_title">Infrequent Site Stories</string>
     <string name="all_shared_stories_title">All Shared Stories</string>
     <string name="global_shared_stories_title">Global Shared Stories</string>
@@ -57,6 +69,7 @@
     <string name="share_this">Share</string>
     <string name="already_shared">Shared</string>
     <string name="share_this_story">Share</string>
+    <string name="share_with_comment">Share with comment</string>
     <string name="unshare">Delete share</string>
     <string name="update_shared">Update comment</string>
     <string name="rename">Rename</string>
@@ -64,6 +77,7 @@
     <string name="save_this">Save</string>
     <string name="unsave_this">Unsave</string>
     <string name="train_this">Train</string>
+    <string name="ask_ai">Ask AI</string>
     <string name="story_mark_unread_state">Read</string>
     <string name="story_mark_read_state">Mark story read</string>
 
@@ -214,10 +228,27 @@
     <string name="story_changes_loading">Story Changes Loading …</string>
     <string name="story_saved_timestamp">Saved %s</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
+    <string name="feed_list_clear_search">Clear search</string>
     <string name="story_search_hint">Search for stories</string>
+    <string name="discover_related_sites_title">Related Sites</string>
+    <string name="discover_loading">Finding related sites…</string>
+    <string name="discover_no_related_sites">No related sites found</string>
+    <string name="discover_view_mode_grid">Grid</string>
+    <string name="discover_view_mode_list">List</string>
+    <string name="discover_try">Try</string>
+    <string name="discover_add">Add</string>
+    <string name="discover_subscribed">Subscribed</string>
+    <string name="discover_updated_today">Updated today</string>
+    <string name="discover_updated_relative">Updated %s</string>
+    <string name="discover_stale_updated_relative">Stale — updated %s</string>
+    <string name="discover_stale_date">Stale. Last story %s</string>
+    <string name="discover_last_fetched_relative">Fetched %s</string>
+    <string name="try_feed_banner_subtitle">Preview. Not yet subscribed.</string>
+    <string name="try_feed_subscribe_button">Subscribe</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="adding_feed_progress">Adding feed…</string>
+    <string name="feed_list_search_hint">Search feeds</string>
     <string name="add_folder_name">Please enter folder name</string>
     <string name="add_tag_name">Please add tag name</string>
     <string name="add_new_folder">+ Add new folder</string>
@@ -251,7 +282,7 @@
     <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
 
     <string name="login_registration_custom_server">Set custom server</string>
-    <string name="login_registration_reset_url"><u>Reset</u></string>
+    <string name="login_registration_reset_url">Reset</string>
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
@@ -290,6 +321,16 @@
     <string name="title_widget_loading">Loading…</string>
     <string name="menu_newsletters">Newsletters…</string>
     <string name="menu_shortcuts">Shortcuts…</string>
+    <string name="main_menu_preferences">Preferences</string>
+    <string name="main_menu_mute_sites">Mute Sites</string>
+    <string name="main_menu_widget_sites">Widget Sites</string>
+    <string name="main_menu_notifications">Notifications</string>
+    <string name="main_menu_interactions">Interactions</string>
+    <string name="main_menu_upgrade_premium">Upgrade to Premium</string>
+    <string name="main_menu_upgrade_archive">Upgrade to Archive</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Support Forum</string>
 
     <string name="newsblur_opml">NewsBlur OPML</string>
     <string name="newsbluropml">NewsBlur-OPML</string>
@@ -299,22 +340,36 @@
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
-    <string name="subscription_toolbar_title">NewsBlur Subscription</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
     <!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
     <string name="thank_you_for_subscribing">Thank you for subscribing!</string>
-    <string name="premium_subscription_renewal">Your subscription is set to\nrenew on %s</string>
-    <string name="premium_subscription_expiration">Your subscription is set\nto expire on %s</string>
-    <string name="premium_subscription_no_expiration">Your subscription is set\nto never expire. Whoa!</string>
+    <string name="premium_subscription_renewal">Your subscription will renew on %s</string>
+    <string name="premium_subscription_expiration">Your subscription will expire on %s</string>
+    <string name="premium_subscription_no_expiration">Your subscription is set to never expire. Whoa!</string>
     <!--    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>-->
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_header">Premium Subscription</string>
-    <string name="archive_subscription_header">Premium Archive Subscription</string>
+    <string name="archive_subscription_header">Premium Archive</string>
+    <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
     <string name="premium_subscription_active">Your premium subscription is active</string>
+    <string name="archive_subscription_active">Your premium archive subscription is active</string>
+    <string name="pro_subscription_active">Your premium pro subscription is active</string>
+    <string name="subscription_manage">Manage Subscription</string>
     <string name="subscription_details_error">Error retrieving subscription details</string>
     <string name="no_subscription_available">No subscription available</string>
+    <string name="subscription_unavailable">Currently unavailable on Android</string>
+    <string name="subscription_coming_soon">Coming soon</string>
+    <string name="subscription_upgrade_from_premium">Upgrade from Premium</string>
+    <string name="subscription_upgrade_from_archive">Upgrade from Archive</string>
+    <string name="subscription_price_yearly">%1$s/year (%2$s/month)</string>
+    <string name="subscription_price_monthly">%1$s/month</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Your premium archive subscription includes everything above</string>
+    <string name="premium_pro_includes_above">Your premium pro subscription includes everything above</string>
 
     <string name="premium_enable_sites">Follow up to 1,024 sites</string>
     <string name="premium_sync">Sites updated up to 5x more often</string>
@@ -324,15 +379,31 @@
     <string name="premium_privacy_options">Privacy options for your blurblog</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
+    <string name="premium_discover_related">Discover related stories and sites</string>
     <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
 
     <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
+    <string name="archive_enable_sites">Follow up to 4,096 sites</string>
     <string name="archive_marked_as_read">Choose when stories are automatically marked as read</string>
+    <string name="archive_customize_auto_read">Customize auto-read by site or folder</string>
     <string name="archive_story_searchable_forever">Every story from every site is archived and searchable forever</string>
     <string name="archive_back_filled">Feeds that support paging are back-filled in for a complete archive</string>
+    <string name="archive_train_full_text">Train stories on full text content</string>
+    <string name="archive_discover_related">Discover related stories across your archive</string>
     <string name="archive_export_trained_stories">Export trained stories from folders as RSS feeds</string>
     <string name="archive_stories_unread_forever">Stories can stay unread forever</string>
-    <string name="archive_subscription_active">Your archive subscription is active</string>
+    <string name="archive_ask_ai">Ask AI questions about stories</string>
+    <string name="archive_filter_by_date_range">Filter stories by date range</string>
+    <string name="archive_train_folder">Apply training across a folder</string>
+    <string name="archive_train_globally">Apply training globally</string>
+
+    <string name="pro_everything_archive">Everything in the archive subscription, of course</string>
+    <string name="pro_enable_sites">Follow up to 10,000 sites</string>
+    <string name="pro_all_feeds_fetched">All feeds fetched every 5-15 minutes</string>
+    <string name="pro_regex_train">Train stories with regular expressions</string>
+    <string name="pro_priority_support">Priority support</string>
+    <string name="pro_natural_language_filters">Natural language filters</string>
+    <string name="pro_natural_language_search">Natural language search</string>
 
     <string name="settings_cat_offline">Offline reading</string>
     <string name="settings_enable_offline">Download stories</string>
@@ -400,11 +471,15 @@
     <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories folder</string>
 
     <string name="settings_cat_story_list">Story List</string>
+    <string name="settings_cat_story_layout">Story Layout</string>
 
     <string name="oldest">Oldest</string>
     <string name="newest">Newest</string>
     <string name="menu_story_order">Story order</string>
     <string name="settings_story_order">Story order…</string>
+    <string name="story_header_options">Options</string>
+    <string name="story_header_search">Search</string>
+    <string name="story_header_related_sites">Related Sites</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -436,6 +511,7 @@
     <string name="menu_story_thumbnail_preview">Thumbnail preview</string>
     <string name="menu_mark_read_on_scroll">Mark read on scroll</string>
     <string name="settings_read_filter">Read story filter…</string>
+    <string name="settings_read_filter_title">Stories shown</string>
     <string name="menu_read_filter">Read story filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
@@ -455,6 +531,18 @@
         <item>Mark older stories read</item>
         <item>Cancel</item>
     </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="one">Older than %d day</item>
+        <item quantity="other">Older than %d days</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="one">%s subscriber</item>
+        <item quantity="other">%s subscribers</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="one">%s story/mo</item>
+        <item quantity="other">%s stories/mo</item>
+    </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>
         <item>Cancel</item>
@@ -467,6 +555,7 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
+    <string name="settings_mark_story_read_title">Mark stories read</string>
     <string name="mark_story_read_immediately">Immediately</string>
     <string name="mark_story_read_5_seconds">After 5 seconds</string>
     <string name="mark_story_read_10_seconds">After 10 seconds</string>
@@ -502,11 +591,38 @@
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
     <string name="settings_reading">Reading</string>
+    <string name="settings_show_ask_ai">Show Ask AI</string>
     <string name="settings_content_preview">Content preview text…</string>
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>
+    <string name="settings_preview_images_title">Preview images</string>
+    <string name="settings_preview_images_segment_off">Off</string>
+    <string name="settings_preview_images_segment_left_small">L small</string>
+    <string name="settings_preview_images_segment_left_large">L large</string>
+    <string name="settings_preview_images_segment_right_small">R small</string>
+    <string name="settings_preview_images_segment_right_large">R large</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
     <string name="settings_enable_notifications_key">enable_notifications</string>
+    <string name="ask_ai_upgrade_archive">Upgrade to Premium Archive</string>
+    <string name="ask_ai_ask_question">Ask a question…</string>
+    <string name="ask_ai_follow_up">Follow up…</string>
+    <string name="ask_ai_ask">Ask</string>
+    <string name="ask_ai_send">Send</string>
+    <string name="ask_ai_reask">Re-ask</string>
+    <string name="ask_ai_recording">Recording…</string>
+    <string name="ask_ai_transcribing">Transcribing…</string>
+    <string name="ask_ai_microphone_permission_denied">Microphone permission denied</string>
+    <string name="ask_ai_microphone_error">Unable to record audio</string>
+    <string name="settings_confirm_mark_all_read_note">Mark read options are always available via long press on the mark read button.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Both</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Folders</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Never</string>
+    <string name="settings_after_mark_read_title">After mark read</string>
+    <string name="settings_after_mark_read_next">Open next list</string>
+    <string name="settings_after_mark_read_stay">Stay here</string>
+    <string name="settings_when_opening_site_title">When opening a site</string>
+    <string name="settings_when_opening_site_stories">Show stories</string>
+    <string name="settings_when_opening_site_first_story">Open first story</string>
 
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
@@ -566,6 +682,7 @@
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>
+    <string name="sepia">Sepia</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
 
@@ -582,6 +699,7 @@
     <string name="sync_status_images">Storing %d images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed</string>
+    <string name="sync_status_done">All done</string>
 
     <string name="volume_key_navigation">Volume key navigation…</string>
     <string name="off">Off</string>
@@ -619,14 +737,18 @@
 
     <string name="settings_confirm_mark_range_read">Confirm mark older/newer read</string>
 
-    <string name="settings_ltr_gesture_action">Rightward swipe on story title…</string>
+    <string name="settings_ltr_gesture_action">Rightward swipe on story list…</string>
     <string name="gest_action_none">No action</string>
+    <string name="gest_action_back">Go back to previous list</string>
+    <string name="gest_action_toggle_read">Toggle story read status</string>
     <string name="gest_action_markread">Mark story as read</string>
     <string name="gest_action_markunread">Mark story as unread</string>
     <string name="gest_action_save">Save story</string>
     <string name="gest_action_unsave">Unsave story</string>
     <string name="gest_action_statistics">Site statistics</string>
     <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
@@ -635,6 +757,8 @@
         <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="ltr_gesture_action_values">
+        <item>GEST_ACTION_BACK</item>
+        <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
@@ -642,10 +766,11 @@
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
+    <string name="ltr_gesture_action_value">GEST_ACTION_BACK</string>
 
     <string name="settings_rtl_gesture_action">Leftward swipe on story title…</string>
     <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
@@ -654,6 +779,7 @@
         <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="rtl_gesture_action_values">
+        <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
         <item>GEST_ACTION_MARKUNREAD</item>
@@ -661,7 +787,7 @@
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
+    <string name="rtl_gesture_action_value">GEST_ACTION_TOGGLE_READ</string>
 
     <string name="default_browser">Default browser…</string>
     <string name="font">Font…</string>
@@ -795,7 +921,7 @@
     <string name="short_open_story_trainer">Open Story Trainer</string>
     <string name="short_open_story_trainer_key">T</string>
 
-    <string name="short_open_all_stories">Open All Stories</string>
+    <string name="short_open_all_stories">Open All Site Stories</string>
     <string name="short_open_all_stories_key">\u2325 E</string>
 
     <string name="short_switch_views">Switch Views</string>

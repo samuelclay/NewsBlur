@@ -379,10 +379,7 @@ class FetchFeed:
                 except (requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
                 if raw_feed and raw_feed.status_code == 304:
-                    logging.debug(
-                        "   ---> [%-30s] ~FGFeed not modified (304)"
-                        % (self.feed.log_title[:30])
-                    )
+                    logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
                     self.feed.save_feed_history(304, "Not modified")
                     return FEED_SAME, None

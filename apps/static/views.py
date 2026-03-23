@@ -101,6 +101,10 @@ def feature_mcp_cli(request):
     return render(request, "static/feature_mcp_cli.xhtml")
 
 
+def feature_story_clustering(request):
+    return render(request, "static/feature_story_clustering.xhtml")
+
+
 def pricing_premium(request):
     return render(request, "static/pricing_premium.xhtml", {"current_plan": "premium"})
 

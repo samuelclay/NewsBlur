@@ -44,7 +44,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-search-site-selection": "search_selected_text_site",
         "click .NB-search-folder-selection": "search_selected_text_folder",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
-        "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
+        "click .NB-feed-story-ask-ai": "show_ask_ai_menu",
+        "click .NB-cluster-locked-upsell": "open_clustering_upgrade",
+        "click .NB-clustering-detail-upgrade-pill": "open_clustering_upgrade",
+        "mouseenter .NB-clustering-detail-info-icon": "show_clustering_tooltip",
+        "mouseleave .NB-clustering-detail-info-icon": "hide_clustering_tooltip"
     },
 
     initialize: function () {
@@ -539,45 +543,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     render_cluster_stories: function () {
-        if (!NEWSBLUR.Globals.is_staff) return;
         if (!this.model.has_cluster()) return;
 
         var cluster_stories = this.model.get('cluster_stories');
-        var current_hash = this.model.get('story_hash');
         var $wrapper = this.$('.NB-story-content-cluster-wrapper');
 
-        // Render initial story title views from cluster data
+        // Cluster metadata (title, feed_title, read_status, images) is already
+        // included in the story payload from the feed/page response — no extra
+        // request needed.
         var $section = this.build_cluster_section(cluster_stories);
         $wrapper.html($section);
-
-        // Fetch full story data to get additional stories and full content
-        var self = this;
-        this.cluster_request = $.ajax({
-            url: '/reader/cluster_stories',
-            data: { cluster_id: current_hash },
-            success: function (data) {
-                self.cluster_request = null;
-                if (data.code <= 0 || !data.stories || !data.stories.length) return;
-
-                // Register feeds for favicon rendering
-                if (data.feeds) {
-                    _.each(data.feeds, function (feed_data, feed_id) {
-                        NEWSBLUR.assets.set_temp_feed(feed_id, feed_data);
-                    });
-                }
-
-                // Filter out the current story
-                var stories = _.filter(data.stories, function (s) {
-                    return s.story_hash !== current_hash;
-                });
-
-                if (!stories.length) return;
-
-                // Re-render with full data
-                var $section = self.build_cluster_section(stories);
-                $wrapper.html($section);
-            }
-        });
     },
 
     build_cluster_section: function (stories) {
@@ -590,19 +565,40 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this._cluster_title_views = [];
 
         var $container = $('<div class="NB-story-cluster-detail"></div>');
-        $container.append(
-            '<div class="NB-story-cluster-detail-header">' +
-            '<span class="NB-staff-only-badge">STAFF ONLY</span>' +
-            '<span class="NB-story-cluster-detail-title">Also reported by ' + stories.length + ' source' + (stories.length !== 1 ? 's' : '') + '</span>' +
-            '</div>'
-        );
+        var is_archive = NEWSBLUR.Globals.is_archive;
+        var visible_stories = is_archive ? stories : stories.slice(0, 1);
+        var hidden_count = stories.length - visible_stories.length;
+
+        var header_children = [
+            $.make('span', { className: 'NB-story-cluster-detail-title' },
+                'Also published by ' + stories.length + ' site' + (stories.length !== 1 ? 's' : ''))
+        ];
+        if (!is_archive) {
+            header_children.push($.make('span', { className: 'NB-clustering-detail-info' }, [
+                $.make('span', { className: 'NB-clustering-detail-info-icon', title: '' }, '\u24D8'),
+                $.make('span', { className: 'NB-clustering-detail-info-tooltip' }, [
+                    'These clusters were found because other subscribers share these feeds.',
+                    $.make('br'),
+                    $.make('br'),
+                    'Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster.'
+                ])
+            ]));
+            if (hidden_count === 0) {
+                header_children.push($.make('a', {
+                    href: '#',
+                    className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
+                }, 'Premium Archive'));
+            }
+        }
+        var $header = $.make('div', { className: 'NB-story-cluster-detail-header' }, header_children);
+        $container.append($header);
 
         var self = this;
         var parent_read = this.model.get('read_status');
         var mark_children_read = NEWSBLUR.assets.preference('cluster_mark_read');
         var collection = NEWSBLUR.assets.stories;
 
-        _.each(stories, function (story_data) {
+        _.each(visible_stories, function (story_data) {
             // Apply read status from parent if preference is set
             if (parent_read && mark_children_read && !story_data.read_status) {
                 story_data.read_status = 1;
@@ -629,7 +625,39 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $container.append(story_view.$el);
         });
 
+        if (!is_archive && hidden_count > 0) {
+            var $upsell = $.make('div', { className: 'NB-cluster-locked-upsell' }, [
+                $.make('span', { className: 'NB-cluster-locked-text' },
+                    '+ ' + hidden_count + ' more site' + (hidden_count !== 1 ? 's' : '')),
+                $.make('a', {
+                    href: '#',
+                    className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
+                }, 'Premium Archive')
+            ]);
+            $container.append($upsell);
+        }
+
         return $container;
+    },
+
+    open_clustering_upgrade: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.reader.open_premium_upgrade_modal();
+    },
+
+    show_clustering_tooltip: function (e) {
+        var $icon = $(e.currentTarget);
+        var $tooltip = $icon.siblings('.NB-clustering-detail-info-tooltip');
+        var rect = $icon[0].getBoundingClientRect();
+        $tooltip.css({
+            top: rect.top - $tooltip.outerHeight() - 8,
+            right: window.innerWidth - rect.right - 4
+        }).show();
+    },
+
+    hide_clustering_tooltip: function (e) {
+        this.$('.NB-clustering-detail-info-tooltip').hide();
     },
 
     render_story_content: function () {
@@ -641,7 +669,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
-        if (this.cluster_request) this.cluster_request.abort();
         if (this._cluster_title_views) {
             _.each(this._cluster_title_views, function (view) { view.remove(); });
             this._cluster_title_views = null;

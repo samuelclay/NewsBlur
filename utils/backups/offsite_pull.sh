@@ -5,9 +5,12 @@
 # - MongoDB full dump: streamed directly via SSH (mongodump --archive --gzip)
 # - PostgreSQL + Redis: download latest from S3 (small files)
 #
+# Each section runs independently — a failure in one (e.g. broken venv)
+# does not prevent the others from completing.
+#
 # Usage: ./offsite_pull.sh
 
-set -euo pipefail
+set -uo pipefail  # No -e: sections handle errors independently
 
 # --- Configuration ---
 BACKUP_DRIVE="/media/newsblur-backup"
@@ -15,6 +18,7 @@ SSH_KEY="/config/scripts/docker.key"
 SSH_USER="nb"
 MONGO_DUMP_TIMEOUT="24h"  # Kill mongodump if it takes longer than this
 MAILGUN_CREDS_FILE="/config/scripts/mailgun_credentials"
+VENV_PYTHON="/config/scripts/venv/bin/python3"
 
 # Hetzner server IPs (from ansible/inventories/hetzner.ini)
 MONGO_SECONDARY="37.27.129.218"  # hdb-mongo-secondary-1
@@ -22,14 +26,19 @@ MONGO_SECONDARY="37.27.129.218"  # hdb-mongo-secondary-1
 # S3 configuration — credentials loaded from config file
 S3_BUCKET="newsblur-backups"
 AWS_CREDS_FILE="/config/scripts/aws_s3_credentials"
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+S3_AVAILABLE=true
 if [[ -f "${AWS_CREDS_FILE}" ]]; then
     # File format: line 1 = access key, line 2 = secret key
     AWS_ACCESS_KEY_ID=$(sed -n '1p' "${AWS_CREDS_FILE}")
     AWS_SECRET_ACCESS_KEY=$(sed -n '2p' "${AWS_CREDS_FILE}")
 else
-    echo "ERROR: AWS credentials file not found at ${AWS_CREDS_FILE}"
-    echo "Create it with: echo 'ACCESS_KEY' > ${AWS_CREDS_FILE} && echo 'SECRET_KEY' >> ${AWS_CREDS_FILE}"
-    exit 1
+    S3_AVAILABLE=false
+fi
+
+if [[ ! -x "${VENV_PYTHON}" ]]; then
+    S3_AVAILABLE=false
 fi
 
 # S3 prefixes for each backup type (hostname with underscores)
@@ -55,6 +64,7 @@ REDIS_KEEP=8
 
 LOG_FILE="${BACKUP_DRIVE}/backup.log"
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -i ${SSH_KEY}"
+FAILURES=""  # Track failed sections for final summary
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "${LOG_FILE}"
@@ -64,38 +74,29 @@ send_failure_alert() {
     local subject="$1"
     local body="$2"
     log "Sending failure alert: ${subject}"
-    /config/scripts/venv/bin/python3 -c "
-import sys
-try:
-    import requests
-except ImportError:
-    print('WARNING: requests not available, cannot send alert')
-    sys.exit(0)
-
-try:
-    with open('${MAILGUN_CREDS_FILE}') as f:
-        lines = f.read().strip().split('\n')
-        api_key = lines[0].strip()
-        domain = lines[1].strip()
-except (IOError, IndexError) as e:
-    print('WARNING: Could not read Mailgun credentials: %s' % e)
-    sys.exit(0)
-
-try:
-    requests.post(
-        'https://api.mailgun.net/v3/%s/messages' % domain,
-        auth=('api', api_key),
-        data={
-            'from': 'NewsBlur Backup <admin@%s>' % domain,
-            'to': ['samuel@newsblur.com'],
-            'subject': 'NewsBlur Backup FAILED: %s' % sys.argv[1],
-            'text': sys.argv[2],
-        },
-    )
-    print('Alert email sent to samuel@newsblur.com')
-except Exception as e:
-    print('WARNING: Failed to send alert email: %s' % e)
-" "${subject}" "${body}" 2>&1 | while read line; do log "  $line"; done
+    if [[ ! -f "${MAILGUN_CREDS_FILE}" ]]; then
+        log "  WARNING: Mailgun credentials not found, cannot send alert"
+        return
+    fi
+    local api_key domain
+    api_key=$(sed -n '1p' "${MAILGUN_CREDS_FILE}")
+    domain=$(sed -n '2p' "${MAILGUN_CREDS_FILE}")
+    if [[ -z "${api_key}" || -z "${domain}" ]]; then
+        log "  WARNING: Could not read Mailgun credentials"
+        return
+    fi
+    if curl -s --max-time 30 \
+        -u "api:${api_key}" \
+        "https://api.mailgun.net/v3/${domain}/messages" \
+        -F from="NewsBlur Backup <admin@${domain}>" \
+        -F to="samuel@newsblur.com" \
+        -F subject="NewsBlur Backup FAILED: ${subject}" \
+        -F text="${body}" \
+        > /dev/null 2>&1; then
+        log "  Alert email sent to samuel@newsblur.com"
+    else
+        log "  WARNING: Failed to send alert email"
+    fi
 }
 
 # Check that backup drive is mounted
@@ -120,7 +121,7 @@ s3_download_latest() {
     local prefix="$1"
     local local_dir="$2"
 
-    /config/scripts/venv/bin/python3 -c "
+    "${VENV_PYTHON}" -c "
 import boto3, os, sys, json, time
 
 s3 = boto3.client('s3',
@@ -193,17 +194,34 @@ print('Downloaded: %s' % local_path)
 " 2>&1
 }
 
-log "--- PostgreSQL backup from S3 ---"
-for pg_prefix in "${S3_POSTGRES_PREFIXES[@]}"; do
-    s3_download_latest "${pg_prefix}" "${BACKUP_DRIVE}/postgres" | while read line; do log "  $line"; done
-done
+if [[ "${S3_AVAILABLE}" == "true" ]]; then
+    log "--- PostgreSQL backup from S3 ---"
+    for pg_prefix in "${S3_POSTGRES_PREFIXES[@]}"; do
+        if ! s3_download_latest "${pg_prefix}" "${BACKUP_DRIVE}/postgres" | while read line; do log "  $line"; done; then
+            log "  WARNING: PostgreSQL download failed for prefix ${pg_prefix}"
+            FAILURES="${FAILURES}PostgreSQL S3; "
+        fi
+    done
 
-log "--- Redis backups from S3 ---"
-for redis_prefix in "${S3_REDIS_PREFIXES[@]}"; do
-    redis_name=$(echo "${redis_prefix}" | cut -d/ -f1)
-    mkdir -p "${BACKUP_DRIVE}/redis/${redis_name}"
-    s3_download_latest "${redis_prefix}" "${BACKUP_DRIVE}/redis/${redis_name}" | while read line; do log "  $line"; done
-done
+    log "--- Redis backups from S3 ---"
+    for redis_prefix in "${S3_REDIS_PREFIXES[@]}"; do
+        redis_name=$(echo "${redis_prefix}" | cut -d/ -f1)
+        mkdir -p "${BACKUP_DRIVE}/redis/${redis_name}"
+        if ! s3_download_latest "${redis_prefix}" "${BACKUP_DRIVE}/redis/${redis_name}" | while read line; do log "  $line"; done; then
+            log "  WARNING: Redis download failed for prefix ${redis_prefix}"
+            FAILURES="${FAILURES}Redis S3; "
+        fi
+    done
+else
+    log "--- Skipping S3 downloads ---"
+    if [[ ! -x "${VENV_PYTHON}" ]]; then
+        log "  Python venv not found at ${VENV_PYTHON}"
+    fi
+    if [[ ! -f "${AWS_CREDS_FILE}" ]]; then
+        log "  AWS credentials not found at ${AWS_CREDS_FILE}"
+    fi
+    FAILURES="${FAILURES}S3 downloads (prerequisites unavailable); "
+fi
 
 # --- 2. Full MongoDB Dump (stream directly via SSH) ---
 # Streams mongodump --archive --gzip over SSH directly to the backup drive.
@@ -224,7 +242,6 @@ else
     # Write to .partial first, rename on success to avoid keeping truncated dumps
     # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via nohup)
     #
-    # The `if` construct prevents `set -e` from triggering on non-zero exit.
     # timeout returns 124 on timeout, or the command's exit code on other failures.
     if timeout "${MONGO_DUMP_TIMEOUT}" \
         ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
@@ -238,6 +255,7 @@ else
         rm -f "${DUMP_TMP}"
         if [[ ${EXIT_CODE} -eq 124 ]]; then
             log "ERROR: MongoDB dump TIMED OUT after ${MONGO_DUMP_TIMEOUT}"
+            FAILURES="${FAILURES}MongoDB (timeout); "
             send_failure_alert \
                 "MongoDB dump timed out" \
                 "MongoDB dump timed out after ${MONGO_DUMP_TIMEOUT} on $(date '+%Y-%m-%d %H:%M').
@@ -246,6 +264,7 @@ The mongodump stream from ${MONGO_SECONDARY} did not complete within the allowed
 The partial file has been removed. The next nightly run will retry automatically."
         else
             log "ERROR: MongoDB dump FAILED with exit code ${EXIT_CODE}"
+            FAILURES="${FAILURES}MongoDB (exit ${EXIT_CODE}); "
             send_failure_alert \
                 "MongoDB dump failed (exit ${EXIT_CODE})" \
                 "MongoDB dump failed with exit code ${EXIT_CODE} on $(date '+%Y-%m-%d %H:%M').
@@ -298,9 +317,17 @@ for redis_dir in "${BACKUP_DRIVE}"/redis/backup_hdb_redis_*/; do
 done
 
 # --- 4. Verify backup integrity ---
-log "--- Verifying backup integrity ---"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-/config/scripts/venv/bin/python3 "${SCRIPT_DIR}/offsite_verify.py" 2>&1 | while read line; do log "  $line"; done
+if [[ -x "${VENV_PYTHON}" ]]; then
+    log "--- Verifying backup integrity ---"
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    if ! "${VENV_PYTHON}" "${SCRIPT_DIR}/offsite_verify.py" 2>&1 | while read line; do log "  $line"; done; then
+        log "  WARNING: Verification reported failures"
+        FAILURES="${FAILURES}verification; "
+    fi
+else
+    log "--- Skipping verification (no Python venv) ---"
+    FAILURES="${FAILURES}verification (no venv); "
+fi
 
 # --- 5. Summary ---
 log "=== Backup pull complete ==="
@@ -308,8 +335,21 @@ log "Disk usage:"
 du -sh "${BACKUP_DRIVE}/mongo_full" "${BACKUP_DRIVE}/postgres" "${BACKUP_DRIVE}/redis" 2>/dev/null | while read line; do log "  $line"; done
 df -h "${BACKUP_DRIVE}" | tail -1 | while read line; do log "  $line"; done
 
+if [[ -n "${FAILURES}" ]]; then
+    log "WARNING: Some sections had issues: ${FAILURES}"
+    send_failure_alert \
+        "Backup partially failed" \
+        "NewsBlur off-site backup on $(date '+%Y-%m-%d %H:%M') completed with issues:
+
+${FAILURES}
+
+Check the backup log for details:
+  ssh root@192.168.1.27 'tail -50 /media/newsblur-backup/backup.log'"
+fi
+
 # --- 6. Unmount backup drive ---
 # Unmount so the drive can spin down and rest between backups.
 # Without this, HA's filesystem monitoring keeps the drive spinning 24/7.
 log "Unmounting backup drive..."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 "${SCRIPT_DIR}/unmount_backup_drive.sh" 2>&1 | while read line; do log "  $line"; done

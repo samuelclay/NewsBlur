@@ -26,8 +26,8 @@ class StartupBenchmark {
         pressHome()
         startActivityAndWait()
         waitLongForTextShown("Android Authority")
-        clickOnText("All Stories")
-        waitForTextShown("All Stories")
+        clickOnText("All Site Stories")
+        waitForTextShown("All Site Stories")
     }
 
     /**

@@ -99,14 +99,29 @@ class Profile(models.Model):
     )
 
     @property
+    def is_self_hosted_ai(self):
+        """True when Stripe billing is not configured but AI provider keys are.
+        Self-hosted users provide their own API keys and pay providers directly.
+        """
+        stripe_configured = bool(
+            getattr(settings, "STRIPE_PRICE_TEXT_CLASSIFICATION", "")
+            and getattr(settings, "STRIPE_PRICE_IMAGE_CLASSIFICATION", "")
+        )
+        if stripe_configured:
+            return False
+        from apps.ask_ai.providers import AnthropicProvider
+
+        return AnthropicProvider().is_configured()
+
+    @property
     def can_use_ai_classifiers(self):
-        return bool(self.is_usage_billing)
+        return bool(self.is_usage_billing) or self.is_self_hosted_ai
 
     def get_usage_billing_spend(self):
         """Get current billing cycle spend from MLLMCost MongoDB records.
         Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
         """
-        if not self.is_usage_billing:
+        if not self.is_usage_billing and not self.is_self_hosted_ai:
             return (0.0, None, False)
 
         from apps.monitor.models import MLLMCost
@@ -119,7 +134,9 @@ class Profile(models.Model):
     @property
     def is_usage_limit_reached(self):
         """Quick check: has user hit their spending limit? Uses Redis cache."""
-        if not self.is_usage_billing or not self.usage_billing_limit:
+        if not self.usage_billing_limit:
+            return False
+        if not self.is_usage_billing and not self.is_self_hosted_ai:
             return False
         return self._check_cached_limit_status()
 
@@ -2072,9 +2089,16 @@ class Profile(models.Model):
         logging.user(self.user, "~FG~BBNew iOS pro subscription: $%s~FW" % amount)
         return True
 
-    def activate_android_premium(self, order_id=None, product_id=None, amount=36):
-        if product_id == "nb.premium.archive.99":
-            amount = 99
+    def activate_android_premium(self, order_id=None, product_id=None, amount=None):
+        payment_provider = "android-subscription"
+        payment_amount = 36 if amount is None else amount
+
+        if product_id and "premium.archive" in product_id:
+            payment_provider = "android-archive"
+            payment_amount = 99 if amount is None else amount
+        elif product_id and "premium.pro" in product_id:
+            payment_provider = "android-pro"
+            payment_amount = 299 if amount is None else amount
 
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
@@ -2083,41 +2107,47 @@ class Profile(models.Model):
                 if PaymentHistory.objects.filter(
                     user=self.user,
                     payment_identifier=order_id,
-                    payment_provider="android-subscription",
+                    payment_provider=payment_provider,
                 ).exists():
                     logging.user(
                         self.user,
-                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % amount,
+                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW"
+                        % payment_amount,
                     )
                     return False
 
             if PaymentHistory.objects.filter(
                 user=self.user,
-                payment_provider="android-subscription",
+                payment_provider=payment_provider,
                 payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
             ).exists():
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % amount,
+                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % payment_amount,
                 )
                 return False
 
             PaymentHistory.objects.create(
                 user=self.user,
                 payment_date=datetime.datetime.now(),
-                payment_amount=amount,
-                payment_provider="android-subscription",
+                payment_amount=payment_amount,
+                payment_provider=payment_provider,
                 payment_identifier=order_id,
             )
 
         self.setup_premium_history()
 
-        if product_id == "nb.premium.archive.99":
+        if product_id and "premium.pro" in product_id:
+            self.activate_pro()
+        elif product_id and "premium.archive" in product_id:
             self.activate_archive()
         elif not self.is_premium:
             self.activate_premium()
 
-        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s (%s)~FW" % (amount, product_id))
+        logging.user(
+            self.user,
+            "~FG~BBNew Android premium subscription: $%s (%s)~FW" % (payment_amount, product_id),
+        )
         return True
 
     @classmethod
@@ -2289,7 +2319,7 @@ class Profile(models.Model):
             % (len(active_feed_ids), len(muted_feed_ids)),
         )
         for feed_ids in [active_feed_ids, muted_feed_ids]:
-            for feeds_group in chunks(feed_ids, 20):
+            for feeds_group in chunks(feed_ids, 200):
                 pipeline = r.pipeline()
                 for feed_id in feeds_group:
                     key = "s:%s" % feed_id
@@ -3029,6 +3059,64 @@ class Profile(models.Model):
         MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
         logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
 
+    def send_premium_renewal_notice_email(self, force=False):
+        if not self.user.email:
+            logging.user(
+                self.user,
+                "~FM~SB~FRNot~FM sending renewal notice for user: %s" % (self.user),
+            )
+            return
+
+        emails_sent = MSentEmail.objects.filter(
+            receiver_user_id=self.user.pk, email_type="premium_renewal_notice"
+        )
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=300)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(
+                    self.user,
+                    "~FM~SBNot sending renewal notice email, already sent recently.",
+                )
+                return
+
+        if self.is_pro:
+            tier_name = "Premium Pro"
+            amount = "$29/month"
+        elif self.is_archive:
+            tier_name = "Premium Archive"
+            amount = "$99/year"
+        else:
+            tier_name = "Premium"
+            amount = "$36/year"
+
+        user = self.user
+        renewal_date = self.premium_expire
+        data = dict(
+            user=user,
+            renewal_date=renewal_date,
+            tier_name=tier_name,
+            amount=amount,
+            is_pro=self.is_pro,
+            is_archive=self.is_archive,
+        )
+        text = render_to_string("mail/email_premium_renewal_notice.txt", data)
+        html = render_to_string("mail/email_premium_renewal_notice.xhtml", data)
+        subject = "Your %s subscription renews soon" % tier_name
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_renewal_notice")
+        logging.user(
+            self.user,
+            "~BB~FM~SBSending renewal notice email for %s: %s" % (tier_name, self.user.email),
+        )
+
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
@@ -3111,6 +3199,8 @@ def paypal_signup(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.custom:
         try:
@@ -3148,11 +3238,13 @@ def paypal_signup(sender, **kwargs):
             user.save()
     except:
         pass
+    # Store the PayPal subscription ID so setup_premium_history can query PayPal for payments.
+    # IPN recurring payments use recurring_payment_id; older ones use subscr_id.
+    paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+    if paypal_sub_id:
+        user.profile.store_paypal_sub_id(paypal_sub_id)
     user.profile.setup_premium_history()
     user.profile.cancel_premium_stripe()
-    # user.profile.cancel_premium_paypal(second_most_recent_only=True)
-
-    # assert False, "Shouldn't be here anymore as the new Paypal REST API uses webhooks"
 
 
 valid_ipn_received.connect(paypal_signup)
@@ -3171,6 +3263,8 @@ def paypal_payment_history_sync(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.subscr_id:
         try:
@@ -3194,6 +3288,9 @@ def paypal_payment_history_sync(sender, **kwargs):
 
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
+        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+        if paypal_sub_id:
+            user.profile.store_paypal_sub_id(paypal_sub_id)
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
@@ -3215,6 +3312,8 @@ def paypal_payment_was_flagged(sender, **kwargs):
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=ipn_obj.payer_email).order_by("-last_login").first()
 
     if not user and ipn_obj.subscr_id:
         try:
@@ -3237,6 +3336,9 @@ def paypal_payment_was_flagged(sender, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}
 
     try:
+        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+        if paypal_sub_id:
+            user.profile.store_paypal_sub_id(paypal_sub_id)
         user.profile.setup_premium_history()
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
@@ -3339,11 +3441,19 @@ zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def stripe_subscription_updated(sender, full_json, **kwargs):
     stripe_id = full_json["data"]["object"]["customer"]
-    plan_id = full_json["data"]["object"]["plan"]["id"]
+    plan = full_json["data"]["object"].get("plan")
+    if plan is None:
+        items = full_json["data"]["object"].get("items", {}).get("data", [])
+        if items:
+            plan = items[0].get("plan") or items[0].get("price")
+    if plan is None:
+        logging.debug("~BC~SB~FRStripe subscription updated but no plan found for customer %s" % stripe_id)
+        return
+    plan_id = plan["id"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = (
-            not full_json["data"]["object"]["cancel_at"] and full_json["data"]["object"]["plan"]["active"]
+            not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         )
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"

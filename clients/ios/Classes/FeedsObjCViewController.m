@@ -310,9 +310,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(selectPreviousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
     [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand action:@selector(selectDashboard:) discoverabilityTitle:@"Open Dashboard"];
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
-    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
-    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierCommand action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
 }
 
 - (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
@@ -2057,7 +2056,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else {
         [appDelegate loadFolder:folderName feedID:feedIdStr];
     }
-    
     if (searchQuery != nil) {
         appDelegate.storiesCollection.inSearch = YES;
         appDelegate.storiesCollection.searchQuery = searchQuery;
@@ -2493,40 +2491,52 @@ heightForHeaderInSection:(NSInteger)section {
     NSInteger section = self.lastSection;
     NSInteger stopAtSection = section;
     BOOL foundNext;
-    
+
     do {
         foundNext = YES;
-        
+
         if (section < self.feedTitlesTable.numberOfSections - 1) {
             section += 1;
         } else {
             section = 0;
         }
-        
-        if (sender == nil) {
-            NSString *folderName = appDelegate.dictFoldersArray[section];
-            UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-            BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
-            
-            if (!hasUnread) {
-                foundNext = NO;
-            }
+
+        NSString *folderName = appDelegate.dictFoldersArray[section];
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
+
+        if (!hasUnread) {
+            foundNext = NO;
         }
     } while (!foundNext && section != stopAtSection);
-    
+
     [self didSelectSectionHeaderWithTag:section];
     [self scrollToSection:section];
 }
 
 - (void)selectPreviousFolder:(id)sender {
     NSInteger section = self.lastSection;
-    
-    if (section > 0) {
-        section -= 1;
-    } else {
-        section = self.feedTitlesTable.numberOfSections - 1;
-    }
-    
+    NSInteger stopAtSection = section;
+    BOOL foundNext;
+
+    do {
+        foundNext = YES;
+
+        if (section > 0) {
+            section -= 1;
+        } else {
+            section = self.feedTitlesTable.numberOfSections - 1;
+        }
+
+        NSString *folderName = appDelegate.dictFoldersArray[section];
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
+
+        if (!hasUnread) {
+            foundNext = NO;
+        }
+    } while (!foundNext && section != stopAtSection);
+
     [self didSelectSectionHeaderWithTag:section];
     [self scrollToSection:section];
 }

@@ -68,7 +68,7 @@ class NetworkClientImpl(
     ): APIResponse {
         val formEncodingBuilder = FormBody.Builder()
         for (entry in values.valueSet()) {
-            formEncodingBuilder.add(entry.key, entry.value as String)
+            formEncodingBuilder.add(entry.key, entry.value?.toString().orEmpty())
         }
         return post(urlString, formEncodingBuilder.build())
     }
@@ -96,7 +96,7 @@ class NetworkClientImpl(
             val builder = StringBuilder()
             builder.append(entry.key)
             builder.append("=")
-            builder.append(NetworkUtils.encodeURL(entry.value as String))
+            builder.append(NetworkUtils.encodeURL(entry.value?.toString().orEmpty()))
             parameters.add(builder.toString())
         }
         return parameters.joinToString("&")

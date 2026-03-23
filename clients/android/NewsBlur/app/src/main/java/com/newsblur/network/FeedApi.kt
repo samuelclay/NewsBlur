@@ -3,6 +3,7 @@ package com.newsblur.network
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.FeedResult
 import com.newsblur.network.domain.AddFeedResponse
+import com.newsblur.network.domain.DiscoverFeedsResponse
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.UnreadCountResponse
@@ -30,6 +31,16 @@ interface FeedApi {
     ): AddFeedResponse?
 
     suspend fun searchForFeed(searchTerm: String?): Array<FeedResult>?
+
+    suspend fun getDiscoverFeeds(
+        feedId: String,
+        pageNumber: Int,
+    ): DiscoverFeedsResponse?
+
+    suspend fun getDiscoverFeeds(
+        feedIds: Collection<String>,
+        pageNumber: Int,
+    ): DiscoverFeedsResponse?
 
     suspend fun deleteFeed(
         feedId: String?,

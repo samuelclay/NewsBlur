@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-story-clustering{% endblock %}
+{% block title %}Story Clustering - NewsBlur{% endblock %}
+{% block nav_title %}Story Clustering{% endblock %}
+{% block head %}
+    <meta name="description" content="When multiple feeds cover the same story, NewsBlur groups them together so you only see it once. Semantic duplicate detection catches similar headlines automatically.">
+    <meta property="og:title" content="Story Clustering - NewsBlur">
+    <meta property="og:description" content="When multiple feeds cover the same story, NewsBlur groups them together so you only see it once.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/clustering.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Story Clustering - NewsBlur">
+    <meta name="twitter:description" content="When multiple feeds cover the same story, NewsBlur groups them together so you only see it once.">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/clustering.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">Archive</div>
+        <h1 class="NB-feature-detail-title">Story Clustering</h1>
+        <p class="NB-feature-detail-subtitle">When multiple feeds cover the same story, NewsBlur groups them together so you only see it once.</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-clustering">
+        <div class="NB-feature-detail-screenshots-left">
+            <div class="NB-feature-detail-screenshot">
+                <img src="{{ MEDIA_URL }}img/features/story-clustering-titles.png" alt="Story titles view showing clustered stories with sources listed underneath">
+                <div class="NB-feature-detail-caption">Clustered stories in the titles view</div>
+            </div>
+            <div class="NB-feature-detail-screenshot">
+                <img src="{{ MEDIA_URL }}img/features/story-clustering-popover.png" alt="Feed options popover showing clustering controls">
+                <div class="NB-feature-detail-caption">Clustering controls in the feed options popover</div>
+            </div>
+        </div>
+        <div class="NB-feature-detail-screenshot NB-feature-detail-screenshot-tall">
+            <img src="{{ MEDIA_URL }}img/features/story-clustering-detail.png" alt="Story detail view showing cluster cards for alternative sources">
+            <div class="NB-feature-detail-caption">Rich cards for alternative sources in the detail view</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>How it works</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">When a feed updates, NewsBlur checks for duplicate stories across all your subscriptions</li>
+            <li class="NB-feature-detail-step">Title matching catches exact and fuzzy duplicates using significant-word overlap</li>
+            <li class="NB-feature-detail-step">Semantic matching uses Elasticsearch to find stories about the same topic with different headlines</li>
+            <li class="NB-feature-detail-step">Duplicates fold underneath the highest-scoring version in your river view</li>
+            <li class="NB-feature-detail-step">Click any source to read that version instead, or mark all duplicates as read at once</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How does clustering detect duplicate stories?</h3>
+            <p class="NB-feature-detail-faq-a">Two layers work together. Title matching normalizes headlines and groups exact and fuzzy matches. Semantic matching sends titles to Elasticsearch's more_like_this query to catch stories about the same event written with completely different headlines.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I automatically mark duplicates as read?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Enable "Mark all as read" in the feed options popover under Story Clustering, or in Manage > Preferences > Stories. When you read the representative story, all other stories in the cluster are marked as read.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I turn clustering off?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Toggle "Keep stories separate" in the feed options popover or in Preferences. Every story will appear individually as before.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: toggle clustering on or off, choose display styles, and automatically mark duplicates as read.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

@@ -4,6 +4,7 @@ import datetime
 import time
 
 import redis
+from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 
 from newsblur_web.celeryapp import app
@@ -14,7 +15,7 @@ from utils import log as logging
 CANDIDATE_FEED_BATCH_SIZE = 50
 
 
-@app.task(name="compute-story-clusters")
+@app.task(name="compute-story-clusters", soft_time_limit=120, time_limit=180)
 def ComputeStoryClusters(feed_id):
     """Compute story clusters for a feed after it updates.
 
@@ -25,14 +26,7 @@ def ComputeStoryClusters(feed_id):
     Results are stored in Redis for fast lookup during river loads.
     Gated to feeds with archive subscribers.
     """
-    from apps.clustering.models import (
-        CLUSTER_LOOKBACK_HOURS,
-        find_semantic_clusters,
-        find_title_clusters,
-        merge_clusters,
-        store_clusters_to_redis,
-    )
-    from apps.rss_feeds.models import Feed, MStory
+    from apps.rss_feeds.models import Feed
 
     # Clear dedup key so this feed can be re-enqueued after we finish
     r_update = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
@@ -53,6 +47,26 @@ def ComputeStoryClusters(feed_id):
         return
 
     cluster_start = time.time()
+
+    try:
+        _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_primary)
+    except SoftTimeLimitExceeded:
+        elapsed = time.time() - cluster_start
+        logging.debug(
+            " ---> ~FRClustering: soft time limit exceeded for feed %s after %.1fs" % (feed_id, elapsed)
+        )
+
+
+def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_primary):
+    """Inner clustering logic, separated so SoftTimeLimitExceeded is caught cleanly."""
+    from apps.clustering.models import (
+        CLUSTER_LOOKBACK_HOURS,
+        find_semantic_clusters,
+        find_title_clusters,
+        merge_clusters,
+        store_clusters_to_redis,
+    )
+    from apps.rss_feeds.models import Feed, MStory
 
     # Get recent stories from this feed
     lookback = datetime.datetime.utcnow() - datetime.timedelta(hours=CLUSTER_LOOKBACK_HOURS)
@@ -143,7 +157,7 @@ def ComputeStoryClusters(feed_id):
         batch = all_hashes_list[batch_start : batch_start + 100]
         for story in (
             MStory.objects(story_hash__in=batch)
-            .only("story_hash", "story_feed_id", "story_title", "story_date")
+            .only("story_hash", "story_feed_id", "story_title", "story_date", "cluster_checked")
             .order_by()
         ):
             stories.append(
@@ -152,6 +166,7 @@ def ComputeStoryClusters(feed_id):
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
                     "story_date": time.mktime(story.story_date.timetuple()) if story.story_date else 0,
+                    "cluster_checked": getattr(story, "cluster_checked", False),
                 }
             )
 
@@ -159,10 +174,20 @@ def ComputeStoryClusters(feed_id):
         return
 
     story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+    unclustered_set = set(unclustered)
 
+    already_checked = sum(
+        1 for s in stories if s["story_hash"] in unclustered_set and s.get("cluster_checked")
+    )
     logging.debug(
-        " ---> ~FBClustering: computing clusters for feed %s (%s stories, %s candidates, %s already clustered)"
-        % (feed_id, len(unclustered), len(unclustered_candidates), len(candidate_cluster_map))
+        " ---> ~FBClustering: computing clusters for feed %s (%s stories, %s already checked, %s candidates, %s already clustered)"
+        % (
+            feed_id,
+            len(unclustered),
+            already_checked,
+            len(unclustered_candidates),
+            len(candidate_cluster_map),
+        )
     )
 
     # Build original_feed_map and feed_title_map for branched feed resolution
@@ -185,18 +210,36 @@ def ComputeStoryClusters(feed_id):
     # Tier 2: Semantic clustering via Elasticsearch MLT on new stories only.
     # Use story titles as query text, searching both title and content fields
     # in the ES index to find similar stories across related feeds.
-    unclustered_stories = [s for s in stories if s["story_hash"] in set(unclustered)]
+    # Skip stories already checked for semantic clusters (cluster_checked=True
+    # in MongoDB) to avoid re-querying stories that had no ES matches before.
+    unclustered_stories = [
+        s for s in stories if s["story_hash"] in unclustered_set and not s.get("cluster_checked")
+    ]
 
+    # clustering/tasks.py: Budget 60s for ES queries (soft limit is 120s),
+    # cap at 200 as safety net (cluster_checked flag is the primary limiter).
+    es_deadline = cluster_start + 60
     semantic_clusters = {}
+    es_stats = {}
+    checked_hashes = set()
     if unclustered_stories:
-        semantic_clusters = find_semantic_clusters(
+        semantic_clusters, es_stats, checked_hashes = find_semantic_clusters(
             unclustered_stories,
             all_feed_ids,
             lookback_date=lookback,
             original_feed_map=original_feed_map,
             story_title_map=story_title_map,
             feed_title_map=feed_title_map,
+            max_es_queries=200,
+            deadline=es_deadline,
         )
+
+    # Mark checked stories in MongoDB so they aren't re-queried next run
+    if checked_hashes:
+        checked_list = list(checked_hashes)
+        for batch_start in range(0, len(checked_list), 500):
+            batch = checked_list[batch_start : batch_start + 500]
+            MStory.objects(story_hash__in=batch).update(set__cluster_checked=True)
 
     # Merge title and semantic clusters
     if title_clusters or semantic_clusters:
@@ -209,14 +252,44 @@ def ComputeStoryClusters(feed_id):
             story_title_map=story_title_map,
             feed_title_map=feed_title_map,
         )
-        store_clusters_to_redis(combined, candidate_cluster_map=candidate_cluster_map)
+        store_clusters_to_redis(
+            combined,
+            candidate_cluster_map=candidate_cluster_map,
+            story_title_map=story_title_map,
+        )
         logging.debug(
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
             % (len(title_clusters), len(semantic_clusters), len(combined), feed_id)
         )
 
-    # clustering/tasks.py: Record timing for Grafana
+    # clustering/tasks.py: Log ES query stats for debugging
+    if es_stats and es_stats.get("query_count", 0) > 0:
+        logging.debug(
+            " ---> ~FBClustering: ES stats for feed %s: %s queries in %sms (avg %sms, max %sms), "
+            "%s hits found, %s matched, %s skipped (title=%s, feeds=%s, deadline=%s, cap=%s)"
+            % (
+                feed_id,
+                es_stats.get("query_count", 0),
+                int(es_stats.get("total_ms", 0)),
+                int(es_stats.get("avg_ms", 0)),
+                int(es_stats.get("max_ms", 0)),
+                es_stats.get("hits_found", 0),
+                es_stats.get("hits_matched", 0),
+                es_stats.get("skipped_short_title", 0)
+                + es_stats.get("skipped_no_feeds", 0)
+                + es_stats.get("skipped_deadline", 0)
+                + es_stats.get("skipped_max_queries", 0),
+                es_stats.get("skipped_short_title", 0),
+                es_stats.get("skipped_no_feeds", 0),
+                es_stats.get("skipped_deadline", 0),
+                es_stats.get("skipped_max_queries", 0),
+            )
+        )
+
+    # clustering/tasks.py: Record timing and ES stats for Grafana
     from apps.statistics.rclustering_usage import RClusteringUsage
 
     cluster_duration_ms = (time.time() - cluster_start) * 1000
     RClusteringUsage.record_timing(cluster_duration_ms)
+    if es_stats:
+        RClusteringUsage.record_es_stats(es_stats)

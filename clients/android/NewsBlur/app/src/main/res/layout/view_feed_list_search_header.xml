@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?feedListToolbarBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:importantForAutofill="noExcludeDescendants"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:background="?attr/feedListSearchBackground"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_search"
+            android:tint="?attr/feedListSearchHintColor" />
+
+        <EditText
+            android:id="@+id/input_search_query"
+            style="?defaultText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:autofillHints="@null"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/feed_list_search_hint"
+            android:imeOptions="actionSearch"
+            android:includeFontPadding="false"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:minHeight="0dp"
+            android:paddingVertical="0dp"
+            android:saveEnabled="false"
+            android:textColor="?attr/feedListSearchTextColor"
+            android:textColorHint="?attr/feedListSearchHintColor"
+            android:textSize="15sp" />
+
+        <ImageButton
+            android:id="@+id/clear_search_query"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/feed_list_clear_search"
+            android:focusable="false"
+            android:padding="0dp"
+            android:src="@drawable/ic_search_clear"
+            android:tint="?attr/feedListSearchHintColor"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</FrameLayout>

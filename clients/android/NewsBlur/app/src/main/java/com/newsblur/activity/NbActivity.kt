@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import com.newsblur.service.SyncServiceState
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
+import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,12 +41,10 @@ open class NbActivity : AppCompatActivity() {
     private var lastTheme: ThemeValue? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyTheme(readStartupTheme(), shouldUseTranslucentTheme())
         super.onCreate(savedInstanceState)
         Log.d(this, "onCreate")
-
-        val theme = prefsRepo.getSelectedTheme()
-        applyTheme(theme)
-        lastTheme = theme
+        lastTheme = prefsRepo.getSelectedTheme()
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
@@ -89,6 +89,18 @@ open class NbActivity : AppCompatActivity() {
     override fun onPause() {
         Log.d(this.javaClass.name, "onPause")
         super.onPause()
+    }
+
+    protected open fun shouldUseTranslucentTheme(): Boolean = false
+
+    private fun readStartupTheme(): ThemeValue {
+        val prefs = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+        return when (prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name)) {
+            "light" -> ThemeValue.LIGHT
+            "dark" -> ThemeValue.DARK
+            null -> ThemeValue.AUTO
+            else -> ThemeValue.valueOf(prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name)!!)
+        }
     }
 
     private fun finishIfNotLoggedIn() {

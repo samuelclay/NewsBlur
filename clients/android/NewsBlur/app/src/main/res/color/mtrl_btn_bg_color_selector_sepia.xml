@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/item_background_sepia" android:state_checked="true" />
+    <item android:color="@color/feed_list_row_background_sepia" android:state_checked="false" />
+</selector>

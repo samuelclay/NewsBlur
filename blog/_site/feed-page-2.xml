@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-16T00:16:29-04:00</updated>
+  <updated>2026-03-18T14:19:44-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,93 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Customizable grid view story layout</title>
+    <link href="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/" rel="alternate" type="text/html" title="Customizable grid view story layout" />
+    <published>2020-10-28T09:01:38-04:00</published>
+    <updated>2020-10-28T09:01:38-04:00</updated>
+    <id>https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/">
+      <![CDATA[<p>The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.</p>
+
+<p>Starting today, you can now change the height of stories in the grid view. You have five options to choose from: XS, Small, Medium, Large, and XL.</p>
+
+<figure class="tmblr-full" data-orig-height="761" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="761" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png" /></figure>
+
+<p>Here are a few examples of how you can customize the grid view.</p>
+
+<p>With the single column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="966" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="966" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png" /></figure>
+
+<p>With the 2 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="938" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="938" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png" /></figure>
+
+<p>With the 3 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="715" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="715" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png" /></figure>
+
+<p>With the 4 column layout:</p>
+
+<figure class="tmblr-full" data-orig-height="957" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="957" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png" /></figure>
+
+<p>Don’t forget you can also adjust the font size and even turn off image previews.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Highlight passages and add private notes to saved stories</title>
+    <link href="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/" rel="alternate" type="text/html" title="Highlight passages and add private notes to saved stories" />
+    <published>2020-07-17T08:30:05-04:00</published>
+    <updated>2020-07-17T08:30:05-04:00</updated>
+    <id>https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/">
+      <![CDATA[<p>When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.</p>
+
+<figure class="tmblr-full" data-orig-height="1128" data-orig-width="1492" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png"><img width="650" height="auto" data-orig-height="1128" data-orig-width="1492" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png" /></figure>
+
+<p>You can enrich your reading experience with highlights and come back to passages you want to remember. All stories with highlights are tagged as “Highlights” in your Saved Story tags list. That way you can immediately come back to your highlights.</p>
+
+<figure class="tmblr-full" data-orig-height="398" data-orig-width="1958" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png"><img width="650" height="auto" data-orig-height="398" data-orig-width="1958" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png" /></figure>
+
+<p>Second, you can now also write private notes to yourself. If you’re doing research and want to remember why a particular story is being saved, the private notes text box can save your thoughts without having to share them with the world.</p>
+
+<figure class="tmblr-full" data-orig-height="1048" data-orig-width="1792" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png"><img width="650" height="auto" data-orig-height="1048" data-orig-width="1792" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png" /></figure>
+
+<p>A few other small changes have been added to this feature. You can also save stories and tag them from any website using the bookmarklet (which you can install under Manage &gt; Goodies &gt; Bookmarklet).</p>
+
+<figure class="tmblr-full" data-orig-height="985" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg"><img width="650" height="auto" data-orig-height="985" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg" /></figure>
+
+<p>Lots to love in this release! Keep <a href="https://forum.newsblur.com">posting good ideas to the forum</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Turn the lights down, dark mode has come to NewsBlur</title>
@@ -1069,92 +1156,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Newsreel is a NewsBlur app for tv</title>
-    <link href="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/" rel="alternate" type="text/html" title="Newsreel is a NewsBlur app for tv" />
-    <published>2016-07-14T07:00:39-04:00</published>
-    <updated>2016-07-14T07:00:39-04:00</updated>
-    <id>https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/">
-      <![CDATA[<p>Check it out, David Berlin built <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">Newsreel</a>, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel.png" alt="" /></p>
-
-<p>You can read your subscriptions as well as subscribe to new sites, right from your television.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-add.png" alt="" /></p>
-
-<p>Not only does it look polished, but it’s smooth and seamless. Take a look at how it works in practice.</p>
-
-<p>&lt;</p>
-
-<p>video src=“https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-780.mp4” style=“width: 650px; margin: 0 auto; border: 1px solid #606060” autoplay=“true” muted=“true” loop=“true”&gt;</p>
-
-<p>You can download <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">download Newsreel on the App Store</a>. What a beautiful app and it goes to show how nice it is to be able to read your news on a big screen.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="tv" />
-    
-    
-    <summary type="html">
-      <![CDATA[Check it out, David Berlin built Newsreel, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Newsletters in your NewsBlur</title>
-    <link href="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/" rel="alternate" type="text/html" title="Newsletters in your NewsBlur" />
-    <published>2016-07-01T07:00:16-04:00</published>
-    <updated>2016-07-01T07:00:16-04:00</updated>
-    <id>https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/">
-      <![CDATA[<p>It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.</p>
-
-<p>You can now forward your email newsletters over to NewsBlur and then read your email newsletters right in your browser/phone/TV/tablet. A couple dozen users have been beta testing this feature for the last couple of months and everybody agrees, this feature is amazing.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters.png" alt="" /></p>
-
-<p>Newsletters are formatted to fit all of your screens, so it looks just as good on the web as it does on your phone.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-ios.png" alt="" /></p>
-
-<p>Here’s the best part. If you get a lot of newsletters, you can group them into folders and even train them to highlight the newsletters you want to read first.</p>
-
-<p>Setting up newsletters on NewsBlur is easy. Just follow the personalized instructions on the web by going to Manage &gt; Email Newsletters on either the web dashboard or the manage menu.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-setup.png" alt="" /></p>
-
-<p>You might ask why not just subscribe your custom NewsBlur newsletter email address directly to the newsletter instead of forwarding copies of the newsletter. The answer is that if you want a single source of truth for where newsletters are going, you want that in your email client and not on NewsBlur. If you ever change news readers (and with new features like this, why would you want to) you’ll want to change only a single filter rule instead of dozens of newsletter emails.</p>
-
-<p>And with this huge new feature, NewsBlur just became even better. NewsBlur has branched beyond RSS for a while now, fetching Twitter and YouTube stories even without RSS. With newsletters, NewsBlur becomes your single source.</p>
-
-<p>If you have suggestions on what NewsBlur can help you read next, post an idea on the <a href="http://getsatisfaction.com/newsblur">Get Satisfaction forums</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.
 ]]>
     </summary>
     

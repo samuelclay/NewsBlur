@@ -64,6 +64,29 @@ private val LightExt =
         overlayBg = Color(0xAA777777),
     )
 
+private val SepiaExt =
+    NbExtendedColors(
+        barBackground = NbSepiaBar,
+        textDefault = NbSepiaText,
+        textLink = NbSepiaLink,
+        textSnippet = NbSepiaText,
+        textFeedTitle = NbSepiaMutedText,
+        textMeta = Color(0x998B7B6B),
+        rowBorder = NbSepiaBorder,
+        commentDivider = NbSepiaBorder,
+        delimiter = NbSepiaBorder,
+        itemBackground = NbSepiaSurface,
+        itemBackgroundDarkAlt = NbSepiaSurfaceAlt,
+        chipContainer = NbSepiaSurfaceAlt,
+        chipLabel = NbSepiaMutedText,
+        buttonText = NbSepiaMutedText,
+        buttonBackground = NbSepiaSurface,
+        shareBarBackground = NbSepiaSurfaceAlt,
+        shareBarText = NbSepiaMutedText,
+        snackbarContainer = NbSepiaBar,
+        overlayBg = Color(0xAA8B7B6B),
+    )
+
 private val DarkExt =
     NbExtendedColors(
         barBackground = Gray13, // @color/dark_bar_background
@@ -103,6 +126,7 @@ fun ProvideNbExtendedColors(
     val ext =
         when (variant) {
             NbThemeVariant.Light -> LightExt
+            NbThemeVariant.Sepia -> SepiaExt
             NbThemeVariant.Dark -> DarkExt
             NbThemeVariant.Black -> BlackExt
             NbThemeVariant.System ->

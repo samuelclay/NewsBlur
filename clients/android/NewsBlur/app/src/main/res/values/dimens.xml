@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="thumbnails_small_size">54dp</dimen>
+    <dimen name="thumbnails_small_width">96dp</dimen>
+    <dimen name="thumbnails_small_min_height">72dp</dimen>
     <dimen name="thumbnails_size">120dp</dimen>
     <dimen name="rounded_corner_radius_4dp">4dp</dimen>
     <dimen name="rounded_corner_radius_6dp">6dp</dimen>

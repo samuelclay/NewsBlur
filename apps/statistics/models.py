@@ -167,7 +167,9 @@ class MStatistics(mongo.Document):
             avgs = [float(a) for a in times[1::2] if a]
 
             if hours_ago == 0:
-                last_1_min_time_taken = round(sum(avgs[:1]) / max(1, sum(counts[:1])), 2)
+                latest_count = int(times[-2] or 0) if len(times) >= 2 else 0
+                latest_total = float(times[-1] or 0) if len(times) >= 2 else 0
+                last_1_min_time_taken = round(latest_total / latest_count, 2) if latest_count else 0
 
             if counts and avgs:
                 count = max(1, sum(counts))

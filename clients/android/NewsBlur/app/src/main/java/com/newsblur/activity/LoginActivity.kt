@@ -29,6 +29,7 @@ class LoginActivity : FragmentActivity() {
         setContent {
             NewsBlurTheme(variant = variant) {
                 LoginScreen(
+                    variant = variant,
                     onAuthCompleted = ::onAuthCompleted,
                     onOpenForgotPassword = ::onOpenForgotPassword,
                 )

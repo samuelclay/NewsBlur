@@ -80,11 +80,15 @@ public class APIConstants {
     public static final String PATH_ADD_FOLDER = "/reader/add_folder";
     public static final String PATH_DELETE_FOLDER = "/reader/delete_folder";
     public static final String PATH_RENAME_FOLDER = "/reader/rename_folder";
+    public static final String PATH_DISCOVER_SIMILAR = "/discover/similar/";
+    public static final String PATH_DISCOVER_SIMILAR_FEEDS = "/discover/similar/feeds/";
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
     public static final String PATH_EXPORT_OPML = "/import/opml_export";
     public static final String PATH_IMPORT_OPML = "/import/opml_upload";
+    public static final String PATH_ASK_AI_QUESTION = "/ask-ai/question";
+    public static final String PATH_ASK_AI_TRANSCRIBE = "/ask-ai/transcribe";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -145,8 +149,14 @@ public class APIConstants {
     public static final String PARAMETER_NEW_FOLDER_NAME = "new_folder_name";
     public static final String PARAMETER_ORDER_ID = "order_id";
     public static final String PARAMETER_PRODUCT_ID = "product_id";
-    public static final String PARAMETER_PURCHASE_TOKEN = "purchase_token";
     public static final String PARAMETER_SHOW_CHANGES = "show_changes";
+    public static final String PARAMETER_FEED_IDS = "feed_ids";
+    public static final String PARAMETER_QUESTION_ID = "question_id";
+    public static final String PARAMETER_CUSTOM_QUESTION = "custom_question";
+    public static final String PARAMETER_REQUEST_ID = "request_id";
+    public static final String PARAMETER_MODEL = "model";
+    public static final String PARAMETER_CONVERSATION_HISTORY = "conversation_history";
+    public static final String PARAMETER_READ_TIMES = "read_times";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

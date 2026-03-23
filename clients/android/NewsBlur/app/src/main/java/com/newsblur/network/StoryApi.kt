@@ -40,7 +40,12 @@ interface StoryApi {
 
     suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse?
 
-    suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse?
+    suspend fun markStoryAsRead(
+        storyHash: String,
+        readTimesJson: String? = null,
+    ): NewsBlurResponse?
+
+    suspend fun submitReadTimes(readTimesJson: String): NewsBlurResponse?
 
     suspend fun markStoryAsStarred(
         storyHash: String,

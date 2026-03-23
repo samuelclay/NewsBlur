@@ -47,9 +47,15 @@ def user(u, msg, request=None, warn_color=True):
                     color = "~FR"
                 elif seconds > 1:
                     color = "~FY"
-            time_elapsed = "[%s%.4ss~SB] " % (
+            queue_str = ""
+            if hasattr(request, "_server_timing_start"):
+                queue_seconds = request.start_time - request._server_timing_start
+                if queue_seconds > 0.1:
+                    queue_str = "~FR+%.2fq~SB" % queue_seconds
+            time_elapsed = "[%s%.4ss%s~SB] " % (
                 color,
                 seconds,
+                queue_str,
             )
     is_premium = u.is_authenticated and u.profile.is_premium
     premium = "*" if is_premium else ""

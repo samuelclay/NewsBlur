@@ -7,6 +7,7 @@ import struct
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from io import BytesIO
 from socket import error as SocketError
 
@@ -31,6 +32,7 @@ from apps.rss_feeds.models import MFeedIcon, MFeedPage
 from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import TimeoutError, timelimit
+from utils.youtube_fetcher import YoutubeFetcher
 
 
 class IconImporter(object):
@@ -50,10 +52,17 @@ class IconImporter(object):
             and self.feed_icon.icon_url
             and self.feed.s3_icon
         ):
-            # print 'Found, but skipping...'
-            return
+            # YouTube feeds should only refetch while they still point at the
+            # generic YouTube favicon. Real channel avatars and playlist art
+            # should be treated as valid cached icons.
+            if "youtube.com" not in self.feed.feed_address:
+                return
+            if not self.is_generic_youtube_icon(self.feed_icon.icon_url):
+                return
         if "facebook.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_facebook_image()
+        elif "youtube.com" in self.feed.feed_address:
+            image, image_file, icon_url = self.fetch_youtube_image()
         else:
             image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
@@ -112,6 +121,17 @@ class IconImporter(object):
             self.feed.save(update_fields=["favicon_color", "favicon_not_found"])
 
         return not self.feed.favicon_not_found
+
+    def is_generic_youtube_icon(self, icon_url):
+        if not icon_url:
+            return True
+
+        generic_markers = (
+            "youtube.com/favicon.ico",
+            "youtube.com/s/desktop/",
+            "youtube.com/s/desktop",
+        )
+        return any(marker in icon_url for marker in generic_markers)
 
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
@@ -222,7 +242,10 @@ class IconImporter(object):
             try:
                 page_response = requests.get(url)
                 if page_response.status_code == 200:
-                    content = page_response.content
+                    try:
+                        content = zlib.decompress(page_response.content)
+                    except zlib.error:
+                        content = page_response.content
             except requests.ConnectionError:
                 pass
         elif settings.BACKED_BY_AWS.get("pages_on_s3") and self.feed.s3_page:
@@ -239,7 +262,16 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.cleaned_feed_link, timeout=10).content
+                headers = {
+                    "User-Agent": "NewsBlur Favicon Fetcher - %s subscriber%s - %s %s"
+                    % (
+                        self.feed.num_subscribers,
+                        "s" if self.feed.num_subscribers != 1 else "",
+                        self.feed.permalink,
+                        self.feed.fake_user_agent,
+                    ),
+                }
+                content = requests.get(self.cleaned_feed_link, headers=headers, timeout=10).content
                 url = self._url_from_html(content)
             except (
                 AttributeError,
@@ -299,6 +331,17 @@ class IconImporter(object):
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
+
+    def fetch_youtube_image(self):
+        youtube_fetcher = YoutubeFetcher(self.feed)
+        url = youtube_fetcher.fetch_channel_icon_url()
+        if url:
+            image, image_file = self.get_image_from_url(url)
+            if image:
+                if max(image.size) > 256:
+                    image = image.resize((256, 256), Image.LANCZOS)
+                return image, image_file, url
+        return None, None, None
 
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url

@@ -7,6 +7,7 @@ exceptions (address changes, duplicate detection).
 
 import base64
 import datetime
+import hashlib
 import re
 import time
 from collections import defaultdict
@@ -63,7 +64,13 @@ def feed_favicon_etag(request, feed_id):
     except MFeedIcon.DoesNotExist:
         return
 
-    return feed_icon.color
+    etag_source = "%s:%s:%s:%s" % (
+        feed_icon.color or "",
+        feed_icon.icon_url or "",
+        feed_icon.not_found or False,
+        feed_icon.data or "",
+    )
+    return hashlib.md5(etag_source.encode("utf-8")).hexdigest()
 
 
 @condition(etag_func=feed_favicon_etag)

@@ -1,4 +1,11 @@
 ---
+- name: SETUP -> mongo analytics swap (small RAM servers need OOM protection)
+  hosts: mongo_analytics
+  vars_files:
+    - ../env_vars/base.yml
+  roles:
+    - { role: "swap", tags: "swap" }
+
 - name: SETUP -> mongo containers
   hosts: mongo, mongo_analytics
   vars:
@@ -8,7 +15,6 @@
     - ../env_vars/base.yml
 
   roles:
-    - { role: "swap", tags: "swap" }
     - { role: "base", tags: "base" }
     - { role: "ufw", tags: "ufw" }
     - { role: "docker", tags: "docker" }

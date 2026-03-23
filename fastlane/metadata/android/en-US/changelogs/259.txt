@@ -1,0 +1,14 @@
+NewsBlur 14 is a ground-up redesign of the Android app.
+
+- Full edge-to-edge UI for Android 15
+- Story highlights: save text in stories
+- Custom folder and feed icons
+- Full text intelligence classifiers
+- User tags on saved stories
+- Home screen widget with synced stories
+- Code block rendering in stories
+- Improved embedded video display
+- Predictive back gestures (Android 14+)
+- Self-hosted certificate support
+- Rewritten in Kotlin with Jetpack Compose
+- Faster sync and database performance

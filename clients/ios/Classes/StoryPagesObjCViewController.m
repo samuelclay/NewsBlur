@@ -32,10 +32,13 @@
 @property (nonatomic) BOOL isUpdatingNavigationBarFade;
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
+@property (nonatomic) BOOL isRefreshingPages;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
+@property (nonatomic, strong) UIBarButtonItem *fullscreenStoryTitlesButton;
+@property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
 
 @end
 
@@ -73,6 +76,76 @@
     }
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     return (safeAreaBottom > 0) ? 12.0 : 8.0;
+}
+
+- (void)ensureStoryTitlesFullscreenButton {
+    if (self.fullscreenStoryTitlesButton) {
+        return;
+    }
+
+    UIImage *fullscreenImage = [UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right"];
+    if (!fullscreenImage) {
+        fullscreenImage = [UIImage systemImageNamed:@"arrow.left.arrow.right.square"];
+    }
+    if (fullscreenImage) {
+        fullscreenImage = [fullscreenImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+
+    self.fullscreenStoryTitlesButton = [[UIBarButtonItem alloc] initWithImage:fullscreenImage
+                                                                        style:UIBarButtonItemStylePlain
+                                                                       target:appDelegate.detailViewController
+                                                                       action:@selector(showFullscreenStoryDetail:)];
+    self.fullscreenStoryTitlesButton.accessibilityLabel = @"Full screen";
+}
+
+- (void)updateStoryTitleNavigationButtons {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    [self ensureStoryTitlesFullscreenButton];
+
+    self.fullscreenStoryTitlesButton.target = self.appDelegate.detailViewController;
+    self.fullscreenStoryTitlesButton.action = @selector(showFullscreenStoryDetail:);
+
+    NSMutableArray *items = [NSMutableArray array];
+    if (self.appDelegate.detailViewController.shouldShowStoryTitlesFullscreenButton) {
+        [items addObject:self.fullscreenStoryTitlesButton];
+    }
+    [items addObject:originalStoryButton];
+    [items addObject:fontSettingsButton];
+
+    if (!self.appDelegate.detailViewController.storyTitlesOnLeft) {
+        [items addObject:markReadBarButton];
+    }
+
+    self.appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = items;
+}
+
+- (void)setupStoryTitlesEdgeRevealGesture {
+    if (self.storyTitlesEdgeRevealGesture || self.isPhoneOrCompact || !appDelegate.detailViewController.storyTitlesOnLeft) {
+        return;
+    }
+
+    self.storyTitlesEdgeRevealGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
+                                                                                          action:@selector(handleStoryTitlesEdgeReveal:)];
+    self.storyTitlesEdgeRevealGesture.edges = UIRectEdgeLeft;
+    self.storyTitlesEdgeRevealGesture.maximumNumberOfTouches = 1;
+    self.storyTitlesEdgeRevealGesture.delegate = self;
+    [self.view addGestureRecognizer:self.storyTitlesEdgeRevealGesture];
+
+    [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.storyTitlesEdgeRevealGesture];
+    NSArray *pageControllers = @[self.currentPage, self.nextPage, self.previousPage];
+    for (StoryDetailViewController *pageController in pageControllers) {
+        if (pageController.webView.scrollView.panGestureRecognizer) {
+            [pageController.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.storyTitlesEdgeRevealGesture];
+        }
+    }
+}
+
+- (void)handleStoryTitlesEdgeReveal:(UIScreenEdgePanGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    [appDelegate.detailViewController revealStoryTitlesFromLeadingEdgeGesture:gestureRecognizer];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -131,6 +204,7 @@
     // Ensure paging is edge-to-edge on iPhone (avoid safe-area inset offsets).
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     self.scrollView.contentInset = UIEdgeInsetsZero;
+    [self setupStoryTitlesEdgeRevealGesture];
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
@@ -208,11 +282,7 @@
 
     self.traverseBottomConstraint.constant = self.traverseBottomGap;
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton, nil];
-    }
+    [self updateStoryTitleNavigationButtons];
 
     // Custom toolbar for scroll-to-hide (replaces system nav bar when fullscreen)
     self.toolbarScrollHandler = [[StoryToolbarScrollHandler alloc] init];
@@ -261,6 +331,13 @@
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(nextSite:) discoverabilityTitle:@"Next Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(previousSite:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(hideStoryTitlesSidebar:) discoverabilityTitle:@"Hide Story Titles" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(showStoryTitlesSidebar:) discoverabilityTitle:@"Show Story Titles" wantPriority:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -273,6 +350,7 @@
 
     [self applyToolbarButtonTint];
     [self updateTheme];
+    [self updateStoryTitleNavigationButtons];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -949,6 +1027,20 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == self.storyTitlesEdgeRevealGesture) {
+        UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint velocity = [pan velocityInView:self.view];
+        BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
+        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+            return NO;
+        }
+
+        return [StorySidebarRevealGestureDecision shouldBeginLeadingEdgeStoryTitlesRevealWithUsesOverlay:usesOverlay
+                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation
+                                                                                         storyTitlesOnLeft:appDelegate.detailViewController.storyTitlesOnLeft
+                                                                                         isPhoneOrCompact:self.isPhoneOrCompact];
+    }
+
     if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
         return navController.viewControllers.count > 1;
     }
@@ -1038,16 +1130,25 @@
 }
 
 - (void)refreshPages {
-    NSInteger pageIndex = currentPage.pageIndex;
-    [self resizeScrollView];
-    [appDelegate adjustStoryDetailWebView];
-    currentPage.pageIndex = -2;
-    nextPage.pageIndex = -2;
-    previousPage.pageIndex = -2;
-    [self changePage:pageIndex animated:NO];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.notifier hide];
-    //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
+    if (![StoryPageRefreshDecision shouldBeginRefreshWithIsRefreshInProgress:self.isRefreshingPages]) {
+        return;
+    }
+
+    self.isRefreshingPages = YES;
+    @try {
+        NSInteger pageIndex = currentPage.pageIndex;
+        [self resizeScrollView];
+        [appDelegate adjustStoryDetailWebView];
+        currentPage.pageIndex = -2;
+        nextPage.pageIndex = -2;
+        previousPage.pageIndex = -2;
+        [self changePage:pageIndex animated:NO];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [self.notifier hide];
+        //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
+    } @finally {
+        self.isRefreshingPages = NO;
+    }
 }
 
 - (void)reorientPages {
@@ -1191,6 +1292,7 @@
     fontSettingsButton.tintColor = toolbarButtonTint;
     originalStoryButton.tintColor = toolbarButtonTint;
     markReadBarButton.tintColor = toolbarButtonTint;
+    self.fullscreenStoryTitlesButton.tintColor = toolbarButtonTint;
     self.subscribeButton.tintColor = toolbarButtonTint;
     UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
     if ([settingsButton isKindOfClass:[UIButton class]]) {
@@ -1686,6 +1788,16 @@
     [self changePage:pageIndex animated:YES];
 }
 
+- (void)immediatelyRealignPagesForPageIndex:(NSInteger)pageIndex {
+    NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:pageIndex];
+    if (storyIndex < 0 || storyIndex >= [appDelegate.storiesCollection.activeFeedStories count]) {
+        return;
+    }
+
+    appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
+    [self updatePageWithActiveStory:pageIndex updateFeedDetail:YES];
+}
+
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
 //    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
     
@@ -1708,6 +1820,9 @@
     }
     
     self.scrollingToPage = pageIndex;
+    BOOL shouldImmediatelyRealignPages = [StoryPageChangeDecision shouldImmediatelyRealignPagesWithCurrentPageIndex:currentPage.pageIndex
+                                                                                                      targetPageIndex:pageIndex
+                                                                                                             animated:animated];
     
     if (pageIndex >= 0) {
         [self.currentPage hideNoStoryMessage];
@@ -1718,10 +1833,16 @@
     // Check if already on the selected page
     if (self.isHorizontal ? offset.x == frame.origin.x : offset.y == frame.origin.y) {
         [self applyNewIndex:pageIndex pageController:currentPage];
-        [self setStoryFromScroll];
+        if (shouldImmediatelyRealignPages) {
+            [self immediatelyRealignPagesForPageIndex:pageIndex];
+        } else {
+            [self setStoryFromScroll];
+        }
     } else {
         [self.scrollView scrollRectToVisible:frame animated:animated && self.currentPage.pageIndex > -2];
-        if (!animated) {
+        if (shouldImmediatelyRealignPages) {
+            [self immediatelyRealignPagesForPageIndex:pageIndex];
+        } else if (!animated) {
             [self setStoryFromScroll];
         }
     }
@@ -1759,6 +1880,7 @@
             [self refreshPages];
         });
     }
+
 }
 
 - (void)changeToNextPage:(id)sender {
@@ -1920,16 +2042,7 @@
     self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
 #endif
     
-    if (appDelegate.detailViewController.storyTitlesOnLeft) {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton, nil];
-    } else {
-        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   fontSettingsButton,
-                                                   markReadBarButton, nil];
-    }
+    [self updateStoryTitleNavigationButtons];
     
     [self setNextPreviousButtons];
     

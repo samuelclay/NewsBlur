@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,9 @@ import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
+import com.newsblur.askai.AskAiBottomSheetFragment
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.delegate.ReadingStoryMenuPopup
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.di.IconLoader
@@ -50,6 +53,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
+import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
@@ -213,6 +217,7 @@ class ReadingItemFragment :
     override fun onResume() {
         super.onResume()
         reloadStoryContent()
+        updateAskAiButton()
         binding.readingWebview.onResume()
     }
 
@@ -245,6 +250,7 @@ class ReadingItemFragment :
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
+        updateAskAiButton()
         updateMarkStoryReadState()
         setupItemCommentsAndShares()
 
@@ -260,11 +266,11 @@ class ReadingItemFragment :
         super.onViewCreated(view, savedInstanceState)
         view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
 
-        binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
         readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
+        readingItemActionsBinding.askAiStoryButton.setOnClickListener { openAskAiDialog() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -379,10 +385,23 @@ class ReadingItemFragment :
         }
     }
 
-    private fun onClickMenuButton() {
-        val pm = PopupMenu(requireActivity(), binding.storyContextMenuButton)
-        val menu = pm.menu
-        pm.menuInflater.inflate(R.menu.story_context, menu)
+    fun showStoryContextMenu(anchor: View) {
+        ReadingStoryMenuPopup(
+            context = requireContext(),
+            prefsRepo = prefsRepo,
+            controller =
+                object : ReadingStoryMenuPopup.Controller {
+                    override fun buildMenuModel(): Menu = buildStoryContextMenu()
+
+                    override fun onMenuItemSelected(itemId: Int): Boolean = onMenuItemClick(buildStoryContextMenu().findItem(itemId))
+                },
+        ).show(anchor)
+    }
+
+    private fun buildStoryContextMenu(): Menu {
+        val popupMenu = PopupMenu(requireActivity(), binding.storyContextMenuButton)
+        val menu = popupMenu.menu
+        popupMenu.menuInflater.inflate(R.menu.story_context, menu)
 
         menu.findItem(R.id.menu_reading_save).setTitle(if (story!!.starred) R.string.menu_unsave_story else R.string.menu_save_story)
         if (fs!!.isFilterSaved ||
@@ -398,13 +417,13 @@ class ReadingItemFragment :
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
+            ThemeValue.SEPIA -> menu.findItem(R.id.menu_theme_sepia).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
         }
 
-        val readingTextSize = prefsRepo.getReadingTextSize()
-        when (ReadingTextSize.fromSize(readingTextSize)) {
+        when (ReadingTextSize.fromSize(prefsRepo.getReadingTextSize())) {
             ReadingTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ReadingTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ReadingTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
@@ -424,8 +443,7 @@ class ReadingItemFragment :
             Font.ROBOTO -> menu.findItem(R.id.menu_font_roboto).isChecked = true
         }
 
-        pm.setOnMenuItemClickListener(this)
-        pm.show()
+        return menu
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean =
@@ -554,6 +572,12 @@ class ReadingItemFragment :
                 true
             }
 
+            R.id.menu_theme_sepia -> {
+                prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
+                UIUtils.restartActivity(requireActivity())
+                true
+            }
+
             R.id.menu_theme_dark -> {
                 prefsRepo.setSelectedTheme(ThemeValue.DARK)
                 UIUtils.restartActivity(requireActivity())
@@ -577,8 +601,15 @@ class ReadingItemFragment :
             R.id.menu_go_to_feed -> {
                 val feed = dbHelper.getFeed(story!!.feedId)
                 feed?.let {
-                    val fs = FeedSet.singleFeed(it.feedId)
-                    FeedItemsList.startActivity(requireContext(), fs, it, null, null)
+                    val targetFeedSet = FeedSet.singleFeed(it.feedId)
+                    val folderName = targetFeedFolderName()
+                    feedUtils.currentFolderName =
+                        if (folderName == AppConstants.ROOT_FOLDER) {
+                            null
+                        } else {
+                            folderName
+                        }
+                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null)
                 }
                 true
             }
@@ -595,12 +626,19 @@ class ReadingItemFragment :
                     feedUtils.markStoryUnread(it, requireContext())
                     getString(R.string.story_unread)
                 } else {
-                    feedUtils.markStoryAsRead(it, requireContext())
+                    (activity as? Reading)?.markStoryAsRead(it) ?: feedUtils.markStoryAsRead(it, requireContext())
                     getString(R.string.story_read)
                 }
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
         } ?: Log.e(this.javaClass.name, "Error switching null story read state.")
     }
+
+    private fun targetFeedFolderName(): String =
+        when {
+            fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+            !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+            else -> AppConstants.ROOT_FOLDER
+        }
 
     private fun updateMarkStoryReadState() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
@@ -621,6 +659,10 @@ class ReadingItemFragment :
 
     private fun updateTrainButton() {
         readingItemActionsBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
+    }
+
+    private fun updateAskAiButton() {
+        readingItemActionsBinding.askAiStoryButton.visibility = if (prefsRepo.isShowAskAi()) View.VISIBLE else View.GONE
     }
 
     fun switchStorySavedState(notifyUser: Boolean = false) {
@@ -656,6 +698,17 @@ class ReadingItemFragment :
         readingItemActionsBinding.shareStoryButton.setText(R.string.share_this)
     }
 
+    private fun openAskAiDialog() {
+        val currentStory = story ?: return
+        if (parentFragmentManager.findFragmentByTag(AskAiBottomSheetFragment.TAG) != null) return
+
+        AskAiBottomSheetFragment
+            .newInstance(
+                storyHash = currentStory.storyHash,
+                storyTitle = UIUtils.fromHtml(currentStory.title).toString(),
+            ).show(parentFragmentManager, AskAiBottomSheetFragment.TAG)
+    }
+
     private fun setupItemCommentsAndShares() {
         SetupCommentSectionTask(this, binding.root, layoutInflater, story, iconLoader).execute()
     }
@@ -671,7 +724,9 @@ class ReadingItemFragment :
         UIUtils.setViewBackground(binding.rowItemFeedHeader, gradient)
 
         if (faviconText == "black") {
-            binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.text))
+            binding.readingFeedTitle.setTextColor(
+                UIUtils.getThemedColor(requireContext(), R.attr.defaultText, android.R.attr.textColor),
+            )
             binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, ContextCompat.getColor(requireContext(), R.color.half_white))
         } else {
             binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -1288,7 +1343,10 @@ private fun MaterialButton.setStoryReadState(
     val styleResId: Int =
         when (selectedTheme) {
             ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons
-            else -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
+            ThemeValue.SEPIA -> if (isRead) R.style.storyButtonsDimmed_sepia else R.style.storyButtons_sepia
+            ThemeValue.DARK -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
+            ThemeValue.BLACK -> if (isRead) R.style.storyButtonsDimmed_black else R.style.storyButtons_black
+            ThemeValue.AUTO -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
         }
     val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state
     this.text = context.getString(stringResId)

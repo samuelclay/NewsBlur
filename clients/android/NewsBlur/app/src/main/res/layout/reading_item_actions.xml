@@ -2,56 +2,84 @@
 <merge xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/actions_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         android:gravity="center_horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/mark_read_story_button"
             style="?storyButtons"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_alignStart="@+id/train_story_button"
-            android:layout_alignEnd="@+id/save_story_button"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginBottom="8dp"
+            android:maxLines="1"
             android:text="@string/story_mark_read_state"
             android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/train_story_button"
-            style="?storyButtons"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_below="@+id/mark_read_story_button"
-            android:text="@string/train_this"
-            app:icon="@drawable/ic_feed_train" />
+        <LinearLayout
+            android:id="@+id/story_action_buttons_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/save_story_button"
-            style="?storyButtons"
-            android:layout_marginHorizontal="12dp"
-            android:layout_toEndOf="@+id/train_story_button"
-            android:layout_below="@+id/mark_read_story_button"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:text="@string/save_this"
-            app:icon="@drawable/ic_saved" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/train_story_button"
+                style="?storyButtons"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/train_this"
+                app:icon="@drawable/ic_feed_train" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/share_story_button"
-            style="?storyButtons"
-            android:layout_toEndOf="@+id/save_story_button"
-            android:layout_below="@+id/mark_read_story_button"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:text="@string/share_this"
-            app:icon="@drawable/ic_share"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_story_button"
+                style="?storyButtons"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/save_this"
+                app:icon="@drawable/ic_saved" />
 
-    </RelativeLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/share_story_button"
+                style="?storyButtons"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/share_this"
+                app:icon="@drawable/ic_share" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ask_ai_story_button"
+                style="?storyButtons"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="@string/ask_ai"
+                app:icon="@drawable/ic_ask_ai" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/comments_container"

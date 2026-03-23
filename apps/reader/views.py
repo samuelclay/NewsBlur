@@ -76,6 +76,12 @@ from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
 from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
+from apps.reader.metrics import (
+    READER_LOAD_PHASE_DURATION,
+    READER_LOAD_REQUESTS,
+    READER_LOAD_SLOW_REQUESTS,
+    normalize_reader_metrics_read_filter,
+)
 from apps.reader.models import (
     Feature,
     MCustomFeedIcon,
@@ -1153,6 +1159,7 @@ def load_single_feed(request, feed_id):
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
+                metrics_source="feed_request",
             )
         else:
             stories = feed.get_stories(
@@ -1244,6 +1251,7 @@ def load_single_feed(request, feed_id):
                 feed_ids=[usersub.feed_id],
                 usersubs=[usersub],
                 cutoff_date=unread_cutoff_date,
+                metrics_source="feed_request",
             )
         story_hashes = [story["story_hash"] for story in stories if story["story_hash"]]
         starred_stories = MStarredStory.objects(
@@ -1367,15 +1375,20 @@ def load_single_feed(request, feed_id):
         except DatabaseError as e:
             logging.user(request, f"~BR~FK~SBNo changes in usersub, ignoring... {e}")
 
-    diff1 = checkpoint1 - start
-    diff2 = checkpoint2 - start
-    diff3 = checkpoint3 - start
-    diff4 = checkpoint4 - start
+    phase_load_stories = checkpoint1 - start
+    phase_shared = checkpoint2 - checkpoint1
+    phase_classifiers = checkpoint3 - checkpoint2
+    phase_story_meta = checkpoint4 - checkpoint3
     timediff = time.time() - start
     last_update = relative_timesince(feed.last_update)
     time_breakdown = ""
     if timediff > 1 or settings.DEBUG:
-        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (diff1, diff2, diff3, diff4)
+        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
+            phase_load_stories,
+            phase_shared,
+            phase_classifiers,
+            phase_story_meta,
+        )
 
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     date_filter_log = ""
@@ -1401,6 +1414,35 @@ def load_single_feed(request, feed_id):
         ),
     )
 
+    metrics_read_filter = normalize_reader_metrics_read_filter(read_filter, query=bool(query))
+    READER_LOAD_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="load_stories", read_filter=metrics_read_filter
+    ).observe(phase_load_stories)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="shared_profiles", read_filter=metrics_read_filter
+    ).observe(phase_shared)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="classifiers", read_filter=metrics_read_filter
+    ).observe(phase_classifiers)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="story_meta", read_filter=metrics_read_filter
+    ).observe(phase_story_meta)
+    READER_LOAD_PHASE_DURATION.labels(endpoint="feed", phase="total", read_filter=metrics_read_filter).observe(
+        timediff
+    )
+    if timediff >= 0.25:
+        READER_LOAD_SLOW_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
+        logging.info(
+            "reader_load "
+            f"endpoint=feed read_filter={metrics_read_filter} page={page} "
+            f"total_ms={int(timediff * 1000)} "
+            f"load_ms={int(phase_load_stories * 1000)} "
+            f"shared_ms={int(phase_shared * 1000)} "
+            f"classifiers_ms={int(phase_classifiers * 1000)} "
+            f"story_meta_ms={int(phase_story_meta * 1000)}"
+        )
+
     MAnalyticsLoader.add(page_load=timediff)
     if hasattr(request, "start_time"):
         seconds = time.time() - request.start_time
@@ -1416,31 +1458,35 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         user_prefs = json.decode(user.profile.preferences)
         if user_prefs.get("story_clustering", True):
-            from apps.clustering.models import apply_clustering_to_stories
+            from apps.statistics.models import MStatistics
 
-            classifiers_context = {
-                "classifier_feeds": classifier_feeds,
-                "classifier_authors": classifier_authors,
-                "classifier_titles": classifier_titles,
-                "classifier_tags": classifier_tags,
-                "classifier_texts": classifier_texts,
-                "classifier_urls": classifier_urls,
-                "folder_feed_ids": folder_feed_ids,
-                "user_is_pro": user_is_pro,
-                "unread_feed_story_hashes": unread_story_hashes,
-                "read_filter": read_filter,
-            }
-            include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
-            stories = apply_clustering_to_stories(
-                stories,
-                user,
-                classifiers_context=classifiers_context,
-                include_expanded_data=include_expanded,
-            )
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import apply_clustering_to_stories
+
+                classifiers_context = {
+                    "classifier_feeds": classifier_feeds,
+                    "classifier_authors": classifier_authors,
+                    "classifier_titles": classifier_titles,
+                    "classifier_tags": classifier_tags,
+                    "classifier_texts": classifier_texts,
+                    "classifier_urls": classifier_urls,
+                    "folder_feed_ids": folder_feed_ids,
+                    "user_is_pro": user_is_pro,
+                    "unread_feed_story_hashes": unread_story_hashes,
+                    "read_filter": read_filter,
+                }
+                include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
+                stories = apply_clustering_to_stories(
+                    stories,
+                    user,
+                    classifiers_context=classifiers_context,
+                    include_expanded_data=include_expanded,
+                )
 
     data = dict(
         stories=stories,
@@ -1480,6 +1526,10 @@ def load_single_feed(request, feed_id):
         data["not_yet_fetched"] = True
         data["fetched_once"] = False
         data["stories"] = []
+    # Always include fetched_once when insta_fetch is requested so the frontend
+    # poll_for_fetch_completion can terminate for subscribed feeds too
+    elif insta_fetch:
+        data["fetched_once"] = feed.fetched_once
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
 
@@ -2225,6 +2275,73 @@ def load_read_stories(request):
     }
 
 
+def prune_missing_river_story_hashes(user_id, story_hashes):
+    if not story_hashes:
+        return
+
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    pipeline = r.pipeline()
+    unique_story_hashes = []
+    seen_story_hashes = set()
+
+    for story_hash in story_hashes:
+        if isinstance(story_hash, bytes):
+            story_hash = story_hash.decode()
+        if story_hash in seen_story_hashes:
+            continue
+        seen_story_hashes.add(story_hash)
+        unique_story_hashes.append(story_hash)
+
+    for story_hash in unique_story_hashes:
+        feed_id = story_hash.split(":", 1)[0]
+        pipeline.srem(f"F:{feed_id}", story_hash)
+        pipeline.zrem(f"zF:{feed_id}", story_hash)
+        pipeline.zrem(f"zU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}", story_hash)
+
+    pipeline.execute()
+
+
+def load_existing_mstories(user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None):
+    if not story_hashes:
+        return story_hashes, unread_feed_story_hashes, []
+
+    current_story_hashes = story_hashes
+    current_unread_feed_story_hashes = unread_feed_story_hashes
+    fetch_limit = min(len(current_story_hashes), limit)
+    max_fetch_limit = max(limit * 32, 400)
+
+    while True:
+        candidate_hashes = current_story_hashes[:fetch_limit]
+        mstories = list(MStory.objects(story_hash__in=candidate_hashes).order_by(story_date_order))
+        found_story_hashes = {story.story_hash for story in mstories}
+        missing_story_hashes = [
+            story_hash for story_hash in candidate_hashes if story_hash not in found_story_hashes
+        ]
+
+        if missing_story_hashes:
+            prune_missing_river_story_hashes(user_id, missing_story_hashes)
+
+        if (
+            len(mstories) >= limit
+            or len(candidate_hashes) < fetch_limit
+            or not fetch_more
+            or fetch_limit >= max_fetch_limit
+        ):
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        next_fetch_limit = min(fetch_limit * 2, max_fetch_limit)
+        if next_fetch_limit <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        current_story_hashes, current_unread_feed_story_hashes = fetch_more(next_fetch_limit)
+        if len(current_story_hashes) <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        fetch_limit = min(next_fetch_limit, len(current_story_hashes))
+
+
 @json.json_view
 def load_river_stories__redis(request):
     # get_post is request.REQUEST, since this endpoint needs to handle either
@@ -2263,6 +2380,62 @@ def load_river_stories__redis(request):
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+    infrequent = is_true(get_post.get("infrequent", False))
+    if infrequent:
+        infrequent = get_post.get("infrequent")
+    is_free_river_user = user.is_authenticated and not user.profile.is_premium
+    requested_limit = limit
+
+    def log_free_river_access(action, effective_limit):
+        sample_feed_ids = original_feed_ids[:10]
+        feed_sample = ",".join(str(feed_id) for feed_id in sample_feed_ids)
+        if len(original_feed_ids) > len(sample_feed_ids):
+            feed_sample = f"{feed_sample},...(+{len(original_feed_ids) - len(sample_feed_ids)})"
+        logging.user(
+            request,
+            "~FRFree user river %s~SN: page=%s read_filter=%s order=%s requested_limit=%s effective_limit=%s "
+            "feeds_requested=%s [%s] include_feeds=%s include_hidden=%s query=%s requested_hashes=%s "
+            "on_dashboard=%s infrequent=%s date_start=%s date_end=%s"
+            % (
+                action,
+                page,
+                read_filter,
+                order,
+                requested_limit,
+                effective_limit,
+                len(original_feed_ids),
+                feed_sample,
+                include_feeds,
+                include_hidden,
+                bool(query),
+                requested_hashes,
+                on_dashboard,
+                infrequent,
+                date_filter_start or "-",
+                date_filter_end or "-",
+            ),
+        )
+
+    if is_free_river_user:
+        message = "The full River of News is a premium feature."
+        if page > 1:
+            log_free_river_access("blocked", effective_limit=0)
+            data = dict(
+                code=0,
+                message=message,
+                stories=[],
+                classifiers={},
+                elapsed_time=round(float(time.time() - start), 2),
+                user_search=None,
+                user_profiles=[],
+            )
+            if include_feeds:
+                data["feeds"] = []
+            if not include_hidden:
+                data["hidden_stories_removed"] = 0
+            return data
+        limit = min(limit, 3)
+        log_free_river_access("limited", effective_limit=limit)
 
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
@@ -2270,12 +2443,9 @@ def load_river_stories__redis(request):
             request,
             f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
         )
-    infrequent = is_true(get_post.get("infrequent", False))
-    if infrequent:
-        infrequent = get_post.get("infrequent")
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs = []
-    code = 1
+    code = 0 if is_free_river_user else 1
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -2320,6 +2490,7 @@ def load_river_stories__redis(request):
                 read_filter="unread",
                 order=order,
                 cutoff_date=user.profile.unread_cutoff,
+                metrics_source="river_request",
             )
         else:
             stories = []
@@ -2371,17 +2542,34 @@ def load_river_stories__redis(request):
                     "date_filter_start": date_filter_start_utc,
                     "date_filter_end": date_filter_end_utc,
                     "use_lazy_merge": user.pk in RIVER_SLOWDOWN_USERS,
+                    "metrics_source": "river_request",
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+
+                def fetch_more_story_hashes(fetch_limit):
+                    refill_params = dict(params)
+                    refill_params["limit"] = fetch_limit
+                    return UserSubscription.feed_stories(**refill_params)
+
+                story_hashes, unread_feed_story_hashes, mstories = load_existing_mstories(
+                    user.pk,
+                    story_hashes,
+                    unread_feed_story_hashes,
+                    story_date_order,
+                    limit,
+                    fetch_more=fetch_more_story_hashes,
+                )
             else:
                 story_hashes = []
                 unread_feed_story_hashes = []
+                mstories = []
 
-            mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
 
+    checkpoint1 = time.time()
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
+    checkpoint2 = time.time()
 
     if not usersubs:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=found_feed_ids, read_filter=read_filter)
@@ -2479,6 +2667,7 @@ def load_river_stories__redis(request):
         classifier_urls=classifier_urls,
         folder_feed_ids=folder_feed_ids,
     )
+    checkpoint3 = time.time()
 
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
@@ -2571,13 +2760,6 @@ def load_river_stories__redis(request):
         feeds = Feed.objects.filter(pk__in=set([story["story_feed_id"] for story in stories]))
         feeds = [feed.canonical(include_favicon=False) for feed in feeds]
 
-    if not user.profile.is_premium and not include_feeds:
-        message = "The full River of News is a premium feature."
-        code = 0
-        # if page > 1:
-        #     stories = []
-        # else:
-        #     stories = stories[:5]
     if not include_hidden:
         hidden_stories_removed = 0
         new_stories = []
@@ -2588,33 +2770,42 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users who have it enabled
-    if user.profile.is_archive:
+    # Apply story clustering for authenticated users who have it enabled
+    if request.user.is_authenticated:
         if user_preferences.get("story_clustering", True):
-            from apps.clustering.models import apply_clustering_to_stories
+            from apps.statistics.models import MStatistics
 
-            classifiers_context = {
-                "classifier_feeds": classifier_feeds,
-                "classifier_authors": classifier_authors,
-                "classifier_titles": classifier_titles,
-                "classifier_tags": classifier_tags,
-                "classifier_texts": classifier_texts,
-                "classifier_urls": classifier_urls,
-                "folder_feed_ids": folder_feed_ids,
-                "user_is_pro": user_is_pro,
-                "unread_feed_story_hashes": unread_feed_story_hashes,
-                "read_filter": read_filter,
-            }
-            include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
-            stories = apply_clustering_to_stories(
-                stories,
-                user,
-                classifiers_context=classifiers_context,
-                include_expanded_data=include_expanded,
-            )
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import apply_clustering_to_stories
 
+                classifiers_context = {
+                    "classifier_feeds": classifier_feeds,
+                    "classifier_authors": classifier_authors,
+                    "classifier_titles": classifier_titles,
+                    "classifier_tags": classifier_tags,
+                    "classifier_texts": classifier_texts,
+                    "classifier_urls": classifier_urls,
+                    "folder_feed_ids": folder_feed_ids,
+                    "user_is_pro": user_is_pro,
+                    "unread_feed_story_hashes": unread_feed_story_hashes,
+                    "read_filter": read_filter,
+                }
+                include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
+                stories = apply_clustering_to_stories(
+                    stories,
+                    user,
+                    classifiers_context=classifiers_context,
+                    include_expanded_data=include_expanded,
+                )
+
+    checkpoint4 = time.time()
     diff = time.time() - start
     timediff = round(float(diff), 2)
+    phase_load_stories = checkpoint1 - start
+    phase_shared = checkpoint2 - checkpoint1
+    phase_classifiers = checkpoint3 - checkpoint2
+    phase_finalize = checkpoint4 - checkpoint3
     if requested_hashes and story_hashes:
         logging.user(
             request,
@@ -2652,6 +2843,36 @@ def load_river_stories__redis(request):
                 read_filter,
                 date_filter_str,
             ),
+        )
+
+    metrics_read_filter = normalize_reader_metrics_read_filter(read_filter, query=bool(query))
+    READER_LOAD_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="load_stories", read_filter=metrics_read_filter
+    ).observe(phase_load_stories)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="shared_profiles", read_filter=metrics_read_filter
+    ).observe(phase_shared)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="classifiers", read_filter=metrics_read_filter
+    ).observe(phase_classifiers)
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="finalize", read_filter=metrics_read_filter
+    ).observe(phase_finalize)
+    READER_LOAD_PHASE_DURATION.labels(endpoint="river", phase="total", read_filter=metrics_read_filter).observe(
+        diff
+    )
+    if diff >= 0.25:
+        READER_LOAD_SLOW_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
+        logging.info(
+            "reader_load "
+            f"endpoint=river read_filter={metrics_read_filter} page={page} "
+            f"total_ms={int(diff * 1000)} "
+            f"load_ms={int(phase_load_stories * 1000)} "
+            f"shared_ms={int(phase_shared * 1000)} "
+            f"classifiers_ms={int(phase_classifiers * 1000)} "
+            f"finalize_ms={int(phase_finalize * 1000)} "
+            f"feeds_requested={len(original_feed_ids)} feeds_found={len(found_feed_ids)}"
         )
 
     if not on_dashboard and not (requested_hashes and story_hashes):
@@ -3027,30 +3248,34 @@ def mark_story_hashes_as_read(request):
     if request.user.profile.is_archive:
         user_prefs = json.decode(request.user.profile.preferences or "{}")
         if user_prefs.get("cluster_mark_read", False):
-            from apps.clustering.models import (
-                get_cluster_for_story,
-                get_cluster_members,
-            )
+            from apps.statistics.models import MStatistics
 
-            seen = set(story_hashes)
-            for story_hash in list(story_hashes):
-                cluster_id = get_cluster_for_story(story_hash)
-                if cluster_id:
-                    for member_hash in get_cluster_members(cluster_id):
-                        if member_hash not in seen:
-                            cluster_hashes.append(member_hash)
-                            seen.add(member_hash)
-            if cluster_hashes:
-                story_hashes = list(seen)
-                logging.user(
-                    request,
-                    "~FBCluster mark read: added %s duplicate%s"
-                    % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+            clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
+            if not clustering_reads_disabled:
+                from apps.clustering.models import (
+                    get_cluster_for_story,
+                    get_cluster_members,
                 )
-                # reader/views.py: Record cluster mark-read metrics for Grafana
-                from apps.statistics.rclustering_usage import RClusteringUsage
 
-                RClusteringUsage.record_mark_read(len(cluster_hashes))
+                seen = set(story_hashes)
+                for story_hash in list(story_hashes):
+                    cluster_id = get_cluster_for_story(story_hash)
+                    if cluster_id:
+                        for member_hash in get_cluster_members(cluster_id):
+                            if member_hash not in seen:
+                                cluster_hashes.append(member_hash)
+                                seen.add(member_hash)
+                if cluster_hashes:
+                    story_hashes = list(seen)
+                    logging.user(
+                        request,
+                        "~FBCluster mark read: added %s duplicate%s"
+                        % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+                    )
+                    # reader/views.py: Record cluster mark-read metrics for Grafana
+                    from apps.statistics.rclustering_usage import RClusteringUsage
+
+                    RClusteringUsage.record_mark_read(len(cluster_hashes))
 
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
@@ -4117,10 +4342,45 @@ def feeds_trainer(request):
         usersubs = usersubs.filter(feed=feed)
     usersubs = usersubs.select_related("feed").order_by("-feed__stories_last_month")
 
+    # Load scoped classifiers once for archive users with folder/global classifiers
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
+    scoped = None
+    folder_feed_ids = None
+    if has_scoped:
+        scoped = load_scoped_classifiers(user.pk)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
+        except UserSubscriptionFolders.DoesNotExist:
+            folder_feed_ids = {}
+
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier["classifiers"] = get_classifiers_for_user(user, feed_id=us.feed.pk)
+            if scoped:
+                classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_titles.extend(scoped["titles"])
+                classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_texts.extend(scoped["texts"])
+                classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_urls.extend(scoped["urls"])
+                classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_authors.extend(scoped["authors"])
+                classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=us.feed.pk))
+                classifier_tags.extend(scoped["tags"])
+                classifier["classifiers"] = get_classifiers_for_user(
+                    user,
+                    feed_id=us.feed.pk,
+                    classifier_authors=classifier_authors,
+                    classifier_titles=classifier_titles,
+                    classifier_tags=classifier_tags,
+                    classifier_texts=classifier_texts,
+                    classifier_urls=classifier_urls,
+                    folder_feed_ids=folder_feed_ids,
+                )
+            else:
+                classifier["classifiers"] = get_classifiers_for_user(user, feed_id=us.feed.pk)
             classifier["feed_id"] = us.feed_id
             classifier["stories_last_month"] = us.feed.stories_last_month
             classifier["num_subscribers"] = us.feed.num_subscribers
@@ -5248,53 +5508,16 @@ def get_auto_mark_read_settings(request):
 def load_cluster_stories(request):
     """Load full story data for all members of a story cluster.
 
-    Parameters:
-        cluster_id: The story_hash of the representative story
+    Deprecated: cluster data is now included inline in the feed/page response.
+    This endpoint returns early with empty data. Kept for backwards compatibility
+    with clients that haven't updated yet.
     """
     user = get_user(request)
     cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
 
-    if not user.profile.is_archive:
-        return {"code": 0, "message": "Story clustering is an archive feature.", "stories": []}
-
-    if not cluster_id:
-        return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
-
-    from apps.clustering.models import get_cluster_for_story, get_cluster_members
-
-    # The frontend passes a story_hash as cluster_id. Look up the actual
-    # cluster_id first, then get all members for that cluster.
-    actual_cluster_id = get_cluster_for_story(cluster_id)
-    member_hashes = get_cluster_members(actual_cluster_id or cluster_id)
-    if not member_hashes:
-        return {"code": 1, "stories": []}
-
-    # Only include cluster members from feeds the user is subscribed to
-    user_feed_ids = set(
-        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    logging.user(
+        request,
+        "~FRDeprecated cluster_stories call~FR for %s (should be inline)" % cluster_id,
     )
-    member_hashes = [h for h in member_hashes if int(h.split(":", 1)[0]) in user_feed_ids]
-    if not member_hashes:
-        return {"code": 1, "stories": []}
 
-    stories = []
-    mstories = MStory.objects(story_hash__in=member_hashes).order_by()
-    for story in mstories:
-        feed = Feed.get_by_id(story.story_feed_id)
-        if not feed:
-            continue
-        story_dict = Feed.format_story(story)
-        story_dict["feed_title"] = feed.feed_title
-        stories.append(story_dict)
-
-    stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)
-
-    feeds = {}
-    for story_dict in stories:
-        fid = story_dict.get("story_feed_id")
-        if fid and fid not in feeds:
-            f = Feed.get_by_id(fid)
-            if f:
-                feeds[fid] = f.canonical(include_favicon=True)
-
-    return {"code": 1, "stories": stories, "feeds": feeds}
+    return {"code": 1, "stories": [], "feeds": {}}

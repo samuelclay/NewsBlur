@@ -4,6 +4,7 @@ package com.newsblur.database
 
 import android.graphics.Color
 import android.os.Parcelable
+import android.os.SystemClock
 import android.text.TextUtils
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
@@ -17,17 +18,21 @@ import android.view.View
 import android.view.View.OnCreateContextMenuListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
+import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.AppConstants
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
@@ -38,6 +43,7 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
 import com.newsblur.util.SpacingStyle
+import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
@@ -47,6 +53,7 @@ import com.newsblur.util.StoryUtil.getStoryHashes
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
+import com.newsblur.util.storyRowLayout
 import com.newsblur.view.StoryThumbnailView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +65,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * Story list adapter, RecyclerView style.
@@ -73,6 +81,7 @@ class StoryViewAdapter(
     listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
+    private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
 
@@ -389,6 +398,9 @@ class StoryViewAdapter(
                 return
             }
             if (gestureL2R || gestureR2L) return
+            val now = SystemClock.elapsedRealtime()
+            if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
+            lastStoryOpenElapsedRealtime = now
             listener.onStoryClicked(fs, story?.storyHash)
         }
 
@@ -445,12 +457,19 @@ class StoryViewAdapter(
                 intelFrag.show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
-                val fs = FeedSet.singleFeed(story!!.feedId)
+                val targetFeedSet = FeedSet.singleFeed(story!!.feedId)
+                val folderName = targetFeedFolderName()
+                feedUtils.currentFolderName =
+                    if (folderName == AppConstants.ROOT_FOLDER) {
+                        null
+                    } else {
+                        folderName
+                    }
                 FeedItemsList.startActivity(
                     context,
-                    fs,
+                    targetFeedSet,
                     feedUtils.getFeed(story!!.feedId),
-                    null,
+                    folderName,
                     null,
                 )
                 return true
@@ -458,6 +477,13 @@ class StoryViewAdapter(
                 return false
             }
         }
+
+        private fun targetFeedFolderName(): String =
+            when {
+                fs?.isFolder == true -> fs?.folderName ?: AppConstants.ROOT_FOLDER
+                !feedUtils.currentFolderName.isNullOrEmpty() -> feedUtils.currentFolderName!!
+                else -> AppConstants.ROOT_FOLDER
+            }
 
         override fun onTouch(
             v: View,
@@ -488,6 +514,8 @@ class StoryViewAdapter(
                 gestureR2L = false
             }
             when (action) {
+                GestureAction.GEST_ACTION_BACK -> (context as? ItemsList)?.completeInteractiveStoryListSwipe()
+                GestureAction.GEST_ACTION_TOGGLE_READ -> toggleStoryReadState()
                 GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
                 GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
@@ -495,6 +523,15 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}
+            }
+        }
+
+        private fun toggleStoryReadState() {
+            val targetStory = story ?: return
+            if (targetStory.read) {
+                feedUtils.markStoryUnread(targetStory, context)
+            } else {
+                feedUtils.markStoryAsRead(targetStory, context)
             }
         }
     }
@@ -657,6 +694,9 @@ class StoryViewAdapter(
         vh: StoryTileViewHolder,
         story: Story,
     ) {
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -676,6 +716,11 @@ class StoryViewAdapter(
         story: Story,
     ) {
         val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
+        val showRightThumbnail = thumbnailStyle.isRight() && !TextUtils.isEmpty(story.thumbnailUrl)
+
+        vh.thumbLoader?.cancel = true
+        vh.thumbLoader = null
+
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
@@ -705,7 +750,18 @@ class StoryViewAdapter(
         vh.storyAuthor.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
         vh.storySnippet.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
 
-        val contentRightPadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        val contentRightPadding =
+            spacingStyle.getStoryContentRightPadding(
+                context,
+                if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
+            )
+        val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
+        vh.storyTitleView.setPadding(
+            vh.storyTitleView.paddingLeft,
+            titleVerticalPadding,
+            contentRightPadding,
+            titleVerticalPadding,
+        )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
         vh.storySnippet.setPadding(
             vh.storySnippet.paddingLeft,
@@ -733,10 +789,13 @@ class StoryViewAdapter(
             } else if (thumbnailStyle.isRight()) {
                 val thumbSizeGuess = vh.thumbViewRight.measuredHeight
                 vh.thumbViewRight.setImageBitmap(null)
-                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
                 vh.thumbViewLeft.visibility = View.GONE
-                val hideThumbnail = TextUtils.isEmpty(story.thumbnailUrl) && storyContentPreviewStyle == StoryContentPreviewStyle.NONE
-                vh.thumbViewRight.visibility = if (hideThumbnail) View.GONE else View.VISIBLE
+                if (showRightThumbnail) {
+                    vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
+                    vh.thumbViewRight.visibility = View.VISIBLE
+                } else {
+                    vh.thumbViewRight.visibility = View.GONE
+                }
             }
             vh.lastThumbUrl = story.thumbnailUrl
         } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
@@ -745,33 +804,102 @@ class StoryViewAdapter(
             vh.thumbViewLeft.visibility = View.GONE
         }
 
-        var sizeRes = R.dimen.thumbnails_size
-        if (thumbnailStyle.isSmall()) {
-            sizeRes = R.dimen.thumbnails_small_size
-        }
-        val sizeDp = context.resources.getDimensionPixelSize(sizeRes)
+        val largeWidthPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_size)
+        val smallWidthPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_small_width)
+        val smallMinHeightPx = context.resources.getDimensionPixelSize(R.dimen.thumbnails_small_min_height)
 
         var params: RelativeLayout.LayoutParams? = null
+        var thumbView: StoryThumbnailView? = null
         if (thumbnailStyle.isLeft() && vh.thumbViewLeft != null) {
             vh.thumbViewLeft.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewLeft
             params = vh.thumbViewLeft.layoutParams as RelativeLayout.LayoutParams
         } else if (thumbnailStyle.isRight() && vh.thumbViewRight != null) {
             vh.thumbViewRight.setThumbnailStyle(thumbnailStyle)
+            thumbView = vh.thumbViewRight
             params = vh.thumbViewRight.layoutParams as RelativeLayout.LayoutParams
         }
-        if (params != null && params.width != sizeDp) {
-            params.width = sizeDp
-        }
-        if (params != null && thumbnailStyle.isSmall()) {
+        if (params != null) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
-            val leftMargin = if (thumbnailStyle.isLeft()) UIUtils.dp2px(context, 8) else 0
-            val rightMargin = if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 8) else 0
-            params.setMargins(leftMargin, verticalMargin, rightMargin, verticalMargin)
-            params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.id)
-        } else if (params != null) {
-            params.setMargins(0, 0, 0, 0)
+            val sideMargin = UIUtils.dp2px(context, 8)
+            val layout = thumbnailStyle.storyRowLayout(largeWidthPx, smallWidthPx, verticalMargin, sideMargin)
+
             params.removeRule(RelativeLayout.ALIGN_BOTTOM)
-            params.height = sizeDp
+            params.removeRule(RelativeLayout.CENTER_VERTICAL)
+            params.removeRule(RelativeLayout.ALIGN_PARENT_TOP)
+            params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+
+            when (layout.verticalMode) {
+                StoryRowThumbnailVerticalMode.CENTERED -> {
+                    params.addRule(RelativeLayout.CENTER_VERTICAL)
+                    val targetThumbView = thumbView
+                    if (targetThumbView != null) {
+                        val boundStoryHash = story.storyHash
+                        val boundThumbnailStyle = thumbnailStyle
+                        val verticalInsetPx = UIUtils.dp2px(context, 8)
+
+                        targetThumbView.setExpandedLayout(
+                            layout.widthPx,
+                            layout.fixedHeightPx ?: 1,
+                            layout.leftMarginPx,
+                            layout.topMarginPx,
+                            layout.rightMarginPx,
+                            layout.bottomMarginPx,
+                        )
+                        vh.itemView.doOnLayout { itemView ->
+                            if (vh.story?.storyHash != boundStoryHash) return@doOnLayout
+                            if (thumbnailStyle != boundThumbnailStyle) return@doOnLayout
+                            val maxAllowedHeight = (itemView.height - verticalInsetPx).coerceAtLeast(1)
+                            val scaledHeight = (itemView.height * layout.rowHeightFraction).roundToInt()
+                            val targetHeight =
+                                if (maxAllowedHeight >= smallMinHeightPx) {
+                                    scaledHeight.coerceAtLeast(smallMinHeightPx).coerceAtMost(maxAllowedHeight)
+                                } else {
+                                    maxAllowedHeight
+                                }
+                            targetThumbView.setExpandedLayout(
+                                layout.widthPx,
+                                targetHeight,
+                                layout.leftMarginPx,
+                                layout.topMarginPx,
+                                layout.rightMarginPx,
+                                layout.bottomMarginPx,
+                            )
+                        }
+                    }
+                }
+                StoryRowThumbnailVerticalMode.MATCH_ROW_HEIGHT -> {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                    val targetThumbView = thumbView
+                    if (targetThumbView != null) {
+                        val boundStoryHash = story.storyHash
+                        val boundThumbnailStyle = thumbnailStyle
+
+                        // Keep the large image from influencing measurement; once the text lays out,
+                        // resize the image to the row's established height.
+                        targetThumbView.setExpandedLayout(
+                            layout.widthPx,
+                            1,
+                            layout.leftMarginPx,
+                            layout.topMarginPx,
+                            layout.rightMarginPx,
+                            layout.bottomMarginPx,
+                        )
+                        vh.itemView.doOnLayout { itemView ->
+                            if (vh.story?.storyHash != boundStoryHash) return@doOnLayout
+                            if (thumbnailStyle != boundThumbnailStyle) return@doOnLayout
+                            targetThumbView.setExpandedLayout(
+                                layout.widthPx,
+                                itemView.height.coerceAtLeast(1),
+                                layout.leftMarginPx,
+                                layout.topMarginPx,
+                                layout.rightMarginPx,
+                                layout.bottomMarginPx,
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         if (this.ignoreReadStatus || !story.read) {
@@ -811,6 +939,7 @@ class StoryViewAdapter(
             val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
             val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
             if (e1 != null &&
+                shouldHandleLeftToRightStoryGesture() &&
                 e1.x > edgeWithNavGesturesPaddingPx &&
                 // the gesture should not start too close to the left edge and
                 e2.x - e1.x > 50f &&
@@ -833,6 +962,11 @@ class StoryViewAdapter(
                 return true
             }
             return false
+        }
+
+        private fun shouldHandleLeftToRightStoryGesture(): Boolean {
+            if (context !is ItemsList) return true
+            return prefsRepo.getLeftToRightGestureAction() != GestureAction.GEST_ACTION_BACK
         }
     }
 

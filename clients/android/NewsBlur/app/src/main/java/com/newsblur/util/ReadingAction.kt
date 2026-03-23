@@ -27,6 +27,13 @@ sealed interface ReadingAction : Serializable {
 
     data class MarkStoryRead(
         val storyHash: String,
+        val readTimesJson: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
+    ) : ReadingAction
+
+    data class ReportStoryReadTimes(
+        val readTimesJson: String,
         override val time: Long = System.currentTimeMillis(),
         override val tried: Int = 0,
     ) : ReadingAction
@@ -197,6 +204,7 @@ sealed interface ReadingAction : Serializable {
 
             return when (decoded) {
                 is MarkStoryRead -> decoded.copy(time = time, tried = tried)
+                is ReportStoryReadTimes -> decoded.copy(time = time, tried = tried)
                 is MarkStoryUnread -> decoded.copy(time = time, tried = tried)
                 is SaveStory -> decoded.copy(time = time, tried = tried)
                 is UnsaveStory -> decoded.copy(time = time, tried = tried)
@@ -299,7 +307,10 @@ suspend fun ReadingAction.doRemote(
     when (this) {
         // MARK_READ (story)
         is ReadingAction.MarkStoryRead ->
-            result = storyApi.markStoryAsRead(storyHash)
+            result = storyApi.markStoryAsRead(storyHash, readTimesJson)
+
+        is ReadingAction.ReportStoryReadTimes ->
+            result = storyApi.submitReadTimes(readTimesJson)
 
         is ReadingAction.MarkStoryUnread ->
             result = storyApi.markStoryHashUnread(storyHash)
@@ -413,6 +424,9 @@ fun ReadingAction.doLocal(
             plus(UPDATE_STORY)
         }
 
+        is ReadingAction.ReportStoryReadTimes -> {
+        }
+
         is ReadingAction.MarkStoryUnread -> {
             dbHelper.setStoryReadState(storyHash, false)
             plus(UPDATE_METADATA)
@@ -521,6 +535,7 @@ fun ReadingAction.doLocal(
         is ReadingAction.RenameFeed -> {
             dbHelper.renameFeed(feedId, newFeedName)
             plus(UPDATE_METADATA)
+            plus(UPDATE_STORY)
         }
     }
 

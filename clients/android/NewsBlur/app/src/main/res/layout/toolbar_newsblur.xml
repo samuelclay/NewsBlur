@@ -8,40 +8,84 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/toolbar_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/actionBarItemBackground"
+                android:contentDescription="@string/gest_action_back"
+                android:padding="10dp"
+                android:scaleType="centerInside"
                 android:src="?attr/homeAsUpIndicator"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/toolbar_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="6dp"
                 android:src="@drawable/ic_world"
-                app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+                app:layout_constraintBottom_toBottomOf="@id/toolbar_arrow"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_text"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@id/toolbar_arrow"
+                app:layout_constraintTop_toTopOf="@id/toolbar_arrow"
+                app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
 
             <TextView
                 android:id="@+id/toolbar_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:ellipsize="end"
+                android:gravity="center"
                 android:maxLines="1"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="@id/toolbar_icon"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_action_container"
+                app:layout_constraintStart_toEndOf="@id/toolbar_icon"
+                app:layout_constraintTop_toTopOf="@id/toolbar_icon" />
 
-        </LinearLayout>
+            <FrameLayout
+                android:id="@+id/toolbar_action_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_settings_button"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/toolbar_settings_button"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/actionBarItemBackground"
+                android:contentDescription="@string/story_settings"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_settings"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.MaterialToolbar>
 </com.google.android.material.appbar.AppBarLayout>

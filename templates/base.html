@@ -40,6 +40,8 @@
       'is_archive'              : {{ user_profile.is_archive|yesno:"true,false" }},
       'is_pro'                  : {{ user_profile.is_pro|yesno:"true,false" }},
       'is_usage_billing'        : {{ user_profile.is_usage_billing|yesno:"true,false,false" }},
+      'can_use_ai_classifiers'  : {{ user_profile.can_use_ai_classifiers|yesno:"true,false,false" }},
+      'is_self_hosted_ai'       : {{ user_profile.is_self_hosted_ai|yesno:"true,false,false" }},
       'usage_billing_limit'     : {% if user_profile.usage_billing_limit %}{{ user_profile.usage_billing_limit }}{% else %}null{% endif %},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
@@ -181,7 +183,7 @@
       {% endif %}
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
-      <script>(function(){var t;try{t=localStorage.getItem('newsblur:theme')}catch(e){}if(!t)t='auto';if(t==='auto')t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
+      <script>(function(){var t=null;try{var r=localStorage.getItem('newsblur:theme');if(r){var o=JSON.parse(r);if(o&&o.theme&&o.ts&&(Date.now()-o.ts<216e5))t=o.theme;else localStorage.removeItem('newsblur:theme')}}catch(e){try{localStorage.removeItem('newsblur:theme')}catch(e2){}}if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
       {% block header %}{% endblock %}
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
@@ -228,6 +230,10 @@
                       <a href="{% url "feature-native-apps" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-native-apps">
                         <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">Native Apps</div>
                         <div class="NB-splash-dropdown-item-desc">First-class iOS &amp; Android apps, not wrappers</div>
+                      </a>
+                      <a href="{% url "feature-story-clustering" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-clustering">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/stack.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">Story Clustering</div>
+                        <div class="NB-splash-dropdown-item-desc">Group duplicate stories across your feeds</div>
                       </a>
                     </div>
                     <div class="NB-splash-dropdown-col NB-splash-dropdown-col-more">

@@ -1,13 +1,20 @@
 package com.newsblur.activity
 
+import android.graphics.Rect
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.VelocityTracker
+import android.view.ViewConfiguration
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -38,7 +45,9 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
+import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
@@ -54,6 +63,28 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
+
+internal enum class OverlayRightAction {
+    NEXT_UNREAD,
+    ANIMATE_TO_FEED_LIST,
+    RETURN_TO_MAIN,
+    FINISH_READING,
+}
+
+internal fun resolveOverlayRightAction(
+    unreadCount: Int,
+    isTaskRoot: Boolean,
+    hasReadingLaunchParent: Boolean,
+): OverlayRightAction =
+    if (unreadCount > 0) {
+        OverlayRightAction.NEXT_UNREAD
+    } else if (hasReadingLaunchParent) {
+        OverlayRightAction.ANIMATE_TO_FEED_LIST
+    } else if (isTaskRoot) {
+        OverlayRightAction.RETURN_TO_MAIN
+    } else {
+        OverlayRightAction.FINISH_READING
+    }
 
 @AndroidEntryPoint
 abstract class Reading :
@@ -83,9 +114,12 @@ abstract class Reading :
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
+    private val readTimeTracker = ReadTimeTracker()
+    private var readTimeTickJob: Job? = null
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
+    private var activeUnreadSnackbar: com.google.android.material.snackbar.Snackbar? = null
     private var overlayRangeTopPx = 0f
     private var overlayRangeBotPx = 0f
     private var lastVScrollPos = 0
@@ -105,9 +139,14 @@ abstract class Reading :
     private lateinit var intelState: StateFilter
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
+    private lateinit var traverseBar: ReadingTraverseBar
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
+    private var interactiveBackSurface: View? = null
+    private var suppressNextExitTransition = false
+    private var allowImmediateFinish = false
+    private var predictiveBackInProgress = false
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -116,6 +155,8 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
+        PendingTransitionUtils.overrideEnterTransition(this)
+        window.setBackgroundDrawableResource(android.R.color.transparent)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
@@ -189,9 +230,15 @@ abstract class Reading :
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false)
         keyboardManager.addListener(this)
+        resumeCurrentStoryReadTimeTracking()
+        updateBackSwipeGestureExclusion()
     }
 
     override fun onPause() {
+        if (!isFinishing) {
+            resetInteractiveReaderBackSwipe(cancelAnimation = true)
+        }
+        flushAndStopReadTimeTracking()
         super.onPause()
         keyboardManager.removeListener()
         if (isMultiWindowModeHack) {
@@ -214,13 +261,13 @@ abstract class Reading :
         overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
         overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
 
-        ViewUtils.setViewElevation(binding.readingOverlayLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayRight, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayText, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlaySend, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgress, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressRight, OVERLAY_ELEVATION_DP)
+        findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
+
+        traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
+        traverseBar.setup()
+
+        ViewUtils.setViewElevation(binding.readingOverlayLeftGroup, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayRightGroup, OVERLAY_ELEVATION_DP)
 
         // this likes to default to 'on' for some platforms
         enableProgressCircle(binding.readingOverlayProgressLeft, false)
@@ -230,6 +277,11 @@ abstract class Reading :
             ?: supportFragmentManager.commit {
                 add(R.id.content, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
             }
+
+        binding.readingBackSwipeEdge.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            updateBackSwipeGestureExclusion()
+        }
+        updateBackSwipeGestureExclusion()
     }
 
     private fun setupListeners() {
@@ -237,7 +289,8 @@ abstract class Reading :
         binding.readingOverlaySend.setOnClickListener { overlaySendClick() }
         binding.readingOverlayLeft.setOnClickListener { overlayLeftClick() }
         binding.readingOverlayRight.setOnClickListener { overlayRightClick() }
-        binding.readingOverlayProgress.setOnClickListener { overlayProgressCountClick() }
+        binding.readingOverlayProgressTapArea.setOnClickListener { overlayProgressCountClick() }
+        binding.readingBackSwipeEdge.setOnTouchListener(ReadingBackSwipeTouchListener())
     }
 
     private fun setupObservers() {
@@ -253,12 +306,36 @@ abstract class Reading :
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(enabled = true) {
+                override fun handleOnBackStarted(backEvent: BackEventCompat) {
+                    predictiveBackInProgress =
+                        supportsPredictiveReaderBack() &&
+                            isInteractiveReaderBackEnabled() &&
+                            backEvent.swipeEdge == BackEventCompat.EDGE_LEFT
+                    if (predictiveBackInProgress) {
+                        beginInteractiveReaderBackSwipe()
+                    }
+                }
+
+                override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+                    if (!predictiveBackInProgress) return
+                    updateInteractiveReaderBackSwipe(backEvent.progress * interactiveBackSurface().width)
+                }
+
+                override fun handleOnBackCancelled() {
+                    if (!predictiveBackInProgress) return
+                    predictiveBackInProgress = false
+                    cancelInteractiveReaderBackSwipe()
+                }
+
                 override fun handleOnBackPressed() {
+                    predictiveBackInProgress = false
                     finish()
                 }
             },
         )
     }
+
+    override fun shouldUseTranslucentTheme(): Boolean = true
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
@@ -369,6 +446,7 @@ abstract class Reading :
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
+            ThemeValue.SEPIA -> pager.setPageMarginDrawable(R.drawable.divider_sepia)
             ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
             ThemeValue.AUTO -> {
                 when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
@@ -469,6 +547,7 @@ abstract class Reading :
                 readingAdapter?.let { readingAdapter ->
                     val story = readingAdapter.getStory(position)
                     if (story != null) {
+                        beginReadTimeTracking(story.storyHash)
                         synchronized(pageHistory) {
                             // if the history is just starting out or the last entry in it isn't this page, add this page
                             if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
@@ -493,6 +572,8 @@ abstract class Reading :
         currentWidth: Int,
         currentHeight: Int,
     ) {
+        readTimeTracker.recordActivity()
+
         // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
         if (abs(lastVScrollPos - vPos) < 2) return
@@ -529,11 +610,11 @@ abstract class Reading :
         }
 
         runOnUiThread {
-            UIUtils.setViewAlpha(binding.readingOverlayLeft, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayRight, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayProgress, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayText, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlaySend, a, !overflowExtras)
+            binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
+            binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
+
+            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, a, true)
+            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, a, true)
         }
     }
 
@@ -556,17 +637,8 @@ abstract class Reading :
         if (currentUnreadCount > startingUnreadCount) {
             startingUnreadCount = currentUnreadCount
         }
-        binding.readingOverlayLeft.isEnabled = getLastReadPosition(false) != -1
-        binding.readingOverlayRight.setText(if (currentUnreadCount > 0) R.string.overlay_next else R.string.overlay_done)
-        if (currentUnreadCount > 0) {
-            binding.readingOverlayRight.setBackgroundResource(
-                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background),
-            )
-        } else {
-            binding.readingOverlayRight.setBackgroundResource(
-                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background),
-            )
-        }
+        traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+        traverseBar.updateNextShowDone(currentUnreadCount <= 0)
 
         if (startingUnreadCount == 0) {
             // sessions with no unreads just show a full progress bar
@@ -579,6 +651,7 @@ abstract class Reading :
         }
         binding.readingOverlayProgress.invalidate()
 
+        updateUnreadSnackbarIfVisible()
         invalidateOptionsMenu()
     }
 
@@ -586,17 +659,9 @@ abstract class Reading :
         runOnUiThread(
             Runnable {
                 val item = readingFragment ?: return@Runnable
-                if (item.selectedViewMode == DefaultFeedView.STORY) {
-                    binding.readingOverlayText.setBackgroundResource(
-                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundText, android.R.attr.background),
-                    )
-                    binding.readingOverlayText.setText(R.string.overlay_text)
-                } else {
-                    binding.readingOverlayText.setBackgroundResource(
-                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundStory, android.R.attr.background),
-                    )
-                    binding.readingOverlayText.setText(R.string.overlay_story)
-                }
+                val inTextView = item.selectedViewMode != DefaultFeedView.STORY
+                traverseBar.updateTextInTextView(inTextView, enabled = true)
+                traverseBar.updateSendEnabled(true)
             },
         )
     }
@@ -661,17 +726,33 @@ abstract class Reading :
      * Click handler for the righthand overlay nav button.
      */
     private fun overlayRightClick() {
-        if (unreadCount <= 0) {
-            // if there are no unread stories, go back to the feed list
-            val i = Intent(this, Main::class.java)
-            i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(i)
-            finish()
-        } else {
-            // if there are unreads, go to the next one
-            lifecycleScope.executeAsyncTask(
-                doInBackground = { nextUnread() },
+        val readingLaunchParent = ItemsList.peekReadingLaunchParent()
+        when (
+            resolveOverlayRightAction(
+                unreadCount = unreadCount,
+                isTaskRoot = isTaskRoot,
+                hasReadingLaunchParent = readingLaunchParent != null,
             )
+        ) {
+            OverlayRightAction.ANIMATE_TO_FEED_LIST -> {
+                readingLaunchParent?.animateBackToFeedListFromReading()
+                finish()
+            }
+
+            OverlayRightAction.RETURN_TO_MAIN -> {
+                // Direct launches need a real list activity underneath before we exit.
+                val i = Intent(this, Main::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(i)
+                finish()
+            }
+
+            OverlayRightAction.FINISH_READING -> finish()
+
+            OverlayRightAction.NEXT_UNREAD ->
+                lifecycleScope.executeAsyncTask(
+                    doInBackground = { nextUnread() },
+                )
         }
     }
 
@@ -783,8 +864,54 @@ abstract class Reading :
      * Click handler for the progress indicator on the righthand overlay nav button.
      */
     private fun overlayProgressCountClick() {
-        val unreadText = getString(if (unreadCount == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
-        Toast.makeText(this, String.format(unreadText, unreadCount), Toast.LENGTH_SHORT).show()
+        showUnreadSnackbar()
+    }
+
+    private fun showUnreadSnackbar() {
+        val count = unreadCount
+        val unreadText = getString(if (count == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
+        val message = String.format(unreadText, count)
+
+        val existing = activeUnreadSnackbar
+        if (existing != null && existing.isShown) {
+            existing.setText(message)
+            return
+        }
+
+        val snackbar = com.google.android.material.snackbar.Snackbar.make(
+            binding.root,
+            message,
+            com.google.android.material.snackbar.Snackbar.LENGTH_SHORT,
+        )
+        snackbar.anchorView = binding.contentBottomOverlay
+        val snackView = snackbar.view
+        val params = snackView.layoutParams as android.widget.FrameLayout.LayoutParams
+        params.width = android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        params.gravity = android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.BOTTOM
+        snackView.layoutParams = params
+        snackView.background = android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            cornerRadius = UIUtils.dp2px(this@Reading, 20f)
+            setColor(traverseBar.palette.groupBackgroundColor)
+        }
+        val textView = snackView.findViewById<android.widget.TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.setTextColor(traverseBar.palette.tintColor)
+        textView.textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+        snackbar.addCallback(object : com.google.android.material.snackbar.Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: com.google.android.material.snackbar.Snackbar?, event: Int) {
+                if (activeUnreadSnackbar === transientBottomBar) activeUnreadSnackbar = null
+            }
+        })
+        activeUnreadSnackbar = snackbar
+        snackbar.show()
+    }
+
+    private fun updateUnreadSnackbarIfVisible() {
+        val existing = activeUnreadSnackbar ?: return
+        if (!existing.isShown) return
+        val count = unreadCount
+        val unreadText = getString(if (count == 1) R.string.overlay_count_toast_1 else R.string.overlay_count_toast_N)
+        existing.setText(String.format(unreadText, count))
     }
 
     private fun overlaySendClick() {
@@ -796,6 +923,10 @@ abstract class Reading :
     private fun overlayTextClick() {
         val item = readingFragment ?: return
         item.switchSelectedViewMode()
+    }
+
+    private fun openStorySettingsMenu(anchor: View) {
+        readingFragment?.showStoryContextMenu(anchor)
     }
 
     private val readingFragment: ReadingItemFragment?
@@ -913,8 +1044,25 @@ abstract class Reading :
     ): Job =
         lifecycleScope.launch(Dispatchers.Default) {
             if (isActive) delay(delayMillis)
-            if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
+            if (isActive) markStoryAsRead(story)
         }
+
+    fun markStoryAsRead(story: Story) {
+        val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
+        feedUtils.syncStoryAsRead(story, this, readTimesJson)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (
+            event.actionMasked == MotionEvent.ACTION_DOWN ||
+            event.actionMasked == MotionEvent.ACTION_MOVE ||
+            event.actionMasked == MotionEvent.ACTION_UP
+        ) {
+            readTimeTracker.recordActivity()
+        }
+
+        return super.dispatchTouchEvent(event)
+    }
 
     override fun onKeyboardEvent(event: KeyboardEvent) {
         when (event) {
@@ -944,6 +1092,11 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        if (!allowImmediateFinish && shouldAnimateReaderBackFinish()) {
+            completeInteractiveReaderBackSwipe()
+            return
+        }
+        flushAndStopReadTimeTracking()
         setResult(
             RESULT_OK,
             Intent().apply {
@@ -955,6 +1108,242 @@ abstract class Reading :
             },
         )
         super.finish()
+        if (suppressNextExitTransition) {
+            PendingTransitionUtils.overrideNoExitTransition(this)
+        }
+        suppressNextExitTransition = false
+        allowImmediateFinish = false
+    }
+
+    private fun beginReadTimeTracking(storyHash: String?) {
+        if (storyHash.isNullOrBlank()) return
+
+        val previousStoryHash = readTimeTracker.currentStoryHash
+        if (previousStoryHash != null && previousStoryHash != storyHash) {
+            readTimeTracker.harvestCurrentStory()
+        }
+
+        readTimeTracker.startTracking(storyHash)
+        ensureReadTimeTickJob()
+    }
+
+    private fun resumeCurrentStoryReadTimeTracking() {
+        val currentStory =
+            if (pager == null || readingAdapter == null) {
+                null
+            } else {
+                readingAdapter!!.getStory(pager!!.currentItem)
+            }
+        beginReadTimeTracking(currentStory?.storyHash)
+    }
+
+    private fun ensureReadTimeTickJob() {
+        if (readTimeTickJob?.isActive == true) return
+
+        readTimeTickJob =
+            lifecycleScope.launch(Dispatchers.Default) {
+                while (isActive) {
+                    delay(1_000L)
+                    readTimeTracker.tick()
+                }
+            }
+    }
+
+    private fun flushStoryReadTimes() {
+        readTimeTracker.harvestCurrentStory()
+        val readTimesJson = readTimeTracker.drainQueuedReadTimesJson()
+        feedUtils.flushStoryReadTimes(this, readTimesJson, sendImmediately = true)
+    }
+
+    private fun flushAndStopReadTimeTracking() {
+        readTimeTickJob?.cancel()
+        readTimeTickJob = null
+        flushStoryReadTimes()
+        readTimeTracker.stopTracking()
+    }
+
+    private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
+
+    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
+
+    private fun supportsPredictiveReaderBack(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+    private fun beginInteractiveReaderBackSwipe() {
+        interactiveBackSurface().animate().cancel()
+    }
+
+    private fun updateInteractiveReaderBackSwipe(offsetPx: Float) {
+        val surface = interactiveBackSurface()
+        var clampedOffset = offsetPx.coerceAtLeast(0f)
+        val width = surface.width
+        if (width > 0) {
+            clampedOffset = clampedOffset.coerceAtMost(width.toFloat())
+        }
+        surface.translationX = clampedOffset
+    }
+
+    private fun cancelInteractiveReaderBackSwipe() {
+        animateInteractiveReaderBackSwipe(0f, finishWhenComplete = false)
+    }
+
+    private fun completeInteractiveReaderBackSwipe() {
+        val surface = interactiveBackSurface()
+        val targetTranslation =
+            if (surface.width > 0) {
+                surface.width.toFloat()
+            } else {
+                resources.displayMetrics.widthPixels.toFloat()
+            }
+        animateInteractiveReaderBackSwipe(targetTranslation, finishWhenComplete = true)
+    }
+
+    private fun animateInteractiveReaderBackSwipe(
+        targetTranslationX: Float,
+        finishWhenComplete: Boolean,
+    ) {
+        interactiveBackSurface()
+            .animate()
+            .translationX(targetTranslationX)
+            .setDuration(READING_BACK_SWIPE_SETTLE_DURATION_MS)
+            .setInterpolator(READING_BACK_SWIPE_INTERPOLATOR)
+            .withEndAction {
+                if (finishWhenComplete) {
+                    suppressNextExitTransition = true
+                    allowImmediateFinish = true
+                    finish()
+                } else {
+                    resetInteractiveReaderBackSwipe(cancelAnimation = false)
+                }
+            }.start()
+    }
+
+    private fun resetInteractiveReaderBackSwipe(cancelAnimation: Boolean) {
+        val surface = interactiveBackSurface()
+        if (cancelAnimation) {
+            surface.animate().cancel()
+        }
+        surface.translationX = 0f
+    }
+
+    private fun interactiveBackSurface(): View {
+        if (interactiveBackSurface == null) {
+            interactiveBackSurface = findViewById(android.R.id.content)
+        }
+        return interactiveBackSurface!!
+    }
+
+    private fun updateBackSwipeGestureExclusion() {
+        if (!this::binding.isInitialized) return
+        val edgeView = binding.readingBackSwipeEdge
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        edgeView.systemGestureExclusionRects =
+            if (!supportsPredictiveReaderBack() &&
+                isInteractiveReaderBackEnabled() &&
+                edgeView.width > 0 &&
+                edgeView.height > 0
+            ) {
+                listOf(Rect(0, 0, edgeView.width, edgeView.height))
+            } else {
+                emptyList()
+            }
+    }
+
+    private inner class ReadingBackSwipeTouchListener : View.OnTouchListener {
+        private val touchSlopPx = ViewConfiguration.get(this@Reading).scaledTouchSlop
+        private val minimumFlingVelocityPx = ViewConfiguration.get(this@Reading).scaledMinimumFlingVelocity
+        private var velocityTracker: VelocityTracker? = null
+        private var downRawX = 0f
+        private var downRawY = 0f
+        private var isDragging = false
+
+        override fun onTouch(
+            view: View,
+            event: MotionEvent,
+        ): Boolean {
+            if (supportsPredictiveReaderBack()) return false
+            if (!isInteractiveReaderBackEnabled()) return false
+
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    isDragging = false
+                    downRawX = event.rawX
+                    downRawY = event.rawY
+                    resetVelocityTracker()
+                    velocityTracker = VelocityTracker.obtain()
+                    trackMovement(event)
+                    return true
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    trackMovement(event)
+                    val deltaX = event.rawX - downRawX
+                    val deltaY = event.rawY - downRawY
+                    if (!isDragging &&
+                        deltaX > touchSlopPx &&
+                        deltaX > kotlin.math.abs(deltaY) * READING_BACK_SWIPE_DIRECTION_RATIO
+                    ) {
+                        isDragging = true
+                        beginInteractiveReaderBackSwipe()
+                    }
+                    if (isDragging) {
+                        updateInteractiveReaderBackSwipe(deltaX)
+                    }
+                    return true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    if (isDragging) {
+                        val totalDeltaX = (event.rawX - downRawX).coerceAtLeast(0f)
+                        val shouldComplete =
+                            totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
+                                getXVelocity() > minimumFlingVelocityPx * 4f
+                        if (shouldComplete) {
+                            completeInteractiveReaderBackSwipe()
+                        } else {
+                            cancelInteractiveReaderBackSwipe()
+                        }
+                    } else {
+                        view.performClick()
+                    }
+                    resetGestureState()
+                    return true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    if (isDragging) {
+                        cancelInteractiveReaderBackSwipe()
+                    }
+                    resetGestureState()
+                    return true
+                }
+            }
+
+            return false
+        }
+
+        private fun getXVelocity(): Float {
+            val tracker = velocityTracker ?: return 0f
+            tracker.computeCurrentVelocity(1000)
+            return tracker.xVelocity
+        }
+
+        private fun trackMovement(event: MotionEvent) {
+            val tracker = velocityTracker ?: return
+            val screenEvent = MotionEvent.obtain(event)
+            screenEvent.offsetLocation(event.rawX - event.x, event.rawY - event.y)
+            tracker.addMovement(screenEvent)
+            screenEvent.recycle()
+        }
+
+        private fun resetGestureState() {
+            isDragging = false
+            resetVelocityTracker()
+        }
+
+        private fun resetVelocityTracker() {
+            velocityTracker?.recycle()
+            velocityTracker = null
+        }
     }
 
     companion object {
@@ -973,5 +1362,9 @@ abstract class Reading :
         private const val OVERLAY_MIN_WIDTH_DP = 355
 
         const val LAST_READING_POS = "last_reading_pos"
+        private const val READING_BACK_SWIPE_TRIGGER_RATIO = 0.33f
+        private const val READING_BACK_SWIPE_DIRECTION_RATIO = 1.2f
+        private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L
+        private val READING_BACK_SWIPE_INTERPOLATOR = DecelerateInterpolator()
     }
 }

@@ -44,7 +44,13 @@ frontend public
     bind :80
     bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem alpn h2,http/1.1
     http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    http-request set-header X-Request-Start %[date()]%[date_us()]
     option http-server-close
+
+    # Block vulnerability scanners before they reach Gunicorn workers
+    acl is_scanner_path path_end .php .cgi .asp .aspx .env
+    acl is_scanner_path path_beg /wp-admin /wp-login /wp-content /wp-includes
+    http-request deny deny_status 403 if is_scanner_path
 
     acl gunicorn_dead nbsrv(app_django) lt 1
     acl nginx_dead nbsrv(nginx) lt 1

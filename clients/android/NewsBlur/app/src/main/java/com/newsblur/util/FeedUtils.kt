@@ -15,6 +15,8 @@ import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.FolderApi
+import com.newsblur.network.StoryApi
+import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -32,7 +34,14 @@ class FeedUtils(
     private val folderApi: FolderApi,
     private val prefsRepo: PrefsRepo,
     private val syncServiceState: SyncServiceState,
+    private val tryFeedStore: TryFeedStore,
+    private val storyApi: StoryApi,
 ) {
+    private enum class StoryReadRemoteMode {
+        QUEUED,
+        IMMEDIATE,
+    }
+
     // this is gross, but the feedset can't hold a folder title
     // without being mistaken for a folder feed.
     // The alternative is to pass it through alongside all instances
@@ -136,21 +145,45 @@ class FeedUtils(
         )
     }
 
+    @JvmOverloads
     fun markStoryAsRead(
         story: Story,
         context: Context,
+        readTimesJson: String? = null,
     ) {
         NBScope.executeAsyncTask(
             doInBackground = {
-                setStoryReadState(story, context, true)
+                setStoryReadState(story, context, true, readTimesJson, StoryReadRemoteMode.QUEUED)
             },
         )
     }
 
-    private fun setStoryReadState(
+    fun syncStoryAsRead(
+        story: Story,
+        context: Context,
+        readTimesJson: String? = null,
+    ) {
+        NBScope.executeAsyncTask(
+            doInBackground = {
+                syncStoryAsReadNow(story, context, readTimesJson)
+            },
+        )
+    }
+
+    internal suspend fun syncStoryAsReadNow(
+        story: Story,
+        context: Context,
+        readTimesJson: String? = null,
+    ) {
+        setStoryReadState(story, context, true, readTimesJson, StoryReadRemoteMode.IMMEDIATE)
+    }
+
+    private suspend fun setStoryReadState(
         story: Story,
         context: Context,
         read: Boolean,
+        readTimesJson: String? = null,
+        remoteMode: StoryReadRemoteMode = StoryReadRemoteMode.QUEUED,
     ) {
         try {
             // this shouldn't throw errors, but crash logs suggest something is racing it for DB resources.
@@ -160,23 +193,87 @@ class FeedUtils(
             Log.e(FeedUtils::class.java.name, "error touching story state in DB", e)
         }
         if (story.read == read) {
+            if (read && remoteMode == StoryReadRemoteMode.IMMEDIATE && !readTimesJson.isNullOrBlank()) {
+                submitReadTimesNow(context, readTimesJson)
+            }
             return
         }
-
-        // tell the sync service we need to mark read
-        val ra =
-            if (read) {
-                ReadingAction.MarkStoryRead(story.storyHash)
-            } else {
-                ReadingAction.MarkStoryUnread(story.storyHash)
-            }
-        dbHelper.enqueueAction(ra)
 
         // update unread state and unread counts in the local DB
         val impactedFeeds = dbHelper.setStoryReadState(story, read)
         syncUpdateStatus(UPDATE_STORY)
-
         syncServiceState.addRecountCandidates(impactedFeeds)
+
+        if (read) {
+            syncStoryReadRemote(story.storyHash, readTimesJson, context, remoteMode)
+        } else {
+            dbHelper.enqueueAction(ReadingAction.MarkStoryUnread(story.storyHash))
+            triggerSync(context)
+        }
+    }
+
+    fun flushStoryReadTimes(
+        context: Context,
+        readTimesJson: String?,
+        sendImmediately: Boolean = false,
+    ) {
+        if (readTimesJson.isNullOrBlank()) return
+
+        NBScope.executeAsyncTask(
+            doInBackground = {
+                if (sendImmediately) {
+                    submitReadTimesNow(context, readTimesJson)
+                } else {
+                    queueReadTimesForRetry(readTimesJson, context)
+                }
+            },
+        )
+    }
+
+    internal suspend fun submitReadTimesNow(
+        context: Context,
+        readTimesJson: String,
+    ) {
+        val response = storyApi.submitReadTimes(readTimesJson)
+        if (shouldQueueForRetry(response)) {
+            queueReadTimesForRetry(readTimesJson, context)
+        }
+    }
+
+    private suspend fun syncStoryReadRemote(
+        storyHash: String,
+        readTimesJson: String?,
+        context: Context,
+        remoteMode: StoryReadRemoteMode,
+    ) {
+        when (remoteMode) {
+            StoryReadRemoteMode.QUEUED -> queueStoryReadForRetry(storyHash, readTimesJson, context)
+            StoryReadRemoteMode.IMMEDIATE -> {
+                val response = storyApi.markStoryAsRead(storyHash, readTimesJson)
+                if (shouldQueueForRetry(response)) {
+                    queueStoryReadForRetry(storyHash, readTimesJson, context)
+                }
+            }
+        }
+    }
+
+    private fun shouldQueueForRetry(response: NewsBlurResponse?): Boolean =
+        response == null || response.isProtocolError
+
+    private fun queueStoryReadForRetry(
+        storyHash: String,
+        readTimesJson: String?,
+        context: Context,
+    ) {
+        dbHelper.enqueueAction(ReadingAction.MarkStoryRead(storyHash, readTimesJson))
+        triggerSync(context)
+    }
+
+    private fun queueReadTimesForRetry(
+        readTimesJson: String,
+        context: Context,
+    ) {
+        dbHelper.enqueueAction(ReadingAction.ReportStoryReadTimes(readTimesJson))
         triggerSync(context)
     }
 
@@ -323,6 +420,19 @@ class FeedUtils(
     ) {
         val ra = ReadingAction.UpdateIntel(feedId, classifier, fs)
         doAction(ra, context)
+    }
+
+    fun renameFeed(
+        context: Context,
+        feedId: String,
+        newFeedName: String,
+    ) {
+        val ra = ReadingAction.RenameFeed(feedId, newFeedName)
+        dbHelper.enqueueAction(ra)
+        val impact = ra.doLocal(dbHelper, prefsRepo)
+        syncUpdateStatus(impact)
+        syncServiceState.forceFeedsFolders()
+        triggerSync(context)
     }
 
     fun sendStoryUrl(
@@ -479,9 +589,9 @@ class FeedUtils(
      * where standalone stories are missing this info and it must be re-fetched.  This is costly
      * and should be avoided where possible.
      */
-    fun getFeedTitle(feedId: String?): String? = dbHelper.getFeed(feedId)?.title
+    fun getFeedTitle(feedId: String?): String? = dbHelper.getFeed(feedId)?.title ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }?.title
 
-    fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId)
+    fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId) ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }
 
     fun openStatistics(
         context: Context?,

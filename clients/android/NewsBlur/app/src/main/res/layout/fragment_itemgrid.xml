@@ -38,9 +38,9 @@
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/top_loading_indicator"
-        style="@style/linearProgressIndicator"
+        style="?linearProgressIndicator"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true" />
 
     <androidx.recyclerview.widget.RecyclerView

@@ -1,13 +1,17 @@
+import datetime
+import zlib
 from unittest.mock import MagicMock, patch
 
 import redis
 from django.conf import settings
 from django.core import management
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.rss_feeds.models import Feed, MStory
+from django.utils.encoding import smart_str
+
+from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 
@@ -712,3 +716,171 @@ class Test_TextImporterEncoding(TestCase):
 
         self.assertIsNotNone(result)
         self.assertIn("développe", result["content"])
+
+
+class Test_YouTubeFavicons(TestCase):
+    """Tests for YouTube favicon lookup and caching."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="https://www.youtube.com/feeds/videos.xml?channel_id=UC123",
+            feed_link="https://www.youtube.com/channel/UC123",
+            feed_title="Test YouTube Feed",
+        )
+        MFeedIcon.objects(feed_id=self.feed.pk).delete()
+
+    def tearDown(self):
+        MFeedIcon.objects(feed_id=self.feed.pk).delete()
+
+    @patch("utils.youtube_fetcher.requests.get")
+    def test_fetch_channel_icon_url_falls_back_from_for_username_to_for_handle(self, mock_get):
+        """Legacy username feeds should try forUsername before forHandle."""
+        from utils.youtube_fetcher import YoutubeFetcher
+
+        self.feed.feed_address = "http://gdata.youtube.com/feeds/base/users/legacy-user/uploads"
+        self.feed.save(update_fields=["feed_address"])
+
+        mock_get.side_effect = [
+            MagicMock(content=b'{"items": []}'),
+            MagicMock(
+                content=(
+                    b'{"items":[{"snippet":{"thumbnails":{"medium":{"url":'
+                    b'"https://yt3.googleusercontent.com/channel-avatar"}}}}]}'
+                )
+            ),
+        ]
+
+        icon_url = YoutubeFetcher(self.feed).fetch_channel_icon_url()
+
+        self.assertEqual(icon_url, "https://yt3.googleusercontent.com/channel-avatar")
+        self.assertEqual(len(mock_get.call_args_list), 2)
+        self.assertIn("forUsername=legacy-user", mock_get.call_args_list[0].args[0])
+        self.assertIn("forHandle=legacy-user", mock_get.call_args_list[1].args[0])
+
+    @patch("utils.youtube_fetcher.requests.get")
+    def test_fetch_channel_icon_url_uses_playlist_thumbnail(self, mock_get):
+        """Playlist feeds should use the YouTube Data API thumbnail instead of generic favicon."""
+        from utils.youtube_fetcher import YoutubeFetcher
+
+        self.feed.feed_address = "https://www.youtube.com/playlist?list=PL123"
+        self.feed.save(update_fields=["feed_address"])
+
+        mock_get.return_value = MagicMock(
+            content=(
+                b'{"items":[{"snippet":{"thumbnails":{"medium":{"url":'
+                b'"https://i.ytimg.com/vi/playlist-thumb/default.jpg"}}}}]}'
+            )
+        )
+
+        icon_url = YoutubeFetcher(self.feed).fetch_channel_icon_url()
+
+        self.assertEqual(icon_url, "https://i.ytimg.com/vi/playlist-thumb/default.jpg")
+        self.assertIn("playlists?part=snippet&id=PL123", mock_get.call_args.args[0])
+
+    @patch("apps.rss_feeds.icon_importer.IconImporter.fetch_image_from_path")
+    @patch("apps.rss_feeds.icon_importer.IconImporter.fetch_youtube_image")
+    def test_icon_importer_skips_existing_googleusercontent_avatar(
+        self, mock_fetch_youtube_image, mock_fetch_image_from_path
+    ):
+        """Current yt3.googleusercontent.com avatars should not be treated as generic."""
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        self.feed.s3_icon = True
+        self.feed.favicon_not_found = False
+        self.feed.save(update_fields=["s3_icon", "favicon_not_found"])
+
+        feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
+        feed_icon.data = "cached-avatar"
+        feed_icon.color = "ff0000"
+        feed_icon.icon_url = "https://yt3.googleusercontent.com/ytc/avatar=s88-c-k-c0x00ffffff-no-rj"
+        feed_icon.not_found = False
+        feed_icon.save()
+
+        mock_fetch_youtube_image.return_value = (None, None, None)
+        mock_fetch_image_from_path.return_value = (None, None, None)
+
+        IconImporter(self.feed).save()
+
+        mock_fetch_youtube_image.assert_not_called()
+        mock_fetch_image_from_path.assert_not_called()
+
+    def test_feed_favicon_etag_changes_when_icon_changes_but_color_does_not(self):
+        """Reloads should invalidate cached favicons when image data changes."""
+        from apps.rss_feeds.views import feed_favicon_etag
+
+        feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
+        feed_icon.color = "ff0000"
+        feed_icon.data = "first-icon"
+        feed_icon.icon_url = "https://yt3.googleusercontent.com/channel-avatar-a"
+        feed_icon.save()
+        first_etag = feed_favicon_etag(None, self.feed.pk)
+
+        feed_icon.data = "second-icon"
+        feed_icon.icon_url = "https://yt3.googleusercontent.com/channel-avatar-b"
+        feed_icon.save()
+        second_etag = feed_favicon_etag(None, self.feed.pk)
+
+        self.assertNotEqual(first_etag, second_etag)
+
+    @override_settings(BACKED_BY_AWS={**settings.BACKED_BY_AWS, "icons_on_s3": True})
+    def test_youtube_feeds_use_local_favicon_url_even_if_s3_icon_exists(self):
+        """Reloads should not reuse long-lived S3 cache for YouTube channel avatars."""
+        self.feed.s3_icon = True
+        self.feed.save(update_fields=["s3_icon"])
+
+        self.assertEqual(
+            self.feed.favicon_url,
+            reverse("feed-favicon", kwargs={"feed_id": self.feed.pk}),
+        )
+
+
+class Test_StoryImageInjection(TestCase):
+    """Tests for prepending og:image into Google News story content at fetch time."""
+
+    def test_prepend_image_to_content(self):
+        story = MStory(
+            story_feed_id=1,
+            story_title="Google News story",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.story_content_z = zlib.compress(b"<p>Story body without image.</p>")
+
+        story.prepend_image_to_content("https://example.com/hero.jpg")
+
+        content = smart_str(zlib.decompress(story.story_content_z))
+        self.assertTrue(content.startswith('<img src="https://example.com/hero.jpg">'))
+        self.assertIn("<p>Story body without image.</p>", content)
+
+    def test_prepend_image_replaces_previously_prepended_image(self):
+        story = MStory(
+            story_feed_id=1,
+            story_title="Google News story",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.story_content_z = zlib.compress(b"<p>Story body.</p>")
+
+        story.prepend_image_to_content("https://example.com/old.jpg")
+        story.prepend_image_to_content("https://example.com/new.jpg")
+
+        content = smart_str(zlib.decompress(story.story_content_z))
+        self.assertTrue(content.startswith('<img src="https://example.com/new.jpg">'))
+        self.assertNotIn("old.jpg", content)
+        self.assertEqual(content.count("<img"), 1)
+
+    def test_prepend_image_does_not_affect_format_story(self):
+        """format_story should not inject images — they're already in the content."""
+        story = MStory(
+            story_feed_id=1,
+            story_title="Regular feed story",
+            story_permalink="https://example.com/story",
+            story_date=datetime.datetime.utcnow(),
+            image_urls=["https://example.com/hero.jpg"],
+        )
+        story.story_content_z = zlib.compress(b"<p>No inline image.</p>")
+
+        rendered = Feed.format_story(story)
+
+        self.assertNotIn("hero.jpg", rendered["story_content"])
+        self.assertIn("<p>No inline image.</p>", rendered["story_content"])

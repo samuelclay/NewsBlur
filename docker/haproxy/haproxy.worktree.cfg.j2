@@ -74,7 +74,7 @@ frontend public
     use_backend gunicorn unless gunicorn_dead || nginx_dead
 
 backend node_images
-    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
+    option httpchk HEAD /
     http-check expect rstatus 200|301
     http-request replace-path /imageproxy(.*)     \1
     server node_images newsblur_imageproxy:8088 check inter 600000ms resolvers docker init-addr last,libc,none

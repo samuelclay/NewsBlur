@@ -102,6 +102,8 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_search_stories).isVisible = false
         }
 
+        menu.findItem(R.id.menu_discover_related_sites).isVisible = activity.shouldShowDiscoverAction();
+
         if (!fs.isSingleNormal || fs.isFilterSaved) {
             menu.findItem(R.id.menu_notifications).isVisible = false
             menu.findItem(R.id.menu_delete_feed).isVisible = false
@@ -110,6 +112,11 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_rename_feed).isVisible = false
             menu.findItem(R.id.menu_statistics).isVisible = false
         }
+
+        menu.findItem(R.id.menu_rename_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_mute_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_unmute_folder).isVisible = fs.isFolder
+        menu.findItem(R.id.menu_delete_folder).isVisible = fs.isFolder
 
         if (!fs.isInfrequent) {
             menu.findItem(R.id.menu_infrequent_cutoff).isVisible = false
@@ -146,6 +153,7 @@ open class ItemListContextMenuDelegateImpl(
 
         when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
+            ThemeValue.SEPIA -> menu.findItem(R.id.menu_theme_sepia).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
@@ -211,15 +219,19 @@ open class ItemListContextMenuDelegateImpl(
             return true
         } else if (item.itemId == R.id.menu_story_order_newest) {
             updateStoryOrder(fragment, fs, StoryOrder.NEWEST)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_story_order_oldest) {
             updateStoryOrder(fragment, fs, StoryOrder.OLDEST)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_read_filter_all_stories) {
             updateReadFilter(fragment, fs, ReadFilter.ALL)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_read_filter_unread_only) {
             updateReadFilter(fragment, fs, ReadFilter.UNREAD)
+            activity.refreshStoryHeaderControls()
             return true
         } else if (item.itemId == R.id.menu_text_size_xs) {
             updateTextSizeStyle(fragment, ListTextSize.XS)
@@ -240,18 +252,19 @@ open class ItemListContextMenuDelegateImpl(
             updateTextSizeStyle(fragment, ListTextSize.XXL)
             return true
         } else if (item.itemId == R.id.menu_search_stories) {
-            if (!searchInputView.isVisible) {
-                searchInputView.visibility = View.VISIBLE
-                searchInputView.requestFocus()
-            } else {
-                searchInputView.text.clear()
-                searchInputView.visibility = View.GONE
-            }
+            activity.toggleStorySearch()
+            activity.refreshStoryHeaderControls()
+        } else if (item.itemId == R.id.menu_discover_related_sites) {
+            activity.openDiscoverFeeds();
+            return true;
         } else if (item.itemId == R.id.menu_theme_auto) {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
+            UIUtils.restartActivity(activity)
+        } else if (item.itemId == R.id.menu_theme_sepia) {
+            prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)
@@ -355,11 +368,13 @@ open class ItemListContextMenuDelegateImpl(
         fragment: ItemSetFragment,
         fs: FeedSet,
     ) {
-        syncServiceState.resetFetchState(fs)
-        feedUtils.prepareReadingSession(fs, true)
-        triggerSync(activity)
-        fragment.resetEmptyState()
-        fragment.hasUpdated()
-        fragment.scrollToTop()
+        (activity as? ItemsList)?.restartReadingSession() ?: run {
+            syncServiceState.resetFetchState(fs)
+            feedUtils.prepareReadingSession(fs, true)
+            triggerSync(activity)
+            fragment.resetEmptyState()
+            fragment.hasUpdated()
+            fragment.scrollToTop()
+        }
     }
 }

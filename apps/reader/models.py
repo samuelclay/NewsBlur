@@ -42,6 +42,16 @@ from apps.analyzer.models import (
     apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
+from apps.reader.metrics import (
+    STORY_HASHES_DURATION,
+    UNREAD_CACHE_FAST_PATH,
+    UNREAD_CACHE_FEED_STATE,
+    UNREAD_CACHE_REBUILD_CALLS,
+    UNREAD_CACHE_REBUILD_FEEDS_PER_CALL,
+    UNREAD_CACHE_REBUILT_FEEDS,
+    normalize_reader_metrics_read_filter,
+    normalize_reader_metrics_source,
+)
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
@@ -137,11 +147,25 @@ class UserSubscription(models.Model):
             usersubs = usersubs.filter(Q(unread_count_neutral__gt=0) | Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, active=True).only(
-                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
+                "user",
+                "feed",
+                "mark_read_date",
+                "is_trained",
+                "needs_unread_recalc",
+                "auto_mark_read_days",
+                "unread_count_neutral",
+                "unread_count_positive",
             )
         else:
             usersubs = usersubs.filter(user=user_id, active=True, feed__in=feed_ids).only(
-                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
+                "user",
+                "feed",
+                "mark_read_date",
+                "is_trained",
+                "needs_unread_recalc",
+                "auto_mark_read_days",
+                "unread_count_neutral",
+                "unread_count_positive",
             )
 
         return usersubs
@@ -163,7 +187,11 @@ class UserSubscription(models.Model):
         store_stories_key=None,
         offset=0,
         limit=500,
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
+        metrics_read_filter = normalize_reader_metrics_read_filter(read_filter)
+        story_hashes_start = time.time()
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         user = User.objects.get(pk=user_id)
@@ -180,6 +208,15 @@ class UserSubscription(models.Model):
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
+        elif read_filter == "unread":
+            usersubs = [
+                sub
+                for sub in usersubs
+                if sub.needs_unread_recalc or sub.unread_count_neutral > 0 or sub.unread_count_positive > 0
+            ]
+            feed_ids = [sub.feed_id for sub in usersubs]
+            if not feed_ids:
+                return story_hashes
 
         current_time = int(time.time() + 60 * 60 * 24)
         if not cutoff_date:
@@ -189,6 +226,12 @@ class UserSubscription(models.Model):
 
         read_dates = dict()
         needs_unread_recalc = dict()
+        unread_cache_state_counts = {
+            "cached": 0,
+            "dirty": 0,
+            "missing": 0,
+            "dirty_missing": 0,
+        }
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
@@ -223,16 +266,27 @@ class UserSubscription(models.Model):
         if read_filter == "unread":
             results = manual_unread_pipeline.execute()
             for i, us in enumerate(usersubs):
+                cache_exists = bool(results[i * 2 + 1])
+                cache_dirty = bool(us.needs_unread_recalc)
                 if results[i * 2]:  # user_manual_unread_stories_feed_key
                     user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
                     oldest_manual_unread = r.zrevrange(
                         user_manual_unread_stories_feed_key, -1, -1, withscores=True
                     )
                     manual_unread_feed_oldest_date[us.feed_id] = int(oldest_manual_unread[0][1])
-                if read_filter == "unread" and not results[i * 2 + 1]:  # user_unread_ranked_stories_key
+                if cache_dirty and cache_exists:
+                    unread_cache_state_counts["dirty"] += 1
+                elif cache_dirty and not cache_exists:
+                    unread_cache_state_counts["dirty_missing"] += 1
+                elif not cache_exists:
+                    unread_cache_state_counts["missing"] += 1
+                else:
+                    unread_cache_state_counts["cached"] += 1
+
+                if not cache_exists:
                     needs_unread_recalc[us.feed_id] = True
 
-        for feed_id_group in chunks(feed_ids, 500):
+        for feed_id_group in chunks(feed_ids, 50):
             pipeline = r.pipeline()
             for feed_id in feed_id_group:
                 stories_key = "F:%s" % feed_id
@@ -354,6 +408,40 @@ class UserSubscription(models.Model):
                         story_hashes.extend(hashes)
 
         if not store_stories_key:
+            story_hashes_duration = time.time() - story_hashes_start
+            STORY_HASHES_DURATION.labels(source=metrics_source, read_filter=metrics_read_filter).observe(
+                story_hashes_duration
+            )
+            if read_filter == "unread" and usersubs:
+                for state, count in unread_cache_state_counts.items():
+                    if count:
+                        UNREAD_CACHE_FEED_STATE.labels(source=metrics_source, state=state).inc(count)
+
+                rebuild_count = (
+                    unread_cache_state_counts["dirty"]
+                    + unread_cache_state_counts["missing"]
+                    + unread_cache_state_counts["dirty_missing"]
+                )
+                if rebuild_count:
+                    UNREAD_CACHE_REBUILD_CALLS.labels(source=metrics_source).inc()
+                    UNREAD_CACHE_REBUILD_FEEDS_PER_CALL.labels(source=metrics_source).observe(rebuild_count)
+                    for reason in ("dirty", "missing", "dirty_missing"):
+                        if unread_cache_state_counts[reason]:
+                            UNREAD_CACHE_REBUILT_FEEDS.labels(source=metrics_source, reason=reason).inc(
+                                unread_cache_state_counts[reason]
+                            )
+
+                if rebuild_count >= 25 or story_hashes_duration >= 0.25:
+                    logging.info(
+                        "reader_story_hashes "
+                        f"source={metrics_source} read_filter={metrics_read_filter} "
+                        f"feeds={len(feed_ids or [])} rebuild={rebuild_count} "
+                        f"cached={unread_cache_state_counts['cached']} "
+                        f"dirty={unread_cache_state_counts['dirty']} "
+                        f"missing={unread_cache_state_counts['missing']} "
+                        f"dirty_missing={unread_cache_state_counts['dirty_missing']} "
+                        f"duration_ms={int(story_hashes_duration * 1000)}"
+                    )
             return story_hashes
 
         chunk_count = 0
@@ -389,11 +477,21 @@ class UserSubscription(models.Model):
         cutoff_date=None,
         date_filter_start=None,
         date_filter_end=None,
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
 
         if offset and r.exists(unread_ranked_stories_key):
+            fast_path_dirty = "dirty" if self.needs_unread_recalc else "clean"
+            UNREAD_CACHE_FAST_PATH.labels(source=metrics_source, dirty=fast_path_dirty).inc()
+            if self.needs_unread_recalc:
+                logging.info(
+                    "reader_unread_fast_path_dirty "
+                    f"source={metrics_source} feed_id={self.feed_id} "
+                    f"offset={offset} order={order}"
+                )
             byscorefunc = r.zrevrange
             if order == "oldest":
                 byscorefunc = r.zrange
@@ -409,6 +507,7 @@ class UserSubscription(models.Model):
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
+                metrics_source=metrics_source,
             )
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -451,7 +550,9 @@ class UserSubscription(models.Model):
         date_filter_start=None,
         date_filter_end=None,
         use_lazy_merge=False,  # Deprecated: lazy merge is now always used
+        metrics_source="other",
     ):
+        metrics_source = normalize_reader_metrics_source(metrics_source)
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
 
@@ -495,6 +596,19 @@ class UserSubscription(models.Model):
             When cache_key is provided, writes merged results to Redis so that
             page 2+ can reuse the cache instead of re-merging from scratch.
             """
+            # When extending an existing cache (page 2+), skip already-cached
+            # stories instead of using target_offset. This prevents pagination
+            # drift when stories marked as read cause zdiffstore to recompute
+            # the per-feed unread sets, shifting the merged list and causing
+            # the offset to skip stories the user hasn't seen yet.
+            already_cached = set()
+            extending_cache = False
+            if cache_key:
+                cached_entries = rt.zrange(cache_key, 0, -1)
+                if cached_entries:
+                    already_cached = set(cached_entries)
+                    extending_cache = True
+
             per_feed_chunk = 25
             per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
             per_feed_indices = {feed_id: 0 for feed_id in feed_ids}
@@ -514,6 +628,7 @@ class UserSubscription(models.Model):
                 limit=per_feed_chunk,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
+                metrics_source=metrics_source,
             )
 
             per_feed_has_more = {
@@ -545,6 +660,7 @@ class UserSubscription(models.Model):
                         limit=per_feed_chunk,
                         date_filter_start=date_filter_start,
                         date_filter_end=date_filter_end,
+                        metrics_source=metrics_source,
                     )
                     buffer = next_chunk.get(feed_id, [])
                     per_feed_buffers[feed_id] = buffer
@@ -564,11 +680,24 @@ class UserSubscription(models.Model):
             merged_story_hashes = []
             merged_with_scores = []
             total_seen = 0
-            while heap and len(merged_story_hashes) < target_offset + target_limit:
+            merge_target = target_limit if extending_cache else target_offset + target_limit
+            while heap and len(merged_story_hashes) < merge_target:
                 transformed_score, feed_id, story_hash = heapq.heappop(heap)
                 original_score = -transformed_score if order == "newest" else transformed_score
-                if total_seen >= target_offset:
-                    merged_story_hashes.append(story_hash)
+                if extending_cache and story_hash in already_cached:
+                    # Skip stories from previous pages — anchors pagination to
+                    # what was already shown, not to a shifting offset.
+                    push_next_from_feed(feed_id)
+                    continue
+                if not extending_cache and total_seen < target_offset:
+                    # Fresh merge (page 1 or expired cache): traditional offset skip,
+                    # but still cache skipped stories for future page extensions.
+                    if cache_key:
+                        merged_with_scores.append((story_hash, original_score))
+                    total_seen += 1
+                    push_next_from_feed(feed_id)
+                    continue
+                merged_story_hashes.append(story_hash)
                 if cache_key:
                     merged_with_scores.append((story_hash, original_score))
                 total_seen += 1
@@ -1027,17 +1156,29 @@ class UserSubscription(models.Model):
             return
 
         key = "RS:%s" % user_id
-        feeds = [f.feed_id for f in subs]
+        feeds = set(f.feed_id for f in subs)
         old_rs = r.smembers(key)
         old_count = len(old_rs)
         if not old_count:
             logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN.")
             return
 
-        # r.sunionstore("%s:backup" % key, key)
-        # r.expire("%s:backup" % key, 60*60*24)
-        r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
-        new_rs = r.smembers(key)
+        # Batch the SUNIONSTORE to avoid blocking Redis for 1+ seconds
+        # when users have 1000+ feeds. Each batch blocks for ~80ms max.
+        feed_keys = ["%s:%s" % (key, f) for f in sorted(feeds)]
+        batch_size = 100
+        if len(feed_keys) <= batch_size:
+            r.sunionstore(key, *feed_keys)
+        else:
+            temp_key = "%s:trim_temp" % key
+            for i in range(0, len(feed_keys), batch_size):
+                batch = feed_keys[i : i + batch_size]
+                if i == 0:
+                    r.sunionstore(temp_key, *batch)
+                else:
+                    r.sunionstore(temp_key, temp_key, *batch)
+            r.rename(temp_key, key)
+        new_count = r.scard(key)
 
         missing_rs = []
         missing_count = 0
@@ -1059,7 +1200,6 @@ class UserSubscription(models.Model):
         if missing_rs:
             r.sadd(key, *missing_rs)
         missing_count += len(missing_rs)
-        new_count = len(new_rs)
         new_total = new_count + missing_count
         logging.user(
             user,
@@ -1160,7 +1300,7 @@ class UserSubscription(models.Model):
 
         if not self.needs_unread_recalc:
             self.needs_unread_recalc = True
-            self.save(update_fields=["needs_unread_recalc"])
+            UserSubscription.objects.filter(pk=self.pk).update(needs_unread_recalc=True)
 
         if len(story_hashes) > 1:
             logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
@@ -1179,7 +1319,7 @@ class UserSubscription(models.Model):
         r.publish(self.user.username, "feed:%s" % self.feed_id)
 
         self.last_read_date = datetime.datetime.now()
-        self.save(update_fields=["last_read_date"])
+        UserSubscription.objects.filter(pk=self.pk).update(last_read_date=self.last_read_date)
 
         return data
 
@@ -1408,6 +1548,7 @@ class UserSubscription(models.Model):
                 usersubs=[self],
                 read_filter="unread",
                 cutoff_date=date_delta,
+                metrics_source="score_recalc",
             )
 
             if not stories:
@@ -1575,6 +1716,7 @@ class UserSubscription(models.Model):
                 read_filter="unread",
                 include_timestamps=True,
                 cutoff_date=date_delta,
+                metrics_source="score_recalc",
             )
 
             feed_scores["neutral"] = len(unread_story_hashes)
@@ -1620,7 +1762,9 @@ class UserSubscription(models.Model):
         if self.is_trained != oit:
             update_fields.append("is_trained")
         if len(update_fields):
-            self.save(update_fields=update_fields)
+            update_dict = {field: getattr(self, field) for field in update_fields}
+            if not UserSubscription.objects.filter(pk=self.pk).update(**update_dict):
+                return None
 
         if self.unread_count_positive == 0 and self.unread_count_neutral == 0:
             self.mark_feed_read()

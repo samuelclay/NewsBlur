@@ -6,6 +6,11 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
+    <style name="dialogButton.sepia" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/text_sepia</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
     <style name="dialogButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/white</item>
         <item name="android:letterSpacing">0</item>
@@ -19,6 +24,12 @@
 
     <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="colorControlNormal">@color/gray55</item>
+        <item name="fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="actionbar.sepia" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:background">@color/bar_background_sepia</item>
+        <item name="colorControlNormal">@color/button_text_sepia</item>
         <item name="fontFamily">@font/whitney</item>
     </style>
 
@@ -38,6 +49,10 @@
         <item name="android:background">@color/gray85</item>
     </style>
 
+    <style name="delimiter.sepia">
+        <item name="android:background">@color/row_border_sepia</item>
+    </style>
+
     <style name="delimiter.dark">
         <item name="android:background">@color/gray30</item>
     </style>
@@ -47,6 +62,11 @@
         <item name="android:textColor">@color/gray30</item>
     </style>
 
+    <style name="subscriptionHeader.sepia">
+        <item name="android:background">@color/bar_background_sepia</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
+    </style>
+
     <style name="subscriptionHeader.dark">
         <item name="android:background">@color/dark_bar_background</item>
         <item name="android:textColor">@color/gray55</item>
@@ -54,6 +74,10 @@
 
     <style name="subscriptionIcon">
         <item name="tint">@color/gray30</item>
+    </style>
+
+    <style name="subscriptionIcon.sepia">
+        <item name="tint">@color/button_text_sepia</item>
     </style>
 
     <style name="subscriptionIcon.dark">
@@ -69,12 +93,32 @@
         <item name="android:background">@drawable/selector_folder_background</item>
     </style>
 
+    <style name="selectorFolderBackground.sepia" parent="selectorFolderParent">
+        <item name="android:background">@drawable/sepia_selector_folder_background</item>
+    </style>
+
     <style name="selectorFolderBackground.dark" parent="selectorFolderParent">
         <item name="android:background">@drawable/dark_selector_folder_background</item>
     </style>
 
     <style name="selectorFolderBackground.black" parent="selectorFolderParent">
         <item name="android:background">@drawable/black_selector_folder_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground" parent="selectorFolderParent">
+        <item name="android:background">@drawable/selector_top_level_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground.sepia" parent="selectorFolderParent">
+        <item name="android:background">@drawable/sepia_selector_top_level_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground.dark" parent="selectorFolderParent">
+        <item name="android:background">@drawable/dark_selector_top_level_background</item>
+    </style>
+
+    <style name="selectorTopLevelBackground.black" parent="selectorFolderParent">
+        <item name="android:background">@drawable/black_selector_top_level_background</item>
     </style>
 
     <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
@@ -89,22 +133,46 @@
         <item name="android:background">@drawable/selector_feed_almost_green_background</item>
     </style>
 
+    <style name="selectorFeedAlmostBlueBackground.sepia" parent="selectorFeedBackground.sepia" />
+
+    <style name="selectorFeedAlmostRedBackground.sepia" parent="selectorFeedBackground.sepia" />
+
+    <style name="selectorFeedAlmostGreenBackground.sepia" parent="selectorFeedBackground.sepia" />
+
     <style name="selectorFeedAlmostBlueBackground.dark" parent="selectorFeedBackground.dark" />
 
     <style name="selectorFeedAlmostRedBackground.dark" parent="selectorFeedBackground.dark" />
 
     <style name="selectorFeedAlmostGreenBackground.dark" parent="selectorFeedBackground.dark" />
 
+    <style name="selectorFeedAlmostBlueBackground.black" parent="selectorFeedBackground.black" />
+
+    <style name="selectorFeedAlmostRedBackground.black" parent="selectorFeedBackground.black" />
+
+    <style name="selectorFeedAlmostGreenBackground.black" parent="selectorFeedBackground.black" />
+
     <style name="selectorFeedBackground">
         <item name="android:background">@drawable/selector_feed_background</item>
+    </style>
+
+    <style name="selectorFeedBackground.sepia">
+        <item name="android:background">@drawable/sepia_selector_feed_background</item>
     </style>
 
     <style name="selectorFeedBackground.dark">
         <item name="android:background">@drawable/dark_selector_feed_background</item>
     </style>
 
+    <style name="selectorFeedBackground.black">
+        <item name="android:background">@drawable/black_selector_feed_background</item>
+    </style>
+
     <style name="feedRowNeutCountText">
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="feedRowNeutCountText.sepia">
+        <item name="android:textColor">@color/item_background_sepia</item>
     </style>
 
     <style name="feedRowNeutCountText.dark">
@@ -115,6 +183,10 @@
         <item name="android:background">@color/bar_background</item>
     </style>
 
+    <style name="actionbarBackground.sepia">
+        <item name="android:background">@color/bar_background_sepia</item>
+    </style>
+
     <style name="actionbarBackground.dark">
         <item name="android:background">@color/dark_bar_background</item>
     </style>
@@ -123,8 +195,28 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="feedListToolbarBackground">
+        <item name="android:background">@drawable/top_level_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.sepia">
+        <item name="android:background">@drawable/sepia_top_level_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.dark">
+        <item name="android:background">@drawable/dark_top_level_background_default</item>
+    </style>
+
+    <style name="feedListToolbarBackground.black">
+        <item name="android:background">@drawable/black_top_level_background_default</item>
+    </style>
+
     <style name="listBackground">
         <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="listBackground.sepia">
+        <item name="android:background">@drawable/list_background_sepia</item>
     </style>
 
     <style name="listBackground.dark">
@@ -133,6 +225,10 @@
 
     <style name="layoutBackground">
         <item name="android:background">@color/item_background</item>
+    </style>
+
+    <style name="layoutBackground.sepia">
+        <item name="android:background">@color/item_background_sepia</item>
     </style>
 
     <style name="layoutBackground.dark">
@@ -147,6 +243,10 @@
         <item name="android:background">@drawable/shape_rounded_corners_6dp_light</item>
     </style>
 
+    <style name="layoutRoundedBackground.sepia">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_sepia</item>
+    </style>
+
     <style name="layoutRoundedBackground.dark">
         <item name="android:background">@drawable/shape_rounded_corners_6dp_dark</item>
     </style>
@@ -157,6 +257,10 @@
 
     <style name="readingBackground">
         <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="readingBackground.sepia">
+        <item name="android:background">@color/reading_background_sepia</item>
     </style>
 
     <style name="readingBackground.dark">
@@ -172,6 +276,11 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
+    <style name="defaultText.sepia">
+        <item name="android:textColorLink">@color/linkblue_sepia</item>
+        <item name="android:textColor">@color/text_sepia</item>
+    </style>
+
     <style name="defaultText.dark">
         <item name="android:textColorLink">@color/dark_linkblue</item>
         <item name="android:textColor">@color/white</item>
@@ -182,21 +291,55 @@
         <item name="android:textColor">@color/linkblue</item>
     </style>
 
+    <style name="linkText.sepia">
+        <item name="android:textColorLink">@color/linkblue_sepia</item>
+        <item name="android:textColor">@color/linkblue_sepia</item>
+    </style>
+
     <style name="linkText.dark">
         <item name="android:textColorLink">@color/dark_linkblue</item>
         <item name="android:textColor">@color/dark_linkblue</item>
+    </style>
+
+    <style name="storyTitleText">
+        <item name="android:textColor">@color/story_title_text</item>
+    </style>
+
+    <style name="storyTitleText.sepia">
+        <item name="android:textColor">@color/story_title_text_sepia</item>
+    </style>
+
+    <style name="storyTitleText.dark">
+        <item name="android:textColor">@color/story_title_text_dark</item>
+    </style>
+
+    <style name="storyTitleText.black">
+        <item name="android:textColor">@color/story_title_text_black</item>
     </style>
 
     <style name="storySnippetText">
         <item name="android:textColor">@color/story_content_text</item>
     </style>
 
+    <style name="storySnippetText.sepia">
+        <item name="android:textColor">@color/story_content_text_sepia</item>
+    </style>
+
     <style name="storySnippetText.dark">
         <item name="android:textColor">@color/dark_story_content_text</item>
     </style>
 
+    <style name="ShapeAppearance.NewsBlur.Subscription.Image" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="storyFeedTitleText">
         <item name="android:textColor">@color/story_feed_title_text</item>
+    </style>
+
+    <style name="storyFeedTitleText.sepia">
+        <item name="android:textColor">@color/story_feed_title_text_sepia</item>
     </style>
 
     <style name="storyFeedTitleText.dark">
@@ -205,6 +348,10 @@
 
     <style name="selectorStoryBackground">
         <item name="android:background">@drawable/selector_story_background</item>
+    </style>
+
+    <style name="selectorStoryBackground.sepia">
+        <item name="android:background">@drawable/sepia_selector_story_background</item>
     </style>
 
     <style name="selectorStoryBackground.dark">
@@ -219,6 +366,10 @@
         <item name="android:background">@drawable/row_item_header_background</item>
     </style>
 
+    <style name="rowItemHeaderBackground.sepia">
+        <item name="android:background">@drawable/sepia_row_item_header_background</item>
+    </style>
+
     <style name="rowItemHeaderBackground.dark">
         <item name="android:background">@drawable/dark_row_item_header_background</item>
     </style>
@@ -231,6 +382,10 @@
         <item name="android:textColor">@color/half_darkgray</item>
     </style>
 
+    <style name="readingItemMetadata.sepia">
+        <item name="android:textColor">@color/half_darkgray_sepia</item>
+    </style>
+
     <style name="readingItemMetadata.dark">
         <item name="android:textColor">@color/half_white</item>
     </style>
@@ -238,6 +393,12 @@
     <style name="chip">
         <item name="android:textColor">@color/gray55</item>
         <item name="chipBackgroundColor">@color/tag_gray</item>
+        <item name="android:fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="chip.sepia">
+        <item name="android:textColor">@color/button_text_sepia</item>
+        <item name="chipBackgroundColor">@color/tag_gray_sepia</item>
         <item name="android:fontFamily">@font/whitney</item>
     </style>
 
@@ -254,6 +415,13 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
+    <style name="actionButtons.sepia">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
+        <item name="android:background">@color/col_button_background_sepia</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
     <style name="actionButtons.dark">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/button_text_dark</item>
@@ -261,33 +429,115 @@
     </style>
 
     <style name="storyButtons" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_light</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="iconTint">@color/gray75</item>
-        <item name="iconSize">16dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_light</item>
+        <item name="strokeColor">@color/story_action_button_border_light</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_light</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_light</item>
+    </style>
+
+    <style name="storyButtons.sepia" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_sepia</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_sepia</item>
+        <item name="strokeColor">@color/story_action_button_border_sepia</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_sepia</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_sepia</item>
     </style>
 
     <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_dark</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="iconTint">@color/gray46</item>
-        <item name="iconSize">16dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_dark</item>
+        <item name="strokeColor">@color/story_action_button_border_dark</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_dark</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_dark</item>
+    </style>
+
+    <style name="storyButtons.black" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/story_action_button_text_black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="backgroundTint">@color/story_action_button_background_black</item>
+        <item name="strokeColor">@color/story_action_button_border_black</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/rounded_corner_radius_6dp</item>
+        <item name="iconTint">@color/story_action_button_text_black</item>
+        <item name="iconSize">12dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">@color/story_action_button_ripple_black</item>
     </style>
 
     <style name="storyButtonsDimmed" parent="storyButtons">
-        <item name="android:textColor">@color/gray85</item>
+        <item name="android:textColor">@color/story_action_button_text_dimmed_light</item>
+    </style>
+
+    <style name="storyButtonsDimmed.sepia" parent="storyButtons.sepia">
+        <item name="android:textColor">@color/story_action_button_text_dimmed_sepia</item>
     </style>
 
     <style name="storyButtonsDimmed.dark" parent="storyButtons.dark">
-        <item name="android:textColor">@color/gray30</item>
+        <item name="android:textColor">@color/story_action_button_text_dimmed_dark</item>
+    </style>
+
+    <style name="storyButtonsDimmed.black" parent="storyButtons.black">
+        <item name="android:textColor">@color/story_action_button_text_dimmed_black</item>
     </style>
 
     <style name="shareBarBackground">
         <item name="android:background">@color/share_bar_background</item>
+    </style>
+
+    <style name="shareBarBackground.sepia">
+        <item name="android:background">@color/share_bar_background_sepia</item>
     </style>
 
     <style name="shareBarBackground.dark">
@@ -306,6 +556,14 @@
         <item name="android:shadowRadius">1</item>
     </style>
 
+    <style name="shareBarText.sepia">
+        <item name="android:textColor">@color/button_text_sepia</item>
+        <item name="android:shadowColor">@color/item_background_sepia</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
     <style name="shareBarText.dark">
         <item name="android:textColor">@color/gray55</item>
         <item name="android:shadowDx">0</item>
@@ -316,6 +574,11 @@
     <style name="commentsHeader">
         <item name="android:background">@drawable/gradient_background_default</item>
         <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="commentsHeader.sepia">
+        <item name="android:background">@drawable/sepia_gradient_background_default</item>
+        <item name="android:textColor">@color/text_sepia</item>
     </style>
 
     <style name="commentsHeader.dark">
@@ -333,6 +596,11 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
+    <style name="activityDetailsPager.sepia">
+        <item name="android:background">@drawable/sepia_gradient_background_default</item>
+        <item name="android:textColor">@color/text_sepia</item>
+    </style>
+
     <style name="activityDetailsPager.dark">
         <item name="android:background">@drawable/dark_gradient_background_default</item>
         <item name="android:textColor">@color/dark_text</item>
@@ -347,6 +615,10 @@
         <item name="android:background">@color/row_border</item>
     </style>
 
+    <style name="rowBorder.sepia">
+        <item name="android:background">@color/row_border_sepia</item>
+    </style>
+
     <style name="rowBorder.dark">
         <item name="android:background">@color/dark_row_border</item>
     </style>
@@ -354,6 +626,11 @@
     <style name="profileCount">
         <item name="android:background">@color/item_background</item>
         <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="profileCount.sepia">
+        <item name="android:background">@color/item_background_sepia</item>
+        <item name="android:textColor">@color/text_sepia</item>
     </style>
 
     <style name="profileCount.dark">
@@ -371,6 +648,11 @@
         <item name="android:divider">@drawable/divider_light</item>
     </style>
 
+    <style name="profileActivityList.sepia">
+        <item name="android:background">@color/item_background_sepia</item>
+        <item name="android:divider">@drawable/divider_sepia</item>
+    </style>
+
     <style name="profileActivityList.dark">
         <item name="android:background">@color/dark_item_background</item>
         <item name="android:divider">@drawable/divider_dark</item>
@@ -385,6 +667,10 @@
         <item name="android:background">@color/story_comment_divider</item>
     </style>
 
+    <style name="storyCommentDivider.sepia">
+        <item name="android:background">@color/story_comment_divider_sepia</item>
+    </style>
+
     <style name="storyCommentDivider.dark">
         <item name="android:background">@color/dark_story_comment_divider</item>
     </style>
@@ -397,24 +683,38 @@
         <item name="android:textColor">@color/gray55</item>
     </style>
 
+    <style name="explainerText.sepia">
+        <item name="android:textColor">@color/button_text_sepia</item>
+    </style>
+
     <style name="explainerText.dark">
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
     <style name="toggleText">
         <item name="android:textColor">@color/gray55</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="toggleText.sepia">
+        <item name="android:textColor">@color/button_text_sepia</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="toggleText.dark">
         <item name="android:textColor">@color/gray55</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="selectorOverlayBackgroundLeft">
         <item name="android:background">@drawable/selector_overlay_bg_left</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundLeft.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_left</item>
     </style>
 
     <style name="selectorOverlayBackgroundLeft.dark">
@@ -424,6 +724,11 @@
     <style name="selectorOverlayBackgroundRight">
         <item name="android:background">@drawable/selector_overlay_bg_right</item>
         <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundRight.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_right</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
     </style>
 
     <style name="selectorOverlayBackgroundRight.dark">
@@ -436,6 +741,11 @@
         <item name="android:textColor">@color/button_text</item>
     </style>
 
+    <style name="selectorOverlayBackgroundRightDone.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_right_done</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
+    </style>
+
     <style name="selectorOverlayBackgroundRightDone.dark">
         <item name="android:background">@drawable/selector_overlay_bg_dark_right_done</item>
         <item name="android:textColor">@color/button_text_dark</item>
@@ -445,6 +755,10 @@
         <item name="android:background">@drawable/selector_overlay_bg_send</item>
     </style>
 
+    <style name="selectorOverlayBackgroundSend.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_send</item>
+    </style>
+
     <style name="selectorOverlayBackgroundSend.dark">
         <item name="android:background">@drawable/selector_overlay_bg_dark_send</item>
     </style>
@@ -452,6 +766,11 @@
     <style name="selectorOverlayBackgroundStory">
         <item name="android:background">@drawable/selector_overlay_bg_story</item>
         <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundStory.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_story</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
     </style>
 
     <style name="selectorOverlayBackgroundStory.dark">
@@ -464,12 +783,21 @@
         <item name="android:textColor">@color/button_text</item>
     </style>
 
+    <style name="selectorOverlayBackgroundText.sepia">
+        <item name="android:background">@drawable/selector_overlay_bg_sepia_text</item>
+        <item name="android:textColor">@color/button_text_sepia</item>
+    </style>
+
     <style name="selectorOverlayBackgroundText.dark">
         <item name="android:background">@drawable/selector_overlay_bg_dark_text</item>
         <item name="android:textColor">@color/button_text_dark</item>
     </style>
 
     <style name="muteicon">
+        <item name="android:src">@drawable/mute_white</item>
+    </style>
+
+    <style name="muteicon.sepia">
         <item name="android:src">@drawable/mute_white</item>
     </style>
 
@@ -480,6 +808,11 @@
     <style name="actionBarPopup" parent="Widget.MaterialComponents.PopupMenu">
         <item name="android:background">@color/transparent</item>
         <item name="popupMenuBackground">@color/primary</item>
+    </style>
+
+    <style name="actionBarPopup.sepia" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/item_background_sepia</item>
     </style>
 
     <style name="actionBarPopup.dark" parent="Widget.MaterialComponents.PopupMenu">
@@ -512,11 +845,35 @@
         <item name="trackThickness">3dp</item>
     </style>
 
+    <style name="syncStatusProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">@color/status_overlay_text</item>
+        <item name="indicatorInset">0dp</item>
+        <item name="indicatorSize">10dp</item>
+        <item name="trackColor">@color/transparent</item>
+        <item name="trackThickness">2dp</item>
+    </style>
+
     <style name="linearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
         <item name="android:indeterminate">true</item>
-        <item name="indeterminateAnimationType">contiguous</item>
-        <item name="indicatorColor">@array/loading_indicator_colors</item>
-        <item name="trackColor">@color/transparent</item>
+        <item name="indeterminateAnimationType">disjoint</item>
+        <item name="trackThickness">3dp</item>
+        <item name="indicatorColor">@color/loading_indicator_light</item>
+        <item name="trackColor">@color/loading_indicator_track_light</item>
+    </style>
+
+    <style name="linearProgressIndicator.sepia" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_sepia</item>
+        <item name="trackColor">@color/loading_indicator_track_sepia</item>
+    </style>
+
+    <style name="linearProgressIndicator.dark" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_dark</item>
+        <item name="trackColor">@color/loading_indicator_track_dark</item>
+    </style>
+
+    <style name="linearProgressIndicator.black" parent="linearProgressIndicator">
+        <item name="indicatorColor">@color/loading_indicator_black</item>
+        <item name="trackColor">@color/loading_indicator_track_black</item>
     </style>
 
     <style name="smallRoundImageShapeAppearance">
@@ -540,6 +897,15 @@
         <item name="android:layout_height">40dp</item>
     </style>
 
+    <style name="toggleButton.sepia" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">@color/mtrl_btn_bg_color_selector_sepia</item>
+        <item name="android:textColor">@color/mtrl_btn_text_color_selector_sepia</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
     <style name="toggleButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:letterSpacing">0</item>
         <item name="android:textAllCaps">false</item>
@@ -549,10 +915,29 @@
         <item name="android:layout_height">40dp</item>
     </style>
 
+    <style name="tryFeedBannerSubscribeButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:layout_height">34dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
     <style name="materialSnackBarTextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="materialSnackBarTextView.sepia" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_sepia</item>
     </style>
 
     <style name="materialSnackBarTextView.dark" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
@@ -563,6 +948,10 @@
 
     <style name="materialSnackBarTheme" parent="@style/Widget.MaterialComponents.Snackbar">
         <item name="android:background">@color/nb_green_gray91</item>
+    </style>
+
+    <style name="materialSnackBarTheme.sepia" parent="@style/Widget.MaterialComponents.Snackbar">
+        <item name="android:background">@color/primary_sepia</item>
     </style>
 
     <style name="materialSnackBarTheme.dark" parent="@style/Widget.MaterialComponents.Snackbar">

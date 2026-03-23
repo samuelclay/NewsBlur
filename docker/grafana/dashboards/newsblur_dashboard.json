@@ -943,9 +943,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])))",
           "interval": "",
-          "legendFormat": "p50 {{method}} {{view}}",
+          "legendFormat": "p50",
           "refId": "A"
         },
         {
@@ -954,11 +954,11 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 5,
-          "legendFormat": "p90 {{method}} {{view}}",
+          "legendFormat": "p90",
           "refId": "B"
         },
         {
@@ -967,15 +967,15 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-single-feed\",method=\"GET\"}[15m]) / rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-single-feed\",method=\"GET\"}[15m])",
+          "expr": "sum(rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])) / sum(rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Avg {{method}} {{view}}",
+          "legendFormat": "Average",
           "refId": "C"
         }
       ],
-      "title": "Requests latency - GET load-single-feed",
+      "title": "Cluster latency - GET load-single-feed",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1074,10 +1074,10 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p50 {{method}} {{view}}",
+          "legendFormat": "p50",
           "refId": "A"
         },
         {
@@ -1086,11 +1086,11 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p90 {{method}} {{view}}",
+          "legendFormat": "p90",
           "refId": "B"
         },
         {
@@ -1099,14 +1099,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-river-stories\",method=\"GET\"}[15m]) / rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-river-stories\",method=\"GET\"}[15m])",
+          "expr": "sum(rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])) / sum(rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Avg {{method}} {{view}}",
+          "legendFormat": "Average",
           "refId": "C"
         }
       ],
-      "title": "Requests latency - POST load-river-stories",
+      "title": "Cluster latency - GET load-river-stories",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1202,7 +1202,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "p50",
@@ -1214,7 +1214,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.75, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.75, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
@@ -1227,7 +1227,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "legendFormat": "p90",
@@ -1239,7 +1239,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_including_middlewares_seconds_sum{}[1h])/rate(django_http_requests_latency_including_middlewares_seconds_count{}[1h])",
+          "expr": "sum(rate(django_http_requests_latency_including_middlewares_seconds_sum{}[$__rate_interval])) / sum(rate(django_http_requests_latency_including_middlewares_seconds_count{}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Average",
@@ -1289,7 +1289,6 @@
             }
           },
           "mappings": [],
-          "max": 4,
           "min": 0.0001,
           "thresholds": {
             "mode": "absolute",
@@ -1333,14 +1332,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_responses_total_by_status_view_method_total{}[2h])",
+          "expr": "topk(12, sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{method}} {{status}} {{view}}",
+          "legendFormat": "{{method}} {{view}}",
           "refId": "A"
         }
       ],
-      "title": "Requests count",
+      "title": "Top request volume by endpoint",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1433,7 +1432,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_responses_total_by_status_total{}[1h])",
+          "expr": "sum by (status) (rate(django_http_responses_total_by_status_total{}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "{{status}}",
           "refId": "A"
@@ -3181,6 +3180,398 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "95th percentile internal reader request duration, split by endpoint and read filter.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 120
+      },
+      "id": 272,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "histogram_quantile(0.95, sum by (le, endpoint, read_filter) (rate(newsblur_reader_load_phase_duration_seconds_bucket{phase=\"total\"}[$__rate_interval])))",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{endpoint}} / {{read_filter}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "title": "Reader Load Total p95",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "95th percentile duration of UserSubscription.story_hashes calls by caller and read filter.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 120
+      },
+      "id": 273,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "histogram_quantile(0.95, sum by (le, source, read_filter) (rate(newsblur_story_hashes_duration_seconds_bucket[$__rate_interval])))",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{source}} / {{read_filter}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "title": "Reader story_hashes p95",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Unread-cache feed rebuild rate. reason=\"missing\" points at expired or absent zU caches; \"dirty\" points at needs_unread_recalc-driven rebuilds.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 128
+      },
+      "id": 274,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "sum by (source, reason) (rate(newsblur_unread_cache_rebuilt_feeds_total[$__rate_interval]))",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{source}} / {{reason}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "title": "Reader Unread Cache Rebuilds",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Observed unread-cache state inside story_hashes calls, useful for confirming whether feed scans are mostly cached, dirty, or missing.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 128
+      },
+      "id": 275,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "sum by (source, state) (rate(newsblur_unread_cache_feed_state_total[$__rate_interval]))",
+          "interval": "",
+          "intervalFactor": 4,
+          "legendFormat": "{{source}} / {{state}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "title": "Reader Unread Cache States",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "datasource",
@@ -3190,7 +3581,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 120
+        "y": 136
       },
       "id": 42,
       "panels": [],
@@ -3267,7 +3658,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 121
+        "y": 137
       },
       "id": 33,
       "options": {
@@ -3363,7 +3754,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 121
+        "y": 137
       },
       "id": 28,
       "options": {
@@ -3476,7 +3867,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 129
+        "y": 145
       },
       "id": 30,
       "options": {
@@ -3574,7 +3965,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 129
+        "y": 145
       },
       "id": 32,
       "options": {
@@ -3670,7 +4061,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 137
+        "y": 153
       },
       "id": 12,
       "options": {
@@ -3766,7 +4157,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 137
+        "y": 153
       },
       "id": 26,
       "options": {
@@ -3808,7 +4199,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 145
+        "y": 161
       },
       "id": 16,
       "panels": [],
@@ -3884,7 +4275,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 146
+        "y": 162
       },
       "id": 8,
       "options": {
@@ -3976,7 +4367,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 146
+        "y": 162
       },
       "id": 232,
       "options": {
@@ -4068,7 +4459,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 146
+        "y": 162
       },
       "id": 233,
       "options": {
@@ -4185,7 +4576,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 154
+        "y": 170
       },
       "id": 35,
       "options": {
@@ -4277,7 +4668,7 @@
         "h": 7,
         "w": 5,
         "x": 5,
-        "y": 154
+        "y": 170
       },
       "id": 18,
       "options": {
@@ -4369,7 +4760,7 @@
         "h": 7,
         "w": 5,
         "x": 10,
-        "y": 154
+        "y": 170
       },
       "id": 14,
       "options": {
@@ -4461,7 +4852,7 @@
         "h": 7,
         "w": 5,
         "x": 15,
-        "y": 154
+        "y": 170
       },
       "id": 24,
       "options": {
@@ -4554,7 +4945,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 154
+        "y": 170
       },
       "id": 148,
       "options": {
@@ -4594,7 +4985,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 161
+        "y": 177
       },
       "id": 50,
       "panels": [],
@@ -4670,7 +5061,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 162
+        "y": 178
       },
       "id": 52,
       "options": {
@@ -4762,7 +5153,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 162
+        "y": 178
       },
       "id": 54,
       "options": {
@@ -4854,7 +5245,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 170
+        "y": 186
       },
       "id": 60,
       "options": {
@@ -4946,7 +5337,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 170
+        "y": 186
       },
       "id": 56,
       "options": {
@@ -5038,7 +5429,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 170
+        "y": 186
       },
       "id": 134,
       "options": {
@@ -5074,7 +5465,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 178
+        "y": 194
       },
       "id": 248,
       "panels": [],
@@ -5128,7 +5519,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 179
+        "y": 195
       },
       "id": 262,
       "options": {
@@ -5192,7 +5583,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 179
+        "y": 195
       },
       "id": 222,
       "options": {
@@ -5256,7 +5647,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 179
+        "y": 195
       },
       "id": 223,
       "options": {
@@ -5347,7 +5738,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 185
+        "y": 201
       },
       "id": 224,
       "options": {
@@ -5396,7 +5787,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 193
+        "y": 209
       },
       "id": 62,
       "panels": [],
@@ -5472,7 +5863,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 194
+        "y": 210
       },
       "id": 80,
       "options": {
@@ -5564,7 +5955,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 194
+        "y": 210
       },
       "id": 116,
       "options": {
@@ -5653,7 +6044,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 202
+        "y": 218
       },
       "id": 75,
       "options": {
@@ -5749,7 +6140,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 202
+        "y": 218
       },
       "id": 136,
       "options": {
@@ -5839,7 +6230,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 210
+        "y": 226
       },
       "id": 114,
       "options": {
@@ -5931,7 +6322,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 210
+        "y": 226
       },
       "id": 78,
       "options": {
@@ -6023,7 +6414,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 210
+        "y": 226
       },
       "id": 120,
       "options": {
@@ -6112,7 +6503,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 210
+        "y": 226
       },
       "id": 118,
       "options": {
@@ -6202,7 +6593,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 217
+        "y": 233
       },
       "id": 130,
       "options": {
@@ -6291,7 +6682,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 217
+        "y": 233
       },
       "id": 128,
       "options": {
@@ -6382,7 +6773,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 217
+        "y": 233
       },
       "id": 126,
       "options": {
@@ -6471,7 +6862,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 217
+        "y": 233
       },
       "id": 122,
       "options": {
@@ -6564,7 +6955,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 225
+        "y": 241
       },
       "id": 66,
       "options": {
@@ -6727,7 +7118,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 225
+        "y": 241
       },
       "id": 110,
       "options": {
@@ -6875,7 +7266,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 233
+        "y": 249
       },
       "id": 71,
       "options": {
@@ -7023,7 +7414,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 233
+        "y": 249
       },
       "id": 111,
       "options": {
@@ -7171,7 +7562,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 241
+        "y": 257
       },
       "id": 72,
       "options": {
@@ -7305,7 +7696,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 241
+        "y": 257
       },
       "id": 112,
       "options": {
@@ -7450,7 +7841,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 249
+        "y": 265
       },
       "id": 73,
       "options": {
@@ -7549,7 +7940,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 249
+        "y": 265
       },
       "id": 64,
       "options": {
@@ -7640,7 +8031,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 255
+        "y": 271
       },
       "id": 138,
       "options": {
@@ -7679,7 +8070,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 263
+        "y": 279
       },
       "id": 68,
       "panels": [],
@@ -7756,7 +8147,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 264
+        "y": 280
       },
       "id": 70,
       "options": {
@@ -7849,7 +8240,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 264
+        "y": 280
       },
       "id": 76,
       "options": {
@@ -7941,7 +8332,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 269
+        "y": 285
       },
       "id": 146,
       "options": {
@@ -8031,7 +8422,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 269
+        "y": 285
       },
       "id": 144,
       "options": {
@@ -8120,7 +8511,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 277
+        "y": 293
       },
       "id": 142,
       "options": {
@@ -8209,7 +8600,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 285
+        "y": 301
       },
       "id": 140,
       "options": {
@@ -8249,7 +8640,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 301
+        "y": 317
       },
       "id": 40,
       "panels": [],
@@ -8326,7 +8717,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 302
+        "y": 318
       },
       "id": 108,
       "options": {
@@ -8417,7 +8808,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 302
+        "y": 318
       },
       "id": 95,
       "options": {
@@ -8487,7 +8878,7 @@
         "h": 43,
         "w": 24,
         "x": 0,
-        "y": 310
+        "y": 326
       },
       "id": 37,
       "options": {
@@ -8532,7 +8923,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 354
+        "y": 370
       },
       "id": 149,
       "panels": [],
@@ -8609,7 +9000,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 355
+        "y": 371
       },
       "id": 150,
       "options": {
@@ -8702,7 +9093,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 355
+        "y": 371
       },
       "id": 151,
       "options": {
@@ -8795,7 +9186,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 355
+        "y": 371
       },
       "id": 152,
       "options": {
@@ -8888,7 +9279,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 363
+        "y": 379
       },
       "id": 153,
       "options": {
@@ -8981,7 +9372,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 363
+        "y": 379
       },
       "id": 154,
       "options": {
@@ -9074,7 +9465,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 363
+        "y": 379
       },
       "id": 155,
       "options": {
@@ -9167,7 +9558,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 371
+        "y": 387
       },
       "id": 156,
       "options": {
@@ -9260,7 +9651,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 371
+        "y": 387
       },
       "id": 157,
       "options": {
@@ -9353,7 +9744,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 371
+        "y": 387
       },
       "id": 158,
       "options": {
@@ -9446,7 +9837,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 379
+        "y": 395
       },
       "id": 159,
       "options": {
@@ -9539,7 +9930,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 379
+        "y": 395
       },
       "id": 160,
       "options": {
@@ -9581,7 +9972,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 387
+        "y": 403
       },
       "id": 234,
       "panels": [],
@@ -9658,7 +10049,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 388
+        "y": 404
       },
       "id": 235,
       "options": {
@@ -9787,7 +10178,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 388
+        "y": 404
       },
       "id": 236,
       "options": {
@@ -9916,7 +10307,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 396
+        "y": 412
       },
       "id": 237,
       "options": {
@@ -10045,7 +10436,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 396
+        "y": 412
       },
       "id": 238,
       "options": {
@@ -10119,7 +10510,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 405
+        "y": 421
       },
       "id": 244,
       "panels": [],
@@ -10196,7 +10587,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 406
+        "y": 422
       },
       "id": 245,
       "options": {
@@ -10313,7 +10704,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 406
+        "y": 422
       },
       "id": 246,
       "options": {
@@ -10430,7 +10821,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 406
+        "y": 422
       },
       "id": 247,
       "options": {
@@ -10504,7 +10895,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 414
+        "y": 430
       },
       "id": 200,
       "panels": [],
@@ -10553,7 +10944,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 415
+        "y": 431
       },
       "id": 201,
       "options": {
@@ -10635,7 +11026,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 415
+        "y": 431
       },
       "id": 202,
       "options": {
@@ -10717,7 +11108,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 415
+        "y": 431
       },
       "id": 203,
       "options": {
@@ -10786,7 +11177,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 415
+        "y": 431
       },
       "id": 204,
       "options": {
@@ -10855,7 +11246,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 415
+        "y": 431
       },
       "id": 208,
       "options": {
@@ -10924,7 +11315,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 415
+        "y": 431
       },
       "id": 209,
       "options": {
@@ -11024,7 +11415,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 420
+        "y": 436
       },
       "id": 205,
       "options": {
@@ -11111,7 +11502,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 420
+        "y": 436
       },
       "id": 206,
       "options": {
@@ -11198,7 +11589,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 420
+        "y": 436
       },
       "id": 210,
       "options": {
@@ -11284,7 +11675,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 420
+        "y": 436
       },
       "id": 207,
       "options": {
@@ -11317,7 +11708,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 427
+        "y": 443
       },
       "id": 161,
       "panels": [],
@@ -11495,7 +11886,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 428
+        "y": 444
       },
       "id": 162,
       "options": {
@@ -11750,7 +12141,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 438
+        "y": 454
       },
       "id": 208,
       "options": {
@@ -11851,7 +12242,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 458
+        "y": 474
       },
       "id": 163,
       "options": {
@@ -11921,7 +12312,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 458
+        "y": 474
       },
       "id": 164,
       "options": {
@@ -11991,7 +12382,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 458
+        "y": 474
       },
       "id": 165,
       "options": {
@@ -12082,7 +12473,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 466
+        "y": 482
       },
       "id": 166,
       "options": {
@@ -12170,7 +12561,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 466
+        "y": 482
       },
       "id": 167,
       "options": {
@@ -12237,7 +12628,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 474
+        "y": 490
       },
       "id": 168,
       "options": {
@@ -12307,7 +12698,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 474
+        "y": 490
       },
       "id": 169,
       "options": {
@@ -12347,7 +12738,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 482
+        "y": 498
       },
       "id": 171,
       "panels": [],
@@ -12481,7 +12872,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 448
+        "y": 464
       },
       "id": 172,
       "options": {
@@ -12580,7 +12971,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 483
+        "y": 499
       },
       "id": 173,
       "options": {
@@ -12650,7 +13041,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 483
+        "y": 499
       },
       "id": 174,
       "options": {
@@ -12742,7 +13133,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 483
+        "y": 499
       },
       "id": 175,
       "options": {
@@ -12783,7 +13174,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 525
+        "y": 541
       },
       "id": 176,
       "panels": [],
@@ -12860,7 +13251,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 526
+        "y": 542
       },
       "id": 177,
       "options": {
@@ -12952,7 +13343,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 526
+        "y": 542
       },
       "id": 178,
       "options": {
@@ -13240,7 +13631,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 534
+        "y": 550
       },
       "id": 211,
       "options": {
@@ -13318,7 +13709,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 546
+        "y": 562
       },
       "id": 212,
       "panels": [],
@@ -13387,7 +13778,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 547
+        "y": 563
       },
       "id": 213,
       "options": {
@@ -13486,7 +13877,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 555
+        "y": 571
       },
       "id": 216,
       "options": {
@@ -13523,7 +13914,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 563
+        "y": 579
       },
       "id": 218,
       "panels": [],
@@ -13588,7 +13979,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 564
+        "y": 580
       },
       "id": 219,
       "options": {
@@ -13625,7 +14016,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 572
+        "y": 588
       },
       "id": 266,
       "panels": [],
@@ -13694,7 +14085,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 573
+        "y": 589
       },
       "id": 267,
       "options": {
@@ -13788,7 +14179,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 573
+        "y": 589
       },
       "id": 268,
       "options": {
@@ -13826,7 +14217,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 581
+        "y": 597
       },
       "id": 239,
       "panels": [],
@@ -13894,7 +14285,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 582
+        "y": 598
       },
       "id": 240,
       "options": {
@@ -14023,7 +14414,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 582
+        "y": 598
       },
       "id": 241,
       "options": {
@@ -14152,7 +14543,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 582
+        "y": 598
       },
       "id": 242,
       "options": {
@@ -14281,7 +14672,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 590
+        "y": 606
       },
       "id": 243,
       "options": {
@@ -14350,12 +14741,234 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 606
+      },
+      "id": 270,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "clustering{metric=\"es_query_avg_ms\",period=\"daily\"}",
+          "interval": "",
+          "legendFormat": "Daily",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "clustering{metric=\"es_query_avg_ms\",period=\"weekly\"}",
+          "interval": "",
+          "legendFormat": "Weekly",
+          "queryType": "randomWalk",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "clustering{metric=\"es_query_avg_ms\",period=\"alltime\"}",
+          "interval": "",
+          "legendFormat": "All Time",
+          "queryType": "randomWalk",
+          "refId": "C"
+        }
+      ],
+      "title": "ES Query Avg Time (ms)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 606
+      },
+      "id": 271,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "clustering{metric=\"es_query_count\",period=\"daily\"}",
+          "interval": "",
+          "legendFormat": "Daily",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "clustering{metric=\"es_stories_compared\",period=\"daily\"}",
+          "interval": "",
+          "legendFormat": "Stories Compared",
+          "queryType": "randomWalk",
+          "refId": "B"
+        }
+      ],
+      "title": "ES Query Count & Stories Compared",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 501
+        "y": 517
       },
       "id": 249,
       "panels": [],
@@ -14390,7 +15003,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 502
+        "y": 518
       },
       "id": 250,
       "options": {
@@ -14452,7 +15065,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 502
+        "y": 518
       },
       "id": 251,
       "options": {
@@ -14514,7 +15127,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 502
+        "y": 518
       },
       "id": 252,
       "options": {
@@ -14576,7 +15189,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 510
+        "y": 526
       },
       "id": 253,
       "options": {
@@ -14638,7 +15251,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 510
+        "y": 526
       },
       "id": 254,
       "options": {
@@ -14700,7 +15313,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 510
+        "y": 526
       },
       "id": 255,
       "options": {
@@ -14792,7 +15405,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 518
+        "y": 534
       },
       "id": 256,
       "options": {
@@ -14903,7 +15516,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 518
+        "y": 534
       },
       "id": 257,
       "options": {
@@ -14962,7 +15575,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 526
+        "y": 542
       },
       "id": 258,
       "options": {
@@ -15024,7 +15637,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 526
+        "y": 542
       },
       "id": 259,
       "options": {
@@ -15086,7 +15699,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 526
+        "y": 542
       },
       "id": 260,
       "options": {
@@ -15148,7 +15761,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 526
+        "y": 542
       },
       "id": 261,
       "options": {
@@ -15231,6 +15844,6 @@
   "timezone": "",
   "title": "NewsBlur",
   "uid": "T86VjXrG2",
-  "version": 130,
+  "version": 131,
   "weekStart": ""
 }

@@ -6,27 +6,35 @@
   tags: always
 
 - name: Disable servers in HAProxy (Group {{ group_name }})
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state maint" | socat stdio /var/run/haproxy.sock'
+  run_once: true
+  delegate_to: "{{ item }}"
+  script: "{{ playbook_dir }}/../../utils/haproxy_batch_state.py maint {{ haproxy_targets }}"
   register: haproxy_disable
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined
-  tags: always
-
-- name: Show HAProxy disable result
-  debug:
-    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_disable.stdout }}"
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_disable is defined
-  tags: always
-
-- name: Verify server is in MAINT mode
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
-  register: server_state
-  failed_when: server_state.stdout != "1"
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  retries: 5
+  delay: 3
+  until: haproxy_disable is not failed
+  loop:
+    - hwww
+    - hstaging
+  vars:
+    haproxy_targets: >-
+      {%- set targets = [] -%}
+      {%- for host in ansible_play_hosts_all -%}
+      {%-   if (item == 'hstaging' and host.startswith('hstaging')) or (item == 'hwww' and not host.startswith('hstaging')) -%}
+      {%-     set backend = 'app_count' if host in groups.get('hcount', []) else 'app_refresh' if host in groups.get('hrefresh', []) else 'app_push' if host in groups.get('hpush', []) else 'app_django' if (host in groups.get('hdjango', []) or host in groups.get('staging', [])) else '' -%}
+      {%-     if backend -%}
+      {%-       set _ = targets.append(backend ~ '/' ~ host) -%}
+      {%-     endif -%}
+      {%-   endif -%}
+      {%- endfor -%}
+      {{ targets | join(' ') }}
+  when:
+    - disable_consul_services_ie_staging is not defined
+    - haproxy_targets | length > 0
   tags: always
 
 - name: Wait for connections to drain
+  run_once: true
   pause:
     seconds: 5
   tags: always
@@ -107,34 +115,22 @@
   until: result.status == 200
   tags: always
 
-- name: Re-enable servers in HAProxy (Group {{ group_name }})
+- name: Re-enable server in HAProxy and wait for healthy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
+  shell: |
+    docker exec haproxy sh -c '
+      echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock
+      for i in $(seq 1 20); do
+        health=$(echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock | grep "{{ inventory_hostname }}" | awk "{print \$6}")
+        state=$(echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock | grep "{{ inventory_hostname }}" | awk "{print \$7}")
+        if [ "$state" = "1" ]; then echo "FAIL: server still in MAINT"; exit 1; fi
+        if [ "$health" = "2" ]; then echo "OK: {{ inventory_hostname }} ready and healthy"; exit 0; fi
+        sleep 1
+      done
+      echo "TIMEOUT: server not healthy after 20s (health=$health)"
+      exit 1
+    '
   register: haproxy_enable
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined
-  tags: always
-
-- name: Show HAProxy enable result
-  debug:
-    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_enable.stdout }}"
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_enable is defined
-  tags: always
-
-- name: Verify server is enabled (not in MAINT)
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
-  register: server_state_enabled
-  failed_when: server_state_enabled.stdout == "1"
-  when: backend_name is defined and disable_consul_services_ie_staging is not defined
-  tags: always
-
-- name: Wait for server to pass HAProxy health checks
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $6}'
-  register: server_health
-  until: server_health.stdout == "2"
-  retries: 10
-  delay: 2
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
   tags: always
 

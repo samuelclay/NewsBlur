@@ -57,9 +57,15 @@ def _simple_stem(word):
 
 
 def title_significant_words(title):
-    """Extract significant (non-stopword) words from a normalized title."""
+    """Extract significant (non-stopword) words from a normalized title.
+
+    Filters out purely numeric tokens (e.g. '2026', '17') which cause
+    date-based false matches across unrelated stories.
+    """
     norm = normalize_title(title)
-    return frozenset(_simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1)
+    return frozenset(
+        _simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1 and not w.isdigit()
+    )
 
 
 def title_words_excluding_feed(story_title, feed_title):
@@ -267,6 +273,8 @@ def find_semantic_clusters(
     original_feed_map=None,
     story_title_map=None,
     feed_title_map=None,
+    max_es_queries=200,
+    deadline=None,
 ):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
@@ -282,16 +290,36 @@ def find_semantic_clusters(
         feed_ids: list of all feed IDs to search across
         lookback_date: datetime for the oldest stories to match (limits ES results)
         min_score: minimum ES relevance score to consider a match
+        max_es_queries: max number of ES queries per invocation (safety cap, default 200)
+        deadline: absolute time.time() value after which no new ES queries are issued
 
     Returns:
-        dict of {cluster_id: [story_hash, ...]}
+        tuple of (dict of {cluster_id: [story_hash, ...]}, dict of ES stats,
+                  set of story_hashes that were checked)
     """
     import elasticsearch
 
     from apps.search.models import SearchStory
 
+    es_stats = {
+        "query_count": 0,
+        "total_ms": 0,
+        "max_ms": 0,
+        "stories_compared": len(stories) if stories else 0,
+        "skipped_short_title": 0,
+        "skipped_no_feeds": 0,
+        "skipped_deadline": 0,
+        "skipped_max_queries": 0,
+        "hits_found": 0,
+        "hits_matched": 0,
+    }
+    # clustering/models.py: Track which stories were actually checked (had ES
+    # query run, or skipped for legitimate reasons like short title / no feeds).
+    # Stories skipped due to cap/deadline are NOT included — they need re-checking.
+    checked_hashes = set()
+
     if not stories or not feed_ids:
-        return {}
+        return {}, es_stats, checked_hashes
 
     story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
 
@@ -314,9 +342,17 @@ def find_semantic_clusters(
         index_name = SearchStory.index_name()
     except Exception as e:
         logging.debug(" ---> ~FRClustering: ES not available: %s" % e)
-        return {}
+        return {}, es_stats, checked_hashes
 
     for story in stories:
+        # clustering/models.py: Check budget limits before issuing ES queries
+        if es_stats["query_count"] >= max_es_queries:
+            es_stats["skipped_max_queries"] += 1
+            continue
+        if deadline and time.time() >= deadline:
+            es_stats["skipped_deadline"] += 1
+            continue
+
         story_hash = story["story_hash"]
         # Use only title as query text (not content) to avoid topical noise.
         # ES still searches both title and content fields in the index, so
@@ -324,12 +360,18 @@ def find_semantic_clusters(
         query_text = story.get("story_title") or ""
 
         if not query_text or len(query_text.strip()) < 10:
+            es_stats["skipped_short_title"] += 1
+            # Story was evaluated — short title won't change, mark as checked
+            checked_hashes.add(story_hash)
             continue
 
         # Search across related feeds, excluding this story's own feed and its branches
         story_rfid = resolve_feed_id(story["story_feed_id"], original_feed_map)
         search_feed_ids = [fid for fid in feed_ids if resolve_feed_id(fid, original_feed_map) != story_rfid]
         if not search_feed_ids:
+            es_stats["skipped_no_feeds"] += 1
+            # No feeds to search won't change for this story, mark as checked
+            checked_hashes.add(story_hash)
             continue
 
         body = {
@@ -364,16 +406,27 @@ def find_semantic_clusters(
         }
 
         try:
-            results = es.search(body=body, index=index_name)
+            query_start = time.time()
+            results = es.search(body=body, index=index_name, request_timeout=5)
+            query_ms = (time.time() - query_start) * 1000
+            es_stats["query_count"] += 1
+            es_stats["total_ms"] += query_ms
+            es_stats["max_ms"] = max(es_stats["max_ms"], query_ms)
             hits = results.get("hits", {}).get("hits", [])
+            es_stats["hits_found"] += len(hits)
         except elasticsearch.exceptions.NotFoundError:
+            checked_hashes.add(story_hash)
             continue
         except elasticsearch.exceptions.ConnectionError as e:
             logging.debug(" ---> ~FRClustering: ES connection error: %s" % e)
-            return {}
+            return {}, es_stats, checked_hashes
         except Exception as e:
             logging.debug(" ---> ~FRClustering semantic search error for %s: %s" % (story_hash, e))
+            checked_hashes.add(story_hash)
             continue
+
+        # ES query ran successfully — mark as checked regardless of hits
+        checked_hashes.add(story_hash)
 
         for hit in hits:
             sim_hash = hit["_id"]
@@ -412,6 +465,7 @@ def find_semantic_clusters(
             if sim_hash not in parent:
                 parent[sim_hash] = sim_hash
             union(story_hash, sim_hash)
+            es_stats["hits_matched"] += 1
 
     # Collect clusters
     groups = {}
@@ -436,7 +490,13 @@ def find_semantic_clusters(
             continue
         clusters[root] = members[:CLUSTER_MAX_SIZE]
 
-    return clusters
+    # Compute average for stats
+    if es_stats["query_count"] > 0:
+        es_stats["avg_ms"] = round(es_stats["total_ms"] / es_stats["query_count"], 1)
+    else:
+        es_stats["avg_ms"] = 0
+
+    return clusters, es_stats, checked_hashes
 
 
 def merge_clusters(
@@ -545,13 +605,19 @@ def merge_clusters(
     return {root: members[:CLUSTER_MAX_SIZE] for root, members in groups.items() if len(members) >= 2}
 
 
-def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None):
+def store_clusters_to_redis(
+    clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None, story_title_map=None
+):
     """Write cluster memberships to Redis.
 
     When candidate_cluster_map is provided, detects when a newly computed cluster
     contains stories that already belong to an existing cluster. In that case,
     new stories are merged into the existing cluster (ZADD without DELETE) rather
     than creating a duplicate cluster.
+
+    Merge validation: new members must share >= FUZZY_MIN_INTERSECTION significant
+    title words with at least one existing cluster member. This prevents unrelated
+    stories from accumulating in a cluster through transitive chains across runs.
 
     Keys:
         sCL:{story_hash} -> cluster_id (STRING with TTL)
@@ -564,6 +630,7 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
     pipe = r.pipeline()
     merged_count = 0
     new_count = 0
+    skipped_validation = 0
 
     for cluster_id, members in clusters.items():
         # Check if any member already belongs to an existing cluster
@@ -577,13 +644,49 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
         if existing_cluster_id:
             # Merge new stories into the existing cluster. Don't delete the
             # existing zCL: — just add new members and update sCL: pointers.
-            merged_count += 1
             target_cluster_id = existing_cluster_id
+
+            # Enforce CLUSTER_MAX_SIZE: check how many members the existing
+            # cluster already has before adding more.
+            existing_members = r.zrange("zCL:%s" % target_cluster_id, 0, -1)
+            existing_size = len(existing_members) if existing_members else 0
+
+            # Build title-word sets for existing cluster members (for merge validation)
+            existing_title_words = []
+            if story_title_map and existing_members:
+                for em in existing_members:
+                    em_str = em.decode() if isinstance(em, bytes) else em
+                    em_title = story_title_map.get(em_str, "")
+                    if em_title:
+                        existing_title_words.append(title_significant_words(em_title))
+
+            added_count = 0
+            merged_count += 1
             for story_hash in members:
                 if story_hash not in candidate_cluster_map:
+                    # Enforce max size — skip new additions but keep processing
+                    # existing members below to refresh their TTLs.
+                    if existing_size + added_count >= CLUSTER_MAX_SIZE:
+                        continue
+
+                    # Validate title-word overlap with existing cluster members.
+                    # If title data is available, require >= FUZZY_MIN_INTERSECTION
+                    # shared words with at least one existing member.
+                    if story_title_map and existing_title_words:
+                        new_title = story_title_map.get(story_hash, "")
+                        if new_title:
+                            new_words = title_significant_words(new_title)
+                            has_overlap = any(
+                                len(new_words & ew) >= FUZZY_MIN_INTERSECTION for ew in existing_title_words
+                            )
+                            if not has_overlap:
+                                skipped_validation += 1
+                                continue
+
                     # New story joining existing cluster
                     pipe.set("sCL:%s" % story_hash, target_cluster_id, ex=ttl)
                     pipe.zadd("zCL:%s" % target_cluster_id, {story_hash: 0})
+                    added_count += 1
                 else:
                     # Already in a cluster — refresh TTL on its sCL: key
                     pipe.expire("sCL:%s" % story_hash, ttl)
@@ -599,6 +702,12 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster
             pipe.expire("zCL:%s" % cluster_id, ttl)
 
     pipe.execute()
+
+    if skipped_validation:
+        logging.debug(
+            " ---> ~FBClustering: skipped %s stories that failed merge title-word validation"
+            % skipped_validation
+        )
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
@@ -699,17 +808,31 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
 
     # For each cluster, fetch metadata for members NOT on this page from MongoDB.
     # Only include members from feeds the user is subscribed to.
+    # Non-archive users only see 1 cluster member in the UI, so cap the backend
+    # to avoid computing metadata for stories that get discarded on the client.
+    is_archive = user.profile.is_archive
+    off_page_limit = None if is_archive else 1
     off_page_hashes = set()
     for cid, members in cluster_all_members.items():
+        cid_count = 0
         for h in members:
             if h not in page_hashes:
-                # Extract feed_id from story_hash (format: feed_id:guid_hash)
                 member_feed_id = int(h.split(":", 1)[0]) if ":" in h else None
                 if member_feed_id and member_feed_id in user_feed_ids:
                     off_page_hashes.add(h)
+                    cid_count += 1
+                    if off_page_limit and cid_count >= off_page_limit:
+                        break
 
     import zlib
 
+    from apps.analyzer.models import (
+        apply_classifier_authors,
+        apply_classifier_feeds,
+        apply_classifier_tags,
+        apply_classifier_titles,
+    )
+    from apps.reader.models import UserSubscription
     from apps.rss_feeds.models import Feed, MStory
 
     # Determine read status for off-page members via Redis.
@@ -728,6 +851,20 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                 read_pipe.sismember(read_stories_key, h)
             read_results = read_pipe.execute()
             off_page_read_hashes = {h for h, is_read in zip(off_page_hashes, read_results) if is_read}
+
+    # Batch-fetch all feeds referenced by cluster members in one SQL query.
+    # Must be outside the off_page_hashes block since on-page members also need it.
+    all_cluster_feed_ids = set()
+    for h in off_page_hashes:
+        fid = int(h.split(":", 1)[0]) if ":" in h else None
+        if fid:
+            all_cluster_feed_ids.add(fid)
+    for s in stories:
+        if s["story_hash"] in hash_to_cluster:
+            all_cluster_feed_ids.add(s["story_feed_id"])
+    feeds_by_id = {}
+    if all_cluster_feed_ids:
+        feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_cluster_feed_ids)}
 
     off_page_metadata = {}
     if off_page_hashes:
@@ -748,7 +885,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         for batch_start in range(0, len(off_page_list), 100):
             batch = off_page_list[batch_start : batch_start + 100]
             for story in MStory.objects(story_hash__in=batch).only(*only_fields).order_by():
-                feed = Feed.get_by_id(story.story_feed_id)
+                feed = feeds_by_id.get(story.story_feed_id)
                 meta = {
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
@@ -761,14 +898,6 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
 
                 # Compute intelligence score if classifiers are available
                 if classifiers_context:
-                    from apps.analyzer.models import (
-                        apply_classifier_authors,
-                        apply_classifier_feeds,
-                        apply_classifier_tags,
-                        apply_classifier_titles,
-                    )
-                    from apps.reader.models import UserSubscription
-
                     cf = classifiers_context
                     story_dict = {
                         "story_feed_id": story.story_feed_id,
@@ -861,7 +990,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
             if member_hash in page_stories_by_hash:
                 # On-page member — already has intelligence, score, read_status
                 s = page_stories_by_hash[member_hash]
-                feed = Feed.get_by_id(s["story_feed_id"])
+                feed = feeds_by_id.get(s["story_feed_id"])
                 entry = {
                     "story_hash": s["story_hash"],
                     "story_feed_id": s["story_feed_id"],

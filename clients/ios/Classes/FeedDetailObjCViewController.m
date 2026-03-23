@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL feedListRevealBouncing;
 @property (nonatomic, strong) UIView *feedListRevealContainer;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
+@property (nonatomic, strong) UIBarButtonItem *storiesSidebarBarButton;
 @property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
 
 @end
@@ -251,6 +252,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
     
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(nextSite:) discoverabilityTitle:@"Next Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(previousSite:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(hideStoryTitlesSidebar:) discoverabilityTitle:@"Hide Story Titles" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(showStoryTitlesSidebar:) discoverabilityTitle:@"Show Story Titles" wantPriority:YES];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -518,8 +527,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 
     UIBarButtonItem *sidebarButton = nil;
+    UIBarButtonItem *storiesSidebarButton = nil;
     BOOL shouldShowSidebarButton = (displayMode == UISplitViewControllerDisplayModeSecondaryOnly ||
-                                    displayMode == UISplitViewControllerDisplayModeOneOverSecondary);
+                                    displayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
+                                    displayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
+                                    displayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary);
+    BOOL isFullscreenOverlayController = self != appDelegate.feedDetailViewController;
     if (!appDelegate.isPhone && !self.isMac && shouldShowSidebarButton) {
         if (!self.sidebarBarButton) {
             UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
@@ -535,21 +548,49 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                                                                     target:self
                                                                     action:@selector(toggleFeeds:)];
             self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+        if (!self.storiesSidebarBarButton) {
+            self.storiesSidebarBarButton = [[UIBarButtonItem alloc] initWithImage:self.sidebarBarButton.image
+                                                                            style:UIBarButtonItemStylePlain
+                                                                           target:self
+                                                                           action:@selector(toggleFeeds:)];
+            self.storiesSidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+
+        if (appDelegate.detailViewController.areStoryTitlesCollapsed) {
+            self.sidebarBarButton.target = appDelegate.detailViewController;
+            self.sidebarBarButton.action = @selector(toggleStoryTitles:);
+            self.storiesSidebarBarButton.target = appDelegate.detailViewController;
+            self.storiesSidebarBarButton.action = @selector(toggleStoryTitles:);
         } else {
             self.sidebarBarButton.target = self;
             self.sidebarBarButton.action = @selector(toggleFeeds:);
+            self.storiesSidebarBarButton.target = self;
+            self.storiesSidebarBarButton.action = @selector(toggleFeeds:);
         }
         sidebarButton = self.sidebarBarButton;
+        storiesSidebarButton = self.storiesSidebarBarButton;
     }
 
     NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton]
                                    : @[settingsBarButton];
+    NSArray *storiesItems = storiesSidebarButton ? @[storiesSidebarButton] : nil;
 
     if (appDelegate.isPhone) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
+    } else if (isFullscreenOverlayController) {
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+        self.navigationItem.leftBarButtonItems = storiesItems;
+    } else if (appDelegate.detailViewController.feedDetailNavigationItem ==
+               appDelegate.detailViewController.storiesNavigationItem) {
+        appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
+        appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems =
+            appDelegate.detailViewController.areStoryTitlesCollapsed ? storiesItems : items;
     } else {
         appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
         appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
+        appDelegate.detailViewController.storiesNavigationItem.leftItemsSupplementBackButton = YES;
+        appDelegate.detailViewController.storiesNavigationItem.leftBarButtonItems = storiesItems;
     }
 }
 
@@ -1811,16 +1852,16 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
 
         if (storyChanged && storiesCollection.storyLocationsCount > 0) {
-            // Server data changed the story list. Select the first story and
-            // reset pages so the detail pane stays in sync.
-            NSInteger firstIndex = [storiesCollection indexFromLocation:0];
-            if (firstIndex >= 0) {
-                appDelegate.activeStory = [storiesCollection.activeFeedStories objectAtIndex:firstIndex];
+            NSInteger targetLocation = [StoryRefreshSelectionDecision targetLocationWithActiveStoryLocation:storiesCollection.locationOfActiveStory
+                                                                                         storyLocationsCount:storiesCollection.storyLocationsCount];
+            NSInteger targetIndex = [storiesCollection indexFromLocation:targetLocation];
+            if (targetIndex >= 0) {
+                appDelegate.activeStory = [storiesCollection.activeFeedStories objectAtIndex:targetIndex];
             }
             appDelegate.storyPagesViewController.currentPage.pageIndex = -2;
             appDelegate.storyPagesViewController.nextPage.pageIndex = -2;
             appDelegate.storyPagesViewController.previousPage.pageIndex = -2;
-            [appDelegate.storyPagesViewController changePage:0 animated:NO];
+            [appDelegate.storyPagesViewController changePage:targetLocation animated:NO];
         } else {
             [appDelegate.storyPagesViewController resizeScrollView];
             [appDelegate.storyPagesViewController setStoryFromScroll:YES];
@@ -1944,7 +1985,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
-        if (appDelegate.activeStory == nil && self.cameFromFeedsList && ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay)) {
+        if (appDelegate.activeStory == nil && self.cameFromFeedsList) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
             if (storyIndex == -1 || self.deferredLoadStoryCount > 0) {
@@ -1953,12 +1994,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
+            BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
             
-            if (!self.isPhone && feedOpening == nil) {
-                feedOpening = @"story";
-            }
-            
-            if ([feedOpening isEqualToString:@"story"] && !self.isDashboard) {
+            if ([StoryInitialSelectionDecision shouldAutomaticallyOpenFirstStoryWithFeedOpeningPreference:feedOpening
+                                                                                                   isPhone:self.isPhone
+                                                                                               isDashboard:self.isDashboard
+                                                                                                 usesOverlay:usesOverlay]) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 [appDelegate loadStoryDetailView];
             }
@@ -2699,8 +2740,20 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
-    [appDelegate loadStoryDetailView];
-    [self redrawUnreadStory];
+    BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldUseExplicitLocation = [StorySelectionNavigationDecision shouldUseExplicitLocationWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                    presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                               presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+    if (shouldUseExplicitLocation) {
+        [appDelegate loadStoryDetailViewAtLocation:row animated:shouldAnimateSelection];
+    } else {
+        [appDelegate loadStoryDetailViewAnimated:shouldAnimateSelection];
+    }
+    if (shouldRefreshStoryTitlesSidebar) {
+        [self redrawUnreadStory];
+    }
 
     NSString *storyHash = [appDelegate.activeStory objectForKey:@"story_hash"];
     if (storyHash) {
@@ -2906,7 +2959,6 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
         BOOL isGridView = appDelegate.detailViewController.storyTitlesInGridView;
-        
         if (!self.isPhoneOrCompact &&
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
@@ -2923,12 +2975,20 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
             
             if (!isGridView) {
+                [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
+                [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
                 return;
             }
         }
         
         [self loadStoryAtRow:location];
-        [self reload];
+        BOOL shouldRefreshStoryTitlesSidebar = [StorySelectionSidebarRefreshDecision shouldRefreshStoryTitlesSidebarWithUsesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
+                                                                                                                                   presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+        if (shouldRefreshStoryTitlesSidebar) {
+            [self reload];
+        }
+        [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
+        [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if (location == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
@@ -4499,6 +4559,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.feedsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
         self.sidebarBarButton.tintColor = toolbarButtonTint;
+    }
+    if (self.storiesSidebarBarButton) {
+        self.storiesSidebarBarButton.tintColor = toolbarButtonTint;
     }
     self.settingsBarButton.tintColor = toolbarButtonTint;
     self.feedMarkReadButton.tintColor = toolbarButtonTint;

@@ -198,10 +198,26 @@ class StoryApiImpl(
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
-    override suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse? {
+    override suspend fun markStoryAsRead(
+        storyHash: String,
+        readTimesJson: String?,
+    ): NewsBlurResponse? {
         val values =
             ValueMultimap().apply {
                 put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+                if (!readTimesJson.isNullOrBlank()) {
+                    put(APIConstants.PARAMETER_READ_TIMES, readTimesJson)
+                }
+            }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
+        val response: APIResponse = networkClient.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override suspend fun submitReadTimes(readTimesJson: String): NewsBlurResponse? {
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_READ_TIMES, readTimesJson)
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
         val response: APIResponse = networkClient.post(urlString, values)

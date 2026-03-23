@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-16T00:16:29-04:00</updated>
+  <updated>2026-03-18T14:19:44-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,92 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Newsreel is a NewsBlur app for tv</title>
+    <link href="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/" rel="alternate" type="text/html" title="Newsreel is a NewsBlur app for tv" />
+    <published>2016-07-14T07:00:39-04:00</published>
+    <updated>2016-07-14T07:00:39-04:00</updated>
+    <id>https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/">
+      <![CDATA[<p>Check it out, David Berlin built <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">Newsreel</a>, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel.png" alt="" /></p>
+
+<p>You can read your subscriptions as well as subscribe to new sites, right from your television.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-add.png" alt="" /></p>
+
+<p>Not only does it look polished, but it’s smooth and seamless. Take a look at how it works in practice.</p>
+
+<p>&lt;</p>
+
+<p>video src=“https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-780.mp4” style=“width: 650px; margin: 0 auto; border: 1px solid #606060” autoplay=“true” muted=“true” loop=“true”&gt;</p>
+
+<p>You can download <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">download Newsreel on the App Store</a>. What a beautiful app and it goes to show how nice it is to be able to read your news on a big screen.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="tv" />
+    
+    
+    <summary type="html">
+      <![CDATA[Check it out, David Berlin built Newsreel, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Newsletters in your NewsBlur</title>
+    <link href="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/" rel="alternate" type="text/html" title="Newsletters in your NewsBlur" />
+    <published>2016-07-01T07:00:16-04:00</published>
+    <updated>2016-07-01T07:00:16-04:00</updated>
+    <id>https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/">
+      <![CDATA[<p>It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.</p>
+
+<p>You can now forward your email newsletters over to NewsBlur and then read your email newsletters right in your browser/phone/TV/tablet. A couple dozen users have been beta testing this feature for the last couple of months and everybody agrees, this feature is amazing.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters.png" alt="" /></p>
+
+<p>Newsletters are formatted to fit all of your screens, so it looks just as good on the web as it does on your phone.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-ios.png" alt="" /></p>
+
+<p>Here’s the best part. If you get a lot of newsletters, you can group them into folders and even train them to highlight the newsletters you want to read first.</p>
+
+<p>Setting up newsletters on NewsBlur is easy. Just follow the personalized instructions on the web by going to Manage &gt; Email Newsletters on either the web dashboard or the manage menu.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-setup.png" alt="" /></p>
+
+<p>You might ask why not just subscribe your custom NewsBlur newsletter email address directly to the newsletter instead of forwarding copies of the newsletter. The answer is that if you want a single source of truth for where newsletters are going, you want that in your email client and not on NewsBlur. If you ever change news readers (and with new features like this, why would you want to) you’ll want to change only a single filter rule instead of dozens of newsletter emails.</p>
+
+<p>And with this huge new feature, NewsBlur just became even better. NewsBlur has branched beyond RSS for a while now, fetching Twitter and YouTube stories even without RSS. With newsletters, NewsBlur becomes your single source.</p>
+
+<p>If you have suggestions on what NewsBlur can help you read next, post an idea on the <a href="http://getsatisfaction.com/newsblur">Get Satisfaction forums</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Twitter’s back, baby</title>
@@ -953,98 +1039,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A Downtime Irony</title>
-    <link href="https://blog.newsblur.com/2014/08/21/a-downtime-irony/" rel="alternate" type="text/html" title="A Downtime Irony" />
-    <published>2014-08-21T21:08:24-04:00</published>
-    <updated>2014-08-21T21:08:24-04:00</updated>
-    <id>https://blog.newsblur.com/2014/08/21/a-downtime-irony</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/08/21/a-downtime-irony/">
-      <![CDATA[<p>So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.</p>
-
-<p>Here’s what happened: At approximately 4:30pm PT feed fetching ceased. The feed fetchers were still working, which is why my monitors didn’t fire and alert anybody. But I have a second large Mongo database server used exclusively for collecting data about feeds being fetched. There are approximately 75 servers dedicated to feed fetching. These analytics look at average fetch times on a per task server basis. I use these analytics to ensure that my task servers are humming along, as they each use a ton of network, cpu, and memory.</p>
-
-<p>This Mongo analytics servers works in a curious way. If you right-click on a feed and go to Statistics you’ll see the feed fetch history for a feed, stretching back a hundred fetches if the feed has had any issues in fetching. I keep these statistics on an analytics server separate from the regular Mongo server. I do this so that if the mongo analytics server goes down, everything will operate normally.</p>
-
-<p>But the mongo server didn’t go down. It merely gave this error:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OperationError: Could not save document (Can't take a write lock while out of disk space)
-</code></pre></div></div>
-
-<p>Mongo continues serving read queries while not allowing write queries. I didn’t plan for that! And it gets worse. The way MongoDB stores data is that is just keeps growing, even as you delete data. NewsBlur only saves the last few fetches, but deleting old fetches doesn’t give you back any disk space. Every other database server I use has an autovacuum process that takes care of this maintenance work (PostgreSQL, Redis, Elasticsearch, but not MongoDB). It’s unfortunate that this is yet another instance of MongoDB being the cause of downtime, even though the fault lies with me.</p>
-
-<p>The server that is meant to only be used to ensure things are working correctly was itself the culprit for feeds no longer being fetched. This is the ironic part.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Big%20Sur.jpg" alt="" /></p>
-
-<h6 id="newsblurs-developer-during-happier-times-wearing-the-2013-newsblur-t-shirt-in-big-sur">NewsBlur’s developer during happier times wearing the 2013 NewsBlur t-shirt in Big Sur</h6>
-
-<p>Now comes the painful part. On Wednesday morning (yesterday) I packed my car and headed down to Big Sur to go backpack camping for the first time. I’ve car camped plenty of times, but I felt confident enough to pack my sleeping bag and tent into a big bag and head ten miles into the woods of coastal California.</p>
-
-<p>I headed out, away from cellular service, at 4pm PT, half an hour before the analytics server ran out of disk space. And then returned nearly 24 hours later to a bevy of alarmed tweets, emails, direct messages, and a voicemail letting me know that things were haywire.</p>
-
-<p>But the real problem is that I set a vacation reply on both my personal and work email accounts to say that I’d be out until September 3rd. Now, I hired a firm to watch the servers while I’m at Burning Man starting this Saturday. But I figured I could get away with leaving the servers for twenty four hours. And I neglected to tweet out that I’d be gone for a day, so theories cropped up that I was injured, dead, or worse, ignoring the service.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Brittany%20in%20Big%20Sur.jpg" alt="" /></p>
-
-<h6 id="brittany-newsblurs-developers-girlfriend-can-handle-any-situation-including-driving-a-hysterical-developer-three-hours-back-to-san-francisco-without-breaking-a-sweat">Brittany, NewsBlur’s developer’s girlfriend, can handle any situation, including driving a hysterical developer three hours back to San Francisco without breaking a sweat.</h6>
-
-<p>If you’re wondering, I think about NewsBlur first thing in the morning and last thing at night when I check Twitter for mentions. It’s my life and I would never just give up on it. I just got cocky after a year and a half of nearly uninterrupted service. NewsBlur requires next to no maintenance, apart from handling support requests and building new features (and occasionally fixing old ones). So I figured what harm could 24 hours of away time be? Boy was I wrong.</p>
-
-<p>If you made it this far then you probably care about NewsBlur’s future. I want to not only assure you that I will be building better monitoring to ensure this never happens again, but to also offer anybody who feels that they are not getting their money’s worth a refund. Even if you are months away from payment, if you aren’t completely satisfied and think NewsBlur’s just about the best thing to happen to RSS since Brent Simmons released NetNewsWire back in 2004, then I want to give you your money back and let you keep your premium account until it expires.</p>
-
-<p>I would like to also mention how much I appreciate the more light-hearted tweets that I read while on the frenetic three hour drive back to San Francisco from Big Sur. I do this for all of your happiness. If I did it for the money I’d probably find a way to juice the data so that I could at least afford to hire an employee. This is a labor of love and your payment goes directly into supporting it.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Tent%20in%20Big%20Sur.jpg" alt="" /></p>
-
-<h6 id="big-sur-is-where-a-good-many-new-ideas-are-thought">Big Sur is where a good many new ideas are thought.</h6>
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Reeder and NewsBlur, sitting in a tree...</title>
-    <link href="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/" rel="alternate" type="text/html" title="Reeder and NewsBlur, sitting in a tree..." />
-    <published>2014-07-23T12:45:57-04:00</published>
-    <updated>2014-07-23T12:45:57-04:00</updated>
-    <id>https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/07/23/reeder-and-newsblur-sitting-in-a-tree/">
-      <![CDATA[<p>…S-Y-N-C-I-N-G.</p>
-
-<p>First comes feeds, then comes training, then comes social for those days when its raining.</p>
-
-<p>That’s not it! That’s not all! Runs on <a href="http://reederapp.com/ios/">iOS</a> and <a href="http://reederapp.com/mac/">Mac</a>, so have a ball!</p>
-
-<p><a href="http://reederapp.com/mac/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/reeder-mac.png" alt="" /></a><a href="http://reederapp.com/ios/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/reeder-ios.png" alt="" /></a></p>
-
-<p>The world’s most popular RSS feed reader now supports the world’s best RSS feed reader backend. <a href="http://reederapp.com/">Download Reeder 2 for Mac and iOS</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="mac" />
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[…S-Y-N-C-I-N-G.
 ]]>
     </summary>
     

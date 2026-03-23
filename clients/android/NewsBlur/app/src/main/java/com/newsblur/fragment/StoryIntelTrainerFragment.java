@@ -3,26 +3,28 @@ package com.newsblur.fragment;
 import java.util.Map;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import android.text.InputType;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogTrainstoryBinding;
+import com.newsblur.databinding.FragmentStoryIntelTrainerSheetBinding;
+import com.newsblur.design.ReaderSheetPalette;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.NewsBlurBottomSheet;
 import com.newsblur.util.UIUtils;
 
 import javax.inject.Inject;
@@ -30,7 +32,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class StoryIntelTrainerFragment extends DialogFragment {
+public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
 
     @Inject
     FeedUtils feedUtils;
@@ -38,11 +40,15 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     @Inject
     BlurDatabaseHelper dbHelper;
 
+    @Inject
+    PrefsRepo prefsRepo;
+
     private Story story;
     private FeedSet fs;
     private Classifier classifier;
     private Integer newTitleTraining;
-    private DialogTrainstoryBinding binding;
+    private DialogTrainstoryBinding contentBinding;
+    private FragmentStoryIntelTrainerSheetBinding binding;
 
     public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs) {
         if (story.feedId.equals("0")) {
@@ -59,51 +65,62 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        return NewsBlurBottomSheet.createDialog(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            NewsBlurBottomSheet.expandWithTheme(dialog, prefsRepo.getSelectedTheme());
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentStoryIntelTrainerSheetBinding.inflate(inflater, container, false);
+        contentBinding = binding.trainContent;
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         story = (Story) getArguments().getSerializable("story");
         fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = dbHelper.getClassifierForFeed(story.feedId);
-
-        View v = getLayoutInflater().inflate(R.layout.dialog_trainstory, null);
-        binding = DialogTrainstoryBinding.bind(v);
+        bindTheme();
 
         // set up the special title training box for the title from this story and the associated buttons
-        binding.intelTitleSelection.setText(story.title);
+        contentBinding.intelTitleSelection.setText(story.title);
         // the layout sets inputType="none" on this EditText, but a widespread platform bug requires us
         // to also set this programmatically to make the field read-only for selection.
-        binding.intelTitleSelection.setInputType(InputType.TYPE_NULL);
+        contentBinding.intelTitleSelection.setInputType(android.text.InputType.TYPE_NULL);
         // the user is selecting for our custom widget, not to copy/paste
-        binding.intelTitleSelection.disableActionMenu();
+        contentBinding.intelTitleSelection.disableActionMenu();
         // pre-select the whole title to make it easier for the user to manipulate the selection handles
-        binding.intelTitleSelection.selectAll();
+        contentBinding.intelTitleSelection.selectAll();
         // do this after init and selection to prevent toast spam
-        binding.intelTitleSelection.setForceSelection(true);
+        contentBinding.intelTitleSelection.setForceSelection(true);
         // the disposition buttons for a new title training don't immediately impact the classifier object,
         // lest the user want to change selection substring after choosing the disposition.  so just store
         // the training factor in a variable that can be pulled on completion
-        binding.intelTitleLike.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newTitleTraining = Classifier.LIKE;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_green);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            }
+        contentBinding.intelTitleLike.setOnClickListener(v -> {
+            newTitleTraining = Classifier.LIKE;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_green);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
         });
-        binding.intelTitleDislike.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newTitleTraining = Classifier.DISLIKE;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
-            }
+        contentBinding.intelTitleDislike.setOnClickListener(v -> {
+            newTitleTraining = Classifier.DISLIKE;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
         });
-        binding.intelTitleClear.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newTitleTraining = null;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            }
+        contentBinding.intelTitleClear.setOnClickListener(v -> {
+            newTitleTraining = null;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
         });
 
         // scan trained title fragments for this feed and see if any apply to this story
@@ -113,7 +130,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 TextView label = row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
-                binding.existingTitleIntelContainer.addView(row);
+                contentBinding.existingTitleIntelContainer.addView(row);
             }
         }
         
@@ -123,9 +140,9 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             TextView label = row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
-            binding.existingTagIntelContainer.addView(row);
+            contentBinding.existingTagIntelContainer.addView(row);
         }
-        if (story.tags.length < 1) binding.intelTagHeader.setVisibility(View.GONE);
+        if (story.tags.length < 1) contentBinding.intelTagHeader.setVisibility(View.GONE);
 
         // there is a single author per story
         if (!TextUtils.isEmpty(story.authors)) {
@@ -133,9 +150,9 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(story.authors);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
-            binding.existingAuthorIntelContainer.addView(rowAuthor);
+            contentBinding.existingAuthorIntelContainer.addView(rowAuthor);
         } else {
-            binding.intelAuthorHeader.setVisibility(View.GONE);
+            contentBinding.intelAuthorHeader.setVisibility(View.GONE);
         }
 
         // there is a single feed to be trained, but it is a bit odd in that the label is the title and
@@ -144,33 +161,47 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
-        binding.existingFeedIntelContainer.addView(rowFeed);
+        contentBinding.existingFeedIntelContainer.addView(rowFeed);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setTitle(R.string.story_intel_dialog_title);
-        builder.setView(v);
+        binding.cancelButton.setOnClickListener(v -> dismiss());
+        binding.saveButton.setOnClickListener(v -> saveAndDismiss());
+    }
 
-        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                StoryIntelTrainerFragment.this.dismiss();
-            }
-        });
-        builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if ((newTitleTraining != null) && (!TextUtils.isEmpty(binding.intelTitleSelection.getSelection()))) {
-                    classifier.title.put(binding.intelTitleSelection.getSelection(), newTitleTraining);
-                }
-                feedUtils.updateClassifier(story.feedId, classifier, fs, requireActivity());
-                StoryIntelTrainerFragment.this.dismiss();
-            }
-        });
+    private void saveAndDismiss() {
+        if ((newTitleTraining != null) && (!TextUtils.isEmpty(contentBinding.intelTitleSelection.getSelection()))) {
+            classifier.title.put(contentBinding.intelTitleSelection.getSelection(), newTitleTraining);
+        }
+        feedUtils.updateClassifier(story.feedId, classifier, fs, requireActivity());
+        dismiss();
+    }
 
-        Dialog dialog = builder.create();
-        dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
-        return dialog;
+    private void bindTheme() {
+        int borderColor = ReaderSheetPalette.borderArgb(prefsRepo.getSelectedTheme());
+        int textPrimaryColor = ReaderSheetPalette.textPrimaryArgb(prefsRepo.getSelectedTheme());
+        int textSecondaryColor = ReaderSheetPalette.textSecondaryArgb(prefsRepo.getSelectedTheme());
+        int accentColor = ReaderSheetPalette.accentArgb(prefsRepo.getSelectedTheme());
+
+        binding.sheetDragHandle.setBackground(makeRoundedRect(borderColor, 2f));
+        binding.sheetTitle.setTextColor(textPrimaryColor);
+        binding.cancelButton.setTextColor(textSecondaryColor);
+        binding.cancelButton.setRippleColor(android.content.res.ColorStateList.valueOf(borderColor));
+        binding.saveButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accentColor));
+        binding.saveButton.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white));
+    }
+
+    private android.graphics.drawable.GradientDrawable makeRoundedRect(int color, float radiusDp) {
+        android.graphics.drawable.GradientDrawable drawable = new android.graphics.drawable.GradientDrawable();
+        drawable.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        drawable.setCornerRadius(radiusDp * getResources().getDisplayMetrics().density);
+        drawable.setColor(color);
+        return drawable;
+    }
+
+    @Override
+    public void onDestroyView() {
+        contentBinding = null;
+        binding = null;
+        super.onDestroyView();
     }
 
 }
-

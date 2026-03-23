@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:fillViewport="false"
+    android:overScrollMode="never"
+    android:scrollbars="none">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_menu"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="10dp"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:id="@+id/container_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <View
+                android:id="@+id/divider_actions"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp" />
+
+            <LinearLayout
+                android:id="@+id/section_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_order"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_history" />
+
+                    <TextView
+                        android:id="@+id/text_section_order"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_story_order"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_order"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_order_newest"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/newest"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_order_oldest"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/oldest"
+                        android:textSize="12sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_read_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_read_filter"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_read_check" />
+
+                    <TextView
+                        android:id="@+id/text_section_read_filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_read_filter"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_read_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_read_filter_all"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/all_stories"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_read_filter_unread"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/unread_only"
+                        android:textSize="12sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_mark_read_on_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_mark_read_on_scroll"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_mark_read" />
+
+                    <TextView
+                        android:id="@+id/text_section_mark_read_on_scroll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_mark_read_on_scroll"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_mark_read_on_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_mark_read_on_scroll_off"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/mark_read_on_scroll_disabled"
+                        android:textSize="11sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_mark_read_on_scroll_on"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/mark_read_on_scroll_enabled"
+                        android:textSize="11sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_content_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_content_preview"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_story_text_gray46" />
+
+                    <TextView
+                        android:id="@+id/text_section_content_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_story_content_preview"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_content_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_content_preview_none"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="Title"
+                        android:textSize="10sp"
+                        android:tooltipText="@string/story_content_preview_none" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_content_preview_small"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="2"
+                        android:textSize="10sp"
+                        android:tooltipText="@string/story_content_preview_small" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_content_preview_medium"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="4"
+                        android:textSize="10sp"
+                        android:tooltipText="@string/story_content_preview_medium" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_content_preview_large"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="6"
+                        android:textSize="10sp"
+                        android:tooltipText="@string/story_content_preview_large" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_thumbnail_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_thumbnail_preview"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_quad" />
+
+                    <TextView
+                        android:id="@+id/text_section_thumbnail_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_story_thumbnail_preview"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_thumbnail_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_thumbnail_preview_none"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_no_image_preview"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_no_image_preview"
+                        app:icon="@drawable/ic_story_thumbnail_preview_none"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_thumbnail_preview_left_small"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_left_hand_small"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_left_hand_small"
+                        app:icon="@drawable/ic_story_thumbnail_preview_left_small"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_thumbnail_preview_left_large"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_left_hand_large"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_left_hand_large"
+                        app:icon="@drawable/ic_story_thumbnail_preview_left_large"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_thumbnail_preview_right_small"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_right_hand_small"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_right_hand_small"
+                        app:icon="@drawable/ic_story_thumbnail_preview_right_small"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_thumbnail_preview_right_large"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/story_thumbnail_right_hand_large"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/story_thumbnail_right_hand_large"
+                        app:icon="@drawable/ic_story_thumbnail_preview_right_large"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="16dp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_list_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_list_style"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_magazine" />
+
+                    <TextView
+                        android:id="@+id/text_section_list_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_story_list_style_choose"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_list_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_list_style_list"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/list_style_list"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/list_style_list"
+                        app:icon="@drawable/ic_story_list_style_list"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_list_style_grid_c"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/list_style_grid_c"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/list_style_grid_c"
+                        app:icon="@drawable/ic_story_list_style_grid_c"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_list_style_grid_m"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/list_style_grid_m"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/list_style_grid_m"
+                        app:icon="@drawable/ic_story_list_style_grid_m"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_list_style_grid_f"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/list_style_grid_f"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/list_style_grid_f"
+                        app:icon="@drawable/ic_story_list_style_grid_f"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_text_size"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_story_text_gray46" />
+
+                    <TextView
+                        android:id="@+id/text_section_text_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_text_size"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_text_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_xs"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_xs"
+                        android:textSize="10sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_s"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_s"
+                        android:textSize="10sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_m"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_m"
+                        android:textSize="10sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_l"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_l"
+                        android:textSize="10sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_xl"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_xl"
+                        android:textSize="10sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_text_size_xxl"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/menu_text_size_xxl"
+                        android:textSize="10sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_spacing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_spacing"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_sheets" />
+
+                    <TextView
+                        android:id="@+id/text_section_spacing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_spacing"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/group_spacing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_spacing_compact"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/compact"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_spacing_comfortable"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:minWidth="0dp"
+                        android:text="@string/comfortable"
+                        android:textSize="12sp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/section_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:id="@+id/icon_section_theme"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_theme_dot_light" />
+
+                    <TextView
+                        android:id="@+id/text_section_theme"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/whitney"
+                        android:text="@string/menu_theme_choose"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:baselineAligned="false"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_theme_auto"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1.5"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text="@string/auto"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_theme_light"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/light"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/light"
+                        app:icon="@drawable/ic_theme_dot_light"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@null" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_theme_sepia"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/sepia"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/sepia"
+                        app:icon="@drawable/ic_theme_dot_sepia"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@null" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_theme_dark"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/dark"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/dark"
+                        app:icon="@drawable/ic_theme_dot_dark"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@null" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_theme_black"
+                        style="?toggleButton"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/black"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp"
+                        android:text=""
+                        android:tooltipText="@string/black"
+                        app:icon="@drawable/ic_theme_dot_black"
+                        app:iconGravity="textTop"
+                        app:iconPadding="0dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@null" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</ScrollView>

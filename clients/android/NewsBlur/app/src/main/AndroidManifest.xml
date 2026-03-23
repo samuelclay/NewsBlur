@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -15,6 +16,7 @@
         android:name=".NbApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backupscheme"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/newsblur"
@@ -65,41 +67,74 @@
             android:label="@string/menu_widget"
             android:launchMode="singleTask" />
 
-        <activity android:name=".activity.FeedItemsList" />
+        <activity
+            android:name=".activity.FeedItemsList"
+            android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllStoriesItemsList"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.InfrequentItemsList" />
+        <activity
+            android:name=".activity.InfrequentItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.ReadStoriesItemsList" />
+        <activity
+            android:name=".activity.ReadStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SavedStoriesItemsList" />
+        <activity
+            android:name=".activity.SavedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllSharedStoriesItemsList" />
+        <activity
+            android:name=".activity.AllSharedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.GlobalSharedStoriesItemsList" />
+        <activity
+            android:name=".activity.GlobalSharedStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FolderItemsList" />
+        <activity
+            android:name=".activity.FolderItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SocialFeedItemsList" />
+        <activity
+            android:name=".activity.SocialFeedItemsList"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FeedReading" />
+        <activity
+            android:name=".activity.FeedReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllStoriesReading" />
+        <activity
+            android:name=".activity.AllStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.InfrequentReading" />
+        <activity
+            android:name=".activity.InfrequentReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.ReadStoriesReading" />
+        <activity
+            android:name=".activity.ReadStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.SavedStoriesReading" />
+        <activity
+            android:name=".activity.SavedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.AllSharedStoriesReading" />
+        <activity
+            android:name=".activity.AllSharedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.GlobalSharedStoriesReading" />
+        <activity
+            android:name=".activity.GlobalSharedStoriesReading"
+            android:theme="@style/Theme.Translucent" />
 
-        <activity android:name=".activity.FolderReading" />
+        <activity
+            android:name=".activity.FolderReading"
+            android:theme="@style/Theme.Translucent" />
 
         <activity android:name=".activity.SubscriptionActivity" />
 
@@ -112,7 +147,13 @@
             android:name=".activity.FeedSearchActivity"
             android:launchMode="singleTop" />
 
-        <activity android:name=".activity.SocialFeedReading" />
+        <activity
+            android:name=".activity.DiscoverFeedsActivity"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".activity.SocialFeedReading"
+            android:theme="@style/Theme.Translucent" />
 
         <service
             android:name=".service.SyncService"

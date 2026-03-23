@@ -1,0 +1,53 @@
+---
+# Re-enable all app servers in HAProxy without deploying.
+# Use after a canceled deploy leaves servers in MAINT mode.
+- name: ENABLE -> Re-enable all app servers in HAProxy
+  hosts: hdjango:hrefresh:hcount:hpush:staging
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
+  tasks:
+    - name: Determine backend name for this server
+      set_fact:
+        backend_name: "{{ 'app_count' if inventory_hostname in groups.get('hcount', []) else 'app_refresh' if inventory_hostname in groups.get('hrefresh', []) else 'app_push' if inventory_hostname in groups.get('hpush', []) else 'app_django' if (inventory_hostname in groups.get('hdjango', []) or inventory_hostname in groups.get('staging', [])) else '' }}"
+
+    - name: Wait for container to be healthy
+      uri:
+        url: "http://localhost:8000/_haproxychk"
+        status_code: 200
+      register: result
+      retries: 10
+      delay: 5
+      until: result.status == 200
+
+    - name: Re-enable servers in HAProxy
+      delegate_to: "{{ haproxy_host }}"
+      shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
+      register: haproxy_enable
+      retries: 5
+      delay: 3
+      until: haproxy_enable is not failed
+      when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+    - name: Show HAProxy enable result
+      debug:
+        msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_enable.stdout }}"
+      when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_enable is defined
+
+    - name: Verify server is enabled (not in MAINT)
+      delegate_to: "{{ haproxy_host }}"
+      shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
+      register: server_state_enabled
+      retries: 5
+      delay: 3
+      until: server_state_enabled is not failed and server_state_enabled.stdout != "1"
+      when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+    - name: Start Consul
+      become: yes
+      service:
+        name: consul
+        state: started
+        enabled: true

@@ -47,6 +47,7 @@ frontend public
     bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem alpn h2,http/1.1
 
     http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    http-request set-header X-Request-Start %[date()]%[date_us()]
     option http-server-close
 
     acl gunicorn_dead nbsrv(app_django) lt 1
@@ -60,6 +61,13 @@ frontend public
     acl is_automated_river urlp(h) -m found
     acl is_dashboard url_param(dashboard) -i true
 
+    # Block vulnerability scanners before they reach Gunicorn workers.
+    # Scanner .php probes on blurblog subdomains were consuming ~160 worker-seconds
+    # per 10 minutes, with individual requests tying up workers for ~10s each.
+    acl is_scanner_path path_end .php .cgi .asp .aspx .env
+    acl is_scanner_path path_beg /wp-admin /wp-login /wp-content /wp-includes
+    http-request deny deny_status 403 if is_scanner_path
+
     monitor-uri /status
     monitor fail if gunicorn_dead
     monitor fail if nginx_dead
@@ -68,7 +76,7 @@ frontend public
     # Redirect all HTTP traffic to HTTPS
     acl is_root path /
     redirect scheme https if is_root !{ ssl_fc }
-    
+
     use_backend app_push if { hdr_end(host) -i push.newsblur.com }
     use_backend app_push if { path_beg /newsletters/receive }
     use_backend node_socket if { path_beg /v3/socket.io/ }
@@ -152,7 +160,7 @@ backend app_push
     # server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_images
-    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
+    option httpchk HEAD /
     http-check expect rstatus 200|301
     default-server check inter 10000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hnode_images %}
