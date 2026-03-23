@@ -251,6 +251,62 @@ class Test_RiverStories(TransactionTestCase):
                 f"Newest/{read_filter} should not return stale Redis hashes",
             )
 
+    def test_river_stories__free_user_first_page_is_capped_at_three_stories(self):
+        """Free users should only receive the first three river stories on page one."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = False
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+
+        with patch("apps.reader.views.UserSubscription.feed_stories", wraps=UserSubscription.feed_stories) as feed_stories:
+            response = self.client.post(
+                reverse("load-river-stories"),
+                {
+                    "feeds": self.test_feeds,
+                    "read_filter": "all",
+                    "page": 1,
+                    "include_hidden": "true",
+                },
+            )
+
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["code"], 0)
+        self.assertEqual(content["message"], "The full River of News is a premium feature.")
+        self.assertEqual(len(content["stories"]), 3)
+        self.assertEqual(feed_stories.call_args.kwargs["limit"], 3)
+
+    def test_river_stories__free_user_later_pages_return_empty_without_aggregation(self):
+        """Free users should be blocked before river aggregation on page two and beyond."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = False
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+
+        with patch("apps.reader.views.UserSubscription.feed_stories") as feed_stories:
+            response = self.client.post(
+                reverse("load-river-stories"),
+                {
+                    "feeds": self.test_feeds,
+                    "read_filter": "unread",
+                    "page": 2,
+                    "include_hidden": "true",
+                },
+            )
+
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["code"], 0)
+        self.assertEqual(content["message"], "The full River of News is a premium feature.")
+        self.assertEqual(content["stories"], [])
+        self.assertFalse(feed_stories.called)
+
 
     def test_river_stories__specific_story_hashes(self):
         """

@@ -2380,6 +2380,26 @@ def load_river_stories__redis(request):
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+    is_free_river_user = user.is_authenticated and not user.profile.is_premium
+
+    if is_free_river_user:
+        message = "The full River of News is a premium feature."
+        if page > 1:
+            data = dict(
+                code=0,
+                message=message,
+                stories=[],
+                classifiers={},
+                elapsed_time=round(float(time.time() - start), 2),
+                user_search=None,
+                user_profiles=[],
+            )
+            if include_feeds:
+                data["feeds"] = []
+            if not include_hidden:
+                data["hidden_stories_removed"] = 0
+            return data
+        limit = min(limit, 3)
 
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
@@ -2392,7 +2412,7 @@ def load_river_stories__redis(request):
         infrequent = get_post.get("infrequent")
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs = []
-    code = 1
+    code = 0 if is_free_river_user else 1
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -2707,13 +2727,6 @@ def load_river_stories__redis(request):
         feeds = Feed.objects.filter(pk__in=set([story["story_feed_id"] for story in stories]))
         feeds = [feed.canonical(include_favicon=False) for feed in feeds]
 
-    if not user.profile.is_premium and not include_feeds:
-        message = "The full River of News is a premium feature."
-        code = 0
-        # if page > 1:
-        #     stories = []
-        # else:
-        #     stories = stories[:5]
     if not include_hidden:
         hidden_stories_removed = 0
         new_stories = []
