@@ -102,10 +102,15 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
 
-    runtime_commands = [f"set server {target.spec} state {args.state}" for target in targets]
-    runtime_commands.append("show servers state")
+    for target in targets:
+        change_result = run_haproxy_commands([f"set server {target.spec} state {args.state}"])
+        if change_result.returncode != 0:
+            stderr = change_result.stderr.strip()
+            if stderr:
+                print("%s: %s" % (target.spec, stderr), file=sys.stderr)
+            return change_result.returncode
 
-    result = run_haproxy_commands(runtime_commands)
+    result = run_haproxy_commands(["show servers state"])
     if result.returncode != 0:
         stderr = result.stderr.strip()
         if stderr:
