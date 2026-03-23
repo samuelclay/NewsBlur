@@ -1,0 +1,11 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Great news, {{ username }}!
+
+{{ referred_username }} just signed up for a premium subscription through your referral link.
+
+You've earned {{ credit_text }} of free {{ tier_name }} as a thank you for spreading the word about NewsBlur.
+
+Keep sharing your referral link to earn more free subscription time. Every referral adds up!
+
+Sam{% endblock body %}

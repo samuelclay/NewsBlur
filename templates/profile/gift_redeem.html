@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block bodyclass %}NB-static NB-static-card{% endblock %}
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block title %}Redeem Gift{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-card-wrapper">
+    <div class="NB-static-card">
+        <a href="{% url "index" %}" class="NB-static-card-logo">
+            <img src="{{ MEDIA_URL }}img/logo_512.png" />
+        </a>
+
+        {% if error %}
+            <h1 class="NB-static-card-title">Gift Error</h1>
+            <p class="NB-static-card-tagline" style="color: #c00;">{{ error }}</p>
+            <a href="{% url "index" %}" class="NB-static-card-submit" style="display: inline-block; margin-top: 16px; text-decoration: none;">Back to NewsBlur</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

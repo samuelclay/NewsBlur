@@ -56,5 +56,9 @@ urlpatterns = [
     url(r"^delete_all_sites/?", views.delete_all_sites, name="profile-delete-all-sites"),
     url(r"^email_optout/?", views.email_optout, name="profile-email-optout"),
     url(r"^ios_subscription_status/?", views.ios_subscription_status, name="profile-ios-subscription-status"),
+    url(r"^gift_checkout/?", views.gift_checkout, name="gift-checkout"),
+    url(r"^gift_checkout_complete/?", views.gift_checkout_complete, name="gift-checkout-complete"),
+    url(r"^referral_data/?", views.referral_data, name="referral-data"),
+    url(r"^gift_data/?", views.gift_data, name="gift-data"),
     url(r"debug/?", views.trigger_error, name="trigger-error"),
 ]

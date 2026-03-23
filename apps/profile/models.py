@@ -692,6 +692,37 @@ class Profile(models.Model):
 
         return True
 
+    def extend_premium_by_days(self, days, tier=None):
+        now = datetime.datetime.now()
+
+        # Ensure user is at the required tier
+        if tier == "pro" and not self.is_pro:
+            self.activate_pro()
+        elif tier == "archive" and not self.is_archive:
+            self.activate_archive()
+        elif not self.is_premium:
+            self.activate_premium()
+
+        # Extend premium_expire
+        if self.premium_expire and self.premium_expire > now:
+            self.premium_expire = self.premium_expire + datetime.timedelta(days=days)
+        else:
+            self.premium_expire = now + datetime.timedelta(days=days)
+        self.save()
+
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=now,
+            payment_amount=0,
+            payment_provider="referral-credit",
+        )
+
+        logging.user(
+            self.user,
+            "~FG~BBExtended premium by %s days (tier: %s, new expire: %s)~FW"
+            % (days, tier or "premium", self.premium_expire),
+        )
+
     def activate_archive(self, never_expire=False):
         logging.user(
             self.user,
@@ -3385,6 +3416,37 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
             logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)
         return
 
+    # Handle gift purchase completion
+    if purpose == "gift":
+        gift_tier = metadata.get("gift_tier", "premium")
+        try:
+            import stripe
+
+            stripe.api_key = settings.STRIPE_SECRET
+            user = User.objects.get(pk=int(newsblur_user_id))
+            payment_intent_id = full_json["data"]["object"].get("payment_intent")
+            tier_prices = {"premium": 36, "archive": 99, "pro": 299}
+            payment_amount = tier_prices.get(gift_tier, 36)
+            duration = 365 if gift_tier != "pro" else 30
+            if metadata.get("gift_duration") == "year":
+                duration = 365
+
+            gift = MGiftCode.add(
+                gifting_user_id=user.pk,
+                duration=duration,
+                payment=payment_amount,
+                gift_tier=gift_tier,
+                stripe_payment_intent_id=payment_intent_id,
+            )
+            logging.user(
+                user,
+                "~BC~SB~FBStripe gift checkout complete: %s tier=%s code=%s"
+                % (user.username, gift_tier, gift.gift_code),
+            )
+        except User.DoesNotExist:
+            logging.debug(" ---> Couldn't find user for gift checkout: %s" % newsblur_user_id)
+        return
+
     stripe_id = full_json["data"]["object"]["customer"]
     profile = None
     try:
@@ -3426,10 +3488,13 @@ def stripe_signup(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         if plan_id == Profile.plan_to_stripe_price("premium"):
             profile.activate_premium()
+            MReferral.award_credit(profile.user.pk, 36, "premium")
         elif plan_id == Profile.plan_to_stripe_price("archive"):
             profile.activate_archive()
+            MReferral.award_credit(profile.user.pk, 99, "archive")
         elif plan_id == Profile.plan_to_stripe_price("pro"):
             profile.activate_pro()
+            MReferral.award_credit(profile.user.pk, 299, "pro")
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
@@ -3800,12 +3865,24 @@ class MGiftCode(mongo.Document):
     gift_code = mongo.StringField(max_length=12)
     duration_days = mongo.IntField()
     payment_amount = mongo.IntField()
+    gift_tier = mongo.StringField(default="premium")  # "premium", "archive", "pro"
+    stripe_payment_intent_id = mongo.StringField()
+    stripe_refund_id = mongo.StringField()
+    redeemed_date = mongo.DateTimeField()
+    expires_date = mongo.DateTimeField()  # 90 days after creation for auto-refund
+    is_staff_gift = mongo.BooleanField(default=False)
     created_date = mongo.DateTimeField(default=datetime.datetime.now)
 
     meta = {
         "collection": "gift_codes",
         "allow_inheritance": False,
-        "indexes": ["gifting_user_id", "receiving_user_id", "created_date"],
+        "indexes": ["gifting_user_id", "receiving_user_id", "gift_code", "created_date"],
+    }
+
+    TIER_PRICES = {
+        "premium": 36,
+        "archive": 99,
+        "pro": 299,
     }
 
     def __str__(self):
@@ -3831,13 +3908,28 @@ class MGiftCode(mongo.Document):
         return code
 
     @classmethod
-    def add(cls, gift_code=None, duration=0, gifting_user_id=None, receiving_user_id=None, payment=0):
+    def add(
+        cls,
+        gift_code=None,
+        duration=0,
+        gifting_user_id=None,
+        receiving_user_id=None,
+        payment=0,
+        gift_tier="premium",
+        stripe_payment_intent_id=None,
+        is_staff_gift=False,
+    ):
+        expires_date = datetime.datetime.now() + datetime.timedelta(days=90)
         return cls.objects.create(
             gift_code=cls.create_code(gift_code),
             gifting_user_id=gifting_user_id,
             receiving_user_id=receiving_user_id,
             duration_days=duration,
             payment_amount=payment,
+            gift_tier=gift_tier,
+            stripe_payment_intent_id=stripe_payment_intent_id,
+            is_staff_gift=is_staff_gift,
+            expires_date=expires_date,
         )
 
 
@@ -3870,6 +3962,9 @@ class MRedeemedCode(mongo.Document):
                 payment_amount=newsblur_gift_code.payment_amount,
                 payment_provider="newsblur-gift",
             )
+            # Mark the gift code as redeemed
+            newsblur_gift_code.redeemed_date = datetime.datetime.now()
+            newsblur_gift_code.save()
 
         else:
             # Thinkup / Good Web Bundle
@@ -3880,8 +3975,160 @@ class MRedeemedCode(mongo.Document):
                 payment_provider="good-web-bundle",
             )
         cls.record(user.pk, gift_code)
-        user.profile.activate_premium()
-        logging.user(user, "~FG~BBRedeeming gift code: %s~FW" % gift_code)
+
+        # Activate the appropriate tier based on the gift
+        gift_tier = getattr(newsblur_gift_code, "gift_tier", "premium") if newsblur_gift_code else "premium"
+        if gift_tier == "pro":
+            user.profile.activate_pro()
+        elif gift_tier == "archive":
+            user.profile.activate_archive()
+        else:
+            user.profile.activate_premium()
+        logging.user(user, "~FG~BBRedeeming gift code: %s (tier: %s)~FW" % (gift_code, gift_tier))
+
+
+class MReferral(mongo.Document):
+    referrer_user_id = mongo.IntField()
+    referred_user_id = mongo.IntField(unique=True)
+    referred_username = mongo.StringField()
+    created_date = mongo.DateTimeField(default=datetime.datetime.now)
+    payment_date = mongo.DateTimeField()
+    payment_amount = mongo.IntField(default=0)
+    payment_tier = mongo.StringField()  # "premium", "archive", "pro"
+    credit_days_awarded = mongo.IntField(default=0)
+    credit_awarded_date = mongo.DateTimeField()
+    status = mongo.StringField(default="pending")  # "pending", "converted"
+
+    meta = {
+        "collection": "referrals",
+        "allow_inheritance": False,
+        "indexes": ["referrer_user_id", "referred_user_id", "status", "created_date"],
+    }
+
+    TIER_YEARLY_COST = {
+        "premium": 36,
+        "archive": 99,
+        "pro": 299,
+    }
+
+    def __str__(self):
+        return "%s referred %s on %s (status: %s)" % (
+            self.referrer_user_id,
+            self.referred_username,
+            self.created_date,
+            self.status,
+        )
+
+    @classmethod
+    def create_referral(cls, referrer_user_id, referred_user_id, referred_username):
+        if cls.check_circular(referrer_user_id, referred_user_id):
+            logging.debug(
+                " ---> Circular referral blocked: %s -> %s" % (referrer_user_id, referred_user_id)
+            )
+            return None
+        try:
+            referral = cls.objects.create(
+                referrer_user_id=referrer_user_id,
+                referred_user_id=referred_user_id,
+                referred_username=referred_username,
+            )
+            logging.debug(
+                " ---> Referral created: %s referred %s" % (referrer_user_id, referred_username)
+            )
+            return referral
+        except mongo.NotUniqueError:
+            logging.debug(
+                " ---> Referral already exists for user %s" % referred_user_id
+            )
+            return None
+
+    @classmethod
+    def check_circular(cls, referrer_user_id, referred_user_id):
+        return cls.objects(
+            referrer_user_id=referred_user_id, referred_user_id=referrer_user_id
+        ).count() > 0
+
+    @classmethod
+    def award_credit(cls, referred_user_id, payment_amount, payment_tier):
+        from apps.profile.tasks import EmailReferralCredit
+
+        referral = cls.objects(referred_user_id=referred_user_id, status="pending").first()
+        if not referral:
+            return
+
+        # Atomically update to prevent double-awarding
+        updated = cls.objects(
+            id=referral.id, status="pending"
+        ).update_one(set__status="converting")
+        if not updated:
+            return
+
+        try:
+            referrer = User.objects.get(pk=referral.referrer_user_id)
+        except User.DoesNotExist:
+            cls.objects(id=referral.id).update_one(set__status="pending")
+            return
+
+        # Determine referrer's current tier for credit calculation
+        profile = referrer.profile
+        if profile.is_pro:
+            referrer_tier = "pro"
+        elif profile.is_archive:
+            referrer_tier = "archive"
+        elif profile.is_premium:
+            referrer_tier = "premium"
+        else:
+            referrer_tier = "premium"  # Free users get Premium time
+
+        tier_yearly_cost = cls.TIER_YEARLY_COST.get(referrer_tier, 36)
+        credit_days = int(payment_amount / (tier_yearly_cost / 365.0))
+
+        if credit_days > 0:
+            profile.extend_premium_by_days(credit_days, tier=referrer_tier)
+
+        cls.objects(id=referral.id).update_one(
+            set__status="converted",
+            set__payment_date=datetime.datetime.now(),
+            set__payment_amount=payment_amount,
+            set__payment_tier=payment_tier,
+            set__credit_days_awarded=credit_days,
+            set__credit_awarded_date=datetime.datetime.now(),
+        )
+
+        logging.debug(
+            " ---> Referral credit awarded: %s gets %s days of %s (referred user %s paid $%s for %s)"
+            % (referrer.username, credit_days, referrer_tier, referred_user_id, payment_amount, payment_tier)
+        )
+
+        EmailReferralCredit.delay(
+            referrer_user_id=referral.referrer_user_id,
+            referred_username=referral.referred_username,
+            credit_days=credit_days,
+            referrer_tier=referrer_tier,
+        )
+
+    @classmethod
+    def get_referral_stats(cls, user_id):
+        referrals = cls.objects(referrer_user_id=user_id)
+        pending = referrals.filter(status="pending").count()
+        converted = referrals.filter(status="converted").count()
+        total_days = sum(r.credit_days_awarded for r in referrals.filter(status="converted"))
+        return {
+            "pending": pending,
+            "converted": converted,
+            "total_days_earned": total_days,
+            "total_referrals": pending + converted,
+            "referrals": [
+                {
+                    "username": r.referred_username,
+                    "date": r.created_date.strftime("%Y-%m-%d") if r.created_date else None,
+                    "status": r.status,
+                    "credit_days": r.credit_days_awarded,
+                    "payment_tier": r.payment_tier,
+                }
+                for r in referrals.order_by("-created_date")
+            ],
+        }
 
 
 class MCustomStyling(mongo.Document):
