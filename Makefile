@@ -282,6 +282,8 @@ logmongo:
 alllogs: 
 	docker compose logs -f --tail 20
 logall: alllogs
+tlnb-slow:
+	/srv/newsblur/utils/tlnb.py app | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (match($$0, /\[[0-9]+\.[0-9]*s/)) {t=substr($$0, RSTART+1, RLENGTH-2); if (t+0 >= 1.0) print line}}'
 tlnb-samuel:
 	$(MAKE) tlnb-user USER=samuel
 tlnb-user:
