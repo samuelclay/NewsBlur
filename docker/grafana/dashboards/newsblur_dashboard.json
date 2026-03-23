@@ -943,9 +943,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])))",
           "interval": "",
-          "legendFormat": "p50 {{method}} {{view}}",
+          "legendFormat": "p50",
           "refId": "A"
         },
         {
@@ -954,11 +954,11 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 5,
-          "legendFormat": "p90 {{method}} {{view}}",
+          "legendFormat": "p90",
           "refId": "B"
         },
         {
@@ -967,15 +967,15 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-single-feed\",method=\"GET\"}[15m]) / rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-single-feed\",method=\"GET\"}[15m])",
+          "expr": "sum(rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval])) / sum(rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-single-feed\",method=\"GET\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Avg {{method}} {{view}}",
+          "legendFormat": "Average",
           "refId": "C"
         }
       ],
-      "title": "Requests latency - GET load-single-feed",
+      "title": "Cluster latency - GET load-single-feed",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1074,10 +1074,10 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p50 {{method}} {{view}}",
+          "legendFormat": "p50",
           "refId": "A"
         },
         {
@@ -1086,11 +1086,11 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "p90 {{method}} {{view}}",
+          "legendFormat": "p90",
           "refId": "B"
         },
         {
@@ -1099,14 +1099,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-river-stories\",method=\"GET\"}[15m]) / rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-river-stories\",method=\"GET\"}[15m])",
+          "expr": "sum(rate(django_http_requests_latency_seconds_by_view_method_sum{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval])) / sum(rate(django_http_requests_latency_seconds_by_view_method_count{view=\"load-river-stories\",method=\"GET\"}[$__rate_interval]))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Avg {{method}} {{view}}",
+          "legendFormat": "Average",
           "refId": "C"
         }
       ],
-      "title": "Requests latency - POST load-river-stories",
+      "title": "Cluster latency - GET load-river-stories",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1202,7 +1202,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.5, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "p50",
@@ -1214,7 +1214,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.75, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.75, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
@@ -1227,7 +1227,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.9, rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[15m]))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "legendFormat": "p90",
@@ -1239,7 +1239,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_requests_latency_including_middlewares_seconds_sum{}[1h])/rate(django_http_requests_latency_including_middlewares_seconds_count{}[1h])",
+          "expr": "sum(rate(django_http_requests_latency_including_middlewares_seconds_sum{}[$__rate_interval])) / sum(rate(django_http_requests_latency_including_middlewares_seconds_count{}[$__rate_interval]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Average",
@@ -1289,7 +1289,6 @@
             }
           },
           "mappings": [],
-          "max": 4,
           "min": 0.0001,
           "thresholds": {
             "mode": "absolute",
@@ -1333,14 +1332,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_responses_total_by_status_view_method_total{}[2h])",
+          "expr": "topk(12, sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{}[$__rate_interval])))",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{method}} {{status}} {{view}}",
+          "legendFormat": "{{method}} {{view}}",
           "refId": "A"
         }
       ],
-      "title": "Requests count",
+      "title": "Top request volume by endpoint",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1433,7 +1432,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "rate(django_http_responses_total_by_status_total{}[1h])",
+          "expr": "sum by (status) (rate(django_http_responses_total_by_status_total{}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "{{status}}",
           "refId": "A"
