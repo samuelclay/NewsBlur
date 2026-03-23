@@ -2275,6 +2275,73 @@ def load_read_stories(request):
     }
 
 
+def prune_missing_river_story_hashes(user_id, story_hashes):
+    if not story_hashes:
+        return
+
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    pipeline = r.pipeline()
+    unique_story_hashes = []
+    seen_story_hashes = set()
+
+    for story_hash in story_hashes:
+        if isinstance(story_hash, bytes):
+            story_hash = story_hash.decode()
+        if story_hash in seen_story_hashes:
+            continue
+        seen_story_hashes.add(story_hash)
+        unique_story_hashes.append(story_hash)
+
+    for story_hash in unique_story_hashes:
+        feed_id = story_hash.split(":", 1)[0]
+        pipeline.srem(f"F:{feed_id}", story_hash)
+        pipeline.zrem(f"zF:{feed_id}", story_hash)
+        pipeline.zrem(f"zU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}", story_hash)
+
+    pipeline.execute()
+
+
+def load_existing_mstories(user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None):
+    if not story_hashes:
+        return story_hashes, unread_feed_story_hashes, []
+
+    current_story_hashes = story_hashes
+    current_unread_feed_story_hashes = unread_feed_story_hashes
+    fetch_limit = min(len(current_story_hashes), limit)
+    max_fetch_limit = max(limit * 32, 400)
+
+    while True:
+        candidate_hashes = current_story_hashes[:fetch_limit]
+        mstories = list(MStory.objects(story_hash__in=candidate_hashes).order_by(story_date_order))
+        found_story_hashes = {story.story_hash for story in mstories}
+        missing_story_hashes = [
+            story_hash for story_hash in candidate_hashes if story_hash not in found_story_hashes
+        ]
+
+        if missing_story_hashes:
+            prune_missing_river_story_hashes(user_id, missing_story_hashes)
+
+        if (
+            len(mstories) >= limit
+            or len(candidate_hashes) < fetch_limit
+            or not fetch_more
+            or fetch_limit >= max_fetch_limit
+        ):
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        next_fetch_limit = min(fetch_limit * 2, max_fetch_limit)
+        if next_fetch_limit <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        current_story_hashes, current_unread_feed_story_hashes = fetch_more(next_fetch_limit)
+        if len(current_story_hashes) <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        fetch_limit = min(next_fetch_limit, len(current_story_hashes))
+
+
 @json.json_view
 def load_river_stories__redis(request):
     # get_post is request.REQUEST, since this endpoint needs to handle either
@@ -2425,11 +2492,25 @@ def load_river_stories__redis(request):
                     "metrics_source": "river_request",
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+
+                def fetch_more_story_hashes(fetch_limit):
+                    refill_params = dict(params)
+                    refill_params["limit"] = fetch_limit
+                    return UserSubscription.feed_stories(**refill_params)
+
+                story_hashes, unread_feed_story_hashes, mstories = load_existing_mstories(
+                    user.pk,
+                    story_hashes,
+                    unread_feed_story_hashes,
+                    story_date_order,
+                    limit,
+                    fetch_more=fetch_more_story_hashes,
+                )
             else:
                 story_hashes = []
                 unread_feed_story_hashes = []
+                mstories = []
 
-            mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
 
     checkpoint1 = time.time()

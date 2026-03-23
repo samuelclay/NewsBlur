@@ -7,6 +7,7 @@ ZUNIONSTORE operations across all feeds.
 """
 
 import datetime
+from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -200,6 +201,56 @@ class Test_RiverStories(TransactionTestCase):
         print(
             f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)"
         )
+
+    def test_river_stories__newest_backfills_past_stale_redis_hashes(self):
+        """Newest river loads should skip stale Redis hashes that no longer exist in Mongo."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+
+        feed_id = self.test_feeds[0]
+        stale_story_hashes = []
+        future_timestamp = int((datetime.datetime.now() + datetime.timedelta(days=1)).timestamp())
+
+        for i in range(12):
+            story_hash = f"{feed_id}:stale{i}"
+            stale_story_hashes.append(story_hash)
+            self.r.sadd(f"F:{feed_id}", story_hash)
+            self.r.zadd(f"zF:{feed_id}", {story_hash: future_timestamp - i})
+
+        ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, self.test_feeds, "")
+        self.r.delete(ranked_key)
+        self.r.delete(unread_key)
+        for test_feed_id in self.test_feeds:
+            self.r.delete(f"zU:{self.user.pk}:{test_feed_id}")
+
+        for read_filter in ["all", "unread"]:
+            response = self.client.post(
+                reverse("load-river-stories"),
+                {
+                    "feeds": self.test_feeds,
+                    "read_filter": read_filter,
+                    "order": "newest",
+                    "page": 1,
+                    "include_hidden": "true",
+                },
+            )
+
+            content = json.decode(response.content)
+            returned_hashes = [story["story_hash"] for story in content.get("stories", [])]
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                len(returned_hashes),
+                12,
+                f"Expected newest/{read_filter} to backfill past stale hashes, got {returned_hashes}",
+            )
+            self.assertFalse(
+                set(returned_hashes) & set(stale_story_hashes),
+                f"Newest/{read_filter} should not return stale Redis hashes",
+            )
+
 
     def test_river_stories__specific_story_hashes(self):
         """
@@ -950,3 +1001,133 @@ class Test_RiverStories(TransactionTestCase):
         self.assertGreater(len(stories), 0, "Single feed river should return stories")
         self.assertLess(counts["total"], 30, "Single feed should have minimal queries")
         print(f">>> ✓ Single feed lazy merge works")
+
+    def test_story_hashes__unread_skips_clean_zero_unread_feeds(self):
+        """
+        The unread helper sometimes receives an all-subs list from higher-level callers.
+        In that case it should only consider feeds that can actually contribute unread stories.
+        Clean feeds with zero unread stories should not be rebuilt on every river request.
+        """
+        feed_ids = self.test_feeds[:3]
+        unread_feed = feed_ids[0]
+        empty_feeds = feed_ids[1:]
+
+        self.r.delete(f"RS:{self.user.pk}")
+        for feed_id in feed_ids:
+            self.r.delete(f"RS:{self.user.pk}:{feed_id}")
+            self.r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        for story_hash in self.test_story_hashes:
+            feed_id = int(story_hash.split(":")[0])
+            if feed_id in empty_feeds:
+                self.r.sadd(f"RS:{self.user.pk}", story_hash)
+                self.r.sadd(f"RS:{self.user.pk}:{feed_id}", story_hash)
+
+        UserSubscription.objects.filter(user=self.user, feed_id=unread_feed).update(
+            unread_count_neutral=3,
+            unread_count_positive=0,
+            needs_unread_recalc=True,
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id__in=empty_feeds).update(
+            unread_count_neutral=0,
+            unread_count_positive=0,
+            needs_unread_recalc=False,
+        )
+
+        usersubs = list(UserSubscription.subs_for_feeds(self.user.pk, feed_ids=feed_ids, read_filter="all"))
+        with patch(
+            "redis.client.Pipeline.zdiffstore",
+            autospec=True,
+            wraps=self.r.pipeline().__class__.zdiffstore,
+        ) as mocked_zdiffstore:
+            unread_story_hashes = UserSubscription.story_hashes(
+                user_id=self.user.pk,
+                feed_ids=feed_ids,
+                usersubs=usersubs,
+                read_filter="unread",
+                cutoff_date=self.user.profile.unread_cutoff,
+                metrics_source="river_request",
+            )
+        rebuilt_keys = {call.args[1] for call in mocked_zdiffstore.call_args_list}
+
+        unread_story_hashes = [h.decode() if isinstance(h, bytes) else h for h in unread_story_hashes]
+        self.assertIn(
+            f"zU:{self.user.pk}:{unread_feed}",
+            rebuilt_keys,
+            "Expected unread Redis work for the feed that actually has unread stories",
+        )
+        self.assertFalse(
+            any(f"zU:{self.user.pk}:{feed_id}" in rebuilt_keys for feed_id in empty_feeds),
+            f"Clean zero-unread feeds should not be scanned, got rebuild keys: {sorted(rebuilt_keys)}",
+        )
+        self.assertTrue(unread_story_hashes, "Expected unread markers for the unread feed")
+        self.assertTrue(
+            all(hash_.startswith(f"{unread_feed}:") for hash_ in unread_story_hashes),
+            f"Unread markers should only come from feed {unread_feed}, got {unread_story_hashes}",
+        )
+
+    def test_story_hashes__unread_keeps_dirty_zero_count_feeds(self):
+        """
+        Dirty feeds still need unread reconstruction even when cached unread counts are zero.
+
+        This protects against over-filtering: we want to skip clean zero-unread feeds,
+        but we must still include dirty feeds because their unread counts may be stale.
+        """
+        feed_ids = self.test_feeds[:2]
+        dirty_feed = feed_ids[0]
+        empty_feed = feed_ids[1]
+
+        self.r.delete(f"RS:{self.user.pk}")
+        for feed_id in feed_ids:
+            self.r.delete(f"RS:{self.user.pk}:{feed_id}")
+            self.r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        for story_hash in self.test_story_hashes:
+            feed_id = int(story_hash.split(":")[0])
+            if feed_id == empty_feed:
+                self.r.sadd(f"RS:{self.user.pk}", story_hash)
+                self.r.sadd(f"RS:{self.user.pk}:{feed_id}", story_hash)
+
+        UserSubscription.objects.filter(user=self.user, feed_id=dirty_feed).update(
+            unread_count_neutral=0,
+            unread_count_positive=0,
+            needs_unread_recalc=True,
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id=empty_feed).update(
+            unread_count_neutral=0,
+            unread_count_positive=0,
+            needs_unread_recalc=False,
+        )
+
+        usersubs = list(UserSubscription.subs_for_feeds(self.user.pk, feed_ids=feed_ids, read_filter="all"))
+        with patch(
+            "redis.client.Pipeline.zdiffstore",
+            autospec=True,
+            wraps=self.r.pipeline().__class__.zdiffstore,
+        ) as mocked_zdiffstore:
+            unread_story_hashes = UserSubscription.story_hashes(
+                user_id=self.user.pk,
+                feed_ids=feed_ids,
+                usersubs=usersubs,
+                read_filter="unread",
+                cutoff_date=self.user.profile.unread_cutoff,
+                metrics_source="river_request",
+            )
+        rebuilt_keys = {call.args[1] for call in mocked_zdiffstore.call_args_list}
+
+        unread_story_hashes = [h.decode() if isinstance(h, bytes) else h for h in unread_story_hashes]
+        self.assertIn(
+            f"zU:{self.user.pk}:{dirty_feed}",
+            rebuilt_keys,
+            "Dirty feed should still participate in unread reconstruction",
+        )
+        self.assertNotIn(
+            f"zU:{self.user.pk}:{empty_feed}",
+            rebuilt_keys,
+            "Clean zero-unread feed should stay out of unread reconstruction",
+        )
+        self.assertTrue(unread_story_hashes, "Dirty feed should contribute unread stories")
+        self.assertTrue(
+            all(hash_.startswith(f"{dirty_feed}:") for hash_ in unread_story_hashes),
+            f"Unread hashes should come from dirty feed {dirty_feed}, got {unread_story_hashes}",
+        )
