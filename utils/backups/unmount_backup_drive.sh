@@ -14,10 +14,22 @@ nsenter_run() {
 }
 
 if nsenter_run mountpoint -q "${HOST_MOUNT_POINT}" 2>/dev/null; then
-    sync
-    nsenter_run umount "${HOST_MOUNT_POINT}" \
-        && echo "Unmounted ${HOST_MOUNT_POINT}" \
-        || { echo "ERROR: could not unmount ${HOST_MOUNT_POINT}"; exit 1; }
+    nsenter_run sync
+    # Retry unmount a few times — processes that just finished reading may
+    # still hold brief references to the mount.
+    for attempt in 1 2 3 4 5; do
+        if nsenter_run umount "${HOST_MOUNT_POINT}" 2>/dev/null; then
+            echo "Unmounted ${HOST_MOUNT_POINT}"
+            break
+        fi
+        if [ "$attempt" -eq 5 ]; then
+            echo "WARNING: regular unmount failed after 5 attempts, using lazy unmount"
+            nsenter_run umount -l "${HOST_MOUNT_POINT}" \
+                && echo "Lazy-unmounted ${HOST_MOUNT_POINT}" \
+                || { echo "ERROR: could not unmount ${HOST_MOUNT_POINT}"; exit 1; }
+        fi
+        sleep 1
+    done
 else
     echo "Not mounted"
 fi
