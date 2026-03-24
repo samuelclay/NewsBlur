@@ -62,7 +62,7 @@ class ReadingStoryMenuPopup(
 
         configureActionRows(binding, controller.buildMenuModel(), popupWindow, dividerColor, textColor, accessoryColor)
         configureFontRow(binding, controller.buildMenuModel(), popupWindow, textColor, accessoryColor)
-        configureToggles(binding, popupWindow, palette)
+        configureToggles(binding, popupWindow, palette, anchor)
         PopupMenuTextScaler.apply(binding.root, prefsRepo.getReadingTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -71,34 +71,7 @@ class ReadingStoryMenuPopup(
         popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
         popupWindow.elevation = UIUtils.dp2px(context, 16f)
 
-        binding.root.measure(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        )
-
-        val popupWidth = binding.root.measuredWidth
-        val displayFrame = Rect()
-        anchor.getWindowVisibleDisplayFrame(displayFrame)
-        val location = IntArray(2)
-        anchor.getLocationInWindow(location)
-        val margin = UIUtils.dp2px(context, 8)
-        val availableHeight = displayFrame.height() - margin * 2
-        popupWindow.height = min(binding.root.measuredHeight, availableHeight)
-        val popupHeight = popupWindow.height
-
-        val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(context, 4))
-                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
-        val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(context, 4)
-        val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(context, 4)
-        val y =
-            if (preferredBelow + popupHeight <= displayFrame.bottom - margin) {
-                preferredBelow
-            } else {
-                preferredAbove.coerceAtLeast(displayFrame.top + margin)
-            }
-
-        popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
+        updatePopupLayout(anchor, binding, popupWindow, prefsRepo.getReadingTextSize(), isShowing = false)
         return popupWindow
     }
 
@@ -205,6 +178,7 @@ class ReadingStoryMenuPopup(
         binding: PopupReadingMenuBinding,
         popupWindow: PopupWindow,
         palette: ReadingPopupPalette,
+        anchor: View,
     ) {
         styleToggleGroup(
             binding.groupTextSize,
@@ -235,12 +209,12 @@ class ReadingStoryMenuPopup(
         binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             when (checkedId) {
-                binding.btnTextSizeXs.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_xs)
-                binding.btnTextSizeS.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_s)
-                binding.btnTextSizeM.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_m)
-                binding.btnTextSizeL.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_l)
-                binding.btnTextSizeXl.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_xl)
-                binding.btnTextSizeXxl.id -> handleSelection(binding, popupWindow, R.id.menu_text_size_xxl)
+                binding.btnTextSizeXs.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xs)
+                binding.btnTextSizeS.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_s)
+                binding.btnTextSizeM.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_m)
+                binding.btnTextSizeL.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_l)
+                binding.btnTextSizeXl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xl)
+                binding.btnTextSizeXxl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xxl)
             }
         }
 
@@ -285,7 +259,21 @@ class ReadingStoryMenuPopup(
             popupWindow.dismiss()
         } else {
             applySelections(binding, controller.buildMenuModel())
+            PopupMenuTextScaler.apply(binding.root, prefsRepo.getReadingTextSize())
         }
+    }
+
+    private fun handleTextSizeSelection(
+        binding: PopupReadingMenuBinding,
+        popupWindow: PopupWindow,
+        anchor: View,
+        itemId: Int,
+    ) {
+        controller.onMenuItemSelected(itemId)
+        applySelections(binding, controller.buildMenuModel())
+        val textSize = prefsRepo.getReadingTextSize()
+        PopupMenuTextScaler.apply(binding.root, textSize)
+        updatePopupLayout(anchor, binding, popupWindow, textSize, isShowing = true)
     }
 
     private fun applySelections(
@@ -444,6 +432,60 @@ class ReadingStoryMenuPopup(
                 dialog.dismiss()
             }.show()
         dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, prefsRepo.getReadingTextSize()) }
+    }
+
+    private fun applyCardWidth(
+        binding: PopupReadingMenuBinding,
+        availableWidthPx: Int,
+        preferenceScale: Float,
+    ) {
+        val popupMargin = UIUtils.dp2px(context, 8)
+        val cardHorizontalMargin = UIUtils.dp2px(context, 16)
+        val baseWidth = UIUtils.dp2px(context, 252)
+        val maxCardWidth = availableWidthPx - (popupMargin * 2) - cardHorizontalMargin
+        binding.cardMenu.layoutParams =
+            binding.cardMenu.layoutParams.apply {
+                width = min(PopupMenuTextScaler.scaledWidthPx(baseWidth, preferenceScale), maxCardWidth).coerceAtLeast(baseWidth)
+            }
+    }
+
+    private fun updatePopupLayout(
+        anchor: View,
+        binding: PopupReadingMenuBinding,
+        popupWindow: PopupWindow,
+        preferenceScale: Float,
+        isShowing: Boolean,
+    ) {
+        val displayFrame = Rect()
+        anchor.getWindowVisibleDisplayFrame(displayFrame)
+        applyCardWidth(binding, displayFrame.width(), preferenceScale)
+        binding.root.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        )
+        val popupWidth = binding.root.measuredWidth
+        val margin = UIUtils.dp2px(context, 8)
+        val availableHeight = displayFrame.height() - margin * 2
+        val popupHeight = min(binding.root.measuredHeight, availableHeight)
+        val location = IntArray(2)
+        anchor.getLocationInWindow(location)
+        val x =
+            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(context, 4))
+                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
+        val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(context, 4)
+        val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(context, 4)
+        val y =
+            if (preferredBelow + popupHeight <= displayFrame.bottom - margin) {
+                preferredBelow
+            } else {
+                preferredAbove.coerceAtLeast(displayFrame.top + margin)
+            }
+        if (isShowing) {
+            popupWindow.update(x, y, popupWidth, popupHeight)
+        } else {
+            popupWindow.height = popupHeight
+            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
+        }
     }
 
     private fun selectedFontTitle(subMenu: SubMenu): String =

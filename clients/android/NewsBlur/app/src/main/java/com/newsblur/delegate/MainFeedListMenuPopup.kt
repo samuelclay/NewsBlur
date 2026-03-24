@@ -40,6 +40,7 @@ import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.widget.WidgetUtils
+import kotlin.math.min
 
 class MainFeedListMenuPopup(
     private val activity: Main,
@@ -74,7 +75,7 @@ class MainFeedListMenuPopup(
             accessoryColor = accessoryColor,
             popupWindow = popupWindow,
         )
-        configureToggles(binding, popupWindow, palette)
+        configureToggles(binding, popupWindow, palette, anchor)
         PopupMenuTextScaler.apply(binding.root, prefsRepo.getListTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
@@ -83,26 +84,7 @@ class MainFeedListMenuPopup(
         popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
         popupWindow.elevation = UIUtils.dp2px(activity, 16f)
 
-        binding.root.measure(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        )
-
-        val popupWidth = binding.root.measuredWidth
-        val popupHeight = binding.root.measuredHeight
-        val displayFrame = android.graphics.Rect()
-        anchor.getWindowVisibleDisplayFrame(displayFrame)
-        val location = IntArray(2)
-        anchor.getLocationInWindow(location)
-        val margin = UIUtils.dp2px(activity, 8)
-        val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
-                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
-        val y =
-            (location[1] - popupHeight + UIUtils.dp2px(activity, 4))
-                .coerceAtLeast(displayFrame.top + margin)
-
-        popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
+        updatePopupLayout(anchor, binding, popupWindow, prefsRepo.getListTextSize(), isShowing = false)
         return popupWindow
     }
 
@@ -258,6 +240,7 @@ class MainFeedListMenuPopup(
         binding: PopupMainMenuBinding,
         popupWindow: PopupWindow,
         palette: PopupPalette,
+        anchor: View,
     ) {
         configureThemeSelector(binding, palette)
 
@@ -279,14 +262,19 @@ class MainFeedListMenuPopup(
 
         binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
-            when (checkedId) {
-                binding.btnTextSizeXs.id -> fragment.setListTextSize(ListTextSize.XS)
-                binding.btnTextSizeS.id -> fragment.setListTextSize(ListTextSize.S)
-                binding.btnTextSizeM.id -> fragment.setListTextSize(ListTextSize.M)
-                binding.btnTextSizeL.id -> fragment.setListTextSize(ListTextSize.L)
-                binding.btnTextSizeXl.id -> fragment.setListTextSize(ListTextSize.XL)
-                binding.btnTextSizeXxl.id -> fragment.setListTextSize(ListTextSize.XXL)
-            }
+            val textSize =
+                when (checkedId) {
+                    binding.btnTextSizeXs.id -> ListTextSize.XS
+                    binding.btnTextSizeS.id -> ListTextSize.S
+                    binding.btnTextSizeM.id -> ListTextSize.M
+                    binding.btnTextSizeL.id -> ListTextSize.L
+                    binding.btnTextSizeXl.id -> ListTextSize.XL
+                    binding.btnTextSizeXxl.id -> ListTextSize.XXL
+                    else -> return@addOnButtonCheckedListener
+                }
+            fragment.setListTextSize(textSize)
+            PopupMenuTextScaler.apply(binding.root, textSize.size)
+            updatePopupLayout(anchor, binding, popupWindow, textSize.size, isShowing = true)
         }
 
         binding.groupSpacing.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -413,6 +401,53 @@ class MainFeedListMenuPopup(
                 }
             }.show()
         dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, prefsRepo.getListTextSize()) }
+    }
+
+    private fun applyCardWidth(
+        binding: PopupMainMenuBinding,
+        availableWidthPx: Int,
+        preferenceScale: Float,
+    ) {
+        val popupMargin = UIUtils.dp2px(activity, 8)
+        val cardHorizontalMargin = UIUtils.dp2px(activity, 16)
+        val baseWidth = UIUtils.dp2px(activity, 236)
+        val maxCardWidth = availableWidthPx - (popupMargin * 2) - cardHorizontalMargin
+        binding.cardMenu.layoutParams =
+            binding.cardMenu.layoutParams.apply {
+                width = min(PopupMenuTextScaler.scaledWidthPx(baseWidth, preferenceScale), maxCardWidth).coerceAtLeast(baseWidth)
+            }
+    }
+
+    private fun updatePopupLayout(
+        anchor: View,
+        binding: PopupMainMenuBinding,
+        popupWindow: PopupWindow,
+        preferenceScale: Float,
+        isShowing: Boolean,
+    ) {
+        val displayFrame = android.graphics.Rect()
+        anchor.getWindowVisibleDisplayFrame(displayFrame)
+        applyCardWidth(binding, displayFrame.width(), preferenceScale)
+        binding.root.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        )
+        val popupWidth = binding.root.measuredWidth
+        val popupHeight = binding.root.measuredHeight
+        val location = IntArray(2)
+        anchor.getLocationInWindow(location)
+        val margin = UIUtils.dp2px(activity, 8)
+        val x =
+            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
+                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
+        val y =
+            (location[1] - popupHeight + UIUtils.dp2px(activity, 4))
+                .coerceAtLeast(displayFrame.top + margin)
+        if (isShowing) {
+            popupWindow.update(x, y, popupWidth, popupHeight)
+        } else {
+            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
+        }
     }
 
     private fun makeDivider(color: Int): View =

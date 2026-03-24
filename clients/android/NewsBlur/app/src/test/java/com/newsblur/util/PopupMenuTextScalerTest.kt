@@ -20,12 +20,22 @@ class PopupMenuTextScalerTest {
     fun textSizeUsesResolvedScale() {
         assertEquals(15f, PopupMenuTextScaler.scaledTextSizePx(15f, 0.85f), 0.0001f)
         assertEquals(21f, PopupMenuTextScaler.scaledTextSizePx(15f, 1.4f), 0.0001f)
+        assertEquals(15f, PopupMenuTextScaler.scaledTextSizePx(15f, 1f), 0.0001f)
     }
 
     @Test
-    fun minimumHeightOnlyGrowsSlightlyWithLargerText() {
-        assertEquals(20, PopupMenuTextScaler.scaledMinimumHeightPx(20, 0.85f))
-        assertEquals(22, PopupMenuTextScaler.scaledMinimumHeightPx(20, 1.5f))
-        assertEquals(24, PopupMenuTextScaler.scaledMinimumHeightPx(20, 2f))
+    fun controlHeightOnlyGetsTinyIncreaseAtLargerScales() {
+        assertEquals(20, PopupMenuTextScaler.scaledControlHeightPx(20, 1f))
+        assertEquals(21, PopupMenuTextScaler.scaledControlHeightPx(20, 1.2f))
+        assertEquals(23, PopupMenuTextScaler.scaledControlHeightPx(20, 1.4f))
+        assertEquals(26, PopupMenuTextScaler.scaledControlHeightPx(20, 1.8f))
+    }
+
+    @Test
+    fun controlHeightDpIncreaseTargetsLargerMenuSizes() {
+        assertEquals(0f, PopupMenuTextScaler.additionalControlHeightDp(1f), 0.0001f)
+        assertEquals(2f, PopupMenuTextScaler.additionalControlHeightDp(1.2f), 0.0001f)
+        assertEquals(3f, PopupMenuTextScaler.additionalControlHeightDp(1.4f), 0.0001f)
+        assertEquals(6f, PopupMenuTextScaler.additionalControlHeightDp(1.8f), 0.0001f)
     }
 }
