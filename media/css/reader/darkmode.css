@@ -5405,16 +5405,21 @@ a.mention, a.mention-group {
 
 /* darkmode.css: Upsell banner */
 .NB-dark .NB-briefing-upsell {
-    background-color: #2A2820;
     border-top-color: #303030;
+}
+
+.NB-dark .NB-briefing-upsell-link {
+    background: #2A2820;
+    border-color: #404040;
+}
+
+.NB-dark .NB-briefing-upsell-link:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
 }
 
 .NB-dark .NB-briefing-upsell-text {
     color: #909090;
-}
-
-.NB-dark .NB-briefing-upsell-link {
-    color: #7B9FD4;
 }
 
 /* darkmode.css: Briefing summary story */
