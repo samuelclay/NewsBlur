@@ -6979,7 +6979,7 @@
             Push.create(feed.get('feed_title'), {
                 body: story_title,
                 icon: $.favicon_image_url(feed),
-                requireInteraction: true,
+                timeout: 10000,
                 onClick: function () {
                     window.focus();
                     this.close();
