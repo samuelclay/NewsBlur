@@ -36,7 +36,7 @@ def user(u, msg, request=None, warn_color=True):
     if isinstance(u, WSGIRequest) or request:
         if not request:
             request = u
-            u = request.user
+            u = getattr(request, "user", None)
         platform = extract_user_agent(request)
 
         if hasattr(request, "start_time"):
@@ -57,6 +57,9 @@ def user(u, msg, request=None, warn_color=True):
                 seconds,
                 queue_str,
             )
+    if not u:
+        info(" ---> [~FB~SN%-6s~SB] %s[anonymous] %s" % (platform, time_elapsed, msg))
+        return
     is_premium = u.is_authenticated and u.profile.is_premium
     premium = "*" if is_premium else ""
     if is_premium and u.profile.is_archive:
