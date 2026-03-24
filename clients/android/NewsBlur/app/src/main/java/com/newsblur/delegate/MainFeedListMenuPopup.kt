@@ -36,6 +36,7 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.widget.WidgetUtils
@@ -74,6 +75,7 @@ class MainFeedListMenuPopup(
             popupWindow = popupWindow,
         )
         configureToggles(binding, popupWindow, palette)
+        PopupMenuTextScaler.apply(binding.root, prefsRepo.getListTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         popupWindow.isOutsideTouchable = true
@@ -400,7 +402,8 @@ class MainFeedListMenuPopup(
                 activity.getString(R.string.menu_feedback_email),
             )
 
-        MaterialAlertDialogBuilder(activity)
+        val dialog =
+            MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.menu_feedback)
             .setItems(options) { _, which ->
                 when (which) {
@@ -409,6 +412,7 @@ class MainFeedListMenuPopup(
                     2 -> prefsRepo.sendLogEmail(activity)
                 }
             }.show()
+        dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, prefsRepo.getListTextSize()) }
     }
 
     private fun makeDivider(color: Int): View =

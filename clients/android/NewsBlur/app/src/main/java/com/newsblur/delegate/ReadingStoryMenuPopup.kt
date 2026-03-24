@@ -23,6 +23,7 @@ import com.newsblur.databinding.PopupReadingMenuBinding
 import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
 import kotlin.math.min
 
@@ -62,6 +63,7 @@ class ReadingStoryMenuPopup(
         configureActionRows(binding, controller.buildMenuModel(), popupWindow, dividerColor, textColor, accessoryColor)
         configureFontRow(binding, controller.buildMenuModel(), popupWindow, textColor, accessoryColor)
         configureToggles(binding, popupWindow, palette)
+        PopupMenuTextScaler.apply(binding.root, prefsRepo.getReadingTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         popupWindow.isOutsideTouchable = true
@@ -434,12 +436,14 @@ class ReadingStoryMenuPopup(
         val titles = Array(subMenu.size()) { index -> subMenu.getItem(index).title }
         val checkedIndex = (0 until subMenu.size()).firstOrNull { subMenu.getItem(it).isChecked } ?: -1
 
-        MaterialAlertDialogBuilder(context)
+        val dialog =
+            MaterialAlertDialogBuilder(context)
             .setTitle(R.string.menu_font)
             .setSingleChoiceItems(titles, checkedIndex) { dialog, which ->
                 controller.onMenuItemSelected(subMenu.getItem(which).itemId)
                 dialog.dismiss()
             }.show()
+        dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, prefsRepo.getReadingTextSize()) }
     }
 
     private fun selectedFontTitle(subMenu: SubMenu): String =

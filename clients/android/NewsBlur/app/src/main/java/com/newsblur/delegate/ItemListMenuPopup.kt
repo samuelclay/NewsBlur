@@ -21,6 +21,7 @@ import com.newsblur.activity.ItemsList
 import com.newsblur.databinding.PopupItemlistMenuBinding
 import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.util.PrefConstants
+import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
 import kotlin.math.min
 
@@ -86,6 +87,7 @@ class ItemListMenuPopup(
         styleToggleGroups(binding, palette)
         configureThemeSelector(binding, palette)
         bindMenu(binding, controller.buildMenuModel(), popupWindow, dividerColor, textColor, accessoryColor)
+        PopupMenuTextScaler.apply(binding.root, activity.prefsRepo.getListTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         popupWindow.isOutsideTouchable = true
@@ -581,12 +583,14 @@ class ItemListMenuPopup(
         val titles = Array(submenu.size()) { index -> submenu.getItem(index).title }
         val checkedIndex = (0 until submenu.size()).firstOrNull { submenu.getItem(it).isChecked } ?: -1
 
-        MaterialAlertDialogBuilder(activity)
+        val dialog =
+            MaterialAlertDialogBuilder(activity)
             .setTitle(notificationsItem.title)
             .setSingleChoiceItems(titles, checkedIndex) { dialog, which ->
                 controller.onMenuItemSelected(submenu.getItem(which).itemId)
                 dialog.dismiss()
             }.show()
+        dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, activity.prefsRepo.getListTextSize()) }
     }
 
     private fun makeDivider(color: Int): View =
