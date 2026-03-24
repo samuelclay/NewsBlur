@@ -352,3 +352,51 @@ def EmailReferralCredit(referrer_user_id, referred_username, credit_days, referr
         "~BB~FM~SBSent referral credit email: %s earned %s of %s"
         % (profile.user.username, credit_text, tier_name),
     )
+
+    # Notify staff
+    EmailStaffNotification.delay(
+        event_type="referral_converted",
+        subject="Referral converted: %s referred %s" % (profile.user.username, referred_username),
+        body="%s earned %s of %s because %s subscribed to %s."
+        % (profile.user.username, credit_text, tier_name, referred_username, tier_name),
+    )
+
+
+@app.task(name="email-gift-created")
+def EmailGiftCreated(gifter_user_id, gift_url, gift_tier):
+    try:
+        profile = Profile.objects.get(user__pk=gifter_user_id)
+    except Profile.DoesNotExist:
+        return
+
+    tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+    tier_name = tier_names.get(gift_tier, "Premium")
+
+    subject = "Your NewsBlur %s gift is ready to share!" % tier_name
+    text = (
+        "Hi %s,\n\n"
+        "Your %s gift subscription is ready. Share this link with the lucky recipient:\n\n"
+        "%s\n\n"
+        "They'll be able to sign up or log in and activate their subscription instantly.\n\n"
+        "If the gift isn't redeemed within 90 days, you'll receive a full refund automatically.\n\n"
+        "Sam\n"
+    ) % (profile.user.username, tier_name, gift_url)
+
+    msg = EmailMultiAlternatives(
+        subject,
+        text,
+        from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+        to=["%s <%s>" % (profile.user.username, profile.user.email)],
+    )
+    msg.send()
+    logging.user(profile.user, "~BB~FM~SBSent gift created email: %s for %s" % (gift_url, tier_name))
+
+
+@app.task(name="email-staff-notification")
+def EmailStaffNotification(event_type, subject, body):
+    from django.core.mail import mail_admins
+
+    mail_admins(
+        subject="[NewsBlur] %s" % subject,
+        message=body,
+    )

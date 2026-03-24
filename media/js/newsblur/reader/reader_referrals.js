@@ -116,11 +116,11 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                     ]),
                     $.make('div', { className: 'NB-referral-stat' }, [
                         $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-converted' }, '0'),
-                        $.make('div', { className: 'NB-referral-stat-label' }, 'Converted')
+                        $.make('div', { className: 'NB-referral-stat-label' }, 'Subscribed')
                     ]),
                     $.make('div', { className: 'NB-referral-stat' }, [
-                        $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-years' }, '0'),
-                        $.make('div', { className: 'NB-referral-stat-label' }, 'Years Earned')
+                        $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-earned' }, '0'),
+                        $.make('div', { className: 'NB-referral-stat-label NB-referral-stat-earned-label' }, 'Years Earned')
                     ])
                 ]),
 
@@ -253,10 +253,19 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
         $('.NB-referral-stat-pending', this.$modal).text(data.pending || 0);
         $('.NB-referral-stat-converted', this.$modal).text(data.converted || 0);
         var total_days = data.total_days_earned || 0;
-        var years = Math.floor(total_days / 365);
-        var remaining_days = total_days % 365;
-        var years_text = years > 0 ? years + (remaining_days > 0 ? '+' : '') : '0';
-        $('.NB-referral-stat-years', this.$modal).text(years_text);
+        var is_pro = data.referrer_tier === 'pro';
+        var earned_text, earned_label;
+        if (is_pro) {
+            var months = Math.floor(total_days / 30);
+            earned_text = months;
+            earned_label = 'Months Earned';
+        } else {
+            var years = Math.floor(total_days / 365);
+            earned_text = years;
+            earned_label = 'Years Earned';
+        }
+        $('.NB-referral-stat-earned', this.$modal).text(earned_text);
+        $('.NB-referral-stat-earned-label', this.$modal).text(earned_label);
 
         // Populate table
         var $container = $('.NB-referral-table-container', this.$modal).empty();
@@ -273,13 +282,25 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                 $.make('tbody')
             ]);
             _.each(data.referrals, function (ref) {
-                var credit_text = ref.credit_days >= 365 ? Math.floor(ref.credit_days / 365) + ' year' + (ref.credit_days >= 730 ? 's' : '') : (ref.credit_days > 0 ? ref.credit_days + ' days' : '-');
+                var credit_text;
+                if (ref.credit_days >= 365) {
+                    var y = Math.floor(ref.credit_days / 365);
+                    credit_text = y + ' year' + (y > 1 ? 's' : '');
+                } else if (ref.credit_days >= 30) {
+                    var m = Math.floor(ref.credit_days / 30);
+                    credit_text = m + ' month' + (m > 1 ? 's' : '');
+                } else if (ref.credit_days > 0) {
+                    credit_text = ref.credit_days + ' days';
+                } else {
+                    credit_text = '-';
+                }
                 var status_class = ref.status === 'converted' ? 'NB-referral-status-converted' : 'NB-referral-status-pending';
+                var status_label = ref.status === 'converted' ? 'subscribed' : 'pending';
                 $('tbody', $table).append($.make('tr', [
                     $.make('td', ref.username),
                     $.make('td', ref.date || '-'),
                     $.make('td', [
-                        $.make('span', { className: 'NB-referral-status ' + status_class }, ref.status)
+                        $.make('span', { className: 'NB-referral-status ' + status_class }, status_label)
                     ]),
                     $.make('td', credit_text)
                 ]));

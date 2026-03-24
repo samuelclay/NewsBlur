@@ -1814,7 +1814,7 @@ def gift_checkout(request):
             gift_tier=gift_tier,
             is_staff_gift=True,
         )
-        gift_url = "https://%s/gift/%s" % (domain, gift.gift_code)
+        gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, request.user.username, gift.gift_code)
         logging.user(
             request.user,
             "~FG~BBStaff gift created: %s tier=%s code=%s" % (request.user.username, gift_tier, gift.gift_code),
@@ -1843,7 +1843,7 @@ def gift_checkout(request):
             "gift_tier": gift_tier,
             "gift_duration": gift_duration,
         },
-        success_url="https://%s%s?gift_tier=%s" % (domain, reverse("gift-checkout-complete"), gift_tier),
+        success_url="https://%s/?next=gift" % domain,
         cancel_url="https://%s%s" % (domain, reverse("index")),
         customer_email=request.user.email,
     )
@@ -1866,7 +1866,7 @@ def gift_checkout_complete(request):
     gift_url = None
     gift_code = None
     if recent_gift:
-        gift_url = "https://%s/gift/%s" % (domain, recent_gift.gift_code)
+        gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, request.user.username, recent_gift.gift_code)
         gift_code = recent_gift.gift_code
 
     return render(
@@ -1880,7 +1880,7 @@ def gift_checkout_complete(request):
     )
 
 
-def gift_redeem(request, gift_code):
+def gift_redeem(request, gift_tier, username, gift_code):
     gift = MGiftCode.objects.filter(gift_code__iexact=gift_code).first()
     if not gift:
         return render(request, "profile/gift_redeem.html", {"error": "Invalid gift code."})
@@ -1891,11 +1891,23 @@ def gift_redeem(request, gift_code):
     if gift.expires_date and gift.expires_date < datetime.datetime.now():
         return render(request, "profile/gift_redeem.html", {"error": "This gift has expired."})
 
+    # Resolve gifter username for display
+    gifter_username = username
+    if not gifter_username:
+        try:
+            gifter = User.objects.get(pk=gift.gifting_user_id)
+            gifter_username = gifter.username
+        except User.DoesNotExist:
+            gifter_username = None
+
+    tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+    tier_display = tier_names.get(gift.gift_tier, "Premium")
+
     if request.user.is_authenticated:
         MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
         return HttpResponseRedirect(reverse("index"))
 
-    # Not logged in: redirect to signup with gift code
+    # Not logged in: redirect to signup with gift code and gifter context
     response = HttpResponseRedirect(
         "%s?gift=%s" % (reverse("welcome-signup"), gift_code)
     )
@@ -1912,6 +1924,13 @@ def referral_data(request):
         request.user.username,
     )
     stats["username"] = request.user.username
+    profile = request.user.profile
+    if profile.is_pro:
+        stats["referrer_tier"] = "pro"
+    elif profile.is_archive:
+        stats["referrer_tier"] = "archive"
+    else:
+        stats["referrer_tier"] = "premium"
     return stats
 
 
@@ -1927,7 +1946,7 @@ def gift_data(request):
             {
                 "gift_code": g.gift_code,
                 "gift_tier": getattr(g, "gift_tier", "premium"),
-                "gift_url": "https://%s/gift/%s" % (domain, g.gift_code),
+                "gift_url": "https://%s/gift/%s/%s/%s" % (domain, getattr(g, "gift_tier", "premium"), request.user.username, g.gift_code),
                 "created_date": g.created_date.strftime("%Y-%m-%d") if g.created_date else None,
                 "redeemed": bool(getattr(g, "redeemed_date", None)),
                 "is_staff_gift": getattr(g, "is_staff_gift", False),

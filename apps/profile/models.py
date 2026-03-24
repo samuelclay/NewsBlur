@@ -710,11 +710,14 @@ class Profile(models.Model):
             self.premium_expire = now + datetime.timedelta(days=days)
         self.save()
 
+        # Push subscription billing date forward (Stripe and/or PayPal)
+        self.delay_subscription_renewal(days)
+
         PaymentHistory.objects.create(
             user=self.user,
             payment_date=now,
             payment_amount=0,
-            payment_provider="referral-credit",
+            payment_provider="referral credit",
         )
 
         logging.user(
@@ -722,6 +725,73 @@ class Profile(models.Model):
             "~FG~BBExtended premium by %s days (tier: %s, new expire: %s)~FW"
             % (days, tier or "premium", self.premium_expire),
         )
+
+    def delay_subscription_renewal(self, days):
+        """Push the next billing date forward for Stripe or PayPal subscriptions."""
+        if self.stripe_id:
+            self._delay_stripe_renewal(days)
+        if self.paypal_sub_id:
+            self._delay_paypal_renewal(days)
+
+    def _delay_stripe_renewal(self, days):
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return
+
+        try:
+            subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
+            active_sub = None
+            for sub in subscriptions:
+                if sub.plan.active and sub.status in ("active", "trialing"):
+                    active_sub = sub
+                    break
+            if not active_sub:
+                return
+
+            current_period_end = active_sub.current_period_end
+            new_trial_end = current_period_end + (days * 86400)  # seconds
+
+            stripe.Subscription.modify(
+                active_sub.id,
+                trial_end=new_trial_end,
+                proration_behavior="none",
+            )
+            logging.user(
+                self.user,
+                "~FG~BBDelayed Stripe renewal by %s days (sub: %s)~FW" % (days, active_sub.id),
+            )
+        except Exception as e:
+            logging.user(
+                self.user,
+                "~FR~BBFailed to delay Stripe renewal: %s~FW" % e,
+            )
+
+    def _delay_paypal_renewal(self, days):
+        paypal_api = self.paypal_api()
+        if not paypal_api:
+            return
+
+        try:
+            # Suspend and reactivate to reset billing cycle
+            paypal_api.post(
+                f"/v1/billing/subscriptions/{self.paypal_sub_id}/suspend",
+                {"reason": "Referral credit: %s days added" % days},
+            )
+            paypal_api.post(
+                f"/v1/billing/subscriptions/{self.paypal_sub_id}/activate",
+                {"reason": "Referral credit applied"},
+            )
+            logging.user(
+                self.user,
+                "~FG~BBReset PayPal billing cycle for %s days credit (sub: %s)~FW"
+                % (days, self.paypal_sub_id),
+            )
+        except Exception as e:
+            logging.user(
+                self.user,
+                "~FR~BBFailed to delay PayPal renewal: %s~FW" % e,
+            )
 
     def activate_archive(self, never_expire=False):
         logging.user(
@@ -3443,6 +3513,22 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
                 "~BC~SB~FBStripe gift checkout complete: %s tier=%s code=%s"
                 % (user.username, gift_tier, gift.gift_code),
             )
+            from apps.profile.tasks import EmailGiftCreated, EmailStaffNotification
+
+            domain = Site.objects.get_current().domain
+            gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, user.username, gift.gift_code)
+
+            tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+            EmailGiftCreated.delay(
+                gifter_user_id=user.pk,
+                gift_url=gift_url,
+                gift_tier=gift_tier,
+            )
+            EmailStaffNotification.delay(
+                event_type="gift_purchased",
+                subject="Gift purchased: %s bought %s gift ($%s)" % (user.username, tier_names.get(gift_tier, "Premium"), payment_amount),
+                body="%s purchased a %s gift for $%s. Gift code: %s\nGift URL: %s" % (user.username, tier_names.get(gift_tier, "Premium"), payment_amount, gift.gift_code, gift_url),
+            )
         except User.DoesNotExist:
             logging.debug(" ---> Couldn't find user for gift checkout: %s" % newsblur_user_id)
         return
@@ -3986,6 +4072,22 @@ class MRedeemedCode(mongo.Document):
             user.profile.activate_premium()
         logging.user(user, "~FG~BBRedeeming gift code: %s (tier: %s)~FW" % (gift_code, gift_tier))
 
+        from apps.profile.tasks import EmailStaffNotification
+
+        gifter_username = "unknown"
+        if newsblur_gift_code:
+            try:
+                gifter = User.objects.get(pk=newsblur_gift_code.gifting_user_id)
+                gifter_username = gifter.username
+            except User.DoesNotExist:
+                pass
+        tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+        EmailStaffNotification.delay(
+            event_type="gift_redeemed",
+            subject="Gift redeemed: %s claimed %s from %s" % (user.username, tier_names.get(gift_tier, "Premium"), gifter_username),
+            body="%s redeemed gift code %s (%s) from %s." % (user.username, gift_code, tier_names.get(gift_tier, "Premium"), gifter_username),
+        )
+
 
 class MReferral(mongo.Document):
     referrer_user_id = mongo.IntField()
@@ -4035,6 +4137,18 @@ class MReferral(mongo.Document):
             logging.debug(
                 " ---> Referral created: %s referred %s" % (referrer_user_id, referred_username)
             )
+            from apps.profile.tasks import EmailStaffNotification
+
+            try:
+                referrer = User.objects.get(pk=referrer_user_id)
+                referrer_username = referrer.username
+            except User.DoesNotExist:
+                referrer_username = str(referrer_user_id)
+            EmailStaffNotification.delay(
+                event_type="referral_signup",
+                subject="Referral signup: %s signed up via %s" % (referred_username, referrer_username),
+                body="%s signed up using %s's referral link. Pending until they subscribe." % (referred_username, referrer_username),
+            )
             return referral
         except mongo.NotUniqueError:
             logging.debug(
@@ -4080,8 +4194,11 @@ class MReferral(mongo.Document):
         else:
             referrer_tier = "premium"  # Free users get Premium time
 
-        tier_yearly_cost = cls.TIER_YEARLY_COST.get(referrer_tier, 36)
-        credit_days = int(payment_amount / (tier_yearly_cost / 365.0))
+        # Fixed credit per referral: 1 year for Premium/Archive, 2 months for Pro
+        if referrer_tier == "pro":
+            credit_days = 60  # 2 months
+        else:
+            credit_days = 365  # 1 year
 
         if credit_days > 0:
             profile.extend_premium_by_days(credit_days, tier=referrer_tier)

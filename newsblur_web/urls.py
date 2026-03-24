@@ -136,7 +136,7 @@ urlpatterns = [
     url(r"^signup/?$", RedirectView.as_view(pattern_name="signup", permanent=True)),
     url(r"^forgot-password/?$", RedirectView.as_view(pattern_name="profile-forgot-password", permanent=True)),
     url(r"^refer/(?P<username>[\w.]+)/?$", profile_views.referral_landing, name="referral-landing"),
-    url(r"^gift/(?P<gift_code>[a-zA-Z0-9]+)/?$", profile_views.gift_redeem, name="gift-redeem"),
+    url(r"^gift/(?P<gift_tier>premium|archive|pro)/(?P<username>[\w.]+)/(?P<gift_code>[a-zA-Z0-9]+)/?$", profile_views.gift_redeem, name="gift-redeem"),
     url(r"^account/redeem_code/?$", profile_views.redeem_code, name="redeem-code"),
     url(r"^account/login/?$", profile_views.login, name="login"),
     url(r"^account/signup/?$", profile_views.signup, name="signup"),

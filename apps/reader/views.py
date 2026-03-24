@@ -417,7 +417,16 @@ def signup(request):
             else:
                 return HttpResponseRedirect(reverse("index"))
 
-    return index(request)
+    # GET: show signup form, with referrer/gift context if present
+    referrer_username = request.GET.get("ref") or request.COOKIES.get("nb_referrer")
+    gift_code = request.GET.get("gift") or request.COOKIES.get("nb_gift_code")
+    form = SignupForm(prefix="signup")
+
+    return {
+        "form": form,
+        "referrer": referrer_username,
+        "gift_code": gift_code,
+    }
 
 
 @never_cache
