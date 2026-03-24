@@ -6960,7 +6960,7 @@
             Push.create("NewsBlur", {
                 body: feed.get('feed_title') + " notifications are setup",
                 icon: $.favicon_image_url(feed),
-                timeout: 3000,
+                timeout: 10000,
                 onClick: function () {
                     window.focus();
                     this.close();
@@ -6979,7 +6979,7 @@
             Push.create(feed.get('feed_title'), {
                 body: story_title,
                 icon: $.favicon_image_url(feed),
-                timeout: 4000,
+                requireInteraction: true,
                 onClick: function () {
                     window.focus();
                     this.close();
