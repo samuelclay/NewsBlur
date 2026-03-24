@@ -24,7 +24,7 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 261
+        versionCode = 262
         versionName = "14.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
