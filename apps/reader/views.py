@@ -3185,15 +3185,25 @@ def mark_story_hashes_as_read(request):
 
     # Filter out story hashes already marked as read to avoid redundant work.
     # Some clients (e.g. NetNewsWire) re-send all read hashes on every sync cycle.
+    # Check both global (RS:{user_id}) and feed-specific (RS:{user_id}:{feed_id}) sets,
+    # because trim_read_stories can remove from the feed-specific set when a story is
+    # temporarily missing from the feed (e.g. unpublish/republish), creating an
+    # inconsistency where the global set says "read" but the feed set doesn't.
     if story_hashes:
         rsh = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         all_read_key = "RS:%s" % request.user.pk
         p = rsh.pipeline()
         for story_hash in story_hashes:
+            feed_id = story_hash.split(":")[0]
             p.sismember(all_read_key, story_hash)
-        already_read = p.execute()
+            p.sismember("RS:%s:%s" % (request.user.pk, feed_id), story_hash)
+        results = p.execute()
         original_count = len(story_hashes)
-        story_hashes = [sh for sh, is_read in zip(story_hashes, already_read) if not is_read]
+        # Only skip if read in BOTH global and feed-specific sets
+        story_hashes = [
+            sh for i, sh in enumerate(story_hashes)
+            if not (results[i * 2] and results[i * 2 + 1])
+        ]
         skipped_count = original_count - len(story_hashes)
         if skipped_count > 0 and not story_hashes:
             logging.user(

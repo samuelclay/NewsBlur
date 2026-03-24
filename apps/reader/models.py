@@ -1145,7 +1145,7 @@ class UserSubscription(models.Model):
             "~FBTrimming ~FR%s~FB read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id),
         )
         r.srem(read_stories_key, *stale_story_hashes)
-        r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
+        r.srem("RS:%s" % self.user_id, *stale_story_hashes)
 
     @classmethod
     def trim_user_read_stories(self, user_id):
