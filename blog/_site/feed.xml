@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-18T14:19:44-04:00</updated>
+  <updated>2026-03-24T18:52:40-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,110 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Daily Briefing: A personalized summary of your news, delivered on your schedule</title>
+    <link href="https://blog.newsblur.com/2026/03/25/daily-briefing/" rel="alternate" type="text/html" title="Daily Briefing: A personalized summary of your news, delivered on your schedule" />
+    <published>2026-03-25T00:00:00-04:00</published>
+    <updated>2026-03-25T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/03/25/daily-briefing</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/25/daily-briefing/">
+      <![CDATA[<p>Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the topics I’ve trained as interesting?</p>
+
+<p>That’s the Daily Briefing. It reads your feeds, scores every story, and writes a personalized summary organized into sections that make sense for the way you read. It shows up as a feed in your sidebar, and you can have it emailed to you on a schedule you control.</p>
+
+<!-- SCREENSHOT: Daily Briefing summary view showing a full briefing with sections like Top Stories, Based on your interests, and Long reads for later, with feed favicons next to each story -->
+<p><img src="/assets/daily-briefing-summary.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Click “Daily Briefing” in your sidebar to open the briefing view. The first time, you’ll see an onboarding screen where you configure your preferences. Hit generate and NewsBlur does the rest: it scores your stories using a mix of trending read time, feed engagement, how often you read each feed, your classifier training, and recency, then generates a written summary of the top stories.</p>
+
+<!-- SCREENSHOT: Briefing onboarding/settings view showing frequency, time, style, and section options -->
+<p><img src="/assets/daily-briefing-onboarding.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each briefing is organized into sections:</p>
+
+<ul>
+  <li><strong>Top stories</strong> — The most important stories from your feeds, ranked by a weighted score of trending engagement, how often you read each feed, your classifier training, and recency</li>
+  <li><strong>From infrequent sites</strong> — Stories from feeds that rarely publish, so they don’t get buried under higher-volume feeds</li>
+  <li><strong>Long reads for later</strong> — Longer articles worth setting time aside for, detected by word count</li>
+  <li><strong>Based on your interests</strong> — Stories matching your trained topics, authors, and tags, with green classifier pills showing exactly why each story was selected</li>
+  <li><strong>Follow-ups</strong> — New posts from feeds where you recently read other stories</li>
+  <li><strong>Widely covered</strong> — Stories that appear across 3 or more of your feeds, using NewsBlur’s story clustering to group duplicates</li>
+</ul>
+
+<p>You can enable or disable any of these sections, and drag to reorder them so your briefing is organized the way you want. If you only care about top stories and classifier matches, turn off the rest.</p>
+
+<h3 id="custom-keyword-sections">Custom keyword sections</h3>
+
+<p>On top of the built-in sections, you can add up to five custom keyword sections. Type a keyword or phrase and NewsBlur uses Elasticsearch to find matching stories across your feeds, then a dedicated section is written for them. If you always want a section about “climate change” or “Apple earnings,” just add the keyword and it appears in every briefing when there’s stories that match.</p>
+
+<p><img src="/assets/daily-briefing-custom-keywords.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="three-writing-styles">Three writing styles</h3>
+
+<p>Choose how you want your briefing written:</p>
+
+<ul>
+  <li><strong>Bullets</strong> — One-sentence summaries for each story, grouped by section. Quick to scan.</li>
+  <li><strong>Editorial</strong> — Narrative prose that explains why each story matters and connects them thematically. Each story’s feed favicon appears as an inline bullet.</li>
+  <li><strong>Headlines</strong> — Just the linked story titles, nothing else. The fastest way to scan.</li>
+</ul>
+
+<!-- SCREENSHOT: Side-by-side comparison or single example of the editorial writing style with favicons as bullets -->
+<p><img src="/assets/daily-briefing-editorial-style.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="delivery-schedule">Delivery schedule</h3>
+
+<p>Set the briefing to generate once, twice, or three times a day, or weekly. Each frequency has its own delivery slots:</p>
+
+<ul>
+  <li><strong>Daily</strong>: Pick morning, afternoon, or evening</li>
+  <li><strong>Twice daily</strong>: Morning plus your choice of afternoon or evening</li>
+  <li><strong>Three times daily</strong>: Morning, afternoon, and evening</li>
+  <li><strong>Weekly</strong>: Pick the day of the week</li>
+</ul>
+
+<p>Briefings are delivered at fixed times in your local timezone: 8:30 AM, 12:30 PM, and 5:00 PM. Each briefing only includes stories from its lookback window, and stories never repeat across same-day briefings.</p>
+
+<h3 id="notifications">Notifications</h3>
+
+<p>Turn on email notifications for your briefing feed and the full summary lands in your inbox, complete with feed favicons, section icons, and classifier pills. The HTML is fully inlined for email clients, so it looks right in Gmail, Apple Mail, Outlook, and everywhere else.</p>
+
+<!-- SCREENSHOT: Daily Briefing email in an email client showing the full formatted summary -->
+<p><img src="/assets/daily-briefing-email.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>You can also enable web, iOS, and Android push notifications if you’d rather get a ping than an email.</p>
+
+<h3 id="choose-your-model">Choose your model</h3>
+
+<p>The briefing summary is written by a language model, and you can pick which one. The same model selector from Ask AI is available here, so you can use whichever model you prefer for writing style and quality.</p>
+
+<h3 id="your-data-stays-yours">Your data stays yours</h3>
+
+<p>The briefing uses your feed stories and classifier training to generate the summary. Story content is sent to the model provider you choose, but NewsBlur doesn’t use your data to train models or for any purpose beyond generating your briefing. The same privacy principles from Ask AI apply here.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The Daily Briefing is available now on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. You can configure everything from the briefing view in the sidebar.</p>
+
+<p>All users can open the Daily Briefing to see a preview with a handful of top stories. To unlock full briefings with all sections, custom keywords, and scheduled delivery, upgrade to Premium Archive.</p>
+
+<p>If you have feedback or ideas for how to make the Daily Briefing better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Story clustering: automatically group duplicate stories across your feeds</title>
@@ -1679,49 +1783,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title>
-    <link href="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" />
-    <published>2020-11-03T07:41:03-05:00</published>
-    <updated>2020-11-03T07:41:03-05:00</updated>
-    <id>https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">
-      <![CDATA[<p>For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.</p>
-
-<p>For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.</p>
-
-<p>Also, saved searches are now at the bottom of your feed list. Take a look:</p>
-
-<figure class="tmblr-full" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"><img width="650" style="width: 650px; height: auto;" data-orig-height="960" data-orig-width="1081" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png" /></figure>
-
-<p>Heres’ the full list of version 10.1’s many new features:</p>
-
-<ul>
-  <li>Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.</li>
-  <li>Saved searches</li>
-  <li>In-app browser, so you don’t need to leave NewsBlur</li>
-  <li>Auto-theme option for dark mode so it can turn on automatically at night</li>
-  <li>You can now delete and rename folders and add a folder while adding a feed</li>
-  <li>Fixed issues around the intelligence trainer, HTML in comments, some images not loading</li>
-</ul>
-
-<p>If you would like to request a new feature on Android, please submit an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. We’re prioritizing the next big release and would love to hear your input.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.
 ]]>
     </summary>
     

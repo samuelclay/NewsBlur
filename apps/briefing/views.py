@@ -90,8 +90,6 @@ def load_briefing_stories(request):
     Premium archive/pro users get full briefings; others get a preview.
     """
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     profile = user.profile
     is_premium_archive = profile.is_archive or profile.is_pro
     per_page = min(50, max(1, int(request.GET.get("limit", 5))))
@@ -258,8 +256,6 @@ def briefing_preferences(request):
     POST /briefing/preferences — Update preferences.
     """
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     if request.method == "POST":
@@ -420,7 +416,6 @@ def generate_briefing(request):
     POST /briefing/generate
 
     Triggers on-demand briefing generation with real-time progress via WebSocket.
-    Staff-only during initial rollout.
     """
     if request.method != "POST":
         return {"code": -1, "message": "POST required"}
@@ -428,8 +423,6 @@ def generate_briefing(request):
     from apps.briefing.tasks import GenerateUserBriefing
 
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
 
     # views.py: Generating a briefing implicitly opts the user in to auto-generation
     prefs = MBriefingPreferences.get_or_create(user.pk)

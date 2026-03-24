@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-18T14:19:44-04:00</updated>
+  <updated>2026-03-24T18:52:40-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,49 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title>
+    <link href="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" />
+    <published>2020-11-03T07:41:03-05:00</published>
+    <updated>2020-11-03T07:41:03-05:00</updated>
+    <id>https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">
+      <![CDATA[<p>For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.</p>
+
+<p>For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.</p>
+
+<p>Also, saved searches are now at the bottom of your feed list. Take a look:</p>
+
+<figure class="tmblr-full" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"><img width="650" style="width: 650px; height: auto;" data-orig-height="960" data-orig-width="1081" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png" /></figure>
+
+<p>Heres’ the full list of version 10.1’s many new features:</p>
+
+<ul>
+  <li>Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.</li>
+  <li>Saved searches</li>
+  <li>In-app browser, so you don’t need to leave NewsBlur</li>
+  <li>Auto-theme option for dark mode so it can turn on automatically at night</li>
+  <li>You can now delete and rename folders and add a folder while adding a feed</li>
+  <li>Fixed issues around the intelligence trainer, HTML in comments, some images not loading</li>
+</ul>
+
+<p>If you would like to request a new feature on Android, please submit an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. We’re prioritizing the next big release and would love to hear your input.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Customizable grid view story layout</title>
@@ -1120,42 +1163,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">The dashboard river will keep you up-to-date in real-time</title>
-    <link href="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/" rel="alternate" type="text/html" title="The dashboard river will keep you up-to-date in real-time" />
-    <published>2017-01-11T06:00:21-05:00</published>
-    <updated>2017-01-11T06:00:21-05:00</updated>
-    <id>https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
-      <![CDATA[<p>This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png" alt="" /></p>
-
-<p>After testing this feature for the past few weeks I now realize that I could not live without it. By having the latest stories always loaded and instantly ready to go, I leave NewsBlur open and just take a quick glance to see if the top of my list is interesting.</p>
-
-<p>It also loads instantly, which means that if you see a story you want to read, clicking on it brings up the text without taking a single moment.</p>
-
-<p>One big change that this necessitated was the handling of the Text view when reading by folders. Used to be that a folder got its own feed/text/story view and every feed had to stay with the same story view. But on iOS and Android it’s different. Every feed gets to keep its own feed/text/story setting.</p>
-
-<p>This is now how it works on the web. If you read on feed by its Text (extracted original text) view and another by its Feed view, then you are automatically switched between the two views. Quite a bit of logic had to accomodate scrolling (you don’t automatically switch, since that would throw you from one scroll viewport into another) and switching between stories.</p>
-
-<p>Enjoy the dashboard river. And if you look closely you might even see the next big feature that itself is about to launch soon.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.
 ]]>
     </summary>
     

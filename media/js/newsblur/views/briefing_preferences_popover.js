@@ -9,6 +9,49 @@ NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
 
+NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES = [
+    'artificial intelligence',
+    'climate change',
+    'open source',
+    'electric vehicles',
+    'space exploration',
+    'cybersecurity',
+    'remote work',
+    'machine learning',
+    'renewable energy',
+    'supply chain',
+    'quantum computing',
+    'gene therapy',
+    'indie games',
+    'urban planning',
+    'book reviews',
+    'interest rates',
+    'browser engines',
+    'labor unions',
+    'nuclear fusion',
+    'food science',
+    'housing market',
+    'public transit',
+    'podcast industry',
+    'data privacy',
+    'autonomous vehicles',
+    'bird migration',
+    'film criticism',
+    'central banking',
+    'web standards',
+    'microplastics',
+    'board games',
+    'trade policy',
+    'dark matter',
+    'local elections',
+    'vintage computing',
+    'soil health',
+    'streaming wars',
+    'right to repair',
+    'coral reefs',
+    'typography'
+];
+
 NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     className: "NB-briefing-popover",
@@ -395,7 +438,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 type: 'text',
                 className: 'NB-briefing-custom-prompt-input',
                 'data-custom-index': index,
-                placeholder: 'e.g. Claude Code',
+                placeholder: 'e.g. ' + NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)],
                 value: prompt || ''
             }),
             $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
@@ -415,12 +458,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
                     'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
-                $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
-                    $.make('li', 'Claude Code'),
-                    $.make('li', 'machine learning'),
-                    $.make('li', 'open source'),
-                    $.make('li', 'climate change')
-                ])
+                $.make('ul', { className: 'NB-briefing-section-hint-examples' },
+                    _.shuffle(NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES).slice(0, 4).map(function (ex) {
+                        return $.make('li', ex);
+                    })
+                )
             ])
         ]);
     },

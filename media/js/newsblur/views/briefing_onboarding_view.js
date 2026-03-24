@@ -85,6 +85,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         $settings.html($.make('div', [
             this.make_section('How often', 'Schedule when your briefing is generated', [
                 this.make_control('frequency', [
+                    ['thrice_daily', '3x daily'],
                     ['twice_daily', '2x daily'],
                     ['daily', 'Daily'],
                     ['weekly', 'Weekly']
@@ -98,6 +99,11 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                     this.make_control('twice_daily_time', [
                         ['afternoon', 'Morning + Afternoon'],
                         ['evening', 'Morning + Evening']
+                    ]),
+                    this.make_control('thrice_daily_time', [
+                        ['morning', 'Morning'],
+                        ['afternoon', 'Afternoon'],
+                        ['evening', 'Evening']
                     ]),
                     this.make_control('preferred_day', [
                         ['sun', 'Sun'],
@@ -145,6 +151,8 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         this.set_active($settings, 'preferred_time', preferred_time);
         var twice_value = (preferred_time === 'evening') ? 'evening' : 'afternoon';
         this.set_active($settings, 'twice_daily_time', twice_value);
+        // briefing_onboarding_view.js: All three slots always active for 3x daily
+        $settings.find('.NB-briefing-control-thrice_daily_time .NB-briefing-setting-option').addClass('NB-active');
         this.set_active($settings, 'preferred_day', prefs.preferred_day || 'sun');
         this.set_active($settings, 'story_count', String(prefs.story_count || 5));
         this.set_active($settings, 'summary_style', prefs.summary_style || 'bullets');
@@ -319,7 +327,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 type: 'text',
                 className: 'NB-briefing-custom-prompt-input',
                 'data-custom-index': index,
-                placeholder: 'e.g. Claude Code',
+                placeholder: 'e.g. ' + NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)],
                 value: prompt || ''
             }),
             $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
@@ -332,12 +340,11 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
                     'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
-                $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
-                    $.make('li', 'Claude Code'),
-                    $.make('li', 'machine learning'),
-                    $.make('li', 'open source'),
-                    $.make('li', 'climate change')
-                ])
+                $.make('ul', { className: 'NB-briefing-section-hint-examples' },
+                    _.shuffle(NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES).slice(0, 4).map(function (ex) {
+                        return $.make('li', ex);
+                    })
+                )
             ])
         ]));
 
@@ -355,19 +362,30 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var frequency = $settings.find('.NB-briefing-control-frequency .NB-active').data('value') || 'daily';
         var $time_control = $settings.find('.NB-briefing-control-preferred_time');
         var $twice_control = $settings.find('.NB-briefing-control-twice_daily_time');
+        var $thrice_control = $settings.find('.NB-briefing-control-thrice_daily_time');
         var $day_control = $settings.find('.NB-briefing-control-preferred_day');
 
-        if (frequency === 'twice_daily') {
+        if (frequency === 'thrice_daily') {
+            $time_control.hide();
+            $twice_control.hide();
+            $thrice_control.show();
+            $day_control.hide();
+            // briefing_onboarding_view.js: All three slots are always active for 3x daily
+            $thrice_control.find('.NB-briefing-setting-option').addClass('NB-active');
+        } else if (frequency === 'twice_daily') {
             $time_control.hide();
             $twice_control.show();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'daily') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'weekly') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.show();
         }
     },
@@ -453,6 +471,12 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         // briefing_onboarding_view.js: Map twice_daily_time to preferred_time for storage
         if (setting_name === 'twice_daily_time') {
             this.pending['preferred_time'] = value;
+            return;
+        }
+
+        // briefing_onboarding_view.js: All three slots always active for 3x daily
+        if (setting_name === 'thrice_daily_time') {
+            this.$('.NB-briefing-control-thrice_daily_time .NB-briefing-setting-option').addClass('NB-active');
             return;
         }
 

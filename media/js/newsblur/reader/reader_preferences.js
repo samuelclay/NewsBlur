@@ -359,7 +359,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
                         ])
                     ]),
-                    (NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
+                    ($.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
                                 $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
