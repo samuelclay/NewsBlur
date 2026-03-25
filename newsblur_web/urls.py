@@ -85,7 +85,11 @@ urlpatterns = [
     url(r"^features/saved-stories/?$", static_views.feature_saved_stories, name="feature-saved-stories"),
     url(r"^features/native-apps/?$", static_views.feature_native_apps, name="feature-native-apps"),
     url(r"^features/mcp-cli/?$", static_views.feature_mcp_cli, name="feature-mcp-cli"),
-    url(r"^features/story-clustering/?$", static_views.feature_story_clustering, name="feature-story-clustering"),
+    url(
+        r"^features/story-clustering/?$",
+        static_views.feature_story_clustering,
+        name="feature-story-clustering",
+    ),
     url(r"^compare/feedly/?", static_views.compare_feedly, name="compare-feedly"),
     url(r"^compare/inoreader/?", static_views.compare_inoreader, name="compare-inoreader"),
     url(r"^compare/readwise-reader/?", static_views.compare_readwise, name="compare-readwise"),

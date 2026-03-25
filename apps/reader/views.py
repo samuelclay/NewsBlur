@@ -298,6 +298,11 @@ def dashboard(request, **kwargs):
     custom_styling = MCustomStyling.get_user(user.pk)
     dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
     preferences = json.decode(user.profile.preferences)
+    from apps.briefing.models import MBriefingPreferences
+
+    briefing_prefs = MBriefingPreferences.objects.filter(user_id=user.pk).only("enabled").first()
+    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else False
+    user.profile.preferences = json.encode(preferences)
 
     if not user.is_active:
         url = "https://%s%s" % (Site.objects.get_current().domain, reverse("stripe-form"))
@@ -1428,9 +1433,9 @@ def load_single_feed(request, feed_id):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="feed", phase="story_meta", read_filter=metrics_read_filter
     ).observe(phase_story_meta)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="feed", phase="total", read_filter=metrics_read_filter).observe(
-        timediff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="total", read_filter=metrics_read_filter
+    ).observe(timediff)
     if timediff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -2303,7 +2308,9 @@ def prune_missing_river_story_hashes(user_id, story_hashes):
     pipeline.execute()
 
 
-def load_existing_mstories(user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None):
+def load_existing_mstories(
+    user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None
+):
     if not story_hashes:
         return story_hashes, unread_feed_story_hashes, []
 
@@ -2859,9 +2866,9 @@ def load_river_stories__redis(request):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="river", phase="finalize", read_filter=metrics_read_filter
     ).observe(phase_finalize)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="river", phase="total", read_filter=metrics_read_filter).observe(
-        diff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="total", read_filter=metrics_read_filter
+    ).observe(diff)
     if diff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -3185,15 +3192,24 @@ def mark_story_hashes_as_read(request):
 
     # Filter out story hashes already marked as read to avoid redundant work.
     # Some clients (e.g. NetNewsWire) re-send all read hashes on every sync cycle.
+    # Check both global (RS:{user_id}) and feed-specific (RS:{user_id}:{feed_id}) sets,
+    # because trim_read_stories can remove from the feed-specific set when a story is
+    # temporarily missing from the feed (e.g. unpublish/republish), creating an
+    # inconsistency where the global set says "read" but the feed set doesn't.
     if story_hashes:
         rsh = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         all_read_key = "RS:%s" % request.user.pk
         p = rsh.pipeline()
         for story_hash in story_hashes:
+            feed_id = story_hash.split(":")[0]
             p.sismember(all_read_key, story_hash)
-        already_read = p.execute()
+            p.sismember("RS:%s:%s" % (request.user.pk, feed_id), story_hash)
+        results = p.execute()
         original_count = len(story_hashes)
-        story_hashes = [sh for sh, is_read in zip(story_hashes, already_read) if not is_read]
+        # Only skip if read in BOTH global and feed-specific sets
+        story_hashes = [
+            sh for i, sh in enumerate(story_hashes) if not (results[i * 2] and results[i * 2 + 1])
+        ]
         skipped_count = original_count - len(story_hashes)
         if skipped_count > 0 and not story_hashes:
             logging.user(

@@ -124,6 +124,12 @@ def set_preference(request):
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
             preferences[preference_name] = preference_value
+            if preference_name == "briefing_enabled":
+                from apps.briefing.models import MBriefingPreferences
+
+                briefing_prefs = MBriefingPreferences.get_or_create(request.user.pk)
+                briefing_prefs.enabled = bool(preference_value)
+                briefing_prefs.save()
         if preference_name == "intro_page":
             logging.user(request, "~FBAdvancing intro to page ~FM~SB%s" % preference_value)
 
@@ -471,6 +477,9 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
+            # Prorate refund on old Stripe subscription before canceling
+            if user.profile.stripe_id:
+                user.profile.refund_prorated_stripe_payment()
             user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":

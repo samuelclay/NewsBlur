@@ -90,8 +90,6 @@ def load_briefing_stories(request):
     Premium archive/pro users get full briefings; others get a preview.
     """
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     profile = user.profile
     is_premium_archive = profile.is_archive or profile.is_pro
     per_page = min(50, max(1, int(request.GET.get("limit", 5))))
@@ -258,9 +256,8 @@ def briefing_preferences(request):
     POST /briefing/preferences — Update preferences.
     """
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     prefs = MBriefingPreferences.get_or_create(user.pk)
+    profile_preferences = json.decode(user.profile.preferences or "{}")
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
@@ -286,6 +283,7 @@ def briefing_preferences(request):
         enabled = request.POST.get("enabled")
         if enabled is not None:
             prefs.enabled = enabled in ("true", "1", True)
+            profile_preferences["briefing_enabled"] = prefs.enabled
 
         story_count = request.POST.get("story_count")
         if story_count:
@@ -366,6 +364,9 @@ def briefing_preferences(request):
                 pass
 
         prefs.save()
+        if enabled is not None:
+            user.profile.preferences = json.encode(profile_preferences)
+            user.profile.save()
 
     # Migrate old "focused" story_sources to the new read_filter field
     if prefs.story_sources == "focused":
@@ -420,7 +421,6 @@ def generate_briefing(request):
     POST /briefing/generate
 
     Triggers on-demand briefing generation with real-time progress via WebSocket.
-    Staff-only during initial rollout.
     """
     if request.method != "POST":
         return {"code": -1, "message": "POST required"}
@@ -428,14 +428,17 @@ def generate_briefing(request):
     from apps.briefing.tasks import GenerateUserBriefing
 
     user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
 
     # views.py: Generating a briefing implicitly opts the user in to auto-generation
     prefs = MBriefingPreferences.get_or_create(user.pk)
     if not prefs.enabled:
         prefs.enabled = True
         prefs.save()
+    profile_preferences = json.decode(user.profile.preferences or "{}")
+    if profile_preferences.get("briefing_enabled") is not True:
+        profile_preferences["briefing_enabled"] = True
+        user.profile.preferences = json.encode(profile_preferences)
+        user.profile.save()
 
     # views.py: Create the briefing feed synchronously so the frontend can save
     # notification preferences immediately, before the Celery task runs.

@@ -3,8 +3,9 @@ Tests for the statistics app, including load time and trending feed functionalit
 """
 
 import datetime
-import redis
 from unittest.mock import patch
+
+import redis
 from django.conf import settings
 from django.test import TestCase
 

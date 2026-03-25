@@ -42,6 +42,7 @@ from apps.analyzer.models import (
     apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
+from apps.reader.managers import UserSubscriptionManager
 from apps.reader.metrics import (
     STORY_HASHES_DURATION,
     UNREAD_CACHE_FAST_PATH,
@@ -52,7 +53,6 @@ from apps.reader.metrics import (
     normalize_reader_metrics_read_filter,
     normalize_reader_metrics_source,
 )
-from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
@@ -1145,7 +1145,7 @@ class UserSubscription(models.Model):
             "~FBTrimming ~FR%s~FB read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id),
         )
         r.srem(read_stories_key, *stale_story_hashes)
-        r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
+        r.srem("RS:%s" % self.user_id, *stale_story_hashes)
 
     @classmethod
     def trim_user_read_stories(self, user_id):

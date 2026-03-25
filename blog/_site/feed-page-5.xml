@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-03-18T14:19:44-04:00</updated>
+  <updated>2026-03-25T10:12:01-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,36 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Read NewsBlur on your Mac with the new ReadKit</title>
+    <link href="https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/" rel="alternate" type="text/html" title="Read NewsBlur on your Mac with the new ReadKit" />
+    <published>2013-05-30T12:12:16-04:00</published>
+    <updated>2013-05-30T12:12:16-04:00</updated>
+    <id>https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2013/05/30/read-newsblur-on-your-mac-with-the-new-readkit/">
+      <![CDATA[<p><a href="http://readkitapp.com">ReadKit</a>, a native Mac app for reading Instapaper, Pocket, and NewsBlur on your desktop, completes the RSS reading trifecta. NewsBlur has a web app, native iOS app, and now a native Mac app.</p>
+
+<p><a href="http://readkitapp.com"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/readkit.jpg" alt="" /></a></p>
+
+<p>While this is not an official app, it’s certainly the best desktop app for NewsBlur. In time more NewsBlur-specific features will be added, such as shared stories (blurblogs), training and separate unread counts in focus mode, and saved stories.</p>
+
+<p>If you’re a developer and want to make your own NewsBlur app, use the free <a href="http://www.newsblur.com/api">NewsBlur API</a>. You can charge for your app and enjoy all of the benefits of the NewsBlur backend.</p>
+
+<p><a href="http://readkitapp.com">Download ReadKit</a> to enjoy offline reading on your Mac.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[ReadKit, a native Mac app for reading Instapaper, Pocket, and NewsBlur on your desktop, completes the RSS reading trifecta. NewsBlur has a web app, native iOS app, and now a native Mac app.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Keyboard Shortcuts Manager</title>

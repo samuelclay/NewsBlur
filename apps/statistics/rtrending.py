@@ -217,13 +217,8 @@ class RTrendingStory:
         if not time_results:
             return []
 
-        story_hashes = [
-            (sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_results
-        ]
-        time_map = {
-            (sh.decode() if isinstance(sh, bytes) else sh): int(score)
-            for sh, score in time_results
-        }
+        story_hashes = [(sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_results]
+        time_map = {(sh.decode() if isinstance(sh, bytes) else sh): int(score) for sh, score in time_results}
 
         # Get reader counts for those stories (pipelined across days)
         count_map = cls._get_scores_for_members(r, "sRTc", days, story_hashes)
@@ -261,12 +256,9 @@ class RTrendingStory:
         if not time_results:
             return []
 
-        feed_ids = [
-            (fid.decode() if isinstance(fid, bytes) else fid) for fid, _ in time_results
-        ]
+        feed_ids = [(fid.decode() if isinstance(fid, bytes) else fid) for fid, _ in time_results]
         time_map = {
-            (fid.decode() if isinstance(fid, bytes) else fid): int(score)
-            for fid, score in time_results
+            (fid.decode() if isinstance(fid, bytes) else fid): int(score) for fid, score in time_results
         }
 
         # Get reader counts for those feeds (pipelined across days)

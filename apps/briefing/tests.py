@@ -1627,6 +1627,14 @@ class Test_Views(BriefingTestCase):
         data = json.decode(response.content)
         self.assertTrue(data["enabled"])
 
+    def test_post_enabled_updates_reader_preference(self):
+        self.make_prefs(enabled=False)
+        self.client.post(reverse("briefing-preferences"), {"enabled": "true"})
+
+        self.user.profile.refresh_from_db()
+        preferences = json.decode(self.user.profile.preferences or "{}")
+        self.assertTrue(preferences["briefing_enabled"])
+
     def test_post_story_count_valid(self):
         self.make_prefs()
         response = self.client.post(reverse("briefing-preferences"), {"story_count": "10"})
@@ -1743,6 +1751,24 @@ class Test_Views(BriefingTestCase):
         response = self.client.post(reverse("generate-briefing"))
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
         self.assertTrue(prefs.enabled)
+
+    @patch("apps.briefing.views.ensure_briefing_feed")
+    @patch("apps.briefing.tasks.GenerateUserBriefing")
+    def test_generate_enables_reader_preference(self, mock_task, mock_feed):
+        mock_feed.return_value = self.feed
+        self.make_prefs(enabled=False)
+
+        self.client.post(reverse("generate-briefing"))
+        self.user.profile.refresh_from_db()
+        preferences = json.decode(self.user.profile.preferences or "{}")
+        self.assertTrue(preferences["briefing_enabled"])
+
+    def test_profile_preference_updates_briefing_enabled(self):
+        self.make_prefs(enabled=True)
+
+        self.client.post("/profile/set_preference", {"briefing_enabled": "false"})
+        prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
+        self.assertFalse(prefs.enabled)
 
     @patch("apps.briefing.views.ensure_briefing_feed")
     @patch("apps.briefing.tasks.GenerateUserBriefing")

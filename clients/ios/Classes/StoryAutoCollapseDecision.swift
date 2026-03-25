@@ -270,9 +270,14 @@ public enum StoryAutoCollapseBehavior: String {
 
 @objcMembers public final class StorySelectionAnimationDecision: NSObject {
     public class func shouldAnimateSelection(
+        isPhoneOrCompact: Bool,
         usesNativeFullscreenSidebar: Bool,
         presentation: FullscreenSidebarPresentation
     ) -> Bool {
+        guard !isPhoneOrCompact else {
+            return true
+        }
+
         let _ = usesNativeFullscreenSidebar
         return presentation == .fullscreen
     }
@@ -280,9 +285,14 @@ public enum StoryAutoCollapseBehavior: String {
 
 @objcMembers public final class StorySelectionNavigationDecision: NSObject {
     public class func shouldUseExplicitLocation(
+        isPhoneOrCompact: Bool,
         usesNativeFullscreenSidebar: Bool,
         presentation: FullscreenSidebarPresentation
     ) -> Bool {
+        guard !isPhoneOrCompact else {
+            return false
+        }
+
         let _ = usesNativeFullscreenSidebar
         return presentation != .fullscreen
     }
@@ -300,9 +310,14 @@ public enum StoryAutoCollapseBehavior: String {
 
 @objcMembers public final class StorySelectionSidebarRefreshDecision: NSObject {
     public class func shouldRefreshStoryTitlesSidebar(
+        isPhoneOrCompact: Bool,
         usesNativeFullscreenSidebar: Bool,
         presentation: FullscreenSidebarPresentation
     ) -> Bool {
+        guard !isPhoneOrCompact else {
+            return true
+        }
+
         let _ = usesNativeFullscreenSidebar
         return presentation == .fullscreen
     }

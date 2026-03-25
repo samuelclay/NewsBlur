@@ -143,49 +143,53 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Choose when stories are marked as read'
+                            'Daily briefing with your top stories and keywords'
                         ]),
                         $.make('li', { className: 'NB-5' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Customize auto-read by site or folder'
+                            'Choose when stories are marked as read'
                         ]),
                         $.make('li', { className: 'NB-6' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Every story archived and searchable forever'
+                            'Customize auto-read by site or folder'
                         ]),
                         $.make('li', { className: 'NB-7' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Feeds back-filled for complete archive'
+                            'Every story archived and searchable forever'
                         ]),
                         $.make('li', { className: 'NB-8' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Train stories on full text content'
+                            'Feeds back-filled for complete archive'
                         ]),
                         $.make('li', { className: 'NB-9' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Discover related stories across your archive'
+                            'Train stories on full text content'
                         ]),
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Export trained stories from folders'
+                            'Discover related stories across your archive'
                         ]),
                         $.make('li', { className: 'NB-11' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Stories can stay unread forever'
+                            'Export trained stories from folders'
                         ]),
                         $.make('li', { className: 'NB-12' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Ask AI questions about stories'
+                            'Stories can stay unread forever'
                         ]),
                         $.make('li', { className: 'NB-13' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Filter stories by date range'
+                            'Ask AI questions about stories'
                         ]),
                         $.make('li', { className: 'NB-14' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Apply training across a folder'
+                            'Filter stories by date range'
                         ]),
                         $.make('li', { className: 'NB-15' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Apply training across a folder'
+                        ]),
+                        $.make('li', { className: 'NB-16' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Apply training globally'
                         ])

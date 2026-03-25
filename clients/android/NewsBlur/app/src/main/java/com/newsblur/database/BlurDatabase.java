@@ -7,10 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	private final static int VERSION = 3;
+	static final int VERSION = 5;
 
 	public BlurDatabase(Context context) {
-		super(context, DB_NAME, null, VERSION);
+		this(context, DB_NAME);
+	}
+
+	BlurDatabase(Context context, String dbName) {
+		super(context, dbName, null, VERSION);
 	}
 
 	@Override
@@ -44,6 +48,10 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	void dropAndRecreateTables() {
 		SQLiteDatabase db = getWritableDatabase();
+		dropAndRecreateTables(db);
+	}
+
+	private void dropAndRecreateTables(SQLiteDatabase db) {
 		String drop = "DROP TABLE IF EXISTS ";
 		db.execSQL(drop + DatabaseConstants.FEED_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_TABLE);
@@ -70,11 +78,12 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
-        // Handle migrations
-        if (previousVersion < 3) {
-            // Add custom icons table in version 3
-            db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
-        }
+        dropAndRecreateTables(db);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        dropAndRecreateTables(db);
     }
 
     public SQLiteDatabase getRO() {

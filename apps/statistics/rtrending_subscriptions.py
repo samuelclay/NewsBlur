@@ -122,9 +122,7 @@ class RTrendingSubscription:
         if days == 1:
             today = datetime.date.today().strftime("%Y-%m-%d")
             results = r.zrevrange(f"fSub:{today}", 0, limit * 3, withscores=True)
-            results = [
-                (m.decode() if isinstance(m, bytes) else m, s) for m, s in results
-            ]
+            results = [(m.decode() if isinstance(m, bytes) else m, s) for m, s in results]
         else:
             results = cls._get_top_weighted(r, days, limit * 3)
 

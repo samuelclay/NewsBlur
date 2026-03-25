@@ -332,7 +332,6 @@ class Test_RiverStories(TransactionTestCase):
             )
         )
 
-
     def test_river_stories__specific_story_hashes(self):
         """
         Test loading specific story hashes - THIS IS THE BUG WE FIXED.
@@ -960,7 +959,6 @@ class Test_RiverStories(TransactionTestCase):
         stories because the offset is applied to a shifted unread list.
         """
         import redis
-
         from django.conf import settings
 
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
