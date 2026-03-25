@@ -477,6 +477,9 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
+            # Prorate refund on old Stripe subscription before canceling
+            if user.profile.stripe_id:
+                user.profile.refund_prorated_stripe_payment()
             user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":

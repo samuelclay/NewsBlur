@@ -1276,6 +1276,9 @@ class Profile(models.Model):
                 logging.user(self.user, "~BY~SN~FWFree lifetime premium")
                 free_lifetime_premium = True
                 continue
+            # Skip refund records (negative amounts)
+            if payment.payment_amount < 0:
+                continue
 
             # Only update exiration if payment in the last year
             if payment.payment_date > last_year:
@@ -1622,13 +1625,14 @@ class Profile(models.Model):
         return refunded
 
     def refund_latest_stripe_payment(self, partial=False):
-        refunded = False
-        if not self.stripe_id:
-            return
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return False
 
-        stripe.api_key = settings.STRIPE_SECRET
-        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-        stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
+        stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+        if not stripe_payments:
+            return False
+
         if partial:
             stripe_payments[0].refund(amount=1200)
             refunded = 12
@@ -1637,6 +1641,13 @@ class Profile(models.Model):
             self.cancel_premium_stripe()
             refunded = stripe_payments[0].amount / 100
 
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=-int(refunded),
+            payment_provider="stripe",
+            refunded=True,
+        )
         logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
         return refunded
 
@@ -1697,11 +1708,129 @@ class Profile(models.Model):
             logging.user(self.user, f"Paypal refund response: {response}")
         if "status" in response and response["status"] == "COMPLETED":
             refunded = int(float(transaction["amount_with_breakdown"]["gross_amount"]["value"]))
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=-int(round(refund_amount)),
+                payment_provider="paypal",
+                refunded=True,
+            )
             logging.user(self.user, "~FRRefunding paypal payment: $%s/%s" % (refund_amount, refunded))
         else:
             logging.user(self.user, "~FRCouldn't refund paypal payment: %s" % response)
             refunded = response
 
+        return refunded
+
+    def refund_prorated_stripe_payment(self):
+        """Refund a prorated portion of the latest Stripe payment based on unused days.
+
+        Used when a user switches from Stripe to another payment provider.
+        Calculates (days_left / 365) * charge_amount and issues a partial refund.
+        Returns the refunded dollar amount, or None if no refund was possible.
+        """
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return None
+
+        try:
+            stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+        except stripe.error.InvalidRequestError as e:
+            logging.user(self.user, "~FRFailed to retrieve Stripe charges for prorated refund: ~SB%s" % e)
+            return None
+
+        if not stripe_payments:
+            logging.user(self.user, "~FRNo Stripe payments found for prorated refund")
+            return None
+
+        latest_charge = stripe_payments[0]
+        if latest_charge.refunded:
+            logging.user(self.user, "~FRLatest Stripe charge already refunded, skipping proration")
+            return None
+
+        charge_date = datetime.datetime.fromtimestamp(latest_charge.created)
+        days_since = (datetime.datetime.now() - charge_date).days
+
+        if days_since >= 365:
+            logging.user(
+                self.user,
+                "~FRCouldn't prorate Stripe payment, too old: ~SB%s days since charge" % days_since,
+            )
+            return None
+
+        days_left = 365 - days_since
+        refund_amount_cents = int(round((days_left / 365) * latest_charge.amount))
+
+        if refund_amount_cents <= 0:
+            logging.user(self.user, "~FRProrated Stripe refund amount is zero or negative")
+            return None
+
+        try:
+            refund = stripe.Refund.create(charge=latest_charge.id, amount=refund_amount_cents)
+        except stripe.error.InvalidRequestError as e:
+            logging.user(self.user, "~FRFailed to prorate Stripe refund: ~SB%s" % e)
+            return None
+
+        refund_dollars = refund_amount_cents / 100.0
+        charge_dollars = latest_charge.amount / 100.0
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=-int(round(refund_dollars)),
+            payment_provider="stripe",
+            payment_identifier=refund.id,
+            refunded=True,
+        )
+        logging.user(
+            self.user,
+            "~FRProrated Stripe refund: $%.2f (of $%.2f, %s days left)"
+            % (refund_dollars, charge_dollars, days_left),
+        )
+        return refund_dollars
+
+    def refund_prorated_paypal_for_provider_switch(self):
+        """Refund a prorated portion of the latest PayPal payment when switching to Stripe.
+
+        Delegates to refund_paypal_payment_from_subscription with prorate=True.
+        Returns the refunded amount, or None if no refund was possible.
+        """
+        paypal_sub_id = self.paypal_sub_id
+        if not paypal_sub_id:
+            logging.user(self.user, "~FRNo PayPal sub ID for prorated refund during provider switch")
+            return None
+
+        last_paypal_payment = (
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="paypal",
+                payment_amount__gt=0,
+            )
+            .exclude(refunded=True)
+            .order_by("-payment_date")
+            .first()
+        )
+
+        if not last_paypal_payment:
+            logging.user(self.user, "~FRNo unrefunded PayPal payment found for prorated refund")
+            return None
+
+        payment_date = last_paypal_payment.payment_date
+        if payment_date.tzinfo:
+            payment_date = payment_date.replace(tzinfo=None)
+        days_since = (datetime.datetime.now() - payment_date).days
+        if days_since >= 365:
+            logging.user(
+                self.user,
+                "~FRPayPal payment too old for proration: ~SB%s days ago" % days_since,
+            )
+            return None
+
+        refunded = self.refund_paypal_payment_from_subscription(paypal_sub_id, prorate=True)
+        if refunded and isinstance(refunded, (int, float)):
+            logging.user(
+                self.user,
+                "~FRProrated PayPal refund for provider switch: $%s" % refunded,
+            )
         return refunded
 
     def cancel_premium(self):
@@ -3423,6 +3552,9 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
+        # Prorate refund on old PayPal subscription before activating new tier
+        if profile.paypal_sub_id:
+            profile.refund_prorated_paypal_for_provider_switch()
         if plan_id == Profile.plan_to_stripe_price("premium"):
             profile.activate_premium()
         elif plan_id == Profile.plan_to_stripe_price("archive"):
@@ -3456,6 +3588,9 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
         if active:
+            # Prorate refund on old PayPal subscription before activating new tier
+            if profile.paypal_sub_id:
+                profile.refund_prorated_paypal_for_provider_switch()
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price("archive"):
