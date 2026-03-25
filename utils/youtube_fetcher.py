@@ -171,14 +171,15 @@ class YoutubeFetcher:
     def _fetch_channel_snippet(self, channel_id=None, username=None, username_key="forUsername"):
         """Fetch channel snippet from YouTube API by channel_id or username."""
         if channel_id:
-            url = (
-                "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s"
-                % (channel_id, settings.YOUTUBE_API_KEY)
+            url = "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" % (
+                channel_id,
+                settings.YOUTUBE_API_KEY,
             )
         elif username:
-            url = (
-                "https://www.googleapis.com/youtube/v3/channels?part=snippet&%s=%s&key=%s"
-                % (username_key, username, settings.YOUTUBE_API_KEY)
+            url = "https://www.googleapis.com/youtube/v3/channels?part=snippet&%s=%s&key=%s" % (
+                username_key,
+                username,
+                settings.YOUTUBE_API_KEY,
             )
         else:
             return None

@@ -2,8 +2,12 @@ import unittest
 from subprocess import CompletedProcess
 from unittest.mock import call, patch
 
-from utils.haproxy_batch_state import HaproxyTarget, main, parse_show_servers_state, verify_target_states
-
+from utils.haproxy_batch_state import (
+    HaproxyTarget,
+    main,
+    parse_show_servers_state,
+    verify_target_states,
+)
 
 SHOW_SERVERS_STATE_OUTPUT = """1
 # be_id be_name srv_id srv_name srv_addr srv_op_state srv_admin_state srv_uweight srv_iweight srv_time_since_last_change srv_check_status srv_check_result srv_check_health srv_check_state srv_agent_state bk_f_forced_id srv_f_forced_id srv_fqdn srv_port srvrecord srv_use_ssl srv_check_port srv_check_addr srv_agent_addr srv_agent_port

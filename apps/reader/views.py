@@ -1428,9 +1428,9 @@ def load_single_feed(request, feed_id):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="feed", phase="story_meta", read_filter=metrics_read_filter
     ).observe(phase_story_meta)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="feed", phase="total", read_filter=metrics_read_filter).observe(
-        timediff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="total", read_filter=metrics_read_filter
+    ).observe(timediff)
     if timediff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -2303,7 +2303,9 @@ def prune_missing_river_story_hashes(user_id, story_hashes):
     pipeline.execute()
 
 
-def load_existing_mstories(user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None):
+def load_existing_mstories(
+    user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None
+):
     if not story_hashes:
         return story_hashes, unread_feed_story_hashes, []
 
@@ -2859,9 +2861,9 @@ def load_river_stories__redis(request):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="river", phase="finalize", read_filter=metrics_read_filter
     ).observe(phase_finalize)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="river", phase="total", read_filter=metrics_read_filter).observe(
-        diff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="total", read_filter=metrics_read_filter
+    ).observe(diff)
     if diff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -3201,8 +3203,7 @@ def mark_story_hashes_as_read(request):
         original_count = len(story_hashes)
         # Only skip if read in BOTH global and feed-specific sets
         story_hashes = [
-            sh for i, sh in enumerate(story_hashes)
-            if not (results[i * 2] and results[i * 2 + 1])
+            sh for i, sh in enumerate(story_hashes) if not (results[i * 2] and results[i * 2 + 1])
         ]
         skipped_count = original_count - len(story_hashes)
         if skipped_count > 0 and not story_hashes:

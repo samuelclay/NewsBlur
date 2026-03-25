@@ -2111,8 +2111,7 @@ class Profile(models.Model):
                 ).exists():
                     logging.user(
                         self.user,
-                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW"
-                        % payment_amount,
+                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % payment_amount,
                     )
                     return False
 
@@ -3452,9 +3451,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     plan_id = plan["id"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
-        active = (
-            not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
-        )
+        active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
