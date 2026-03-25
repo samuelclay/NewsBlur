@@ -83,7 +83,7 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                     $.make('div', { className: 'NB-referral-hero-text' }, [
                         $.make('div', { className: 'NB-referral-hero-headline' }, 'Earn Free Premium'),
                         $.make('div', { className: 'NB-referral-hero-subtext' },
-                            'Get a free year of premium for every person who subscribes. No cap \u2014 unlimited years of premium await.'
+                            'Earn free time on your subscription for every person who signs up and subscribes. The credit scales with what they pick \u2014 no cap.'
                         )
                     ])
                 ]),

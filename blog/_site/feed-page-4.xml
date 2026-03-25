@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-25T10:12:01-04:00</updated>
+  <updated>2026-03-25T18:08:53-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,49 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur iOS v4.5: iPhone 6 and iOS 8, full bleed images, alt text, and more</title>
+    <link href="https://blog.newsblur.com/2014/10/15/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed/" rel="alternate" type="text/html" title="NewsBlur iOS v4.5: iPhone 6 and iOS 8, full bleed images, alt text, and more" />
+    <published>2014-10-15T15:25:12-04:00</published>
+    <updated>2014-10-15T15:25:12-04:00</updated>
+    <id>https://blog.newsblur.com/2014/10/15/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/10/15/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed/">
+      <![CDATA[<p>This week’s update to the <a href="http://www.newsblur.com/ios">official NewsBlur iOS app</a> brings a whole lot of oft-requested features and improvements. Here’s what’s new this month:</p>
+
+<p>&lt;table cellspacing=”0” cellpadding=”0” border=”0”&gt;&lt;tr&gt;&lt;td&gt; <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.5%20-%20full%20bleed.png" alt="" />&lt;/td&gt; &lt;td&gt; <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.5%20-%20alt%20text.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;/table&gt;</p>
+<ul>
+  <li>iPhone 6 and 6 Plus are now fully supported</li>
+  <li>iOS 8 is also now fully supported (as well as iOS 7)</li>
+  <li>Moving between the feed list, story list, and story detail is now much faster</li>
+  <li>Images are now “full bleed”, extending to the entire width of the screen</li>
+  <li>New preference for hiding feeds after they are read</li>
+  <li>Long press images in a story to read the alt text</li>
+  <li>Long press images in a story to save it to your camera roll</li>
+  <li>Long press images in a story to zoom into it</li>
+  <li>Long press links in a story to get an actions menu (safari, instapaper, bookmark, etc)</li>
+  <li>Fixed all iOS 8 issues (preference panes, profile popovers)</li>
+  <li>OvershareKit updated for iOS 8</li>
+  <li>Pull to refresh updated to match theme</li>
+  <li>Pull to refresh date is now localized</li>
+</ul>
+
+<p>Next to come will be a native iOS share dialog, saved story tag editing, search, and possibly some features requested by users like you. If you have a feature request, post it as an idea on <a href="http://getsatisfaction.com/newsblur">the NewsBlur forum on Get Satisfaction</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[This week’s update to the official NewsBlur iOS app brings a whole lot of oft-requested features and improvements. Here’s what’s new this month:
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur&apos;s 2014 t-shirt on sale for this week only</title>
@@ -983,38 +1026,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[Last year I was proud to be able to send a free t-shirt and handwritten note to every single user who requested one. It took a few days of writing, stuffing, and mailing to send out a couple hundred t-shirts.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Text view comes to the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Text view comes to the NewsBlur iOS app" />
-    <published>2013-06-04T08:31:18-04:00</published>
-    <updated>2013-06-04T08:31:18-04:00</updated>
-    <id>https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/">
-      <![CDATA[<p>The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.</p>
-
-<p>You can already use the Text view on the web. It’s great for extracting the story’s content on demand and helps you stay on a single tab to do all of your reading.</p>
-
-<p>If you have an iPad or iPhone, you can now use the Text view by hitting the Text/Story button on the bottom left of the story detail pane.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_text_view.jpg" alt="" /></p>
-
-<p>On Android? Don’t you worry, major updates are finishing up as we speak, and soon the Android app will reach full feature parity with the iOS app. It’s just a matter of time.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.
 ]]>
     </summary>
     

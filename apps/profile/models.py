@@ -3735,7 +3735,7 @@ def stripe_signup(sender, full_json, **kwargs):
             MReferral.award_credit(profile.user.pk, 99, "archive")
         elif plan_id == Profile.plan_to_stripe_price("pro"):
             profile.activate_pro()
-            MReferral.award_credit(profile.user.pk, 299, "pro")
+            MReferral.award_credit(profile.user.pk, 29, "pro")
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
@@ -4350,11 +4350,19 @@ class MReferral(mongo.Document):
         else:
             referrer_tier = "premium"  # Free users get Premium time
 
-        # Fixed credit per referral: 1 year for Premium/Archive, 2 months for Pro
-        if referrer_tier == "pro":
-            credit_days = 60  # 2 months
+        # Credit is proportional: (payment / referrer_yearly_cost) * 12 months,
+        # capped at 12. Annual referrals (Premium/Archive) earn the referrer at
+        # least 2 months; monthly referrals (Pro) earn at least 1 month.
+        referrer_yearly = cls.TIER_YEARLY_COST.get(referrer_tier, 36)
+
+        if payment_amount >= referrer_yearly:
+            credit_months = 12
         else:
-            credit_days = 365  # 1 year
+            is_annual_referral = payment_tier in ("premium", "archive")
+            min_months = 2 if is_annual_referral else 1
+            credit_months = min(12, max(min_months, round(payment_amount / referrer_yearly * 12)))
+
+        credit_days = credit_months * 30
 
         if credit_days > 0:
             profile.extend_premium_by_days(credit_days, tier=referrer_tier)

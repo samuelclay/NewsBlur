@@ -9,8 +9,10 @@
   <link href="/feed-page-4.xml" rel="prev-archive" type="application/atom+xml" />
   
   
+  <link href="/feed-page-6.xml" rel="next" type="application/atom+xml" />
+  
 
-  <updated>2026-03-25T10:12:01-04:00</updated>
+  <updated>2026-03-25T18:08:53-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +22,38 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Text view comes to the NewsBlur iOS app</title>
+    <link href="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Text view comes to the NewsBlur iOS app" />
+    <published>2013-06-04T08:31:18-04:00</published>
+    <updated>2013-06-04T08:31:18-04:00</updated>
+    <id>https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2013/06/04/text-view-comes-to-the-newsblur-ios-app/">
+      <![CDATA[<p>The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.</p>
+
+<p>You can already use the Text view on the web. It’s great for extracting the story’s content on demand and helps you stay on a single tab to do all of your reading.</p>
+
+<p>If you have an iPad or iPhone, you can now use the Text view by hitting the Text/Story button on the bottom left of the story detail pane.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_text_view.jpg" alt="" /></p>
+
+<p>On Android? Don’t you worry, major updates are finishing up as we speak, and soon the Android app will reach full feature parity with the iOS app. It’s just a matter of time.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Read NewsBlur on your Mac with the new ReadKit</title>
@@ -1508,39 +1542,6 @@ $ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
     <summary type="html">
       <![CDATA[If you’re not using intelligence classifiers, you’re only getting half the value out of NewsBlur. 
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A New Logo for a New Blog</title>
-    <link href="https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog/" rel="alternate" type="text/html" title="A New Logo for a New Blog" />
-    <published>2011-03-15T08:39:00-04:00</published>
-    <updated>2011-03-15T08:39:00-04:00</updated>
-    <id>https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/03/15/a-new-logo-for-a-new-blog/">
-      <![CDATA[<p>We’ve come a long way, readers. What started as a fun project to scratch an itch has become a fun project that pays for its ever-increasing self. This week I’m going to show how motivated I am about turning NewsBlur into a serious blog reader. And it starts with a collection of a circles:</p>
-
-<figure class="tmblr-full" data-orig-height="500" data-orig-width="500"><img src="https://64.media.tumblr.com/7bc39090e65c93d25c183d34feef0697/9acad7bd3a38ca12-aa/s540x810/af26a4e5fc93ac78867704956f89508c2bfc3a3d.png" data-orig-height="500" data-orig-width="500" /></figure>
-
-<p>What may take you, somebody who has done more than only crop images in an image editor, only a few minutes took me on the order of 1-2 hours a day over 5 days. It’s always like this. Slow as sin until you start to pick up how the editor wants you to work. Then it’s gravy. I could, in fact, completely redo the logo in 10 minutes on a blank canvas. That’s how it goes.</p>
-
-<p>The biggest difference is not the new logo, which sits comfortably underneath your sites when reading, but the new favicon.</p>
-
-<figure data-orig-height="16" data-orig-width="16"><img src="https://64.media.tumblr.com/d1157d27999b31a8e085ac6ad7180523/9acad7bd3a38ca12-51/s540x810/7a0ffd42b679efab43f012e6323092835c2e9ff2.png" data-orig-height="16" data-orig-width="16" /></figure>
-
-<p>This little guy sits there, staring at you the whole time, and reminding you where you are. He had to be created separately, but once you know what the hell a mask is, resizing and showing exaggerated pixels is child’s play.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="design" />
-    
-    
-    <summary type="html">
-      <![CDATA[We’ve come a long way, readers. What started as a fun project to scratch an itch has become a fun project that pays for its ever-increasing self. This week I’m going to show how motivated I am about turning NewsBlur into a serious blog reader. And it starts with a...]]>
     </summary>
     
   </entry>

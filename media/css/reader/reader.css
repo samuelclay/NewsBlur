@@ -15788,9 +15788,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-menu-manage .NB-menu-manage-referrals .NB-menu-manage-image {
-    background: transparent url("/media/embed/icons/nouns/share.svg") no-repeat center center;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none'%3E%3Crect x='2' y='8' width='14' height='9' rx='1.5' fill='%237B4FAF'/%3E%3Crect x='1' y='6' width='16' height='3' rx='1' fill='%238E63BF'/%3E%3Crect x='8' y='6' width='2' height='11' fill='%23EDE7F6' opacity='0.4'/%3E%3Cellipse cx='7' cy='5.5' rx='3' ry='2.5' fill='%23A77FD4' opacity='0.8' transform='rotate(-10 7 5.5)'/%3E%3Cellipse cx='11' cy='5.5' rx='3' ry='2.5' fill='%23A77FD4' opacity='0.8' transform='rotate(10 11 5.5)'/%3E%3Ccircle cx='9' cy='6' r='1.5' fill='%23FFD54F'/%3E%3C/svg%3E") no-repeat center center;
     background-size: 18px;
-    filter: hue-rotate(260deg) saturate(14);
 }
 
 .NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
@@ -22278,9 +22277,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-modal-referrals .NB-modal-title .NB-icon {
-    background: transparent url("/media/embed/icons/nouns/share.svg") no-repeat center center;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none'%3E%3Crect x='2' y='8' width='14' height='9' rx='1.5' fill='%237B4FAF'/%3E%3Crect x='1' y='6' width='16' height='3' rx='1' fill='%238E63BF'/%3E%3Crect x='8' y='6' width='2' height='11' fill='%23EDE7F6' opacity='0.4'/%3E%3Cellipse cx='7' cy='5.5' rx='3' ry='2.5' fill='%23A77FD4' opacity='0.8' transform='rotate(-10 7 5.5)'/%3E%3Cellipse cx='11' cy='5.5' rx='3' ry='2.5' fill='%23A77FD4' opacity='0.8' transform='rotate(10 11 5.5)'/%3E%3Ccircle cx='9' cy='6' r='1.5' fill='%23FFD54F'/%3E%3C/svg%3E") no-repeat center center;
     background-size: 28px;
-    filter: hue-rotate(260deg) saturate(14);
 }
 
 /* Referral modal */
