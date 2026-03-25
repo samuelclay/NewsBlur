@@ -177,7 +177,7 @@ static UIFont *textFont = nil;
     backgroundColor = cell.isSocial ? UIColorFromLightSepiaMediumDarkRGB(0xD8E3DB, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
                       cell.isSearch ? UIColorFromLightSepiaMediumDarkRGB(0xDBDFE6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
                       cell.isSaved ? UIColorFromLightSepiaMediumDarkRGB(0xDFDCD6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
-                      UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF8ECD8, 0x48484A, 0x38383A);
+                      UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF8ECD8, 0x48484A, 0x000000);
     
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
