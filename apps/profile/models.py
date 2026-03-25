@@ -3620,7 +3620,7 @@ class PaymentHistory(models.Model):
     user = models.ForeignKey(User, related_name="payments", on_delete=models.CASCADE)
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
-    payment_provider = models.CharField(max_length=20)
+    payment_provider = models.CharField(max_length=32)
     payment_identifier = models.CharField(max_length=100, null=True)
     refunded = models.BooleanField(blank=True, null=True)
 
