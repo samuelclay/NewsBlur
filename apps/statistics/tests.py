@@ -1,13 +1,77 @@
 """
-Tests for the statistics app, including trending feeds functionality.
+Tests for the statistics app, including load time and trending feed functionality.
 """
+
+import datetime
+from unittest.mock import patch
 
 import redis
 from django.conf import settings
 from django.test import TestCase
 
+from apps.statistics.models import MStatistics
+from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
+
+
+class Test_MStatistics(TestCase):
+    """Tests for MStatistics aggregation helpers."""
+
+    def setUp(self):
+        self.r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        self._delete_page_load_keys()
+        MStatistics.objects.filter(
+            key__in=[
+                "sites_loaded",
+                "avg_time_taken",
+                "latest_sites_loaded",
+                "latest_avg_time_taken",
+                "max_sites_loaded",
+                "max_avg_time_taken",
+                "last_1_min_time_taken",
+            ]
+        ).delete()
+
+    def tearDown(self):
+        self._delete_page_load_keys()
+        MStatistics.objects.filter(
+            key__in=[
+                "sites_loaded",
+                "avg_time_taken",
+                "latest_sites_loaded",
+                "latest_avg_time_taken",
+                "max_sites_loaded",
+                "max_avg_time_taken",
+                "last_1_min_time_taken",
+            ]
+        ).delete()
+
+    def _delete_page_load_keys(self):
+        for key in self.r.scan_iter(match="PLT:*"):
+            self.r.delete(key)
+
+    def _set_page_load_minute(self, minute, count, total_duration):
+        prefix = RStats.stats_type("page_load")
+        key = f"{prefix}:{minute.strftime('%s')}"
+        self.r.set(f"{key}:s", count)
+        self.r.set(f"{key}:a", total_duration)
+
+    @patch("apps.statistics.models.round_time")
+    def test_collect_statistics_sites_loaded_uses_latest_minute(self, mock_round_time):
+        """last_1_min_time_taken should reflect the latest complete minute, not the oldest."""
+        fixed_now = datetime.datetime(2026, 3, 23, 12, 0, 0)
+        mock_round_time.return_value = fixed_now
+
+        oldest_minute = fixed_now - datetime.timedelta(hours=1)
+        latest_minute = fixed_now - datetime.timedelta(minutes=1)
+
+        self._set_page_load_minute(oldest_minute, count=5, total_duration=1.95)  # 390ms
+        self._set_page_load_minute(latest_minute, count=4, total_duration=0.44)  # 110ms
+
+        MStatistics.collect_statistics_sites_loaded()
+
+        self.assertEqual(MStatistics.get("last_1_min_time_taken"), 0.11)
 
 
 class Test_RTrendingStory(TestCase):

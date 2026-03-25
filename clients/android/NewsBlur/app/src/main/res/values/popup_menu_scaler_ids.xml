@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="popup_menu_scaler_base_text_size" type="id" />
+    <item name="popup_menu_scaler_base_height" type="id" />
+</resources>

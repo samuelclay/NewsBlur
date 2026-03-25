@@ -13,24 +13,27 @@ That's the Daily Briefing. It reads your feeds, scores every story, and writes a
 
 ### How it works
 
-Click "Daily Briefing" in your sidebar to open the briefing view. The first time, you'll see an onboarding screen where you configure your preferences. Hit generate and NewsBlur does the rest: it scores your stories using a mix of trending read time, feed engagement, your classifier training, and recency, then generates a written summary of the top stories.
+Click "Daily Briefing" in your sidebar to open the briefing view. The first time, you'll see an onboarding screen where you configure your preferences. Hit generate and NewsBlur does the rest: it scores your stories using a mix of trending read time, feed engagement, how often you read each feed, your classifier training, and recency, then generates a written summary of the top stories.
 
 <!-- SCREENSHOT: Briefing onboarding/settings view showing frequency, time, style, and section options -->
 <img src="/assets/daily-briefing-onboarding.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 Each briefing is organized into sections:
 
-- **Top stories** — The most important stories from your feeds, ranked by a weighted score of trending engagement, your reading habits, and recency
-- **Based on your interests** — Stories matching your trained topics, authors, and tags, with green classifier pills showing exactly why each story was selected
+- **Top stories** — The most important stories from your feeds, ranked by a weighted score of trending engagement, how often you read each feed, your classifier training, and recency
+- **From infrequent sites** — Stories from feeds that rarely publish, so they don't get buried under higher-volume feeds
 - **Long reads for later** — Longer articles worth setting time aside for, detected by word count
+- **Based on your interests** — Stories matching your trained topics, authors, and tags, with green classifier pills showing exactly why each story was selected
 - **Follow-ups** — New posts from feeds where you recently read other stories
 - **Widely covered** — Stories that appear across 3 or more of your feeds, using NewsBlur's story clustering to group duplicates
 
-You can enable or disable any of these sections. If you only care about top stories and classifier matches, turn off the rest.
+You can enable or disable any of these sections, and drag to reorder them so your briefing is organized the way you want. If you only care about top stories and classifier matches, turn off the rest.
 
 ### Custom keyword sections
 
 On top of the built-in sections, you can add up to five custom keyword sections. Type a keyword or phrase and NewsBlur uses Elasticsearch to find matching stories across your feeds, then a dedicated section is written for them. If you always want a section about "climate change" or "Apple earnings," just add the keyword and it appears in every briefing when there's stories that match.
+
+<img src="/assets/daily-briefing-custom-keywords.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 ### Three writing styles
 
@@ -74,5 +77,7 @@ The briefing uses your feed stories and classifier training to generate the summ
 ### Availability
 
 The Daily Briefing is available now on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. You can configure everything from the briefing view in the sidebar.
+
+All users can open the Daily Briefing to see a preview with a handful of top stories. To unlock full briefings with all sections, custom keywords, and scheduled delivery, upgrade to Premium Archive.
 
 If you have feedback or ideas for how to make the Daily Briefing better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.

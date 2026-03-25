@@ -74,8 +74,8 @@ public class BlurDatabaseHelper {
         com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
-            dbRO = dbWrapper.getRO();
             dbRW = dbWrapper.getRW();
+            dbRO = dbWrapper.getRO();
         }
         // Load custom icons from SQLite if not already in memory
         if (folderIcons.isEmpty() && feedIcons.isEmpty()) {

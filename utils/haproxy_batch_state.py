@@ -6,7 +6,6 @@ import sys
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-
 EXPECTED_ADMIN_STATE = {
     "maint": "1",
     "ready": "0",
@@ -74,8 +73,7 @@ def verify_target_states(
         errors.append("missing: %s" % ", ".join(missing_targets))
     if mismatched_targets:
         errors.append(
-            "expected admin_state=%s but saw %s"
-            % (expected_admin_state, ", ".join(mismatched_targets))
+            "expected admin_state=%s but saw %s" % (expected_admin_state, ", ".join(mismatched_targets))
         )
     raise RuntimeError("; ".join(errors))
 
@@ -91,7 +89,9 @@ def run_haproxy_commands(commands: list[str]) -> subprocess.CompletedProcess[str
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Batch HAProxy server state changes over one socket session.")
+    parser = argparse.ArgumentParser(
+        description="Batch HAProxy server state changes over one socket session."
+    )
     parser.add_argument("state", choices=sorted(EXPECTED_ADMIN_STATE.keys()))
     parser.add_argument("targets", nargs="+", help="Backend/server specs such as app_django/happ-web-01")
     args = parser.parse_args(argv)
@@ -102,10 +102,15 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
 
-    runtime_commands = [f"set server {target.spec} state {args.state}" for target in targets]
-    runtime_commands.append("show servers state")
+    for target in targets:
+        change_result = run_haproxy_commands([f"set server {target.spec} state {args.state}"])
+        if change_result.returncode != 0:
+            stderr = change_result.stderr.strip()
+            if stderr:
+                print("%s: %s" % (target.spec, stderr), file=sys.stderr)
+            return change_result.returncode
 
-    result = run_haproxy_commands(runtime_commands)
+    result = run_haproxy_commands(["show servers state"])
     if result.returncode != 0:
         stderr = result.stderr.strip()
         if stderr:

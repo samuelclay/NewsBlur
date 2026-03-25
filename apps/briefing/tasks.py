@@ -42,7 +42,6 @@ def GenerateBriefings():
 
     eligible_profiles = Profile.objects.filter(
         Q(is_archive=True) | Q(is_pro=True),
-        user__is_staff=True,
     ).select_related("user")
 
     dispatched = 0

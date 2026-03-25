@@ -8,7 +8,6 @@ from django.core import management
 from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
-
 from django.utils.encoding import smart_str
 
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory

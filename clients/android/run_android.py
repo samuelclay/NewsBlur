@@ -69,7 +69,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_PROJECT_DIR = SCRIPT_DIR / "NewsBlur"
 DEFAULT_ANDROID_HOME_CANDIDATES = (
@@ -110,7 +109,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--avd", default=os.environ.get("ANDROID_AVD"))
     parser.add_argument("--variant", default=os.environ.get("ANDROID_BUILD_VARIANT", "debug"))
     parser.add_argument("--apk-path", default=os.environ.get("ANDROID_APK_PATH"))
-    parser.add_argument("--project-dir", default=os.environ.get("ANDROID_PROJECT_DIR", str(DEFAULT_PROJECT_DIR)))
+    parser.add_argument(
+        "--project-dir", default=os.environ.get("ANDROID_PROJECT_DIR", str(DEFAULT_PROJECT_DIR))
+    )
     parser.add_argument("--appium-port", type=int, default=int(os.environ.get("ANDROID_APPIUM_PORT", "4723")))
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("actions", nargs="*")
@@ -296,7 +297,11 @@ def list_devices(runtime: RuntimeConfig) -> list[dict[str, str]]:
             if avd_name:
                 device["avd_name"] = avd_name
         devices.append(device)
-    ready_emulators = [device for device in devices if device["serial"].startswith("emulator-") and device["state"] == "device"]
+    ready_emulators = [
+        device
+        for device in devices
+        if device["serial"].startswith("emulator-") and device["state"] == "device"
+    ]
     if len(configured_avds) == 1 and len(ready_emulators) == 1 and "avd_name" not in ready_emulators[0]:
         ready_emulators[0]["avd_name"] = configured_avds[0]
     return devices
@@ -403,7 +408,9 @@ def start_emulator(runtime: RuntimeConfig) -> None:
         devices = list_devices(runtime)
         matched = next((d for d in devices if d.get("avd_name") == avd and d["state"] == "device"), None)
         if not matched:
-            new_serials = [d["serial"] for d in devices if d["serial"] not in before and d["state"] == "device"]
+            new_serials = [
+                d["serial"] for d in devices if d["serial"] not in before and d["state"] == "device"
+            ]
             if len(new_serials) == 1:
                 matched = next(d for d in devices if d["serial"] == new_serials[0])
         if matched:
@@ -444,7 +451,9 @@ def build_app(runtime: RuntimeConfig) -> Path:
     if not gradlew.exists():
         raise RunnerError(f"Could not find gradlew at {gradlew}")
     task = f":app:assemble{variant_task_suffix(runtime.variant)}"
-    run_cmd(runtime, [str(gradlew), task], description=f"Building {runtime.variant} APK", cwd=runtime.project_dir)
+    run_cmd(
+        runtime, [str(gradlew), task], description=f"Building {runtime.variant} APK", cwd=runtime.project_dir
+    )
     apk_path = default_apk_path(runtime)
     if not apk_path.exists():
         raise RunnerError(f"Build completed but APK was not found at {apk_path}")
@@ -802,7 +811,9 @@ class AppiumSession:
             raise RunnerError(f"Could not find element using {using}: {value}")
         status, response = self.request("POST", f"/session/{self.session_id}/element/{element_id}/click", {})
         if status != 200:
-            raise RunnerError(self.error_message(response) or f"Failed to click element using {using}: {value}")
+            raise RunnerError(
+                self.error_message(response) or f"Failed to click element using {using}: {value}"
+            )
 
     def wait_for(self, using: str, value: str, timeout_seconds: float) -> None:
         deadline = time.time() + timeout_seconds
@@ -837,7 +848,9 @@ class AppiumSession:
             except subprocess.TimeoutExpired:
                 self.server_process.kill()
 
-    def request(self, method: str, path: str, payload: dict[str, Any] | None = None) -> tuple[int, dict[str, Any]]:
+    def request(
+        self, method: str, path: str, payload: dict[str, Any] | None = None
+    ) -> tuple[int, dict[str, Any]]:
         data = json.dumps(payload).encode("utf-8") if payload is not None else None
         request = urllib.request.Request(f"{self.base_url}{path}", data=data, method=method)
         request.add_header("Accept", "application/json")

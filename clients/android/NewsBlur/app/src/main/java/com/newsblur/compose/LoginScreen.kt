@@ -44,6 +44,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.autofill.contentType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material3.Button
@@ -117,6 +119,32 @@ internal object LoginScreenTags {
     const val CustomServerFooter = "login_custom_server_footer"
     const val CustomServerDialogPanel = "login_custom_server_dialog_panel"
 }
+
+internal enum class LoginFieldType {
+    Username,
+    Password,
+    Email,
+}
+
+internal fun loginFieldContentType(
+    mode: AuthMode,
+    fieldType: LoginFieldType,
+): ContentType =
+    when (fieldType) {
+        LoginFieldType.Username ->
+            if (mode == AuthMode.SignIn) {
+                ContentType.Username + ContentType.EmailAddress
+            } else {
+                ContentType.NewUsername
+            }
+        LoginFieldType.Password ->
+            if (mode == AuthMode.SignIn) {
+                ContentType.Password
+            } else {
+                ContentType.NewPassword
+            }
+        LoginFieldType.Email -> ContentType.EmailAddress
+    }
 
 @Composable
 fun LoginScreen(
@@ -363,18 +391,14 @@ internal fun LoginScreenContent(
                     focusRequester = usernameFocusRequester,
                     keyboardOptions =
                         KeyboardOptions(
-                            keyboardType =
-                                if (uiState.mode == AuthMode.SignIn) {
-                                    KeyboardType.Email
-                                } else {
-                                    KeyboardType.Text
-                                },
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next,
                         ),
                     keyboardActions =
                         KeyboardActions(
                             onNext = { passwordFocusRequester?.requestFocus() },
                         ),
+                    contentType = loginFieldContentType(uiState.mode, LoginFieldType.Username),
                 )
 
                 Spacer(Modifier.height(12.dp))
@@ -399,6 +423,7 @@ internal fun LoginScreenContent(
                             },
                             onNext = { emailFocusRequester?.requestFocus() },
                         ),
+                    contentType = loginFieldContentType(uiState.mode, LoginFieldType.Password),
                 )
 
                 AnimatedVisibility(
@@ -426,6 +451,7 @@ internal fun LoginScreenContent(
                                         if (canSubmit && !isBusy) onSubmit()
                                     },
                                 ),
+                            contentType = loginFieldContentType(uiState.mode, LoginFieldType.Email),
                         )
                     }
                 }
@@ -736,6 +762,7 @@ private fun AuthTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    contentType: ContentType? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -767,6 +794,7 @@ private fun AuthTextField(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .then(if (contentType != null) Modifier.contentType(contentType) else Modifier)
                     .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier),
             singleLine = true,
             textStyle =

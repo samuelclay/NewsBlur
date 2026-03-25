@@ -56,7 +56,7 @@ def main(hostnames=None, roles=None, command=None, path=None):
         else:
             roles = roles.replace("-", "_")
 
-    if not path:
+    if path is None:
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"

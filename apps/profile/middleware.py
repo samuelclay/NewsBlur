@@ -657,8 +657,10 @@ class UserAgentBanMiddleware:
 
             return HttpResponse(json.encode(data), status=403, content_type="text/json")
 
-        if request.user.is_authenticated and any(
-            username == request.user.username for username in BANNED_USERNAMES
+        if (
+            getattr(request, "user", None)
+            and request.user.is_authenticated
+            and any(username == request.user.username for username in BANNED_USERNAMES)
         ):
             data = {"error": "User banned: %s" % request.user.username, "code": -1}
             ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown"))

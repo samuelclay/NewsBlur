@@ -282,8 +282,12 @@ logmongo:
 alllogs: 
 	docker compose logs -f --tail 20
 logall: alllogs
+tlnb-slow:
+	/srv/newsblur/utils/tlnb.py app | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (match($$0, /\[[0-9]+\.[0-9]*s/)) {t=substr($$0, RSTART+1, RLENGTH-2); if (t+0 >= 1.0) print line}}'
 tlnb-samuel:
-	/srv/newsblur/utils/tlnb.py | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (/\[samuel\^]/) print line}'
+	$(MAKE) tlnb-user USER=samuel
+tlnb-user:
+	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) print line}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:

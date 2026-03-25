@@ -298,6 +298,11 @@ def dashboard(request, **kwargs):
     custom_styling = MCustomStyling.get_user(user.pk)
     dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
     preferences = json.decode(user.profile.preferences)
+    from apps.briefing.models import MBriefingPreferences
+
+    briefing_prefs = MBriefingPreferences.objects.filter(user_id=user.pk).only("enabled").first()
+    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else False
+    user.profile.preferences = json.encode(preferences)
 
     if not user.is_active:
         url = "https://%s%s" % (Site.objects.get_current().domain, reverse("stripe-form"))
@@ -1455,9 +1460,9 @@ def load_single_feed(request, feed_id):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="feed", phase="story_meta", read_filter=metrics_read_filter
     ).observe(phase_story_meta)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="feed", phase="total", read_filter=metrics_read_filter).observe(
-        timediff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="feed", phase="total", read_filter=metrics_read_filter
+    ).observe(timediff)
     if timediff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="feed", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -2302,6 +2307,75 @@ def load_read_stories(request):
     }
 
 
+def prune_missing_river_story_hashes(user_id, story_hashes):
+    if not story_hashes:
+        return
+
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    pipeline = r.pipeline()
+    unique_story_hashes = []
+    seen_story_hashes = set()
+
+    for story_hash in story_hashes:
+        if isinstance(story_hash, bytes):
+            story_hash = story_hash.decode()
+        if story_hash in seen_story_hashes:
+            continue
+        seen_story_hashes.add(story_hash)
+        unique_story_hashes.append(story_hash)
+
+    for story_hash in unique_story_hashes:
+        feed_id = story_hash.split(":", 1)[0]
+        pipeline.srem(f"F:{feed_id}", story_hash)
+        pipeline.zrem(f"zF:{feed_id}", story_hash)
+        pipeline.zrem(f"zU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}:{feed_id}", story_hash)
+        pipeline.zrem(f"uU:{user_id}", story_hash)
+
+    pipeline.execute()
+
+
+def load_existing_mstories(
+    user_id, story_hashes, unread_feed_story_hashes, story_date_order, limit, fetch_more=None
+):
+    if not story_hashes:
+        return story_hashes, unread_feed_story_hashes, []
+
+    current_story_hashes = story_hashes
+    current_unread_feed_story_hashes = unread_feed_story_hashes
+    fetch_limit = min(len(current_story_hashes), limit)
+    max_fetch_limit = max(limit * 32, 400)
+
+    while True:
+        candidate_hashes = current_story_hashes[:fetch_limit]
+        mstories = list(MStory.objects(story_hash__in=candidate_hashes).order_by(story_date_order))
+        found_story_hashes = {story.story_hash for story in mstories}
+        missing_story_hashes = [
+            story_hash for story_hash in candidate_hashes if story_hash not in found_story_hashes
+        ]
+
+        if missing_story_hashes:
+            prune_missing_river_story_hashes(user_id, missing_story_hashes)
+
+        if (
+            len(mstories) >= limit
+            or len(candidate_hashes) < fetch_limit
+            or not fetch_more
+            or fetch_limit >= max_fetch_limit
+        ):
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        next_fetch_limit = min(fetch_limit * 2, max_fetch_limit)
+        if next_fetch_limit <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        current_story_hashes, current_unread_feed_story_hashes = fetch_more(next_fetch_limit)
+        if len(current_story_hashes) <= fetch_limit:
+            return current_story_hashes, current_unread_feed_story_hashes, mstories
+
+        fetch_limit = min(next_fetch_limit, len(current_story_hashes))
+
+
 @json.json_view
 def load_river_stories__redis(request):
     # get_post is request.REQUEST, since this endpoint needs to handle either
@@ -2340,6 +2414,62 @@ def load_river_stories__redis(request):
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+    infrequent = is_true(get_post.get("infrequent", False))
+    if infrequent:
+        infrequent = get_post.get("infrequent")
+    is_free_river_user = user.is_authenticated and not user.profile.is_premium
+    requested_limit = limit
+
+    def log_free_river_access(action, effective_limit):
+        sample_feed_ids = original_feed_ids[:10]
+        feed_sample = ",".join(str(feed_id) for feed_id in sample_feed_ids)
+        if len(original_feed_ids) > len(sample_feed_ids):
+            feed_sample = f"{feed_sample},...(+{len(original_feed_ids) - len(sample_feed_ids)})"
+        logging.user(
+            request,
+            "~FRFree user river %s~SN: page=%s read_filter=%s order=%s requested_limit=%s effective_limit=%s "
+            "feeds_requested=%s [%s] include_feeds=%s include_hidden=%s query=%s requested_hashes=%s "
+            "on_dashboard=%s infrequent=%s date_start=%s date_end=%s"
+            % (
+                action,
+                page,
+                read_filter,
+                order,
+                requested_limit,
+                effective_limit,
+                len(original_feed_ids),
+                feed_sample,
+                include_feeds,
+                include_hidden,
+                bool(query),
+                requested_hashes,
+                on_dashboard,
+                infrequent,
+                date_filter_start or "-",
+                date_filter_end or "-",
+            ),
+        )
+
+    if is_free_river_user:
+        message = "The full River of News is a premium feature."
+        if page > 1:
+            log_free_river_access("blocked", effective_limit=0)
+            data = dict(
+                code=0,
+                message=message,
+                stories=[],
+                classifiers={},
+                elapsed_time=round(float(time.time() - start), 2),
+                user_search=None,
+                user_profiles=[],
+            )
+            if include_feeds:
+                data["feeds"] = []
+            if not include_hidden:
+                data["hidden_stories_removed"] = 0
+            return data
+        limit = min(limit, 3)
+        log_free_river_access("limited", effective_limit=limit)
 
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
@@ -2347,12 +2477,9 @@ def load_river_stories__redis(request):
             request,
             f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
         )
-    infrequent = is_true(get_post.get("infrequent", False))
-    if infrequent:
-        infrequent = get_post.get("infrequent")
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs = []
-    code = 1
+    code = 0 if is_free_river_user else 1
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -2452,11 +2579,25 @@ def load_river_stories__redis(request):
                     "metrics_source": "river_request",
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+
+                def fetch_more_story_hashes(fetch_limit):
+                    refill_params = dict(params)
+                    refill_params["limit"] = fetch_limit
+                    return UserSubscription.feed_stories(**refill_params)
+
+                story_hashes, unread_feed_story_hashes, mstories = load_existing_mstories(
+                    user.pk,
+                    story_hashes,
+                    unread_feed_story_hashes,
+                    story_date_order,
+                    limit,
+                    fetch_more=fetch_more_story_hashes,
+                )
             else:
                 story_hashes = []
                 unread_feed_story_hashes = []
+                mstories = []
 
-            mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
 
     checkpoint1 = time.time()
@@ -2653,13 +2794,6 @@ def load_river_stories__redis(request):
         feeds = Feed.objects.filter(pk__in=set([story["story_feed_id"] for story in stories]))
         feeds = [feed.canonical(include_favicon=False) for feed in feeds]
 
-    if not user.profile.is_premium and not include_feeds:
-        message = "The full River of News is a premium feature."
-        code = 0
-        # if page > 1:
-        #     stories = []
-        # else:
-        #     stories = stories[:5]
     if not include_hidden:
         hidden_stories_removed = 0
         new_stories = []
@@ -2759,9 +2893,9 @@ def load_river_stories__redis(request):
     READER_LOAD_PHASE_DURATION.labels(
         endpoint="river", phase="finalize", read_filter=metrics_read_filter
     ).observe(phase_finalize)
-    READER_LOAD_PHASE_DURATION.labels(endpoint="river", phase="total", read_filter=metrics_read_filter).observe(
-        diff
-    )
+    READER_LOAD_PHASE_DURATION.labels(
+        endpoint="river", phase="total", read_filter=metrics_read_filter
+    ).observe(diff)
     if diff >= 0.25:
         READER_LOAD_SLOW_REQUESTS.labels(endpoint="river", read_filter=metrics_read_filter).inc()
         logging.info(
@@ -3085,15 +3219,24 @@ def mark_story_hashes_as_read(request):
 
     # Filter out story hashes already marked as read to avoid redundant work.
     # Some clients (e.g. NetNewsWire) re-send all read hashes on every sync cycle.
+    # Check both global (RS:{user_id}) and feed-specific (RS:{user_id}:{feed_id}) sets,
+    # because trim_read_stories can remove from the feed-specific set when a story is
+    # temporarily missing from the feed (e.g. unpublish/republish), creating an
+    # inconsistency where the global set says "read" but the feed set doesn't.
     if story_hashes:
         rsh = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         all_read_key = "RS:%s" % request.user.pk
         p = rsh.pipeline()
         for story_hash in story_hashes:
+            feed_id = story_hash.split(":")[0]
             p.sismember(all_read_key, story_hash)
-        already_read = p.execute()
+            p.sismember("RS:%s:%s" % (request.user.pk, feed_id), story_hash)
+        results = p.execute()
         original_count = len(story_hashes)
-        story_hashes = [sh for sh, is_read in zip(story_hashes, already_read) if not is_read]
+        # Only skip if read in BOTH global and feed-specific sets
+        story_hashes = [
+            sh for i, sh in enumerate(story_hashes) if not (results[i * 2] and results[i * 2 + 1])
+        ]
         skipped_count = original_count - len(story_hashes)
         if skipped_count > 0 and not story_hashes:
             logging.user(

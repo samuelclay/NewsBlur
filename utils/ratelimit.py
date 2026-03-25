@@ -8,6 +8,7 @@ import functools
 import hashlib
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 
@@ -17,6 +18,7 @@ class ratelimit(object):
     # This class is designed to be sub-classed
     minutes = 1  # The time period
     requests = 4  # Number of allowed requests in that time period
+    DEBUG_MULTIPLIER = 10  # In DEBUG mode, multiply request limits by this factor
     use_path = False  # Whether to include the request path in the key
 
     prefix = "rl-"  # Prefix for memcache key
@@ -41,8 +43,13 @@ class ratelimit(object):
         # Increment rate limiting counter
         self.cache_incr(self.current_key(request))
 
+        # In DEBUG mode, allow 10x more requests
+        limit = self.requests
+        if settings.DEBUG:
+            limit = self.requests * self.DEBUG_MULTIPLIER
+
         # Have they failed?
-        if sum(counts) >= self.requests:
+        if sum(counts) >= limit:
             return self.disallowed(request)
 
         return fn(request, *args, **kwargs)

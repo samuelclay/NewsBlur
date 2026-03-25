@@ -8,6 +8,7 @@ import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.Dp
@@ -19,6 +20,7 @@ import com.newsblur.design.loginAuthPalette
 import com.newsblur.viewModel.LoginRegisterViewModel
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthMode
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthPhase
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -45,6 +47,29 @@ class LoginScreenTest {
             .onNodeWithTag(LoginScreenTags.SubmitButton)
             .assertIsNotEnabled()
             .assertTextEquals(composeRule.activity.getString(com.newsblur.R.string.login_logging_in))
+    }
+
+    @Test
+    fun signInFields_exposeAutofillContentTypes() {
+        setLoginContent(
+            uiState = LoginRegisterViewModel.UiState(mode = AuthMode.SignIn),
+            username = "",
+            password = "",
+        )
+
+        composeRule.waitForIdle()
+
+        val textFields = composeRule.onAllNodes(hasSetTextAction(), useUnmergedTree = true).fetchSemanticsNodes()
+
+        assertTrue("Expected username and password fields", textFields.size >= 2)
+        assertEquals(
+            setOf("username", "emailAddress"),
+            textFields[0].contentHintSet(),
+        )
+        assertEquals(
+            setOf("password"),
+            textFields[1].contentHintSet(),
+        )
     }
 
     @Test
@@ -150,5 +175,18 @@ class LoginScreenTest {
         generateSequence(node.parent) { it.parent }.any { ancestor ->
             ancestor.config.contains(SemanticsProperties.TestTag) &&
                 ancestor.config[SemanticsProperties.TestTag] == tag
+        }
+
+    private fun SemanticsNode.contentHintSet(): Set<String>? =
+        if (config.contains(SemanticsProperties.ContentType)) {
+            @Suppress("UNCHECKED_CAST")
+            config[SemanticsProperties.ContentType]
+                ?.let { contentType ->
+                    val hintsField = contentType.javaClass.getDeclaredField("androidAutofillHints")
+                    hintsField.isAccessible = true
+                    hintsField.get(contentType) as Set<String>
+                }
+        } else {
+            null
         }
 }

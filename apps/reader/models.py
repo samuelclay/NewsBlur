@@ -42,6 +42,7 @@ from apps.analyzer.models import (
     apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
+from apps.reader.managers import UserSubscriptionManager
 from apps.reader.metrics import (
     STORY_HASHES_DURATION,
     UNREAD_CACHE_FAST_PATH,
@@ -52,7 +53,6 @@ from apps.reader.metrics import (
     normalize_reader_metrics_read_filter,
     normalize_reader_metrics_source,
 )
-from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
@@ -147,11 +147,25 @@ class UserSubscription(models.Model):
             usersubs = usersubs.filter(Q(unread_count_neutral__gt=0) | Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, active=True).only(
-                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
+                "user",
+                "feed",
+                "mark_read_date",
+                "is_trained",
+                "needs_unread_recalc",
+                "auto_mark_read_days",
+                "unread_count_neutral",
+                "unread_count_positive",
             )
         else:
             usersubs = usersubs.filter(user=user_id, active=True, feed__in=feed_ids).only(
-                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
+                "user",
+                "feed",
+                "mark_read_date",
+                "is_trained",
+                "needs_unread_recalc",
+                "auto_mark_read_days",
+                "unread_count_neutral",
+                "unread_count_positive",
             )
 
         return usersubs
@@ -191,6 +205,15 @@ class UserSubscription(models.Model):
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
             if not usersubs:
                 usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter="all")
+            feed_ids = [sub.feed_id for sub in usersubs]
+            if not feed_ids:
+                return story_hashes
+        elif read_filter == "unread":
+            usersubs = [
+                sub
+                for sub in usersubs
+                if sub.needs_unread_recalc or sub.unread_count_neutral > 0 or sub.unread_count_positive > 0
+            ]
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
@@ -1122,7 +1145,7 @@ class UserSubscription(models.Model):
             "~FBTrimming ~FR%s~FB read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id),
         )
         r.srem(read_stories_key, *stale_story_hashes)
-        r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
+        r.srem("RS:%s" % self.user_id, *stale_story_hashes)
 
     @classmethod
     def trim_user_read_stories(self, user_id):
