@@ -257,6 +257,7 @@ def briefing_preferences(request):
     """
     user = request.user
     prefs = MBriefingPreferences.get_or_create(user.pk)
+    profile_preferences = json.decode(user.profile.preferences or "{}")
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
@@ -282,6 +283,7 @@ def briefing_preferences(request):
         enabled = request.POST.get("enabled")
         if enabled is not None:
             prefs.enabled = enabled in ("true", "1", True)
+            profile_preferences["briefing_enabled"] = prefs.enabled
 
         story_count = request.POST.get("story_count")
         if story_count:
@@ -362,6 +364,9 @@ def briefing_preferences(request):
                 pass
 
         prefs.save()
+        if enabled is not None:
+            user.profile.preferences = json.encode(profile_preferences)
+            user.profile.save()
 
     # Migrate old "focused" story_sources to the new read_filter field
     if prefs.story_sources == "focused":
@@ -429,6 +434,11 @@ def generate_briefing(request):
     if not prefs.enabled:
         prefs.enabled = True
         prefs.save()
+    profile_preferences = json.decode(user.profile.preferences or "{}")
+    if profile_preferences.get("briefing_enabled") is not True:
+        profile_preferences["briefing_enabled"] = True
+        user.profile.preferences = json.encode(profile_preferences)
+        user.profile.save()
 
     # views.py: Create the briefing feed synchronously so the frontend can save
     # notification preferences immediately, before the Celery task runs.

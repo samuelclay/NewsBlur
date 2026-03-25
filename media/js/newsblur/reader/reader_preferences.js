@@ -1382,34 +1382,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var cluster_mark_read = NEWSBLUR.Preferences.cluster_mark_read;
         $('input[name=cluster_mark_read]', $modal).prop('checked', !!cluster_mark_read);
 
-        // reader_preferences.js: Load briefing preferences from API
-        if (NEWSBLUR.Globals.is_staff) {
-            this.load_briefing_preferences();
+        var briefing_enabled = NEWSBLUR.Preferences.briefing_enabled;
+        if (briefing_enabled === undefined || briefing_enabled === null) {
+            briefing_enabled = true;
         }
-    },
-
-    load_briefing_preferences: function () {
-        var $modal = this.$modal;
-        $.ajax({
-            url: '/briefing/preferences',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                var enabled = data.enabled !== false;
-                $('input[name=briefing_enabled][value=' + enabled + ']', $modal).prop('checked', true);
-            }
-        });
-    },
-
-    save_briefing_preferences: function (form) {
-        // reader_preferences.js: Save briefing enabled/disabled to separate API endpoint
-        $.ajax({
-            url: '/briefing/preferences',
-            type: 'POST',
-            data: { enabled: form['briefing_enabled'] },
-            dataType: 'json'
-        });
-        delete form['briefing_enabled'];
+        $('input[name=briefing_enabled][value=' + !!briefing_enabled + ']', $modal).prop('checked', true);
     },
 
     // ===================
@@ -1655,11 +1632,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('.NB-preference-error', this.$modal).text('');
         $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
 
-        // reader_preferences.js: Save briefing preferences separately
-        if (NEWSBLUR.Globals.is_staff) {
-            this.save_briefing_preferences(form);
-        }
-
         this.model.save_preferences(form, function (data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
@@ -1674,7 +1646,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 NEWSBLUR.app.feed_list.make_social_feeds();
             }
             if (self.original_preferences['show_global_shared_stories'] != form['show_global_shared_stories'] ||
-                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories']) {
+                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
+                self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
             if (self.original_preferences['ssl'] != form['ssl']) {

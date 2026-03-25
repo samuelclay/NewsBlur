@@ -298,6 +298,11 @@ def dashboard(request, **kwargs):
     custom_styling = MCustomStyling.get_user(user.pk)
     dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
     preferences = json.decode(user.profile.preferences)
+    from apps.briefing.models import MBriefingPreferences
+
+    briefing_prefs = MBriefingPreferences.objects.filter(user_id=user.pk).only("enabled").first()
+    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else False
+    user.profile.preferences = json.encode(preferences)
 
     if not user.is_active:
         url = "https://%s%s" % (Site.objects.get_current().domain, reverse("stripe-form"))
