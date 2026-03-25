@@ -9,7 +9,7 @@
     <color name="primaryDark_sepia">#F3E2CB</color>
     <color name="secondary_sepia">#1D4BA6</color>
 
-    <color name="primary.dark">@color/gray13</color>
+    <color name="primary.dark">#333333</color>
     <color name="primaryDark.dark">@color/black</color>
     <color name="secondary.dark">@color/newsblur_blue</color>
 
@@ -39,7 +39,7 @@
 
     <color name="bar_background">@color/nb_green_gray91</color>
     <color name="bar_background_sepia">@color/primary_sepia</color>
-    <color name="dark_bar_background">@color/gray13</color>
+    <color name="dark_bar_background">#333333</color>
     <color name="feed_list_top_background">#EAECE6</color>
     <color name="feed_list_top_background_sepia">#E9DECE</color>
     <color name="feed_list_top_background_dark">#3A3A3C</color>
@@ -74,19 +74,19 @@
     <color name="dark_folder_background_selected">#4C4C4C</color>
     <color name="row_border">@color/gray95</color>
     <color name="row_border_sepia">#D4C8B8</color>
-    <color name="dark_row_border">@color/gray10</color>
+    <color name="dark_row_border">#333333</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="feed_background_selected_end_sepia">#F7E9D8</color>
     <color name="feed_background_selected_start_sepia">#E8D8C5</color>
-    <color name="dark_feed_background_selected_end">#4C4C4C</color>
-    <color name="dark_feed_background_selected_start">#1A1A1A</color>
+    <color name="dark_feed_background_selected_end">#606060</color>
+    <color name="dark_feed_background_selected_start">#333333</color>
     <color name="story_background">@color/gray96</color>
     <color name="story_background_selected">#FFFDEF</color>
     <color name="story_background_sepia">#F3E2CB</color>
     <color name="story_background_selected_sepia">#EEE0CE</color>
-    <color name="dark_story_background">@color/gray07</color>
-    <color name="dark_story_background_selected">#4C4C4C</color>
+    <color name="dark_story_background">#4F4F4F</color>
+    <color name="dark_story_background_selected">#606060</color>
 
     <color name="story_feed_title_text">#606060</color>
     <color name="story_feed_title_text_sepia">#606060</color>
@@ -109,23 +109,23 @@
 
     <color name="story_comment_divider">#F0F0F0</color>
     <color name="story_comment_divider_sepia">#D4C8B8</color>
-    <color name="dark_story_comment_divider">#42453E</color>
+    <color name="dark_story_comment_divider">#555555</color>
 
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="item_header_background_start_sepia">#FCF6ED</color>
     <color name="item_header_background_end_sepia">#FAF3E8</color>
-    <color name="dark_item_header_background_start">#505050</color>
-    <color name="dark_item_header_background_end">#303030</color>
+    <color name="dark_item_header_background_start">#606060</color>
+    <color name="dark_item_header_background_end">#404040</color>
     <color name="black_item_header_background_start">@color/gray07</color>
     <color name="black_item_header_background_end">@color/black</color>
     <color name="item_background">#F4F4F4</color>
     <color name="item_background_sepia">#FAF5ED</color>
     <color name="reading_background_sepia">#FAF3E8</color>
-    <color name="dark_item_background">#1A1A1A</color>
+    <color name="dark_item_background">#444444</color>
     <color name="share_bar_background">#F5F5EF</color>
     <color name="share_bar_background_sepia">#EDE0D0</color>
-    <color name="dark_share_bar_background">#303030</color>
+    <color name="dark_share_bar_background">#555555</color>
     
     <color name="half_black">#7000</color>
     

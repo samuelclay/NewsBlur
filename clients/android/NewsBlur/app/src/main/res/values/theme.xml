@@ -170,7 +170,7 @@
         <item name="colorSecondary">@color/secondary.dark</item>
         <item name="actionBarTheme">@style/actionbar.dark</item>
         <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
-        <item name="popupMenuBackground">@color/gray13</item>
+        <item name="popupMenuBackground">@color/primary.dark</item>
         <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
