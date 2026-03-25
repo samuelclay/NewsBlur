@@ -106,6 +106,8 @@ struct TrainerCapsule: View {
     var capsuleBackground: Color {
         if score == .like {
             return Color(red: 0, green: 0.5, blue: 0.0)
+        } else if score == .superDislike {
+            return Color(red: 0.42, green: 0, blue: 0.004)
         } else if score == .dislike {
             return Color.red
         } else {
@@ -116,6 +118,8 @@ struct TrainerCapsule: View {
     var regexCapsuleBackground: Color {
         if score == .like {
             return Color(red: 0, green: 0.5, blue: 0.0)
+        } else if score == .superDislike {
+            return Color(red: 0.42, green: 0, blue: 0.004)
         } else if score == .dislike {
             return Color.red
         } else {
@@ -124,7 +128,7 @@ struct TrainerCapsule: View {
     }
 
     var regexBadgeBackground: Color {
-        if score == .like || score == .dislike {
+        if score == .like || score == .dislike || score == .superDislike {
             return Color.white.opacity(0.25)
         } else {
             return Color(red: 0.482, green: 0.408, blue: 0.933) // #7B68EE
@@ -132,7 +136,7 @@ struct TrainerCapsule: View {
     }
 
     var regexIconColor: Color {
-        if score == .like || score == .dislike {
+        if score == .like || score == .dislike || score == .superDislike {
             return .white
         } else {
             return Color(red: 0.475, green: 0.525, blue: 0.795) // #7986CB
@@ -140,7 +144,7 @@ struct TrainerCapsule: View {
     }
 
     var regexValueColor: Color {
-        if score == .like || score == .dislike {
+        if score == .like || score == .dislike || score == .superDislike {
             return .white
         } else {
             return Color.themed([0x333333, 0x3C3226, 0xE0E0E0, 0xE0E0E0])
@@ -150,6 +154,8 @@ struct TrainerCapsule: View {
     var dashedBorderColor: Color {
         if score == .like {
             return Color(red: 0, green: 0.35, blue: 0.0)
+        } else if score == .superDislike {
+            return Color(red: 0.42, green: 0, blue: 0)
         } else if score == .dislike {
             return Color(red: 0.7, green: 0, blue: 0)
         } else {
@@ -158,7 +164,7 @@ struct TrainerCapsule: View {
     }
 
     var content: Text {
-        if score == .like || score == .dislike {
+        if score == .like || score == .dislike || score == .superDislike {
             Text("\(Text("\(header):").colored(.init(white: 0.85))) \(imageText)\(value)")
                 .colored(.white)
         } else {

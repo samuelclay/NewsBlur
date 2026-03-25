@@ -2554,7 +2554,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
-                if (intelligence.title <= 0) {
+                if (intelligence.title > -2 && intelligence.title <= 0) {
                     // Standard substring matching
                     if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
                         intelligence.title = classifier_score;
@@ -2563,28 +2563,28 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             });
 
             _.each(this.classifiers[feed_id].authors, function (classifier_score, classifier_author) {
-                if (intelligence.author <= 0 &&
+                if (intelligence.author > -2 && intelligence.author <= 0 &&
                     story.get('story_authors', '').indexOf(classifier_author) != -1) {
                     intelligence.author = classifier_score;
                 }
             });
 
             _.each(this.classifiers[feed_id].tags, function (classifier_score, classifier_tag) {
-                if (intelligence.tags <= 0 &&
+                if (intelligence.tags > -2 && intelligence.tags <= 0 &&
                     story.get('story_tags') && _.contains(story.get('story_tags'), classifier_tag)) {
                     intelligence.tags = classifier_score;
                 }
             });
 
             _.each(this.classifiers[feed_id].feeds, function (classifier_score, classifier_feed_id) {
-                if (intelligence.feed <= 0 &&
+                if (intelligence.feed > -2 && intelligence.feed <= 0 &&
                     story.get('story_feed_id') == classifier_feed_id) {
                     intelligence.feed = classifier_score;
                 }
             });
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
-                if (intelligence.text <= 0) {
+                if (intelligence.text > -2 && intelligence.text <= 0) {
                     // Standard substring matching against RSS body and full article text
                     var ct = classifier_text.toLowerCase();
                     if (story.get('story_content', '').toLowerCase().indexOf(ct) != -1 ||
@@ -2597,7 +2597,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             // Title regex classifiers (PRO only)
             if (user_is_pro && this.classifiers[feed_id].title_regex) {
                 _.each(this.classifiers[feed_id].title_regex, function (classifier_score, pattern) {
-                    if (intelligence.title_regex <= 0) {
+                    if (intelligence.title_regex > -2 && intelligence.title_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
                             if (regex.test(story.get('story_title', ''))) {
@@ -2613,7 +2613,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             // Text regex classifiers (PRO only)
             if (user_is_pro && this.classifiers[feed_id].text_regex) {
                 _.each(this.classifiers[feed_id].text_regex, function (classifier_score, pattern) {
-                    if (intelligence.text_regex <= 0) {
+                    if (intelligence.text_regex > -2 && intelligence.text_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
                             if (regex.test(story.get('story_content', '')) ||
@@ -2629,7 +2629,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             // URL exact phrase classifiers
             _.each(this.classifiers[feed_id].urls, function (classifier_score, classifier_url) {
-                if (intelligence.url <= 0) {
+                if (intelligence.url > -2 && intelligence.url <= 0) {
                     var permalink = story.get('story_permalink') || '';
                     if (permalink.toLowerCase().indexOf(classifier_url.toLowerCase()) != -1) {
                         intelligence.url = classifier_score;
@@ -2640,7 +2640,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             // URL regex classifiers (PRO only)
             if (user_is_pro && this.classifiers[feed_id].url_regex) {
                 _.each(this.classifiers[feed_id].url_regex, function (classifier_score, pattern) {
-                    if (intelligence.url_regex <= 0) {
+                    if (intelligence.url_regex > -2 && intelligence.url_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
                             var permalink = story.get('story_permalink') || '';

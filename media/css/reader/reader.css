@@ -11886,7 +11886,7 @@ form.opml_import_form input {
     display: block;
     margin: 2px 6px 6px 0;
     cursor: pointer;
-    padding: 0 30px 0 26px;
+    padding: 0 54px 0 26px;
     font-size: 12px;
     background-color: #D8DEE2;
     position: relative;
@@ -11947,7 +11947,7 @@ form.opml_import_form input {
     height: 22px;
     position: absolute;
     top: -1px;
-    right: -1px;
+    right: 23px;
     background: transparent url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat 4px 3px;
     background-size: 14px;
     opacity: .2;
@@ -12068,6 +12068,206 @@ form.opml_import_form input {
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label span {
     color: white;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* ================================ */
+/* = Super Downvote                = */
+/* ================================ */
+
+/* Double thumbs-down icon: two stacked thumbs-down SVGs */
+.NB-classifiers .NB-classifier .NB-classifier-icon-super-dislike {
+    width: 24px;
+    height: 22px;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    opacity: .2;
+    cursor: pointer;
+    z-index: 1;
+    border-left: 1px solid #EBEBE1;
+}
+
+.NB-classifiers .NB-classifier .NB-classifier-icon-super-dislike::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    background: transparent url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat 0 0;
+    background-size: 12px;
+    opacity: 0.7;
+}
+
+.NB-classifiers .NB-classifier .NB-classifier-icon-super-dislike::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 7px;
+    width: 14px;
+    height: 14px;
+    background: transparent url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat 0 0;
+    background-size: 12px;
+}
+
+/* Active super-dislike state */
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike {
+    background-color: #6B0001;
+    border: 1px solid #000;
+    -webkit-box-shadow: 1px 1px 1px #BDC0D7;
+    -moz-box-shadow: 1px 1px 1px #BDC0D7;
+    box-shadow: 1px 1px 1px #BDC0D7;
+}
+
+/* Hover state for super-dislike icon — must override hover-like green */
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-super-dislike {
+    background-color: #8B0001;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-super-dislike {
+    border: 1px solid transparent;
+    background-color: #8B0001;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-super-dislike {
+    border: 1px solid transparent;
+    background-color: #8B0001;
+}
+
+/* Icon opacity when super-dislike is active or hovered */
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike .NB-classifier-icon-super-dislike {
+    opacity: 1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike .NB-classifier-icon-like {
+    opacity: .1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike .NB-classifier-icon-dislike {
+    opacity: .1;
+}
+
+/* When hovering like on a super-dislike pill, show the like icon */
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike.NB-classifier-hover-like .NB-classifier-icon-like {
+    opacity: 1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike.NB-classifier-hover-like .NB-classifier-icon-super-dislike {
+    opacity: .1;
+}
+
+/* When hovering super-dislike, suppress like/dislike icons */
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-super-dislike .NB-classifier-icon-super-dislike {
+    opacity: 1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-super-dislike .NB-classifier-icon-like {
+    opacity: .1;
+}
+
+/* Super-dislike label text styles */
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-super-dislike label b {
+    color: white;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike label span,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike label span,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-super-dislike label span {
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike .NB-classifier-icon-dislike-inner,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike .NB-classifier-icon-dislike-inner {
+    border-left-color: #8B3333;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-super-dislike {
+    border-left-color: #2A7A24;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-super-dislike {
+    border-left-color: #C17C52;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-super-dislike .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-super-dislike .NB-classifier-icon-super-dislike {
+    border-left-color: #8B3333;
+}
+
+/* Explainer banner */
+.NB-classifier-explainer {
+    padding: 8px 12px;
+    margin: 0 0 8px;
+    background: #f8f8f0;
+    border: 1px solid #e0e0d8;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #888;
+    line-height: 1.8;
+}
+
+.NB-classifier-explainer .NB-classifier-title-like {
+    color: #34912E;
+}
+
+.NB-classifier-explainer .NB-classifier-title-dislike {
+    color: #A90103;
+}
+
+.NB-classifier-explainer .NB-classifier-title-super-dislike {
+    color: #6B0001;
+}
+
+.NB-classifier-explainer .NB-explainer-icon {
+    width: 12px;
+    height: 12px;
+    vertical-align: -1px;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-like {
+    filter: brightness(0) saturate(100%) invert(39%) sepia(96%) saturate(520%) hue-rotate(80deg) brightness(95%) contrast(87%);
+}
+
+.NB-classifier-explainer .NB-explainer-icon-dislike {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(96%) saturate(5400%) hue-rotate(358deg) brightness(85%) contrast(120%);
+}
+
+.NB-classifier-explainer .NB-explainer-icon-super-dislike {
+    filter: brightness(0) saturate(100%) invert(6%) sepia(96%) saturate(5400%) hue-rotate(358deg) brightness(65%) contrast(120%);
+}
+
+.NB-classifier-explainer .NB-explainer-icon-double-dislike {
+    display: inline-block;
+    position: relative;
+    width: 18px;
+    height: 14px;
+    vertical-align: -2px;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-double-dislike .NB-explainer-icon {
+    position: absolute;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-double-dislike .NB-explainer-icon:first-child {
+    top: 0;
+    left: 0;
+    opacity: 0.6;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-double-dislike .NB-explainer-icon-super-dislike-shadow {
+    top: 3px;
+    left: 4px;
 }
 
 /* ================================ */
