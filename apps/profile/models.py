@@ -419,6 +419,11 @@ class Profile(models.Model):
             "url_ng": MClassifierUrl.objects.filter(user_id=self.user.pk, score__lt=0).count(),
         }
 
+        # Collect all PayPal and Stripe IDs before deletion
+        self.retrieve_paypal_ids()
+        paypal_ids = list(self.user.paypal_ids.values_list("paypal_sub_id", flat=True))
+        stripe_ids = list(self.user.stripe_ids.values_list("stripe_id", flat=True))
+
         # Create the archived record
         deleted_user = MDeletedUser(
             user_id=self.user.pk,
@@ -438,7 +443,9 @@ class Profile(models.Model):
             total_payments=total_payments,
             payment_history=payment_history,
             stripe_id=self.stripe_id,
+            stripe_ids=stripe_ids,
             paypal_email=self.latest_paypal_email,
+            paypal_ids=paypal_ids,
             feeds_count=feeds_count,
             feed_opens=feed_opens,
             read_story_count=read_story_count,
@@ -456,20 +463,34 @@ class Profile(models.Model):
             % (feeds_count, len(payments), total_payments, read_story_count),
         )
 
+        return deleted_user
+
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print(" ---> You must pass confirm=True to delete this user.")
             return
 
         # Archive user data BEFORE deletion for analytics
-        self.archive_deleted_user()
+        deleted_user = self.archive_deleted_user()
 
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
+        cancellation_succeeded = False
         try:
             if not fast:
-                self.cancel_premium()
-        except:
-            logging.user(self.user, "~BR~SK~FWError cancelling premium renewal for: %s" % self.user.username)
+                self.cancel_premium(force=True)
+                cancellation_succeeded = True
+        except Exception as e:
+            logging.user(
+                self.user,
+                "~BR~SK~FWError cancelling premium renewal for: %s (%s)" % (self.user.username, e),
+            )
+
+        if deleted_user:
+            try:
+                deleted_user.cancellation_succeeded = cancellation_succeeded
+                deleted_user.save()
+            except Exception as e:
+                logging.user(self.user, "~FRError updating deleted user archive: %s" % e)
 
         from apps.social.models import (
             MActivity,
@@ -1833,18 +1854,18 @@ class Profile(models.Model):
             )
         return refunded
 
-    def cancel_premium(self):
-        paypal_cancel = self.cancel_premium_paypal()
-        stripe_cancel = self.cancel_premium_stripe()
+    def cancel_premium(self, force=False):
+        paypal_cancel = self.cancel_premium_paypal(force=force)
+        stripe_cancel = self.cancel_premium_stripe(force=force)
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
-    def cancel_premium_paypal(self, cancel_older_subscriptions_only=False):
+    def cancel_premium_paypal(self, cancel_older_subscriptions_only=False, force=False):
         self.retrieve_paypal_ids()
         if not self.paypal_sub_id:
             logging.user(self.user, "~FRUser doesn't have a Paypal subscription, how did we get here?")
             return
-        if not self.premium_renewal and not cancel_older_subscriptions_only:
+        if not force and not self.premium_renewal and not cancel_older_subscriptions_only:
             logging.user(
                 self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % self.paypal_sub_id
             )
@@ -1882,9 +1903,12 @@ class Profile(models.Model):
 
         return True
 
-    def cancel_premium_stripe(self):
+    def cancel_premium_stripe(self, force=False):
         if not self.stripe_id:
-            return
+            if force:
+                self.retrieve_stripe_ids()
+            if not self.stripe_id:
+                return
 
         stripe.api_key = settings.STRIPE_SECRET
         for stripe_id_model in self.user.stripe_ids.all():
@@ -4234,7 +4258,10 @@ class MDeletedUser(mongo.Document):
     total_payments = mongo.IntField(default=0)  # in dollars
     payment_history = mongo.ListField(mongo.DictField())  # [{date, amount, provider}]
     stripe_id = mongo.StringField(max_length=255)
+    stripe_ids = mongo.ListField(mongo.StringField())
     paypal_email = mongo.StringField(max_length=255)
+    paypal_ids = mongo.ListField(mongo.StringField())
+    cancellation_succeeded = mongo.BooleanField(default=False)
 
     # Usage stats
     feeds_count = mongo.IntField(default=0)
