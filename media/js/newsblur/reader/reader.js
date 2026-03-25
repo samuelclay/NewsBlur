@@ -1768,6 +1768,16 @@
                     NEWSBLUR.reader.open_premium_upgrade_modal();
                 });
             }
+            if (next == 'gift') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_referrals_modal({ tab: 'gift' });
+                });
+            }
+            if (next == 'refer') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_referrals_modal({ tab: 'refer' });
+                });
+            }
             if (add_url) {
                 NEWSBLUR.reader.open_add_feed_modal({ url: url });
             }
@@ -4240,6 +4250,10 @@
             NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
         },
 
+        open_referrals_modal: function (options) {
+            NEWSBLUR.referrals = new NEWSBLUR.ReaderReferrals(options);
+        },
+
         open_notifications_modal: function (feed_id) {
             NEWSBLUR.notifications = new NEWSBLUR.ReaderNotifications(feed_id);
         },
@@ -4596,6 +4610,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-newsletters', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-referrals', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Refer &amp; Gift')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -8245,6 +8263,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
                         self.open_newsletters_modal();
+                    });
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-referrals' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function () {
+                        self.open_referrals_modal();
                     });
                 }
             });

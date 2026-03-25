@@ -1,0 +1,10 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">You earned free {{ tier_name }}!</h2>
+
+    <p style="line-height: 20px;"><b>{{ referred_username }}</b> just signed up for a premium subscription through your referral link.</p>
+    <p style="line-height: 20px;">You've earned <b>{{ credit_text }}</b> of free {{ tier_name }} as a thank you for spreading the word about NewsBlur.</p>
+    <p style="line-height: 20px;">Keep sharing your referral link to earn more free subscription time. Every referral adds up!</p>
+    <p style="line-height: 20px;">- Sam</p>
+{% endblock %}

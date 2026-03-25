@@ -15794,6 +15794,165 @@
       ],
       "title": "Re-analyses Today",
       "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 607
+      },
+      "id": 276,
+      "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "Referrals & Gifts",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 608
+      },
+      "id": 277,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "referrals{category=\"total_referrals\"}",
+          "legendFormat": "Total Referrals",
+          "refId": "A"
+        },
+        {
+          "expr": "referrals{category=\"pending_referrals\"}",
+          "legendFormat": "Pending",
+          "refId": "B"
+        },
+        {
+          "expr": "referrals{category=\"converted_referrals\"}",
+          "legendFormat": "Converted",
+          "refId": "C"
+        }
+      ],
+      "title": "Referrals",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 608
+      },
+      "id": 278,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "referrals{category=\"total_gifts\"}",
+          "legendFormat": "Total Gifts",
+          "refId": "A"
+        },
+        {
+          "expr": "referrals{category=\"redeemed_gifts\"}",
+          "legendFormat": "Redeemed",
+          "refId": "B"
+        },
+        {
+          "expr": "referrals{category=\"refunded_gifts\"}",
+          "legendFormat": "Refunded",
+          "refId": "C"
+        },
+        {
+          "expr": "referrals{category=\"staff_gifts\"}",
+          "legendFormat": "Staff Gifts",
+          "refId": "D"
+        }
+      ],
+      "title": "Gifts",
+      "type": "stat"
     }
   ],
   "refresh": "5s",

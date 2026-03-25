@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block bodyclass %}NB-static NB-static-card{% endblock %}
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block title %}Gift Sent{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-card-wrapper">
+    <div class="NB-static-card">
+        <a href="{% url "index" %}" class="NB-static-card-logo">
+            <img src="{{ MEDIA_URL }}img/logo_512.png" />
+        </a>
+        <h1 class="NB-static-card-title">Your Gift is Ready!</h1>
+
+        {% if gift_url %}
+            <p class="NB-static-card-tagline">
+                Share this link with the person you're gifting NewsBlur {{ gift_tier|title }} to:
+            </p>
+            <div style="background: #f0f0f0; padding: 12px; border-radius: 8px; margin: 16px 0; word-break: break-all; text-align: center;">
+                <a href="{{ gift_url }}" style="font-size: 16px; font-weight: bold;">{{ gift_url }}</a>
+            </div>
+            <p style="color: #888; font-size: 13px; text-align: center;">
+                This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded.
+            </p>
+        {% else %}
+            <p class="NB-static-card-tagline">
+                Your payment is being processed. Your gift link will be available shortly.
+            </p>
+        {% endif %}
+
+        <a href="{% url "index" %}" class="NB-static-card-submit" style="display: inline-block; margin-top: 16px; text-decoration: none;">Back to NewsBlur</a>
+    </div>
+</div>
+
+{% endblock %}
