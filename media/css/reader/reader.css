@@ -11926,11 +11926,6 @@ form.opml_import_form input {
     display: none;
 }
 
-/* Hide any unexpected images injected into classifier labels (e.g. browser extensions) */
-.NB-classifiers .NB-classifier label > img {
-    display: none;
-}
-
 .NB-classifiers .NB-classifier .feed_favicon {
     margin-top: -2px;
     width: 16px;
