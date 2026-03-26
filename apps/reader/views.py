@@ -74,7 +74,14 @@ from apps.analyzer.models import (
 )
 from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
-from apps.profile.models import MCustomStyling, MDashboardRiver, MGiftCode, MRedeemedCode, MReferral, Profile
+from apps.profile.models import (
+    MCustomStyling,
+    MDashboardRiver,
+    MGiftCode,
+    MRedeemedCode,
+    MReferral,
+    Profile,
+)
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.metrics import (
     READER_LOAD_PHASE_DURATION,
@@ -274,7 +281,7 @@ def index(request, **kwargs):
         if user:
             user = user[0]
         if not user:
-            return HttpResponseRedirect("http://%s%s" % (Site.objects.get_current().domain, reverse("index")))
+            return HttpResponseRedirect("https://%s%s" % (Site.objects.get_current().domain, reverse("index")))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
     if request.user.is_anonymous:
         return welcome(request, **kwargs)

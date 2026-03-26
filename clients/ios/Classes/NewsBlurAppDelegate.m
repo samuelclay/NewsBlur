@@ -2043,6 +2043,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
+    [self.detailViewController resetTemporaryFullScreenIfNeeded];
+
     if (!self.skipTryFeedCleanup) {
         [self cleanUpTryFeed];
     }

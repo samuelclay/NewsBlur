@@ -89,24 +89,24 @@ private val SepiaExt =
 
 private val DarkExt =
     NbExtendedColors(
-        barBackground = Gray13, // @color/dark_bar_background
+        barBackground = Gray20, // @color/dark_bar_background #333333
         textDefault = Gray85, // @color/dark_text
         textLink = Color(0xFF319DC5), // @color/dark_linkblue
         textSnippet = Color(0xFFCECECE), // @color/dark_story_content_text
         textFeedTitle = Gray55, // @color/dark_story_feed_title_text
         textMeta = Color(0x7FFFFFFF), // @color/half_white
-        rowBorder = Gray10, // @color/dark_row_border
-        commentDivider = Color(0xFF42453E), // @color/dark_story_comment_divider
-        delimiter = Gray30,
-        itemBackground = Gray10, // @color/dark_item_background
-        itemBackgroundDarkAlt = Gray10,
+        rowBorder = Gray20, // @color/dark_row_border #333333
+        commentDivider = Color(0xFF555555), // @color/dark_story_comment_divider
+        delimiter = Gray46,
+        itemBackground = Color(0xFF444444), // @color/dark_item_background
+        itemBackgroundDarkAlt = Color(0xFF444444),
         chipContainer = Color(0xFF757575), // @color/tag_bg_dark
         chipLabel = Color(0xFFE0E0DE), // @color/tag_gray
         buttonText = Color(0xFFBFBFBF), // @color/button_text_dark ~ gray75
-        buttonBackground = Gray20, // @color/col_button_background_dark
-        shareBarBackground = Color(0xFF303030), // @color/dark_share_bar_background
+        buttonBackground = Gray30, // @color/col_button_background_dark
+        shareBarBackground = Color(0xFF555555), // @color/dark_share_bar_background
         shareBarText = Gray55,
-        snackbarContainer = Gray13, // materialSnackBarTheme.dark
+        snackbarContainer = Gray20, // materialSnackBarTheme.dark #333333
         overlayBg = Color(0xAA777777),
     )
 

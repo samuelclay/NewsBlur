@@ -280,7 +280,6 @@ def EmailFeedLimitNotifications():
 @app.task(name="refund-unredeemed-gifts")
 def RefundUnredeemedGifts():
     import stripe
-
     from django.conf import settings
 
     stripe.api_key = settings.STRIPE_SECRET
@@ -306,9 +305,7 @@ def RefundUnredeemedGifts():
                 % (gift.gift_code, gift.stripe_payment_intent_id, refund.id)
             )
         except Exception as e:
-            logging.debug(
-                " ---> Failed to auto-refund gift %s: %s" % (gift.gift_code, e)
-            )
+            logging.debug(" ---> Failed to auto-refund gift %s: %s" % (gift.gift_code, e))
 
 
 @app.task(name="email-referral-credit")

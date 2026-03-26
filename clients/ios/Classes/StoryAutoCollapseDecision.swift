@@ -372,9 +372,10 @@ public struct StoryAutoCollapseDecision {
     public static func resolvedShouldCollapse(
         baseShouldCollapse: Bool,
         fullscreenSidebarPresentation: FullscreenSidebarPresentation,
-        usesNativeFullscreenSidebar: Bool
+        usesNativeFullscreenSidebar: Bool,
+        isTemporaryFullScreen: Bool
     ) -> Bool {
-        if usesNativeFullscreenSidebar {
+        if usesNativeFullscreenSidebar || isTemporaryFullScreen {
             return true
         }
 

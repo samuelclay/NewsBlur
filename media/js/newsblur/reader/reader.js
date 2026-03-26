@@ -2325,7 +2325,7 @@
                 }
             }
 
-            if (!data.enabled && !all_briefings.length) {
+            if (!data.enabled) {
                 // reader.js: Show full-pane onboarding for users who haven't opted in
                 if (this.briefing_onboarding_view) {
                     this.briefing_onboarding_view.close();
