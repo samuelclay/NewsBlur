@@ -951,8 +951,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     preserve_classifier_color: function (classifier_type, value, score) {
         var $tag;
         this.$('.NB-feed-story-' + classifier_type).each(function () {
-            // Use html() for tags to match HTML entities, text() for authors
-            var el_value = classifier_type === 'tag' ? _.string.trim($(this).html()) : _.string.trim($(this).text());
+            // Clone and strip icons before comparing value
+            var $clean = $(this).clone();
+            $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+            var el_value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
             if (el_value == value) {
                 $tag = $(this);
                 return false;
@@ -961,6 +963,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!$tag) return;
         $tag.removeClass('NB-score-now-1')
             .removeClass('NB-score-now--1')
+            .removeClass('NB-score-now--2')
             .removeClass('NB-score-now-0')
             .addClass('NB-score-now-' + score)
             .one('mouseleave', function () {
@@ -1787,9 +1790,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     save_classifier: function (e) {
         var $tag = $(e.currentTarget);
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
-        // Use innerHTML for tags to preserve HTML entities that match the classifier keys
-        var value = classifier_type === 'tag' ? _.string.trim($tag.html()) : _.string.trim($tag.text());
-        var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
+        // Clone and strip score icons before reading value
+        var $clean = $tag.clone();
+        $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+        var value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
+        // Cycle: +1 → -1, -1 → 0, -2 → 0, neutral → +1 (skip super downvote in inline cycle)
+        var score = $tag.hasClass('NB-score-1') ? -1 : ($tag.hasClass('NB-score--1') || $tag.hasClass('NB-score--2')) ? 0 : 1;
         var feed_id = this.model.get('story_feed_id');
         var data = {
             'feed_id': feed_id
