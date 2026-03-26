@@ -1177,6 +1177,22 @@ class Test_SuperDownvote(TransactionTestCase):
         )
         self.assertLessEqual(score, -2)
 
+    def test_apply_classifier_tags_super_downvote_beats_positive_tag(self):
+        """Super downvote tag (-2) wins even when another tag is positive (+1)."""
+        tag_like = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="tech", score=1, creation_date=datetime.datetime.now(),
+        )
+        tag_super = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="python", score=-2, creation_date=datetime.datetime.now(),
+        )
+        result = apply_classifier_tags([tag_like, tag_super], self.story)
+        self.assertEqual(result, -2)
+        # Also test reverse order
+        result = apply_classifier_tags([tag_super, tag_like], self.story)
+        self.assertEqual(result, -2)
+
     def test_compute_story_score_positive_beats_regular_negative(self):
         """Positive (+1) still beats regular negative (-1)."""
         title_like = MClassifierTitle.objects.create(
