@@ -26,30 +26,11 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
     },
 
     render: function () {
-        // Inactive classifiers (not liked) show an explanatory message instead of controls
-        if (this.options.inactive) {
-            var $content = $.make('div', { className: 'NB-classifier-notif-controls NB-notif-inactive' }, [
-                $.make('div', { className: 'NB-classifier-notif-header' }, [
-                    $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
-                ]),
-                $.make('div', { className: 'NB-classifier-notif-inactive-msg' },
-                    'Only applies to liked classifiers')
-            ]);
-            this.$el.html($content);
-            return this;
-        }
-
         var is_archive = NEWSBLUR.Globals.is_archive;
-        var $header_items = [
-            $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
-        ];
-        if (!is_archive) {
-            $header_items.push(
-                $.make('span', { className: 'NB-classifier-notif-premium' }, 'Premium Archive')
-            );
-        }
         var $content = $.make('div', { className: 'NB-classifier-notif-controls' + (!is_archive ? ' NB-notif-gated' : '') }, [
-            $.make('div', { className: 'NB-classifier-notif-header' }, $header_items),
+            $.make('div', { className: 'NB-classifier-notif-header' }, [
+                $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
+            ]),
             $.make('ul', { className: 'segmented-control NB-classifier-notif-types' }, [
                 $.make('li', {
                     className: 'NB-classifier-notif-option NB-classifier-notif-email' +
@@ -89,46 +70,75 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
 
     toggle_type: function (type) {
         if (!NEWSBLUR.Globals.is_archive) {
-            // Flash the premium badge to signal "denied"
-            var $premium = this.$('.NB-classifier-notif-premium');
-            $premium.removeClass('NB-flash');
-            $premium[0].offsetWidth; // force reflow
-            $premium.addClass('NB-flash');
-            setTimeout(function () { $premium.removeClass('NB-flash'); }, 800);
+            var $bell = this.options.$bell;
+            if ($bell) {
+                // 1. Shake the bell to signal "denied"
+                $bell.removeClass('NB-shake');
+                $bell[0].offsetWidth;
+                $bell.addClass('NB-shake');
+                setTimeout(function () { $bell.removeClass('NB-shake'); }, 500);
+
+                // 2. Show a brief "Requires Premium Archive" tooltip above the bell
+                $('.NB-scope-tooltip').remove();
+                var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
+                $('body').append($tip);
+                var tip_rect = $bell[0].getBoundingClientRect();
+                $tip.css({
+                    top: tip_rect.top - $tip.outerHeight() - 6,
+                    left: tip_rect.left + tip_rect.width / 2 - $tip.outerWidth() / 2
+                });
+                setTimeout(function () { $tip.fadeOut(300, function () { $tip.remove(); }); }, 1500);
+
+                // 3. Animate in the notification notice in the section header
+                var $section = $bell.closest('.NB-fieldset');
+                var $notice = $section.find('.NB-classifier-notif-notice');
+                if ($notice.length && !$notice.hasClass('NB-visible')) {
+                    $notice.removeClass('NB-fading');
+                    $notice[0].offsetWidth;
+                    $notice.addClass('NB-visible');
+                }
+            }
             return;
         }
+
         this.channels[type] = !this.channels[type];
         var func = this.channels[type] ? 'addClass' : 'removeClass';
         this.$('.NB-classifier-notif-' + type)[func]('NB-active');
-        this.save();
-    },
 
-    save: function () {
+        // Build current notification types list
         var notification_types = [];
-        _.each(this.channels, function (active, type) {
-            if (active) notification_types.push(type);
+        _.each(this.channels, function (active, t) {
+            if (active) notification_types.push(t);
         });
 
-        var data = {
-            classifier_type: this.options.classifier_type,
-            classifier_value: this.options.classifier_value,
-            scope: this.options.scope,
-            feed_id: this.options.feed_id,
-            folder_name: this.options.folder_name || '',
-            notification_types: notification_types
-        };
+        // Store on bell data for deferred save
+        var $bell = this.options.$bell;
+        if ($bell) {
+            $bell.data('notification-types', notification_types);
+            this.update_bell_display(notification_types);
 
-        var self = this;
-        NEWSBLUR.assets.set_classifier_notification(data, function (resp) {
-            // Update the cached classifier notifications on the trainer
-            if (resp && resp.classifier_notifications && self.options.trainer) {
-                self.options.trainer.classifier_notifications = resp.classifier_notifications;
+            // Mark the parent classifier as changed if notification types differ from original
+            var $classifier = $bell.closest('.NB-classifier');
+            var original_types = ($bell.data('original-notification-types') || []).slice().sort().join(',');
+            var current_types = notification_types.slice().sort().join(',');
+            var original_state = $classifier.data('original-state') || 'neutral';
+            var current_state = $classifier.hasClass('NB-classifier-like') ? 'like' :
+                ($classifier.hasClass('NB-classifier-super-dislike') ? 'super_dislike' :
+                ($classifier.hasClass('NB-classifier-dislike') ? 'dislike' : 'neutral'));
+            var original_scope = $classifier.data('original-scope') || 'feed';
+            var current_scope = $classifier.data('scope') || 'feed';
+
+            if (current_types !== original_types || current_state !== original_state || current_scope !== original_scope) {
+                $classifier.addClass('NB-classifier-changed');
+            } else {
+                $classifier.removeClass('NB-classifier-changed');
             }
-            // Update the bell icon on the pill
-            if (self.options.$bell) {
-                self.update_bell_display(notification_types);
+
+            // Update the save button
+            if (this.options.trainer) {
+                this.options.trainer.update_save_button();
             }
-        });
+        }
     },
 
     update_bell_display: function (notification_types) {

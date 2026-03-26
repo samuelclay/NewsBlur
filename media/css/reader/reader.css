@@ -13904,14 +13904,16 @@ h5.NB-classifier-section-header {
 /* Archive notice - always visible for non-archive users */
 .NB-classifier-archive-notice,
 .NB-classifier-pro-notice,
-.NB-classifier-scope-notice {
+.NB-classifier-scope-notice,
+.NB-classifier-notif-notice {
     color: #807060;
     white-space: nowrap;
 }
 
 .NB-classifier-archive-notice a,
 .NB-classifier-pro-notice a,
-.NB-classifier-scope-notice a {
+.NB-classifier-scope-notice a,
+.NB-classifier-notif-notice a {
     color: #d97706;
     font-weight: 600;
     text-decoration: none;
@@ -13919,7 +13921,8 @@ h5.NB-classifier-section-header {
 
 .NB-classifier-archive-notice a:hover,
 .NB-classifier-pro-notice a:hover,
-.NB-classifier-scope-notice a:hover {
+.NB-classifier-scope-notice a:hover,
+.NB-classifier-notif-notice a:hover {
     text-decoration: underline;
 }
 
@@ -13932,7 +13935,7 @@ h5.NB-classifier-section-header {
     display: block;
 }
 
-/* Scope notice - hidden by default, animated in when non-Pro clicks scope */
+/* Scope notice - hidden by default, animated in when non-archive clicks scope */
 .NB-classifier-scope-notice {
     display: none;
     opacity: 0;
@@ -13940,6 +13943,18 @@ h5.NB-classifier-section-header {
 }
 
 .NB-classifier-scope-notice.NB-visible {
+    display: block;
+    animation: scope-notice-in 0.3s ease-out forwards;
+}
+
+/* Notification notice - hidden by default, animated in when non-archive clicks bell */
+.NB-classifier-notif-notice {
+    display: none;
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.NB-classifier-notif-notice.NB-visible {
     display: block;
     animation: scope-notice-in 0.3s ease-out forwards;
 }
@@ -13956,9 +13971,10 @@ h5.NB-classifier-section-header {
     }
 }
 
-/* Shake animation on type badge when scope change is denied */
+/* Shake animation on type badge when scope change or notification is denied */
 .NB-classifier-type-badge.NB-shake,
-.NB-classifier-scope-badge.NB-shake {
+.NB-classifier-scope-badge.NB-shake,
+.NB-classifier-notification-bell.NB-shake {
     animation: badge-shake 0.4s ease-in-out;
 }
 

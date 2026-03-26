@@ -719,6 +719,10 @@ var classifier_prototype = {
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
+                        'Notifications require ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
             ]),
@@ -768,6 +772,10 @@ var classifier_prototype = {
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
+                        'Notifications require ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
@@ -827,6 +835,10 @@ var classifier_prototype = {
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
+                        'Notifications require ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
@@ -989,6 +1001,10 @@ var classifier_prototype = {
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
+                        'Notifications require ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
             ]),
@@ -1051,6 +1067,10 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
+                        'Notifications require ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
@@ -2351,6 +2371,8 @@ var classifier_prototype = {
         $bell.data('scope', scope);
         $bell.data('folder-name', folder_name || '');
         $bell.data('score', score);
+        $bell.data('notification-types', active_types.slice());
+        $bell.data('original-notification-types', active_types.slice());
 
         // Bind hover/click for popover
         var self = this;
@@ -2386,11 +2408,8 @@ var classifier_prototype = {
         var folder_name = $bell.data('folder-name');
         var feed_id = this.feed_id;
 
-        var bell_score = $bell.data('score');
-        var is_inactive = bell_score != null && bell_score < 1;
-
         // For feed-type classifiers, use existing FeedNotificationView in popover mode
-        if (classifier_type === 'feed' && !is_inactive) {
+        if (classifier_type === 'feed') {
             var feed = this.model.get_feed(classifier_value);
             if (feed) {
                 var feed_view = new NEWSBLUR.Views.FeedNotificationView({
@@ -2446,9 +2465,8 @@ var classifier_prototype = {
         }
 
         // Non-feed: use the ClassifierNotificationPopover
-        var notif_key = classifier_type + ':' + classifier_value + ':' + scope + ':' + (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
-        var notif = this.classifier_notifications && this.classifier_notifications[notif_key];
-        var active_types = (notif && notif.notification_types) || [];
+        // Read current notification types from bell data (deferred save model)
+        var active_types = $bell.data('notification-types') || [];
 
         var popover = new NEWSBLUR.Views.ClassifierNotificationPopover({
             classifier_type: classifier_type,
@@ -2460,7 +2478,6 @@ var classifier_prototype = {
             is_web: _.contains(active_types, 'web'),
             is_ios: _.contains(active_types, 'ios'),
             is_android: _.contains(active_types, 'android'),
-            inactive: is_inactive,
             $bell: $bell,
             trainer: this
         });
@@ -2747,13 +2764,20 @@ var classifier_prototype = {
             $toggle.css('transform', '');
         }, 150);
 
-        // Compare scope + like/dislike to original state to determine if changed
+        // Compare scope + like/dislike + notifications to original state to determine if changed
         var original_scope = $cl.data('original-scope') || 'feed';
         var current_state = $cl.hasClass('NB-classifier-like') ? 'like' :
             ($cl.hasClass('NB-classifier-dislike') ? 'dislike' : 'neutral');
         var original_state = $cl.data('original-state') || 'neutral';
+        var $bell = $cl.find('.NB-classifier-notification-bell');
+        var notif_changed = false;
+        if ($bell.length) {
+            var current_notif = ($bell.data('notification-types') || []).slice().sort().join(',');
+            var original_notif = ($bell.data('original-notification-types') || []).slice().sort().join(',');
+            notif_changed = current_notif !== original_notif;
+        }
 
-        if (new_scope !== original_scope || current_state !== original_state) {
+        if (new_scope !== original_scope || current_state !== original_state || notif_changed) {
             $cl.addClass('NB-classifier-changed');
         } else {
             $cl.removeClass('NB-classifier-changed');
@@ -2851,11 +2875,18 @@ var classifier_prototype = {
             current_state = 'dislike';
         }
 
-        // Compare to original state (sentiment + scope) - only mark as changed if different
+        // Compare to original state (sentiment + scope + notifications) - only mark as changed if different
         var original_state = $classifier.data('original-state') || 'neutral';
         var current_scope = $classifier.data('scope') || 'feed';
         var original_scope = $classifier.data('original-scope') || 'feed';
-        if (current_state === original_state && current_scope === original_scope) {
+        var $bell = $classifier.find('.NB-classifier-notification-bell');
+        var notif_changed = false;
+        if ($bell.length) {
+            var current_notif = ($bell.data('notification-types') || []).slice().sort().join(',');
+            var original_notif = ($bell.data('original-notification-types') || []).slice().sort().join(',');
+            notif_changed = current_notif !== original_notif;
+        }
+        if (current_state === original_state && current_scope === original_scope && !notif_changed) {
             $classifier.removeClass('NB-classifier-changed');
         } else {
             $classifier.addClass('NB-classifier-changed');
@@ -3822,10 +3853,43 @@ var classifier_prototype = {
             }
         });
 
+        // Collect changed notification settings from bells to save after classifiers
+        var notif_saves = [];
+        $active_tab.find('.NB-classifier-notification-bell').each(function () {
+            var $bell = $(this);
+            var current_types = ($bell.data('notification-types') || []).slice().sort().join(',');
+            var original_types = ($bell.data('original-notification-types') || []).slice().sort().join(',');
+            if (current_types !== original_types) {
+                notif_saves.push({
+                    classifier_type: $bell.data('classifier-type'),
+                    classifier_value: $bell.data('classifier-value'),
+                    scope: $bell.data('scope'),
+                    feed_id: $bell.data('scope') === 'feed' ? self.feed_id : 0,
+                    folder_name: $bell.data('folder-name') || '',
+                    notification_types: $bell.data('notification-types') || []
+                });
+            }
+        });
+
         this.model.save_classifier(data, function () {
             // Save non-feed-scope classifiers with their individual scope
             _.each(scoped_saves, function (scoped_data) {
                 self.model.save_classifier(scoped_data);
+            });
+
+            // Save changed notification settings
+            _.each(notif_saves, function (notif_data) {
+                NEWSBLUR.assets.set_classifier_notification(notif_data, function (resp) {
+                    if (resp && resp.classifier_notifications) {
+                        self.classifier_notifications = resp.classifier_notifications;
+                    }
+                });
+            });
+
+            // Update original notification types to match saved state
+            $active_tab.find('.NB-classifier-notification-bell').each(function () {
+                var $bell = $(this);
+                $bell.data('original-notification-types', ($bell.data('notification-types') || []).slice());
             });
 
             // Clear changed markers only for the tab that was saved
@@ -3833,7 +3897,7 @@ var classifier_prototype = {
             self.update_save_button();
 
             if (!keep_modal_open) {
-                if (scoped_saves.length) {
+                if (scoped_saves.length || notif_saves.length) {
                     NEWSBLUR.reader.force_feeds_refresh();
                 } else {
                     NEWSBLUR.reader.feed_unread_count(feed_id);

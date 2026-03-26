@@ -3907,6 +3907,15 @@ a.mention, a.mention-group {
     color: #f59e0b;
 }
 
+/* Notification notice - dark mode */
+.NB-dark .NB-classifier-notif-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-notif-notice a {
+    color: #f59e0b;
+}
+
 /* ========================================== */
 /* = AI Content Filter (text) Dark Mode    = */
 /* ========================================== */
