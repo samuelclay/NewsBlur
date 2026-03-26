@@ -43,7 +43,7 @@ defaults
 frontend public
     bind :80
     bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem alpn h2,http/1.1
-    http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    http-response add-header Strict-Transport-Security max-age=31536000;\ includeSubDomains
     http-request set-header X-Request-Start %[date()]%[date_us()]
     option http-server-close
 
@@ -68,8 +68,7 @@ frontend public
     monitor fail if mx_mode
 
     # Redirect all HTTP traffic to HTTPS
-    acl is_root path /
-    redirect scheme https if is_root !{ ssl_fc }
+    redirect scheme https if !{ ssl_fc }
     
     use_backend node_socket if { path_beg /v3/socket.io/ }
     use_backend node_favicon if { path_beg /rss_feeds/icon/ }
