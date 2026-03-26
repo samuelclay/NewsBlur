@@ -2965,7 +2965,7 @@ var classifier_prototype = {
         var $text_input = $('.NB-classifier-text-input', this.$modal);
         var $text_placeholder = $('.NB-classifier-text-placeholder', this.$modal);
         var $text_classifier = $text_placeholder.parents('.NB-classifier').eq(0);
-        var $text_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
+        var $text_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike, .NB-classifier-input-super-dislike', $text_classifier);
         var $text_validation = $('.NB-classifier-text-validation', this.$modal);
 
         var update_text_classifier = function () {
@@ -3056,7 +3056,7 @@ var classifier_prototype = {
         var $title_input = $('.NB-classifier-title-input', this.$modal);
         var $title_placeholder = $('.NB-classifier-title-placeholder', this.$modal);
         var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
-        var $title_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
+        var $title_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike, .NB-classifier-input-super-dislike', $title_classifier);
         var $title_validation = $('.NB-classifier-title-validation', this.$modal);
 
         var last_title_selection = '';
@@ -3140,7 +3140,7 @@ var classifier_prototype = {
             var $url_input = $('.NB-classifier-url-input', this.$modal);
             var $url_placeholder = $('.NB-classifier-url-placeholder', this.$modal);
             var $url_classifier = $url_placeholder.parents('.NB-classifier').eq(0);
-            var $url_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $url_classifier);
+            var $url_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike, .NB-classifier-input-super-dislike', $url_classifier);
             var $url_validation = $('.NB-classifier-url-validation', this.$modal);
 
             var last_url_selection = '';
