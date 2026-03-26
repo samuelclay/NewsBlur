@@ -1614,14 +1614,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this));
 
         // Apply text classifier highlights
+        var self = this;
         _.each(text_classifiers, _.bind(function (classifier_text) {
             var classifier_score = this.classifiers.texts[classifier_text];
             var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+            var icon_html = self.score_icon_html(classifier_score);
             $doc.mark(classifier_text, {
                 "className": className,
                 "separateWordSearch": false,
                 "acrossElements": true,
-                "caseSensitive": false
+                "caseSensitive": false,
+                "each": function (element) {
+                    if (icon_html) $(element).append(icon_html);
+                }
             });
         }, this));
 
@@ -1630,10 +1635,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             try {
                 var classifier_score = this.classifiers.text_regex[pattern];
                 var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                var icon_html = self.score_icon_html(classifier_score);
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
-                    "acrossElements": true
+                    "acrossElements": true,
+                    "each": function (element) {
+                        if (icon_html) $(element).append(icon_html);
+                    }
                 });
             } catch (e) {
                 console.log(['Invalid regex pattern for highlighting', pattern, e]);
@@ -1645,10 +1654,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             try {
                 var classifier_score = this.classifiers.regex[pattern];
                 var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                var icon_html = self.score_icon_html(classifier_score);
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
-                    "acrossElements": true
+                    "acrossElements": true,
+                    "each": function (element) {
+                        if (icon_html) $(element).append(icon_html);
+                    }
                 });
             } catch (e) {
                 console.log(['Invalid regex pattern for highlighting', pattern, e]);
