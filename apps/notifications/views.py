@@ -91,6 +91,7 @@ def set_classifier_notification(request):
     scope = request.POST.get("scope", "feed")
     feed_id = int(request.POST.get("feed_id", 0))
     folder_name = request.POST.get("folder_name", "")
+    is_regex = request.POST.get("is_regex", "") in ("true", "1", "True")
     notification_types = request.POST.getlist("notification_types") or request.POST.getlist(
         "notification_types[]"
     )
@@ -101,11 +102,16 @@ def set_classifier_notification(request):
     if classifier_type not in ("title", "author", "tag", "text", "url"):
         return {"code": -1, "message": "Invalid classifier_type"}
 
+    # is_regex only applies to title, text, url classifiers
+    if is_regex and classifier_type not in ("title", "text", "url"):
+        is_regex = False
+
     try:
         notif = MUserClassifierNotification.objects.get(
             user_id=user.pk,
             classifier_type=classifier_type,
             classifier_value=classifier_value,
+            is_regex=is_regex,
             scope=scope,
             feed_id=feed_id,
             folder_name=folder_name,
@@ -115,6 +121,7 @@ def set_classifier_notification(request):
             user_id=user.pk,
             classifier_type=classifier_type,
             classifier_value=classifier_value,
+            is_regex=is_regex,
             scope=scope,
             feed_id=feed_id,
             folder_name=folder_name,

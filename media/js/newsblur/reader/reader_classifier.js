@@ -2319,10 +2319,11 @@ var classifier_prototype = {
         });
     },
 
-    make_notification_bell: function (classifier_type, classifier_value, scope, folder_name, score) {
+    make_notification_bell: function (classifier_type, classifier_value, scope, folder_name, score, is_regex) {
         var feed_id = this.feed_id;
         var has_channels = false;
         var active_types = [];
+        is_regex = is_regex || false;
 
         if (classifier_type === 'feed') {
             // Feed-type: read from existing feed notification data
@@ -2333,7 +2334,8 @@ var classifier_prototype = {
             }
         } else {
             // Non-feed: read from classifier notifications cache
-            var notif_key = classifier_type + ':' + classifier_value + ':' + scope + ':' + (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
+            var regex_key = is_regex ? 'regex' : '';
+            var notif_key = classifier_type + ':' + classifier_value + ':' + regex_key + ':' + scope + ':' + (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
             var notif = this.classifier_notifications && this.classifier_notifications[notif_key];
             if (notif) {
                 active_types = notif.notification_types || [];
@@ -2368,6 +2370,7 @@ var classifier_prototype = {
         // Store data for popover
         $bell.data('classifier-type', classifier_type);
         $bell.data('classifier-value', classifier_value);
+        $bell.data('is-regex', is_regex);
         $bell.data('scope', scope);
         $bell.data('folder-name', folder_name || '');
         $bell.data('score', score);
@@ -2471,6 +2474,7 @@ var classifier_prototype = {
         var popover = new NEWSBLUR.Views.ClassifierNotificationPopover({
             classifier_type: classifier_type,
             classifier_value: classifier_value,
+            is_regex: $bell.data('is-regex') || false,
             scope: scope,
             feed_id: scope === 'feed' ? feed_id : 0,
             folder_name: folder_name || '',
@@ -2611,7 +2615,7 @@ var classifier_prototype = {
                 (classifier_type !== 'feed' && $.make('div', { className: 'NB-classifier-icon-super-dislike' })),
                 $.make('label', [
                     $scope_badge,
-                    this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score),
+                    this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score, is_regex),
                     $type_label,
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (classifier_type === 'feed' && $.favicon_el(classifier)),
@@ -3863,6 +3867,7 @@ var classifier_prototype = {
                 notif_saves.push({
                     classifier_type: $bell.data('classifier-type'),
                     classifier_value: $bell.data('classifier-value'),
+                    is_regex: $bell.data('is-regex') || false,
                     scope: $bell.data('scope'),
                     feed_id: $bell.data('scope') === 'feed' ? self.feed_id : 0,
                     folder_name: $bell.data('folder-name') || '',
