@@ -62,6 +62,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) NSUInteger deferredLoadStoryCount;
 @property (nonatomic, strong) NSTimer *markStoryReadTimer;
 @property (nonatomic, strong) UIPanGestureRecognizer *feedListSwipeGesture;
+@property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *feedListEdgeSwipeGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
 @property (nonatomic) CGFloat feedListRevealWidth;
 @property (nonatomic) BOOL feedListRevealActive;
@@ -276,7 +277,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         return YES;
     }
 
-    if (gestureRecognizer == self.feedListSwipeGesture || gestureRecognizer == self.fullScreenPopGesture) {
+    if (gestureRecognizer == self.feedListSwipeGesture ||
+        gestureRecognizer == self.feedListEdgeSwipeGesture ||
+        gestureRecognizer == self.fullScreenPopGesture) {
         return NO;
     }
 
@@ -331,13 +334,24 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer == self.feedListSwipeGesture || gestureRecognizer == self.fullScreenPopGesture) {
-        if (gestureRecognizer == self.feedListSwipeGesture) {
+    if (gestureRecognizer == self.feedListSwipeGesture ||
+        gestureRecognizer == self.feedListEdgeSwipeGesture ||
+        gestureRecognizer == self.fullScreenPopGesture) {
+        if (gestureRecognizer == self.feedListSwipeGesture || gestureRecognizer == self.feedListEdgeSwipeGesture) {
             for (UITableViewCell *cell in self.storyTitlesTable.visibleCells) {
                 if (cell.isEditing) {
                     return NO;
                 }
             }
+
+            if (gestureRecognizer == self.feedListEdgeSwipeGesture) {
+                BOOL shouldBeginLeadingEdgeReveal = [FeedSidebarRevealGestureDecision shouldBeginLeadingEdgeFeedsRevealWithPresentation:appDelegate.detailViewController.fullscreenSidebarPresentation
+                                                                                                                       isPhoneOrCompact:self.isPhoneOrCompact];
+                if (!shouldBeginLeadingEdgeReveal) {
+                    return NO;
+                }
+            }
+
             UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
             CGPoint velocity = [pan velocityInView:self.view];
             if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
@@ -803,18 +817,35 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 
     if (self.feedListSwipeGesture != nil) {
-        return;
+        if (self.feedListEdgeSwipeGesture != nil || self.isMac) {
+            return;
+        }
     }
 
-    self.feedListSwipeGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFeedListSwipe:)];
-    self.feedListSwipeGesture.delegate = self;
-    self.feedListSwipeGesture.maximumNumberOfTouches = 1;
+    if (self.feedListSwipeGesture == nil) {
+        self.feedListSwipeGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFeedListSwipe:)];
+        self.feedListSwipeGesture.delegate = self;
+        self.feedListSwipeGesture.maximumNumberOfTouches = 1;
 #if TARGET_OS_MACCATALYST
-    // On Mac, trackpad two-finger swipes generate scroll events, not direct touch events.
-    // Allow the pan gesture to respond to trackpad scroll gestures.
-    self.feedListSwipeGesture.allowedScrollTypesMask = UIScrollTypeMaskAll;
+        // On Mac, trackpad two-finger swipes generate scroll events, not direct touch events.
+        // Allow the pan gesture to respond to trackpad scroll gestures.
+        self.feedListSwipeGesture.allowedScrollTypesMask = UIScrollTypeMaskAll;
 #endif
-    [self.view addGestureRecognizer:self.feedListSwipeGesture];
+        [self.view addGestureRecognizer:self.feedListSwipeGesture];
+    }
+
+    if (!self.isMac && self.feedListEdgeSwipeGesture == nil) {
+        self.feedListEdgeSwipeGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
+                                                                                           action:@selector(handleFeedListSwipe:)];
+        self.feedListEdgeSwipeGesture.edges = UIRectEdgeLeft;
+        self.feedListEdgeSwipeGesture.delegate = self;
+        self.feedListEdgeSwipeGesture.maximumNumberOfTouches = 1;
+        [self.view addGestureRecognizer:self.feedListEdgeSwipeGesture];
+
+        if (self.storyTitlesTable.panGestureRecognizer) {
+            [self.storyTitlesTable.panGestureRecognizer requireGestureRecognizerToFail:self.feedListEdgeSwipeGesture];
+        }
+    }
 }
 
 - (void)configureFullScreenPopGesture {

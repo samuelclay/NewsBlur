@@ -395,6 +395,33 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_feed_list_leading_edge_reveal_begins_when_story_titles_are_visible_on_ipad() {
+        XCTAssertTrue(
+            FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
+                presentation: .storyTitles,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertTrue(
+            FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
+                presentation: .feeds,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
+                presentation: .fullscreen,
+                isPhoneOrCompact: false
+            )
+        )
+        XCTAssertFalse(
+            FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
+                presentation: .storyTitles,
+                isPhoneOrCompact: true
+            )
+        )
+    }
+
     func test_story_titles_header_shows_fullscreen_button_in_portrait_when_titles_are_visible() {
         XCTAssertTrue(
             StoryTitlesHeaderButtonDecision.showsFullscreenButton(

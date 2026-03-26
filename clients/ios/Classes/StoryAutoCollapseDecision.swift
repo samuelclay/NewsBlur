@@ -222,6 +222,19 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class FeedSidebarRevealGestureDecision: NSObject {
+    public class func shouldBeginLeadingEdgeFeedsReveal(
+        presentation: FullscreenSidebarPresentation,
+        isPhoneOrCompact: Bool
+    ) -> Bool {
+        guard !isPhoneOrCompact else {
+            return false
+        }
+
+        return presentation != .fullscreen
+    }
+}
+
 @objcMembers public final class StoryTitlesHeaderButtonDecision: NSObject {
     public class func showsFullscreenButton(
         for presentation: FullscreenSidebarPresentation,
