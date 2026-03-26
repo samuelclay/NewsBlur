@@ -231,7 +231,11 @@ public enum StoryAutoCollapseBehavior: String {
             return false
         }
 
-        return presentation != .fullscreen
+        // The feed detail controller only receives this edge gesture while the
+        // story titles pane is actually on screen, so cached presentation
+        // state should not block the initial reveal gesture.
+        let _ = presentation
+        return true
     }
 }
 

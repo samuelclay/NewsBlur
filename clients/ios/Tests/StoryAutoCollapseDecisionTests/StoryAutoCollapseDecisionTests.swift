@@ -395,7 +395,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_feed_list_leading_edge_reveal_begins_when_story_titles_are_visible_on_ipad() {
+    func test_feed_list_leading_edge_reveal_does_not_require_cached_presentation_to_be_primed() {
         XCTAssertTrue(
             FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
                 presentation: .storyTitles,
@@ -408,7 +408,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isPhoneOrCompact: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             FeedSidebarRevealGestureDecision.shouldBeginLeadingEdgeFeedsReveal(
                 presentation: .fullscreen,
                 isPhoneOrCompact: false
