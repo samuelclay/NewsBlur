@@ -12936,6 +12936,14 @@ form.opml_import_form input {
     100% { opacity: 0.8; color: #d97706; }
 }
 
+/* Inactive state: classifier is not liked, show explanatory message */
+.NB-classifier-notif-inactive-msg {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    padding: 2px 0;
+}
+
 /* Gated state: dim the toggles to signal they're not clickable */
 .NB-notif-gated .NB-classifier-notif-option {
     opacity: 0.4;
@@ -12951,6 +12959,34 @@ form.opml_import_form input {
     padding: 1px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.08);
+}
+
+/* Override segmented-control base styles inside the dark popover */
+.NB-classifier-notification-popover .segmented-control {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-classifier-notification-popover .segmented-control:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-classifier-notification-popover .segmented-control li {
+    color: rgba(255, 255, 255, 0.55);
+    text-shadow: none;
+}
+
+.NB-classifier-notification-popover .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-classifier-notification-popover .segmented-control li.NB-active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.NB-classifier-notification-popover .segmented-control:hover li.NB-active {
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
 .NB-classifier-notification-popover .NB-classifier-notif-option,

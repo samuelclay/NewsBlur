@@ -26,6 +26,19 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
     },
 
     render: function () {
+        // Inactive classifiers (not liked) show an explanatory message instead of controls
+        if (this.options.inactive) {
+            var $content = $.make('div', { className: 'NB-classifier-notif-controls NB-notif-inactive' }, [
+                $.make('div', { className: 'NB-classifier-notif-header' }, [
+                    $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
+                ]),
+                $.make('div', { className: 'NB-classifier-notif-inactive-msg' },
+                    'Only applies to liked classifiers')
+            ]);
+            this.$el.html($content);
+            return this;
+        }
+
         var is_archive = NEWSBLUR.Globals.is_archive;
         var $header_items = [
             $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
