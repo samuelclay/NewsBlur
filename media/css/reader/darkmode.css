@@ -3609,6 +3609,14 @@ a.mention, a.mention-group {
     color: #999;
 }
 
+.NB-dark .NB-classifier-scope-icon.NB-scope-folder {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-classifier-scope-icon.NB-scope-global {
+    color: #A78BFA;
+}
+
 .NB-dark .NB-scope-toggle-feed.NB-active {
     color: #aaa;
 }
