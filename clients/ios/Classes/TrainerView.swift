@@ -24,10 +24,21 @@ struct TrainerView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
-                .font(font(named: "WhitneySSm-Medium", size: 16))
-                .foregroundColor(textColor)
-                .padding()
+            VStack(alignment: .leading, spacing: 4) {
+                Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
+                    .font(font(named: "WhitneySSm-Medium", size: 16))
+                    .foregroundColor(textColor)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Thumbs up beats any number of thumbs down.")
+                        .font(font(named: "WhitneySSm-Medium", size: 11))
+                        .foregroundColor(.secondary)
+                    Text("Super thumbs down beats any number of thumbs up. (long press)")
+                        .font(font(named: "WhitneySSm-Medium", size: 11))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
 
             List {
                 Section(content: {
@@ -83,6 +94,14 @@ struct TrainerView: View {
                                 })
                             })
                             .buttonStyle(BorderlessButtonStyle())
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    let newScore: Int = title.score == .superDislike ? 0 : -2
+                                    cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: newScore, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName)
+                                } label: {
+                                    Label(title.score == .superDislike ? "Remove Super Thumbs Down" : "Super Thumbs Down", systemImage: "hand.thumbsdown.fill")
+                                }
+                            }
                             .padding([.top, .bottom], 5)
                         }
 
@@ -119,6 +138,14 @@ struct TrainerView: View {
                             })
                         })
                         .buttonStyle(BorderlessButtonStyle())
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                let newScore: Int = author.score == .superDislike ? 0 : -2
+                                cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: newScore, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName)
+                            } label: {
+                                Label(author.score == .superDislike ? "Remove Super Thumbs Down" : "Super Thumbs Down", systemImage: "hand.thumbsdown.fill")
+                            }
+                        }
                         .padding([.top, .bottom], 5)
                     }
                     .listRowBackground(rowBackground)
@@ -136,6 +163,14 @@ struct TrainerView: View {
                             })
                         })
                         .buttonStyle(BorderlessButtonStyle())
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                let newScore: Int = tag.score == .superDislike ? 0 : -2
+                                cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: newScore, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName)
+                            } label: {
+                                Label(tag.score == .superDislike ? "Remove Super Thumbs Down" : "Super Thumbs Down", systemImage: "hand.thumbsdown.fill")
+                            }
+                        }
                         .padding([.top, .bottom], 5)
                     }
                     .listRowBackground(rowBackground)

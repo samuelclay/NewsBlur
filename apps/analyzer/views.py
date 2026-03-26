@@ -127,8 +127,10 @@ def save_classifier(request):
         classifiers = {
             "like_" + content_type: (1, False),
             "dislike_" + content_type: (-1, False),
+            "super_dislike_" + content_type: (-2, False),
             "remove_like_" + content_type: (0, False),
             "remove_dislike_" + content_type: (0, False),
+            "remove_super_dislike_" + content_type: (0, False),
         }
         # Add regex classifier for title, text, and url types
         if content_type in ("title", "text", "url"):
@@ -136,8 +138,10 @@ def save_classifier(request):
                 {
                     "like_" + content_type + "_regex": (1, True),
                     "dislike_" + content_type + "_regex": (-1, True),
+                    "super_dislike_" + content_type + "_regex": (-2, True),
                     "remove_like_" + content_type + "_regex": (0, True),
                     "remove_dislike_" + content_type + "_regex": (0, True),
+                    "remove_super_dislike_" + content_type + "_regex": (0, True),
                 }
             )
 

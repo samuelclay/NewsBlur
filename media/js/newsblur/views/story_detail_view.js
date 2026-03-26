@@ -40,6 +40,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-train-selection": "train_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
+        "click .NB-classifier-highlight-super-negative": "show_classifier_highlight_menu",
         "click .NB-search-highlight": "show_search_highlight_menu",
         "click .NB-search-site-selection": "search_selected_text_site",
         "click .NB-search-folder-selection": "search_selected_text_folder",
@@ -248,6 +249,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             authors_score: this.classifiers &&
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
+            score_icon_html: this.score_icon_html,
             prompt_classifiers: this.model.get('prompt_classifiers') || [],
             url_match: this.get_url_match(),
             options: this.options,
@@ -361,7 +363,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-feed-story-author-wrapper">\
                             <span class="NB-middot">&middot;</span>\
                             <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                                <%= story.story_authors() %>\
+                                <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -370,7 +372,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(story.get("story_tags"), function(tag) { %>\
                                 <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                    <%= tag %>\
+                                    <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
                                 </div>\
                             <% }) %>\
                         </div>\
@@ -509,16 +511,29 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 NEWSBLUR.reader.flags['social_view']);
     },
 
+    score_icon_html: function (score) {
+        if (score >= 1) {
+            return '<img src="/media/embed/icons/nouns/thumbs-up.svg" class="NB-score-icon NB-score-icon-like" />';
+        } else if (score <= -2) {
+            return '<span class="NB-score-icon-double"><img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-super-dislike NB-score-icon-super-dislike-back" /><img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-super-dislike" /></span>';
+        } else if (score <= -1) {
+            return '<img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-dislike" />';
+        }
+        return '';
+    },
+
     make_story_title: function (story) {
         story = story || this.model;
         var title = story.get('story_title');
         var classifiers = NEWSBLUR.assets.classifiers[story.get('story_feed_id')];
         var feed_titles = classifiers && classifiers.titles || [];
+        var self = this;
 
         _.each(feed_titles, function (score, title_classifier) {
             if (!title_classifier || title.toLowerCase().indexOf(title_classifier.toLowerCase()) != -1) {
                 var pos = title.toLowerCase().indexOf(title_classifier.toLowerCase());
-                title = title.substr(0, pos) + '<span class="NB-score-' + score + '">' + title.substr(pos, title_classifier.length) + '</span>' + title.substr(pos + title_classifier.length);
+                var icon = self.score_icon_html(score);
+                title = title.substr(0, pos) + '<span class="NB-score-' + score + '">' + title.substr(pos, title_classifier.length) + icon + '</span>' + title.substr(pos + title_classifier.length);
             }
         });
 
@@ -936,8 +951,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     preserve_classifier_color: function (classifier_type, value, score) {
         var $tag;
         this.$('.NB-feed-story-' + classifier_type).each(function () {
-            // Use html() for tags to match HTML entities, text() for authors
-            var el_value = classifier_type === 'tag' ? _.string.trim($(this).html()) : _.string.trim($(this).text());
+            // Clone and strip icons before comparing value
+            var $clean = $(this).clone();
+            $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+            var el_value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
             if (el_value == value) {
                 $tag = $(this);
                 return false;
@@ -946,6 +963,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!$tag) return;
         $tag.removeClass('NB-score-now-1')
             .removeClass('NB-score-now--1')
+            .removeClass('NB-score-now--2')
             .removeClass('NB-score-now-0')
             .addClass('NB-score-now-' + score)
             .one('mouseleave', function () {
@@ -1223,7 +1241,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             return;
         }
         if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
-            $(e.target).hasClass("NB-classifier-highlight-negative")) {
+            $(e.target).hasClass("NB-classifier-highlight-negative") ||
+            $(e.target).hasClass("NB-classifier-highlight-super-negative")) {
             // Let the click handler deal with classifier highlights
             return;
         }
@@ -1598,14 +1617,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this));
 
         // Apply text classifier highlights
+        var self = this;
         _.each(text_classifiers, _.bind(function (classifier_text) {
             var classifier_score = this.classifiers.texts[classifier_text];
-            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+            var icon_html = self.score_icon_html(classifier_score);
             $doc.mark(classifier_text, {
                 "className": className,
                 "separateWordSearch": false,
                 "acrossElements": true,
-                "caseSensitive": false
+                "caseSensitive": false,
+                "each": function (element) {
+                    if (icon_html) $(element).append(icon_html);
+                }
             });
         }, this));
 
@@ -1613,11 +1637,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         _.each(text_regex_classifiers, _.bind(function (pattern) {
             try {
                 var classifier_score = this.classifiers.text_regex[pattern];
-                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                var icon_html = self.score_icon_html(classifier_score);
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
-                    "acrossElements": true
+                    "acrossElements": true,
+                    "each": function (element) {
+                        if (icon_html) $(element).append(icon_html);
+                    }
                 });
             } catch (e) {
                 console.log(['Invalid regex pattern for highlighting', pattern, e]);
@@ -1628,11 +1656,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         _.each(legacy_regex_classifiers, _.bind(function (pattern) {
             try {
                 var classifier_score = this.classifiers.regex[pattern];
-                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                var icon_html = self.score_icon_html(classifier_score);
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
-                    "acrossElements": true
+                    "acrossElements": true,
+                    "each": function (element) {
+                        if (icon_html) $(element).append(icon_html);
+                    }
                 });
             } catch (e) {
                 console.log(['Invalid regex pattern for highlighting', pattern, e]);
@@ -1758,9 +1790,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     save_classifier: function (e) {
         var $tag = $(e.currentTarget);
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
-        // Use innerHTML for tags to preserve HTML entities that match the classifier keys
-        var value = classifier_type === 'tag' ? _.string.trim($tag.html()) : _.string.trim($tag.text());
-        var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
+        // Clone and strip score icons before reading value
+        var $clean = $tag.clone();
+        $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+        var value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
+        // Cycle: +1 → -1, -1 → 0, -2 → 0, neutral → +1 (skip super downvote in inline cycle)
+        var score = $tag.hasClass('NB-score-1') ? -1 : ($tag.hasClass('NB-score--1') || $tag.hasClass('NB-score--2')) ? 0 : 1;
         var feed_id = this.model.get('story_feed_id');
         var data = {
             'feed_id': feed_id

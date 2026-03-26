@@ -3497,7 +3497,8 @@ def paypal_signup(sender, **kwargs):
     if paypal_sub_id:
         user.profile.store_paypal_sub_id(paypal_sub_id)
     user.profile.setup_premium_history()
-    user.profile.cancel_premium_stripe()
+    if user.profile.active_provider != "stripe":
+        user.profile.cancel_premium_stripe()
 
 
 valid_ipn_received.connect(paypal_signup)
@@ -3678,8 +3679,16 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
             )
             EmailStaffNotification.delay(
                 event_type="gift_purchased",
-                subject="Gift purchased: %s bought %s gift ($%s)" % (user.username, tier_names.get(gift_tier, "Premium"), payment_amount),
-                body="%s purchased a %s gift for $%s. Gift code: %s\nGift URL: %s" % (user.username, tier_names.get(gift_tier, "Premium"), payment_amount, gift.gift_code, gift_url),
+                subject="Gift purchased: %s bought %s gift ($%s)"
+                % (user.username, tier_names.get(gift_tier, "Premium"), payment_amount),
+                body="%s purchased a %s gift for $%s. Gift code: %s\nGift URL: %s"
+                % (
+                    user.username,
+                    tier_names.get(gift_tier, "Premium"),
+                    payment_amount,
+                    gift.gift_code,
+                    gift_url,
+                ),
             )
         except User.DoesNotExist:
             logging.debug(" ---> Couldn't find user for gift checkout: %s" % newsblur_user_id)
@@ -3725,7 +3734,7 @@ def stripe_signup(sender, full_json, **kwargs):
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         # Prorate refund on old PayPal subscription before activating new tier
-        if profile.paypal_sub_id:
+        if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
         if plan_id == Profile.plan_to_stripe_price("premium"):
             profile.activate_premium()
@@ -3764,7 +3773,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
         )
         if active:
             # Prorate refund on old PayPal subscription before activating new tier
-            if profile.paypal_sub_id:
+            if profile.paypal_sub_id and profile.active_provider == "paypal":
                 profile.refund_prorated_paypal_for_provider_switch()
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
@@ -4240,8 +4249,10 @@ class MRedeemedCode(mongo.Document):
         tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
         EmailStaffNotification.delay(
             event_type="gift_redeemed",
-            subject="Gift redeemed: %s claimed %s from %s" % (user.username, tier_names.get(gift_tier, "Premium"), gifter_username),
-            body="%s redeemed gift code %s (%s) from %s." % (user.username, gift_code, tier_names.get(gift_tier, "Premium"), gifter_username),
+            subject="Gift redeemed: %s claimed %s from %s"
+            % (user.username, tier_names.get(gift_tier, "Premium"), gifter_username),
+            body="%s redeemed gift code %s (%s) from %s."
+            % (user.username, gift_code, tier_names.get(gift_tier, "Premium"), gifter_username),
         )
 
 
@@ -4280,9 +4291,7 @@ class MReferral(mongo.Document):
     @classmethod
     def create_referral(cls, referrer_user_id, referred_user_id, referred_username):
         if cls.check_circular(referrer_user_id, referred_user_id):
-            logging.debug(
-                " ---> Circular referral blocked: %s -> %s" % (referrer_user_id, referred_user_id)
-            )
+            logging.debug(" ---> Circular referral blocked: %s -> %s" % (referrer_user_id, referred_user_id))
             return None
         try:
             referral = cls.objects.create(
@@ -4290,9 +4299,7 @@ class MReferral(mongo.Document):
                 referred_user_id=referred_user_id,
                 referred_username=referred_username,
             )
-            logging.debug(
-                " ---> Referral created: %s referred %s" % (referrer_user_id, referred_username)
-            )
+            logging.debug(" ---> Referral created: %s referred %s" % (referrer_user_id, referred_username))
             from apps.profile.tasks import EmailStaffNotification
 
             try:
@@ -4303,20 +4310,17 @@ class MReferral(mongo.Document):
             EmailStaffNotification.delay(
                 event_type="referral_signup",
                 subject="Referral signup: %s signed up via %s" % (referred_username, referrer_username),
-                body="%s signed up using %s's referral link. Pending until they subscribe." % (referred_username, referrer_username),
+                body="%s signed up using %s's referral link. Pending until they subscribe."
+                % (referred_username, referrer_username),
             )
             return referral
         except mongo.NotUniqueError:
-            logging.debug(
-                " ---> Referral already exists for user %s" % referred_user_id
-            )
+            logging.debug(" ---> Referral already exists for user %s" % referred_user_id)
             return None
 
     @classmethod
     def check_circular(cls, referrer_user_id, referred_user_id):
-        return cls.objects(
-            referrer_user_id=referred_user_id, referred_user_id=referrer_user_id
-        ).count() > 0
+        return cls.objects(referrer_user_id=referred_user_id, referred_user_id=referrer_user_id).count() > 0
 
     @classmethod
     def award_credit(cls, referred_user_id, payment_amount, payment_tier):
@@ -4327,9 +4331,7 @@ class MReferral(mongo.Document):
             return
 
         # Atomically update to prevent double-awarding
-        updated = cls.objects(
-            id=referral.id, status="pending"
-        ).update_one(set__status="converting")
+        updated = cls.objects(id=referral.id, status="pending").update_one(set__status="converting")
         if not updated:
             return
 

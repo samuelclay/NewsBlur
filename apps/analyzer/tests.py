@@ -1100,3 +1100,136 @@ class Test_Classifiers(TransactionTestCase):
         self.assertIn("Breaking", classifiers["titles"])
         # "urgent" is global, should always be included
         self.assertIn("urgent", classifiers["titles"])
+
+
+class Test_SuperDownvote(TransactionTestCase):
+    """Tests for the super downvote (score=-2) feature."""
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="supertest", password="testpass", email="super@test.com")
+        self.feed = Feed.objects.get(pk=1)
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=False)
+        self.story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Breaking news about Python",
+            "story_authors": "John Doe",
+            "story_tags": ["python", "tech"],
+            "story_content": "This is some content about Python programming.",
+            "story_permalink": "https://example.com/python-news",
+        }
+
+    def tearDown(self):
+        MClassifierTitle.objects(user_id=self.user.pk).delete()
+        MClassifierAuthor.objects(user_id=self.user.pk).delete()
+        MClassifierTag.objects(user_id=self.user.pk).delete()
+        MClassifierFeed.objects(user_id=self.user.pk).delete()
+
+    def test_apply_classifier_titles_super_downvote(self):
+        """Super downvote title classifier returns -2."""
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            title="Breaking", score=-2, creation_date=datetime.datetime.now(),
+        )
+        result = apply_classifier_titles([classifier], self.story)
+        self.assertEqual(result, -2)
+
+    def test_apply_classifier_authors_super_downvote(self):
+        """Super downvote author classifier returns -2."""
+        classifier = MClassifierAuthor.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            author="John Doe", score=-2, creation_date=datetime.datetime.now(),
+        )
+        result = apply_classifier_authors([classifier], self.story)
+        self.assertEqual(result, -2)
+
+    def test_apply_classifier_tags_super_downvote(self):
+        """Super downvote tag classifier returns -2."""
+        classifier = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="python", score=-2, creation_date=datetime.datetime.now(),
+        )
+        result = apply_classifier_tags([classifier], self.story)
+        self.assertEqual(result, -2)
+
+    def test_compute_story_score_super_downvote_beats_positive(self):
+        """Super downvote (-2) beats any positive classifier (+1)."""
+        # Title is liked (+1), but author is super-downvoted (-2)
+        title_like = MClassifierTitle.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            title="Breaking", score=1, creation_date=datetime.datetime.now(),
+        )
+        author_super = MClassifierAuthor.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            author="John Doe", score=-2, creation_date=datetime.datetime.now(),
+        )
+        score = compute_story_score(
+            self.story,
+            classifier_titles=[title_like],
+            classifier_authors=[author_super],
+            classifier_tags=[],
+            classifier_feeds=[],
+        )
+        self.assertLessEqual(score, -2)
+
+    def test_apply_classifier_tags_super_downvote_beats_positive_tag(self):
+        """Super downvote tag (-2) wins even when another tag is positive (+1)."""
+        tag_like = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="tech", score=1, creation_date=datetime.datetime.now(),
+        )
+        tag_super = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="python", score=-2, creation_date=datetime.datetime.now(),
+        )
+        result = apply_classifier_tags([tag_like, tag_super], self.story)
+        self.assertEqual(result, -2)
+        # Also test reverse order
+        result = apply_classifier_tags([tag_super, tag_like], self.story)
+        self.assertEqual(result, -2)
+
+    def test_compute_story_score_positive_beats_regular_negative(self):
+        """Positive (+1) still beats regular negative (-1)."""
+        title_like = MClassifierTitle.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            title="Breaking", score=1, creation_date=datetime.datetime.now(),
+        )
+        tag_dislike = MClassifierTag.objects.create(
+            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
+            tag="python", score=-1, creation_date=datetime.datetime.now(),
+        )
+        score = compute_story_score(
+            self.story,
+            classifier_titles=[title_like],
+            classifier_authors=[],
+            classifier_tags=[tag_dislike],
+            classifier_feeds=[],
+        )
+        self.assertGreater(score, 0)
+
+    def test_score_story_super_downvote_returns_negative_bucket(self):
+        """UserSubscription.score_story() puts super-downvoted stories in negative bucket."""
+        scores = {"author": -2, "tags": 1, "title": 0, "feed": 0}
+        result = UserSubscription.score_story(scores)
+        self.assertEqual(result, -1)
+
+    def test_save_classifier_super_dislike(self):
+        """API endpoint accepts super_dislike_title and saves score=-2."""
+        self.client.login(username="supertest", password="testpass")
+        response = self.client.post(
+            "/classifier/save",
+            {"feed_id": self.feed.pk, "super_dislike_title": "Breaking"},
+        )
+        data = json.decode(response.content)
+        self.assertEqual(response.status_code, 200)
+
+        # Verify the classifier was saved with score=-2
+        classifier = MClassifierTitle.objects.get(
+            user_id=self.user.pk, feed_id=self.feed.pk, title="Breaking"
+        )
+        self.assertEqual(classifier.score, -2)

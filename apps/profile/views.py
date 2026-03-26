@@ -508,10 +508,11 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
-            # Prorate refund on old Stripe subscription before canceling
-            if user.profile.stripe_id:
-                user.profile.refund_prorated_stripe_payment()
-            user.profile.cancel_premium_stripe()
+            # Only cancel Stripe if user hasn't already switched back to Stripe
+            if user.profile.active_provider != "stripe":
+                if user.profile.stripe_id:
+                    user.profile.refund_prorated_stripe_payment()
+                user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
@@ -1789,9 +1790,7 @@ def referral_landing(request, username):
     if request.user.is_authenticated and request.user.pk == referrer.pk:
         return HttpResponseRedirect(reverse("index"))
 
-    response = HttpResponseRedirect(
-        "%s?ref=%s" % (reverse("welcome-signup"), referrer.username)
-    )
+    response = HttpResponseRedirect("%s?ref=%s" % (reverse("welcome-signup"), referrer.username))
     response.set_cookie("nb_referrer", referrer.username, max_age=30 * 24 * 60 * 60)
     return response
 
@@ -1826,7 +1825,8 @@ def gift_checkout(request):
         gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, request.user.username, gift.gift_code)
         logging.user(
             request.user,
-            "~FG~BBStaff gift created: %s tier=%s code=%s" % (request.user.username, gift_tier, gift.gift_code),
+            "~FG~BBStaff gift created: %s tier=%s code=%s"
+            % (request.user.username, gift_tier, gift.gift_code),
         )
         return {"code": 1, "gift_url": gift_url, "gift_code": gift.gift_code}
 
@@ -1867,15 +1867,22 @@ def gift_checkout_complete(request):
     gift_tier = request.GET.get("gift_tier", "premium")
     # The gift code is created by the stripe_checkout_session_completed webhook.
     # Find the most recent gift code for this user.
-    recent_gift = MGiftCode.objects.filter(
-        gifting_user_id=request.user.pk, gift_tier=gift_tier
-    ).order_by("-created_date").first()
+    recent_gift = (
+        MGiftCode.objects.filter(gifting_user_id=request.user.pk, gift_tier=gift_tier)
+        .order_by("-created_date")
+        .first()
+    )
 
     domain = Site.objects.get_current().domain
     gift_url = None
     gift_code = None
     if recent_gift:
-        gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, request.user.username, recent_gift.gift_code)
+        gift_url = "https://%s/gift/%s/%s/%s" % (
+            domain,
+            gift_tier,
+            request.user.username,
+            recent_gift.gift_code,
+        )
         gift_code = recent_gift.gift_code
 
     return render(
@@ -1917,9 +1924,7 @@ def gift_redeem(request, gift_tier, username, gift_code):
         return HttpResponseRedirect(reverse("index"))
 
     # Not logged in: redirect to signup with gift code and gifter context
-    response = HttpResponseRedirect(
-        "%s?gift=%s" % (reverse("welcome-signup"), gift_code)
-    )
+    response = HttpResponseRedirect("%s?gift=%s" % (reverse("welcome-signup"), gift_code))
     response.set_cookie("nb_gift_code", gift_code, max_age=24 * 60 * 60)
     return response
 
@@ -1955,7 +1960,8 @@ def gift_data(request):
             {
                 "gift_code": g.gift_code,
                 "gift_tier": getattr(g, "gift_tier", "premium"),
-                "gift_url": "https://%s/gift/%s/%s/%s" % (domain, getattr(g, "gift_tier", "premium"), request.user.username, g.gift_code),
+                "gift_url": "https://%s/gift/%s/%s/%s"
+                % (domain, getattr(g, "gift_tier", "premium"), request.user.username, g.gift_code),
                 "created_date": g.created_date.strftime("%Y-%m-%d") if g.created_date else None,
                 "redeemed": bool(getattr(g, "redeemed_date", None)),
                 "is_staff_gift": getattr(g, "is_staff_gift", False),

@@ -71,6 +71,7 @@
 - (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
 - (IBAction)toggleFeeds:(id)sender;
+- (IBAction)toggleTemporaryFullScreen:(id)sender;
 - (IBAction)hideStoryTitlesSidebar:(id)sender;
 - (IBAction)showStoryTitlesSidebar:(id)sender;
 

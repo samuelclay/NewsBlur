@@ -1783,7 +1783,7 @@ def get_subdomain(request):
 
 
 def shared_stories_rss_feed_noid(request):
-    index = HttpResponseRedirect("http://%s%s" % (Site.objects.get_current().domain, reverse("index")))
+    index = HttpResponseRedirect("https://%s%s" % (Site.objects.get_current().domain, reverse("index")))
     if get_subdomain(request):
         username = get_subdomain(request)
         try:

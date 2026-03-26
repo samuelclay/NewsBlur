@@ -321,3 +321,7 @@ When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` 
 - Never use em dashes
 - Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
 - Keep it concise and direct
+
+## Writing Forum Replies
+- Keep replies free of AI slop: no em dashes, no overly polished language
+- Be concise and direct, matching a natural conversational tone

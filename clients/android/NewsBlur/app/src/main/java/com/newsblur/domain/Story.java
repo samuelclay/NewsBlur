@@ -233,12 +233,14 @@ public class Story implements Serializable {
             max = Math.max(max, intelligenceAuthors);
             max = Math.max(max, intelligenceTags);
             max = Math.max(max, intelligenceTitle);
-            if (max > 0) return max;
 
             int min = 0;
             min = Math.min(min, intelligenceAuthors);
             min = Math.min(min, intelligenceTags);
             min = Math.min(min, intelligenceTitle);
+
+            if (min <= -2) return min;   // super downvote beats any positive
+            if (max > 0) return max;
             if (min < 0) return min;
 
             return intelligenceFeed;

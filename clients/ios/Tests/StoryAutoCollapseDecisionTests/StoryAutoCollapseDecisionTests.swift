@@ -142,7 +142,19 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StoryAutoCollapseDecision.resolvedShouldCollapse(
                 baseShouldCollapse: true,
                 fullscreenSidebarPresentation: .storyTitles,
-                usesNativeFullscreenSidebar: false
+                usesNativeFullscreenSidebar: false,
+                isTemporaryFullScreen: false
+            )
+        )
+    }
+
+    func test_temporary_fullscreen_forces_story_titles_collapsed() {
+        XCTAssertTrue(
+            StoryAutoCollapseDecision.resolvedShouldCollapse(
+                baseShouldCollapse: false,
+                fullscreenSidebarPresentation: .fullscreen,
+                usesNativeFullscreenSidebar: false,
+                isTemporaryFullScreen: true
             )
         )
     }

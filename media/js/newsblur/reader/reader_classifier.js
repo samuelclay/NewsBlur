@@ -1734,6 +1734,12 @@ var classifier_prototype = {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
         });
 
+        $('.NB-classifier-icon-super-dislike', $classifier).bind('mouseenter', function (e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-super-dislike');
+        }).bind('mouseleave', function (e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-super-dislike');
+        });
+
         // Scope toggle click handlers
         $('.NB-scope-toggle', $classifier).on('click', function (e) {
             e.stopPropagation();
@@ -1816,7 +1822,39 @@ var classifier_prototype = {
             '?'
         ]);
 
+        var $explainer = $.make('div', { className: 'NB-classifier-explainer' }, [
+            $.make('div', { className: 'NB-explainer-hierarchy' }, [
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-super' }, [
+                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, 'Super Dislike '),
+                    $.make('span', { className: 'NB-explainer-icon-double-dislike' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
+                        $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
+                    ])
+                ]),
+                $.make('span', { className: 'NB-explainer-separator' }, [
+                    $.make('span', { className: 'NB-explainer-separator-line' }),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-line' })
+                ]),
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-like' }, [
+                    $.make('span', { className: 'NB-classifier-title-like' }, 'Like '),
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-up.svg', className: 'NB-explainer-icon NB-explainer-icon-like' })
+                ]),
+                $.make('span', { className: 'NB-explainer-separator' }, [
+                    $.make('span', { className: 'NB-explainer-separator-line' }),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-line' })
+                ]),
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-dislike' }, [
+                    $.make('span', { className: 'NB-classifier-title-dislike' }, 'Dislike '),
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-dislike' })
+                ])
+            ])
+        ]);
+
         $modal_title.html($title);
+        $modal_title.next('.NB-classifier-explainer').remove();
+        $modal_title.after($explainer);
     },
 
     make_modal_trainer_count: function () {
@@ -2481,10 +2519,17 @@ var classifier_prototype = {
                     name: 'dislike_' + input_type,
                     value: classifier_value
                 }),
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-classifier-input-super-dislike',
+                    name: 'super_dislike_' + input_type,
+                    value: classifier_value
+                }),
                 $.make('div', { className: 'NB-classifier-icon-like' }),
                 $.make('div', { className: 'NB-classifier-icon-dislike' }, [
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
+                $.make('div', { className: 'NB-classifier-icon-super-dislike' }),
                 $.make('label', [
                     $scope_badge,
                     this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score),
@@ -2503,8 +2548,8 @@ var classifier_prototype = {
         $('.NB-classifier', $classifier).data('scope', scope);
         $('.NB-classifier', $classifier).data('folder-name', scope_folder_name);
 
-        // Store original state for change tracking (like, dislike, or neutral)
-        var original_state = score > 0 ? 'like' : (score < 0 ? 'dislike' : 'neutral');
+        // Store original state for change tracking (like, dislike, super_dislike, or neutral)
+        var original_state = score > 0 ? 'like' : (score <= -2 ? 'super_dislike' : (score < 0 ? 'dislike' : 'neutral'));
         $('.NB-classifier', $classifier).data('original-state', original_state);
         $('.NB-classifier', $classifier).data('original-scope', scope || 'feed');
         $('.NB-classifier', $classifier).data('original-folder-name', scope_folder_name || '');
@@ -2512,6 +2557,9 @@ var classifier_prototype = {
         if (score > 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-like');
             $('.NB-classifier-input-like', $classifier).prop('checked', true);
+        } else if (score <= -2) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-super-dislike');
+            $('.NB-classifier-input-super-dislike', $classifier).prop('checked', true);
         } else if (score < 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-dislike');
             $('.NB-classifier-input-dislike', $classifier).prop('checked', true);
@@ -2527,6 +2575,12 @@ var classifier_prototype = {
             $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
         }).bind('mouseleave', function (e) {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
+        });
+
+        $('.NB-classifier-icon-super-dislike', $classifier).bind('mouseenter', function (e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-super-dislike');
+        }).bind('mouseleave', function (e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-super-dislike');
         });
 
         // Click individual scope toggle icons to switch scope
@@ -2679,30 +2733,48 @@ var classifier_prototype = {
     change_classifier: function ($classifier, classifier_opinion) {
         var $like = $('.NB-classifier-input-like', $classifier);
         var $dislike = $('.NB-classifier-input-dislike', $classifier);
+        var $super_dislike = $('.NB-classifier-input-super-dislike', $classifier);
 
         var $close = $('.NB-modal-submit-grey', this.$modal);
 
         if (classifier_opinion == 'like') {
             if ($classifier.is('.NB-classifier-like')) {
                 $classifier.removeClass('NB-classifier-like');
-                $dislike.prop('checked', false);
                 $like.prop('checked', false);
-            } else {
-                $classifier.removeClass('NB-classifier-dislike');
-                $classifier.addClass('NB-classifier-like');
                 $dislike.prop('checked', false);
+                $super_dislike.prop('checked', false);
+            } else {
+                $classifier.removeClass('NB-classifier-dislike NB-classifier-super-dislike');
+                $classifier.addClass('NB-classifier-like');
                 $like.prop('checked', true);
+                $dislike.prop('checked', false);
+                $super_dislike.prop('checked', false);
             }
         } else if (classifier_opinion == 'dislike') {
             if ($classifier.is('.NB-classifier-dislike')) {
                 $classifier.removeClass('NB-classifier-dislike');
                 $like.prop('checked', false);
                 $dislike.prop('checked', false);
+                $super_dislike.prop('checked', false);
             } else {
-                $classifier.removeClass('NB-classifier-like');
+                $classifier.removeClass('NB-classifier-like NB-classifier-super-dislike');
                 $classifier.addClass('NB-classifier-dislike');
                 $like.prop('checked', false);
                 $dislike.prop('checked', true);
+                $super_dislike.prop('checked', false);
+            }
+        } else if (classifier_opinion == 'super_dislike') {
+            if ($classifier.is('.NB-classifier-super-dislike')) {
+                $classifier.removeClass('NB-classifier-super-dislike');
+                $like.prop('checked', false);
+                $dislike.prop('checked', false);
+                $super_dislike.prop('checked', false);
+            } else {
+                $classifier.removeClass('NB-classifier-like NB-classifier-dislike');
+                $classifier.addClass('NB-classifier-super-dislike');
+                $like.prop('checked', false);
+                $dislike.prop('checked', false);
+                $super_dislike.prop('checked', true);
             }
         }
 
@@ -2710,6 +2782,8 @@ var classifier_prototype = {
         var current_state = 'neutral';
         if ($classifier.is('.NB-classifier-like')) {
             current_state = 'like';
+        } else if ($classifier.is('.NB-classifier-super-dislike')) {
+            current_state = 'super_dislike';
         } else if ($classifier.is('.NB-classifier-dislike')) {
             current_state = 'dislike';
         }
@@ -2740,7 +2814,7 @@ var classifier_prototype = {
         // Only count classifiers that have been CHANGED during this session
         // For training modal: count all like/dislike classifiers (original behavior)
         if (this.options['training']) {
-            return this.$modal.find('.NB-classifier.NB-classifier-like, .NB-classifier.NB-classifier-dislike').length;
+            return this.$modal.find('.NB-classifier.NB-classifier-like, .NB-classifier.NB-classifier-dislike, .NB-classifier.NB-classifier-super-dislike').length;
         }
         // For story/feed modals: count changed classifiers only in the ACTIVE tab
         var $active_tab = this.$modal.find('.NB-tab.NB-active');
@@ -3490,6 +3564,16 @@ var classifier_prototype = {
         }
 
         var stop = false;
+        $.targetIs(e, { tagSelector: '.NB-classifier-icon-super-dislike' }, function ($t, $p) {
+            e.preventDefault();
+            stop = true;
+            var $classifier = $t.closest('.NB-classifier');
+            var value = $('.NB-classifier-input-like', $classifier).val();
+            if (value) {
+                self.change_classifier($classifier, 'super_dislike');
+            }
+        });
+        if (stop) return;
         $.targetIs(e, { tagSelector: '.NB-classifier-icon-dislike' }, function ($t, $p) {
             e.preventDefault();
             stop = true;
@@ -3529,7 +3613,11 @@ var classifier_prototype = {
             }
 
             var value = $('.NB-classifier-input-like', this).val();
-            if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
+            if ($('.NB-classifier-input-super-dislike', this).is(':checked')) {
+                var name = $('.NB-classifier-input-super-dislike', this).attr('name');
+                if (!data[name]) data[name] = [];
+                data[name].push(value);
+            } else if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
                 if (!data[name]) data[name] = [];
                 data[name].push(value);
@@ -3583,6 +3671,7 @@ var classifier_prototype = {
             var input_name = $cl.find('.NB-classifier-input-like').attr('name');
             var is_like = $cl.hasClass('NB-classifier-like');
             var is_dislike = $cl.hasClass('NB-classifier-dislike');
+            var is_super_dislike = $cl.hasClass('NB-classifier-super-dislike');
 
             // If scope changed, remove the old classifier at its previous scope
             if (original_scope !== el_scope) {
@@ -3605,6 +3694,8 @@ var classifier_prototype = {
 
                 if (is_like) {
                     scoped_data[input_name] = value;
+                } else if (is_super_dislike) {
+                    scoped_data[input_name.replace('like_', 'super_dislike_')] = value;
                 } else if (is_dislike) {
                     scoped_data[input_name.replace('like_', 'dislike_')] = value;
                 } else {
@@ -3647,8 +3738,8 @@ var classifier_prototype = {
 
         $active_tab.find(selector).each(function () {
             var $this = $(this);
-            var name = $this.attr('name').replace(/^(dis)?like_/, '');
-            var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
+            var name = $this.attr('name').replace(/^(super_dis|dis)?like_/, '');
+            var score = /^super_dislike/.test($this.attr('name')) ? -2 : (/^dislike/.test($this.attr('name')) ? -1 : 1);
             var value = $this.val();
             var checked = $this.prop('checked');
 

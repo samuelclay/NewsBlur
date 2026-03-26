@@ -2325,7 +2325,7 @@
                 }
             }
 
-            if (!data.enabled && !all_briefings.length) {
+            if (!data.enabled) {
                 // reader.js: Show full-pane onboarding for users who haven't opted in
                 if (this.briefing_onboarding_view) {
                     this.briefing_onboarding_view.close();
@@ -6063,7 +6063,7 @@
                 if (score_name == 'neutral') {
                     return 0;
                 } else if (score_name == 'negative') {
-                    return -1;
+                    return -2;  // Must be <= -2 to include super-downvoted stories
                 }
             }
 
