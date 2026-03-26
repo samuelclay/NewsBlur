@@ -37,8 +37,9 @@ def newsblur_research_topic(topic: str) -> str:
     return (
         f"Research the topic: '{topic}' across my NewsBlur account. "
         "1. Use newsblur_search_stories to find relevant stories in subscribed feeds. "
-        "2. Use newsblur_get_saved_stories to check saved stories for related content. "
-        "3. Compile findings into a structured summary with source links. "
+        "2. Use newsblur_get_read_stories with a query to search your reading history. "
+        "3. Use newsblur_get_saved_stories to check saved stories for related content. "
+        "4. Compile findings into a structured summary with source links. "
         "Group by subtopic and note the most authoritative sources."
     )
 

@@ -2189,14 +2189,31 @@ def load_read_stories(request):
             % (date_filter_start, date_filter_end, date_filter_start_utc, date_filter_end_utc),
         )
 
+    # Optional feed_id filtering
+    feed_ids = request.GET.getlist("feed_id") or request.GET.getlist("feed_id[]")
+    feed_ids = [int(f) for f in feed_ids if f]
+
     if query:
-        stories = []
-        message = "Not implemented yet."
-        # if user.profile.is_premium:
-        #     stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
-        # else:
-        #     stories = []
-        #     message = "You must be a premium subscriber to search."
+        if user.profile.is_premium:
+            user_search = MUserSearch.get_user(user.pk)
+            user_search.touch_search_date()
+            # Search ES for matching stories across the user's subscribed feeds
+            search_feed_ids = feed_ids
+            if not search_feed_ids:
+                usersubs = UserSubscription.objects.filter(user__pk=user.pk).only("feed")
+                search_feed_ids = [sub.feed_id for sub in usersubs]
+            search_stories = Feed.find_feed_stories(
+                search_feed_ids, query, order=order, offset=0, limit=200
+            )
+            # Intersect search results with read story hashes
+            read_story_hashes_set = set(
+                RUserStory.get_read_stories(user.pk, offset=0, limit=1000, order=order)
+            )
+            stories = [s for s in search_stories if s["story_hash"] in read_story_hashes_set]
+            stories = stories[offset : offset + limit]
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     else:
         story_hashes = RUserStory.get_read_stories(
             user.pk,
@@ -2213,6 +2230,9 @@ def load_read_stories(request):
             key=lambda story: story_hashes.index(story["story_hash"]),
             reverse=bool(order == "oldest"),
         )
+        # Apply feed_id filter if specified
+        if feed_ids:
+            stories = [s for s in stories if s["story_feed_id"] in feed_ids]
 
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 

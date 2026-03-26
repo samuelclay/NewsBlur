@@ -137,6 +137,81 @@ async def newsblur_get_saved_stories(
         await client.close()
 
 
+async def _get_read_stories(
+    client: NewsBlurClient,
+    feed_ids: list[int] | None = None,
+    folder: str | None = None,
+    query: str | None = None,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+    date_filter_start: str | None = None,
+    date_filter_end: str | None = None,
+) -> dict:
+    """Retrieve previously read stories, optionally filtered."""
+    limit = min(limit, MAX_STORIES_PER_PAGE)
+
+    resolved_feed_ids = feed_ids
+    if folder and not feed_ids:
+        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        flat_folders = feeds_resp.get("flat_folders", {})
+        resolved_feed_ids = flat_folders.get(folder, [])
+        if not resolved_feed_ids:
+            return {"error": f"Folder '{folder}' not found or empty"}
+
+    params = {"page": page, "order": order, "limit": limit}
+    if query:
+        params["query"] = query
+    if date_filter_start:
+        params["date_filter_start"] = date_filter_start
+    if date_filter_end:
+        params["date_filter_end"] = date_filter_end
+    if resolved_feed_ids:
+        params["feed_id"] = resolved_feed_ids
+
+    resp = await client.get("/reader/read_stories", params=params)
+
+    stories = [transform_story(s) for s in resp.get("stories", [])]
+    return paginate(stories, page, has_more=len(stories) >= limit)
+
+
+@mcp.tool()
+async def newsblur_get_read_stories(
+    feed_ids: list[int] | None = None,
+    folder: str | None = None,
+    query: str | None = None,
+    order: str = "newest",
+    page: int = 1,
+    limit: int = DEFAULT_STORIES_PER_PAGE,
+    date_filter_start: str | None = None,
+    date_filter_end: str | None = None,
+) -> dict:
+    """Browse your reading history -- stories you've already read.
+
+    Use this to find a story you read recently but can't quite remember.
+    Describe what you recall and use the query parameter, or browse
+    chronologically. Combine with feed or folder filters to narrow scope.
+
+    Args:
+        feed_ids: Limit to stories from specific feed IDs.
+        folder: Limit to stories from feeds in this folder (e.g. "Tech").
+        query: Full-text search within read stories (premium feature).
+        order: Sort order - "newest" (default) or "oldest".
+        page: Page number for pagination (starts at 1).
+        limit: Stories per page (default 12, max 50).
+        date_filter_start: Start date for date range filter (YYYY-MM-DD, Archive tier).
+        date_filter_end: End date for date range filter (YYYY-MM-DD, Archive tier).
+    """
+    client = get_client()
+    try:
+        return await _get_read_stories(
+            client, feed_ids, folder, query, order, page, limit,
+            date_filter_start, date_filter_end,
+        )
+    finally:
+        await client.close()
+
+
 async def _search_stories(
     client: NewsBlurClient,
     query: str,
