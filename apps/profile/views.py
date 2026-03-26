@@ -1182,10 +1182,10 @@ def manage_usage_billing(request):
 def usage_billing_history(request):
     user = request.user
 
+    import calendar
+
     # Self-hosted: return local spend data without Stripe
     if user.profile.is_self_hosted_ai and not user.profile.is_usage_billing:
-        import calendar
-
         current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
         now = datetime.datetime.utcnow()
         cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
