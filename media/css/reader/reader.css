@@ -5675,7 +5675,7 @@ body {
 .NB-score-icon {
     width: 10px;
     height: 10px;
-    vertical-align: -1px;
+    vertical-align: middle;
     margin-left: 2px;
     display: inline;
 }
@@ -5697,7 +5697,7 @@ body {
     position: relative;
     width: 16px;
     height: 12px;
-    vertical-align: -2px;
+    vertical-align: middle;
     margin-left: 2px;
 }
 
