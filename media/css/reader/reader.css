@@ -5676,7 +5676,8 @@ body {
     width: 10px;
     height: 10px;
     vertical-align: middle;
-    margin-left: 2px;
+    margin-left: 4px;
+    margin-top: -2px;
     display: inline;
 }
 
@@ -5698,7 +5699,8 @@ body {
     width: 16px;
     height: 12px;
     vertical-align: middle;
-    margin-left: 2px;
+    margin-left: 4px;
+    margin-top: -2px;
 }
 
 .NB-score-icon-double .NB-score-icon {
