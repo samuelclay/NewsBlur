@@ -2199,7 +2199,10 @@ var classifier_prototype = {
         });
     },
 
-    make_notification_bell: function (classifier_type, classifier_value, scope, folder_name) {
+    make_notification_bell: function (classifier_type, classifier_value, scope, folder_name, score) {
+        // Only show notification bell on positive classifiers (score >= 1)
+        if (score != null && score < 1) return null;
+
         var feed_id = this.feed_id;
         var has_channels = false;
         var active_types = [];
@@ -2484,7 +2487,7 @@ var classifier_prototype = {
                 ]),
                 $.make('label', [
                     $scope_badge,
-                    this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name),
+                    this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score),
                     $type_label,
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     $.make('span', classifier_title)
@@ -4686,7 +4689,7 @@ var classifier_prototype = {
                 ]),
                 $.make('label', [
                     $scope_badge,
-                    this.make_notification_bell(type, value, effective_scope, folder_name),
+                    this.make_notification_bell(type, value, effective_scope, folder_name, score),
                     (type !== 'feed' ? $type_label_el : null),
                     $.make('span', value)
                 ])
