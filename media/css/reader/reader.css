@@ -2770,7 +2770,7 @@ img.feed_favicon {
 }
 
 .NB-story-title.read .NB-storytitles-sentiment {
-    opacity: .15;
+    opacity: .50;
 }
 
 .NB-story-title:hover .NB-storytitles-sentiment {
@@ -5123,7 +5123,7 @@ body {
 }
 
 .NB-feed-story.read .NB-feed-story-sentiment {
-    opacity: .06;
+    opacity: .50;
 }
 
 .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-sentiment {
