@@ -36,8 +36,8 @@ from django.core.cache import cache
 from django.db import IntegrityError
 from sentry_sdk import set_user
 
-from apps.notifications.models import MUserFeedNotification
-from apps.notifications.tasks import QueueNotifications
+from apps.notifications.models import MUserClassifierNotification, MUserFeedNotification
+from apps.notifications.tasks import QueueClassifierNotifications, QueueNotifications
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.icon_importer import IconImporter
@@ -994,6 +994,8 @@ class ProcessFeed:
         # Push notifications
         if ret_values["new"] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
             QueueNotifications.delay(self.feed.pk, ret_values["new"])
+        if ret_values["new"] > 0 and MUserClassifierNotification.feed_has_users(self.feed.pk):
+            QueueClassifierNotifications.delay(self.feed.pk, ret_values["new"])
 
         # All Done
         logging.debug(
