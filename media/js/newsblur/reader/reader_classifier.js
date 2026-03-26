@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderClassifierTrainer = function (options) {
     var defaults = {
-        'width': 820,
+        'width': 920,
         'height': 600,
         'training': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -31,7 +31,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
 
 NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
     var defaults = {
-        'width': 820,
+        'width': 920,
         'training': false,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -62,7 +62,7 @@ NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
 
 NEWSBLUR.ReaderClassifierStory = function (story_id, feed_id, options) {
     var defaults = {
-        'width': 820,
+        'width': 920,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
