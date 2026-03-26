@@ -40,6 +40,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-train-selection": "train_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
+        "click .NB-classifier-highlight-super-negative": "show_classifier_highlight_menu",
         "click .NB-search-highlight": "show_search_highlight_menu",
         "click .NB-search-site-selection": "search_selected_text_site",
         "click .NB-search-folder-selection": "search_selected_text_folder",
@@ -1223,7 +1224,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             return;
         }
         if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
-            $(e.target).hasClass("NB-classifier-highlight-negative")) {
+            $(e.target).hasClass("NB-classifier-highlight-negative") ||
+            $(e.target).hasClass("NB-classifier-highlight-super-negative")) {
             // Let the click handler deal with classifier highlights
             return;
         }
@@ -1600,7 +1602,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Apply text classifier highlights
         _.each(text_classifiers, _.bind(function (classifier_text) {
             var classifier_score = this.classifiers.texts[classifier_text];
-            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
             $doc.mark(classifier_text, {
                 "className": className,
                 "separateWordSearch": false,
@@ -1613,7 +1615,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         _.each(text_regex_classifiers, _.bind(function (pattern) {
             try {
                 var classifier_score = this.classifiers.text_regex[pattern];
-                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
@@ -1628,7 +1630,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         _.each(legacy_regex_classifiers, _.bind(function (pattern) {
             try {
                 var classifier_score = this.classifiers.regex[pattern];
-                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : (classifier_score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
                 var regex = new RegExp(pattern, 'gi');
                 $doc.markRegExp(regex, {
                     "className": className,
