@@ -249,6 +249,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             authors_score: this.classifiers &&
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
+            score_icon_html: this.score_icon_html,
             prompt_classifiers: this.model.get('prompt_classifiers') || [],
             url_match: this.get_url_match(),
             options: this.options,
@@ -362,7 +363,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-feed-story-author-wrapper">\
                             <span class="NB-middot">&middot;</span>\
                             <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                                <%= story.story_authors() %>\
+                                <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -371,7 +372,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(story.get("story_tags"), function(tag) { %>\
                                 <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                    <%= tag %>\
+                                    <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
                                 </div>\
                             <% }) %>\
                         </div>\
@@ -510,16 +511,29 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 NEWSBLUR.reader.flags['social_view']);
     },
 
+    score_icon_html: function (score) {
+        if (score >= 1) {
+            return '<img src="/media/embed/icons/nouns/thumbs-up.svg" class="NB-score-icon NB-score-icon-like" />';
+        } else if (score <= -2) {
+            return '<span class="NB-score-icon-double"><img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-super-dislike NB-score-icon-super-dislike-back" /><img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-super-dislike" /></span>';
+        } else if (score <= -1) {
+            return '<img src="/media/embed/icons/nouns/thumbs-down.svg" class="NB-score-icon NB-score-icon-dislike" />';
+        }
+        return '';
+    },
+
     make_story_title: function (story) {
         story = story || this.model;
         var title = story.get('story_title');
         var classifiers = NEWSBLUR.assets.classifiers[story.get('story_feed_id')];
         var feed_titles = classifiers && classifiers.titles || [];
+        var self = this;
 
         _.each(feed_titles, function (score, title_classifier) {
             if (!title_classifier || title.toLowerCase().indexOf(title_classifier.toLowerCase()) != -1) {
                 var pos = title.toLowerCase().indexOf(title_classifier.toLowerCase());
-                title = title.substr(0, pos) + '<span class="NB-score-' + score + '">' + title.substr(pos, title_classifier.length) + '</span>' + title.substr(pos + title_classifier.length);
+                var icon = self.score_icon_html(score);
+                title = title.substr(0, pos) + '<span class="NB-score-' + score + '">' + title.substr(pos, title_classifier.length) + icon + '</span>' + title.substr(pos + title_classifier.length);
             }
         });
 
