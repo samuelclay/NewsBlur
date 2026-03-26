@@ -406,19 +406,7 @@ class DetailViewController: BaseViewController {
     private var preFullScreenDisplayMode: UISplitViewController.DisplayMode?
     private var preFullScreenSplitBehavior: UISplitViewController.SplitBehavior?
 
-    @objc var shouldShowStoryTitlesFullscreenButton: Bool {
-        let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
-        return StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-            for: fullscreenSidebarPresentationState,
-            storyTitlesOnLeft: storyTitlesOnLeft,
-            usesNativeFullscreenSidebar: shouldUseNativeFullscreenSidebarOverlay,
-            isPhoneOrCompact: isPhoneOrCompact,
-            width: size.width,
-            height: size.height
-        )
-    }
-
-    private var hasVisibleStoryForSidebarLayout: Bool {
+    @objc var hasVisibleStoryForSidebarLayout: Bool {
         appDelegate.activeStory != nil || currentStoryController?.activeStory != nil
     }
     
@@ -630,31 +618,6 @@ class DetailViewController: BaseViewController {
 
         fullscreenSidebarPresentationState = nextPresentation
         setStoryTitlesCollapsed(nextPresentation == .fullscreen, animated: true)
-    }
-
-    @objc(showFullscreenStoryDetail:) func showFullscreenStoryDetail(_ sender: Any?) {
-        guard storyTitlesOnLeft, !isPhoneOrCompact else {
-            return
-        }
-
-        let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterFullscreenButtonTap(
-            fullscreenSidebarPresentationState
-        )
-
-        if shouldUseNativeFullscreenSidebarOverlay {
-            applyFullscreenSidebarPresentation(nextPresentation, sender: sender)
-            return
-        }
-
-        fullscreenSidebarPresentationState = nextPresentation
-
-        if let splitViewController = appDelegate.splitViewController {
-            UIView.animate(withDuration: 0.2) {
-                splitViewController.preferredDisplayMode = .secondaryOnly
-            }
-        }
-
-        setStoryTitlesCollapsed(true, animated: true)
     }
 
     @objc override func toggleTemporaryFullScreen(_ sender: Any?) {

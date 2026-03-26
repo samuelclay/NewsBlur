@@ -449,9 +449,11 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         local_date_str=local_date,
     )
 
-    logging.debug(
-        " ---> GenerateUserBriefing: completed for user %s — %s stories, hash %s"
-        % (user_id, len(curated_hashes), story.story_hash)
+    model_name = (summary_meta or {}).get("display_name", "unknown")
+    logging.user(
+        user,
+        "~FCGenerated ~SB%s~SN briefing with ~SB%s~SN stories (~SB%s~SN, ~SB%.1fs~SN, hash %s)"
+        % (prefs.frequency, len(curated_hashes), model_name, t_summary_elapsed, story.story_hash),
     )
 
     publish("complete")

@@ -23,6 +23,7 @@ from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
+from utils import log as logging
 from utils.user_functions import ajax_login_required
 
 
@@ -200,6 +201,17 @@ def load_briefing_stories(request):
                 match = re.search(r"<h3[^>]*>(?:<img[^>]*>)?\s*([^<]+)</h3>", html)
                 if match:
                     section_definitions[key] = match.group(1).strip()
+
+    if briefing_list:
+        total_stories = sum(len(b.get("curated_stories", [])) for b in briefing_list)
+        latest = briefing_list[0]
+        frequency = latest.get("frequency", "daily")
+        model = prefs.briefing_model or "default"
+        logging.user(
+            request,
+            "~FCLoading ~SB%s~SN briefing%s (~SB%s~SN, ~SB%s~SN stories, ~SB%s~SN model, page %s)"
+            % (len(briefing_list), "s" if len(briefing_list) != 1 else "", frequency, total_stories, model, page),
+        )
 
     result = {
         "briefings": briefing_list,

@@ -222,26 +222,36 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
-@objcMembers public final class StoryTitlesHeaderButtonDecision: NSObject {
-    public class func showsFullscreenButton(
-        for presentation: FullscreenSidebarPresentation,
-        storyTitlesOnLeft: Bool,
-        usesNativeFullscreenSidebar: Bool,
-        isPhoneOrCompact: Bool,
-        width: CGFloat,
-        height: CGFloat
+@objcMembers public final class FeedSidebarRevealGestureDecision: NSObject {
+    public class func shouldBeginLeadingEdgeFeedsReveal(
+        presentation: FullscreenSidebarPresentation,
+        isPhoneOrCompact: Bool
     ) -> Bool {
-        let _ = width
-
-        guard storyTitlesOnLeft, !isPhoneOrCompact, presentation != .fullscreen else {
+        guard !isPhoneOrCompact else {
             return false
         }
 
-        if usesNativeFullscreenSidebar {
-            return true
+        // The feed detail controller only receives this edge gesture while the
+        // story titles pane is actually on screen, so cached presentation
+        // state should not block the initial reveal gesture.
+        let _ = presentation
+        return true
+    }
+}
+
+@objcMembers public final class StoryDetailFullscreenButtonDecision: NSObject {
+    public class func showsTemporaryFullscreenButton(
+        storyDetailVisible: Bool,
+        isPhoneOrCompact: Bool,
+        isMac: Bool,
+        isUserOverlayMode: Bool,
+        isTemporaryFullScreen: Bool
+    ) -> Bool {
+        guard storyDetailVisible, !isPhoneOrCompact, !isMac else {
+            return false
         }
 
-        return height >= width
+        return isTemporaryFullScreen || !isUserOverlayMode
     }
 }
 

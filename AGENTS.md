@@ -1,7 +1,7 @@
 # NewsBlur Development Guidelines
 
 ## Planning & Clarification
-**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions in chat.** The AskUserQuestion tool is not available in Codex/Claude Code, so use normal questions to understand:
+**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions using the AskUserQuestion tool (not plain text).** Always use the AskUserQuestion tool in Claude Code when you have questions to ask after a prompt. Use it to understand:
 - The specific goals and desired outcomes
 - Edge cases and error handling preferences
 - UI/UX preferences (if applicable)
@@ -11,7 +11,7 @@
 - Any constraints or preferences I might have
 
 **Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
-**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+**Claude Code: Always use the AskUserQuestion tool (not plain text questions) when you need to ask the user something - during planning, implementation, and any other time.**
 
 Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
 
