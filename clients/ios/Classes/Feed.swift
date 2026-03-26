@@ -54,8 +54,7 @@ typealias AnyDictionary = [AnyHashable : Any]
         case none = 0
         case like = 1
         case dislike = -1
-        case superDislike = -2
-
+        
         var imageName: String {
             switch self {
                 case .none:
@@ -63,8 +62,6 @@ typealias AnyDictionary = [AnyHashable : Any]
                 case .like:
                     return "hand.thumbsup.fill"
                 case .dislike:
-                    return "hand.thumbsdown.fill"
-                case .superDislike:
                     return "hand.thumbsdown.fill"
             }
         }

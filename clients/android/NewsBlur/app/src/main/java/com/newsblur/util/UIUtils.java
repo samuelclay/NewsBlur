@@ -428,20 +428,8 @@ public class UIUtils {
             classifier.put(key, Classifier.DISLIKE);
             colourIntelDialogRow(row, classifier, key);
         });
-        // Long-press dislike for super downvote
-        row.findViewById(R.id.intel_row_dislike).setOnLongClickListener(v -> {
-            if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(classifier.get(key))) {
-                classifier.put(key, Classifier.CLEAR_SUPER_DISLIKE);
-            } else {
-                classifier.put(key, Classifier.SUPER_DISLIKE);
-            }
-            colourIntelDialogRow(row, classifier, key);
-            return true;
-        });
         row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
-            if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(classifier.get(key))) {
-                classifier.put(key, Classifier.CLEAR_SUPER_DISLIKE);
-            } else if (Objects.equals(classifier.get(key), Classifier.DISLIKE)) {
+            if (Objects.equals(classifier.get(key), Classifier.DISLIKE)) {
                 classifier.put(key, Classifier.CLEAR_DISLIKE);
             } else {
                 classifier.put(key, Classifier.CLEAR_LIKE);
@@ -454,11 +442,6 @@ public class UIUtils {
         if (Integer.valueOf(Classifier.LIKE).equals(classifier.get(key))) {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else
-        if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
         } else
         if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {

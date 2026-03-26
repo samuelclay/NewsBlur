@@ -2682,37 +2682,33 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
         
         for (NSString *title in [classifiers objectForKey:@"titles"]) {
-            int currentTitle = [[intelligence objectForKey:@"title"] intValue];
-            if (currentTitle > -2 && currentTitle <= 0 &&
+            if ([[intelligence objectForKey:@"title"] intValue] <= 0 &&
                 [[story objectForKey:@"story_title"] containsString:title]) {
                 int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
             }
         }
-
+        
         for (NSString *author in [classifiers objectForKey:@"authors"]) {
-            int currentAuthor = [[intelligence objectForKey:@"author"] intValue];
-            if (currentAuthor > -2 && currentAuthor <= 0 &&
+            if ([[intelligence objectForKey:@"author"] intValue] <= 0 &&
                 [[story objectForKey:@"story_authors"] class] != [NSNull class] &&
                 [[story objectForKey:@"story_authors"] containsString:author]) {
                 int score = [[[classifiers objectForKey:@"authors"] objectForKey:author] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"author"];
             }
         }
-
+        
         for (NSString *tag in [classifiers objectForKey:@"tags"]) {
-            int currentTags = [[intelligence objectForKey:@"tags"] intValue];
-            if (currentTags > -2 && currentTags <= 0 &&
+            if ([[intelligence objectForKey:@"tags"] intValue] <= 0 &&
                 [[story objectForKey:@"story_tags"] class] != [NSNull class] &&
                 [[story objectForKey:@"story_tags"] containsObject:tag]) {
                 int score = [[[classifiers objectForKey:@"tags"] objectForKey:tag] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"tags"];
             }
         }
-
+        
         for (NSString *feed in [classifiers objectForKey:@"feeds"]) {
-            int currentFeed = [[intelligence objectForKey:@"feed"] intValue];
-            if (currentFeed > -2 && currentFeed <= 0 &&
+            if ([[intelligence objectForKey:@"feed"] intValue] <= 0 &&
                 [storyFeedId isEqualToString:feed]) {
                 int score = [[[classifiers objectForKey:@"feeds"] objectForKey:feed] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"feed"];
@@ -3972,9 +3968,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     int score_max = MAX(title, MAX(author, tags));
     int score_min = MIN(title, MIN(author, tags));
 
-    if (score_min <= -2)     score = score_min;   // super downvote beats any positive
-    else if (score_max > 0)  score = score_max;
-    else if (score_min < 0)  score = score_min;
+    if (score_max > 0)      score = score_max;
+    else if (score_min < 0) score = score_min;
     
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
 
@@ -4499,24 +4494,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [self toggleAuthorClassifier:author feedId:feedId scope:@"feed" folderName:@""];
 }
 
-- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId score:(NSInteger)explicitScore scope:(NSString *)scope folderName:(NSString *)folderName {
-    int authorScore = (int)explicitScore;
-    if (authorScore == 0) {
-        // Cycle: like -> dislike -> neutral -> like
-        authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
-                             objectForKey:@"authors"]
-                            objectForKey:author] intValue];
-        if (authorScore > 0) {
-            authorScore = -1;
-        } else if (authorScore < 0) {
-            authorScore = 0;
-        } else {
-            authorScore = 1;
-        }
-    }
-    [self _applyAuthorClassifier:author feedId:feedId score:authorScore scope:scope folderName:folderName];
-}
-
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
@@ -4528,10 +4505,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     } else {
         authorScore = 1;
     }
-    [self _applyAuthorClassifier:author feedId:feedId score:authorScore scope:scope folderName:folderName];
-}
-
-- (void)_applyAuthorClassifier:(NSString *)author feedId:(NSString *)feedId score:(int)authorScore scope:(NSString *)scope folderName:(NSString *)folderName {
     NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
@@ -4548,7 +4521,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:author
                forKey:authorScore >= 1 ? @"like_author" :
-     authorScore <= -2 ? @"super_dislike_author" :
      authorScore <= -1 ? @"dislike_author" :
      @"remove_like_author"];
     [params setObject:feedId forKey:@"feed_id"];
@@ -4571,50 +4543,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
     [self toggleTagClassifier:tag feedId:feedId scope:@"feed" folderName:@""];
-}
-
-- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId score:(NSInteger)explicitScore scope:(NSString *)scope folderName:(NSString *)folderName {
-    int tagScore = (int)explicitScore;
-    if (tagScore == 0) {
-        [self toggleTagClassifier:tag feedId:feedId scope:scope folderName:folderName];
-        return;
-    }
-    // Direct score set (for super-dislike)
-    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
-                                            mutableCopy];
-    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
-    NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
-    if (!tags) tags = [NSMutableDictionary dictionary];
-    [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
-    [feedClassifiers setObject:tags forKey:@"tags"];
-    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [self.storyPagesViewController refreshHeaders];
-    [self.trainerViewController reload];
-
-    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
-                           self.url];
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:tag
-               forKey:tagScore >= 1 ? @"like_tag" :
-     tagScore <= -2 ? @"super_dislike_tag" :
-     tagScore <= -1 ? @"dislike_tag" :
-     @"remove_like_tag"];
-    [params setObject:feedId forKey:@"feed_id"];
-    if (scope && ![scope isEqualToString:@"feed"]) {
-        [params setObject:scope forKey:@"scope"];
-        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
-            [params setObject:folderName forKey:@"folder_name"];
-        }
-    }
-
-    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
-    }];
-
-    [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController reload];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
@@ -4647,7 +4575,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:tag
                forKey:tagScore >= 1 ? @"like_tag" :
-     tagScore <= -2 ? @"super_dislike_tag" :
      tagScore <= -1 ? @"dislike_tag" :
      @"remove_like_tag"];
     [params setObject:feedId forKey:@"feed_id"];
@@ -4706,7 +4633,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:title
                forKey:titleScore >= 1 ? @"like_title" :
-     titleScore <= -2 ? @"super_dislike_title" :
      titleScore <= -1 ? @"dislike_title" :
      @"remove_like_title"];
     [params setObject:feedId forKey:@"feed_id"];
@@ -4755,7 +4681,6 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedId
                    forKey:feedScore >= 1 ? @"like_feed" :
-                          feedScore <= -2 ? @"super_dislike_feed" :
                           feedScore <= -1 ? @"dislike_feed" :
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
