@@ -74,7 +74,14 @@ from apps.analyzer.models import (
 )
 from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
-from apps.profile.models import MCustomStyling, MDashboardRiver, MGiftCode, MRedeemedCode, MReferral, Profile
+from apps.profile.models import (
+    MCustomStyling,
+    MDashboardRiver,
+    MGiftCode,
+    MRedeemedCode,
+    MReferral,
+    Profile,
+)
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.metrics import (
     READER_LOAD_PHASE_DURATION,
