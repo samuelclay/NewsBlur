@@ -3795,6 +3795,31 @@ a.mention, a.mention-group {
     border-top-color: rgba(123, 104, 238, 0.3);
 }
 
+.NB-dark .NB-scoring-popover {
+    background: linear-gradient(135deg, #2a2a28 0%, #252520 100%);
+    border-color: #4a4a3a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-scoring-example-header {
+    color: #bbb;
+}
+
+.NB-dark .NB-scoring-divider {
+    border-top-color: #4a4a3a;
+}
+
+.NB-dark .NB-scoring-result-focus {
+    background: rgba(110, 167, 74, 0.15);
+    color: #7ec45a;
+}
+
+.NB-dark .NB-scoring-result-hidden {
+    background: rgba(204, 42, 46, 0.15);
+    color: #e06060;
+}
+
+
 /* Unified text/title/url input - dark mode */
 .NB-dark .NB-classifier-text-input,
 .NB-dark .NB-classifier-title-input,

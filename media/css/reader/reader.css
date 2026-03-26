@@ -5562,9 +5562,9 @@ body {
 
 /* AI Classifier Pills */
 .NB-feed-story .NB-feed-story-ai-classifiers {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    margin: 5px 0 0;
+    vertical-align: middle;
 }
 
 .NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {
@@ -12052,7 +12052,6 @@ form.opml_import_form input {
 }
 
 .NB-classifiers .NB-classifier .feed_favicon {
-    margin-top: -2px;
     width: 16px;
     height: 16px;
 }
@@ -12205,7 +12204,8 @@ form.opml_import_form input {
     height: 22px;
     position: absolute;
     top: 1px;
-    right: -1px;
+    right: 1px;
+    border-radius: 0 14px 14px 0;
     opacity: .2;
     cursor: pointer;
     z-index: 1;
@@ -12444,6 +12444,141 @@ form.opml_import_form input {
 .NB-classifier-explainer .NB-explainer-icon-double-dislike .NB-explainer-icon-super-dislike-shadow {
     top: 3px;
     left: 5px;
+}
+
+/* Scoring info icon in explainer banner */
+.NB-explainer-scoring-info {
+    margin-left: 10px;
+    cursor: help;
+    font-size: 13px;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+}
+
+.NB-explainer-scoring-info:hover {
+    opacity: 1;
+}
+
+/* Scoring popover */
+.NB-scoring-popover {
+    display: none;
+    position: absolute;
+    z-index: 10000;
+    background: linear-gradient(135deg, #fafaf6 0%, #f3f2ec 100%);
+    border: 1px solid #ddd9cc;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    width: 360px;
+}
+
+.NB-scoring-popover.NB-visible {
+    display: block;
+}
+
+.NB-scoring-example {
+    padding: 0;
+}
+
+.NB-scoring-example-header {
+    font-weight: 600;
+    color: #555;
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.NB-scoring-example-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.NB-scoring-example-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.NB-scoring-pill-like {
+    background: linear-gradient(to bottom, #4E8F3E, #366B2A);
+    color: #fff;
+}
+
+.NB-scoring-pill-dislike {
+    background: linear-gradient(to bottom, #B33D3D, #8B2020);
+    color: #fff;
+}
+
+.NB-scoring-pill-super-dislike {
+    background: linear-gradient(to bottom, #6B0001, #4A0001);
+    color: #fff;
+}
+
+.NB-scoring-pill-icon {
+    width: 10px;
+    height: 10px;
+    filter: brightness(0) invert(1);
+}
+
+.NB-scoring-pill-double-icon {
+    display: inline-block;
+    position: relative;
+    width: 14px;
+    height: 10px;
+}
+
+.NB-scoring-pill-double-icon .NB-scoring-pill-icon {
+    position: absolute;
+    top: 0;
+}
+
+.NB-scoring-pill-double-icon .NB-scoring-pill-icon:first-child {
+    left: 0;
+    opacity: 0.5;
+}
+
+.NB-scoring-pill-double-icon .NB-scoring-pill-icon-shadow {
+    left: 4px;
+    top: 0;
+}
+
+.NB-scoring-example-result {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.NB-scoring-result-focus {
+    background: rgba(110, 167, 74, 0.1);
+    color: #3d7a2a;
+}
+
+.NB-scoring-result-hidden {
+    background: rgba(204, 42, 46, 0.1);
+    color: #9a1c1f;
+}
+
+.NB-scoring-result-indicator {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-scoring-divider {
+    border: none;
+    border-top: 1px solid #ddd9cc;
+    margin: 12px 0;
 }
 
 /* ================================ */
@@ -12932,8 +13067,15 @@ form.opml_import_form input {
 }
 
 @keyframes notif-premium-flash {
-    0% { opacity: 1; color: #fbbf24; }
-    100% { opacity: 0.8; color: #d97706; }
+    0% {
+        opacity: 1;
+        color: #fbbf24;
+    }
+
+    100% {
+        opacity: 0.8;
+        color: #d97706;
+    }
 }
 
 /* Inactive state: classifier is not liked, show explanatory message */
