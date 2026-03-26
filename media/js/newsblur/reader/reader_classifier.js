@@ -1813,25 +1813,32 @@ var classifier_prototype = {
         ]);
 
         var $explainer = $.make('div', { className: 'NB-classifier-explainer' }, [
-            $.make('span', { className: 'NB-explainer-item' }, [
-                $.make('img', { src: '/media/embed/icons/nouns/thumbs-up.svg', className: 'NB-explainer-icon NB-explainer-icon-like' }),
-                $.make('b', { className: 'NB-classifier-title-like' }, ' Thumbs up'),
-                ' beats any number of ',
-                $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-dislike' }),
-                $.make('b', { className: 'NB-classifier-title-dislike' }, ' thumbs down'),
-                '.'
-            ]),
-            $.make('br'),
-            $.make('span', { className: 'NB-explainer-item' }, [
-                $.make('span', { className: 'NB-explainer-icon-double-dislike' }, [
-                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
-                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
+            $.make('div', { className: 'NB-explainer-hierarchy' }, [
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-super' }, [
+                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, 'Super Dislike '),
+                    $.make('span', { className: 'NB-explainer-icon-double-dislike' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
+                        $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
+                    ])
                 ]),
-                $.make('b', { className: 'NB-classifier-title-super-dislike' }, ' Super thumbs down'),
-                ' beats any number of ',
-                $.make('img', { src: '/media/embed/icons/nouns/thumbs-up.svg', className: 'NB-explainer-icon NB-explainer-icon-like' }),
-                $.make('b', { className: 'NB-classifier-title-like' }, ' thumbs up'),
-                '.'
+                $.make('span', { className: 'NB-explainer-separator' }, [
+                    $.make('span', { className: 'NB-explainer-separator-line' }),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-line' })
+                ]),
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-like' }, [
+                    $.make('span', { className: 'NB-classifier-title-like' }, 'Like '),
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-up.svg', className: 'NB-explainer-icon NB-explainer-icon-like' })
+                ]),
+                $.make('span', { className: 'NB-explainer-separator' }, [
+                    $.make('span', { className: 'NB-explainer-separator-line' }),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-line' })
+                ]),
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-dislike' }, [
+                    $.make('span', { className: 'NB-classifier-title-dislike' }, 'Dislike '),
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-dislike' })
+                ])
             ])
         ]);
 
