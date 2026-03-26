@@ -898,6 +898,66 @@ var classifier_prototype = {
         ]);
     },
 
+    make_scoring_popover: function () {
+        // Helper to build a mini classifier pill for the examples
+        var make_mini_pill = function (label, type, sentiment) {
+            var cls = 'NB-scoring-example-pill NB-scoring-pill-' + sentiment;
+            var icon_src = sentiment === 'like'
+                ? '/media/embed/icons/nouns/thumbs-up.svg'
+                : '/media/embed/icons/nouns/thumbs-down.svg';
+            var icon_cls = 'NB-scoring-pill-icon NB-scoring-pill-icon-' + sentiment;
+            return $.make('span', { className: cls }, [
+                $.make('img', { src: icon_src, className: icon_cls }),
+                $.make('span', { className: 'NB-scoring-pill-label' }, label)
+            ]);
+        };
+
+        var make_super_pill = function (label) {
+            return $.make('span', { className: 'NB-scoring-example-pill NB-scoring-pill-super-dislike' }, [
+                $.make('span', { className: 'NB-scoring-pill-double-icon' }, [
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-scoring-pill-icon NB-scoring-pill-icon-super-dislike' }),
+                    $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-scoring-pill-icon NB-scoring-pill-icon-super-dislike NB-scoring-pill-icon-shadow' })
+                ]),
+                $.make('span', { className: 'NB-scoring-pill-label' }, label)
+            ]);
+        };
+
+        return $.make('div', { className: 'NB-scoring-popover' }, [
+            $.make('div', { className: 'NB-scoring-popover-content' }, [
+                // Section 1: Like beats dislikes
+                $.make('div', { className: 'NB-scoring-example' }, [
+                    $.make('div', { className: 'NB-scoring-example-header' }, 'A single like overrides any number of dislikes'),
+                    $.make('div', { className: 'NB-scoring-example-pills' }, [
+                        make_mini_pill('tech', 'tag', 'dislike'),
+                        make_mini_pill('review', 'tag', 'dislike'),
+                        make_mini_pill('gadgets', 'tag', 'dislike'),
+                        make_mini_pill('roundup', 'title', 'dislike'),
+                        make_mini_pill('John Gruber', 'author', 'like')
+                    ]),
+                    $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-focus' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/indicator-focus.svg', className: 'NB-scoring-result-indicator' }),
+                        $.make('span', { className: 'NB-scoring-result-label' }, 'Story shows in Focus view')
+                    ])
+                ]),
+                $.make('hr', { className: 'NB-scoring-divider' }),
+                // Section 2: Super dislike beats everything
+                $.make('div', { className: 'NB-scoring-example' }, [
+                    $.make('div', { className: 'NB-scoring-example-header' }, 'A single super dislike overrides everything'),
+                    $.make('div', { className: 'NB-scoring-example-pills' }, [
+                        make_mini_pill('John Gruber', 'author', 'like'),
+                        make_mini_pill('Apple', 'tag', 'like'),
+                        make_mini_pill('review', 'tag', 'dislike'),
+                        make_super_pill('rumor')
+                    ]),
+                    $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-hidden' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/indicator-hidden.svg', className: 'NB-scoring-result-indicator' }),
+                        $.make('span', { className: 'NB-scoring-result-label' }, 'Story is always hidden')
+                    ])
+                ])
+            ])
+        ]);
+    },
+
     make_combined_authors_section: function (story) {
         var story_author = story.story_authors();
         var feed_authors = this.feed_authors || [];
@@ -1848,8 +1908,12 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-explainer-level NB-explainer-level-dislike' }, [
                     $.make('span', { className: 'NB-classifier-title-dislike' }, 'Dislike '),
                     $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-dislike' })
+                ]),
+                $.make('span', { className: 'NB-explainer-scoring-info' }, [
+                    $.make('img', { src: '/media/embed/icons/nouns/indicator-focus.svg', className: 'NB-explainer-scoring-icon' })
                 ])
-            ])
+            ]),
+            this.make_scoring_popover()
         ]);
 
         $modal_title.html($title);
@@ -2238,9 +2302,6 @@ var classifier_prototype = {
     },
 
     make_notification_bell: function (classifier_type, classifier_value, scope, folder_name, score) {
-        // Only show notification bell on positive classifiers (score >= 1)
-        if (score != null && score < 1) return null;
-
         var feed_id = this.feed_id;
         var has_channels = false;
         var active_types = [];
@@ -2291,6 +2352,7 @@ var classifier_prototype = {
         $bell.data('classifier-value', classifier_value);
         $bell.data('scope', scope);
         $bell.data('folder-name', folder_name || '');
+        $bell.data('score', score);
 
         // Bind hover/click for popover
         var self = this;
@@ -2326,8 +2388,11 @@ var classifier_prototype = {
         var folder_name = $bell.data('folder-name');
         var feed_id = this.feed_id;
 
+        var bell_score = $bell.data('score');
+        var is_inactive = bell_score != null && bell_score < 1;
+
         // For feed-type classifiers, use existing FeedNotificationView in popover mode
-        if (classifier_type === 'feed') {
+        if (classifier_type === 'feed' && !is_inactive) {
             var feed = this.model.get_feed(classifier_value);
             if (feed) {
                 var feed_view = new NEWSBLUR.Views.FeedNotificationView({
@@ -2397,6 +2462,7 @@ var classifier_prototype = {
             is_web: _.contains(active_types, 'web'),
             is_ios: _.contains(active_types, 'ios'),
             is_android: _.contains(active_types, 'android'),
+            inactive: is_inactive,
             $bell: $bell,
             trainer: this
         });
@@ -2472,12 +2538,10 @@ var classifier_prototype = {
         }
 
         // Build scope badge, notification bell, and type label as three separate containers
-        // For feed-type classifiers, show favicon instead of scope controls
+        // For feed-type classifiers, no scope badge — favicon goes next to the title
         var $scope_badge;
         if (classifier_type === 'feed') {
-            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' }, [
-                $.favicon_el(classifier)
-            ]);
+            $scope_badge = null;
         } else {
             // Three scope icons shown simultaneously — active one highlighted
             var scope_icon_data = [
@@ -2535,6 +2599,7 @@ var classifier_prototype = {
                     this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score),
                     $type_label,
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
+                    (classifier_type === 'feed' && $.favicon_el(classifier)),
                     $.make('span', classifier_title)
                 ])
             ]),
@@ -3507,6 +3572,13 @@ var classifier_prototype = {
 
         // Manage tab classifier clicks (handle before regular classifiers)
         var manage_stop = false;
+        $.targetIs(e, { tagSelector: '.NB-manage-classifier-item .NB-classifier-icon-super-dislike' }, function ($t, $p) {
+            e.preventDefault();
+            manage_stop = true;
+            var $item = $t.closest('.NB-manage-classifier-item');
+            self.change_manage_classifier($item, 'super_dislike');
+        });
+        if (manage_stop) return;
         $.targetIs(e, { tagSelector: '.NB-manage-classifier-item .NB-classifier-icon-dislike' }, function ($t, $p) {
             e.preventDefault();
             manage_stop = true;
@@ -4699,22 +4771,22 @@ var classifier_prototype = {
             $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'url', c.url, c.score, c.scope, c.folder_name));
         });
 
-        // Feed-level classifier (publisher) - use feed_id as value but display feed_title
+        // Feed-level classifier (publisher) - use feed_id as value, display feed_title
         _.each(classifiers.feeds, function (c) {
             var $item = self.make_manage_classifier_item(feed.feed_id, 'feed', feed.feed_id, c.score);
-            // Update the label to show feed title instead of feed_id
-            $item.find('.NB-classifier label span').text(feed.feed_title);
+            // Update the value span (last direct child span of label) to show feed title
+            $item.find('.NB-classifier label > span:last-child').text(feed.feed_title);
             $classifiers_list.push($item);
         });
 
         // AI Content prompts
         _.each(classifiers.prompts, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'prompt', c.prompt, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'prompt', c.prompt, c.score, c.scope, c.folder_name));
         });
 
         // AI Image prompts
         _.each(classifiers.image_prompts, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'image_prompt', c.prompt, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'image_prompt', c.prompt, c.score, c.scope, c.folder_name));
         });
 
         if (!$classifiers_list.length) return null;
@@ -4740,10 +4812,10 @@ var classifier_prototype = {
         var effective_scope = scope || 'feed';
 
         // Build scope badge with three toggleable icons (same as story tab)
-        // For feed-type and prompt classifiers, no scope controls
+        // For feed-type classifiers, no scope controls (publisher is always feed-scoped)
         var $scope_badge;
-        if (type === 'feed' || type === 'prompt' || type === 'image_prompt') {
-            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' });
+        if (type === 'feed') {
+            $scope_badge = null;
         } else {
             var scope_icon_data = [
                 { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
@@ -4779,17 +4851,20 @@ var classifier_prototype = {
             'data-scope': effective_scope,
             'data-folder-name': folder_name || ''
         }, [
-            $.make('div', { className: 'NB-classifier NB-classifier-' + type + (score > 0 ? ' NB-classifier-like' : ' NB-classifier-dislike') }, [
+            $.make('div', { className: 'NB-classifier NB-classifier-' + type + (score > 0 ? ' NB-classifier-like' : (score <= -2 ? ' NB-classifier-super-dislike' : ' NB-classifier-dislike')) }, [
                 $.make('input', { type: 'checkbox', className: 'NB-classifier-input-like', name: 'like_' + type, value: value }),
                 $.make('input', { type: 'checkbox', className: 'NB-classifier-input-dislike', name: 'dislike_' + type, value: value }),
+                $.make('input', { type: 'checkbox', className: 'NB-classifier-input-super-dislike', name: 'super_dislike_' + type, value: value }),
                 $.make('div', { className: 'NB-classifier-icon-like' }),
                 $.make('div', { className: 'NB-classifier-icon-dislike' }, [
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
+                $.make('div', { className: 'NB-classifier-icon-super-dislike' }),
                 $.make('label', [
                     $scope_badge,
                     this.make_notification_bell(type, value, effective_scope, folder_name, score),
                     (type !== 'feed' ? $type_label_el : null),
+                    (type === 'feed' && $.favicon_el(feed_id)),
                     $.make('span', value)
                 ])
             ])
@@ -4806,6 +4881,9 @@ var classifier_prototype = {
         if (score > 0) {
             $('.NB-classifier-input-like', $item).prop('checked', true);
             original_state = 'like';
+        } else if (score <= -2) {
+            $('.NB-classifier-input-super-dislike', $item).prop('checked', true);
+            original_state = 'super_dislike';
         } else if (score < 0) {
             $('.NB-classifier-input-dislike', $item).prop('checked', true);
             original_state = 'dislike';
@@ -4813,7 +4891,7 @@ var classifier_prototype = {
         $('.NB-classifier', $item).data('original-state', original_state);
 
         // Bind scope toggle clicks (same behavior as story tab)
-        if (type !== 'feed' && type !== 'prompt' && type !== 'image_prompt') {
+        if (type !== 'feed') {
             var self = this;
             $('.NB-scope-toggle', $item).on('click', function (e) {
                 e.stopPropagation();
@@ -4859,6 +4937,8 @@ var classifier_prototype = {
         var current_score = 0;
         if ($('.NB-classifier-input-like', $item).is(':checked')) {
             current_score = 1;
+        } else if ($('.NB-classifier-input-super-dislike', $item).is(':checked')) {
+            current_score = -2;
         } else if ($('.NB-classifier-input-dislike', $item).is(':checked')) {
             current_score = -1;
         }
@@ -4940,6 +5020,8 @@ var classifier_prototype = {
                     var name;
                     if (change.current_score === 1) {
                         name = 'like_' + change.type;
+                    } else if (change.current_score === -2) {
+                        name = 'super_dislike_' + change.type;
                     } else if (change.current_score === -1) {
                         name = 'dislike_' + change.type;
                     } else if (change.orig_score > 0) {
@@ -5028,6 +5110,8 @@ var classifier_prototype = {
 
             if (change.current_score === 1) {
                 name = 'like_' + type;
+            } else if (change.current_score === -2) {
+                name = 'super_dislike_' + type;
             } else if (change.current_score === -1) {
                 name = 'dislike_' + type;
             } else {
