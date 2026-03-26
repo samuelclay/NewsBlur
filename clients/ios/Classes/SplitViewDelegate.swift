@@ -53,6 +53,14 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
                 NSLog("split will change to an unexpected mode")
         }
 
+        // If display mode changed away from secondaryOnly while temporary fullscreen is active,
+        // something external (e.g. Mac sidebar toggle) changed the mode, so exit temporary fullscreen.
+        if let detail = NewsBlurAppDelegate.shared?.detailViewController,
+           detail.isTemporaryFullScreen,
+           displayMode != .secondaryOnly {
+            detail.resetTemporaryFullScreenIfNeeded()
+        }
+
         NewsBlurAppDelegate.shared?.detailViewController.syncFullscreenSidebarPresentation(for: displayMode)
         NewsBlurAppDelegate.shared?.feedsViewController.updateSidebarButton(for: displayMode)
         NewsBlurAppDelegate.shared?.feedDetailViewController.updateSidebarButton(for: displayMode)

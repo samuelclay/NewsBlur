@@ -631,7 +631,17 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [ThemeManager themeManager].theme = string;
 }
 
+- (IBAction)toggleTemporaryFullScreen:(id)sender {
+    [self.appDelegate.detailViewController toggleTemporaryFullScreen:sender];
+}
+
 - (IBAction)toggleFeeds:(id)sender {
+    // If in temporary full-screen, exit it instead of normal sidebar toggle.
+    if (self.appDelegate.detailViewController.isTemporaryFullScreen) {
+        [self.appDelegate.detailViewController resetTemporaryFullScreenIfNeeded];
+        return;
+    }
+
     if (self.appDelegate.detailViewController.isUsingNativeFullscreenSidebar &&
         self.appDelegate.detailViewController.fullscreenSidebarPresentation != FullscreenSidebarPresentationFullscreen) {
         FullscreenSidebarPresentation currentPresentation = self.appDelegate.detailViewController.fullscreenSidebarPresentation;
