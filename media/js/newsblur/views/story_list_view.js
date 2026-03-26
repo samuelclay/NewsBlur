@@ -5,7 +5,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         }
     },
 
