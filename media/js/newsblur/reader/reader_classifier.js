@@ -4647,23 +4647,31 @@ var classifier_prototype = {
         if (type === 'image_prompt') type_label = 'AI Image';
 
         var effective_scope = scope || 'feed';
-        var scope_svgs = {
-            'feed': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>',
-            'folder': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
-            'global': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
-        };
 
-        // Build scope badge and type label as separate containers
+        // Build scope badge with three toggleable icons (same as story tab)
+        // For feed-type and prompt classifiers, no scope controls
         var $scope_badge;
-        if (type === 'feed') {
-            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' }, [
-                $.make('span', { className: 'NB-classifier-type-label' }, type_label)
-            ]);
+        if (type === 'feed' || type === 'prompt' || type === 'image_prompt') {
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' });
         } else {
-            var $scope_icon = $.make('span', { className: 'NB-classifier-scope-icon NB-scope-' + effective_scope });
-            $scope_icon.html(scope_svgs[effective_scope]);
-            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-scope-' + effective_scope }, [
-                $scope_icon
+            var scope_icon_data = [
+                { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+                { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+                { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+            ];
+            var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
+            _.each(scope_icon_data, function (icon) {
+                var $toggle = $.make('span', {
+                    className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === effective_scope ? ' NB-active' : ''),
+                    'data-tooltip': icon.title
+                });
+                $toggle.html(icon.svg);
+                $toggle.data('scope', icon.key);
+                $scope_toggles.append($toggle);
+            });
+
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge' }, [
+                $scope_toggles
             ]);
         }
 
@@ -4696,6 +4704,12 @@ var classifier_prototype = {
             ])
         ]);
 
+        // Store scope data on the classifier element
+        $('.NB-classifier', $item).data('scope', effective_scope);
+        $('.NB-classifier', $item).data('folder-name', folder_name || '');
+        $('.NB-classifier', $item).data('original-scope', effective_scope);
+        $('.NB-classifier', $item).data('original-folder-name', folder_name || '');
+
         // Set initial checkbox state and store original state for change tracking
         var original_state = 'neutral';
         if (score > 0) {
@@ -4706,6 +4720,34 @@ var classifier_prototype = {
             original_state = 'dislike';
         }
         $('.NB-classifier', $item).data('original-state', original_state);
+
+        // Bind scope toggle clicks (same behavior as story tab)
+        if (type !== 'feed' && type !== 'prompt' && type !== 'image_prompt') {
+            var self = this;
+            $('.NB-scope-toggle', $item).on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                self.select_scope($(this), $item);
+            });
+
+            // Scope toggle tooltips
+            $('.NB-scope-toggle', $item).on('mouseenter', function () {
+                var $this = $(this);
+                var text = $this.attr('data-tooltip');
+                if (!text) return;
+                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                $('body').append($tip);
+                var rect = this.getBoundingClientRect();
+                $tip.css({
+                    top: rect.top - $tip.outerHeight() - 6,
+                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+                });
+                $this.data('$tooltip', $tip);
+            }).on('mouseleave', function () {
+                var $tip = $(this).data('$tooltip');
+                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+            });
+        }
 
         return $item;
     },
