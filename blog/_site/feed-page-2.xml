@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-26T11:37:22-04:00</updated>
+  <updated>2026-03-26T19:30:50-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,77 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Redesigning NewsBlur on the web, iOS, and Android</title>
+    <link href="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/" rel="alternate" type="text/html" title="Redesigning NewsBlur on the web, iOS, and Android" />
+    <published>2021-07-01T00:00:00-04:00</published>
+    <updated>2021-07-01T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/">
+      <![CDATA[<p>This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on <a href="/2013/03/17/three-months-to-scale-newsblur/">the ninth anniversary of the sunset of Google Reader</a>.</p>
+
+<p>To start, let’s take a look below at the redesigned NewsBlur.</p>
+
+<p><img src="/assets/redesign-web.png" style="width: 750px;" /></p>
+
+<p>Loads of new features:</p>
+
+<ul>
+  <li>The dashboard now has multiple, customizable rivers of news</li>
+  <li>Image previews are now customizable by size and layout</li>
+  <li>Story previews are also customizable by length</li>
+  <li>Images are now full bleed on the web (edge-to-edge)</li>
+  <li>Controls have been re-styled and made more accessible</li>
+  <li>Sizes, spaces, and text have all been tweaked for a more legible read</li>
+  <li>Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure</li>
+  <li>Both Android and iOS apps have been updated with the new design</li>
+</ul>
+
+<p>Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.</p>
+
+<p>Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.</p>
+
+<p>
+    <video autoplay="" loop="" playsinline="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
+        <source src="/assets/redesign-content-preview.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.</p>
+
+<p><img src="/assets/redesign-full-bleed.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.</p>
+
+<p><img src="/assets/redesign-bottom.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the <a href="https://testflight.apple.com/join/hYk9WU3f">iOS TestFlight</a> or the <a href="https://play.google.com/store/apps/details?id=com.newsblur&amp;hl=en_US&amp;gl=US">Android beta</a>.</p>
+
+<p><img src="/assets/redesign-ios-android.png" style="" /></p>
+
+<p>This whole redesign weighs in at a whopping 1,316 commits, which <a href="https://github.com/samuelclay/NewsBlur/compare/python2...master">you can view on GitHub</a>. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is <code class="language-plaintext highlighter-rouge">make nb</code> and <a href="https://github.com/samuelclay/NewsBlur">instructions are found on the repo</a>.</p>
+
+<p>If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="backend" />
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">How a Docker footgun led to a vandal deleting NewsBlur&apos;s MongoDB database</title>
@@ -1238,40 +1309,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Preview NewsBlur&apos;s upcoming hardware device, Turn Touch</title>
-    <link href="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/" rel="alternate" type="text/html" title="Preview NewsBlur&apos;s upcoming hardware device, Turn Touch" />
-    <published>2017-02-02T05:00:24-05:00</published>
-    <updated>2017-02-02T05:00:24-05:00</updated>
-    <id>https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/">
-      <![CDATA[<p>I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. <a href="https://www.turntouch.com">Signup on turntouch.com</a> to find out.</p>
-
-<p><a href="https://www.turntouch.com"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/blog-preview-blur.jpg" alt="" /></a></p>
-
-<p>It’s a new kind of device and it’s machined out of solid wood. I built it to last, much like my other projects (for instance the news reader you’re likely reading this in). Turn Touch is built for NewsBlur, among many other things.</p>
-
-<p>Turn Touch will be launching on Kickstarter next week and I want to ask for your help. When I launch my campaign I’m going to need people like you to share it with people who look to you for recomendations on what’s good. You already use NewsBlur, so you’re already known for having good taste.</p>
-
-<p>Now, you probably want to know what Turn Touch is and actually looks like, yeah? Then <a href="https://www.turntouch.com">signup on turntouch.com</a>.</p>
-
-<p>You’ll get to preview the Kickstarter campaign and offer me any feedback you have. You’ll get to see Turn Touch and find out what it offers you.</p>
-
-<p>I’ve been working on this as a side project for that past few years. And by signing up you’ll have the first access to it.</p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. Signup on turntouch.com to find out.
 ]]>
     </summary>
     
