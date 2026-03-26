@@ -13108,11 +13108,6 @@ form.opml_import_form input {
     color: #777;
 }
 
-/* No super dislike on publisher/feed classifiers */
-.NB-classifier-feed .NB-classifier-icon-super-dislike {
-    display: none;
-}
-
 /* Scope toggle group: three icons side by side */
 .NB-classifier-scope-toggles {
     display: inline-flex;
