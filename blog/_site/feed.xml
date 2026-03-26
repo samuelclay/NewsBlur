@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-26T11:37:22-04:00</updated>
+  <updated>2026-03-26T19:30:50-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,101 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title>
+    <link href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" rel="alternate" type="text/html" title="Hide what you hate, track what you love: super dislikes and per-classifier notifications" />
+    <published>2026-03-27T00:00:00-04:00</published>
+    <updated>2026-03-27T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/">
+      <![CDATA[<p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
+
+<p>Today I’m shipping two features that give the Intelligence Trainer more teeth: super dislikes that override any number of likes, and per-classifier notifications that ping you only when specific classifiers match.</p>
+
+<p>Super dislikes are available to all users – free, Premium, Premium Archive, and Premium Pro. Folder and global scoping requires Premium Archive. Per-classifier notifications are exclusive to Premium Archive and Premium Pro subscribers.</p>
+
+<h3 id="super-dislikes">Super dislikes</h3>
+
+<p>A super dislike is a new third state for classifiers. The regular thumbs down hides a story unless a thumbs up overrides it. The super dislike – shown as a double thumbs-down icon – overrides everything. If a story matches a super-disliked classifier, it’s hidden no matter how many positive classifiers it also matches.</p>
+
+<!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
+<p><img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The priority order is now: AI prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to AI classifiers.</p>
+
+<h4 id="how-to-use-it">How to use it</h4>
+
+<p>In the Intelligence Trainer, every classifier pill now has three clickable icons on the right side: thumbs up, thumbs down, and the double thumbs-down for super dislike. Click the double thumbs-down to super-dislike a classifier. Click it again to remove the super dislike.</p>
+
+<p>An explainer banner at the top of the trainer shows the priority chain so you always know how scoring works:</p>
+
+<ul>
+  <li><strong>Thumbs up</strong> beats any number of thumbs down</li>
+  <li><strong>Super thumbs down</strong> beats any number of thumbs up</li>
+</ul>
+
+<!-- SCREENSHOT: Explainer banner at top of trainer showing the priority chain with icons -->
+<p><img src="/assets/super-dislike-explainer.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="visual-highlighting">Visual highlighting</h4>
+
+<p>Super-disliked classifiers are highlighted in a deeper crimson color, distinct from the regular red of a normal dislike. When you’re reading stories, you’ll see the same color treatment on matched titles, authors, tags, and text, with a small double thumbs-down icon inline so you can tell at a glance why a story was scored the way it was.</p>
+
+<!-- SCREENSHOT: Story detail view showing a super-disliked title or tag highlighted in deep crimson with the double thumbs-down icon -->
+<p><img src="/assets/super-dislike-highlight.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="works-with-scopes">Works with scopes</h4>
+
+<p>Super dislikes work with all scope levels. Set a global super dislike on a topic like “sponsored” and it’s hidden across every feed. Set a folder-scoped super dislike on an author and they’re hidden in that folder regardless of positive training elsewhere. The same scoping rules from regular classifiers apply.</p>
+
+<h3 id="per-classifier-notifications">Per-classifier notifications</h3>
+
+<p>NewsBlur’s notifications have always been per-feed: turn them on and you get pinged on every new story. That’s fine for low-volume feeds, but not great for a high-volume feed where you only care about specific topics or authors. You end up choosing between too many notifications or none at all.</p>
+
+<p>Now you can set notifications on individual classifiers. Every classifier pill in the Intelligence Trainer has a small bell icon. Hover over it and a popover appears with four channel toggles: Email, Web, iOS, and Android. Choose any combination, and when a new story matches that specific classifier, you get notified. Everything else in the feed stays quiet.</p>
+
+<!-- SCREENSHOT: Classifier pill with bell icon and notification popover showing Email/Web/iOS/Android toggles -->
+<p><img src="/assets/classifier-notification-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The bell icon lights up on classifiers with active notifications, so you can see at a glance which ones will ping you.</p>
+
+<h4 id="works-with-scopes-and-regex">Works with scopes and regex</h4>
+
+<p>Classifier notifications respect the scope system. A notification on a global “breaking news” classifier fires when any feed publishes a matching story. A notification on a folder-scoped “earnings” classifier fires only for feeds in that folder.</p>
+
+<p>Regex classifiers work too. If you have a regex title or text classifier, the notification evaluates the pattern with timeout protection on every new story.</p>
+
+<h4 id="smart-deduplication">Smart deduplication</h4>
+
+<p>If a story already triggered a feed-level notification on a channel, the classifier notification won’t duplicate it. Each story is sent once per channel, regardless of how many classifiers or feed rules it matches. There’s also a cap of 3 stories per classifier per update cycle, so a burst of matching stories won’t flood you.</p>
+
+<h4 id="real-world-examples">Real-world examples</h4>
+
+<p><strong>Breaking news alerts.</strong> Train “breaking” as a global title classifier, set it to notify via iOS and Email. You get a push notification whenever any feed publishes a story with “breaking” in the title.</p>
+
+<p><strong>Author tracking.</strong> Follow a journalist across multiple outlets. Train their name as a global author classifier with notifications, and you’ll know the moment they publish regardless of which feed it’s in.</p>
+
+<p><strong>Keyword monitoring.</strong> Use a regex classifier for a product name or company, scoped to your industry folder. Get an email when a matching story appears, without turning on notifications for every feed in that folder.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Super dislikes are available now on the web for all NewsBlur users. Per-classifier notifications are available on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers – all users can see the bell icon and popover, but toggling channels requires an Archive or Pro subscription.</p>
+
+<p>If you have feedback or ideas for how to make these features better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Refer friends, gift subscriptions, and never pay for NewsBlur premium again</title>
@@ -1628,77 +1723,6 @@ A new sound of an old instrument.
     <summary type="html">
       <![CDATA[Here’s a nice feature that brings a new perspective to your stories. It’s called the Magazine view and features larger images, longer story content previews, and improved legibility of text.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Redesigning NewsBlur on the web, iOS, and Android</title>
-    <link href="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/" rel="alternate" type="text/html" title="Redesigning NewsBlur on the web, iOS, and Android" />
-    <published>2021-07-01T00:00:00-04:00</published>
-    <updated>2021-07-01T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/">
-      <![CDATA[<p>This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on <a href="/2013/03/17/three-months-to-scale-newsblur/">the ninth anniversary of the sunset of Google Reader</a>.</p>
-
-<p>To start, let’s take a look below at the redesigned NewsBlur.</p>
-
-<p><img src="/assets/redesign-web.png" style="width: 750px;" /></p>
-
-<p>Loads of new features:</p>
-
-<ul>
-  <li>The dashboard now has multiple, customizable rivers of news</li>
-  <li>Image previews are now customizable by size and layout</li>
-  <li>Story previews are also customizable by length</li>
-  <li>Images are now full bleed on the web (edge-to-edge)</li>
-  <li>Controls have been re-styled and made more accessible</li>
-  <li>Sizes, spaces, and text have all been tweaked for a more legible read</li>
-  <li>Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure</li>
-  <li>Both Android and iOS apps have been updated with the new design</li>
-</ul>
-
-<p>Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.</p>
-
-<p>Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.</p>
-
-<p>
-    <video autoplay="" loop="" playsinline="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
-        <source src="/assets/redesign-content-preview.mp4" type="video/mp4" />
-    </video>
-</p>
-
-<p>The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.</p>
-
-<p><img src="/assets/redesign-full-bleed.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
-
-<p>There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.</p>
-
-<p><img src="/assets/redesign-bottom.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
-
-<p>The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the <a href="https://testflight.apple.com/join/hYk9WU3f">iOS TestFlight</a> or the <a href="https://play.google.com/store/apps/details?id=com.newsblur&amp;hl=en_US&amp;gl=US">Android beta</a>.</p>
-
-<p><img src="/assets/redesign-ios-android.png" style="" /></p>
-
-<p>This whole redesign weighs in at a whopping 1,316 commits, which <a href="https://github.com/samuelclay/NewsBlur/compare/python2...master">you can view on GitHub</a>. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is <code class="language-plaintext highlighter-rouge">make nb</code> and <a href="https://github.com/samuelclay/NewsBlur">instructions are found on the repo</a>.</p>
-
-<p>If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="backend" />
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on...]]>
     </summary>
     
   </entry>
