@@ -12348,7 +12348,8 @@ form.opml_import_form input {
 
 /* Regex badge inside classifier */
 .NB-classifier-regex-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     background: #7B68EE;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -12356,10 +12357,11 @@ form.opml_import_form input {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 1px 4px;
+    padding: 2px 5px;
     border-radius: 3px;
     margin-right: 4px;
     vertical-align: middle;
+    line-height: 1;
 }
 
 .NB-classifier-like .NB-classifier-regex-badge {
