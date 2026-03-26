@@ -2094,6 +2094,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    load_classifier_notifications: function (callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/notifications/classifiers/', {}, callback);
+        } else {
+            if ($.isFunction(callback)) callback({ classifier_notifications: {} });
+        }
+    },
+
+    set_classifier_notification: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/notifications/classifier/', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
     send_story_email: function (data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/send_story_email', data, callback, error_callback, { 'timeout': 6000 });

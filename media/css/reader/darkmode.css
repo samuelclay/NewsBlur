@@ -3603,7 +3603,8 @@ a.mention, a.mention-group {
 }
 
 /* Type badge dark mode */
-.NB-dark .NB-classifier-type-badge {
+.NB-dark .NB-classifier-type-badge,
+.NB-dark .NB-classifier-scope-badge {
     background: rgba(255, 255, 255, 0.08);
     color: #999;
 }
@@ -3621,8 +3622,9 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-scope-tooltip {
-    background: rgba(255, 255, 255, 0.9);
-    color: #222;
+    background: rgba(30, 30, 30, 0.95);
+    color: #eee;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .NB-dark .NB-classifier-scope-popover {
@@ -3651,6 +3653,34 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-scope-upgrade-nudge a {
     color: #A78BFA;
+}
+
+/* Classifier notification bell dark mode */
+.NB-dark .NB-classifier-notification-bell {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-classifier-notification-bell:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-classifier-notification-bell .NB-bell-icon {
+    color: #aaa;
+    opacity: 0.45;
+}
+
+.NB-dark .NB-classifier-notification-bell.NB-active .NB-bell-icon {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-channel-indicator {
+    color: #60A5FA;
+}
+
+/* Classifier notification popover dark mode — already dark bg, just adjust border */
+.NB-dark .NB-classifier-notification-popover {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ================================== */

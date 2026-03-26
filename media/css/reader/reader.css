@@ -11903,7 +11903,8 @@ form.opml_import_form input {
     cursor: pointer;
     color: black;
     float: left;
-    display: block;
+    display: inline-flex;
+    align-items: stretch;
     padding: 2px 0;
 }
 
@@ -12391,29 +12392,272 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
-/* Type badge: scope toggle icons + type label inside classifier pill */
-.NB-classifier-type-badge {
+/* ============================================== */
+/* = Classifier Notification Bell               = */
+/* ============================================== */
+
+.NB-classifier-notification-bell {
+    gap: 2px;
+    cursor: pointer;
+    padding: 0 3px;
+    background: rgba(128, 128, 128, 0.1);
+    transition: background 0.15s;
+}
+
+.NB-classifier-notification-bell:hover {
+    background: rgba(128, 128, 128, 0.25);
+}
+
+.NB-classifier-notification-bell .NB-bell-icon {
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    opacity: 0.35;
+    transition: opacity 0.15s;
+    color: #777;
+    flex-shrink: 0;
+}
+
+.NB-classifier-notification-bell .NB-bell-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.NB-classifier-notification-bell:hover .NB-bell-icon {
+    opacity: 0.5;
+}
+
+.NB-classifier-notification-bell.NB-active .NB-bell-icon {
+    opacity: 1;
+    color: #4a90d9;
+}
+
+/* Channel indicator icons next to the bell */
+.NB-classifier-notif-indicators {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: 1px;
+}
+
+.NB-channel-indicator {
+    display: inline-flex;
+    width: 8px;
+    height: 8px;
+    opacity: 0.6;
+    color: #4a90d9;
+    flex-shrink: 0;
+}
+
+.NB-channel-indicator svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Bell styles inside liked/disliked classifier pills */
+.NB-classifier-like .NB-classifier-notification-bell {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.NB-classifier-like .NB-classifier-notification-bell:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.NB-classifier-like .NB-classifier-notification-bell .NB-bell-icon {
+    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-classifier-like .NB-classifier-notification-bell:hover .NB-bell-icon {
+    opacity: 0.85;
+    color: white;
+}
+
+.NB-classifier-like .NB-classifier-notification-bell.NB-active .NB-bell-icon {
+    opacity: 1;
+    color: white;
+}
+
+.NB-classifier-like .NB-channel-indicator {
+    color: white;
+    opacity: 0.9;
+}
+
+.NB-classifier-dislike .NB-classifier-notification-bell {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.NB-classifier-dislike .NB-classifier-notification-bell:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.NB-classifier-dislike .NB-classifier-notification-bell .NB-bell-icon {
+    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-classifier-dislike .NB-classifier-notification-bell:hover .NB-bell-icon {
+    opacity: 0.85;
+    color: white;
+}
+
+.NB-classifier-dislike .NB-classifier-notification-bell.NB-active .NB-bell-icon {
+    opacity: 1;
+    color: white;
+}
+
+.NB-classifier-dislike .NB-channel-indicator {
+    color: white;
+    opacity: 0.9;
+}
+
+/* ============================================== */
+/* = Classifier Notification Popover            = */
+/* ============================================== */
+
+.NB-classifier-notification-popover {
+    position: fixed;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    border-radius: 6px;
+    padding: 8px 8px 6px;
+    pointer-events: auto;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 5px;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-premium {
+    font-size: 9px;
+    font-weight: 600;
+    color: #d97706;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-premium.NB-flash {
+    animation: notif-premium-flash 0.6s ease-out;
+}
+
+@keyframes notif-premium-flash {
+    0% { opacity: 1; color: #fbbf24; }
+    100% { opacity: 0.8; color: #d97706; }
+}
+
+/* Gated state: dim the toggles to signal they're not clickable */
+.NB-notif-gated .NB-classifier-notif-option {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-types,
+.NB-classifier-notification-popover .NB-feed-notification-types,
+.NB-classifier-notification-popover .NB-feed-notification-filter {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 1px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-option,
+.NB-classifier-notification-popover .NB-feed-notification-option,
+.NB-classifier-notification-popover .NB-feed-notification-filter-unread,
+.NB-classifier-notification-popover .NB-feed-notification-filter-focus {
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    margin: 0 2px 0 0;
+    white-space: nowrap;
+    user-select: none;
+    color: rgba(255, 255, 255, 0.55);
+    text-shadow: none;
+    background: none;
+    transition: background-color 0.14s, color 0.14s;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-option:last-child,
+.NB-classifier-notification-popover .NB-feed-notification-option:last-child,
+.NB-classifier-notification-popover .NB-feed-notification-filter-focus {
+    margin-right: 0;
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-option:hover,
+.NB-classifier-notification-popover .NB-feed-notification-option:hover,
+.NB-classifier-notification-popover .NB-feed-notification-filter-unread:hover,
+.NB-classifier-notification-popover .NB-feed-notification-filter-focus:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-classifier-notification-popover .NB-classifier-notif-option.NB-active,
+.NB-classifier-notification-popover .NB-feed-notification-option.NB-active,
+.NB-classifier-notification-popover .NB-feed-notification-filter-unread.NB-active,
+.NB-classifier-notification-popover .NB-feed-notification-filter-focus.NB-active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Feed notification popover: stack filter and types vertically */
+.NB-classifier-notification-popover-feed .NB-feed-notification-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Shared style for all three classifier pill containers */
+.NB-classifier-scope-badge,
+.NB-classifier-type-badge,
+.NB-classifier-notification-bell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+    background: rgba(128, 128, 128, 0.15);
+    line-height: 1;
+}
+
+/* Scope badge: just the scope toggle icons */
+.NB-classifier-scope-badge {
+    gap: 1px;
+    padding: 2px 3px;
+}
+
+.NB-classifier-scope-badge.NB-classifier-type-feed {
+    cursor: default;
+    padding: 2px 3px;
+}
+
+/* Type label badge: just the classifier type name */
+.NB-classifier-type-badge {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 8px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 2px 5px 2px 2px;
-    border-radius: 3px;
-    margin-right: 4px;
-    vertical-align: middle;
-    background: rgba(128, 128, 128, 0.15);
+    padding: 2px 5px;
     color: #777;
-    line-height: 1;
-}
-
-/* Feed-type classifier badge (Site) — no scope controls */
-.NB-classifier-type-badge.NB-classifier-type-feed {
-    cursor: default;
-    padding-left: 3px;
 }
 
 /* Scope toggle group: three icons side by side */
@@ -12486,7 +12730,8 @@ form.opml_import_form input {
 }
 
 /* Liked classifier — badge adapts to green background */
-.NB-classifier-like .NB-classifier-type-badge {
+.NB-classifier-like .NB-classifier-type-badge,
+.NB-classifier-like .NB-classifier-scope-badge {
     background: rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.9);
 }
@@ -12517,7 +12762,8 @@ form.opml_import_form input {
 }
 
 /* Disliked classifier — badge adapts to red background */
-.NB-classifier-dislike .NB-classifier-type-badge {
+.NB-classifier-dislike .NB-classifier-type-badge,
+.NB-classifier-dislike .NB-classifier-scope-badge {
     background: rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.9);
 }
@@ -13121,7 +13367,8 @@ h5.NB-classifier-section-header {
 }
 
 /* Shake animation on type badge when scope change is denied */
-.NB-classifier-type-badge.NB-shake {
+.NB-classifier-type-badge.NB-shake,
+.NB-classifier-scope-badge.NB-shake {
     animation: badge-shake 0.4s ease-in-out;
 }
 

@@ -99,6 +99,9 @@ var classifier_prototype = {
             this.user_classifiers = {};
         }
 
+        this.classifier_notifications = {};
+        this.load_classifier_notifications();
+
         this.make_trainer_intro();
         this.get_feeds_trainer();
         this.handle_cancel();
@@ -124,6 +127,10 @@ var classifier_prototype = {
         } else {
             this.user_classifiers = {};
         }
+
+        this.classifier_notifications = {};
+        this.load_classifier_notifications();
+
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
@@ -153,6 +160,9 @@ var classifier_prototype = {
         } else {
             this.user_classifiers = {};
         }
+
+        this.classifier_notifications = {};
+        this.load_classifier_notifications();
 
         this.find_story_and_feed();
         this.make_modal_story();
@@ -2178,6 +2188,213 @@ var classifier_prototype = {
         return $sections;
     },
 
+    // ------------------------------------------------------------------
+    // Classifier notification bell + popover
+    // ------------------------------------------------------------------
+
+    load_classifier_notifications: function () {
+        var self = this;
+        this.model.load_classifier_notifications(function (data) {
+            self.classifier_notifications = (data && data.classifier_notifications) || {};
+        });
+    },
+
+    make_notification_bell: function (classifier_type, classifier_value, scope, folder_name) {
+        var feed_id = this.feed_id;
+        var has_channels = false;
+        var active_types = [];
+
+        if (classifier_type === 'feed') {
+            // Feed-type: read from existing feed notification data
+            var feed = this.model.get_feed(classifier_value);
+            if (feed) {
+                active_types = feed.get('notification_types') || [];
+                has_channels = active_types.length > 0;
+            }
+        } else {
+            // Non-feed: read from classifier notifications cache
+            var notif_key = classifier_type + ':' + classifier_value + ':' + scope + ':' + (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
+            var notif = this.classifier_notifications && this.classifier_notifications[notif_key];
+            if (notif) {
+                active_types = notif.notification_types || [];
+                has_channels = active_types.length > 0;
+            }
+        }
+
+        var bell_svg = NEWSBLUR.Views.ClassifierNotificationPopover.BELL_SVG;
+
+        var $indicators = $.make('span', { className: 'NB-classifier-notif-indicators' });
+        if (has_channels) {
+            _.each(active_types, function (type) {
+                var icon_svg = NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS[type];
+                if (icon_svg) {
+                    var $icon = $.make('span', { className: 'NB-channel-indicator NB-channel-' + type });
+                    $icon.html(icon_svg);
+                    $indicators.append($icon);
+                }
+            });
+        }
+
+        var $bell_icon = $.make('span', { className: 'NB-bell-icon' });
+        $bell_icon.html(bell_svg);
+
+        var $bell = $.make('span', {
+            className: 'NB-classifier-notification-bell' + (has_channels ? ' NB-active' : '')
+        }, [
+            $bell_icon,
+            $indicators
+        ]);
+
+        // Store data for popover
+        $bell.data('classifier-type', classifier_type);
+        $bell.data('classifier-value', classifier_value);
+        $bell.data('scope', scope);
+        $bell.data('folder-name', folder_name || '');
+
+        // Bind hover/click for popover
+        var self = this;
+        $bell.on('mouseenter', function (e) {
+            var $this = $(this);
+            clearTimeout(self._bell_close_timer);
+            self._bell_hover_timer = setTimeout(function () {
+                self.show_notification_popover($this);
+            }, 200);
+        }).on('mouseleave', function () {
+            clearTimeout(self._bell_hover_timer);
+            self._bell_close_timer = setTimeout(function () {
+                if (!self._popover_hovered) {
+                    self.close_notification_popover();
+                }
+            }, 150);
+        }).on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            clearTimeout(self._bell_hover_timer);
+            self.show_notification_popover($(this));
+        });
+
+        return $bell;
+    },
+
+    show_notification_popover: function ($bell) {
+        this.close_notification_popover();
+
+        var classifier_type = $bell.data('classifier-type');
+        var classifier_value = $bell.data('classifier-value');
+        var scope = $bell.data('scope');
+        var folder_name = $bell.data('folder-name');
+        var feed_id = this.feed_id;
+
+        // For feed-type classifiers, use existing FeedNotificationView in popover mode
+        if (classifier_type === 'feed') {
+            var feed = this.model.get_feed(classifier_value);
+            if (feed) {
+                var feed_view = new NEWSBLUR.Views.FeedNotificationView({
+                    model: feed,
+                    popover: true,
+                    selected: true
+                });
+                var $popover = $.make('div', { className: 'NB-classifier-notification-popover NB-classifier-notification-popover-feed' });
+                $popover.append(feed_view.render().$el);
+                $('body').append($popover);
+
+                // Position above the bell
+                var rect = $bell[0].getBoundingClientRect();
+                var popover_height = $popover.outerHeight();
+                $popover.css({
+                    top: rect.top - popover_height - 6,
+                    left: Math.max(4, rect.left - 20)
+                });
+
+                this._active_popover = $popover;
+                this._active_popover_bell = $bell;
+
+                var self = this;
+                $popover.on('mouseenter', function () {
+                    self._popover_hovered = true;
+                    clearTimeout(self._bell_close_timer);
+                }).on('mouseleave', function () {
+                    self._popover_hovered = false;
+                    self._bell_close_timer = setTimeout(function () {
+                        self.close_notification_popover();
+                        // Update bell display after feed notification change
+                        var types = feed.get('notification_types') || [];
+                        if (types.length > 0) {
+                            $bell.addClass('NB-active');
+                        } else {
+                            $bell.removeClass('NB-active');
+                        }
+                        var $ind = $bell.find('.NB-classifier-notif-indicators');
+                        $ind.empty();
+                        _.each(types, function (type) {
+                            var svg = NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS[type];
+                            if (svg) {
+                                var $icon = $.make('span', { className: 'NB-channel-indicator NB-channel-' + type });
+                                $icon.html(svg);
+                                $ind.append($icon);
+                            }
+                        });
+                    }, 150);
+                });
+
+                return;
+            }
+        }
+
+        // Non-feed: use the ClassifierNotificationPopover
+        var notif_key = classifier_type + ':' + classifier_value + ':' + scope + ':' + (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
+        var notif = this.classifier_notifications && this.classifier_notifications[notif_key];
+        var active_types = (notif && notif.notification_types) || [];
+
+        var popover = new NEWSBLUR.Views.ClassifierNotificationPopover({
+            classifier_type: classifier_type,
+            classifier_value: classifier_value,
+            scope: scope,
+            feed_id: scope === 'feed' ? feed_id : 0,
+            folder_name: folder_name || '',
+            is_email: _.contains(active_types, 'email'),
+            is_web: _.contains(active_types, 'web'),
+            is_ios: _.contains(active_types, 'ios'),
+            is_android: _.contains(active_types, 'android'),
+            $bell: $bell,
+            trainer: this
+        });
+
+        var $popover = popover.render().$el;
+        $('body').append($popover);
+
+        // Position above the bell
+        var rect = $bell[0].getBoundingClientRect();
+        var popover_height = $popover.outerHeight();
+        $popover.css({
+            top: rect.top - popover_height - 6,
+            left: Math.max(4, rect.left - 20)
+        });
+
+        this._active_popover = $popover;
+        this._active_popover_bell = $bell;
+
+        var self = this;
+        $popover.on('mouseenter', function () {
+            self._popover_hovered = true;
+            clearTimeout(self._bell_close_timer);
+        }).on('mouseleave', function () {
+            self._popover_hovered = false;
+            self._bell_close_timer = setTimeout(function () {
+                self.close_notification_popover();
+            }, 150);
+        });
+    },
+
+    close_notification_popover: function () {
+        if (this._active_popover) {
+            this._active_popover.remove();
+            this._active_popover = null;
+            this._active_popover_bell = null;
+        }
+        this._popover_hovered = false;
+    },
+
     make_classifier: function (classifier_title, classifier_value, classifier_type, classifier_count, classifier, is_regex) {
         var score = 0;
         // is_regex can be passed explicitly, or detected from classifier_type === 'regex'
@@ -2213,13 +2430,12 @@ var classifier_prototype = {
             css_class += ' NB-classifier-regex';
         }
 
-        // Build the type badge with all three scope icons as a toggle group
-        // For feed-type classifiers, just show the favicon + "Site:" (no scope controls)
-        var $type_badge;
+        // Build scope badge, notification bell, and type label as three separate containers
+        // For feed-type classifiers, show favicon instead of scope controls
+        var $scope_badge;
         if (classifier_type === 'feed') {
-            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-classifier-type-feed' }, [
-                $.favicon_el(classifier),
-                $.make('span', { className: 'NB-classifier-type-label' }, 'Site')
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' }, [
+                $.favicon_el(classifier)
             ]);
         } else {
             // Three scope icons shown simultaneously — active one highlighted
@@ -2239,11 +2455,14 @@ var classifier_prototype = {
                 $scope_toggles.append($toggle);
             });
 
-            $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
-                $scope_toggles,
-                $.make('span', { className: 'NB-classifier-type-label' }, classifier_type_title)
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge' }, [
+                $scope_toggles
             ]);
         }
+
+        var $type_label = $.make('span', { className: 'NB-classifier-type-badge' }, [
+            $.make('span', { className: 'NB-classifier-type-label' }, classifier_type_title)
+        ]);
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
             $.make('span', { className: css_class }, [
@@ -2264,7 +2483,9 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    $type_badge,
+                    $scope_badge,
+                    this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name),
+                    $type_label,
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     $.make('span', classifier_title)
                 ])
@@ -2347,8 +2568,8 @@ var classifier_prototype = {
 
         // Archive gating: non-Archive users can't use folder/global
         if (!is_archive && new_scope !== 'feed') {
-            // 1. Shake the type badge to signal "denied"
-            var $badge = $toggle.closest('.NB-classifier-type-badge');
+            // 1. Shake the scope badge to signal "denied"
+            var $badge = $toggle.closest('.NB-classifier-scope-badge');
             $badge.removeClass('NB-shake');
             $badge[0].offsetWidth; // force reflow
             $badge.addClass('NB-shake');
@@ -4429,20 +4650,23 @@ var classifier_prototype = {
             'global': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
         };
 
-        // Build type badge with scope icon
-        var $type_badge;
+        // Build scope badge and type label as separate containers
+        var $scope_badge;
         if (type === 'feed') {
-            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-classifier-type-feed' }, [
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-classifier-type-feed' }, [
                 $.make('span', { className: 'NB-classifier-type-label' }, type_label)
             ]);
         } else {
             var $scope_icon = $.make('span', { className: 'NB-classifier-scope-icon NB-scope-' + effective_scope });
             $scope_icon.html(scope_svgs[effective_scope]);
-            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-scope-' + effective_scope }, [
-                $scope_icon,
-                $.make('span', { className: 'NB-classifier-type-label' }, type_label)
+            $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge NB-scope-' + effective_scope }, [
+                $scope_icon
             ]);
         }
+
+        var $type_label_el = $.make('span', { className: 'NB-classifier-type-badge' }, [
+            $.make('span', { className: 'NB-classifier-type-label' }, type_label)
+        ]);
 
         var $item = $.make('div', {
             className: 'NB-manage-classifier-item',
@@ -4461,7 +4685,9 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    $type_badge,
+                    $scope_badge,
+                    this.make_notification_bell(type, value, effective_scope, folder_name),
+                    (type !== 'feed' ? $type_label_el : null),
                     $.make('span', value)
                 ])
             ])
