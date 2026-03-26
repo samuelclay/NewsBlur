@@ -878,12 +878,17 @@ class MUserClassifierNotification(mongo.Document):
             except UserSubscription.DoesNotExist:
                 continue
 
+            # Track per-classifier send counts: cap at 3 stories per classifier per update
+            classifier_send_counts = {notif.pk: 0 for notif in user_notifs}
+
             for story in stories:
                 story["story_content"] = html.unescape(story.get("story_content", ""))
 
-                # Find all matching classifiers for this story
+                # Find all matching classifiers for this story (skip classifiers that hit their cap)
                 matched = []
                 for notif in user_notifs:
+                    if classifier_send_counts[notif.pk] >= 3:
+                        continue
                     if notif.matches_story(story, feed_id, folder_feed_ids):
                         matched.append(notif)
 
@@ -944,6 +949,8 @@ class MUserClassifierNotification(mongo.Document):
                     is_android=channels_to_send.get("android", False),
                 )
                 total_sent_count += 1
+                for notif in matched:
+                    classifier_send_counts[notif.pk] += 1
 
                 # Update last_notification_date on matched notifications
                 for notif in matched:

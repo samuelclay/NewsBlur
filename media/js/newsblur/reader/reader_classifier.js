@@ -2372,7 +2372,9 @@ var classifier_prototype = {
         $bell.data('classifier-value', classifier_value);
         $bell.data('is-regex', is_regex);
         $bell.data('scope', scope);
+        $bell.data('original-scope', scope);
         $bell.data('folder-name', folder_name || '');
+        $bell.data('original-folder-name', folder_name || '');
         $bell.data('score', score);
         $bell.data('notification-types', active_types.slice());
         $bell.data('original-notification-types', active_types.slice());
@@ -2754,9 +2756,14 @@ var classifier_prototype = {
             }
         }
 
-        // Update data
+        // Update data on classifier and its bell
         $cl.data('scope', new_scope);
         $cl.data('folder-name', folder_name);
+        var $bell = $cl.find('.NB-classifier-notification-bell');
+        if ($bell.length) {
+            $bell.data('scope', new_scope);
+            $bell.data('folder-name', folder_name);
+        }
 
         // Update toggle active states
         $toggle.closest('.NB-classifier-scope-toggles').find('.NB-scope-toggle').removeClass('NB-active');
@@ -3863,7 +3870,9 @@ var classifier_prototype = {
             var $bell = $(this);
             var current_types = ($bell.data('notification-types') || []).slice().sort().join(',');
             var original_types = ($bell.data('original-notification-types') || []).slice().sort().join(',');
-            if (current_types !== original_types) {
+            var scope_changed = ($bell.data('scope') || 'feed') !== ($bell.data('original-scope') || 'feed');
+            var folder_changed = ($bell.data('folder-name') || '') !== ($bell.data('original-folder-name') || '');
+            if (current_types !== original_types || scope_changed || folder_changed) {
                 notif_saves.push({
                     classifier_type: $bell.data('classifier-type'),
                     classifier_value: $bell.data('classifier-value'),
@@ -4976,7 +4985,7 @@ var classifier_prototype = {
                 (type !== 'feed' && $.make('div', { className: 'NB-classifier-icon-super-dislike' })),
                 $.make('label', [
                     $scope_badge,
-                    this.make_notification_bell(type, value, effective_scope, folder_name, score),
+                    this.make_notification_bell(type, value, effective_scope, folder_name, score, is_regex),
                     (type !== 'feed' ? $type_label_el : null),
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (type === 'feed' && $.favicon_el(feed_id)),
