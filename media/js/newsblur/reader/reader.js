@@ -6063,7 +6063,7 @@
                 if (score_name == 'neutral') {
                     return 0;
                 } else if (score_name == 'negative') {
-                    return -1;
+                    return -2;  // Must be <= -2 to include super-downvoted stories
                 }
             }
 
