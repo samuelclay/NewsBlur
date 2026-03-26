@@ -422,71 +422,65 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_story_titles_header_shows_fullscreen_button_in_portrait_when_titles_are_visible() {
+    func test_story_detail_toolbar_shows_temporary_fullscreen_button_for_visible_story_in_column_mode() {
         XCTAssertTrue(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .storyTitles,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: false,
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: true,
                 isPhoneOrCompact: false,
-                width: 1032,
-                height: 1376
-            )
-        )
-        XCTAssertTrue(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .feeds,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: false,
-                isPhoneOrCompact: false,
-                width: 1032,
-                height: 1376
+                isMac: false,
+                isUserOverlayMode: false,
+                isTemporaryFullScreen: false
             )
         )
     }
 
-    func test_story_titles_header_hides_fullscreen_button_when_not_in_portrait_titles_state() {
+    func test_story_detail_toolbar_hides_temporary_fullscreen_button_without_a_visible_story() {
         XCTAssertFalse(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .fullscreen,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: false,
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: false,
                 isPhoneOrCompact: false,
-                width: 1032,
-                height: 1376
+                isMac: false,
+                isUserOverlayMode: false,
+                isTemporaryFullScreen: false
             )
         )
         XCTAssertFalse(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .storyTitles,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: false,
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: true,
+                isPhoneOrCompact: true,
+                isMac: false,
+                isUserOverlayMode: false,
+                isTemporaryFullScreen: false
+            )
+        )
+        XCTAssertFalse(
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: true,
                 isPhoneOrCompact: false,
-                width: 1376,
-                height: 1032
+                isMac: true,
+                isUserOverlayMode: false,
+                isTemporaryFullScreen: false
             )
         )
     }
 
-    func test_story_titles_header_shows_fullscreen_button_for_native_overlay_in_landscape() {
+    func test_story_detail_toolbar_keeps_temporary_fullscreen_button_visible_while_fullscreen_in_overlay_mode() {
         XCTAssertTrue(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .storyTitles,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: true,
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: true,
                 isPhoneOrCompact: false,
-                width: 1376,
-                height: 1032
+                isMac: false,
+                isUserOverlayMode: true,
+                isTemporaryFullScreen: true
             )
         )
-        XCTAssertTrue(
-            StoryTitlesHeaderButtonDecision.showsFullscreenButton(
-                for: .feeds,
-                storyTitlesOnLeft: true,
-                usesNativeFullscreenSidebar: true,
+        XCTAssertFalse(
+            StoryDetailFullscreenButtonDecision.showsTemporaryFullscreenButton(
+                storyDetailVisible: true,
                 isPhoneOrCompact: false,
-                width: 1376,
-                height: 1032
+                isMac: false,
+                isUserOverlayMode: true,
+                isTemporaryFullScreen: false
             )
         )
     }

@@ -235,26 +235,19 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
-@objcMembers public final class StoryTitlesHeaderButtonDecision: NSObject {
-    public class func showsFullscreenButton(
-        for presentation: FullscreenSidebarPresentation,
-        storyTitlesOnLeft: Bool,
-        usesNativeFullscreenSidebar: Bool,
+@objcMembers public final class StoryDetailFullscreenButtonDecision: NSObject {
+    public class func showsTemporaryFullscreenButton(
+        storyDetailVisible: Bool,
         isPhoneOrCompact: Bool,
-        width: CGFloat,
-        height: CGFloat
+        isMac: Bool,
+        isUserOverlayMode: Bool,
+        isTemporaryFullScreen: Bool
     ) -> Bool {
-        let _ = width
-
-        guard storyTitlesOnLeft, !isPhoneOrCompact, presentation != .fullscreen else {
+        guard storyDetailVisible, !isPhoneOrCompact, !isMac else {
             return false
         }
 
-        if usesNativeFullscreenSidebar {
-            return true
-        }
-
-        return height >= width
+        return isTemporaryFullScreen || !isUserOverlayMode
     }
 }
 
