@@ -52,6 +52,12 @@ class NewsBlurClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def get_unprotected(self, path: str, params: dict | None = None) -> dict:
+        """GET without premium check. Use for endpoints any user needs (e.g. account info)."""
+        resp = await self._http.get(path, params=params)
+        resp.raise_for_status()
+        return resp.json()
+
     async def post(self, path: str, data: dict | None = None) -> dict:
         await self.require_premium()
         resp = await self._http.post(path, data=data)
@@ -60,6 +66,6 @@ class NewsBlurClient:
 
     async def delete(self, path: str, data: dict | None = None) -> dict:
         await self.require_premium()
-        resp = await self._http.post(path, data=data)
+        resp = await self._http.delete(path, params=data)
         resp.raise_for_status()
         return resp.json()

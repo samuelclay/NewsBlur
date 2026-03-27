@@ -6,9 +6,7 @@ from newsblur_mcp.server import mcp, get_client
 
 async def _get_account_info(client: NewsBlurClient) -> dict:
     """Get information about the authenticated user's account."""
-    # Bypass premium check for account info - users need to see their status
-    client._is_premium = True
-    resp = await client.get("/profile/get_preferences")
+    resp = await client.get_unprotected("/profile/get_preferences")
 
     prefs = resp.get("preferences", {})
     user = resp.get("user", {})

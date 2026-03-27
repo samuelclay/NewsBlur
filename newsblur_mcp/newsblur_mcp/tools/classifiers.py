@@ -17,26 +17,28 @@ async def _train_classifier(
     dislike_feed: bool | None = None,
 ) -> dict:
     """Train the intelligence classifier to like or dislike stories."""
-    data = {"feed_id": feed_id}
+    # NewsBlur's classifier API expects repeated form fields for multiple values
+    # (e.g. like_title=python&like_title=rust), so we build a list of tuples
+    fields = [("feed_id", feed_id)]
 
     for keyword in (like_title or []):
-        data[f"like_title"] = keyword
+        fields.append(("like_title", keyword))
     for keyword in (dislike_title or []):
-        data[f"dislike_title"] = keyword
+        fields.append(("dislike_title", keyword))
     for author in (like_author or []):
-        data[f"like_author"] = author
+        fields.append(("like_author", author))
     for author in (dislike_author or []):
-        data[f"dislike_author"] = author
+        fields.append(("dislike_author", author))
     for tag in (like_tag or []):
-        data[f"like_tag"] = tag
+        fields.append(("like_tag", tag))
     for tag in (dislike_tag or []):
-        data[f"dislike_tag"] = tag
+        fields.append(("dislike_tag", tag))
     if like_feed:
-        data["like_feed"] = feed_id
+        fields.append(("like_feed", feed_id))
     if dislike_feed:
-        data["dislike_feed"] = feed_id
+        fields.append(("dislike_feed", feed_id))
 
-    resp = await client.post(f"/classifier/save", data=data)
+    resp = await client.post("/classifier/save", data=fields)
     return {"code": resp.get("code"), "message": "Classifier updated"}
 
 
