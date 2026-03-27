@@ -5013,6 +5013,42 @@ body {
     color: rgba(0, 0, 0, .6);
 }
 
+/* Feed manage icon on story feed bar */
+.NB-feed-story-feed .NB-feedlist-manage-icon {
+    opacity: 0;
+    display: none;
+    position: absolute;
+    left: -22px;
+    top: 2px;
+    width: 20px;
+    height: 20px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 4px 4px;
+    background-size: 8px;
+    cursor: pointer;
+    filter: brightness(0) invert(1);
+}
+
+.NB-inverse .NB-feed-story-feed .NB-feedlist-manage-icon {
+    filter: none;
+}
+
+.NB-feed-story-header-feed:hover .NB-feed-story-feed .NB-feedlist-manage-icon {
+    display: block;
+    opacity: 1;
+}
+
+.NB-feed-story-header-feed:hover .NB-feed-story-feed .feed_favicon {
+    display: none;
+}
+
+.NB-feed-story-feed .NB-feedlist-manage-icon:hover {
+    background-image: url('/media/embed/icons/nouns/down.svg');
+}
+
+.NB-feed-story.NB-hover-inverse .NB-feed-story-feed .NB-feedlist-manage-icon:hover {
+    background-image: url('/media/embed/icons/nouns/up.svg');
+}
+
 /* =============================== */
 /* = Story content modifications = */
 /* =============================== */
@@ -17205,6 +17241,82 @@ h5.NB-classifier-section-header {
     color: #808080;
     font-weight: normal;
     margin-left: 4px;
+}
+
+/* Feed flyout submenu in story manage menu */
+.NB-menu-manage-story-feed-submenu-wrapper {
+    padding: 0 !important;
+    margin: 0;
+    height: 0;
+    overflow: visible;
+    border: none !important;
+}
+
+.NB-menu-manage-story-feed-submenu-wrapper:hover {
+    background: none !important;
+}
+
+.NB-menu-manage-story-feed .NB-menu-manage-image {
+    background: none;
+}
+
+.NB-menu-manage-story-feed .NB-menu-manage-image img,
+.NB-menu-manage-story-feed .NB-menu-manage-image .feed_favicon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-menu-manage-story-feed:after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat center center;
+    background-size: 8px;
+    opacity: 0.4;
+}
+
+.NB-menu-manage li.NB-menu-item.NB-menu-manage-story-feed.NB-active {
+    background-color: #ECEEEA;
+}
+
+.NB-menu-manage-story-feed-submenu {
+    display: none;
+    position: fixed;
+    width: 260px;
+    background-color: #EAECE6;
+    border: 1px solid #90928B;
+    box-shadow: 2px 2px 5px #5E6267;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    z-index: 11;
+}
+
+.NB-menu-manage-story-feed-submenu li.NB-menu-item {
+    background-color: white;
+}
+
+.NB-menu-manage-story-feed-submenu li.NB-menu-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.NB-menu-manage-story-feed-submenu li.NB-menu-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.NB-menu-manage-story-feed-submenu li.NB-menu-item:hover:not(.NB-disabled) {
+    background-color: #DADCD4;
+}
+
+.NB-menu-manage-story-feed-submenu li.NB-menu-separator {
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    margin: 0;
+    padding: 0;
 }
 
 .NB-menu-manage .NB-menu-manage-controls {

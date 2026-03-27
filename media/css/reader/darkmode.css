@@ -1429,6 +1429,29 @@ color: #a85b40;
     background: #7CA4D8;
 }
 
+/* Feed flyout submenu in story manage menu - dark mode */
+.NB-dark .NB-menu-manage li.NB-menu-item.NB-menu-manage-story-feed.NB-active {
+    background-color: #3d4649;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu {
+    background-color: #303739;
+    border-color: #10120b;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-item {
+    background-color: #303739;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-item:hover:not(.NB-disabled) {
+    background-color: #3d4649;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-separator {
+    border-bottom-color: #252623;
+}
+
 /* Filter popover auto-mark-read slider dark mode */
 .NB-dark .NB-filter-popover .NB-auto-mark-read-slider-container {
     background: rgba(255, 255, 255, 0.05);

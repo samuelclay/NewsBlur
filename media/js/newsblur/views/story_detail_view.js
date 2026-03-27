@@ -24,6 +24,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
         "click .NB-feed-story-show-changes": "show_story_changes",
+        "click .NB-feed-story-header-feed .NB-feedlist-manage-icon": "show_feed_manage_menu",
+        "contextmenu .NB-feed-story-header-feed": "show_feed_manage_menu_rightclick",
+        "mouseenter .NB-feed-story-header-feed .NB-feedlist-manage-icon": "mouseenter_feed_manage_icon",
+        "mouseleave .NB-feed-story-header-feed .NB-feedlist-manage-icon": "mouseleave_feed_manage_icon",
         "click .NB-feed-story-header-title": "open_feed",
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
@@ -335,6 +339,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <%= $.favicon_html(feed) %>\
                     <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                 </div>\
@@ -1771,6 +1776,32 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             rightclick: e.which >= 2
         });
         return false;
+    },
+
+    show_feed_manage_menu_rightclick: function (e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        return this.show_feed_manage_menu(e);
+    },
+
+    show_feed_manage_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.reader.show_manage_menu('feed', this.$el, {
+            feed_id: this.model.get('story_feed_id'),
+            from_story_feed_bar: true,
+            rightclick: e.which >= 2
+        });
+        return false;
+    },
+
+    mouseenter_feed_manage_icon: function () {
+        if (this.$el.offset().top > $(window).height() / 2) {
+            this.$el.addClass('NB-hover-inverse');
+        }
+    },
+
+    mouseleave_feed_manage_icon: function () {
+        this.$el.removeClass('NB-hover-inverse');
     },
 
     show_story_changes: function () {
