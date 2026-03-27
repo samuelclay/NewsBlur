@@ -228,7 +228,7 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 2. Get issue details with `--log-level debug` to find the file and function
 3. Fix the issue in code
 4. Commit the fix
-5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
+5. **Always resolve the issue on Sentry** with `sentry-cli issues resolve -i <issue_id>` — do not skip this step
 
 ## Browser Testing
 - **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
