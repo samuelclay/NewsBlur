@@ -7811,52 +7811,6 @@ body {
 }
 
 /* reader.css: Briefing sections folder — expandable sub-items under Daily Briefing */
-.NB-briefing-sections-folder {
-    display: none;
-}
-
-.NB-briefing-section-feeds {
-    background-color: #dfdcd5;
-}
-
-.NB-briefing-section-feeds .feed {
-    background-color: #dfdcd5;
-}
-
-/* reader.css: Briefing section count — muted outline pill, not an unread indicator */
-.NB-briefing-section-feeds .unread_count_positive {
-    background-color: transparent;
-    color: #808080;
-    border: 1.5px solid #a0a0a0;
-    font-weight: 600;
-    text-shadow: none;
-    font-size: 10px;
-    padding: 1px 4px;
-    line-height: 13px;
-    min-width: 14px;
-    text-align: center;
-}
-
-/* reader.css: Per-section icons — tint to muted slate-blue via $.favicon() */
-.NB-briefing-section-feed .feed_favicon img {
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
-}
-
-/* reader.css: Dark mode for briefing section feeds */
-.NB-dark .NB-briefing-section-feeds {
-    background-color: #292b2e;
-}
-
-.NB-dark .NB-briefing-section-feeds .feed {
-    background-color: #292b2e;
-}
-
-/* reader.css: Dark mode briefing section count outline pill */
-.NB-dark .NB-briefing-section-feeds .unread_count_positive {
-    color: #888;
-    border-color: #555;
-}
-
 .NB-staff-badge {
     position: absolute;
     right: 28px;

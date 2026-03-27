@@ -1481,7 +1481,6 @@
             this.model.feeds.deselect();
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
-            this.model.briefing_section_feeds.deselect();
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
             this.model.social_feeds.deselect();
@@ -2186,17 +2185,7 @@
                 this.flags['briefing_select_story'] = options.story_hash;
             }
 
-            // reader.js: Highlight the section model or the parent header, not both
-            NEWSBLUR.assets.briefing_section_feeds.deselect();
-            if (options.section) {
-                this.$s.$river_briefing_header.removeClass('NB-selected');
-                var section_model = NEWSBLUR.assets.briefing_section_feeds.get('briefing:' + options.section);
-                if (section_model) {
-                    section_model.set('selected', true);
-                }
-            } else {
-                this.$s.$river_briefing_header.addClass('NB-selected');
-            }
+            this.$s.$river_briefing_header.addClass('NB-selected');
 
             if (!options.silent) {
                 var url = options.section ? "/briefing/" + options.section : "/briefing";
@@ -2280,50 +2269,6 @@
                     }
                 });
             });
-
-            // reader.js: Populate briefing_section_feeds collection for the sidebar.
-            // Use section_summaries key order from the latest briefing so the sidebar
-            // matches the order sections appear in the summary.
-            var section_models = [];
-            var added_keys = {};
-            var latest_briefing = all_briefings[0];
-            if (latest_briefing && latest_briefing.section_summaries) {
-                _.each(_.keys(latest_briefing.section_summaries), function (key) {
-                    if (key in aggregate_sections) {
-                        section_models.push({
-                            section_key: key,
-                            section_name: section_definitions[key] || key,
-                            count: aggregate_sections[key]
-                        });
-                        added_keys[key] = true;
-                    }
-                });
-            }
-            // reader.js: Add any remaining sections not in section_summaries
-            _.each(aggregate_sections, function (count, key) {
-                if (!added_keys[key]) {
-                    section_models.push({
-                        section_key: key,
-                        section_name: section_definitions[key] || key,
-                        count: count
-                    });
-                }
-            });
-            NEWSBLUR.assets.briefing_section_feeds.reset(section_models, { parse: true });
-
-            if (NEWSBLUR.app.feed_list) {
-                NEWSBLUR.app.feed_list.make_briefing_sections();
-            }
-
-            // reader.js: Re-select section model if filtering
-            if (this.flags.briefing_section) {
-                var section_model = NEWSBLUR.assets.briefing_section_feeds.get(
-                    'briefing:' + this.flags.briefing_section
-                );
-                if (section_model) {
-                    section_model.set('selected', true);
-                }
-            }
 
             if (!data.enabled) {
                 // reader.js: Show full-pane onboarding for users who haven't opted in
