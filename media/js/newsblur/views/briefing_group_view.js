@@ -8,6 +8,7 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
 
     initialize: function () {
         this.briefing = this.options.briefing;
+        this.collapsed = this.options.collapsed || false;
         this.stories = [];
     },
 
@@ -16,8 +17,14 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var briefing_date = briefing.briefing_date ? new Date(briefing.briefing_date) : new Date();
         var story_count = (briefing.curated_stories || []).length;
 
-        var $header = this.render_header(briefing_date, story_count);
+        var $header = this.render_header(briefing_date, story_count, briefing.slot);
         var $stories = this.render_curated_stories(briefing);
+
+        // briefing_group_view.js: Collapse non-first briefings by default
+        if (this.collapsed) {
+            $header.addClass('NB-collapsed');
+            $stories.hide();
+        }
 
         this.$el.empty()
             .append($header)
@@ -26,8 +33,13 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         return this;
     },
 
-    render_header: function (briefing_date, story_count) {
+    render_header: function (briefing_date, story_count, slot) {
         var date_label = this.format_date(briefing_date);
+        // briefing_group_view.js: Prepend slot name (Morning/Afternoon/Evening) when available
+        if (slot) {
+            var slot_label = slot.charAt(0).toUpperCase() + slot.slice(1);
+            date_label = slot_label + ' \u2014 ' + date_label;
+        }
 
         return $.make('div', { className: 'NB-briefing-group-header' }, [
             $.make('div', { className: 'NB-briefing-group-collapse-icon' }),

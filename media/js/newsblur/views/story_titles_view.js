@@ -163,7 +163,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$el.find('.NB-briefing-regenerate').remove();
         this.$el.find('.NB-briefing-loading').remove();
 
-        var $groups = this._render_briefing_groups(briefings, data);
+        var $groups = this._render_briefing_groups(briefings, data, { all_collapsed: true });
         var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
             $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
         ]);
@@ -207,9 +207,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         return all_stories;
     },
 
-    _render_briefing_groups: function (briefings, data) {
+    _render_briefing_groups: function (briefings, data, options) {
+        options = options || {};
         var active_section = NEWSBLUR.reader.flags.briefing_section;
         var $groups = [];
+        var group_index = 0;
         _.each(briefings, function (briefing) {
             briefing.is_preview = data.is_preview;
             var display_briefing = briefing;
@@ -232,11 +234,15 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 });
                 if (!display_briefing.curated_stories.length && !section_summary) return;
             }
+            // story_titles_view.js: Only the first briefing group is expanded,
+            // all subsequent ones start collapsed. Paginated groups are always collapsed.
             var group = new NEWSBLUR.Views.BriefingGroupView({
                 briefing: display_briefing,
-                collection: this.collection
+                collection: this.collection,
+                collapsed: options.all_collapsed || group_index > 0
             }).render();
             $groups.push(group.el);
+            group_index++;
         }, this);
         return $groups;
     },
