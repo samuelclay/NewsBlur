@@ -20889,6 +20889,12 @@ h5.NB-classifier-section-header {
     margin: 0 12px;
 }
 
+.NB-feed-notification .NB-feed-notification-filter,
+.NB-feed-notification .NB-feed-notification-types,
+.NB-classifier-notification .NB-classifier-notification-types {
+    width: 232px;
+}
+
 .NB-feed-notification .NB-feed-notification-filter .NB-unread-icon,
 .NB-feed-notification .NB-feed-notification-filter .NB-focus-icon {
     width: 8px;
