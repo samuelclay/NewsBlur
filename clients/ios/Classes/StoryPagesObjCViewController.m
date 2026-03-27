@@ -406,6 +406,9 @@
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+                titleImage = [UIImage imageNamed:@"briefing"];
             } else if (appDelegate.storiesCollection.isSavedView &&
                        appDelegate.storiesCollection.activeSavedStoryTag) {
                 titleImage = [UIImage imageNamed:@"tag.png"];
@@ -927,6 +930,10 @@
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             titleText = @"Infrequent Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+            titleImage = [UIImage imageNamed:@"briefing"];
+            titleText = @"Daily Briefing";
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];

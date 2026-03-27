@@ -268,6 +268,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
 @property (nonatomic) BOOL isPremiumPro;
+@property (nonatomic) BOOL briefingEnabled;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;

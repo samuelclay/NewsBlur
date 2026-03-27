@@ -42,6 +42,7 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
+@synthesize isDailyBriefing;
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize inSearch;
@@ -72,6 +73,7 @@
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
+    self.isDailyBriefing = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
     self.isWidgetView = NO;
@@ -109,7 +111,14 @@
 }
 
 - (BOOL)isCustomFolder {
-    return self.isRiverView && !self.isEverything && !self.isInfrequent && !self.isSavedView && !self.isReadView && !self.isSocialView && !self.isWidgetView;
+    return self.isRiverView &&
+    !self.isEverything &&
+    !self.isInfrequent &&
+    !self.isDailyBriefing &&
+    !self.isSavedView &&
+    !self.isReadView &&
+    !self.isSocialView &&
+    !self.isWidgetView;
 }
 
 - (BOOL)isCustomFolderOrFeed {
@@ -378,6 +387,8 @@
             return @"NewsBlur Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
+        } else if ([activeFolder isEqualToString:@"daily_briefing"]) {
+            return @"Daily Briefing";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
         } else if ([activeFolder isEqualToString:@"widget_stories"]) {

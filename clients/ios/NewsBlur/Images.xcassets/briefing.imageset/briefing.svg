@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>briefing</title>
+    <defs>
+        <mask id="lines">
+            <rect x="0" y="0" width="150" height="150" fill="white"/>
+            <rect x="32" y="38" width="86" height="8" rx="4" fill="black"/>
+            <rect x="32" y="62" width="60" height="8" rx="4" fill="black"/>
+            <rect x="32" y="86" width="72" height="8" rx="4" fill="black"/>
+            <rect x="32" y="110" width="50" height="8" rx="4" fill="black"/>
+        </mask>
+    </defs>
+    <rect x="10" y="10" width="130" height="130" rx="10" fill="#95968E" mask="url(#lines)"/>
+</svg>

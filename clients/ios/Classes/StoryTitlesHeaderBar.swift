@@ -64,6 +64,7 @@ class StoryTitlesHeaderBar: NSObject {
     private var headerHeightConstraint: NSLayoutConstraint?
     private var isSearchCompact = false
     private var isDiscoverCompact = false
+    private var isDailyBriefingMode = false
 
     // MARK: - State
 
@@ -471,6 +472,34 @@ class StoryTitlesHeaderBar: NSObject {
         searchCancelButton.tintColor = tint
     }
 
+    func setDailyBriefingMode(_ enabled: Bool) {
+        isDailyBriefingMode = enabled
+        for fv in faviconViews { fv.removeFromSuperview() }
+        faviconViews.removeAll()
+        discoverWidthConstraint?.isActive = false
+        discoverWidthConstraint = nil
+
+        if enabled {
+            setPillContent(discoverPill, title: "SETTINGS",
+                           image: sym("slider.horizontal.3", size: 11),
+                           leadingInset: 14, trailingInset: 14)
+            discoverPill.isHidden = false
+            optionsPill.isHidden = false
+            searchPill.isHidden = false
+            markReadContainer.isHidden = false
+        } else {
+            let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
+            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+                           leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
+            optionsPill.isHidden = false
+            searchPill.isHidden = false
+            markReadContainer.isHidden = false
+        }
+
+        relayoutPills()
+        updateTheme()
+    }
+
     // MARK: - State Updates
 
     /// Updates the options pill text to reflect current order and read filter.
@@ -503,6 +532,15 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Called from ObjC after layout changes (e.g. rotation) to re-check pill fit.
     func relayoutPills() {
+        if isDailyBriefingMode {
+            layoutSearchPill()
+            discoverPill.invalidateIntrinsicContentSize()
+            optionsPill.invalidateIntrinsicContentSize()
+            searchPill.invalidateIntrinsicContentSize()
+            pillStack.setNeedsLayout()
+            return
+        }
+
         layoutSearchPill()
         layoutDiscoverPill()
 

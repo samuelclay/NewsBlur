@@ -36,6 +36,13 @@ public enum StoryAutoCollapseBehavior: String {
     case feeds
 }
 
+@objc public enum DailyBriefingPresentationState: Int {
+    case loading
+    case settings
+    case empty
+    case stories
+}
+
 @objcMembers public final class StorySplitBehaviorDecision: NSObject {
     public class func preferredBehavior(
         for behaviorValue: String?,
@@ -239,6 +246,97 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class DailyBriefingPresentationDecision: NSObject {
+    public class func presentationState(
+        hasLoadedPreferences: Bool,
+        preferencesEnabled: Bool,
+        isLoadingInitialData: Bool,
+        hasStories: Bool
+    ) -> DailyBriefingPresentationState {
+        if !hasLoadedPreferences || (isLoadingInitialData && !hasStories) {
+            return .loading
+        }
+
+        if !preferencesEnabled {
+            return .settings
+        }
+
+        return hasStories ? .stories : .empty
+    }
+
+    public class func shouldFetchStories(
+        page: Int,
+        hasLoadedPreferences: Bool,
+        preferencesEnabled: Bool
+    ) -> Bool {
+        if page <= 1 {
+            return true
+        }
+
+        return hasLoadedPreferences && preferencesEnabled
+    }
+}
+
+@objcMembers public final class DailyBriefingLinkDecision: NSObject {
+    @objc(storyHashForURL:isDailyBriefing:)
+    public class func storyHash(for url: NSURL?, isDailyBriefing: Bool) -> String? {
+        guard isDailyBriefing, let url = url as URL? else {
+            return nil
+        }
+
+        guard url.path.contains("/briefing") else {
+            return nil
+        }
+
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+
+        return components.queryItems?.first(where: { $0.name == "story" })?.value
+    }
+}
+
+@objcMembers public final class DailyBriefingPaginationDecision: NSObject {
+    public class func shouldPrefetchNextPage(
+        remainingOffset: CGFloat,
+        isDragging: Bool,
+        isDecelerating: Bool
+    ) -> Bool {
+        guard remainingOffset <= 500 else {
+            return false
+        }
+
+        return isDragging || isDecelerating
+    }
+}
+
+@objcMembers public final class FeedDetailReturnFrameDecision: NSObject {
+    public class func correctedFrame(
+        _ frame: CGRect,
+        containerBounds: CGRect,
+        navigationBarMinY: CGFloat,
+        isPhoneOrCompact: Bool
+    ) -> CGRect {
+        guard isPhoneOrCompact, containerBounds.width > 0 else {
+            return frame
+        }
+
+        var corrected = frame
+
+        if abs(corrected.minX - containerBounds.minX) > 0.5 ||
+            abs(corrected.width - containerBounds.width) > 0.5 {
+            corrected.origin.x = containerBounds.minX
+            corrected.size.width = containerBounds.width
+        }
+
+        if corrected.minY == 0, navigationBarMinY < 0 {
+            corrected.origin.y = -navigationBarMinY
+        }
+
+        return corrected
+    }
+}
+
 @objcMembers public final class StoryDetailFullscreenButtonDecision: NSObject {
     public class func showsTemporaryFullscreenButton(
         storyDetailVisible: Bool,
@@ -353,6 +451,22 @@ public enum StoryAutoCollapseBehavior: String {
 @objcMembers public final class StoryPageRefreshDecision: NSObject {
     public class func shouldBeginRefresh(isRefreshInProgress: Bool) -> Bool {
         !isRefreshInProgress
+    }
+}
+
+@objcMembers public final class DailyBriefingFolderPlacementDecision: NSObject {
+    @objc(orderedFoldersFromFolderNames:isEnabled:)
+    public class func orderedFolders(folderNames: [String], isEnabled: Bool) -> [String] {
+        let foldersWithoutBriefing = folderNames.filter { $0 != "daily_briefing" }
+        let _ = isEnabled
+
+        var orderedFolders = foldersWithoutBriefing
+        let insertionIndex = orderedFolders.firstIndex(of: "infrequent")
+            ?? orderedFolders.firstIndex(of: "everything")
+            ?? 0
+        orderedFolders.insert("daily_briefing", at: insertionIndex)
+
+        return orderedFolders
     }
 }
 

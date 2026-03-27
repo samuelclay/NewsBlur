@@ -124,6 +124,208 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_daily_briefing_initial_open_fetches_stories_before_preferences_are_known() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: false,
+                preferencesEnabled: false,
+                isLoadingInitialData: true,
+                hasStories: false
+            ),
+            .loading
+        )
+        XCTAssertFalse(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: false,
+                preferencesEnabled: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: false,
+                preferencesEnabled: false
+            )
+        )
+    }
+
+    func test_daily_briefing_with_disabled_preferences_shows_settings_after_the_story_response() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: false,
+                isLoadingInitialData: false,
+                hasStories: false
+            ),
+            .settings
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: true,
+                preferencesEnabled: false
+            )
+        )
+        XCTAssertFalse(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: true,
+                preferencesEnabled: false
+            )
+        )
+    }
+
+    func test_daily_briefing_with_enabled_preferences_loads_stories_then_shows_story_list() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: true,
+                isLoadingInitialData: true,
+                hasStories: false
+            ),
+            .loading
+        )
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: true,
+                isLoadingInitialData: false,
+                hasStories: true
+            ),
+            .stories
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: true,
+                preferencesEnabled: true
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: true,
+                preferencesEnabled: true
+            )
+        )
+    }
+
+    func test_daily_briefing_link_extracts_story_hash_for_internal_navigation() {
+        XCTAssertEqual(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://www.newsblur.com/briefing?story=feed%3A1"),
+                isDailyBriefing: true
+            ),
+            "feed:1"
+        )
+    }
+
+    func test_daily_briefing_link_ignores_non_briefing_urls() {
+        XCTAssertNil(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://example.com/article?story=feed%3A1"),
+                isDailyBriefing: true
+            )
+        )
+        XCTAssertNil(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://www.newsblur.com/briefing?story=feed%3A1"),
+                isDailyBriefing: false
+            )
+        )
+    }
+
+    func test_daily_briefing_pagination_waits_for_user_scroll() {
+        XCTAssertFalse(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: false,
+                isDecelerating: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: true,
+                isDecelerating: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: false,
+                isDecelerating: true
+            )
+        )
+    }
+
+    func test_daily_briefing_pagination_ignores_far_offsets() {
+        XCTAssertFalse(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 800,
+                isDragging: true,
+                isDecelerating: true
+            )
+        )
+    }
+
+    func test_daily_briefing_folder_appears_before_infrequent_site_stories() {
+        XCTAssertEqual(
+            DailyBriefingFolderPlacementDecision.orderedFolders(
+                folderNames: ["dashboard", "infrequent", "everything", "tech"],
+                isEnabled: true
+            ),
+            ["dashboard", "daily_briefing", "infrequent", "everything", "tech"]
+        )
+    }
+
+    func test_daily_briefing_folder_keeps_its_top_section_slot_when_disabled() {
+        XCTAssertEqual(
+            DailyBriefingFolderPlacementDecision.orderedFolders(
+                folderNames: ["dashboard", "daily_briefing", "infrequent", "everything"],
+                isEnabled: false
+            ),
+            ["dashboard", "daily_briefing", "infrequent", "everything"]
+        )
+    }
+
+    func test_phone_story_titles_return_frame_snaps_back_to_full_width() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 247, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: 0,
+                isPhoneOrCompact: true
+            ),
+            CGRect(x: 0, y: 0, width: 393, height: 720)
+        )
+    }
+
+    func test_phone_story_titles_return_frame_keeps_regular_width_on_ipad() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 247, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: 0,
+                isPhoneOrCompact: false
+            ),
+            CGRect(x: 0, y: 0, width: 247, height: 720)
+        )
+    }
+
+    func test_phone_story_titles_return_frame_preserves_nav_bar_y_workaround() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 393, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: -59,
+                isPhoneOrCompact: true
+            ),
+            CGRect(x: 0, y: 59, width: 393, height: 720)
+        )
+    }
+
     func test_overlay_in_portrait_with_story_collapses_story_titles() {
         XCTAssertTrue(
             StoryAutoCollapseDecision.shouldCollapse(

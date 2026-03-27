@@ -195,6 +195,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @synthesize isPremium;
 @synthesize isPremiumArchive;
 @synthesize isPremiumPro;
+@synthesize briefingEnabled;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -255,6 +256,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     isPremium = NO;
     isPremiumArchive = NO;
     isPremiumPro = NO;
+    briefingEnabled = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -2393,6 +2395,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
     if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
+    } else if ([folderTitle isEqualToString:@"daily_briefing"]) {
+        return @[];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
         NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
@@ -2555,6 +2559,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
+        } else if ([folder isEqualToString:@"daily_briefing"] || [folderName isEqualToString:@"daily_briefing"]) {
+            feedDetailView.storiesCollection.isDailyBriefing = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"daily_briefing"];
         } else if ([folder isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_searches"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_searches"];
@@ -4267,6 +4274,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Daily Briefing"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -4322,6 +4332,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+            titleImage = [UIImage imageNamed:@"briefing"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -4370,6 +4383,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
+    } else if ([folder isEqualToString:@"daily_briefing"]) {
+        return @"Daily Briefing";
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return @"Widget Site Stories";
     } else if ([folder isEqualToString:@"read_stories"]) {
@@ -4394,6 +4409,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
         return [UIImage imageNamed:@"ak-icon-infrequent.png"];
+    } else if ([folder isEqualToString:@"daily_briefing"]) {
+        return [UIImage imageNamed:@"briefing"];
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_widget.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {

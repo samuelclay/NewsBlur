@@ -39,6 +39,7 @@ static UIFont *indicatorFont = nil;
 @synthesize isSaved;
 @synthesize textSize;
 @synthesize isRiverOrSocial;
+@synthesize isDailyBriefingSummary;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
@@ -193,8 +194,15 @@ static UIFont *indicatorFont = nil;
     CGRect dateRect = rect;
     
     UIColor *backgroundColor;
-    backgroundColor = isHighlighted ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+    if (cell.isDailyBriefingSummary) {
+        backgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xDCEAF8, 0xE9DCCB, 0x38414A, 0x30363E) :
+            UIColorFromLightSepiaMediumDarkRGB(0xEAF3FC, 0xF1E6D7, 0x30363E, 0x232830);
+    } else {
+        backgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
+            UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+    }
     [backgroundColor set];
     
     CGContextFillRect(context, r);

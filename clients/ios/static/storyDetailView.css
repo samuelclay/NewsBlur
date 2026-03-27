@@ -644,6 +644,46 @@ body.NB-iphone {
     display: block;
 }
 
+.NB-story .NB-briefing-summary table {
+    display: table;
+    width: 100% !important;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary tbody {
+    display: table-row-group;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary tr {
+    display: table-row;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary td {
+    display: table-cell;
+    clear: none;
+    overflow: visible;
+    vertical-align: top;
+}
+
+.NB-story .NB-briefing-summary td:first-child {
+    width: 22px !important;
+}
+
+.NB-story .NB-briefing-summary img.NB-briefing-inline-favicon {
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 4px 4px 0 0;
+    position: relative;
+    top: 2px;
+    vertical-align: top;
+}
+
 .NB-story h1, 
 .NB-story h2,
 .NB-story h3,

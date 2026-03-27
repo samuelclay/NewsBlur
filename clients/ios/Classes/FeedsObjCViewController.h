@@ -19,8 +19,9 @@
 // keep in sync with NewsBlurTopSectionNames
 static enum {
     NewsBlurTopSectionDashboard = 0,
-    NewsBlurTopSectionInfrequentSiteStories = 1,
-    NewsBlurTopSectionAllStories = 2
+    NewsBlurTopSectionDailyBriefing = 1,
+    NewsBlurTopSectionInfrequentSiteStories = 2,
+    NewsBlurTopSectionAllStories = 3
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
