@@ -39,6 +39,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.AllStoriesItemsList;
+import com.newsblur.activity.DailyBriefingActivity;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
@@ -304,6 +305,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
             if (adapter.isRowReadStories(groupPosition)) break;
+            if (adapter.isRowDailyBriefing(groupPosition)) break;
             if (adapter.isRowGlobalSharedStories(groupPosition)) break;
             if (adapter.isRowAllSharedStories(groupPosition)) break;
             if (adapter.isRowInfrequentStories(groupPosition)) break;
@@ -602,6 +604,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             } else {
 			    i = new Intent(getActivity(), AllStoriesItemsList.class);
             }
+        } else if (adapter.isRowDailyBriefing(groupPosition)) {
+            i = new Intent(getActivity(), DailyBriefingActivity.class);
         } else if (adapter.isRowGlobalSharedStories(groupPosition)) {
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
         } else if (adapter.isRowAllSharedStories(groupPosition)) {

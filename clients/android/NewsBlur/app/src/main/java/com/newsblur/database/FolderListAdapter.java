@@ -2,6 +2,7 @@ package com.newsblur.database;
 
 import static com.newsblur.util.AppConstants.ALL_SHARED_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.ALL_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.DAILY_BRIEFING_GROUP_KEY;
 import static com.newsblur.util.AppConstants.GLOBAL_SHARED_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.READ_STORIES_GROUP_KEY;
@@ -50,6 +51,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DailyBriefingFolderPlacementDecision;
 import com.newsblur.util.FeedListOrder;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.SpacingStyle;
@@ -63,7 +65,7 @@ import com.newsblur.util.UIUtils;
  */
 public class FolderListAdapter extends BaseExpandableListAdapter {
 
-    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
+    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, DAILY_BRIEFING, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
     private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG, SAVED_SEARCH }
 
     private final static float defaultTextSize_childName = 14;
@@ -188,6 +190,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 ((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(totalSocialPosiCount));
             }
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
+		} else if (isRowDailyBriefing(groupPosition)) {
+			if (v == null) v =  inflater.inflate(R.layout.row_daily_briefing, null, false);
 		} else if (isRowAllStories(groupPosition)) {
 			if (v == null) v =  inflater.inflate(R.layout.row_all_stories, null, false);
 		} else if (isRowInfrequentStories(groupPosition)) {
@@ -469,6 +473,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.globalShared();
         } else if (isRowAllSharedStories(groupPosition)) {
             return FeedSet.allSocialFeeds();
+        } else if (isRowDailyBriefing(groupPosition)) {
+            return FeedSet.dailyBriefing();
         } else if (isRowAllStories(groupPosition)) {
             if (currentState == StateFilter.SAVED) return FeedSet.allSaved();
             return FeedSet.allFeeds();
@@ -572,6 +578,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return ALL_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
     }
 
+    public boolean isRowDailyBriefing(int groupPosition) {
+        return DAILY_BRIEFING_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
+    }
+
     public boolean isRowInfrequentStories(int groupPosition) {
         return INFREQUENT_SITE_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
     }
@@ -591,6 +601,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public boolean isNormalFolder(int groupPosition) {
         return !isRowGlobalSharedStories(groupPosition) &&
                !isRowAllSharedStories(groupPosition) &&
+               !isRowDailyBriefing(groupPosition) &&
                !isRowAllStories(groupPosition) &&
                !isRowInfrequentStories(groupPosition) &&
                !isRowReadStories(groupPosition) &&
@@ -724,8 +735,15 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         folderNeutCounts = new ArrayList<Integer>();
         folderPosCounts = new ArrayList<Integer>();
 
-        if (prefsRepo.isEnableRowInfrequent() && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
-        addSpecialRow(ALL_STORIES_GROUP_KEY);
+        List<String> topLevelRows = new ArrayList<String>();
+        if (prefsRepo.isEnableRowInfrequent() && (currentState != StateFilter.SAVED)) topLevelRows.add(INFREQUENT_SITE_STORIES_GROUP_KEY);
+        topLevelRows.add(ALL_STORIES_GROUP_KEY);
+        if (currentState != StateFilter.SAVED) {
+            topLevelRows = new ArrayList<String>(DailyBriefingFolderPlacementDecision.orderedFolderNames(topLevelRows));
+        }
+        for (String topLevelRow : topLevelRows) {
+            addSpecialRow(topLevelRow);
+        }
 
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
@@ -974,10 +992,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getGroupType(int groupPosition) {
-		if (isRowGlobalSharedStories(groupPosition)) {
+        if (isRowGlobalSharedStories(groupPosition)) {
 			return GroupType.GLOBAL_SHARED_STORIES.ordinal();
 		} else if (isRowAllSharedStories(groupPosition)) {
             return GroupType.ALL_SHARED_STORIES.ordinal();
+        } else if (isRowDailyBriefing(groupPosition)) {
+            return GroupType.DAILY_BRIEFING.ordinal();
         } else if (isRowAllStories(groupPosition)) {
             return GroupType.ALL_STORIES.ordinal();
         } else if (isRowInfrequentStories(groupPosition)) {

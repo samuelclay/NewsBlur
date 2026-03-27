@@ -96,6 +96,7 @@ public class AppConstants {
     public static final String GLOBAL_SHARED_STORIES_GROUP_KEY = "GLOBAL_SHARED_STORIES_GROUP_KEY";
     public static final String ALL_SHARED_STORIES_GROUP_KEY = "ALL_SHARED_STORIES_GROUP_KEY";
     public static final String ALL_STORIES_GROUP_KEY = "ALL_STORIES_GROUP_KEY";
+    public static final String DAILY_BRIEFING_GROUP_KEY = "DAILY_BRIEFING_GROUP_KEY";
     public static final String INFREQUENT_SITE_STORIES_GROUP_KEY = "INFREQUENT_SITE_STORIES_GROUP_KEY";
     public static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
     public static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";

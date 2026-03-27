@@ -58,6 +58,9 @@ class FeedUtils(
                 try {
                     if (resetFirst) syncServiceState.resetReadingSession(dbHelper)
                     fs?.let { feedSet ->
+                        if (feedSet.isDailyBriefing) {
+                            return@let
+                        }
                         synchronized(syncServiceState.pendingFeedMutex) {
                             val cursorFilters = CursorFilters(prefsRepo, feedSet)
                             if (feedSet != dbHelper.getSessionFeedSet()) {
