@@ -1,3 +1,6 @@
+import datetime
+
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 
@@ -30,12 +33,32 @@ class Notifications(View):
                 {channel: True}
             )
 
-        # -- Unique users --
-        feed_users = set(feed_coll.distinct("user_id"))
-        classifier_users = set(classifier_coll.distinct("user_id"))
-        data["unique_users_feed"] = len(feed_users)
-        data["unique_users_classifier"] = len(classifier_users)
-        data["unique_users_total"] = len(feed_users | classifier_users)
+        # -- Unique users: active (last seen within 90 days) vs stale --
+        feed_user_ids = set(feed_coll.distinct("user_id"))
+        classifier_user_ids = set(classifier_coll.distinct("user_id"))
+        all_user_ids = feed_user_ids | classifier_user_ids
+
+        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=90)
+        stale_user_ids = set(
+            User.objects.filter(
+                pk__in=all_user_ids,
+                profile__last_seen_on__lt=stale_cutoff,
+            ).values_list("pk", flat=True)
+        )
+
+        active_feed = len(feed_user_ids - stale_user_ids)
+        stale_feed = len(feed_user_ids & stale_user_ids)
+        active_classifier = len(classifier_user_ids - stale_user_ids)
+        stale_classifier = len(classifier_user_ids & stale_user_ids)
+        active_total = len(all_user_ids - stale_user_ids)
+        stale_total = len(all_user_ids & stale_user_ids)
+
+        data["active_feed"] = active_feed
+        data["stale_feed"] = stale_feed
+        data["active_classifier"] = active_classifier
+        data["stale_classifier"] = stale_classifier
+        data["active_total"] = active_total
+        data["stale_total"] = stale_total
 
         # -- Format for Prometheus --
         chart_name = "notifications"
@@ -65,16 +88,13 @@ class Notifications(View):
                 f'{chart_name}{{metric="delivery",source="classifier",channel="{channel}"}} {data[key]}'
             )
 
-        # Unique users
-        formatted_data["unique_users_feed"] = (
-            f'{chart_name}{{metric="unique_users",source="feed"}} {data["unique_users_feed"]}'
-        )
-        formatted_data["unique_users_classifier"] = (
-            f'{chart_name}{{metric="unique_users",source="classifier"}} {data["unique_users_classifier"]}'
-        )
-        formatted_data["unique_users_total"] = (
-            f'{chart_name}{{metric="unique_users",source="total"}} {data["unique_users_total"]}'
-        )
+        # Active vs stale notification users
+        for status in ["active", "stale"]:
+            for source in ["feed", "classifier", "total"]:
+                key = f"{status}_{source}"
+                formatted_data[key] = (
+                    f'{chart_name}{{metric="unique_users",status="{status}",source="{source}"}} {data[key]}'
+                )
 
         context = {
             "data": formatted_data,

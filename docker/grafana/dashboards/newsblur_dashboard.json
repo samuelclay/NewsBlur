@@ -15824,7 +15824,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "U1-fPO3Mk"
       },
       "fieldConfig": {
         "defaults": {
@@ -15888,7 +15888,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "U1-fPO3Mk"
       },
       "fieldConfig": {
         "defaults": {
@@ -16345,9 +16345,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "notifications{metric=\"unique_users\",source=\"total\"}",
+          "expr": "notifications{metric=\"unique_users\",status=\"active\",source=\"total\"}",
           "interval": "",
-          "legendFormat": "Total",
+          "legendFormat": "Active Total",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -16357,9 +16357,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "notifications{metric=\"unique_users\",source=\"feed\"}",
+          "expr": "notifications{metric=\"unique_users\",status=\"stale\",source=\"total\"}",
           "interval": "",
-          "legendFormat": "Feed",
+          "legendFormat": "Stale Total",
           "queryType": "randomWalk",
           "refId": "B"
         },
@@ -16369,14 +16369,50 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "notifications{metric=\"unique_users\",source=\"classifier\"}",
+          "expr": "notifications{metric=\"unique_users\",status=\"active\",source=\"feed\"}",
           "interval": "",
-          "legendFormat": "Classifier",
+          "legendFormat": "Active Feed",
           "queryType": "randomWalk",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "notifications{metric=\"unique_users\",status=\"stale\",source=\"feed\"}",
+          "interval": "",
+          "legendFormat": "Stale Feed",
+          "queryType": "randomWalk",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "notifications{metric=\"unique_users\",status=\"active\",source=\"classifier\"}",
+          "interval": "",
+          "legendFormat": "Active Classifier",
+          "queryType": "randomWalk",
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "notifications{metric=\"unique_users\",status=\"stale\",source=\"classifier\"}",
+          "interval": "",
+          "legendFormat": "Stale Classifier",
+          "queryType": "randomWalk",
+          "refId": "F"
         }
       ],
-      "title": "Unique Notification Users",
+      "title": "Active vs Stale Notification Users",
       "type": "timeseries"
     }
   ],
