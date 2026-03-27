@@ -318,10 +318,10 @@ When the user reports downtime, read `DOWNTIME.md` for the full investigation pl
 When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` for the full investigation playbook. Start with the Quick Assessment commands to check per-minute and hourly load times.
 
 ## Writing Emails
-- Never use em dashes
+- Never use em dashes or hyphens as punctuation. Restructure the sentence instead.
 - Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
 - Keep it concise and direct
 
 ## Writing Forum Replies
-- Keep replies free of AI slop: no em dashes, no overly polished language
+- Keep replies free of AI slop: no em dashes, no hyphens as punctuation, no overly polished language. Restructure sentences instead.
 - Be concise and direct, matching a natural conversational tone
