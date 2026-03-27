@@ -5082,7 +5082,7 @@ body {
     max-width: 100%;
 }
 
-.NB-feed-story .NB-feed-story-content img {
+.NB-feed-story .NB-feed-story-content img:not(.NB-score-icon) {
     max-width: 100% !important;
     width: auto !important;
     height: auto;
@@ -5752,20 +5752,6 @@ body {
 .NB-score-icon-double .NB-score-icon:last-child {
     top: 3px;
     left: 4px;
-}
-
-/* Score icons inside story content must override the content img rule
-   (.NB-feed-story-content img { width: auto !important }) to stay small */
-.NB-feed-story-content .NB-score-icon {
-    width: 10px !important;
-    height: 10px !important;
-    outline: none;
-}
-
-.NB-feed-story-content .NB-score-icon-double {
-    width: 16px !important;
-    height: 12px !important;
-    outline: none;
 }
 
 /* Icons in tags need white filter since tags have colored backgrounds */
