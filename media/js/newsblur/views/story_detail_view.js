@@ -1259,7 +1259,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
             $(e.target).hasClass("NB-classifier-highlight-negative") ||
-            $(e.target).hasClass("NB-classifier-highlight-super-negative")) {
+            $(e.target).hasClass("NB-classifier-highlight-super-negative") ||
+            $(e.target).closest("[class*='NB-classifier-highlight-']").length) {
             // Let the click handler deal with classifier highlights
             return;
         }
@@ -1618,6 +1619,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
+        // Remove orphaned score icons left behind by unmark() which unwraps
+        // mark elements but preserves their children including appended icons
+        $doc.find('.NB-score-icon, .NB-score-icon-double').remove();
 
         $doc.attr('id', 'NB-highlighting');
 
