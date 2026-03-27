@@ -12064,7 +12064,7 @@ form.opml_import_form input {
     position: absolute;
     left: 6px;
     top: 4px;
-    opacity: .2;
+    opacity: .6;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike {
@@ -12075,13 +12075,19 @@ form.opml_import_form input {
     right: 23px;
     background: transparent url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat 6px 5px;
     background-size: 14px;
-    opacity: .2;
+    opacity: .6;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike-inner {
     margin: 4px 4px 0 0;
     width: 18px;
     height: 13px;
+}
+
+/* Publisher (feed) has no super-dislike, so shift dislike icon to the right edge */
+.NB-classifiers .NB-classifier.NB-classifier-feed .NB-classifier-icon-dislike {
+    right: 1px;
+    border-radius: 0 14px 14px 0;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-like {
@@ -12128,6 +12134,11 @@ form.opml_import_form input {
     opacity: .1;
 }
 
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-super-dislike {
+    opacity: .1;
+}
+
 .NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
     opacity: 1;
@@ -12135,6 +12146,11 @@ form.opml_import_form input {
 
 .NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-like {
+    opacity: .1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-super-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-super-dislike {
     opacity: .1;
 }
 
@@ -12201,12 +12217,12 @@ form.opml_import_form input {
 /* Double thumbs-down icon: two stacked thumbs-down SVGs */
 .NB-classifiers .NB-classifier .NB-classifier-icon-super-dislike {
     width: 24px;
-    height: 22px;
     position: absolute;
-    top: 1px;
+    top: 0;
+    bottom: 0;
     right: 1px;
     border-radius: 0 14px 14px 0;
-    opacity: .2;
+    opacity: .6;
     cursor: pointer;
     z-index: 1;
     border-left: 1px solid #EBEBE1;
@@ -12541,12 +12557,13 @@ form.opml_import_form input {
 
 .NB-scoring-pill-double-icon .NB-scoring-pill-icon:first-child {
     left: 0;
+    top: -2px;
     opacity: 0.5;
 }
 
 .NB-scoring-pill-double-icon .NB-scoring-pill-icon-shadow {
     left: 4px;
-    top: 0;
+    top: 2px;
 }
 
 .NB-scoring-example-result {
