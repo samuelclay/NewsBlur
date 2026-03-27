@@ -4072,20 +4072,8 @@ var classifier_prototype = {
             this.manage_filter_scope = 'all';
             this.manage_filter_search = '';
 
-            // Default feed filter to current folder context
-            var active_folder = NEWSBLUR.reader.active_folder;
-            if (active_folder && active_folder.get && active_folder.get('folder_title')) {
-                this.manage_filter_feed = 'river:' + active_folder.get('folder_title');
-            } else if (this.feed) {
-                var folders = this.feed.in_folders();
-                if (folders && folders.length) {
-                    this.manage_filter_feed = 'river:' + folders[0];
-                } else {
-                    this.manage_filter_feed = null;
-                }
-            } else {
-                this.manage_filter_feed = null;
-            }
+            // Default to showing all classifiers
+            this.manage_filter_feed = null;
 
             // Always refresh data when switching to manage tab
             this.all_classifiers_data = null;
@@ -4139,6 +4127,9 @@ var classifier_prototype = {
             self.manage_filter_search = $(this).val().toLowerCase();
             self.apply_manage_filters();
         });
+
+        // Apply initial filters and update counts
+        this.apply_manage_filters();
     },
 
     make_manage_tab_content: function () {
@@ -4851,6 +4842,8 @@ var classifier_prototype = {
                 _.each(folder_feeds, function (id) {
                     feed_ids[id] = true;
                 });
+            } else {
+                return null; // Folder not found, show all
             }
         } else if (_.string.startsWith(filter_value, 'feed:')) {
             // It's a specific feed
