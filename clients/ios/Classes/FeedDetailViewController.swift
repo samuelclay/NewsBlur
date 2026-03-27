@@ -10,6 +10,28 @@ import UIKit
 import SwiftUI
 import QuartzCore
 
+@objcMembers final class DailyBriefingSectionInfo: NSObject {
+    let title: String
+    let dateText: String
+    let isCollapsed: Bool
+    let isLoadingSection: Bool
+    let rowCount: Int
+
+    init(
+        title: String,
+        dateText: String,
+        isCollapsed: Bool,
+        isLoadingSection: Bool,
+        rowCount: Int
+    ) {
+        self.title = title
+        self.dateText = dateText
+        self.isCollapsed = isCollapsed
+        self.isLoadingSection = isLoadingSection
+        self.rowCount = rowCount
+    }
+}
+
 /// List of stories for a feed.
 class FeedDetailViewController: FeedDetailObjCViewController {
     private var gridViewController: UIHostingController<FeedDetailGridView>?
@@ -376,6 +398,64 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         }
 
         present(host, animated: true)
+    }
+
+    @objc(dailyBriefingSectionCount)
+    func dailyBriefingSectionCount() -> Int {
+        dailyBriefingStore.tableSections.count
+    }
+
+    @objc(dailyBriefingNumberOfRowsInSection:)
+    func dailyBriefingNumberOfRows(inSection section: Int) -> Int {
+        guard let section = dailyBriefingStore.tableSection(at: section) else {
+            return 0
+        }
+
+        if section.isLoadingSection {
+            return 1
+        }
+
+        return section.isCollapsed ? 0 : section.rowLocations.count
+    }
+
+    @objc(dailyBriefingSectionInfoForSection:)
+    func dailyBriefingSectionInfo(forSection section: Int) -> DailyBriefingSectionInfo? {
+        guard let section = dailyBriefingStore.tableSection(at: section) else {
+            return nil
+        }
+
+        return DailyBriefingSectionInfo(
+            title: section.title,
+            dateText: section.dateText,
+            isCollapsed: section.isCollapsed,
+            isLoadingSection: section.isLoadingSection,
+            rowCount: section.rowLocations.count
+        )
+    }
+
+    @objc(dailyBriefingIsLoadingSection:)
+    func dailyBriefingIsLoadingSection(_ section: Int) -> Bool {
+        dailyBriefingStore.tableSection(at: section)?.isLoadingSection ?? false
+    }
+
+    @objc(dailyBriefingStoryLocationForIndexPath:)
+    func dailyBriefingStoryLocation(for indexPath: NSIndexPath) -> Int {
+        dailyBriefingStore.storyLocation(for: indexPath as IndexPath)
+    }
+
+    @objc(indexPathForDailyBriefingStoryLocation:)
+    func indexPathForDailyBriefingStoryLocation(_ location: Int) -> NSIndexPath? {
+        dailyBriefingStore.indexPath(forStoryLocation: location) as NSIndexPath?
+    }
+
+    @objc(toggleDailyBriefingSectionAt:)
+    func toggleDailyBriefingSection(at section: Int) {
+        dailyBriefingStore.toggleSection(at: section)
+    }
+
+    @objc(resetDailyBriefingState)
+    func resetDailyBriefingState() {
+        dailyBriefingStore.resetForFeedChange()
     }
 }
 
@@ -769,6 +849,7 @@ private final class DailyBriefingStore: ObservableObject {
     struct Group: Identifiable, Hashable {
         let id: String
         let title: String
+        let dateText: String
         let storyHashes: [String]
         let summaryHash: String?
         let isPreview: Bool
@@ -871,6 +952,86 @@ private final class DailyBriefingStore: ObservableObject {
         } else {
             collapsedGroupIDs.insert(group.id)
         }
+    }
+
+    var tableSections: [DailyBriefingListSection] {
+        DailyBriefingSectionLayoutDecision.sections(
+            groups: groups.map {
+                DailyBriefingListGroup(
+                    id: $0.id,
+                    title: $0.title,
+                    dateText: $0.dateText,
+                    storyHashes: $0.storyHashes
+                )
+            },
+            storyLocationsByHash: storyLocations,
+            collapsedGroupIDs: collapsedGroupIDs,
+            includesLoadingSection: true
+        )
+    }
+
+    func tableSection(at section: Int) -> DailyBriefingListSection? {
+        guard tableSections.indices.contains(section) else { return nil }
+        return tableSections[section]
+    }
+
+    func storyLocation(for indexPath: IndexPath) -> Int {
+        guard let section = tableSection(at: indexPath.section) else {
+            return allStories.count
+        }
+
+        if section.isLoadingSection {
+            return allStories.count
+        }
+
+        guard !section.isCollapsed, section.rowLocations.indices.contains(indexPath.row) else {
+            return allStories.count
+        }
+
+        return section.rowLocations[indexPath.row]
+    }
+
+    func indexPath(forStoryLocation location: Int) -> IndexPath? {
+        for (sectionIndex, section) in tableSections.enumerated() where !section.isLoadingSection && !section.isCollapsed {
+            if let rowIndex = section.rowLocations.firstIndex(of: location) {
+                return IndexPath(row: rowIndex, section: sectionIndex)
+            }
+        }
+
+        if location == allStories.count,
+           let loadingSectionIndex = tableSections.firstIndex(where: { $0.isLoadingSection }) {
+            return IndexPath(row: 0, section: loadingSectionIndex)
+        }
+
+        return nil
+    }
+
+    func toggleSection(at section: Int) {
+        guard groups.indices.contains(section) else { return }
+        toggleCollapse(groups[section])
+    }
+
+    func resetForFeedChange() {
+        requestToken = UUID()
+        groups = []
+        preferences = nil
+        collapsedGroupIDs = []
+        hasLoadedPreferences = false
+        hasLoadedPreferenceDetails = false
+        isLoading = false
+        isLoadingMore = false
+        isSaving = false
+        isGenerating = false
+        progressMessage = nil
+        errorMessage = nil
+        isLoadingInitialData = false
+        refreshID = UUID()
+        hasNextPage = false
+        currentPage = 1
+        storyLocations = [:]
+        allStories = []
+        pendingPreferenceCompletions.removeAll()
+        isLoadingPreferences = false
     }
 
     func loadPreferencesIfNeeded() {
@@ -1237,9 +1398,13 @@ private final class DailyBriefingStore: ObservableObject {
         if page == 1 {
             groups = parsed.groups
             allStories = parsed.stories
+            collapsedGroupIDs = DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIDs(
+                for: parsed.groups.map(\.id)
+            )
         } else {
             groups.append(contentsOf: parsed.groups)
             allStories.append(contentsOf: parsed.stories)
+            collapsedGroupIDs.formUnion(parsed.groups.map(\.id))
         }
         let mergeMs = Self.elapsedMs(since: mergeStartedAt)
 
@@ -1352,6 +1517,7 @@ private final class DailyBriefingStore: ObservableObject {
             let briefingId = Self.stringValue(briefing["briefing_id"]) ?? UUID().uuidString
             var storyHashes = [String]()
             var summaryHash: String?
+            let slot = Self.stringValue(briefing["slot"])
 
             if let summaryStory = briefing["summary_story"] as? AnyDictionary {
                 let prepareStartedAt = Self.timingNow()
@@ -1379,7 +1545,8 @@ private final class DailyBriefingStore: ObservableObject {
 
             groups.append(Group(
                 id: briefingId,
-                title: Self.formattedDateTitle(from: briefing["briefing_date"] as? String),
+                title: Self.formattedBriefingTitle(from: slot),
+                dateText: Self.formattedDateTitle(from: briefing["briefing_date"] as? String),
                 storyHashes: storyHashes,
                 summaryHash: summaryHash,
                 isPreview: isPreview
@@ -1614,20 +1781,37 @@ private final class DailyBriefingStore: ObservableObject {
         let calendar = Calendar.current
 
         if calendar.isDateInToday(date) {
-            return "Today, \(Self.absoluteDateString(from: date))"
+            return "Today, \(Self.compactDateString(from: date))"
         } else if calendar.isDateInYesterday(date) {
-            return "Yesterday, \(Self.absoluteDateString(from: date))"
+            return "Yesterday, \(Self.compactDateString(from: date))"
+        } else if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEE, MMM d"
+            return formatter.string(from: date)
         } else {
             let formatter = DateFormatter()
-            formatter.dateFormat = "EEEE, MMMM d, yyyy"
+            formatter.dateFormat = "MMM d, yyyy"
             return formatter.string(from: date)
         }
     }
 
-    private static func absoluteDateString(from date: Date) -> String {
+    private static func compactDateString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d, yyyy"
+        formatter.dateFormat = "MMM d"
         return formatter.string(from: date)
+    }
+
+    private static func formattedBriefingTitle(from slot: String?) -> String {
+        switch slot?.lowercased() {
+        case "morning":
+            return "Morning Briefing"
+        case "afternoon":
+            return "Afternoon Briefing"
+        case "evening":
+            return "Evening Briefing"
+        default:
+            return "Daily Briefing"
+        }
     }
 }
 

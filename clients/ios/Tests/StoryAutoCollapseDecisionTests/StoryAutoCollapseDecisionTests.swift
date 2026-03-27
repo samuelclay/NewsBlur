@@ -290,6 +290,74 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_daily_briefing_defaults_only_the_latest_group_to_expanded() {
+        XCTAssertEqual(
+            DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIDs(for: ["latest", "older", "oldest"]),
+            Set(["older", "oldest"])
+        )
+        XCTAssertEqual(
+            DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIDs(for: ["latest"]),
+            []
+        )
+    }
+
+    func test_daily_briefing_section_layout_maps_rows_and_loading_section() {
+        let sections = DailyBriefingSectionLayoutDecision.sections(
+            groups: [
+                DailyBriefingListGroup(
+                    id: "latest",
+                    title: "Morning Briefing",
+                    dateText: "Today, Mar 27",
+                    storyHashes: ["summary", "story-1", "story-2"]
+                ),
+                DailyBriefingListGroup(
+                    id: "older",
+                    title: "Evening Briefing",
+                    dateText: "Yesterday, Mar 26",
+                    storyHashes: ["story-3"]
+                ),
+            ],
+            storyLocationsByHash: [
+                "summary": 0,
+                "story-1": 1,
+                "story-2": 2,
+                "story-3": 3,
+            ],
+            collapsedGroupIDs: ["older"],
+            includesLoadingSection: true
+        )
+
+        XCTAssertEqual(
+            sections,
+            [
+                DailyBriefingListSection(
+                    id: "latest",
+                    title: "Morning Briefing",
+                    dateText: "Today, Mar 27",
+                    rowLocations: [0, 1, 2],
+                    isCollapsed: false,
+                    isLoadingSection: false
+                ),
+                DailyBriefingListSection(
+                    id: "older",
+                    title: "Evening Briefing",
+                    dateText: "Yesterday, Mar 26",
+                    rowLocations: [3],
+                    isCollapsed: true,
+                    isLoadingSection: false
+                ),
+                DailyBriefingListSection(
+                    id: "__loading__",
+                    title: "",
+                    dateText: "",
+                    rowLocations: [],
+                    isCollapsed: false,
+                    isLoadingSection: true
+                ),
+            ]
+        )
+    }
+
     func test_phone_story_titles_return_frame_snaps_back_to_full_width() {
         XCTAssertEqual(
             FeedDetailReturnFrameDecision.correctedFrame(

@@ -310,6 +310,84 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+public struct DailyBriefingListGroup: Equatable {
+    public let id: String
+    public let title: String
+    public let dateText: String
+    public let storyHashes: [String]
+
+    public init(id: String, title: String, dateText: String, storyHashes: [String]) {
+        self.id = id
+        self.title = title
+        self.dateText = dateText
+        self.storyHashes = storyHashes
+    }
+}
+
+public struct DailyBriefingListSection: Equatable {
+    public let id: String
+    public let title: String
+    public let dateText: String
+    public let rowLocations: [Int]
+    public let isCollapsed: Bool
+    public let isLoadingSection: Bool
+
+    public init(
+        id: String,
+        title: String,
+        dateText: String,
+        rowLocations: [Int],
+        isCollapsed: Bool,
+        isLoadingSection: Bool
+    ) {
+        self.id = id
+        self.title = title
+        self.dateText = dateText
+        self.rowLocations = rowLocations
+        self.isCollapsed = isCollapsed
+        self.isLoadingSection = isLoadingSection
+    }
+}
+
+public enum DailyBriefingSectionLayoutDecision {
+    public static func defaultCollapsedGroupIDs(for groupIDs: [String]) -> Set<String> {
+        Set(groupIDs.dropFirst())
+    }
+
+    public static func sections(
+        groups: [DailyBriefingListGroup],
+        storyLocationsByHash: [String: Int],
+        collapsedGroupIDs: Set<String>,
+        includesLoadingSection: Bool
+    ) -> [DailyBriefingListSection] {
+        var sections = groups.map { group in
+            DailyBriefingListSection(
+                id: group.id,
+                title: group.title,
+                dateText: group.dateText,
+                rowLocations: group.storyHashes.compactMap { storyLocationsByHash[$0] },
+                isCollapsed: collapsedGroupIDs.contains(group.id),
+                isLoadingSection: false
+            )
+        }
+
+        if includesLoadingSection {
+            sections.append(
+                DailyBriefingListSection(
+                    id: "__loading__",
+                    title: "",
+                    dateText: "",
+                    rowLocations: [],
+                    isCollapsed: false,
+                    isLoadingSection: true
+                )
+            )
+        }
+
+        return sections
+    }
+}
+
 @objcMembers public final class FeedDetailReturnFrameDecision: NSObject {
     public class func correctedFrame(
         _ frame: CGRect,
