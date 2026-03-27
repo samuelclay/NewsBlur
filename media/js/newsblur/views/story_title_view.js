@@ -24,6 +24,18 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.collection.bind('render:intelligence', this.render_intelligence, this);
         this.model.story_title_view = this;
+
+        // Listen for feed title changes to update grid/list/magazine views in real time
+        this.story_feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+        if (this.story_feed) {
+            this.listenTo(this.story_feed, 'change:feed_title', this.update_feed_title);
+        }
+    },
+
+    update_feed_title: function () {
+        if (this.story_feed) {
+            this.$('.feed_title').text(this.story_feed.get('feed_title'));
+        }
     },
 
     render: function () {
