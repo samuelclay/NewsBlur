@@ -1,6 +1,13 @@
 from django.db import connections, migrations
 
-from apps.mcp.migrations.0001_setup_mcp_oauth import _get_table_columns
+
+def _get_table_columns(cursor, table_name):
+    """Return the set of column names for a table."""
+    cursor.execute(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = %s",
+        [table_name],
+    )
+    return {row[0] for row in cursor.fetchall()}
 
 
 def setup_cli_oauth(apps, schema_editor):
