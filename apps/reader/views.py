@@ -308,7 +308,7 @@ def dashboard(request, **kwargs):
     from apps.briefing.models import MBriefingPreferences
 
     briefing_prefs = MBriefingPreferences.objects.filter(user_id=user.pk).only("enabled").first()
-    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else False
+    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else True
     user.profile.preferences = json.encode(preferences)
 
     if not user.is_active:

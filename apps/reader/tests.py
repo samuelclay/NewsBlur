@@ -23,11 +23,11 @@ class Test_ReaderPreferencesBootstrap(TestCase):
         )
         self.client.login(username="prefstest", password="testpass")
 
-    def test_daily_briefing_preference_defaults_false_in_reader_bootstrap(self):
+    def test_daily_briefing_preference_defaults_true_in_reader_bootstrap(self):
         response = self.client.get(reverse("index"))
         content = response.content.decode("utf-8")
 
-        self.assertRegex(content, re.compile(r"'briefing_enabled'\s*:\s*false"))
+        self.assertRegex(content, re.compile(r"['\"]briefing_enabled['\"]\s*:\s*true"))
 
     def test_briefing_generation_preference_is_bootstrapped_on_reload(self):
         MBriefingPreferences(user_id=self.user.pk, enabled=True).save()

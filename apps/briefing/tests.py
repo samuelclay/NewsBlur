@@ -1343,7 +1343,7 @@ class Test_Models(BriefingTestCase):
     def test_default_values(self):
         prefs = MBriefingPreferences.get_or_create(self.user.pk)
         self.assertEqual(prefs.frequency, "daily")
-        self.assertFalse(prefs.enabled)
+        self.assertTrue(prefs.enabled)
         self.assertEqual(prefs.story_count, 5)
 
     # --- ensure_briefing_feed ---
