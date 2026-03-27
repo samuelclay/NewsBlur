@@ -690,8 +690,18 @@ color: #a85b40;
 /* Divider color */
 .NB-dark .NB-profile-badge,
 .NB-dark .NB-feed-notification,
+.NB-dark .NB-feed-notification-group,
+.NB-dark .NB-notification-scope-section,
 .NB-dark fieldset {
     border-color: #777;
+}
+
+.NB-dark .NB-classifier-notification-value {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-notification-scope-label {
+    color: #999;
 }
 
 /* Selected tab */

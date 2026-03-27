@@ -20909,13 +20909,15 @@ h5.NB-classifier-section-header {
     margin: 0 0 4px 0;
 }
 
-.NB-feed-notification .segmented-control li {
+.NB-feed-notification .segmented-control li,
+.NB-classifier-notification .segmented-control li {
     padding: 2px 6px;
     font-size: 10px;
     min-width: 36px;
 }
 
-.NB-feed-notification .segmented-control li:not(.NB-active) {
+.NB-feed-notification .segmented-control li:not(.NB-active),
+.NB-classifier-notification .segmented-control li:not(.NB-active) {
     color: #A0A0A0;
 }
 
@@ -20926,6 +20928,82 @@ h5.NB-classifier-section-header {
 
 .NB-feed-notification .NB-feed-notification-filter-focus {
     width: 82px;
+}
+
+/* Feed notification group (feed + classifier notifications) */
+.NB-feed-notification-group {
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.NB-feed-notification-group:last-child {
+    border-bottom: none;
+}
+
+.NB-feed-notification-group > .NB-feed-notification {
+    border-bottom: none;
+}
+
+/* Scope sections for global/folder classifier notifications */
+.NB-notification-scope-section {
+    padding: 10px 0;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.NB-notification-scope-section:last-child {
+    border-bottom: none;
+}
+
+.NB-notification-scope-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #808080;
+    padding: 0 0 6px;
+}
+
+/* Classifier notification rows */
+.NB-classifier-notification {
+    overflow: hidden;
+    position: relative;
+    padding: 5px 0 5px 24px;
+}
+
+.NB-classifier-notification .NB-classifier-notification-controls {
+    position: relative;
+}
+
+.NB-classifier-notification .NB-classifier-notification-types {
+    float: right;
+}
+
+.NB-classifier-notification .segmented-control {
+    margin: 0;
+}
+
+.NB-classifier-notification-pill {
+    font-size: 12px;
+    padding: 2px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.NB-classifier-notification-pill .NB-classifier-type-badge {
+    margin-right: 0;
+}
+
+.NB-classifier-notification-pill .NB-classifier-regex-badge {
+    color: #9B59B6;
+    background: rgba(155, 89, 182, 0.12);
+}
+
+.NB-classifier-notification-value {
+    font-size: 11px;
+    color: #505050;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ===================== */
