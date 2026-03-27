@@ -6,7 +6,7 @@ import datetime
 import random
 
 import feedparser
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.http.request import UnreadablePostError
 from django.shortcuts import get_object_or_404
 
@@ -18,6 +18,8 @@ from utils import log as logging
 
 def push_callback(request, push_id):
     if request.method == "GET":
+        if "hub.mode" not in request.GET or "hub.topic" not in request.GET:
+            return HttpResponseBadRequest("Missing required hub.mode or hub.topic parameter")
         mode = request.GET["hub.mode"]
         topic = request.GET["hub.topic"]
         challenge = request.GET.get("hub.challenge", "")

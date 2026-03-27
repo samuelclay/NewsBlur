@@ -532,7 +532,7 @@ def embed_briefing_icons(summary_html, scored_stories):
         if icon.data:
             favicon_data_map[icon.feed_id] = "data:image/png;base64,%s" % icon.data
 
-    default_favicon_url = "%s/media/img/favicon.png" % settings.NEWSBLUR_URL
+    default_favicon_url = "%s/media/img/icons/nouns/world.svg" % settings.NEWSBLUR_URL
     favicon_map = {}
     for story_hash, story in stories_by_hash.items():
         data_uri = favicon_data_map.get(story.story_feed_id)

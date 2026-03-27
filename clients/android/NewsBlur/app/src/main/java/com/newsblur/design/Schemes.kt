@@ -32,15 +32,15 @@ val SepiaColors: ColorScheme =
 
 val DarkColors: ColorScheme =
     darkColorScheme(
-        primary = Gray13, // @color/primary.dark
+        primary = Gray20, // @color/primary.dark #333333
         onPrimary = Gray85,
         secondary = NewsblurBlue,
         onSecondary = Black,
-        background = Gray07,
+        background = Gray20, // #333333
         onBackground = Gray85,
-        surface = Gray10,
+        surface = Gray30, // #4D4D4D
         onSurface = Gray85,
-        outline = Gray10,
+        outline = Gray20, // #333333
     )
 
 // AMOLED “Black”

@@ -1,7 +1,7 @@
 # NewsBlur Development Guidelines
 
 ## Planning & Clarification
-**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions in chat.** The AskUserQuestion tool is not available in Codex/Claude Code, so use normal questions to understand:
+**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions using the AskUserQuestion tool (not plain text).** Always use the AskUserQuestion tool in Claude Code when you have questions to ask after a prompt. Use it to understand:
 - The specific goals and desired outcomes
 - Edge cases and error handling preferences
 - UI/UX preferences (if applicable)
@@ -11,7 +11,7 @@
 - Any constraints or preferences I might have
 
 **Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
-**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+**Claude Code: Always use the AskUserQuestion tool (not plain text questions) when you need to ask the user something - during planning, implementation, and any other time.**
 
 Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
 
@@ -228,7 +228,7 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 2. Get issue details with `--log-level debug` to find the file and function
 3. Fix the issue in code
 4. Commit the fix
-5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
+5. **Always resolve the issue on Sentry** with `sentry-cli issues resolve -i <issue_id>` — do not skip this step
 
 ## Browser Testing
 - **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
@@ -318,6 +318,10 @@ When the user reports downtime, read `DOWNTIME.md` for the full investigation pl
 When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` for the full investigation playbook. Start with the Quick Assessment commands to check per-minute and hourly load times.
 
 ## Writing Emails
-- Never use em dashes
+- Never use em dashes or hyphens as punctuation. Restructure the sentence instead.
 - Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
 - Keep it concise and direct
+
+## Writing Forum Replies
+- Keep replies free of AI slop: no em dashes, no hyphens as punctuation, no overly polished language. Restructure sentences instead.
+- Be concise and direct, matching a natural conversational tone

@@ -34,7 +34,8 @@ NEWSBLUR.utils = {
             intelligence['text_regex'] || 0,
             intelligence['url'] || 0,
             intelligence['url_regex'] || 0);
-        if (score_max > 0) score = score_max;
+        if (score_min <= -2) score = score_min;       // super downvote beats everything
+        else if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;
 
         if (score == 0) score = intelligence['feed'];

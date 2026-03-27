@@ -595,6 +595,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(minutes=1),
         "options": {"queue": "cron_queue"},
     },
+    "refund-unredeemed-gifts": {
+        "task": "refund-unredeemed-gifts",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
 }
 
 # Beat tasks that should also run in worktrees during development.

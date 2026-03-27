@@ -167,29 +167,33 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Discover related stories across your archive'
+                            'Notifications on trained intelligence classifiers'
                         ]),
                         $.make('li', { className: 'NB-11' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Export trained stories from folders'
+                            'Discover related stories across your archive'
                         ]),
                         $.make('li', { className: 'NB-12' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Stories can stay unread forever'
+                            'Export trained stories from folders'
                         ]),
                         $.make('li', { className: 'NB-13' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Ask AI questions about stories'
+                            'Stories can stay unread forever'
                         ]),
                         $.make('li', { className: 'NB-14' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Filter stories by date range'
+                            'Ask AI questions about stories'
                         ]),
                         $.make('li', { className: 'NB-15' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Apply training across a folder'
+                            'Filter stories by date range'
                         ]),
                         $.make('li', { className: 'NB-16' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Apply training across a folder'
+                        ]),
+                        $.make('li', { className: 'NB-17' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Apply training globally'
                         ])

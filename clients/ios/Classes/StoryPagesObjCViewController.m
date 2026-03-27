@@ -37,7 +37,7 @@
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
-@property (nonatomic, strong) UIBarButtonItem *fullscreenStoryTitlesButton;
+@property (nonatomic, strong) UIBarButtonItem *temporaryFullScreenButton;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
 
 @end
@@ -78,39 +78,51 @@
     return (safeAreaBottom > 0) ? 12.0 : 8.0;
 }
 
-- (void)ensureStoryTitlesFullscreenButton {
-    if (self.fullscreenStoryTitlesButton) {
+- (void)ensureTemporaryFullScreenButton {
+    if (self.temporaryFullScreenButton) {
         return;
     }
 
-    UIImage *fullscreenImage = [UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right"];
-    if (!fullscreenImage) {
-        fullscreenImage = [UIImage systemImageNamed:@"arrow.left.arrow.right.square"];
-    }
-    if (fullscreenImage) {
-        fullscreenImage = [fullscreenImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage *fullScreenImage = [[UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right"]
+                                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-    self.fullscreenStoryTitlesButton = [[UIBarButtonItem alloc] initWithImage:fullscreenImage
-                                                                        style:UIBarButtonItemStylePlain
-                                                                       target:appDelegate.detailViewController
-                                                                       action:@selector(showFullscreenStoryDetail:)];
-    self.fullscreenStoryTitlesButton.accessibilityLabel = @"Full screen";
+    self.temporaryFullScreenButton = [[UIBarButtonItem alloc] initWithImage:fullScreenImage
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:appDelegate.detailViewController
+                                                                     action:@selector(toggleTemporaryFullScreen:)];
+    self.temporaryFullScreenButton.accessibilityLabel = @"Toggle Full Screen";
 }
 
 - (void)updateStoryTitleNavigationButtons {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [self ensureStoryTitlesFullscreenButton];
-
-    self.fullscreenStoryTitlesButton.target = self.appDelegate.detailViewController;
-    self.fullscreenStoryTitlesButton.action = @selector(showFullscreenStoryDetail:);
+    [self ensureTemporaryFullScreenButton];
 
     NSMutableArray *items = [NSMutableArray array];
-    if (self.appDelegate.detailViewController.shouldShowStoryTitlesFullscreenButton) {
-        [items addObject:self.fullscreenStoryTitlesButton];
-    }
     [items addObject:originalStoryButton];
     [items addObject:fontSettingsButton];
+
+    // Temporary full-screen toggle button (iPad only, not Mac).
+    if (!self.isPhoneOrCompact && !self.isMac) {
+        BOOL isTemporaryFullScreen = self.appDelegate.detailViewController.isTemporaryFullScreen;
+        NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"] ?: @"auto";
+        BOOL isUserOverlayMode = [behavior isEqualToString:@"overlay"];
+
+        BOOL shouldShowTemporaryFullScreenButton =
+            [StoryDetailFullscreenButtonDecision showsTemporaryFullscreenButtonWithStoryDetailVisible:self.appDelegate.detailViewController.hasVisibleStoryForSidebarLayout
+                                                                                    isPhoneOrCompact:self.isPhoneOrCompact
+                                                                                               isMac:self.isMac
+                                                                                   isUserOverlayMode:isUserOverlayMode
+                                                                               isTemporaryFullScreen:isTemporaryFullScreen];
+
+        if (shouldShowTemporaryFullScreenButton) {
+            NSString *iconName = isTemporaryFullScreen
+                ? @"arrow.down.right.and.arrow.up.left"
+                : @"arrow.up.left.and.arrow.down.right";
+            self.temporaryFullScreenButton.image = [[UIImage systemImageNamed:iconName]
+                                                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            [items addObject:self.temporaryFullScreenButton];
+        }
+    }
 
     if (!self.appDelegate.detailViewController.storyTitlesOnLeft) {
         [items addObject:markReadBarButton];
@@ -1292,7 +1304,7 @@
     fontSettingsButton.tintColor = toolbarButtonTint;
     originalStoryButton.tintColor = toolbarButtonTint;
     markReadBarButton.tintColor = toolbarButtonTint;
-    self.fullscreenStoryTitlesButton.tintColor = toolbarButtonTint;
+    self.temporaryFullScreenButton.tintColor = toolbarButtonTint;
     self.subscribeButton.tintColor = toolbarButtonTint;
     UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
     if ([settingsButton isKindOfClass:[UIButton class]]) {

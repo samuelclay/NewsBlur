@@ -74,7 +74,14 @@ from apps.analyzer.models import (
 )
 from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
-from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
+from apps.profile.models import (
+    MCustomStyling,
+    MDashboardRiver,
+    MGiftCode,
+    MRedeemedCode,
+    MReferral,
+    Profile,
+)
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.metrics import (
     READER_LOAD_PHASE_DURATION,
@@ -274,7 +281,7 @@ def index(request, **kwargs):
         if user:
             user = user[0]
         if not user:
-            return HttpResponseRedirect("http://%s%s" % (Site.objects.get_current().domain, reverse("index")))
+            return HttpResponseRedirect("https://%s%s" % (Site.objects.get_current().domain, reverse("index")))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
     if request.user.is_anonymous:
         return welcome(request, **kwargs)
@@ -301,7 +308,7 @@ def dashboard(request, **kwargs):
     from apps.briefing.models import MBriefingPreferences
 
     briefing_prefs = MBriefingPreferences.objects.filter(user_id=user.pk).only("enabled").first()
-    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else False
+    preferences["briefing_enabled"] = briefing_prefs.enabled if briefing_prefs else True
     user.profile.preferences = json.encode(preferences)
 
     if not user.is_active:
@@ -398,13 +405,40 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
+
+            # Record referral if present
+            referrer_username = request.COOKIES.get("nb_referrer") or request.POST.get("referrer")
+            if referrer_username:
+                try:
+                    referrer = User.objects.get(username__iexact=referrer_username)
+                    if referrer.pk != new_user.pk:
+                        MReferral.create_referral(referrer.pk, new_user.pk, new_user.username)
+                except User.DoesNotExist:
+                    pass
+
+            # Redeem gift code if present
+            gift_code = request.COOKIES.get("nb_gift_code") or request.POST.get("gift_code")
+            if gift_code:
+                gift = MGiftCode.objects.filter(gift_code__iexact=gift_code).first()
+                if gift and not gift.redeemed_date:
+                    MRedeemedCode.redeem(user=new_user, gift_code=gift_code)
+
             if not new_user.is_active:
                 url = "https://%s%s" % (Site.objects.get_current().domain, reverse("stripe-form"))
                 return HttpResponseRedirect(url)
             else:
                 return HttpResponseRedirect(reverse("index"))
 
-    return index(request)
+    # GET: show signup form, with referrer/gift context if present
+    referrer_username = request.GET.get("ref") or request.COOKIES.get("nb_referrer")
+    gift_code = request.GET.get("gift") or request.COOKIES.get("nb_gift_code")
+    form = SignupForm(prefix="signup")
+
+    return {
+        "form": form,
+        "referrer": referrer_username,
+        "gift_code": gift_code,
+    }
 
 
 @never_cache

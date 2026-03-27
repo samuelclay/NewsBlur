@@ -45,11 +45,10 @@ defaults
 frontend public
     bind :80
     bind :443 ssl crt /srv/newsblur/config/certificates/localhost.pem
-    http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    http-response add-header Strict-Transport-Security max-age=31536000;\ includeSubDomains
     option http-server-close
 
-    acl is_root path /
-    redirect scheme https if is_root !{ ssl_fc }
+    redirect scheme https if !{ ssl_fc }
 
     acl gunicorn_dead nbsrv(gunicorn) lt 1
     acl nginx_dead nbsrv(nginx) lt 1

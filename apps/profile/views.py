@@ -51,6 +51,7 @@ from apps.profile.models import (
     GooglePlayIds,
     MGiftCode,
     MRedeemedCode,
+    MReferral,
     PaymentHistory,
     PaypalIds,
     Profile,
@@ -202,12 +203,42 @@ def signup(request):
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()
-            return HttpResponseRedirect(request.POST["next"] or reverse("index"))
+
+            # Record referral if present
+            referrer_username = request.COOKIES.get("nb_referrer") or request.POST.get("referrer")
+            if referrer_username:
+                try:
+                    referrer = User.objects.get(username__iexact=referrer_username)
+                    if referrer.pk != new_user.pk:
+                        MReferral.create_referral(referrer.pk, new_user.pk, new_user.username)
+                except User.DoesNotExist:
+                    pass
+
+            # Redeem gift code if present
+            gift_code = request.COOKIES.get("nb_gift_code") or request.POST.get("gift_code")
+            if gift_code:
+                gift = MGiftCode.objects.filter(gift_code__iexact=gift_code).first()
+                if gift and not gift.redeemed_date:
+                    MRedeemedCode.redeem(user=new_user, gift_code=gift_code)
+
+            response = HttpResponseRedirect(request.POST["next"] or reverse("index"))
+            response.delete_cookie("nb_referrer")
+            response.delete_cookie("nb_gift_code")
+            return response
+
+    referrer = request.COOKIES.get("nb_referrer") or request.GET.get("ref", "")
+    gift_code = request.COOKIES.get("nb_gift_code") or request.GET.get("gift", "")
 
     return render(
         request,
         "accounts/signup.html",
-        {"form": form, "recaptcha_error": recaptcha_error, "next": request.POST.get("next", "")},
+        {
+            "form": form,
+            "recaptcha_error": recaptcha_error,
+            "next": request.POST.get("next", ""),
+            "referrer": referrer,
+            "gift_code": gift_code,
+        },
     )
 
 
@@ -477,10 +508,11 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
-            # Prorate refund on old Stripe subscription before canceling
-            if user.profile.stripe_id:
-                user.profile.refund_prorated_stripe_payment()
-            user.profile.cancel_premium_stripe()
+            # Only cancel Stripe if user hasn't already switched back to Stripe
+            if user.profile.active_provider != "stripe":
+                if user.profile.stripe_id:
+                    user.profile.refund_prorated_stripe_payment()
+                user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
@@ -1150,10 +1182,10 @@ def manage_usage_billing(request):
 def usage_billing_history(request):
     user = request.user
 
+    import calendar
+
     # Self-hosted: return local spend data without Stripe
     if user.profile.is_self_hosted_ai and not user.profile.is_usage_billing:
-        import calendar
-
         current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
         now = datetime.datetime.utcnow()
         cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
@@ -1743,3 +1775,205 @@ def trigger_error(request):
     logging.user(request.user, "~BR~FW~SBTriggering divison by zero")
     division_by_zero = 1 / 0
     return HttpResponseRedirect(reverse("index"))
+
+
+# = Referral & Gift Views ====================================================
+
+
+def referral_landing(request, username):
+    try:
+        referrer = User.objects.get(username__iexact=username)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse("index"))
+
+    # Don't allow self-referral
+    if request.user.is_authenticated and request.user.pk == referrer.pk:
+        return HttpResponseRedirect(reverse("index"))
+
+    response = HttpResponseRedirect("%s?ref=%s" % (reverse("welcome-signup"), referrer.username))
+    response.set_cookie("nb_referrer", referrer.username, max_age=30 * 24 * 60 * 60)
+    return response
+
+
+@login_required
+@require_POST
+@json.json_view
+def gift_checkout(request):
+    stripe.api_key = settings.STRIPE_SECRET
+    domain = Site.objects.get_current().domain
+    gift_tier = request.POST.get("gift_tier", "premium")
+    gift_duration = request.POST.get("gift_duration", "year")
+
+    if gift_tier not in ("premium", "archive", "pro"):
+        return {"code": -1, "message": "Invalid gift tier."}
+
+    tier_prices = {"premium": 36, "archive": 99, "pro": 299}
+    payment_amount = tier_prices[gift_tier]
+    if gift_tier == "pro" and gift_duration == "month":
+        payment_amount = 25
+    duration_days = 365 if gift_duration == "year" else 30
+
+    # Staff can gift for free
+    if request.user.is_staff:
+        gift = MGiftCode.add(
+            gifting_user_id=request.user.pk,
+            duration=duration_days,
+            payment=0,
+            gift_tier=gift_tier,
+            is_staff_gift=True,
+        )
+        gift_url = "https://%s/gift/%s/%s/%s" % (domain, gift_tier, request.user.username, gift.gift_code)
+        logging.user(
+            request.user,
+            "~FG~BBStaff gift created: %s tier=%s code=%s"
+            % (request.user.username, gift_tier, gift.gift_code),
+        )
+        return {"code": 1, "gift_url": gift_url, "gift_code": gift.gift_code}
+
+    # Create Stripe Checkout Session for one-time payment
+    checkout_session = stripe.checkout.Session.create(
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "NewsBlur %s Gift (%s)"
+                        % (gift_tier.title(), "1 year" if gift_duration == "year" else "1 month"),
+                    },
+                    "unit_amount": payment_amount * 100,  # Stripe uses cents
+                },
+                "quantity": 1,
+            }
+        ],
+        mode="payment",
+        metadata={
+            "newsblur_user_id": request.user.pk,
+            "purpose": "gift",
+            "gift_tier": gift_tier,
+            "gift_duration": gift_duration,
+        },
+        success_url="https://%s/?next=gift" % domain,
+        cancel_url="https://%s%s" % (domain, reverse("index")),
+        customer_email=request.user.email,
+    )
+
+    logging.user(request, "~BM~FBLoading Stripe gift checkout for %s" % gift_tier)
+
+    return {"code": 1, "stripe_url": checkout_session.url}
+
+
+@login_required
+def gift_checkout_complete(request):
+    gift_tier = request.GET.get("gift_tier", "premium")
+    # The gift code is created by the stripe_checkout_session_completed webhook.
+    # Find the most recent gift code for this user.
+    recent_gift = (
+        MGiftCode.objects.filter(gifting_user_id=request.user.pk, gift_tier=gift_tier)
+        .order_by("-created_date")
+        .first()
+    )
+
+    domain = Site.objects.get_current().domain
+    gift_url = None
+    gift_code = None
+    if recent_gift:
+        gift_url = "https://%s/gift/%s/%s/%s" % (
+            domain,
+            gift_tier,
+            request.user.username,
+            recent_gift.gift_code,
+        )
+        gift_code = recent_gift.gift_code
+
+    return render(
+        request,
+        "profile/gift_checkout_complete.html",
+        {
+            "gift_url": gift_url,
+            "gift_code": gift_code,
+            "gift_tier": gift_tier,
+        },
+    )
+
+
+def gift_redeem(request, gift_tier, username, gift_code):
+    gift = MGiftCode.objects.filter(gift_code__iexact=gift_code).first()
+    if not gift:
+        return render(request, "profile/gift_redeem.html", {"error": "Invalid gift code."})
+
+    if gift.redeemed_date:
+        return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
+
+    if gift.expires_date and gift.expires_date < datetime.datetime.now():
+        return render(request, "profile/gift_redeem.html", {"error": "This gift has expired."})
+
+    # Resolve gifter username for display
+    gifter_username = username
+    if not gifter_username:
+        try:
+            gifter = User.objects.get(pk=gift.gifting_user_id)
+            gifter_username = gifter.username
+        except User.DoesNotExist:
+            gifter_username = None
+
+    tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+    tier_display = tier_names.get(gift.gift_tier, "Premium")
+
+    if request.user.is_authenticated:
+        MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
+        return HttpResponseRedirect(reverse("index"))
+
+    # Not logged in: redirect to signup with gift code and gifter context
+    response = HttpResponseRedirect("%s?gift=%s" % (reverse("welcome-signup"), gift_code))
+    response.set_cookie("nb_gift_code", gift_code, max_age=24 * 60 * 60)
+    return response
+
+
+@ajax_login_required
+@json.json_view
+def referral_data(request):
+    stats = MReferral.get_referral_stats(request.user.pk)
+    stats["referral_url"] = "https://%s/refer/%s" % (
+        Site.objects.get_current().domain,
+        request.user.username,
+    )
+    stats["username"] = request.user.username
+    profile = request.user.profile
+    if profile.is_pro:
+        stats["referrer_tier"] = "pro"
+    elif profile.is_archive:
+        stats["referrer_tier"] = "archive"
+    else:
+        stats["referrer_tier"] = "premium"
+    return stats
+
+
+@ajax_login_required
+@json.json_view
+def gift_data(request):
+    domain = Site.objects.get_current().domain
+    gifts_sent = MGiftCode.objects.filter(gifting_user_id=request.user.pk).order_by("-created_date")
+    gifts_received = MRedeemedCode.objects.filter(user_id=request.user.pk).order_by("-redeemed_date")
+
+    return {
+        "gifts_sent": [
+            {
+                "gift_code": g.gift_code,
+                "gift_tier": getattr(g, "gift_tier", "premium"),
+                "gift_url": "https://%s/gift/%s/%s/%s"
+                % (domain, getattr(g, "gift_tier", "premium"), request.user.username, g.gift_code),
+                "created_date": g.created_date.strftime("%Y-%m-%d") if g.created_date else None,
+                "redeemed": bool(getattr(g, "redeemed_date", None)),
+                "is_staff_gift": getattr(g, "is_staff_gift", False),
+                "refunded": bool(getattr(g, "stripe_refund_id", None)),
+            }
+            for g in gifts_sent
+        ],
+        "gifts_received": [
+            {
+                "gift_code": g.gift_code,
+                "redeemed_date": g.redeemed_date.strftime("%Y-%m-%d") if g.redeemed_date else None,
+            }
+            for g in gifts_received
+        ],
+    }

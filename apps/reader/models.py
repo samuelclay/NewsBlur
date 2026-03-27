@@ -1697,7 +1697,9 @@ class UserSubscription(models.Model):
                     scores["url"],
                     scores["url_regex"],
                 )
-                if max_score > 0:
+                if min_score <= -2:
+                    feed_scores["negative"] += 1  # super downvote
+                elif max_score > 0:
                     feed_scores["positive"] += 1
                 elif min_score < 0:
                     feed_scores["negative"] += 1
@@ -1808,7 +1810,9 @@ class UserSubscription(models.Model):
             scores.get("url_regex", 0),
         )
 
-        if max_score > 0:
+        if min_score <= -2:
+            return -1  # super downvote → negative bucket
+        elif max_score > 0:
             return 1
         elif min_score < 0:
             return -1

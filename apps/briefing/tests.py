@@ -1343,7 +1343,7 @@ class Test_Models(BriefingTestCase):
     def test_default_values(self):
         prefs = MBriefingPreferences.get_or_create(self.user.pk)
         self.assertEqual(prefs.frequency, "daily")
-        self.assertFalse(prefs.enabled)
+        self.assertTrue(prefs.enabled)
         self.assertEqual(prefs.story_count, 5)
 
     # --- ensure_briefing_feed ---
@@ -1468,13 +1468,20 @@ class Test_Views(BriefingTestCase):
 
     # --- load_briefing_stories ---
 
-    def test_load_requires_staff(self):
+    @patch("apps.briefing.views.redis.Redis")
+    def test_load_accessible_by_non_staff(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+        mock_pipe.execute.return_value = []
+
         non_staff = User.objects.create_user(username="nostaff", password="testpass")
         c = Client()
         c.login(username="nostaff", password="testpass")
         response = c.get(reverse("load-briefing-stories"))
         data = json.decode(response.content)
-        self.assertEqual(data["code"], -1)
+        self.assertIn("briefings", data)
 
     @patch("apps.briefing.views.redis.Redis")
     def test_load_empty_briefings(self, mock_redis_cls):

@@ -28,7 +28,13 @@
             <img src="{{ MEDIA_URL }}img/logo_512.png" />
         </a>
         <h1 class="NB-static-card-title">Create an Account</h1>
-        <p class="NB-static-card-tagline">A personal news reader bringing people together to talk about the world</p>
+        {% if referrer %}
+            <p class="NB-static-card-tagline" style="color: #507C30;">Referred by <b>{{ referrer }}</b> &mdash; welcome to NewsBlur!</p>
+        {% elif gift_code %}
+            <p class="NB-static-card-tagline" style="color: #507C30;">You've been gifted a premium subscription! Sign up to claim it.</p>
+        {% else %}
+            <p class="NB-static-card-tagline">A personal news reader bringing people together to talk about the world</p>
+        {% endif %}
 
         <form method="post" action="{% url "signup" %}">
             {% if form.errors %}
@@ -60,6 +66,8 @@
 
             <button type="submit" class="NB-static-card-submit">Sign Up</button>
             <input type="hidden" name="next" value="{{ next }}" />
+            {% if referrer %}<input type="hidden" name="referrer" value="{{ referrer }}" />{% endif %}
+            {% if gift_code %}<input type="hidden" name="gift_code" value="{{ gift_code }}" />{% endif %}
         </form>
 
         <a href="{% url "login" %}?next={{ next|urlencode }}" class="NB-static-card-altlink">Login to your account</a>

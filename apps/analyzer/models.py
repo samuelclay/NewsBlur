@@ -444,7 +444,9 @@ def compute_story_score(
         intelligence["url"],
         intelligence["url_regex"],
     )
-    if score_max > 0:
+    if score_min <= -2:
+        score = score_min  # super downvote beats any positive
+    elif score_max > 0:
         score = score_max
     elif score_min < 0:
         score = score_min
@@ -465,7 +467,7 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     score = 0
     story_title = story.get("story_title", "")
@@ -484,9 +486,12 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
 
         # Standard substring matching (case-insensitive)
         if classifier.title.lower() in story_title_lower:
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score  # super downvote beats everything
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -501,7 +506,7 @@ def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     score = 0
     story_content = story.get("story_content", "")
@@ -520,9 +525,12 @@ def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
 
         # Standard substring matching (case-insensitive)
         if classifier.text.lower() in story_content_lower:
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -537,7 +545,7 @@ def apply_classifier_title_regex(classifiers, story, folder_feed_ids=None):
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     score = 0
     story_title = story.get("story_title", "")
@@ -552,9 +560,12 @@ def apply_classifier_title_regex(classifiers, story, folder_feed_ids=None):
             continue
 
         if safe_regex_match(classifier.title, story_title):
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -569,7 +580,7 @@ def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     score = 0
     story_content = story.get("story_content", "")
@@ -584,9 +595,12 @@ def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
             continue
 
         if safe_regex_match(classifier.text, story_content):
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -602,7 +616,7 @@ def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     if not user_is_premium:
         return 0
@@ -624,9 +638,12 @@ def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed
 
         # Standard substring matching (case-insensitive)
         if classifier.url.lower() in story_url_lower:
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -641,7 +658,7 @@ def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
-        Score (1 for like, -1 for dislike, 0 for neutral)
+        Score (1 for like, -2 for super downvote, -1 for dislike, 0 for neutral)
     """
     score = 0
     story_url = story.get("story_permalink", "")
@@ -656,9 +673,12 @@ def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
             continue
 
         if safe_regex_match(classifier.url, story_url):
-            score = classifier.score
-            if score > 0:
-                return score
+            if classifier.score <= -2:
+                return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
 
     return score
 
@@ -670,9 +690,12 @@ def apply_classifier_authors(classifiers, story, folder_feed_ids=None):
             continue
         if story.get("story_authors") and classifier.author == story.get("story_authors"):
             # print 'Authors: %s -- %s' % (classifier.author, story['story_authors'])
-            score = classifier.score
-            if score > 0:
+            if classifier.score <= -2:
                 return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
     return score
 
 
@@ -683,9 +706,12 @@ def apply_classifier_tags(classifiers, story, folder_feed_ids=None):
             continue
         if story["story_tags"] and classifier.tag in story["story_tags"]:
             # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
-            score = classifier.score
-            if score > 0:
+            if classifier.score <= -2:
                 return classifier.score
+            if classifier.score > 0:
+                score = classifier.score
+            elif classifier.score < 0 and score <= 0:
+                score = classifier.score
     return score
 
 

@@ -1,6 +1,126 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-25T10:12:01-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-26T19:30:50-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Daily Briefing: A personalized summary of your news, delivered on your schedule</title><link href="https://blog.newsblur.com/2026/03/25/daily-briefing/" rel="alternate" type="text/html" title="Daily Briefing: A personalized summary of your news, delivered on your schedule" /><published>2026-03-25T00:00:00-04:00</published><updated>2026-03-25T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/25/daily-briefing</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/25/daily-briefing/"><![CDATA[<p>Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the topics I’ve trained as interesting?</p>
+</subtitle><entry><title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title><link href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" rel="alternate" type="text/html" title="Hide what you hate, track what you love: super dislikes and per-classifier notifications" /><published>2026-03-27T00:00:00-04:00</published><updated>2026-03-27T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"><![CDATA[<p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
+
+<p>Today I’m shipping two features that give the Intelligence Trainer more teeth: super dislikes that override any number of likes, and per-classifier notifications that ping you only when specific classifiers match.</p>
+
+<p>Super dislikes are available to all users – free, Premium, Premium Archive, and Premium Pro. Folder and global scoping requires Premium Archive. Per-classifier notifications are exclusive to Premium Archive and Premium Pro subscribers.</p>
+
+<h3 id="super-dislikes">Super dislikes</h3>
+
+<p>A super dislike is a new third state for classifiers. The regular thumbs down hides a story unless a thumbs up overrides it. The super dislike – shown as a double thumbs-down icon – overrides everything. If a story matches a super-disliked classifier, it’s hidden no matter how many positive classifiers it also matches.</p>
+
+<!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
+<p><img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The priority order is now: AI prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to AI classifiers.</p>
+
+<h4 id="how-to-use-it">How to use it</h4>
+
+<p>In the Intelligence Trainer, every classifier pill now has three clickable icons on the right side: thumbs up, thumbs down, and the double thumbs-down for super dislike. Click the double thumbs-down to super-dislike a classifier. Click it again to remove the super dislike.</p>
+
+<p>An explainer banner at the top of the trainer shows the priority chain so you always know how scoring works:</p>
+
+<ul>
+  <li><strong>Thumbs up</strong> beats any number of thumbs down</li>
+  <li><strong>Super thumbs down</strong> beats any number of thumbs up</li>
+</ul>
+
+<!-- SCREENSHOT: Explainer banner at top of trainer showing the priority chain with icons -->
+<p><img src="/assets/super-dislike-explainer.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="visual-highlighting">Visual highlighting</h4>
+
+<p>Super-disliked classifiers are highlighted in a deeper crimson color, distinct from the regular red of a normal dislike. When you’re reading stories, you’ll see the same color treatment on matched titles, authors, tags, and text, with a small double thumbs-down icon inline so you can tell at a glance why a story was scored the way it was.</p>
+
+<!-- SCREENSHOT: Story detail view showing a super-disliked title or tag highlighted in deep crimson with the double thumbs-down icon -->
+<p><img src="/assets/super-dislike-highlight.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="works-with-scopes">Works with scopes</h4>
+
+<p>Super dislikes work with all scope levels. Set a global super dislike on a topic like “sponsored” and it’s hidden across every feed. Set a folder-scoped super dislike on an author and they’re hidden in that folder regardless of positive training elsewhere. The same scoping rules from regular classifiers apply.</p>
+
+<h3 id="per-classifier-notifications">Per-classifier notifications</h3>
+
+<p>NewsBlur’s notifications have always been per-feed: turn them on and you get pinged on every new story. That’s fine for low-volume feeds, but not great for a high-volume feed where you only care about specific topics or authors. You end up choosing between too many notifications or none at all.</p>
+
+<p>Now you can set notifications on individual classifiers. Every classifier pill in the Intelligence Trainer has a small bell icon. Hover over it and a popover appears with four channel toggles: Email, Web, iOS, and Android. Choose any combination, and when a new story matches that specific classifier, you get notified. Everything else in the feed stays quiet.</p>
+
+<!-- SCREENSHOT: Classifier pill with bell icon and notification popover showing Email/Web/iOS/Android toggles -->
+<p><img src="/assets/classifier-notification-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The bell icon lights up on classifiers with active notifications, so you can see at a glance which ones will ping you.</p>
+
+<h4 id="works-with-scopes-and-regex">Works with scopes and regex</h4>
+
+<p>Classifier notifications respect the scope system. A notification on a global “breaking news” classifier fires when any feed publishes a matching story. A notification on a folder-scoped “earnings” classifier fires only for feeds in that folder.</p>
+
+<p>Regex classifiers work too. If you have a regex title or text classifier, the notification evaluates the pattern with timeout protection on every new story.</p>
+
+<h4 id="smart-deduplication">Smart deduplication</h4>
+
+<p>If a story already triggered a feed-level notification on a channel, the classifier notification won’t duplicate it. Each story is sent once per channel, regardless of how many classifiers or feed rules it matches. There’s also a cap of 3 stories per classifier per update cycle, so a burst of matching stories won’t flood you.</p>
+
+<h4 id="real-world-examples">Real-world examples</h4>
+
+<p><strong>Breaking news alerts.</strong> Train “breaking” as a global title classifier, set it to notify via iOS and Email. You get a push notification whenever any feed publishes a story with “breaking” in the title.</p>
+
+<p><strong>Author tracking.</strong> Follow a journalist across multiple outlets. Train their name as a global author classifier with notifications, and you’ll know the moment they publish regardless of which feed it’s in.</p>
+
+<p><strong>Keyword monitoring.</strong> Use a regex classifier for a product name or company, scoped to your industry folder. Get an email when a matching story appears, without turning on notifications for every feed in that folder.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Super dislikes are available now on the web for all NewsBlur users. Per-classifier notifications are available on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers – all users can see the bell icon and popover, but toggling channels requires an Archive or Pro subscription.</p>
+
+<p>If you have feedback or ideas for how to make these features better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/super-dislike-trainer.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/super-dislike-trainer.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Refer friends, gift subscriptions, and never pay for NewsBlur premium again</title><link href="https://blog.newsblur.com/2026/03/26/refer-and-gift/" rel="alternate" type="text/html" title="Refer friends, gift subscriptions, and never pay for NewsBlur premium again" /><published>2026-03-26T00:00:00-04:00</published><updated>2026-03-26T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/26/refer-and-gift</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/26/refer-and-gift/"><![CDATA[<p>If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still love it, tell people. Post about it on LinkedIn, on X, on Facebook, on Instagram, on TikTok, wherever you hang out online. Word of mouth is still king, and it’s how NewsBlur has always grown.</p>
+
+<p>To make that more rewarding, I’m launching two new features today: referrals and gift subscriptions.</p>
+
+<h3 id="earn-free-premium-by-referring-friends">Earn free premium by referring friends</h3>
+
+<p>Every NewsBlur user now has a personal referral link. Share it with someone, and if they sign up and subscribe, you earn free time on your current tier. There’s no cap. Your next billing date gets pushed forward automatically, so you won’t be charged while you have referral credit.</p>
+
+<!-- SCREENSHOT: Refer tab of the Refer & Gift modal showing the hero banner, referral URL with copy button, and referral stats -->
+<p><img src="/assets/refer-and-gift-refer-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Open the Refer &amp; Gift modal from the Manage menu to find your link. Copy it and share it however you’d like. The modal also shows your referral stats: how many people have signed up through your link, how many have subscribed, and how many years of premium you’ve earned.</p>
+
+<p>The credit scales proportionally based on your tier and what your referral subscribes to. If they subscribe to your tier or higher, you get a full free year. If they subscribe to a lower tier, you get proportional credit:</p>
+
+<ul>
+  <li><strong>Premium subscribers</strong> earn a full free year for every referral, regardless of what tier the referred person picks</li>
+  <li><strong>Premium Archive subscribers</strong> earn a free year when the referral subscribes to Archive or Pro, or 4 free months for a Premium referral</li>
+  <li><strong>Premium Pro subscribers</strong> earn 4 free months for an Archive referral, 2 free months for Premium, or 1 free month for Pro</li>
+</ul>
+
+<p>The higher your tier, the more it pays to refer people to higher tiers. When a referral converts, you’ll get an email confirming your credit, and your subscription renewal date adjusts automatically. No action needed on your part.</p>
+
+<h3 id="gift-a-subscription-to-anyone">Gift a subscription to anyone</h3>
+
+<p>The Gift tab lets you buy a NewsBlur subscription for someone else. Pick a tier, check out through Stripe, and you’ll get a shareable gift link. The recipient clicks the link, signs up or logs in, and their premium activates instantly.</p>
+
+<!-- SCREENSHOT: Gift tab showing the hero banner with how-it-works steps, tier selector (Premium/Archive/Pro), and Create Gift Link button -->
+<p><img src="/assets/refer-and-gift-gift-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Three tiers are available as gifts:</p>
+
+<ul>
+  <li><strong>Premium</strong> at $36/year</li>
+  <li><strong>Premium Archive</strong> at $99/year</li>
+  <li><strong>Premium Pro</strong> at $29/month</li>
+</ul>
+
+<p>If the gift isn’t redeemed within 90 days, you get a full refund automatically. No need to contact support or remember to follow up.</p>
+
+<h3 id="how-to-access-it">How to access it</h3>
+
+<p>Open the Manage menu (the gear icon at the bottom of the feed list) and choose <strong>Refer &amp; Gift</strong>. The modal has two tabs: Refer for your referral link and stats, and Gift for purchasing gift subscriptions.</p>
+
+<!-- SCREENSHOT: Manage menu showing the new Refer & Gift option -->
+<p><img src="/assets/refer-and-gift-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Referrals and gift subscriptions are available now on the web for all NewsBlur users. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still love it, tell people. Post about it on LinkedIn, on X, on Facebook, on Instagram, on TikTok, wherever you hang out online. Word of mouth is still king, and it’s how NewsBlur has always grown.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/refer-and-gift-refer-tab.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/refer-and-gift-refer-tab.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Daily Briefing: A personalized summary of your news, delivered on your schedule</title><link href="https://blog.newsblur.com/2026/03/25/daily-briefing/" rel="alternate" type="text/html" title="Daily Briefing: A personalized summary of your news, delivered on your schedule" /><published>2026-03-25T00:00:00-04:00</published><updated>2026-03-25T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/25/daily-briefing</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/25/daily-briefing/"><![CDATA[<p>Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the topics I’ve trained as interesting?</p>
 
 <p>That’s the Daily Briefing. It reads your feeds, scores every story, and writes a personalized summary organized into sections that make sense for the way you read. It shows up as a feed in your sidebar, and you can have it emailed to you on a schedule you control.</p>
 
@@ -522,157 +642,4 @@ A new sound of an old instrument.
   </tbody>
 </table>
 
-<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Premium Archive: Per-feed and per-folder auto-mark-as-read settings</title><link href="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/" rel="alternate" type="text/html" title="Premium Archive: Per-feed and per-folder auto-mark-as-read settings" /><published>2026-01-23T00:00:00-05:00</published><updated>2026-01-23T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/"><![CDATA[<p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
-
-<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
-<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
-
-<h3 id="folder-inheritance">Folder inheritance</h3>
-
-<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
-
-<ul>
-  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
-  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
-  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
-  <li>Individual feeds can still override their folder’s setting</li>
-</ul>
-
-<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
-<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
-
-<h3 id="site-settings-dialog">Site settings dialog</h3>
-
-<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
-
-<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
-<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. Premium Archive subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/auto-mark-read-popover.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/auto-mark-read-popover.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place</title><link href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" rel="alternate" type="text/html" title="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" /><published>2026-01-22T00:00:00-05:00</published><updated>2026-01-22T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul</id><content type="html" xml:base="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"><![CDATA[<p>The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.</p>
-
-<p>Today I’m launching three major improvements: URL classifiers, regex mode for power users, and a completely redesigned Manage Training tab.</p>
-
-<h3 id="train-on-urls">Train on URLs</h3>
-
-<p>You can now train on story permalink URLs, not just titles and content. This opens up new filtering possibilities based on URL patterns.</p>
-
-<p><img src="/assets/url-classifier-section.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The URL classifier matches against the full story permalink. Some use cases:</p>
-
-<ul>
-  <li><strong>Filter by URL path</strong>: Like or dislike stories that contain <code class="language-plaintext highlighter-rouge">/sponsored/</code> or <code class="language-plaintext highlighter-rouge">/opinion/</code> in their URL</li>
-  <li><strong>Domain sections</strong>: Match specific subdomains or URL segments that indicate content types</li>
-  <li><strong>Landing pages vs articles</strong>: Some feeds include both—filter by URL structure to show only what you want</li>
-</ul>
-
-<p>URL classifiers support both exact phrase matching and regex mode. The exact phrase match is available to Premium subscribers, while regex mode requires <a href="https://newsblur.com/?next=premium">Premium Pro</a>.</p>
-
-<p>When a URL classifier matches, you’ll see the matched portion highlighted directly in the story header, so you always know why a story was filtered.</p>
-
-<h3 id="regex-matching-for-power-users">Regex matching for power users</h3>
-
-<p>For years, the text classifier only supported exact phrase matching. If you wanted to match “iPhone” and “iPad” you needed two separate classifiers. Now you can use regex patterns in the Title, Text, and URL classifiers.</p>
-
-<p><img src="/assets/regex-mode-toggle.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>A segmented control lets you switch between “Exact phrase” and “Regex” mode. In regex mode, you get access to the full power of regular expressions:</p>
-
-<ul>
-  <li><strong>Word boundaries</strong> (<code class="language-plaintext highlighter-rouge">\b</code>): Match <code class="language-plaintext highlighter-rouge">\bapple\b</code> to find “apple” but not “pineapple”</li>
-  <li><strong>Alternation</strong> (<code class="language-plaintext highlighter-rouge">|</code>): Match <code class="language-plaintext highlighter-rouge">iPhone|iPad|Mac</code> in a single classifier</li>
-  <li><strong>Optional characters</strong> (<code class="language-plaintext highlighter-rouge">?</code>): Match <code class="language-plaintext highlighter-rouge">colou?r</code> to find both “color” and “colour”</li>
-  <li><strong>Anchors</strong> (<code class="language-plaintext highlighter-rouge">^</code> and <code class="language-plaintext highlighter-rouge">$</code>): Match patterns at the start or end of text</li>
-  <li><strong>Character classes</strong>: Match <code class="language-plaintext highlighter-rouge">[0-9]+</code> for any number sequence</li>
-</ul>
-
-<p><img src="/assets/regex-help-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>A built-in help popover explains regex syntax with practical examples. The trainer validates your regex in real-time and shows helpful error messages if the pattern is invalid.</p>
-
-<p>Regex matching is case-insensitive, so <code class="language-plaintext highlighter-rouge">apple</code> matches “Apple”, “APPLE”, and “apple”. This mode is available to Premium Pro subscribers.</p>
-
-<h3 id="manage-all-your-training-in-one-place">Manage all your training in one place</h3>
-
-<p>Over the years you may have trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when you wanted to review what you’d trained, you had to open each feed’s trainer individually and click through them one by one.</p>
-
-<p>The new Manage Training tab provides a consolidated view of every classifier you’ve ever trained, organized by folder. You can see everything at a glance, edit inline, and save changes across multiple feeds in a single click.</p>
-
-<p><img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Open the Intelligence Trainer from the sidebar menu (or press the <code class="language-plaintext highlighter-rouge">t</code> key). You’ll now see two tabs at the top: “Site by Site” and “Manage Training”. The Manage Training tab is available everywhere you train—from the story trainer, feed trainer, or the main Intelligence Trainer dialog.</p>
-
-<p>The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That’s still the best way to train new feeds with lots of suggestions.</p>
-
-<p>The Manage Training tab shows only what you’ve already trained. Every thumbs up and thumbs down you’ve ever given, organized by folder just like your feed list. Each feed shows its trained classifiers as pills you can click to toggle.</p>
-
-<h4 id="filtering-made-easy">Filtering made easy</h4>
-
-<p>The real power comes from the filtering options. At the top of the tab you’ll find several ways to narrow down your training:</p>
-
-<p><strong>Folder/Site dropdown</strong> — Only folders and sites with training appear in this dropdown. Select a folder to see all training within it, or select a specific site to focus on just that feed’s classifiers. This is especially useful when you have hundreds of trained items and want to review just one area.</p>
-
-<p><img src="/assets/manage-training-site-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Instant search</strong> — Type in the search box and results filter as you type. Search matches against classifier names, feed titles, and folder names. Looking for everything you’ve trained about “apple”? Just type it and see all matches instantly.</p>
-
-<p><img src="/assets/manage-training-search.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Likes and Dislikes</strong> — Toggle between All, Likes only, or Dislikes only. Want to see everything you’ve marked as disliked? One click shows you all the red thumbs-down items across your entire training history.</p>
-
-<p><img src="/assets/manage-training-dislikes.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Type filters</strong> — Filter by classifier type: Title, Author, Tag, Text, URL, or Site. These are multi-select, so you can show just Authors and Tags while hiding everything else. Perfect for when you want to audit just the authors you’ve trained across all your feeds.</p>
-
-<h4 id="edit-inline-and-save-in-bulk">Edit inline and save in bulk</h4>
-
-<p>Click any classifier pill to toggle it between like, dislike, and neutral. The Save button shows exactly how many changes you’ve made, so you always know what’s pending. Made a mistake? Just click again to undo—the count updates automatically.</p>
-
-<p>When you click Save, all your changes across all feeds are saved in a single request. No more clicking through feeds one at a time to clean up old training.</p>
-
-<h3 id="subscription-tiers">Subscription tiers</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Tier Required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Title/Author/Tag/Feed classifiers</td>
-      <td>Free</td>
-    </tr>
-    <tr>
-      <td>Manage Training tab</td>
-      <td>Free</td>
-    </tr>
-    <tr>
-      <td>URL classifiers (exact phrase)</td>
-      <td>Premium</td>
-    </tr>
-    <tr>
-      <td>Text classifiers (exact phrase)</td>
-      <td>Premium Archive</td>
-    </tr>
-    <tr>
-      <td>Regex mode (Title, Text, URL)</td>
-      <td>Premium Pro</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>All three features are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/url-classifier-section.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/url-classifier-section.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
