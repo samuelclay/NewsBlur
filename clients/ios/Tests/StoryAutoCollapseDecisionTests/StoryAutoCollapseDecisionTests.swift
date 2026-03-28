@@ -270,6 +270,26 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_fetching_banner_loading_spinner_uses_intrinsic_size_after_banner_reveal() {
+        XCTAssertEqual(
+            FetchingBannerAccessoryLayoutDecision.fixedAccessoryDimension(isOffline: false),
+            0
+        )
+        XCTAssertTrue(
+            FetchingBannerAccessoryLayoutDecision.revealsAccessoryAfterBannerExpansion(isOffline: false)
+        )
+    }
+
+    func test_fetching_banner_offline_icon_keeps_fixed_size_and_shows_immediately() {
+        XCTAssertEqual(
+            FetchingBannerAccessoryLayoutDecision.fixedAccessoryDimension(isOffline: true),
+            16
+        )
+        XCTAssertFalse(
+            FetchingBannerAccessoryLayoutDecision.revealsAccessoryAfterBannerExpansion(isOffline: true)
+        )
+    }
+
     func test_daily_briefing_folder_appears_before_infrequent_site_stories() {
         XCTAssertEqual(
             DailyBriefingFolderPlacementDecision.orderedFolders(
@@ -1183,5 +1203,86 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             ),
             .wait
         )
+    }
+
+    func test_cluster_mark_read_preference_parses_dictionary_user_profile_preferences() {
+        let userProfile: [String: Any] = [
+            "preferences": [
+                "cluster_mark_read": true,
+            ],
+        ]
+
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.isClusterMarkReadEnabled(userProfile: userProfile as NSDictionary)
+        )
+    }
+
+    func test_cluster_mark_read_preference_parses_json_string_user_profile_preferences() {
+        let userProfile: [String: Any] = [
+            "preferences": "{\"cluster_mark_read\": true}",
+        ]
+
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.isClusterMarkReadEnabled(userProfile: userProfile as NSDictionary)
+        )
+    }
+
+    func test_cluster_mark_read_effective_read_status_follows_parent_for_archive_users() {
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: true,
+                isPremiumArchive: true
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: false,
+                isPremiumArchive: true
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: true,
+                isPremiumArchive: false
+            )
+        )
+    }
+
+    func test_cluster_mark_read_updates_cluster_story_metadata_locally() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:2",
+                "read_status": 0,
+                "score": 1,
+            ],
+            [
+                "story_hash": "feed:3",
+                "read_status": 1,
+                "score": 0,
+            ],
+        ]
+
+        let updated = StoryClusterDisplayDecision.updatedClusterStories(
+            clusterStories,
+            parentRead: true,
+            clusterMarkReadEnabled: true,
+            isPremiumArchive: true
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(updated?.count, 2)
+        XCTAssertEqual(updated?.first?["read_status"] as? Int, 1)
+        XCTAssertEqual(updated?.last?["read_status"] as? Int, 1)
+    }
+
+    func test_cluster_story_indicator_names_match_main_story_icons() {
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: -1), "indicator-hidden")
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 1), "indicator-focus")
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 0), "indicator-unread")
     }
 }

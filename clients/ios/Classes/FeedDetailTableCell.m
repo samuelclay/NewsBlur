@@ -223,17 +223,14 @@ static UIFont *indicatorFont = nil;
 
         CGFloat contentY = CGRectGetMinY(clusterRect) + comfortMargin;
         CGFloat contentHeight = CGRectGetHeight(clusterRect) - comfortMargin * 2;
-        CGFloat indicatorSize = cell.storyScore == 0 ? 8.0 : 10.0;
+        NSString *indicatorImageName = [StoryClusterDisplayDecision indicatorImageNameForScore:cell.storyScore];
+        UIImage *indicatorImage = [UIImage imageNamed:indicatorImageName];
+        CGFloat indicatorSize = cell.storyScore == 0 ? 10.0 : 12.0;
         CGFloat indicatorX = CGRectGetMinX(clusterRect) + 11.0;
         CGFloat indicatorY = contentY + (contentHeight - indicatorSize) / 2.0;
-        UIColor *indicatorColor = UIColorFromRGB(0xC2C2C2);
-        if (cell.storyScore > 0) {
-            indicatorColor = UIColorFromRGB(0x6DB764);
-        } else if (cell.storyScore < 0) {
-            indicatorColor = UIColorFromRGB(0xD07C80);
-        }
-        CGContextSetFillColorWithColor(context, [indicatorColor colorWithAlphaComponent:(cell.isRead ? 0.25 : 1.0)].CGColor);
-        CGContextFillEllipseInRect(context, CGRectMake(indicatorX, indicatorY, indicatorSize, indicatorSize));
+        [indicatorImage drawInRect:CGRectMake(indicatorX, indicatorY, indicatorSize, indicatorSize)
+                         blendMode:0
+                             alpha:(cell.isRead ? 0.15 : 1.0)];
 
         UIImage *favicon = [Utilities roundCorneredImage:cell.siteFavicon radius:4 convertToSize:CGSizeMake(16, 16)];
         if (cell.isRead && favicon) {

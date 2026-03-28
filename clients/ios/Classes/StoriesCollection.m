@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *recentlyReadHashes;
 
+- (BOOL)isClusterMarkReadEnabledForStory:(NSDictionary *)story;
+
 @end
 
 @implementation StoriesCollection
@@ -615,6 +617,16 @@
 
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    if ([self isClusterMarkReadEnabledForStory:story]) {
+        NSArray *updatedClusterStories = [StoryClusterDisplayDecision
+                                          updatedClusterStories:[story objectForKey:@"cluster_stories"]
+                                          parentRead:YES
+                                          clusterMarkReadEnabled:YES
+                                          isPremiumArchive:self.appDelegate.isPremiumArchive];
+        if (updatedClusterStories) {
+            [newStory setObject:updatedClusterStories forKey:@"cluster_stories"];
+        }
+    }
 
     if ([[appDelegate.activeStory objectForKey:@"story_hash"]
          isEqualToString:[newStory objectForKey:@"story_hash"]]) {
@@ -673,6 +685,14 @@
         [appDelegate.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
     }
     [appDelegate finishMarkAsRead:story];
+}
+
+- (BOOL)isClusterMarkReadEnabledForStory:(NSDictionary *)story {
+    NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
+
+    return self.appDelegate.isPremiumArchive &&
+        clusterStories.count > 0 &&
+        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:self.appDelegate.dictUserProfile];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withId:(NSString *)newStoryIdStr {

@@ -97,6 +97,11 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL dailyBriefingDidLogInitialRender;
 @property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
 
+- (BOOL)isClusterMarkReadEnabled;
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
+- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location;
+- (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
+
 @end
 
 static inline CFTimeInterval NBDailyBriefingNow(void) {
@@ -613,6 +618,21 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     }
 
     return sortedClusterStories;
+}
+
+- (BOOL)isClusterMarkReadEnabled {
+    return appDelegate.isPremiumArchive &&
+        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:appDelegate.dictUserProfile];
+}
+
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory {
+    BOOL isClusterRead = [clusterStory[@"read_status"] boolValue];
+    BOOL isParentRead = parentStory ? ![storiesCollection isStoryUnread:parentStory] : NO;
+
+    return [StoryClusterDisplayDecision effectiveClusterReadStatusWithIsClusterRead:isClusterRead
+                                                                         parentRead:isParentRead
+                                                             clusterMarkReadEnabled:[self isClusterMarkReadEnabled]
+                                                                   isPremiumArchive:appDelegate.isPremiumArchive];
 }
 
 - (NSArray<NSDictionary *> *)buildVisibleStoryRows {
@@ -2571,6 +2591,10 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         accessoryView = spinner;
     }
 
+    CGFloat accessoryDimension = [FetchingBannerAccessoryLayoutDecision fixedAccessoryDimensionForOffline:isOffline];
+    BOOL revealAccessoryAfterExpansion = [FetchingBannerAccessoryLayoutDecision revealsAccessoryAfterBannerExpansionForOffline:isOffline];
+    accessoryView.alpha = revealAccessoryAfterExpansion ? 0 : 1;
+
     // Title label
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -2603,10 +2627,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         ? self.tryFeedBannerView.bottomAnchor
         : self.storyTitlesHeaderBar.headerContainer.bottomAnchor;
 
-    [NSLayoutConstraint activateConstraints:@[
-        [accessoryView.widthAnchor constraintEqualToConstant:16],
-        [accessoryView.heightAnchor constraintEqualToConstant:16],
-
+    NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray arrayWithArray:@[
         [mainStack.topAnchor constraintEqualToAnchor:banner.topAnchor constant:8],
         [mainStack.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor constant:-8],
         [mainStack.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor constant:12],
@@ -2621,6 +2642,11 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
+    if (accessoryDimension > 0) {
+        [constraints addObject:[accessoryView.widthAnchor constraintEqualToConstant:accessoryDimension]];
+        [constraints addObject:[accessoryView.heightAnchor constraintEqualToConstant:accessoryDimension]];
+    }
+    [NSLayoutConstraint activateConstraints:constraints];
 
     // Animate in: expand height from 0 so banner slides out from under the header bar,
     // pushing story titles down
@@ -2633,7 +2659,13 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         collapseHeight.active = NO;
         [self updateTopBannerInsets];
         [self.view layoutIfNeeded];
-    } completion:nil];
+    } completion:^(BOOL finished) {
+        if (!finished || !revealAccessoryAfterExpansion) return;
+
+        [UIView animateWithDuration:0.12 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            accessoryView.alpha = 1;
+        } completion:nil];
+    }];
 }
 
 - (void)hideFetchingBanner {
@@ -2984,6 +3016,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     NSDictionary *rowDescriptor = self.isLegacyTable ? [self storyRowDescriptorForIndexPath:indexPath] : nil;
     BOOL isClusterRow = [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
     NSInteger location = [self storyLocationForIndexPath:indexPath];
+    NSInteger parentLocation = isClusterRow ? [self storyLocationForScrollingAtIndexPath:indexPath] : location;
     BOOL shouldMeasureRender = tableView == self.storyTitlesTable &&
         storiesCollection.isDailyBriefing &&
         location < storyCount;
@@ -3104,11 +3137,14 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     cell.hasAlpha = NO;
     
     // undread indicator
-    
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+
+    NSDictionary *parentStory = isClusterRow && parentLocation != NSNotFound ? [self getStoryAtLocation:parentLocation] : nil;
+    int score = isClusterRow ?
+        ([story[@"score"] respondsToSelector:@selector(integerValue)] ? [story[@"score"] integerValue] : 0) :
+        [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
-    
-    cell.isRead = isClusterRow ? [[story objectForKey:@"read_status"] boolValue] : ![storiesCollection isStoryUnread:story];
+
+    cell.isRead = isClusterRow ? [self isClusterStoryRead:story parentStory:parentStory] : ![storiesCollection isStoryUnread:story];
     cell.isReadAvailable = !isClusterRow && ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
     cell.textSize = self.textSize;
     cell.isShort = NO;
@@ -3241,6 +3277,15 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
+    if (self.isLegacyTable && rowIndex != NSNotFound) {
+        [self reloadStoryRowsForLocation:rowIndex rowAnimation:UITableViewRowAnimationNone];
+        NSIndexPath *storyIndexPath = [self indexPathForStoryLocation:rowIndex];
+        if (storyIndexPath) {
+            [self.storyTitlesTable selectRowAtIndexPath:storyIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+        return;
+    }
+
     NSIndexPath *indexPath = [self indexPathForStoryLocation:rowIndex];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     
@@ -3252,6 +3297,46 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
     cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];
+}
+
+- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location {
+    if (!self.isLegacyTable || location == NSNotFound) {
+        return @[];
+    }
+
+    NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
+    NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
+
+    for (NSInteger row = 0; row < (NSInteger)rowDescriptors.count; row++) {
+        NSDictionary *rowDescriptor = rowDescriptors[(NSUInteger)row];
+        if ([rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue] != location) {
+            continue;
+        }
+
+        [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:FeedSectionBefore]];
+    }
+
+    return indexPaths;
+}
+
+- (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation {
+    if (location == NSNotFound) {
+        return;
+    }
+
+    if (self.isLegacyTable) {
+        self.visibleStoryRows = [self buildVisibleStoryRows];
+        NSArray<NSIndexPath *> *indexPaths = [self indexPathsForStoryLocationIncludingClusterRows:location];
+        if (indexPaths.count) {
+            [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:rowAnimation];
+            return;
+        }
+    }
+
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+    if (indexPath) {
+        [self reloadIndexPath:indexPath withRowAnimation:rowAnimation];
+    }
 }
 
 - (void)changeActiveStoryTitleCellLayout {
@@ -3420,7 +3505,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
-                [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
+                [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
@@ -3803,9 +3888,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
                 NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 
                 if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
-                    NSIndexPath *reloadIndexPath = [self indexPathForStoryLocation:thisRow];
-                    NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
-                    [self reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationFade];
+                    [self reloadStoryRowsForLocation:thisRow rowAnimation:UITableViewRowAnimationFade];
                 }
             }
             

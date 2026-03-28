@@ -1654,19 +1654,16 @@ a.NB-show-profile {
 }
 
 .NB-cluster-sentiment {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 12px;
+    height: 12px;
     flex: 0 0 auto;
-    background-color: #B6B6B6;
+    display: block;
+    object-fit: contain;
 }
 
-.NB-story-cluster-detail-item.NB-story-positive .NB-cluster-sentiment {
-    background-color: #6DB764;
-}
-
-.NB-story-cluster-detail-item.NB-story-negative .NB-cluster-sentiment {
-    background-color: #D07C80;
+.NB-cluster-sentiment.NB-cluster-sentiment-unread {
+    width: 10px;
+    height: 10px;
 }
 
 .NB-cluster-detail-favicon {

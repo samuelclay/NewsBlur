@@ -40,6 +40,10 @@
 - (BOOL)openDailyBriefingStoryForURL:(NSURL *)url;
 - (NSString *)clusterStoriesHTML;
 - (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType;
+- (BOOL)isClusterMarkReadEnabled;
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory;
+- (NSString *)clusterSentimentHTMLForScore:(NSInteger)score;
+- (void)refreshClusterStories;
 
 @end
 
@@ -451,6 +455,34 @@
     return [NSString stringWithFormat:@"data:%@;base64,%@", mimeType, base64];
 }
 
+- (BOOL)isClusterMarkReadEnabled {
+    return appDelegate.isPremiumArchive &&
+        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:appDelegate.dictUserProfile];
+}
+
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory {
+    BOOL isClusterRead = [clusterStory[@"read_status"] boolValue];
+    BOOL isParentRead = self.activeStory ? ![appDelegate.storiesCollection isStoryUnread:self.activeStory] : NO;
+
+    return [StoryClusterDisplayDecision effectiveClusterReadStatusWithIsClusterRead:isClusterRead
+                                                                         parentRead:isParentRead
+                                                             clusterMarkReadEnabled:[self isClusterMarkReadEnabled]
+                                                                   isPremiumArchive:appDelegate.isPremiumArchive];
+}
+
+- (NSString *)clusterSentimentHTMLForScore:(NSInteger)score {
+    UIImage *indicatorImage = [UIImage imageNamed:[StoryClusterDisplayDecision indicatorImageNameForScore:score]];
+    NSString *indicatorDataURL = [self dataURLForImage:indicatorImage mimeType:@"image/png"];
+    if (!indicatorDataURL.length) {
+        return @"";
+    }
+
+    NSString *sizeClass = score == 0 ? @" NB-cluster-sentiment-unread" : @"";
+    return [NSString stringWithFormat:@"<img class=\"NB-cluster-sentiment%@\" src=\"%@\" />",
+            sizeClass,
+            indicatorDataURL];
+}
+
 - (NSString *)clusterStoriesHTML {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
         return @"";
@@ -502,8 +534,9 @@
         NSString *borderInner = [feed[@"favicon_fade"] isKindOfClass:[NSString class]] ? feed[@"favicon_fade"] : @"707070";
         NSInteger score = [clusterStory[@"score"] respondsToSelector:@selector(integerValue)] ? [clusterStory[@"score"] integerValue] : 0;
         NSString *scoreClass = score > 0 ? @"NB-story-positive" : (score < 0 ? @"NB-story-negative" : @"NB-story-neutral");
-        NSString *readClass = [clusterStory[@"read_status"] boolValue] ? @" read" : @"";
+        NSString *readClass = [self isClusterStoryRead:clusterStory] ? @" read" : @"";
         NSString *dateText = [Utilities formatClusterDateFromTimestamp:[clusterStory[@"story_timestamp"] integerValue]];
+        NSString *sentimentHTML = [self clusterSentimentHTMLForScore:score];
 
         NSString *faviconDataURL = nil;
         UIImage *favicon = [Utilities roundCorneredImage:[appDelegate getFavicon:feedId] radius:4 convertToSize:CGSizeMake(16, 16)];
@@ -535,7 +568,7 @@
         [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/open-cluster-story?feed_id=%@&story_hash=%@&story_title=%@\" class=\"NB-story-cluster-detail-item %@%@\">"
          "<span class=\"NB-cluster-feed-border-outer\" style=\"background-color:#%@;\"></span>"
          "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
-         "<span class=\"NB-cluster-sentiment\"></span>"
+         "%@"
          "%@"
          "<span class=\"NB-cluster-detail-title-text\">%@</span>"
          "%@"
@@ -548,6 +581,7 @@
          readClass,
          borderOuter,
          borderInner,
+         sentimentHTML,
          faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
          storyTitle,
          imageHTML,
@@ -806,7 +840,7 @@
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
                              "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
-                             "        %@"
+                             "        <div id=\"NB-cluster-stories-container\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
@@ -2039,10 +2073,8 @@
         }
 
         if (hasScrolled && !atTop && [appDelegate.feedDetailViewController markStoryReadIfNeeded:activeStory isScrolling:YES]) {
-            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
-            if (reloadIndexPath != nil) {
-                [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationNone];
-            }
+            [appDelegate.feedDetailViewController redrawUnreadStory];
+            [self refreshHeader];
         }
 
 #if !TARGET_OS_MACCATALYST
@@ -3334,6 +3366,17 @@
     NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-header-container'); if (el) { el.innerHTML = '%@'; }",
                           headerString];
     
+    [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
+        [self refreshClusterStories];
+    }];
+}
+
+- (void)refreshClusterStories {
+    NSString *clusterStoriesString = [[[self clusterStoriesHTML] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                                      stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-cluster-stories-container'); if (el) { el.innerHTML = '%@'; }",
+                          clusterStoriesString];
+
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
         [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
         [self applyClassifierHighlights];

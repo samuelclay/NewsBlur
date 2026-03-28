@@ -333,6 +333,18 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class FetchingBannerAccessoryLayoutDecision: NSObject {
+    @objc(fixedAccessoryDimensionForOffline:)
+    public class func fixedAccessoryDimension(isOffline: Bool) -> CGFloat {
+        isOffline ? 16 : 0
+    }
+
+    @objc(revealsAccessoryAfterBannerExpansionForOffline:)
+    public class func revealsAccessoryAfterBannerExpansion(isOffline: Bool) -> Bool {
+        !isOffline
+    }
+}
+
 public struct DailyBriefingListGroup: Equatable {
     public let id: String
     public let title: String
@@ -593,6 +605,112 @@ public enum DailyBriefingSectionLayoutDecision {
         }
 
         return 0
+    }
+}
+
+@objcMembers public final class StoryClusterDisplayDecision: NSObject {
+    @objc(isClusterMarkReadEnabledWithUserProfile:)
+    public class func isClusterMarkReadEnabled(userProfile: NSDictionary?) -> Bool {
+        guard let preferences = preferencesDictionary(from: userProfile) else {
+            return false
+        }
+
+        guard let value = preferences["cluster_mark_read"] else {
+            return false
+        }
+
+        return boolValue(from: value)
+    }
+
+    @objc(effectiveClusterReadStatusWithIsClusterRead:parentRead:clusterMarkReadEnabled:isPremiumArchive:)
+    public class func effectiveClusterReadStatus(
+        isClusterRead: Bool,
+        parentRead: Bool,
+        clusterMarkReadEnabled: Bool,
+        isPremiumArchive: Bool
+    ) -> Bool {
+        guard isPremiumArchive, clusterMarkReadEnabled, parentRead else {
+            return isClusterRead
+        }
+
+        return true
+    }
+
+    @objc(updatedClusterStories:parentRead:clusterMarkReadEnabled:isPremiumArchive:)
+    public class func updatedClusterStories(
+        _ clusterStories: NSArray?,
+        parentRead: Bool,
+        clusterMarkReadEnabled: Bool,
+        isPremiumArchive: Bool
+    ) -> NSArray {
+        guard
+            let clusterStories,
+            effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: parentRead,
+                clusterMarkReadEnabled: clusterMarkReadEnabled,
+                isPremiumArchive: isPremiumArchive
+            )
+        else {
+            return clusterStories ?? []
+        }
+
+        return clusterStories.compactMap { item in
+            guard let story = item as? NSDictionary else {
+                return item
+            }
+
+            let updatedStory = NSMutableDictionary(dictionary: story)
+            updatedStory["read_status"] = 1
+            return updatedStory.copy()
+        } as NSArray
+    }
+
+    @objc(indicatorImageNameForScore:)
+    public class func indicatorImageName(forScore score: Int) -> String {
+        if score < 0 {
+            return "indicator-hidden"
+        } else if score > 0 {
+            return "indicator-focus"
+        } else {
+            return "indicator-unread"
+        }
+    }
+
+    private class func preferencesDictionary(from userProfile: NSDictionary?) -> NSDictionary? {
+        guard let preferencesValue = userProfile?["preferences"] else {
+            return nil
+        }
+
+        if let preferences = preferencesValue as? NSDictionary {
+            return preferences
+        }
+
+        guard
+            let preferencesJSON = preferencesValue as? String,
+            let data = preferencesJSON.data(using: .utf8),
+            let preferences = try? JSONSerialization.jsonObject(with: data) as? NSDictionary
+        else {
+            return nil
+        }
+
+        return preferences
+    }
+
+    private class func boolValue(from value: Any) -> Bool {
+        if let boolValue = value as? Bool {
+            return boolValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.boolValue
+        }
+
+        if let stringValue = value as? String {
+            return NSString(string: stringValue).boolValue
+        }
+
+        return false
     }
 }
 
