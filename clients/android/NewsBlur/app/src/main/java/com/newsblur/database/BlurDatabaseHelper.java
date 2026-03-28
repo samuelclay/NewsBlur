@@ -1393,16 +1393,7 @@ public class BlurDatabaseHelper {
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
         if (fs.isDailyBriefing()) {
-            StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE_1);
-            q.append(DatabaseConstants.STORY_HASH)
-             .append(" IN (SELECT ")
-             .append(DatabaseConstants.READING_SESSION_STORY_HASH)
-             .append(" FROM ")
-             .append(DatabaseConstants.READING_SESSION_TABLE)
-             .append(")")
-             .append(DatabaseConstants.STORY_QUERY_BASE_2)
-             .append(" ORDER BY rowid");
-            return rawQuery(q.toString(), null, cancellationSignal);
+            return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
         }
 
         StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);

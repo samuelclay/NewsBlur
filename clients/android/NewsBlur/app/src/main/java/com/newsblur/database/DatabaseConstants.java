@@ -398,6 +398,18 @@ public class DatabaseConstants {
         ")" + 
         STORY_QUERY_BASE_2;
 
+    public static final String DAILY_BRIEFING_SESSION_STORY_QUERY =
+        "SELECT " +
+        STORY_COLUMNS +
+        " FROM " + READING_SESSION_TABLE +
+        " INNER JOIN " + STORY_TABLE +
+        " ON " + READING_SESSION_TABLE + "." + READING_SESSION_STORY_HASH +
+        " = " + STORY_TABLE + "." + STORY_HASH +
+        " INNER JOIN " + FEED_TABLE +
+        " ON " + STORY_TABLE + "." + STORY_FEED_ID +
+        " = " + FEED_TABLE + "." + FEED_ID +
+        " ORDER BY " + READING_SESSION_TABLE + ".rowid";
+
     public static String NOTIFY_FOCUS_STORY_QUERY = 
         STORY_QUERY_BASE_1 +
         STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "')" +
