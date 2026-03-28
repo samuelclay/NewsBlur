@@ -690,8 +690,18 @@ color: #a85b40;
 /* Divider color */
 .NB-dark .NB-profile-badge,
 .NB-dark .NB-feed-notification,
+.NB-dark .NB-feed-notification-group,
+.NB-dark .NB-notification-scope-section,
 .NB-dark fieldset {
     border-color: #777;
+}
+
+.NB-dark .NB-classifier-notification-value {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-notification-scope-label {
+    color: #999;
 }
 
 /* Selected tab */
@@ -1417,6 +1427,29 @@ color: #a85b40;
 
 .NB-dark .NB-menu-manage .NB-mute-slider::-moz-range-thumb {
     background: #7CA4D8;
+}
+
+/* Feed flyout submenu in story manage menu - dark mode */
+.NB-dark .NB-menu-manage li.NB-menu-item.NB-menu-manage-story-feed.NB-active {
+    background-color: #3d4649;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu {
+    background-color: #303739;
+    border-color: #10120b;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-item {
+    background-color: #303739;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-item:hover:not(.NB-disabled) {
+    background-color: #3d4649;
+}
+
+.NB-dark .NB-menu-manage-story-feed-submenu li.NB-menu-separator {
+    border-bottom-color: #252623;
 }
 
 /* Filter popover auto-mark-read slider dark mode */
@@ -3603,9 +3636,18 @@ a.mention, a.mention-group {
 }
 
 /* Type badge dark mode */
-.NB-dark .NB-classifier-type-badge {
+.NB-dark .NB-classifier-type-badge,
+.NB-dark .NB-classifier-scope-badge {
     background: rgba(255, 255, 255, 0.08);
     color: #999;
+}
+
+.NB-dark .NB-classifier-scope-icon.NB-scope-folder {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-classifier-scope-icon.NB-scope-global {
+    color: #A78BFA;
 }
 
 .NB-dark .NB-scope-toggle-feed.NB-active {
@@ -3621,8 +3663,9 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-scope-tooltip {
-    background: rgba(255, 255, 255, 0.9);
-    color: #222;
+    background: rgba(30, 30, 30, 0.95);
+    color: #eee;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .NB-dark .NB-classifier-scope-popover {
@@ -3651,6 +3694,34 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-scope-upgrade-nudge a {
     color: #A78BFA;
+}
+
+/* Classifier notification bell dark mode */
+.NB-dark .NB-classifier-notification-bell {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-classifier-notification-bell:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-classifier-notification-bell .NB-bell-icon {
+    color: #aaa;
+    opacity: 0.45;
+}
+
+.NB-dark .NB-classifier-notification-bell.NB-active .NB-bell-icon {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-channel-indicator {
+    color: #60A5FA;
+}
+
+/* Classifier notification popover dark mode — already dark bg, just adjust border */
+.NB-dark .NB-classifier-notification-popover {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ================================== */
@@ -3757,6 +3828,79 @@ a.mention, a.mention-group {
     border-top-color: rgba(123, 104, 238, 0.3);
 }
 
+.NB-dark .NB-scoring-popover {
+    background: linear-gradient(135deg, #2a2a28 0%, #252520 100%);
+    border-color: #4a4a3a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-scoring-example-header {
+    color: #bbb;
+}
+
+.NB-dark .NB-scoring-divider {
+    border-top-color: #4a4a3a;
+}
+
+.NB-dark .NB-scoring-result-focus {
+    background: rgba(110, 167, 74, 0.15);
+    color: #7ec45a;
+}
+
+.NB-dark .NB-scoring-result-hidden {
+    background: rgba(204, 42, 46, 0.15);
+    color: #e06060;
+}
+
+/* Explainer hierarchy banner - dark mode */
+.NB-dark .NB-explainer-hierarchy {
+    background: #2a2a28;
+}
+
+.NB-dark .NB-explainer-level-super {
+    background: rgba(107, 0, 1, 0.15);
+}
+
+.NB-dark .NB-explainer-level-like {
+    background: rgba(52, 145, 46, 0.15);
+}
+
+.NB-dark .NB-explainer-level-dislike {
+    background: rgba(169, 1, 3, 0.15);
+}
+
+.NB-dark .NB-classifier-explainer .NB-classifier-title-like {
+    color: #7ec45a;
+}
+
+.NB-dark .NB-classifier-explainer .NB-classifier-title-dislike {
+    color: #e06060;
+}
+
+.NB-dark .NB-classifier-explainer .NB-classifier-title-super-dislike {
+    color: #c04040;
+}
+
+.NB-dark .NB-explainer-separator-line {
+    background: #555;
+}
+
+.NB-dark .NB-explainer-separator-label {
+    color: #888;
+}
+
+.NB-dark .NB-classifier-explainer .NB-explainer-icon-like {
+    filter: brightness(0) saturate(100%) invert(65%) sepia(50%) saturate(400%) hue-rotate(80deg) brightness(95%) contrast(87%);
+}
+
+.NB-dark .NB-classifier-explainer .NB-explainer-icon-dislike {
+    filter: brightness(0) saturate(100%) invert(45%) sepia(80%) saturate(2000%) hue-rotate(340deg) brightness(90%) contrast(100%);
+}
+
+.NB-dark .NB-classifier-explainer .NB-explainer-icon-super-dislike {
+    filter: brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(2000%) hue-rotate(340deg) brightness(80%) contrast(100%);
+}
+
 /* Unified text/title/url input - dark mode */
 .NB-dark .NB-classifier-text-input,
 .NB-dark .NB-classifier-title-input,
@@ -3841,6 +3985,15 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-classifier-scope-notice a {
+    color: #f59e0b;
+}
+
+/* Notification notice - dark mode */
+.NB-dark .NB-classifier-notif-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-notif-notice a {
     color: #f59e0b;
 }
 

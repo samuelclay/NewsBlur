@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hide what you hate, track what you love: super dislikes and per-classifier notifications | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Hide what you hate, track what you love: super dislikes and per-classifier notifications" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it." />
+<meta property="og:description" content="NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/super-dislike-trainer.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-27T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/super-dislike-trainer.png" />
+<meta property="twitter:title" content="Hide what you hate, track what you love: super dislikes and per-classifier notifications" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-27T00:00:00-04:00","datePublished":"2026-03-27T00:00:00-04:00","description":"NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.","headline":"Hide what you hate, track what you love: super dislikes and per-classifier notifications","image":"https://blog.newsblur.com/assets/super-dislike-trainer.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-03-27T00:00:00-04:00" itemprop="datePublished">Mar 27, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">Hide what you hate, track what you love: super dislikes and per-classifier notifications</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
+
+<p>Today I’m shipping two features that give the Intelligence Trainer more teeth: super dislikes that override any number of likes, and per-classifier notifications that ping you only when specific classifiers match.</p>
+
+<p>Super dislikes are available to all users – free, Premium, Premium Archive, and Premium Pro. Folder and global scoping requires Premium Archive. Per-classifier notifications are exclusive to Premium Archive and Premium Pro subscribers.</p>
+
+<h3 id="super-dislikes">Super dislikes</h3>
+
+<p>A super dislike is a new third state for classifiers. The regular thumbs down hides a story unless a thumbs up overrides it. The super dislike – shown as a double thumbs-down icon – overrides everything. If a story matches a super-disliked classifier, it’s hidden no matter how many positive classifiers it also matches.</p>
+
+<!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
+<p><img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The priority order is now: AI prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to AI classifiers.</p>
+
+<h4 id="how-to-use-it">How to use it</h4>
+
+<p>In the Intelligence Trainer, every classifier pill now has three clickable icons on the right side: thumbs up, thumbs down, and the double thumbs-down for super dislike. Click the double thumbs-down to super-dislike a classifier. Click it again to remove the super dislike.</p>
+
+<p>An explainer banner at the top of the trainer shows the priority chain so you always know how scoring works:</p>
+
+<ul>
+  <li><strong>Thumbs up</strong> beats any number of thumbs down</li>
+  <li><strong>Super thumbs down</strong> beats any number of thumbs up</li>
+</ul>
+
+<!-- SCREENSHOT: Explainer banner at top of trainer showing the priority chain with icons -->
+<p><img src="/assets/super-dislike-explainer.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="visual-highlighting">Visual highlighting</h4>
+
+<p>Super-disliked classifiers are highlighted in a deeper crimson color, distinct from the regular red of a normal dislike. When you’re reading stories, you’ll see the same color treatment on matched titles, authors, tags, and text, with a small double thumbs-down icon inline so you can tell at a glance why a story was scored the way it was.</p>
+
+<!-- SCREENSHOT: Story detail view showing a super-disliked title or tag highlighted in deep crimson with the double thumbs-down icon -->
+<p><img src="/assets/super-dislike-highlight.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h4 id="works-with-scopes">Works with scopes</h4>
+
+<p>Super dislikes work with all scope levels. Set a global super dislike on a topic like “sponsored” and it’s hidden across every feed. Set a folder-scoped super dislike on an author and they’re hidden in that folder regardless of positive training elsewhere. The same scoping rules from regular classifiers apply.</p>
+
+<h3 id="per-classifier-notifications">Per-classifier notifications</h3>
+
+<p>NewsBlur’s notifications have always been per-feed: turn them on and you get pinged on every new story. That’s fine for low-volume feeds, but not great for a high-volume feed where you only care about specific topics or authors. You end up choosing between too many notifications or none at all.</p>
+
+<p>Now you can set notifications on individual classifiers. Every classifier pill in the Intelligence Trainer has a small bell icon. Hover over it and a popover appears with four channel toggles: Email, Web, iOS, and Android. Choose any combination, and when a new story matches that specific classifier, you get notified. Everything else in the feed stays quiet.</p>
+
+<!-- SCREENSHOT: Classifier pill with bell icon and notification popover showing Email/Web/iOS/Android toggles -->
+<p><img src="/assets/classifier-notification-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The bell icon lights up on classifiers with active notifications, so you can see at a glance which ones will ping you.</p>
+
+<h4 id="works-with-scopes-and-regex">Works with scopes and regex</h4>
+
+<p>Classifier notifications respect the scope system. A notification on a global “breaking news” classifier fires when any feed publishes a matching story. A notification on a folder-scoped “earnings” classifier fires only for feeds in that folder.</p>
+
+<p>Regex classifiers work too. If you have a regex title or text classifier, the notification evaluates the pattern with timeout protection on every new story.</p>
+
+<h4 id="smart-deduplication">Smart deduplication</h4>
+
+<p>If a story already triggered a feed-level notification on a channel, the classifier notification won’t duplicate it. Each story is sent once per channel, regardless of how many classifiers or feed rules it matches. There’s also a cap of 3 stories per classifier per update cycle, so a burst of matching stories won’t flood you.</p>
+
+<h4 id="real-world-examples">Real-world examples</h4>
+
+<p><strong>Breaking news alerts.</strong> Train “breaking” as a global title classifier, set it to notify via iOS and Email. You get a push notification whenever any feed publishes a story with “breaking” in the title.</p>
+
+<p><strong>Author tracking.</strong> Follow a journalist across multiple outlets. Train their name as a global author classifier with notifications, and you’ll know the moment they publish regardless of which feed it’s in.</p>
+
+<p><strong>Keyword monitoring.</strong> Use a regex classifier for a product name or company, scoped to your industry folder. Get an email when a matching story appears, without turning on notifications for every feed in that folder.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Super dislikes are available now on the web for all NewsBlur users. Per-classifier notifications are available on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers – all users can see the bell icon and popover, but toggling channels requires an Archive or Pro subscription.</p>
+
+<p>If you have feedback or ideas for how to make these features better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/03/27/super-dislikes-and-classifier-notifications/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>

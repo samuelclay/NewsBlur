@@ -3,7 +3,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     events: {
         "click .NB-text-view-premium-only a": function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         }
     },
 

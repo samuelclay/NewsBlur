@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import User
 
-from apps.notifications.models import MUserFeedNotification
+from apps.notifications.models import MUserClassifierNotification, MUserFeedNotification
 from newsblur_web.celeryapp import app
 from utils import log as logging
 
@@ -10,3 +10,8 @@ from utils import log as logging
 @app.task()
 def QueueNotifications(feed_id, new_stories):
     MUserFeedNotification.push_feed_notifications(feed_id, new_stories)
+
+
+@app.task()
+def QueueClassifierNotifications(feed_id, new_stories):
+    MUserClassifierNotification.push_classifier_notifications(feed_id, new_stories)

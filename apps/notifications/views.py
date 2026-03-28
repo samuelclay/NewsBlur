@@ -4,7 +4,11 @@ import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 
-from apps.notifications.models import MUserFeedNotification, MUserNotificationTokens
+from apps.notifications.models import (
+    MUserClassifierNotification,
+    MUserFeedNotification,
+    MUserNotificationTokens,
+)
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
 from utils import log as logging
@@ -63,6 +67,83 @@ def set_notifications_for_feed(request):
     notifications_by_feed = MUserFeedNotification.feeds_for_user(user.pk)
 
     return {"notifications_by_feed": notifications_by_feed}
+
+
+@ajax_login_required
+@json.json_view
+def get_classifier_notifications(request):
+    """Get all classifier notifications for the current user."""
+    user = get_user(request)
+    return {"classifier_notifications": MUserClassifierNotification.for_user(user.pk)}
+
+
+@ajax_login_required
+@json.json_view
+def set_classifier_notification(request):
+    """Set notification channels for a specific classifier. Premium Archive only."""
+    user = get_user(request)
+
+    if not user.profile.is_archive:
+        return {"code": -1, "message": "Premium Archive required for classifier notifications"}
+
+    classifier_type = request.POST.get("classifier_type", "")
+    classifier_value = request.POST.get("classifier_value", "")
+    scope = request.POST.get("scope", "feed")
+    feed_id = int(request.POST.get("feed_id", 0))
+    folder_name = request.POST.get("folder_name", "")
+    is_regex = request.POST.get("is_regex", "") in ("true", "1", "True")
+    notification_types = request.POST.getlist("notification_types") or request.POST.getlist(
+        "notification_types[]"
+    )
+
+    if not classifier_type or not classifier_value:
+        return {"code": -1, "message": "classifier_type and classifier_value are required"}
+
+    if classifier_type not in ("title", "author", "tag", "text", "url"):
+        return {"code": -1, "message": "Invalid classifier_type"}
+
+    # is_regex only applies to title, text, url classifiers
+    if is_regex and classifier_type not in ("title", "text", "url"):
+        is_regex = False
+
+    try:
+        notif = MUserClassifierNotification.objects.get(
+            user_id=user.pk,
+            classifier_type=classifier_type,
+            classifier_value=classifier_value,
+            is_regex=is_regex,
+            scope=scope,
+            feed_id=feed_id,
+            folder_name=folder_name,
+        )
+    except MUserClassifierNotification.DoesNotExist:
+        notif = MUserClassifierNotification.objects.create(
+            user_id=user.pk,
+            classifier_type=classifier_type,
+            classifier_value=classifier_value,
+            is_regex=is_regex,
+            scope=scope,
+            feed_id=feed_id,
+            folder_name=folder_name,
+        )
+
+    notif.is_email = bool("email" in notification_types)
+    notif.is_web = bool("web" in notification_types)
+    notif.is_ios = bool("ios" in notification_types)
+    notif.is_android = bool("android" in notification_types)
+    notif.save()
+
+    # Delete if all channels cleared
+    if not any([notif.is_email, notif.is_web, notif.is_ios, notif.is_android]):
+        notif.delete()
+
+    logging.user(
+        user,
+        "~FCSet classifier notification: %s/%s (%s) -> %s"
+        % (classifier_type, classifier_value[:30], scope, notification_types),
+    )
+
+    return {"classifier_notifications": MUserClassifierNotification.for_user(user.pk)}
 
 
 @ajax_login_required

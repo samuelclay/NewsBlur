@@ -72,6 +72,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'referrals'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/referrals
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'clustering'
       static_configs:
         - targets: ['{{ monitor_server }}']
@@ -100,6 +108,14 @@ scrape_configs:
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/llm-costs
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
+    - job_name: 'notifications'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/notifications
       scheme: https
       relabel_configs:
         - target_label: instance

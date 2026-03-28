@@ -217,7 +217,7 @@ public class Story implements Serializable {
     }
 
 	public static class Intelligence implements Serializable {
-		private static final long serialVersionUID = -1314486209455376730L;
+		private static final long serialVersionUID = -1314486209455376731L;
 
 		@SerializedName("feed")
 		public int intelligenceFeed = 0;
@@ -231,17 +231,50 @@ public class Story implements Serializable {
 		@SerializedName("title")
 		public int intelligenceTitle = 0;
 
+		@SerializedName("title_regex")
+		public int intelligenceTitleRegex = 0;
+
+		@SerializedName("text")
+		public int intelligenceText = 0;
+
+		@SerializedName("text_regex")
+		public int intelligenceTextRegex = 0;
+
+		@SerializedName("url")
+		public int intelligenceUrl = 0;
+
+		@SerializedName("url_regex")
+		public int intelligenceUrlRegex = 0;
+
+		@SerializedName("prompt")
+		public int intelligencePrompt = 0;
+
         public int calcTotalIntel() {
+            // AI prompt classifier takes absolute priority
+            if (intelligencePrompt != 0) return intelligencePrompt;
+
             int max = 0;
             max = Math.max(max, intelligenceAuthors);
             max = Math.max(max, intelligenceTags);
             max = Math.max(max, intelligenceTitle);
-            if (max > 0) return max;
+            max = Math.max(max, intelligenceTitleRegex);
+            max = Math.max(max, intelligenceText);
+            max = Math.max(max, intelligenceTextRegex);
+            max = Math.max(max, intelligenceUrl);
+            max = Math.max(max, intelligenceUrlRegex);
 
             int min = 0;
             min = Math.min(min, intelligenceAuthors);
             min = Math.min(min, intelligenceTags);
             min = Math.min(min, intelligenceTitle);
+            min = Math.min(min, intelligenceTitleRegex);
+            min = Math.min(min, intelligenceText);
+            min = Math.min(min, intelligenceTextRegex);
+            min = Math.min(min, intelligenceUrl);
+            min = Math.min(min, intelligenceUrlRegex);
+
+            if (min <= -2) return min;
+            if (max > 0) return max;
             if (min < 0) return min;
 
             return intelligenceFeed;

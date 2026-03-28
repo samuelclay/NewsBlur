@@ -66,6 +66,13 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'notifications'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/notifications
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'media_player'
       static_configs:
         - targets: ['haproxy']

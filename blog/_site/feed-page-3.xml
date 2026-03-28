@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-26T11:37:22-04:00</updated>
+  <updated>2026-03-26T19:30:50-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,40 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Preview NewsBlur&apos;s upcoming hardware device, Turn Touch</title>
+    <link href="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/" rel="alternate" type="text/html" title="Preview NewsBlur&apos;s upcoming hardware device, Turn Touch" />
+    <published>2017-02-02T05:00:24-05:00</published>
+    <updated>2017-02-02T05:00:24-05:00</updated>
+    <id>https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/">
+      <![CDATA[<p>I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. <a href="https://www.turntouch.com">Signup on turntouch.com</a> to find out.</p>
+
+<p><a href="https://www.turntouch.com"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/blog-preview-blur.jpg" alt="" /></a></p>
+
+<p>It’s a new kind of device and it’s machined out of solid wood. I built it to last, much like my other projects (for instance the news reader you’re likely reading this in). Turn Touch is built for NewsBlur, among many other things.</p>
+
+<p>Turn Touch will be launching on Kickstarter next week and I want to ask for your help. When I launch my campaign I’m going to need people like you to share it with people who look to you for recomendations on what’s good. You already use NewsBlur, so you’re already known for having good taste.</p>
+
+<p>Now, you probably want to know what Turn Touch is and actually looks like, yeah? Then <a href="https://www.turntouch.com">signup on turntouch.com</a>.</p>
+
+<p>You’ll get to preview the Kickstarter campaign and offer me any feedback you have. You’ll get to see Turn Touch and find out what it offers you.</p>
+
+<p>I’ve been working on this as a side project for that past few years. And by signing up you’ll have the first access to it.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. Signup on turntouch.com to find out.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A new NewsBlur Android release for the new year</title>
@@ -1007,45 +1041,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[This is a huge release for the NewsBlur Android app. So much has happened in the last six months. We’ve had a big backend rewrite that makes the app feel like new. It’s faster, which is necessary to make the new offline reading feature really shine. Now you can read...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A new way to use the Story view while on https (SSL)</title>
-    <link href="https://blog.newsblur.com/2014/10/31/a-new-way-to-use-the-story-view-while-on-https/" rel="alternate" type="text/html" title="A new way to use the Story view while on https (SSL)" />
-    <published>2014-10-31T07:00:36-04:00</published>
-    <updated>2014-10-31T07:00:36-04:00</updated>
-    <id>https://blog.newsblur.com/2014/10/31/a-new-way-to-use-the-story-view-while-on-https</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/10/31/a-new-way-to-use-the-story-view-while-on-https/">
-      <![CDATA[<p>Modern browsers are taking your privacy and security seriously with new restrictions for sites that use https. You can choose to use NewsBlur over https, which will encrypt your communications with NewsBlur and prevent eavesdroppers—hackers, the government, other people on the same wireless network as you—from seeing what you see. While that’s not necessary for everybody, SSL/https is a priority for some and NewsBlur supports this beautifully.</p>
-
-<p><a href="https://www.ssllabs.com/ssltest/analyze.html?d=newsblur.com"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/SSL%20labs.png" alt="" /></a></p>
-
-<p>However, what modern browsers like Chrome and Firefox do is not allow you to embed an insecure http-only site in an iframe from a secure https site. That means that the Story view in NewsBlur does not load a thing for many users who are reading NewsBlur over an https connection.</p>
-
-<p>Today I’m launching a fix for this. It’s not perfect, but this will allow you to still get at some of the content while getting around the https-only issue. This feature will proxy http-only sites in the Story view, resulting in a hacked-together but workable view of the original story.</p>
-
-<p>At best, the Story view will look like this:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Story%20Proxy%20view.png" alt="" /></p>
-
-<p>At worst, the Story view will look like this:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Story%20Proxy%20view%20truncated.png" alt="" /></p>
-
-<p>While it’s not ideal, it’s a whole lot better than a blank page. Let me know how this new proxied Story view works for you. And if you want it to work flawlessly and are willing to use an unencrypted connection, just use the http version of NewsBlur instead of the https version.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Modern browsers are taking your privacy and security seriously with new restrictions for sites that use https. You can choose to use NewsBlur over https, which will encrypt your communications with NewsBlur and prevent eavesdroppers—hackers, the government, other people on the same wireless network as you—from seeing what you see....]]>
     </summary>
     
   </entry>
