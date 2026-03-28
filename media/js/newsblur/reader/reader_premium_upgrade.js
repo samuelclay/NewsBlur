@@ -108,10 +108,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Natural language text and image classifiers'
-                        ]),
-                        $.make('li', { className: 'NB-11' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Connect AI agents with MCP server and CLI'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -196,6 +192,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-17' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Apply training globally'
+                        ]),
+                        $.make('li', { className: 'NB-18' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Connect AI agents with MCP server and CLI'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [

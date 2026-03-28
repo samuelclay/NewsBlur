@@ -121,7 +121,6 @@ struct PremiumView: View {
         PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
         PremiumFeature(title: "Natural language text and image classifiers", icon: "pencil.line", iconColor: .purple),
-        PremiumFeature(title: "Connect AI agents with MCP server and CLI", icon: "cable.connector", iconColor: .indigo),
         PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
     ]
 
@@ -141,7 +140,8 @@ struct PremiumView: View {
         PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
         PremiumFeature(title: "Filter stories by date range", icon: "calendar", iconColor: .pink),
         PremiumFeature(title: "Apply training across a folder", icon: "folder.fill", iconColor: .mint),
-        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo)
+        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo),
+        PremiumFeature(title: "Connect AI agents with MCP server and CLI", icon: "cable.connector", iconColor: .indigo)
     ]
 
     @available(iOS 15.0, *)

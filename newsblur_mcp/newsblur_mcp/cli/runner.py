@@ -8,7 +8,7 @@ from functools import wraps
 import typer
 from rich.console import Console
 
-from newsblur_mcp.client import NewsBlurClient, PremiumRequiredError
+from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 
 console = Console(stderr=True)
 
@@ -20,8 +20,8 @@ def async_command(f):
     def wrapper(*args, **kwargs):
         try:
             return asyncio.run(f(*args, **kwargs))
-        except PremiumRequiredError as e:
-            console.print(f"[red]Premium required:[/red] {e}")
+        except ArchiveRequiredError as e:
+            console.print(f"[red]Premium Archive required:[/red] {e}")
             raise typer.Exit(1)
         except KeyboardInterrupt:
             console.print("\n[dim]Interrupted.[/dim]")
