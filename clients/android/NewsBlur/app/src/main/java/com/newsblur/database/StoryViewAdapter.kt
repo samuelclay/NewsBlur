@@ -30,6 +30,7 @@ import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
+import com.newsblur.design.StoryRowPalette
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
@@ -589,6 +590,9 @@ class StoryViewAdapter(
         vh: StoryViewHolder,
         story: Story,
     ) {
+        val isRead = !ignoreReadStatus && story.read
+        val theme = prefsRepo.getSelectedTheme()
+
         vh.itemView.setBackgroundResource(backgroundResourceFor(story))
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
@@ -625,6 +629,7 @@ class StoryViewAdapter(
                 iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
             }
             vh.feedTitleView.text = story.extern_feedTitle
+            vh.feedTitleView.setTextColor(StoryRowPalette.feedTitleArgb(theme, isRead))
             vh.feedIconView.visibility = View.VISIBLE
             vh.feedTitleView.visibility = View.VISIBLE
         } else {
@@ -667,7 +672,7 @@ class StoryViewAdapter(
         )
 
         // read/unread fading
-        if (this.ignoreReadStatus || (!story.read)) {
+        if (!isRead) {
             vh.leftBarOne.background.alpha = 255
             vh.leftBarTwo.background.alpha = 255
             vh.intelDot.imageAlpha = 255
@@ -686,7 +691,7 @@ class StoryViewAdapter(
             vh.thumbViewRight?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
             vh.thumbTileView?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
             vh.feedIconView.imageAlpha = READ_STORY_ALPHA_B255
-            vh.feedTitleView.alpha = READ_STORY_ALPHA
+            vh.feedTitleView.alpha = 1.0f
             vh.storyTitleView.alpha = READ_STORY_ALPHA
             vh.storyDate.alpha = READ_STORY_ALPHA
         }
