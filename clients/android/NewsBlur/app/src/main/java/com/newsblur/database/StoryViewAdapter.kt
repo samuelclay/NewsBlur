@@ -42,6 +42,7 @@ import com.newsblur.util.GestureAction
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
+import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
@@ -588,6 +589,7 @@ class StoryViewAdapter(
         vh: StoryViewHolder,
         story: Story,
     ) {
+        vh.itemView.setBackgroundResource(backgroundResourceFor(story))
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
 
@@ -973,6 +975,27 @@ class StoryViewAdapter(
     fun notifyAllItemsChanged() {
         notifyItemRangeChanged(0, itemCount)
     }
+
+    private fun backgroundResourceFor(story: Story): Int {
+        if (!story.isBriefingSummary) {
+            return defaultBackgroundResource()
+        }
+
+        return when (prefsRepo.getSelectedTheme()) {
+            ThemeValue.SEPIA -> R.drawable.sepia_daily_briefing_selector_story_background
+            ThemeValue.DARK -> R.drawable.dark_daily_briefing_selector_story_background
+            ThemeValue.BLACK -> R.drawable.black_daily_briefing_selector_story_background
+            else -> R.drawable.daily_briefing_selector_story_background
+        }
+    }
+
+    private fun defaultBackgroundResource(): Int =
+        when (prefsRepo.getSelectedTheme()) {
+            ThemeValue.SEPIA -> R.drawable.sepia_selector_story_background
+            ThemeValue.DARK -> R.drawable.dark_selector_story_background
+            ThemeValue.BLACK -> R.drawable.black_selector_story_background
+            else -> R.drawable.selector_story_background
+        }
 
     interface OnStoryClickListener {
         fun onStoryClicked(

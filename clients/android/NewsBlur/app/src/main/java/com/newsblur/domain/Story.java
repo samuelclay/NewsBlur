@@ -121,6 +121,9 @@ public class Story implements Serializable {
     // non-API, but indicates that the story came from the infrequent-feeds river
     public boolean infrequent;
 
+    // non-API, only used to style the Daily Briefing summary row in the story list
+    public boolean isBriefingSummary;
+
     // these properties are associated with stories, but only available if the record was joined on other tables
     // when queried and thus are not generally thawed.  calling bindExternValues() immediately after fromCursor()
     // will populate them iff the cursor was from a joined query

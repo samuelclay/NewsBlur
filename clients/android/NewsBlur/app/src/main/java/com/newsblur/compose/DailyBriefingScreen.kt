@@ -2,8 +2,12 @@
 
 package com.newsblur.compose
 
+import android.os.SystemClock
+import android.view.View
+import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,11 +32,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,16 +57,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
+import com.newsblur.activity.NbActivity
+import com.newsblur.database.StoryViewAdapter
 import com.newsblur.design.LocalNbColors
+import com.newsblur.domain.Story
 import com.newsblur.network.domain.DailyBriefingModelOption
 import com.newsblur.util.DailyBriefingPresentationState
+import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.StoryListStyle
 import com.newsblur.viewModel.DailyBriefingDraft
 import com.newsblur.viewModel.DailyBriefingGroupUi
 import com.newsblur.viewModel.DailyBriefingSectionDefinition
-import com.newsblur.viewModel.DailyBriefingStoryUi
 import com.newsblur.viewModel.DailyBriefingUiState
 import com.newsblur.viewModel.DailyBriefingViewModel
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.view.ExpandedHeightRecyclerView
+import com.newsblur.util.PrefConstants.ThemeValue
 
 private data class DailyBriefingPalette(
     val screen: Color,
@@ -76,9 +92,24 @@ private data class DailyBriefingPalette(
     val unread: Color,
 )
 
+private data class DailyBriefingSectionPalette(
+    val background: Color,
+    val border: Color,
+    val title: Color,
+    val date: Color,
+)
+
 private data class BriefingChoiceOption<T>(
     val value: T,
     val title: String,
+)
+
+data class DailyBriefingStoryTableConfig(
+    val activity: NbActivity,
+    val iconLoader: ImageLoader,
+    val thumbnailLoader: ImageLoader,
+    val feedUtils: FeedUtils,
+    val prefsRepo: PrefsRepo,
 )
 
 @Composable
@@ -101,8 +132,53 @@ private fun rememberDailyBriefingPalette(): DailyBriefingPalette {
 }
 
 @Composable
+private fun rememberDailyBriefingSectionPalette(prefsRepo: PrefsRepo): DailyBriefingSectionPalette {
+    val selectedTheme = prefsRepo.getSelectedTheme()
+    val effectiveTheme =
+        when (selectedTheme) {
+            ThemeValue.AUTO -> if (isSystemInDarkTheme()) ThemeValue.DARK else ThemeValue.LIGHT
+            else -> selectedTheme
+        }
+
+    return remember(effectiveTheme) {
+        when (effectiveTheme) {
+            ThemeValue.LIGHT ->
+                DailyBriefingSectionPalette(
+                    background = Color(0xFFEAECE6),
+                    border = Color(0xFFD9DDD5),
+                    title = Color(0xFF4C4D4A),
+                    date = Color(0xFF767974),
+                )
+            ThemeValue.SEPIA ->
+                DailyBriefingSectionPalette(
+                    background = Color(0xFFE9DECE),
+                    border = Color(0xFFD9CDBE),
+                    title = Color(0xFF5C4A3D),
+                    date = Color(0xFF7D6F61),
+                )
+            ThemeValue.DARK ->
+                DailyBriefingSectionPalette(
+                    background = Color(0xFF3A3A3C),
+                    border = Color(0xFF4A4A4C),
+                    title = Color(0xFFE0E0E0),
+                    date = Color(0xFFA5A5AA),
+                )
+            ThemeValue.BLACK ->
+                DailyBriefingSectionPalette(
+                    background = Color(0xFF2C2C2E),
+                    border = Color(0xFF242426),
+                    title = Color(0xFFE8E8E8),
+                    date = Color(0xFF98989D),
+                )
+            ThemeValue.AUTO -> error("AUTO should resolve to a concrete theme")
+        }
+    }
+}
+
+@Composable
 fun DailyBriefingScreen(
     state: DailyBriefingUiState,
+    storyTableConfig: DailyBriefingStoryTableConfig,
     onToggleGroup: (String) -> Unit,
     onLoadMoreIfNeeded: (String) -> Unit,
     onStoryClick: (String) -> Unit,
@@ -111,6 +187,7 @@ fun DailyBriefingScreen(
     onSavePreferences: (DailyBriefingDraft, Boolean) -> Unit,
 ) {
     val palette = rememberDailyBriefingPalette()
+    val sectionPalette = rememberDailyBriefingSectionPalette(storyTableConfig.prefsRepo)
 
     Box(
         modifier =
@@ -159,7 +236,7 @@ fun DailyBriefingScreen(
             DailyBriefingPresentationState.STORIES -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
@@ -171,7 +248,8 @@ fun DailyBriefingScreen(
                         }
                         DailyBriefingGroupCard(
                             group = group,
-                            storiesByHash = state.storiesByHash,
+                            sectionPalette = sectionPalette,
+                            storyTableConfig = storyTableConfig,
                             collapsed = state.collapsedGroupIds.contains(group.briefingId),
                             onToggleGroup = onToggleGroup,
                             onStoryClick = onStoryClick,
@@ -691,89 +769,91 @@ private fun DailyBriefingSettingsForm(
 @Composable
 private fun DailyBriefingGroupCard(
     group: DailyBriefingGroupUi,
-    storiesByHash: Map<String, DailyBriefingStoryUi>,
+    sectionPalette: DailyBriefingSectionPalette,
+    storyTableConfig: DailyBriefingStoryTableConfig,
     collapsed: Boolean,
     onToggleGroup: (String) -> Unit,
     onStoryClick: (String) -> Unit,
     onPremiumClick: () -> Unit,
 ) {
     val palette = rememberDailyBriefingPalette()
-    Card(
-        colors = CardDefaults.cardColors(containerColor = palette.card),
-        shape = RoundedCornerShape(22.dp),
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(sectionPalette.background),
     ) {
-        Column {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { onToggleGroup(group.briefingId) }
-                        .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onToggleGroup(group.briefingId) }
+                    .padding(start = 12.dp, top = 10.dp, end = 8.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = if (collapsed) "▸" else "▾",
+                style = MaterialTheme.typography.titleMedium,
+                color = sectionPalette.title,
+            )
+            Spacer(Modifier.size(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (collapsed) "▸" else "▾",
+                    text = group.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = palette.title,
+                    color = sectionPalette.title,
                 )
-                Spacer(Modifier.size(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
+                if (group.dateText.isNotBlank()) {
                     Text(
-                        text = group.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = palette.title,
+                        text = group.dateText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = sectionPalette.date,
                     )
-                    if (group.dateText.isNotBlank()) {
-                        Text(
-                            text = group.dateText,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = palette.muted,
-                        )
-                    }
                 }
-                Text(
-                    text = "${group.curatedCount} ${if (group.curatedCount == 1) "story" else "stories"}",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = palette.muted,
-                )
             }
+            Text(
+                text = "${group.curatedCount} ${if (group.curatedCount == 1) "story" else "stories"}",
+                style = MaterialTheme.typography.labelLarge,
+                color = sectionPalette.date,
+            )
+        }
+        HorizontalDivider(color = sectionPalette.border)
 
-            if (!collapsed) {
-                Divider(color = palette.border)
+        if (!collapsed) {
+            NativeDailyBriefingStoryList(
+                stories = group.stories,
+                storyTableConfig = storyTableConfig,
+                onStoryClick = onStoryClick,
+            )
+
+            if (group.isPreview) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .background(palette.card)
+                            .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    group.storyHashes.forEach { hash ->
-                        storiesByHash[hash]?.let { story ->
-                            DailyBriefingStoryRow(
-                                story = story,
-                                onClick = { onStoryClick(hash) },
-                            )
-                        }
-                    }
-
-                    if (group.isPreview) {
-                        Card(
-                            colors = CardDefaults.cardColors(containerColor = palette.cardAlt),
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier.clickable(onClick = onPremiumClick),
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = palette.cardAlt),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.clickable(onClick = onPremiumClick),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            Column(
-                                modifier = Modifier.padding(14.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
-                            ) {
-                                Text(
-                                    text = "Premium Archive",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = palette.accent,
-                                )
-                                Text(
-                                    text = "Get Daily Briefing with all of your top stories.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = palette.body,
-                                )
-                            }
+                            Text(
+                                text = "Premium Archive",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = palette.accent,
+                            )
+                            Text(
+                                text = "Get Daily Briefing with all of your top stories.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = palette.body,
+                            )
                         }
                     }
                 }
@@ -783,48 +863,57 @@ private fun DailyBriefingGroupCard(
 }
 
 @Composable
-private fun DailyBriefingStoryRow(
-    story: DailyBriefingStoryUi,
-    onClick: () -> Unit,
+private fun NativeDailyBriefingStoryList(
+    stories: List<Story>,
+    storyTableConfig: DailyBriefingStoryTableConfig,
+    onStoryClick: (String) -> Unit,
 ) {
-    val palette = rememberDailyBriefingPalette()
-    Row(
+    AndroidView(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .clickable(onClick = onClick)
-                .padding(4.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .padding(top = 6.dp, end = 10.dp)
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(if (story.isRead) Color.Transparent else palette.unread),
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = if (story.isSummary) "Daily Briefing" else (story.feedTitle ?: ""),
-                style = MaterialTheme.typography.labelMedium,
-                color = if (story.isSummary) palette.accent else palette.muted,
-            )
-            Text(
-                text = story.title,
-                style = if (story.isSummary) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
-                color = palette.title,
-            )
-            if (story.isSummary && story.shortContent.isNotBlank()) {
-                Text(
-                    text = story.shortContent,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = palette.body,
-                )
+                .padding(horizontal = 0.dp),
+        factory = { context ->
+            ExpandedHeightRecyclerView(context).apply {
+                layoutParams =
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    )
+                layoutManager = LinearLayoutManager(context)
+                itemAnimator = null
+                overScrollMode = View.OVER_SCROLL_NEVER
+                isNestedScrollingEnabled = false
+                adapter =
+                    StoryViewAdapter(
+                        storyTableConfig.activity,
+                        FeedSet.dailyBriefing(),
+                        StoryListStyle.LIST,
+                        storyTableConfig.iconLoader,
+                        storyTableConfig.thumbnailLoader,
+                        storyTableConfig.feedUtils,
+                        storyTableConfig.prefsRepo,
+                        object : StoryViewAdapter.OnStoryClickListener {
+                            override fun onStoryClicked(
+                                feedSet: FeedSet?,
+                                storyHash: String?,
+                            ) {
+                                storyHash?.let(onStoryClick)
+                            }
+                        },
+                    )
             }
-        }
-    }
+        },
+        update = { recyclerView ->
+            (recyclerView.adapter as? StoryViewAdapter)?.submitStories(
+                stories = stories,
+                loadId = SystemClock.elapsedRealtime(),
+                rv = recyclerView,
+                oldScrollState = null,
+                skipBackFillingStories = false,
+            )
+        },
+    )
 }
 
 @Composable

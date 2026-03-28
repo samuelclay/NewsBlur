@@ -10,12 +10,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.newsblur.R
+import com.newsblur.compose.DailyBriefingStoryTableConfig
 import com.newsblur.compose.DailyBriefingScreen
 import com.newsblur.databinding.ActivityDailyBriefingBinding
+import com.newsblur.di.IconLoader
+import com.newsblur.di.ThumbnailLoader
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.viewModel.DailyBriefingViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,9 +28,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DailyBriefingActivity : NbActivity() {
+    @Inject
+    lateinit var feedUtils: FeedUtils
+
+    @Inject
+    @IconLoader
+    lateinit var iconLoader: ImageLoader
+
+    @Inject
+    @ThumbnailLoader
+    lateinit var thumbnailLoader: ImageLoader
+
     private lateinit var binding: ActivityDailyBriefingBinding
     private lateinit var viewModel: DailyBriefingViewModel
 
@@ -49,6 +66,14 @@ class DailyBriefingActivity : NbActivity() {
             ) {
                 DailyBriefingScreen(
                     state = state,
+                    storyTableConfig =
+                        DailyBriefingStoryTableConfig(
+                            activity = this@DailyBriefingActivity,
+                            iconLoader = iconLoader,
+                            thumbnailLoader = thumbnailLoader,
+                            feedUtils = feedUtils,
+                            prefsRepo = prefsRepo,
+                        ),
                     onToggleGroup = viewModel::toggleGroup,
                     onLoadMoreIfNeeded = viewModel::loadMoreIfNeeded,
                     onStoryClick = ::openStory,

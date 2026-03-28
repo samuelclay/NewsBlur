@@ -38,20 +38,12 @@ data class DailyBriefingSectionDefinition(
     val subtitle: String,
 )
 
-data class DailyBriefingStoryUi(
-    val storyHash: String,
-    val title: String,
-    val shortContent: String,
-    val isRead: Boolean,
-    val feedTitle: String?,
-    val isSummary: Boolean,
-)
-
 data class DailyBriefingGroupUi(
     val briefingId: String,
     val title: String,
     val dateText: String,
     val storyHashes: List<String>,
+    val stories: List<Story>,
     val summaryHash: String?,
     val isPreview: Boolean,
 ) {
@@ -174,7 +166,6 @@ data class DailyBriefingDraft(
 
 data class DailyBriefingUiState(
     val groups: List<DailyBriefingGroupUi> = emptyList(),
-    val storiesByHash: Map<String, DailyBriefingStoryUi> = emptyMap(),
     val preferences: DailyBriefingDraft? = null,
     val hasLoadedPreferences: Boolean = false,
     val hasLoadedPreferenceDetails: Boolean = false,
@@ -420,7 +411,6 @@ class DailyBriefingViewModel
                         }
                     }
                 persistCurrentStoriesAndSession(groups, effectiveFeedId)
-                val storyUiMap = buildStoryUiMap()
                 val collapsedGroups =
                     if (page == 1) {
                         DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIds(groups.map { it.briefingId })
@@ -431,7 +421,6 @@ class DailyBriefingViewModel
                 _uiState.update { current ->
                     current.copy(
                         groups = groups,
-                        storiesByHash = storyUiMap,
                         preferences = responsePreferences,
                         hasLoadedPreferences = true,
                         hasLoadedPreferenceDetails = current.hasLoadedPreferenceDetails || response.preferences != null,
@@ -522,7 +511,6 @@ class DailyBriefingViewModel
             _uiState.update { current ->
                 current.copy(
                     groups = groups,
-                    storiesByHash = buildStoryUiMap(),
                     preferences =
                         current.preferences?.copy(
                             enabled = true,
@@ -547,22 +535,29 @@ class DailyBriefingViewModel
         ): List<DailyBriefingGroupUi> =
             briefings.map { briefing ->
                 val storyHashes = mutableListOf<String>()
+                val stories = mutableListOf<Story>()
                 val summaryHash =
                     briefing.summaryStory
                         ?.normalize(briefingFeedId = briefingFeedId)
-                        ?.storyHash
-                        ?.takeIf { it.isNotBlank() }
-                        ?.also { hash ->
-                            storyHashes.add(hash)
+                        ?.let { story ->
+                            story.storyHash
+                                ?.takeIf { it.isNotBlank() }
+                                ?.also { hash ->
+                                    storyHashes.add(hash)
+                                    stories.add(story)
+                                }
                         }
 
                 briefing.curatedStories.forEach { storyPayload ->
                     storyPayload
                         .normalize(briefingFeedId = briefingFeedId)
-                        ?.storyHash
-                        ?.takeIf { it.isNotBlank() }
-                        ?.also { hash ->
-                            storyHashes.add(hash)
+                        ?.let { story ->
+                            story.storyHash
+                                ?.takeIf { it.isNotBlank() }
+                                ?.also { hash ->
+                                    storyHashes.add(hash)
+                                    stories.add(story)
+                                }
                         }
                 }
 
@@ -584,26 +579,11 @@ class DailyBriefingViewModel
                     title = DailyBriefingTitleFormatter.titleForSlot(briefing.slot),
                     dateText = formatDateTitle(briefing.briefingDate),
                     storyHashes = storyHashes,
+                    stories = stories,
                     summaryHash = summaryHash,
                     isPreview = isPreview,
                 )
             }
-
-        private fun buildStoryUiMap(): Map<String, DailyBriefingStoryUi> =
-            storedStoriesByHash
-                .mapNotNull { (hash, payload) ->
-                    hash.takeIf { it.isNotBlank() }?.let {
-                        it to
-                            DailyBriefingStoryUi(
-                                storyHash = it,
-                                title = payload.story.title.orEmpty(),
-                                shortContent = payload.story.shortContent.orEmpty(),
-                                isRead = payload.story.read,
-                                feedTitle = payload.feedTitle,
-                                isSummary = payload.isSummary,
-                            )
-                    }
-                }.toMap()
 
         private fun persistCurrentStoriesAndSession(
             groups: List<DailyBriefingGroupUi>,
@@ -811,5 +791,6 @@ private fun DailyBriefingStory.normalize(briefingFeedId: String?): Story? {
             normalizedStory.content = normalizedStory.content.orEmpty()
             normalizedStory.title = normalizedStory.title.orEmpty()
             normalizedStory.shortContent = normalizedStory.shortContent.orEmpty()
+            normalizedStory.isBriefingSummary = isSummary
         }
 }
