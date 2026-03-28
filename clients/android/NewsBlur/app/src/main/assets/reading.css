@@ -49,6 +49,39 @@ img {
     max-height: none !important;
 }
 
+.NB-story img.NB-briefing-section-icon {
+    display: inline-block !important;
+    width: 1em !important;
+    max-width: 1em !important;
+    height: 1em !important;
+    max-height: 1em !important;
+    margin: 0 0.3em 0 0 !important;
+    vertical-align: -0.1em !important;
+}
+
+.NB-story img.NB-briefing-inline-favicon {
+    display: inline-block !important;
+    width: 16px !important;
+    max-width: 16px !important;
+    height: 16px !important;
+    max-height: 16px !important;
+    margin: 4px 4px 0 0 !important;
+    border-radius: 2px !important;
+    vertical-align: top !important;
+}
+
+.NB-story img.NB-classifier-icon-like,
+.NB-story img.NB-classifier-icon-dislike,
+.NB-story img.NB-classifier-icon-dislike-inner {
+    display: inline-block !important;
+    width: 12px !important;
+    max-width: 12px !important;
+    height: 12px !important;
+    max-height: 12px !important;
+    margin: 0 3px 0 0 !important;
+    vertical-align: middle !important;
+}
+
 p {
     margin-bottom: 0.9em !important;
 }
