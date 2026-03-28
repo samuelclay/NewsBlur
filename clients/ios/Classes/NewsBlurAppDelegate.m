@@ -3962,15 +3962,25 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
     int title = [[intelligence objectForKey:@"title"] intValue];
+    int titleRegex = [[intelligence objectForKey:@"title_regex"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
+    int text = [[intelligence objectForKey:@"text"] intValue];
+    int textRegex = [[intelligence objectForKey:@"text_regex"] intValue];
+    int url = [[intelligence objectForKey:@"url"] intValue];
+    int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
+    int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    int score_max = MAX(title, MAX(author, tags));
-    int score_min = MIN(title, MIN(author, tags));
+    // AI prompt classifier takes absolute priority
+    if (prompt != 0) return prompt;
 
-    if (score_max > 0)      score = score_max;
+    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex)))))));
+    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex)))))));
+
+    if (score_min <= -2) score = score_min;
+    else if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
-    
+
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
 
 //    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
