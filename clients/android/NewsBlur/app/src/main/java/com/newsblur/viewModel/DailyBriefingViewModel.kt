@@ -6,6 +6,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
+import com.newsblur.network.APIConstants
 import com.newsblur.network.BriefingApi
 import com.newsblur.network.FeedApi
 import com.newsblur.network.domain.DailyBriefingBriefing
@@ -538,7 +539,7 @@ class DailyBriefingViewModel
                 val stories = mutableListOf<Story>()
                 val summaryHash =
                     briefing.summaryStory
-                        ?.normalize(briefingFeedId = briefingFeedId)
+                        ?.toDisplayStory(briefingFeedId = briefingFeedId, feedLookup = dbHelper::getFeed)
                         ?.let { story ->
                             story.storyHash
                                 ?.takeIf { it.isNotBlank() }
@@ -550,7 +551,7 @@ class DailyBriefingViewModel
 
                 briefing.curatedStories.forEach { storyPayload ->
                     storyPayload
-                        .normalize(briefingFeedId = briefingFeedId)
+                        .toDisplayStory(briefingFeedId = briefingFeedId, feedLookup = dbHelper::getFeed)
                         ?.let { story ->
                             story.storyHash
                                 ?.takeIf { it.isNotBlank() }
@@ -794,3 +795,32 @@ private fun DailyBriefingStory.normalize(briefingFeedId: String?): Story? {
             normalizedStory.isBriefingSummary = isSummary
         }
 }
+
+internal fun DailyBriefingStory.toDisplayStory(
+    briefingFeedId: String?,
+    feedLookup: (String) -> Feed?,
+): Story? =
+    normalize(briefingFeedId)?.also { normalizedStory ->
+        val feed =
+            normalizedStory.feedId
+                ?.takeIf { it.isNotBlank() }
+                ?.let(feedLookup)
+        val resolvedFeedColor = feed?.faviconColor ?: faviconColor ?: normalizedStory.extern_feedColor
+
+        normalizedStory.extern_feedTitle =
+            feed?.title ?: feedTitle ?: normalizedStory.extern_feedTitle ?: if (isSummary) "Daily Briefing" else null
+        normalizedStory.extern_feedColor = resolvedFeedColor
+        normalizedStory.extern_feedFade = feed?.faviconFade ?: normalizedStory.extern_feedFade ?: resolvedFeedColor
+        normalizedStory.extern_faviconBorderColor =
+            feed?.faviconBorder ?: resolvedFeedColor ?: normalizedStory.extern_faviconBorderColor
+        normalizedStory.extern_faviconTextColor =
+            feed?.faviconText ?: normalizedStory.extern_faviconTextColor ?: "FFFFFF"
+
+        if (normalizedStory.extern_faviconUrl.isNullOrBlank()) {
+            normalizedStory.extern_faviconUrl =
+                feed?.faviconUrl?.takeIf { it.isNotBlank() }
+                    ?: normalizedStory.feedId
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { feedId -> APIConstants.PATH_FEED_FAVICON_URL + feedId }
+        }
+    }
