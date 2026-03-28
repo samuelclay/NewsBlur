@@ -222,6 +222,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *findingStoryDictionary;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedFeedId;
+@property (nonatomic) NSString *tryFeedStoryTitle;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
@@ -364,6 +365,10 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
+- (void)loadFeed:(NSString *)feedId
+       withStory:(NSString *)contentId
+      storyTitle:(NSString *)storyTitle
+        animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)addTryFeedToSidebar:(NSDictionary *)feed;
 - (void)removeTryFeedFromSidebar;

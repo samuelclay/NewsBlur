@@ -38,6 +38,8 @@
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
 - (BOOL)openDailyBriefingStoryForURL:(NSURL *)url;
+- (NSString *)clusterStoriesHTML;
+- (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType;
 
 @end
 
@@ -435,6 +437,137 @@
     self.noStoryMessage.hidden = YES;
 }
 
+- (NSString *)dataURLForImage:(UIImage *)image mimeType:(NSString *)mimeType {
+    if (!image || !mimeType.length) {
+        return nil;
+    }
+
+    NSData *data = [mimeType isEqualToString:@"image/jpeg"] ? UIImageJPEGRepresentation(image, 0.82) : UIImagePNGRepresentation(image);
+    if (!data.length) {
+        return nil;
+    }
+
+    NSString *base64 = [data base64EncodedStringWithOptions:0];
+    return [NSString stringWithFormat:@"data:%@;base64,%@", mimeType, base64];
+}
+
+- (NSString *)clusterStoriesHTML {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
+        return @"";
+    }
+
+    NSArray<NSDictionary *> *clusterStories = [self.activeStory[@"cluster_stories"] isKindOfClass:[NSArray class]] ? self.activeStory[@"cluster_stories"] : nil;
+    if (!clusterStories.count) {
+        return @"";
+    }
+
+    NSArray<NSDictionary *> *sortedClusterStories = [clusterStories sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger timestamp1 = [obj1[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj1[@"story_timestamp"] integerValue] : 0;
+        NSInteger timestamp2 = [obj2[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj2[@"story_timestamp"] integerValue] : 0;
+        if (timestamp1 > timestamp2) {
+            return NSOrderedAscending;
+        } else if (timestamp1 < timestamp2) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedSame;
+    }];
+
+    NSArray<NSDictionary *> *visibleClusterStories = appDelegate.isPremiumArchive || sortedClusterStories.count <= 1 ?
+        sortedClusterStories :
+        [sortedClusterStories subarrayWithRange:NSMakeRange(0, 1)];
+    NSInteger hiddenCount = sortedClusterStories.count - visibleClusterStories.count;
+
+    NSMutableString *clusterHTML = [NSMutableString string];
+    [clusterHTML appendFormat:@"<div class=\"NB-story-cluster-detail\">"
+     "<div class=\"NB-story-cluster-detail-header\">"
+     "<span class=\"NB-story-cluster-detail-title\">Also published by %ld site%@</span>",
+     (long)sortedClusterStories.count,
+     sortedClusterStories.count == 1 ? @"" : @"s"];
+
+    if (!appDelegate.isPremiumArchive && hiddenCount == 0) {
+        [clusterHTML appendString:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-clustering-detail-upgrade-pill\">Premium Archive</a>"];
+    }
+
+    [clusterHTML appendString:@"</div>"];
+
+    for (NSDictionary *clusterStory in visibleClusterStories) {
+        NSString *feedId = [NSString stringWithFormat:@"%@", clusterStory[@"story_feed_id"] ?: @""];
+        NSString *storyHash = [NSString stringWithFormat:@"%@", clusterStory[@"story_hash"] ?: @""];
+        NSString *storyTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
+            [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByEncodingHTMLEntities] : @"";
+        NSString *encodedTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
+            [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] : @"";
+        NSDictionary *feed = [appDelegate getFeed:feedId];
+        NSString *borderOuter = [feed[@"favicon_color"] isKindOfClass:[NSString class]] ? feed[@"favicon_color"] : @"505050";
+        NSString *borderInner = [feed[@"favicon_fade"] isKindOfClass:[NSString class]] ? feed[@"favicon_fade"] : @"707070";
+        NSInteger score = [clusterStory[@"score"] respondsToSelector:@selector(integerValue)] ? [clusterStory[@"score"] integerValue] : 0;
+        NSString *scoreClass = score > 0 ? @"NB-story-positive" : (score < 0 ? @"NB-story-negative" : @"NB-story-neutral");
+        NSString *readClass = [clusterStory[@"read_status"] boolValue] ? @" read" : @"";
+        NSString *dateText = [Utilities formatClusterDateFromTimestamp:[clusterStory[@"story_timestamp"] integerValue]];
+
+        NSString *faviconDataURL = nil;
+        UIImage *favicon = [Utilities roundCorneredImage:[appDelegate getFavicon:feedId] radius:4 convertToSize:CGSizeMake(16, 16)];
+        if (favicon) {
+            faviconDataURL = [self dataURLForImage:favicon mimeType:@"image/png"];
+        }
+
+        NSString *imageHTML = @"";
+        UIImage *cachedStoryImage = [appDelegate cachedImageForStoryHash:storyHash];
+        NSString *clusterImageURL = nil;
+        if (cachedStoryImage && ![cachedStoryImage isKindOfClass:[NSNull class]]) {
+            clusterImageURL = [self dataURLForImage:cachedStoryImage mimeType:@"image/jpeg"];
+        } else {
+            NSArray *imageURLs = [clusterStory[@"image_urls"] isKindOfClass:[NSArray class]] ? clusterStory[@"image_urls"] : nil;
+            NSString *firstImageURL = imageURLs.firstObject;
+            if ([firstImageURL hasPrefix:@"http://"]) {
+                NSString *secureURL = [clusterStory[@"secure_image_thumbnails"] isKindOfClass:[NSDictionary class]] ? clusterStory[@"secure_image_thumbnails"][firstImageURL] : nil;
+                if ([secureURL isKindOfClass:[NSString class]] && secureURL.length) {
+                    firstImageURL = secureURL;
+                }
+            }
+            clusterImageURL = [[firstImageURL ?: @"" stringByReplacingOccurrencesOfString:@"'" withString:@"%27"] stringByEncodingHTMLEntities];
+        }
+
+        if (clusterImageURL.length) {
+            imageHTML = [NSString stringWithFormat:@"<span class=\"NB-cluster-detail-image\" style=\"background-image:url('%@');\"></span>", clusterImageURL];
+        }
+
+        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/open-cluster-story?feed_id=%@&story_hash=%@&story_title=%@\" class=\"NB-story-cluster-detail-item %@%@\">"
+         "<span class=\"NB-cluster-feed-border-outer\" style=\"background-color:#%@;\"></span>"
+         "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
+         "<span class=\"NB-cluster-sentiment\"></span>"
+         "%@"
+         "<span class=\"NB-cluster-detail-title-text\">%@</span>"
+         "%@"
+         "<span class=\"NB-cluster-detail-date\">%@</span>"
+         "</a>",
+         [feedId stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] ?: @"",
+         [storyHash stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] ?: @"",
+         encodedTitle ?: @"",
+         scoreClass,
+         readClass,
+         borderOuter,
+         borderInner,
+         faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
+         storyTitle,
+         imageHTML,
+         [dateText stringByEncodingHTMLEntities]];
+    }
+
+    if (!appDelegate.isPremiumArchive && hiddenCount > 0) {
+        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-cluster-locked-upsell\">"
+         "<span class=\"NB-cluster-locked-text\">+ %ld more site%@</span>"
+         "<span class=\"NB-clustering-detail-upgrade-pill\">Premium Archive</span>"
+         "</a>",
+         (long)hiddenCount,
+         hiddenCount == 1 ? @"" : @"s"];
+    }
+
+    [clusterHTML appendString:@"</div>"];
+
+    return clusterHTML;
+}
+
 - (void)drawStory {
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self drawStory:NO withOrientation:orientation];
@@ -461,6 +594,7 @@
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
+    NSString *clusterStoriesString = [self clusterStoriesHTML];
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
@@ -672,6 +806,7 @@
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
                              "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
+                             "        %@"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
@@ -682,6 +817,7 @@
                              htmlTop,
                              storyClassSuffix,
                              storyContent,
+                             clusterStoriesString,
                              premiumTextString,
                              sharingHtmlString,
                              commentString,
@@ -2119,6 +2255,7 @@
     NSURLRequest *request = navigationAction.request;
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
+    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
     NSString *action = @"";
     NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
                                                           objectForKey:@"story_feed_id"]];
@@ -2280,6 +2417,28 @@
         } else if ([action isEqualToString:@"classify-tag"]) {
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTagClassifier:tag feedId:feedId];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"open-cluster-story"]) {
+            NSString *targetFeedId = nil;
+            NSString *storyHash = nil;
+            NSString *storyTitle = nil;
+            for (NSURLQueryItem *queryItem in components.queryItems) {
+                if ([queryItem.name isEqualToString:@"feed_id"]) {
+                    targetFeedId = queryItem.value;
+                } else if ([queryItem.name isEqualToString:@"story_hash"]) {
+                    storyHash = queryItem.value;
+                } else if ([queryItem.name isEqualToString:@"story_title"]) {
+                    storyTitle = queryItem.value;
+                }
+            }
+            if (targetFeedId.length && storyHash.length) {
+                [self.appDelegate loadFeed:targetFeedId withStory:storyHash storyTitle:storyTitle animated:NO];
+            }
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"premium-archive"]) {
+            [self.appDelegate showPremiumDialogForArchive];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"premium"]) {

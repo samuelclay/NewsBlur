@@ -846,6 +846,7 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
         
         self.isOffline = YES;
         appDelegate.tryFeedStoryId = nil;
+        appDelegate.tryFeedStoryTitle = nil;
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
         
@@ -1792,6 +1793,17 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+    } else if ([identifier isEqual:@"story_clustering"]) {
+        NSString *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
+        NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
+        [self.appDelegate POST:urlString
+                    parameters:@{@"story_clustering": value}
+                       success:nil
+                       failure:^(__unused NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@"Failed to save story_clustering preference: %@", error);
+        }];
+        [self.appDelegate.feedDetailViewController reload];
+        [self.appDelegate.storyPagesViewController refreshPages];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];

@@ -358,6 +358,54 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_daily_briefing_story_lookup_uses_raw_story_indexes() {
+        XCTAssertEqual(
+            StoryRowLookupDecision.storyIndex(
+                for: 2,
+                isDailyBriefing: true,
+                allStoriesCount: 4,
+                visibleStoryLocations: []
+            )?.intValue,
+            2
+        )
+    }
+
+    func test_non_briefing_story_lookup_uses_visible_story_locations() {
+        XCTAssertEqual(
+            StoryRowLookupDecision.storyIndex(
+                for: 1,
+                isDailyBriefing: false,
+                allStoriesCount: 10,
+                visibleStoryLocations: [5, 7, 9]
+            )?.intValue,
+            7
+        )
+    }
+
+    func test_daily_briefing_legacy_rows_do_not_fall_back_to_loading_without_row_descriptors() {
+        XCTAssertFalse(
+            FeedRowLoadingDecision.shouldShowLoadingCell(
+                isLegacyTable: true,
+                isDailyBriefing: true,
+                hasRowDescriptor: false,
+                storyLocation: 0,
+                storyCount: 4
+            )
+        )
+    }
+
+    func test_non_briefing_legacy_rows_still_use_loading_when_the_descriptor_is_missing() {
+        XCTAssertTrue(
+            FeedRowLoadingDecision.shouldShowLoadingCell(
+                isLegacyTable: true,
+                isDailyBriefing: false,
+                hasRowDescriptor: false,
+                storyLocation: 0,
+                storyCount: 4
+            )
+        )
+    }
+
     func test_phone_story_titles_return_frame_snaps_back_to_full_width() {
         XCTAssertEqual(
             FeedDetailReturnFrameDecision.correctedFrame(
@@ -1104,6 +1152,36 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 size: CGSize(width: 1032, height: 1376),
                 isMac: false
             )
+        )
+    }
+
+    func test_feed_selection_on_regular_width_loads_story_titles_immediately() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: false,
+                userInterfaceIdiomPhone: false
+            ),
+            .loadFeedDetail
+        )
+    }
+
+    func test_feed_selection_on_iphone_shows_feed_list_then_story_titles() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: true,
+                userInterfaceIdiomPhone: true
+            ),
+            .showFeedsListThenLoadFeedDetail
+        )
+    }
+
+    func test_feed_selection_on_compact_ipad_waits_for_existing_navigation_flow() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: true,
+                userInterfaceIdiomPhone: false
+            ),
+            .wait
         )
     }
 }

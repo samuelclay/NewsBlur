@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
+@property (readwrite) BOOL isClusterStory;
 @property (readwrite) BOOL isDailyBriefingSummary;
 @property (readwrite) BOOL hasAlpha;
 

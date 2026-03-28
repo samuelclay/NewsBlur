@@ -100,6 +100,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 
+- (void)presentFeedDetailAfterFeedSelection;
+
 @end
 
 @implementation NewsBlurAppDelegate
@@ -158,6 +160,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @synthesize hasLoadedFeedDetail;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedFeedId;
+@synthesize tryFeedStoryTitle;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
@@ -647,6 +650,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
                     self.findingStoryDictionary = nil;
                     self.tryFeedStoryId = storyHash;
                     self.tryFeedFeedId = feedIdStr;
+                    self.tryFeedStoryTitle = nil;
                     [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
                 } else {
                     // Fallback: no notification feeds, open individual feed
@@ -732,6 +736,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         self.findingStoryDictionary = nil;
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
+        self.tryFeedStoryTitle = nil;
         
         [self.storiesCollection reset];
         
@@ -2092,6 +2097,13 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (void)loadFeed:(NSString *)feedId
        withStory:(NSString *)contentId
         animated:(BOOL)animated {
+    [self loadFeed:feedId withStory:contentId storyTitle:nil animated:animated];
+}
+
+- (void)loadFeed:(NSString *)feedId
+       withStory:(NSString *)contentId
+      storyTitle:(NSString *)storyTitle
+        animated:(BOOL)animated {
     NSDictionary *feed = [self getFeed:feedId];
     NSLog(@"loadFeed: %@", feed);
     
@@ -2099,9 +2111,11 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         if (self.tryFeedFeedId) {
             self.tryFeedStoryId = nil;
             self.tryFeedFeedId = nil;
+            self.tryFeedStoryTitle = nil;
         } else {
             self.tryFeedFeedId = feedId;
             self.tryFeedStoryId = contentId;
+            self.tryFeedStoryTitle = storyTitle;
         }
         return;
     }
@@ -2112,6 +2126,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     self.findingStoryDictionary = nil;
     self.tryFeedStoryId = contentId;
     self.tryFeedFeedId = feedId;
+    self.tryFeedStoryTitle = storyTitle;
     
     [self.storiesCollection reset];
     
@@ -2120,6 +2135,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     storiesCollection.activeFolder = nil;
     
     [self reloadFeedsView:NO];
+    self.skipTryFeedCleanup = YES;
+    [self presentFeedDetailAfterFeedSelection];
     
     //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     //        if (!self.isPhone) {
@@ -2139,6 +2156,28 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     //            }];
     //        }
     //    });
+}
+
+- (void)presentFeedDetailAfterFeedSelection {
+    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:self.isPhone
+                                                                                  userInterfaceIdiomPhone:[[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone];
+
+    if (presentation == FeedSelectionPresentationLoadFeedDetail) {
+        [self loadFeedDetailView];
+    } else if (presentation == FeedSelectionPresentationShowFeedsListThenLoadFeedDetail) {
+        [self showFeedsListAnimated:NO];
+        [self hidePopoverAnimated:YES completion:^{
+            void (^showFeedDetail)(void) = ^{
+                [self loadFeedDetailView];
+            };
+
+            if (self.feedsNavigationController.presentedViewController) {
+                [self.feedsNavigationController dismissViewControllerAnimated:YES completion:showFeedDetail];
+            } else {
+                showFeedDetail();
+            }
+        }];
+    }
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -2170,6 +2209,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     self.tryFeedStoryId = contentId;
+    self.tryFeedStoryTitle = nil;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     storiesCollection.isRiverView = NO;
@@ -2208,22 +2248,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
 
     self.skipTryFeedCleanup = YES;
-    if (!self.isPhone) {
-        [self loadFeedDetailView];
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self showFeedsListAnimated:NO];
-        [self hidePopoverAnimated:YES completion:^{
-            if (self.feedsNavigationController.presentedViewController) {
-                [self.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
-                    [self loadFeedDetailView];
-                }];
-            } else {
-                [self loadFeedDetailView];
-            }
-        }];
-    }
+    [self presentFeedDetailAfterFeedSelection];
 }
 
 - (void)addTryFeedToSidebar:(NSDictionary *)feed {
@@ -2284,6 +2309,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     if (self.tryFeedFeedId) {
         [self removeTryFeedFromSidebar];
     }
+    self.tryFeedStoryTitle = nil;
     self.isTryFeedView = NO;
 }
 
@@ -2338,6 +2364,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     storiesCollection.isRiverView = YES;
     
     self.tryFeedStoryId = contentId;
+    self.tryFeedStoryTitle = nil;
     storiesCollection.activeFolder = @"saved_stories";
     
     [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"saved_stories"];
@@ -2749,6 +2776,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         self.findingStoryDictionary = nil;
         self.tryFeedStoryId = nil;
         self.tryFeedFeedId = nil;
+        self.tryFeedStoryTitle = nil;
     }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];

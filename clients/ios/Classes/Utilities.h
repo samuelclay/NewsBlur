@@ -25,6 +25,7 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 + (NSString *)md5:(NSString *)string;
 + (NSString *)formatLongDateFromTimestamp:(NSInteger)timestamp;
 + (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp;
++ (NSString *)formatClusterDateFromTimestamp:(NSInteger)timestamp;
 
 @end
 

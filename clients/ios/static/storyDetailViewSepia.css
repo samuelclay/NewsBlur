@@ -258,3 +258,46 @@ a:active {
 .NB-text-view-premium-only {
     background-color: #FAF3E8;
 }
+
+.NB-story-cluster-detail {
+    border-top-color: rgba(180, 165, 150, .55);
+    border-bottom-color: rgba(180, 165, 150, .55);
+    background-color: #F5EADB;
+}
+
+.NB-story-cluster-detail-header {
+    border-bottom-color: rgba(180, 165, 150, .4);
+}
+
+.NB-story-cluster-detail-title {
+    color: #8B7B6B;
+}
+
+.NB-story-cluster-detail-item,
+.NB-cluster-locked-upsell {
+    color: #3C3226;
+    border-top-color: rgba(180, 165, 150, .25);
+}
+
+.NB-story-cluster-detail-item.read {
+    color: #8B7B6B;
+}
+
+.NB-clustering-detail-upgrade-pill {
+    background-color: rgba(27, 36, 140, .12);
+    color: #1B248C;
+}
+
+.NB-cluster-detail-date,
+.NB-cluster-locked-text {
+    color: #8B7B6B;
+}
+
+.NB-cluster-detail-favicon,
+.NB-cluster-detail-image {
+    background-color: rgba(60, 50, 38, .10);
+}
+
+.NB-cluster-locked-upsell {
+    background-color: rgba(212, 200, 184, .35);
+}

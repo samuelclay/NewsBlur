@@ -43,6 +43,12 @@ public enum StoryAutoCollapseBehavior: String {
     case stories
 }
 
+@objc public enum FeedSelectionPresentation: Int {
+    case loadFeedDetail
+    case showFeedsListThenLoadFeedDetail
+    case wait
+}
+
 @objcMembers public final class StorySplitBehaviorDecision: NSObject {
     public class func preferredBehavior(
         for behaviorValue: String?,
@@ -211,6 +217,23 @@ public enum StoryAutoCollapseBehavior: String {
         _ currentPresentation: FullscreenSidebarPresentation
     ) -> FullscreenSidebarPresentation {
         presentationAfterKeyboardReveal(currentPresentation)
+    }
+}
+
+@objcMembers public final class FeedSelectionPresentationDecision: NSObject {
+    public class func presentation(
+        isPhone: Bool,
+        userInterfaceIdiomPhone: Bool
+    ) -> FeedSelectionPresentation {
+        if !isPhone {
+            return .loadFeedDetail
+        }
+
+        if userInterfaceIdiomPhone {
+            return .showFeedsListThenLoadFeedDetail
+        }
+
+        return .wait
     }
 }
 
@@ -385,6 +408,53 @@ public enum DailyBriefingSectionLayoutDecision {
         }
 
         return sections
+    }
+}
+
+@objcMembers public final class StoryRowLookupDecision: NSObject {
+    public class func storyIndex(
+        for location: Int,
+        isDailyBriefing: Bool,
+        allStoriesCount: Int,
+        visibleStoryLocations: [NSNumber]
+    ) -> NSNumber? {
+        guard location >= 0 else {
+            return nil
+        }
+
+        if isDailyBriefing {
+            guard location < allStoriesCount else {
+                return nil
+            }
+
+            return NSNumber(value: location)
+        }
+
+        guard visibleStoryLocations.indices.contains(location) else {
+            return nil
+        }
+
+        return visibleStoryLocations[location]
+    }
+}
+
+@objcMembers public final class FeedRowLoadingDecision: NSObject {
+    public class func shouldShowLoadingCell(
+        isLegacyTable: Bool,
+        isDailyBriefing: Bool,
+        hasRowDescriptor: Bool,
+        storyLocation: Int,
+        storyCount: Int
+    ) -> Bool {
+        if isLegacyTable && !isDailyBriefing && !hasRowDescriptor {
+            return true
+        }
+
+        if !isLegacyTable && storyLocation >= storyCount {
+            return true
+        }
+
+        return false
     }
 }
 
