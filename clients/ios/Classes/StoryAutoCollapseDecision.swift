@@ -677,6 +677,60 @@ public enum DailyBriefingSectionLayoutDecision {
         }
     }
 
+    @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)
+    public class func visibleClusterStories(
+        _ clusterStories: NSArray?,
+        subscribedFeedIds: NSSet?,
+        isPremiumArchive: Bool
+    ) -> NSArray {
+        guard
+            let clusterStories = clusterStories as? [NSDictionary],
+            let subscribedFeedIds
+        else {
+            return []
+        }
+
+        let allowedFeedIds = Set(subscribedFeedIds.compactMap { stringValue(from: $0) })
+        let visibleClusterStories = clusterStories
+            .filter { clusterStory in
+                guard let feedId = stringValue(from: clusterStory["story_feed_id"]) else {
+                    return false
+                }
+
+                return allowedFeedIds.contains(feedId)
+            }
+            .sorted { lhs, rhs in
+                timestamp(from: lhs) > timestamp(from: rhs)
+            }
+
+        guard !isPremiumArchive, visibleClusterStories.count > 1 else {
+            return visibleClusterStories as NSArray
+        }
+
+        return Array(visibleClusterStories.prefix(1)) as NSArray
+    }
+
+    @objc(canSafelyReloadClusterRowsWithCurrentTableRowCount:visibleStoryRowCount:targetRows:)
+    public class func canSafelyReloadClusterRows(
+        currentTableRowCount: Int,
+        visibleStoryRowCount: Int,
+        targetRows: NSArray?
+    ) -> Bool {
+        guard let targetRows = targetRows as? [NSNumber], !targetRows.isEmpty else {
+            return false
+        }
+
+        let expectedTableRowCount = visibleStoryRowCount + 1
+        guard currentTableRowCount == expectedTableRowCount else {
+            return false
+        }
+
+        return targetRows.allSatisfy { targetRow in
+            let row = targetRow.intValue
+            return row >= 0 && row < currentTableRowCount
+        }
+    }
+
     private class func preferencesDictionary(from userProfile: NSDictionary?) -> NSDictionary? {
         guard let preferencesValue = userProfile?["preferences"] else {
             return nil
@@ -698,6 +752,57 @@ public enum DailyBriefingSectionLayoutDecision {
     }
 
     private class func boolValue(from value: Any) -> Bool {
+        if let boolValue = value as? Bool {
+            return boolValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.boolValue
+        }
+
+        if let stringValue = value as? String {
+            return NSString(string: stringValue).boolValue
+        }
+
+        return false
+    }
+
+    private class func stringValue(from value: Any?) -> String? {
+        guard let value else {
+            return nil
+        }
+
+        if let stringValue = value as? String, !stringValue.isEmpty {
+            return stringValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.stringValue
+        }
+
+        return nil
+    }
+
+    private class func timestamp(from clusterStory: NSDictionary) -> Int {
+        if let timestamp = clusterStory["story_timestamp"] as? NSNumber {
+            return timestamp.intValue
+        }
+
+        if let timestamp = clusterStory["story_timestamp"] as? NSString {
+            return timestamp.integerValue
+        }
+
+        return 0
+    }
+}
+
+@objcMembers public final class TryFeedPresentationDecision: NSObject {
+    @objc(isTryFeedPreviewWithFeed:)
+    public class func isTryFeedPreview(feed: NSDictionary?) -> Bool {
+        guard let value = feed?["temp"] else {
+            return false
+        }
+
         if let boolValue = value as? Bool {
             return boolValue
         }

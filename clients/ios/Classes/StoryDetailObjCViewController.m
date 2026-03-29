@@ -493,28 +493,24 @@
         return @"";
     }
 
-    NSArray<NSDictionary *> *sortedClusterStories = [clusterStories sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSInteger timestamp1 = [obj1[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj1[@"story_timestamp"] integerValue] : 0;
-        NSInteger timestamp2 = [obj2[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj2[@"story_timestamp"] integerValue] : 0;
-        if (timestamp1 > timestamp2) {
-            return NSOrderedAscending;
-        } else if (timestamp1 < timestamp2) {
-            return NSOrderedDescending;
-        }
-        return NSOrderedSame;
-    }];
+    NSArray<NSDictionary *> *allClusterStories = [StoryClusterDisplayDecision visibleClusterStories:clusterStories
+                                                                                   subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
+                                                                                    isPremiumArchive:YES];
+    if (!allClusterStories.count) {
+        return @"";
+    }
 
-    NSArray<NSDictionary *> *visibleClusterStories = appDelegate.isPremiumArchive || sortedClusterStories.count <= 1 ?
-        sortedClusterStories :
-        [sortedClusterStories subarrayWithRange:NSMakeRange(0, 1)];
-    NSInteger hiddenCount = sortedClusterStories.count - visibleClusterStories.count;
+    NSArray<NSDictionary *> *visibleClusterStories = [StoryClusterDisplayDecision visibleClusterStories:clusterStories
+                                                                                       subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
+                                                                                        isPremiumArchive:appDelegate.isPremiumArchive];
+    NSInteger hiddenCount = allClusterStories.count - visibleClusterStories.count;
 
     NSMutableString *clusterHTML = [NSMutableString string];
     [clusterHTML appendFormat:@"<div class=\"NB-story-cluster-detail\">"
      "<div class=\"NB-story-cluster-detail-header\">"
      "<span class=\"NB-story-cluster-detail-title\">Also published by %ld site%@</span>",
-     (long)sortedClusterStories.count,
-     sortedClusterStories.count == 1 ? @"" : @"s"];
+     (long)allClusterStories.count,
+     allClusterStories.count == 1 ? @"" : @"s"];
 
     if (!appDelegate.isPremiumArchive && hiddenCount == 0) {
         [clusterHTML appendString:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-clustering-detail-upgrade-pill\">Premium Archive</a>"];
@@ -2464,7 +2460,7 @@
                     storyTitle = queryItem.value;
                 }
             }
-            if (targetFeedId.length && storyHash.length) {
+            if (targetFeedId.length && storyHash.length && [self.appDelegate isSubscribedFeedIdForStoryClusters:targetFeedId]) {
                 [self.appDelegate loadFeed:targetFeedId withStory:storyHash storyTitle:storyTitle animated:NO];
             }
             decisionHandler(WKNavigationActionPolicyCancel);

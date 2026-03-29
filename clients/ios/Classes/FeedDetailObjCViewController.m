@@ -101,6 +101,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
 - (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location;
 - (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
+- (void)clearTryFeedSearchState;
 
 @end
 
@@ -602,22 +603,9 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         return @[];
     }
 
-    NSArray<NSDictionary *> *sortedClusterStories = [clusterStories sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSInteger timestamp1 = [obj1[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj1[@"story_timestamp"] integerValue] : 0;
-        NSInteger timestamp2 = [obj2[@"story_timestamp"] respondsToSelector:@selector(integerValue)] ? [obj2[@"story_timestamp"] integerValue] : 0;
-        if (timestamp1 > timestamp2) {
-            return NSOrderedAscending;
-        } else if (timestamp1 < timestamp2) {
-            return NSOrderedDescending;
-        }
-        return NSOrderedSame;
-    }];
-
-    if (!appDelegate.isPremiumArchive && sortedClusterStories.count > 1) {
-        return [sortedClusterStories subarrayWithRange:NSMakeRange(0, 1)];
-    }
-
-    return sortedClusterStories;
+    return [StoryClusterDisplayDecision visibleClusterStories:clusterStories
+                                            subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
+                                             isPremiumArchive:appDelegate.isPremiumArchive];
 }
 
 - (BOOL)isClusterMarkReadEnabled {
@@ -714,7 +702,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     NSString *storyTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
         [clusterStory[@"story_title"] stringByDecodingHTMLEntities] : nil;
 
-    if (!feedId.length || !storyHash.length) {
+    if (!feedId.length || !storyHash.length || ![self.appDelegate isSubscribedFeedIdForStoryClusters:feedId]) {
         return;
     }
 
@@ -1282,11 +1270,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     [self.appDelegate hidePopoverAnimated:YES];
     
     if (self.isMovingToParentViewController) {
-        appDelegate.inFindingStoryMode = NO;
-        appDelegate.findingStoryStartDate = nil;
-        appDelegate.findingStoryDictionary = nil;
-        appDelegate.tryFeedStoryId = nil;
-        appDelegate.tryFeedStoryTitle = nil;
+        [self clearTryFeedSearchState];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
 }
@@ -1942,11 +1926,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         if (self.appDelegate.inFindingStoryMode) {
             [self informError:@"Can't find the story."];
         }
-        self.appDelegate.tryFeedStoryId = nil;
-        self.appDelegate.tryFeedStoryTitle = nil;
-        self.appDelegate.inFindingStoryMode = NO;
-        self.appDelegate.findingStoryStartDate = nil;
-        self.appDelegate.findingStoryDictionary = nil;
+        [self clearTryFeedSearchState];
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showFetchingBanner:@"Offline" isOffline:YES];
@@ -2279,11 +2259,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     [self deferredLoadStoryAtRow:indexPath];
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    appDelegate.tryFeedStoryId = nil;
-    appDelegate.tryFeedStoryTitle = nil;
-    appDelegate.inFindingStoryMode = NO;
-    appDelegate.findingStoryStartDate = nil;
-    appDelegate.findingStoryDictionary = nil;
+    [self clearTryFeedSearchState];
 
     return YES;
 }
@@ -2318,11 +2294,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         if (appDelegate.inFindingStoryMode) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }
-        appDelegate.inFindingStoryMode = NO;
-        appDelegate.findingStoryStartDate = nil;
-        appDelegate.findingStoryDictionary = nil;
-        appDelegate.tryFeedStoryId = nil;
-        appDelegate.tryFeedStoryTitle = nil;
+        [self clearTryFeedSearchState];
         return;
     }
     
@@ -2500,6 +2472,17 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     [UIView animateWithDuration:0.3 animations:^{
         banner.alpha = 1;
     }];
+}
+
+- (void)clearTryFeedSearchState {
+    appDelegate.inFindingStoryMode = NO;
+    appDelegate.findingStoryStartDate = nil;
+    appDelegate.findingStoryDictionary = nil;
+    appDelegate.tryFeedStoryId = nil;
+    appDelegate.tryFeedStoryTitle = nil;
+    if (!appDelegate.isTryFeedView) {
+        appDelegate.tryFeedFeedId = nil;
+    }
 }
 
 - (void)hideTryFeedSubscribeBanner {
@@ -3328,7 +3311,20 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
         self.visibleStoryRows = [self buildVisibleStoryRows];
         NSArray<NSIndexPath *> *indexPaths = [self indexPathsForStoryLocationIncludingClusterRows:location];
         if (indexPaths.count) {
-            [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:rowAnimation];
+            NSArray<NSNumber *> *targetRows = [indexPaths valueForKey:@"row"];
+            NSInteger currentTableRowCount = [self.storyTitlesTable numberOfRowsInSection:FeedSectionBefore];
+            if ([StoryClusterDisplayDecision canSafelyReloadClusterRowsWithCurrentTableRowCount:currentTableRowCount
+                                                                            visibleStoryRowCount:self.visibleStoryRows.count
+                                                                                      targetRows:targetRows]) {
+                [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:rowAnimation];
+            } else {
+                NSLog(@"Skipping clustered row reload due to table/model row mismatch. table=%ld visible=%ld location=%ld rows=%@",
+                      (long)currentTableRowCount,
+                      (long)self.visibleStoryRows.count,
+                      (long)location,
+                      targetRows);
+                [self.storyTitlesTable reloadData];
+            }
             return;
         }
     }

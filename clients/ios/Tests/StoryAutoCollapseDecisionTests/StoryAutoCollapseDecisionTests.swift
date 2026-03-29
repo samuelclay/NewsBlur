@@ -1285,4 +1285,99 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 1), "indicator-focus")
         XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 0), "indicator-unread")
     }
+
+    func test_visible_cluster_stories_exclude_unsubscribed_feeds() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:3",
+                "story_feed_id": 3,
+                "story_timestamp": 100,
+            ],
+            [
+                "story_hash": "feed:2",
+                "story_feed_id": 2,
+                "story_timestamp": 200,
+            ],
+            [
+                "story_hash": "feed:4",
+                "story_feed_id": 4,
+                "story_timestamp": 150,
+            ],
+        ]
+
+        let visible = StoryClusterDisplayDecision.visibleClusterStories(
+            clusterStories,
+            subscribedFeedIds: NSSet(array: ["2", "4"]),
+            isPremiumArchive: true
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(visible?.count, 2)
+        XCTAssertEqual(visible?.map { $0["story_hash"] as? String }, ["feed:2", "feed:4"])
+    }
+
+    func test_visible_cluster_stories_limit_to_one_for_non_archive_users() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:3",
+                "story_feed_id": 3,
+                "story_timestamp": 100,
+            ],
+            [
+                "story_hash": "feed:2",
+                "story_feed_id": 2,
+                "story_timestamp": 200,
+            ],
+        ]
+
+        let visible = StoryClusterDisplayDecision.visibleClusterStories(
+            clusterStories,
+            subscribedFeedIds: NSSet(array: ["2", "3"]),
+            isPremiumArchive: false
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(visible?.count, 1)
+        XCTAssertEqual(visible?.first?["story_hash"] as? String, "feed:2")
+    }
+
+    func test_cluster_row_reload_requires_stable_row_counts() {
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 4,
+                targetRows: [1, 2] as NSArray
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 5,
+                targetRows: [1, 2] as NSArray
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 4,
+                targetRows: [5] as NSArray
+            )
+        )
+    }
+
+    func test_try_feed_preview_only_applies_to_temporary_feeds() {
+        XCTAssertTrue(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "999", "temp": true] as NSDictionary
+            )
+        )
+        XCTAssertFalse(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "123"] as NSDictionary
+            )
+        )
+        XCTAssertFalse(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "123", "temp": false] as NSDictionary
+            )
+        )
+    }
 }

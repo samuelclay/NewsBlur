@@ -2120,7 +2120,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return;
     }
     
-    self.isTryFeedView = YES;
+    self.isTryFeedView = [TryFeedPresentationDecision isTryFeedPreviewWithFeed:feed];
     self.inFindingStoryMode = YES;
     self.findingStoryStartDate = [NSDate date];
     self.findingStoryDictionary = nil;
@@ -4113,6 +4113,31 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     return [[self feedIdWithoutSearchQuery:feedId] substringFromIndex:prefix.length];
+}
+
+- (NSSet<NSString *> *)subscribedFeedIdsForStoryClusters {
+    NSMutableSet<NSString *> *feedIds = [NSMutableSet set];
+
+    [self.dictFeeds enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        NSDictionary *feed = [obj isKindOfClass:[NSDictionary class]] ? obj : nil;
+        if (!feed || [feed[@"temp"] boolValue]) {
+            return;
+        }
+
+        NSString *feedId = [NSString stringWithFormat:@"%@", key];
+        if (feedId.length) {
+            [feedIds addObject:feedId];
+        }
+    }];
+
+    return [feedIds copy];
+}
+
+- (BOOL)isSubscribedFeedIdForStoryClusters:(NSString *)feedId {
+    NSString *normalizedFeedId = [self feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", feedId ?: @""]];
+    NSDictionary *feed = self.dictFeeds[normalizedFeedId];
+
+    return [feed isKindOfClass:[NSDictionary class]] && ![feed[@"temp"] boolValue];
 }
 
 - (NSDictionary *)getFeedWithId:(id)feedId {

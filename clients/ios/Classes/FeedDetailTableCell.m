@@ -187,6 +187,8 @@ static UIFont *indicatorFont = nil;
         UIBezierPath *clusterPath = [UIBezierPath bezierPathWithRoundedRect:clusterRect cornerRadius:(isComfortable ? 8.0 : 6.0)];
         [clusterBackgroundColor setFill];
         [clusterPath fill];
+        CGContextSaveGState(context);
+        [clusterPath addClip];
 
         UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:MAX(fontDescriptor.pointSize - 1, 11)];
@@ -301,6 +303,7 @@ static UIFont *indicatorFont = nil;
         CGContextMoveToPoint(context, CGRectGetMinX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
         CGContextAddLineToPoint(context, CGRectGetMaxX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
         CGContextStrokePath(context);
+        CGContextRestoreGState(context);
 
         return;
     }
