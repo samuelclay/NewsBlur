@@ -378,6 +378,16 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_referrals_modal({ tab: 'gift' });
         }
 
+        var gift_redeemed = $.getQueryString('gift_redeemed');
+        if (gift_redeemed) {
+            NEWSBLUR.reader.open_account_modal({
+                tab: 'premium',
+                gift_redeemed: gift_redeemed,
+                gift_duration: $.getQueryString('gift_duration'),
+                gift_from: $.getQueryString('gift_from')
+            });
+        }
+
         var url = $.getQueryString('url') || $.getQueryString('add');
         if (url) {
             NEWSBLUR.reader.open_add_feed_modal({ url: url });

@@ -182,6 +182,19 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-premium' }, [
+                    (this.options.gift_redeemed && $.make('div', { className: 'NB-gift-redeemed-banner' }, [
+                        $.make('div', { className: 'NB-gift-redeemed-banner-icon' }),
+                        $.make('div', { className: 'NB-gift-redeemed-banner-text' }, [
+                            $.make('div', { className: 'NB-gift-redeemed-banner-headline' },
+                                'You\'ve been gifted ' + this.options.gift_duration + ' of ' + this.options.gift_redeemed + '!'
+                            ),
+                            $.make('div', { className: 'NB-gift-redeemed-banner-subtext' },
+                                this.options.gift_from
+                                    ? 'A gift from ' + this.options.gift_from + ' has been applied to your account.'
+                                    : 'The gift has been applied to your account.'
+                            )
+                        ])
+                    ])),
                     $.make('div', { className: 'NB-preference NB-preference-premium' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             (!NEWSBLUR.Globals.is_premium && $.make('div', [

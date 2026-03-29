@@ -9,6 +9,7 @@ import calendar
 import datetime
 import json as python_json
 import re
+from urllib.parse import urlencode
 
 import dateutil
 import requests
@@ -1921,7 +1922,25 @@ def gift_redeem(request, gift_tier, username, gift_code):
 
     if request.user.is_authenticated:
         MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-        return HttpResponseRedirect(reverse("index"))
+        duration_days = gift.duration_days or 365
+        if duration_days >= 365:
+            duration_label = "%d year" % (duration_days // 365)
+            if duration_days // 365 > 1:
+                duration_label += "s"
+        elif duration_days >= 30:
+            duration_label = "%d month" % (duration_days // 30)
+            if duration_days // 30 > 1:
+                duration_label += "s"
+        else:
+            duration_label = "%d days" % duration_days
+        params = urlencode(
+            {
+                "gift_redeemed": tier_display,
+                "gift_duration": duration_label,
+                "gift_from": gifter_username or "",
+            }
+        )
+        return HttpResponseRedirect("%s?%s" % (reverse("index"), params))
 
     # Not logged in: redirect to signup with gift code and gifter context
     response = HttpResponseRedirect("%s?gift=%s" % (reverse("welcome-signup"), gift_code))
