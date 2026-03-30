@@ -827,35 +827,88 @@ private fun DailyBriefingGroupCard(
             )
 
             if (group.isPreview) {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .background(palette.card)
-                            .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                DailyBriefingUpgradeBanner(onPremiumClick = onPremiumClick)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DailyBriefingUpgradeBanner(onPremiumClick: () -> Unit) {
+    val palette = rememberDailyBriefingPalette()
+    val archivePurple = Color(0xFF8B5CF6)
+    val archivePurpleLight = Color(0xFF6366F1)
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(palette.card)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Card(
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = archivePurple.copy(alpha = 0.08f),
+                ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.clickable(onClick = onPremiumClick),
+            border = androidx.compose.foundation.BorderStroke(1.dp, archivePurple.copy(alpha = 0.2f)),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = painterResource(id = R.drawable.ic_star_active),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(archivePurple),
+                )
+                Spacer(Modifier.height(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = palette.cardAlt),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.clickable(onClick = onPremiumClick),
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(14.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                        ) {
-                            Text(
-                                text = "Premium Archive",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = palette.accent,
-                            )
-                            Text(
-                                text = "Get Daily Briefing with all of your top stories.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = palette.body,
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Premium Archive",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(
+                                    brush =
+                                        androidx.compose.ui.graphics.Brush.linearGradient(
+                                            colors = listOf(archivePurpleLight, archivePurple),
+                                        ),
+                                )
+                                .padding(horizontal = 8.dp, vertical = 3.dp),
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "Get daily briefings with all your top stories",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = palette.body,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(12.dp))
+                Button(
+                    onClick = onPremiumClick,
+                    shape = RoundedCornerShape(10.dp),
+                    colors =
+                        androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = archivePurple,
+                            contentColor = Color.White,
+                        ),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "Upgrade to Premium Archive",
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
