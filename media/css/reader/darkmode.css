@@ -864,6 +864,27 @@ color: #a85b40;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none'%3E%3Ccircle cx='28' cy='26' r='10' fill='%236AAE40'/%3E%3Cpath d='M10 58c0-10 8-18 18-18s18 8 18 18' fill='%236AAE40' opacity='0.3'/%3E%3Ccircle cx='52' cy='26' r='10' fill='%238BC34A'/%3E%3Cpath d='M34 58c0-10 8-18 18-18s18 8 18 18' fill='%238BC34A' opacity='0.3'/%3E%3Cpath d='M36 38l8-6 8 6' stroke='%23FFD54F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M44 32v-8' stroke='%23FFD54F' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M68 14l1.5 4.5 4.5 1.5-4.5 1.5-1.5 4.5-1.5-4.5-4.5-1.5 4.5-1.5z' fill='%23FFD54F' opacity='0.7'/%3E%3Cpath d='M14 12l1 3 3 1-3 1-1 3-1-3-3-1 3-1z' fill='%23FFD54F' opacity='0.5'/%3E%3C/svg%3E");
 }
 
+.NB-dark .NB-gift-redeemed-banner {
+    background: linear-gradient(135deg, #2E2810 0%, #3A3018 40%, #332C14 100%);
+    border-color: #5C4E1E;
+}
+
+.NB-dark .NB-gift-redeemed-banner::before {
+    background: radial-gradient(circle, rgba(255, 193, 7, 0.08) 0%, transparent 70%);
+}
+
+.NB-dark .NB-gift-redeemed-banner-headline {
+    color: #FFB74D;
+}
+
+.NB-dark .NB-gift-redeemed-banner-subtext {
+    color: #BCAA80;
+}
+
+.NB-dark .NB-gift-redeemed-banner-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='3' y='8' width='18' height='13' rx='2' fill='%23C49000' stroke='%23A67C00' stroke-width='1.5'/%3E%3Crect x='1' y='5' width='22' height='5' rx='1.5' fill='%23DEAD30' stroke='%23C49000' stroke-width='1.5'/%3E%3Crect x='10.5' y='5' width='3' height='16' fill='%23BF6000' opacity='0.7'/%3E%3Cpath d='M12 5C12 5 9 2 7 2C5.5 2 4.5 3 5 4.5C5.5 5.5 8 5 12 5Z' fill='%23BF6000' opacity='0.8'/%3E%3Cpath d='M12 5C12 5 15 2 17 2C18.5 2 19.5 3 19 4.5C18.5 5.5 16 5 12 5Z' fill='%23BF6000' opacity='0.8'/%3E%3C/svg%3E");
+}
+
 .NB-dark .NB-gift-hero {
     background: linear-gradient(135deg, #1E1A2E 0%, #252030 40%, #2A2530 100%);
 }
