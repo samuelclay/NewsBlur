@@ -23,6 +23,7 @@ import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
+import kotlin.math.max
 import kotlin.math.min
 
 class ItemListMenuPopup(
@@ -617,9 +618,11 @@ class ItemListMenuPopup(
         val popupHeight = min(binding.root.measuredHeight, availableHeight)
         val location = IntArray(2)
         anchor.getLocationInWindow(location)
+        val minX = displayFrame.left + margin
+        val maxX = displayFrame.right - popupWidth - margin
         val x =
             (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
-                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
+                .coerceIn(min(minX, maxX), max(minX, maxX))
         val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(activity, 4)
         val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(activity, 4)
         val y =
