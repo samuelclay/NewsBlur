@@ -60,6 +60,7 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 - Working command: `env JAVA_HOME=/opt/homebrew/opt/openjdk ./gradlew :app:installDebug`
 - Fast compile-only verification: `env JAVA_HOME=/opt/homebrew/opt/openjdk ./gradlew :app:compileDebugJavaWithJavac --rerun-tasks`
 - Reinstalling with `installDebug` preserves the existing logged-in emulator app state
+- Do **not** run `connectedDebugAndroidTest` on a shared or logged-in emulator unless explicitly asked. It installs the instrumentation APK and can replace the app in a way that costs the current login/session state. Use `:app:installDebug` for normal build/install work, and only run instrumentation tests on a disposable emulator.
 
 ### Launch and App State
 - Launch the app with `adb -s emulator-5554 shell monkey -p com.newsblur -c android.intent.category.LAUNCHER 1`
