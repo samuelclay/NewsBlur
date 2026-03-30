@@ -474,7 +474,7 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_android:
             return
 
-    def send_email(self, story, usersub):
+    def send_email(self, story, usersub, classifier_match_desc=None):
         if not self.is_email:
             return
 
@@ -509,6 +509,7 @@ class MUserFeedNotification(mongo.Document):
             "feed_title": usersub.user_title or feed.feed_title,
             "favicon_border": feed.favicon_color,
             "favicon_url": favicon_url,
+            "classifier_match_desc": classifier_match_desc,
         }
         from_address = "notifications@newsblur.com"
         to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
@@ -938,7 +939,7 @@ class MUserClassifierNotification(mongo.Document):
                 sender.send_web(story, user)
                 sender.send_ios(story, user, usersub)
                 sender.send_android(story)
-                sender.send_email(story, usersub)
+                sender.send_email(story, usersub, classifier_match_desc=match_desc)
 
                 # Mark as sent for dedup
                 cls.mark_story_sent(

@@ -12,5 +12,5 @@
 
 Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
 
-You received this because you have email notifications for {{ feed_title }}. 
+{% if classifier_match_desc %}You received this because of a classifier match ({{ classifier_match_desc }}) on {{ feed_title }}.{% else %}You received this because you have email notifications for {{ feed_title }}.{% endif %}
 https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications
