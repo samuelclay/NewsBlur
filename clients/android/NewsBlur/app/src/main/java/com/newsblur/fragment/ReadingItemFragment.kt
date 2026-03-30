@@ -143,12 +143,14 @@ class ReadingItemFragment :
     private var sourceUserId: String? = null
     private var contentHash = 0
     private val storyHighlights = mutableSetOf<String>()
+    private var hasCompletedInitialStoryRender = false
 
     // these three flags are progressively set by async callbacks and unioned
     // to set isLoadFinished, when we trigger any final UI tricks.
     private var isContentLoadFinished = false
     private var isSocialLoadFinished = false
     private val isWebLoadFinished = AtomicBoolean(false)
+    private var isWebVisualStateReady = false
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
@@ -209,6 +211,9 @@ class ReadingItemFragment :
     // WebViews don't automatically pause content like audio and video when they lose focus.  Chain our own
     // state into the webview so it behaves.
     override fun onPause() {
+        if (::binding.isInitialized) {
+            enableProgress(false)
+        }
         binding.readingWebview.onPause()
         contentHash = 0
         super.onPause()
@@ -216,6 +221,8 @@ class ReadingItemFragment :
 
     override fun onResume() {
         super.onResume()
+        resetStoryRenderState()
+        syncStoryLoadingUi()
         reloadStoryContent()
         updateAskAiButton()
         binding.readingWebview.onResume()
@@ -253,6 +260,7 @@ class ReadingItemFragment :
         updateAskAiButton()
         updateMarkStoryReadState()
         setupItemCommentsAndShares()
+        syncStoryLoadingUi()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
 
@@ -925,7 +933,7 @@ class ReadingItemFragment :
         // reset indicators
         binding.readingTextloading.visibility = View.GONE
         binding.readingTextmodefailed.visibility = View.GONE
-        enableProgress(false)
+        syncStoryLoadingUi()
 
         var needStoryContent = false
         var enableStoryChanges = false
@@ -969,6 +977,40 @@ class ReadingItemFragment :
 
     private fun enableProgress(loading: Boolean) {
         (activity as Reading?)?.enableLeftProgressCircle(loading)
+    }
+
+    private fun resetStoryRenderState() {
+        hasCompletedInitialStoryRender = false
+        isContentLoadFinished = false
+        isWebLoadFinished.set(false)
+        isWebVisualStateReady = false
+        isLoadFinished.set(false)
+    }
+
+    private fun syncStoryLoadingUi() {
+        readingItemActionsBinding.actionsContainer.visibility =
+            if (hasCompletedInitialStoryRender) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        enableProgress(shouldShowLoadingProgress())
+    }
+
+    private fun shouldShowLoadingProgress(): Boolean =
+        !hasCompletedInitialStoryRender ||
+            (
+                selectedViewMode == DefaultFeedView.TEXT &&
+                    originalText == null &&
+                    !textViewUnavailable
+            )
+
+    private fun maybeFinishInitialStoryRender() {
+        if (hasCompletedInitialStoryRender) return
+        if (!isContentLoadFinished || !isWebLoadFinished.get() || !isWebVisualStateReady) return
+
+        hasCompletedInitialStoryRender = true
+        syncStoryLoadingUi()
     }
 
     /**
@@ -1134,6 +1176,7 @@ class ReadingItemFragment :
     /** We have pushed our desired content into the WebView.  */
     private fun onContentLoadFinished() {
         isContentLoadFinished = true
+        maybeFinishInitialStoryRender()
         checkLoadStatus()
     }
 
@@ -1142,7 +1185,13 @@ class ReadingItemFragment :
         if (!isWebLoadFinished.getAndSet(true)) {
             binding.readingWebview.evaluateJavascript("loadImages();", null)
         }
+        maybeFinishInitialStoryRender()
         checkLoadStatus()
+    }
+
+    fun onWebVisualStateReady() {
+        isWebVisualStateReady = true
+        maybeFinishInitialStoryRender()
     }
 
     /** The social UI has finished loading from the DB.  */
