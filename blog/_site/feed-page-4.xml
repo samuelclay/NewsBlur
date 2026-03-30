@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-26T19:30:50-04:00</updated>
+  <updated>2026-03-30T15:48:55-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,46 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Offline reading and a dark theme on the Android app</title>
+    <link href="https://blog.newsblur.com/2014/11/18/offline-reading-and-a-dark-theme-on-the-android/" rel="alternate" type="text/html" title="Offline reading and a dark theme on the Android app" />
+    <published>2014-11-18T05:00:50-05:00</published>
+    <updated>2014-11-18T05:00:50-05:00</updated>
+    <id>https://blog.newsblur.com/2014/11/18/offline-reading-and-a-dark-theme-on-the-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/11/18/offline-reading-and-a-dark-theme-on-the-android/">
+      <![CDATA[<p>This is a huge release for the NewsBlur Android app. So much has happened in the last six months. We’ve had a big backend rewrite that makes the app feel like new. It’s faster, which is necessary to make the new offline reading feature really shine. Now you can read on your Android phone or tablet while on the train, underground, or just in airplane mode to save battery.</p>
+
+<p>Better yet, not only can you read while offline, but you can better read at night with the new dark theme. Take a look.</p>
+
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"><img data-orig-height="1920" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png" /></figure>
+
+<p>Here’s what’s new in version 4.0:</p>
+
+<ul>
+  <li>Offline reading and story syncing. Stories read while offline will sync as soon as you’re back online.</li>
+  <li>Option to also store images from stories for offline reading. They do take space, though.</li>
+  <li>A dark theme for reading at night.</li>
+  <li>The Text mode can be set to automatically fetch, so you can get to the full text quicker.</li>
+  <li>An option to mark stories newer than a story as read.</li>
+  <li>Major backend improvements for faster story loading and transitions. This app should feel like new.</li>
+</ul>
+
+<p>The NewsBlur Android app is a <a href="https://www.newsblur.com/android">free download</a>. And as always, there’s more big ticket features coming soon for Android.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is a huge release for the NewsBlur Android app. So much has happened in the last six months. We’ve had a big backend rewrite that makes the app feel like new. It’s faster, which is necessary to make the new offline reading feature really shine. Now you can read...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A new way to use the Story view while on https (SSL)</title>
@@ -999,42 +1039,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[Here’s a few big improvements for the NewsBlur website.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Simple Search for Feeds, Saved Stories, and Blurblogs</title>
-    <link href="https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/" rel="alternate" type="text/html" title="Simple Search for Feeds, Saved Stories, and Blurblogs" />
-    <published>2013-07-30T12:38:23-04:00</published>
-    <updated>2013-07-30T12:38:23-04:00</updated>
-    <id>https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/">
-      <![CDATA[<p>Search, which can easily be considered one of the most important features of a world-class news reader, is also one of the most difficult features to build.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search2.png" alt="" /></p>
-
-<p>While working on the feature, I came across a great method that allows searching through story titles, authors, and tags on a per-feed basis. It’s not perfect and it’s not the full feature, but this will get us 80% of the way there.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search.png" alt="" /></p>
-
-<p>Also comes with a handy keyboard shortcut (and a refactored keyboard shortcut dialog).</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/keyboard.png" alt="" /></p>
-
-<p>You can also search your saved stories and shared stories. This feature will soon find it’s way to both Android and iOS, and is available today to all premium users.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Search, which can easily be considered one of the most important features of a world-class news reader, is also one of the most difficult features to build.
 ]]>
     </summary>
     

@@ -1,6 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-26T19:30:50-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-30T15:48:55-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title><link href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" rel="alternate" type="text/html" title="Hide what you hate, track what you love: super dislikes and per-classifier notifications" /><published>2026-03-27T00:00:00-04:00</published><updated>2026-03-27T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"><![CDATA[<p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
+</subtitle><entry><title type="html">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</title><link href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" rel="alternate" type="text/html" title="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" /><published>2026-03-30T00:00:00-04:00</published><updated>2026-03-30T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"><![CDATA[<p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="ask-ai">Ask AI</h3>
+
+<p>Ask AI brings the same AI-powered Q&amp;A from the web and iOS to Android. Open any story, tap Ask AI, and ask questions about it. Summarize a long article, get background on a developing situation, or fact-check a claim. Pick your preferred AI model and keep the conversation going with follow-ups. The Ask AI sheet matches your current theme and slides up as a bottom sheet, consistent with the share and trainer dialogs.</p>
+
+<p><img src="/assets/android-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="discover-related-sites">Discover related sites</h3>
+
+<p>Discover Related Sites lets you find new feeds related to any feed you’re already subscribed to. Tap the Discover button in the story list header bar, browse what’s available, and preview a feed before subscribing. Duplicate feeds are filtered out so you only see new options.</p>
+
+<p><img src="/assets/android-14-discover.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="daily-briefing">Daily Briefing</h3>
+
+<p>The Daily Briefing generates a personalized summary of your news, organized into sections like Top Stories, Based on Your Interests, and Long Reads. It uses native Android story rows, so it feels like a regular feed rather than a bolted-on feature. Configure your briefing frequency, writing style, and sections from the briefing view in your sidebar.</p>
+
+<p><img src="/assets/android-14-daily-briefing.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="sepia-theme-and-refined-dark-themes">Sepia theme and refined dark themes</h3>
+
+<p>A new Sepia theme brings warmer tones for comfortable long reading sessions. The Dark theme has been lightened to match the iOS gray/medium palette, and the Black theme now uses true absolute black backgrounds for feed and story cells, making it ideal for OLED screens.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-14-sepia.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-dark.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-black.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<h3 id="story-list-header-bar">Story list header bar</h3>
+
+<p>The top of the story list now has a header bar with quick access to Discover, search, display options, and settings. The display and settings controls are split into separate menus so you can change the view without wading through unrelated options.</p>
+
+<p><img src="/assets/android-14-header-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-reading-experience">Redesigned reading experience</h3>
+
+<p>The reading view has been rethought from top to bottom. Story traversal buttons are lifted above the bottom edge for easier thumb access. A new traverse bar with refined icons shows your position and unread count. Story actions are hidden until the story finishes rendering, so you never tap a button before the content is ready. Opening a story from the list now animates smoothly into the reader, and swiping back uses an interactive gesture that tracks your finger.</p>
+
+<p><img src="/assets/android-14-reader.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-preferences-and-menus">Redesigned preferences and menus</h3>
+
+<p>Preferences have been rebuilt as a modern settings screen with inline segments instead of separate dialog pickers. The feed list menu, reading menu, and folder menus have all been redesigned with cleaner styling and better organization. Menus now scale with your device font size, so they stay readable at any accessibility setting.</p>
+
+<p><img src="/assets/android-14-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="premium-archive-and-pro-subscriptions">Premium Archive and Pro subscriptions</h3>
+
+<p>You can now subscribe to Premium Archive and Premium Pro directly from the Android app. An upgrade banner appears in the story list when you’re on a lower tier, showing what you’d unlock by upgrading.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Interactive swipe-back gesture in both the story list and reading view with predictive back support on Android 14+.</li>
+  <li>Feed list aligned with iOS styling, with new collapse-all and expand-all toggles.</li>
+  <li>Story header pills with compact layout and title case formatting.</li>
+  <li>Active reading time tracking per story, synced to your account.</li>
+  <li>Full text and regex classifiers for the Intelligence Trainer.</li>
+  <li>Feed search field themed to match your current theme with autofill disabled.</li>
+  <li>Sync done pill delayed until feeds actually render, so you see the update happen.</li>
+  <li>Story thumbnails enlarged for small sizes and cropping fixed.</li>
+  <li>Status banners at the top of the story list for loading and error states.</li>
+  <li>Mute Sites redesigned with upgrade card and progress bar.</li>
+  <li>Custom folder and feed icon support.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed TransactionTooLargeException crash in the reading pager.</li>
+  <li>Fixed database version mismatch crash on launch.</li>
+  <li>Fixed ItemListMenuPopup crash on small and split-screen displays.</li>
+  <li>Fixed login autofill and app switching losing input.</li>
+  <li>Fixed story row thumbnail cropping.</li>
+  <li>Fixed search pill text vanishing.</li>
+  <li>Fixed story list edge back gesture interference.</li>
+  <li>Brightened story feed titles for better readability.</li>
+</ul>
+
+<p>Coming up next: v14.2 will bring story clustering to Android, so duplicate stories across your feeds get grouped together automatically, just like on the web.</p>
+
+<p>NewsBlur v14 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/android-14-ask-ai.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/android-14-ask-ai.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title><link href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" rel="alternate" type="text/html" title="Hide what you hate, track what you love: super dislikes and per-classifier notifications" /><published>2026-03-27T00:00:00-04:00</published><updated>2026-03-27T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"><![CDATA[<p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
 
 <p>Today I’m shipping two features that give the Intelligence Trainer more teeth: super dislikes that override any number of likes, and per-classifier notifications that ping you only when specific classifiers match.</p>
 
@@ -575,71 +664,4 @@ A new sound of an old instrument.
 
 <p>Click the speed indicator (next to the time display) to cycle through speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x, and 3x. Your speed preference is saved and applied to the next item in your queue automatically.</p>
 
-<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Global and folder-scoped intelligence training: Train once, apply everywhere</title><link href="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/" rel="alternate" type="text/html" title="Global and folder-scoped intelligence training: Train once, apply everywhere" /><published>2026-02-02T00:00:00-05:00</published><updated>2026-02-02T00:00:00-05:00</updated><id>https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training</id><content type="html" xml:base="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/"><![CDATA[<p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
-
-<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
-
-<h3 id="three-scope-levels">Three scope levels</h3>
-
-<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
-
-<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
-<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<ul>
-  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
-  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
-  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
-</ul>
-
-<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
-
-<h3 id="real-world-examples">Real-world examples</h3>
-
-<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
-
-<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
-
-<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
-
-<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
-
-<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
-
-<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
-<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
-
-<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
-
-<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
-
-<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
-
-<h3 id="subscription-tiers">Subscription tiers</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Tier Required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Per-site classifiers (default)</td>
-      <td>Free</td>
-    </tr>
-    <tr>
-      <td>Global and folder-scoped classifiers</td>
-      <td>Premium Archive</td>
-    </tr>
-    <tr>
-      <td>Manage Training scope filter</td>
-      <td>Premium Archive</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/scope-toggle-icons.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mini-player-feed-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
