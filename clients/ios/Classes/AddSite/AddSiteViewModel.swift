@@ -55,7 +55,7 @@ class AddSiteViewModel: ObservableObject {
         guard let allFolders = appDelegate.dictFoldersArray as? [String] else { return [] }
         let excluded: Set<String> = [
             "saved_searches", "saved_stories", "read_stories", "widget_stories",
-            "river_blurblogs", "river_global", "dashboard", "infrequent", "everything"
+            "river_blurblogs", "river_global", "dashboard", "discover_sites", "infrequent", "everything"
         ]
         return allFolders.filter { !excluded.contains($0) }
     }

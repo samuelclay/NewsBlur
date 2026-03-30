@@ -1683,6 +1683,18 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
 }
 
+- (void)openDiscoverSitesView {
+    if (@available(iOS 15.0, *)) {
+        DiscoverSitesViewController *discoverVC = [[DiscoverSitesViewController alloc] init];
+
+        if (self.detailViewController.isPhoneOrCompact) {
+            [self.feedsNavigationController pushViewController:discoverVC animated:YES];
+        } else {
+            [self.feedsNavigationController pushViewController:discoverVC animated:YES];
+        }
+    }
+}
+
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
     if (!presentedVC) {

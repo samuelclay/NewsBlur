@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "web-feed-any-site.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

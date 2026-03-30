@@ -109,6 +109,8 @@
     NSString *folderTitle;
     if (section == NewsBlurTopSectionDashboard) {
         folderTitle = @"NewsBlur Dashboard";
+    } else if (section == NewsBlurTopSectionDiscoverSites) {
+        folderTitle = @"Add + Discover Sites";
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
@@ -204,7 +206,7 @@
             }
             [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionDiscoverSites && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -244,6 +246,14 @@
             folderImageViewX = 7;
         }
         allowLongPress = YES;
+    } else if (section == NewsBlurTopSectionDiscoverSites) {
+        folderImage = [UIImage imageNamed:@"discover"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+        allowLongPress = NO;
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         if (!appDelegate.isPhone) {
@@ -385,7 +395,7 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-    if (section < 2) return;
+    if (section < NewsBlurTopSectionInfrequentSiteStories) return;
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];
