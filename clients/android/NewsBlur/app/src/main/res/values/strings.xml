@@ -338,9 +338,12 @@ people together to talk about the world.</string>
     <string name="import_export_title">Import/Export OPML</string>
     <string name="notifications_title">Notifications</string>
 
-    <string name="premium_subscribers_folder">Reading by folder is only available to</string>
-    <string name="premium_subscribers_search">Search is only available to</string>
+    <string name="premium_subscribers_folder">The full River of News is a premium feature</string>
+    <string name="premium_subscribers_allstories">Reading All Site Stories is a premium feature</string>
+    <string name="premium_subscribers_saved_tag">Reading saved stories by tag is a premium feature</string>
+    <string name="premium_subscribers_search">Search is a premium feature</string>
     <string name="premium_subscribers">premium subscribers</string>
+    <string name="premium_upgrade_button">Upgrade to Premium</string>
     <string name="subscription_toolbar_title">NewsBlur Premium</string>
     <!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
     <string name="thank_you_for_subscribing">Thank you for subscribing!</string>
@@ -417,9 +420,12 @@ people together to talk about the world.</string>
     <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
     <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
     <string name="mute_config_reset_button">Reset to popular sites</string>
-    <string name="mute_config_upgrade_to_premium">Upgrade to NewsBlur Premium</string>
+    <string name="mute_config_upgrade_to_premium">Upgrade to Premium</string>
+    <string name="mute_config_upgrade_subtitle">Subscribe to 1,024 sites</string>
     <string name="mute_config_upgrade">Upgrade</string>
     <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">%d sites available</string>
+    <string name="mute_config_sites_over">%d over limit</string>
 
     <string name="menu_network_select">Download using…</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>

@@ -1,5 +1,8 @@
 package com.newsblur.fragment;
 
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +40,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
@@ -173,6 +178,8 @@ public class ItemSetFragment extends NbFragment {
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
+        fleuronBinding.buttonUpgrade.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
+        styleUpgradeBanner();
 
         binding.itemgridfragmentGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -347,6 +354,7 @@ public class ItemSetFragment extends NbFragment {
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
+            updateUpgradeBannerText();
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             fleuronResized = false;
             return;
@@ -381,6 +389,51 @@ public class ItemSetFragment extends NbFragment {
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    private void styleUpgradeBanner() {
+        int cardBg, strokeColor, textColor, buttonBg;
+        int goldColor = ContextCompat.getColor(requireContext(), R.color.premium_gold);
+
+        PrefConstants.ThemeValue theme = prefsRepo.getSelectedTheme();
+        boolean isDarkSystem = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        boolean isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK || (theme == PrefConstants.ThemeValue.AUTO && isDarkSystem);
+
+        if (theme == PrefConstants.ThemeValue.SEPIA) {
+            cardBg = ContextCompat.getColor(requireContext(), R.color.item_background_sepia);
+            strokeColor = ContextCompat.getColor(requireContext(), R.color.row_border_sepia);
+            textColor = ContextCompat.getColor(requireContext(), R.color.text_sepia);
+            buttonBg = goldColor;
+        } else if (isDark) {
+            cardBg = Color.parseColor("#2C2C2E");
+            strokeColor = Color.parseColor("#48484A");
+            textColor = ContextCompat.getColor(requireContext(), R.color.gray85);
+            buttonBg = goldColor;
+        } else {
+            cardBg = ContextCompat.getColor(requireContext(), R.color.white);
+            strokeColor = ContextCompat.getColor(requireContext(), R.color.gray85);
+            textColor = Color.parseColor("#1C1C1E");
+            buttonBg = goldColor;
+        }
+
+        fleuronBinding.containerSubscribe.setCardBackgroundColor(cardBg);
+        fleuronBinding.containerSubscribe.setStrokeColor(strokeColor);
+        fleuronBinding.textSubscription.setTextColor(textColor);
+        fleuronBinding.imgPremiumIcon.setImageTintList(ColorStateList.valueOf(goldColor));
+        fleuronBinding.buttonUpgrade.setBackgroundTintList(ColorStateList.valueOf(buttonBg));
+    }
+
+    private void updateUpgradeBannerText() {
+        FeedSet fs = getFeedSet();
+        int textRes;
+        if (fs.isAllNormal()) {
+            textRes = R.string.premium_subscribers_allstories;
+        } else if (fs.isSingleSavedTag()) {
+            textRes = R.string.premium_subscribers_saved_tag;
+        } else {
+            textRes = R.string.premium_subscribers_folder;
+        }
+        fleuronBinding.textSubscription.setText(textRes);
     }
 
     public void notifyContentPrefsChanged() {
