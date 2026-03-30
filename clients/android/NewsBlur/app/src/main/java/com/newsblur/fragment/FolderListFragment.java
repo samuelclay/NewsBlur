@@ -108,6 +108,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     private ViewFeedListSearchHeaderBinding searchHeaderBinding;
     private boolean isSyncingSearchField = false;
     public boolean firstCursorSeenYet = false;
+    private boolean hasShownFeedsLimitDialog = false;
 
     // the two-step context menu for feeds requires us to temp store the feed long-pressed so
     // it can be accessed during the sub-menu tap
@@ -710,8 +711,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
 	private void checkAccountFeedsLimit() {
+        if (hasShownFeedsLimitDialog) return;
         new Handler().postDelayed(() -> {
             if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !prefsRepo.hasSubscription()) {
+                hasShownFeedsLimitDialog = true;
                 Intent intent = new Intent(getActivity(), MuteConfig.class);
                 startActivity(intent);
             }
