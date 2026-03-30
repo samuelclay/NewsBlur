@@ -1803,7 +1803,6 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
             NSLog(@"Failed to save story_clustering preference: %@", error);
         }];
         [self.appDelegate.feedDetailViewController reload];
-        [self.appDelegate.storyPagesViewController refreshPages];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
