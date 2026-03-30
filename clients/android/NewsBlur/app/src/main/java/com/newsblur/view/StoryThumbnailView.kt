@@ -1,7 +1,9 @@
 package com.newsblur.view
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import com.newsblur.R
@@ -46,6 +48,7 @@ class StoryThumbnailView
                     params.height = height
                     params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin)
                     layoutParams = params
+                    refreshHierarchy()
                 }
             }
         }
@@ -83,5 +86,18 @@ class StoryThumbnailView
                 layoutParams = params
             }
             super.setVisibility(visibility)
+            refreshHierarchy()
+        }
+
+        override fun setImageBitmap(bm: Bitmap?) {
+            super.setImageBitmap(bm)
+            refreshHierarchy()
+        }
+
+        private fun refreshHierarchy() {
+            // Story rows keep aggressive caching enabled, so delayed thumbnail resizes need an explicit redraw.
+            requestLayout()
+            invalidate()
+            (parent as? View)?.invalidate()
         }
     }
