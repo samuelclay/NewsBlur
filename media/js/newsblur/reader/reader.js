@@ -5255,6 +5255,41 @@
             }
             $manage_menu_container.stop().css({ 'display': 'block', 'opacity': 1 });
 
+            // Constrain menu height to viewport and enable scrolling if needed
+            _.defer(function () {
+                var container_offset = $manage_menu_container.offset();
+                var container_height = $manage_menu_container.outerHeight();
+                var window_height = $(window).height();
+                var margin = 12;
+                var needs_scroll = false;
+                var max_height;
+
+                if (container_offset.top < margin) {
+                    // Menu extends above viewport (inverse/upward menus)
+                    max_height = container_height + container_offset.top - margin;
+                    $manage_menu_container.css('top', margin);
+                    needs_scroll = true;
+                } else if (container_offset.top + container_height > window_height - margin) {
+                    // Menu extends below viewport
+                    max_height = window_height - container_offset.top - margin;
+                    needs_scroll = true;
+                }
+
+                if (needs_scroll && max_height > 0) {
+                    $manage_menu_container.css({
+                        'max-height': max_height,
+                        'overflow-y': 'auto',
+                        'overflow-x': 'hidden'
+                    });
+                } else {
+                    $manage_menu_container.css({
+                        'max-height': '',
+                        'overflow-y': '',
+                        'overflow-x': ''
+                    });
+                }
+            });
+
             // Create and position the arrow tab
             if (type == 'feed' || type == 'folder' || type == 'story' ||
                 type == 'socialfeed' || type == 'starred' || type == 'search') {
@@ -5397,11 +5432,11 @@
                     'duration': 250,
                     'queue': false,
                     'complete': function () {
-                        $manage_menu_container.css({ 'display': 'none', 'opacity': 0 });
+                        $manage_menu_container.css({ 'display': 'none', 'opacity': 0, 'max-height': '', 'overflow-y': '', 'overflow-x': '' });
                     }
                 });
             } else {
-                $manage_menu_container.css({ 'display': 'none', 'opacity': 0 });
+                $manage_menu_container.css({ 'display': 'none', 'opacity': 0, 'max-height': '', 'overflow-y': '', 'overflow-x': '' });
             }
             $('.NB-task-manage').removeClass('NB-hover');
 
