@@ -17,6 +17,7 @@ BACKUP_DRIVE="/media/newsblur-backup"
 SSH_KEY="/config/scripts/docker.key"
 SSH_USER="nb"
 MONGO_DUMP_TIMEOUT="24h"  # Kill mongodump if it takes longer than this
+MONGO_BACKUP_DAY=0        # Day of week to run MongoDB dump (0=Sunday, 6=Saturday)
 MAILGUN_CREDS_FILE="/config/scripts/mailgun_credentials"
 VENV_PYTHON="/config/scripts/venv/bin/python3"
 
@@ -56,7 +57,7 @@ S3_REDIS_PREFIXES=(
 )
 
 # Local retention: how many backups to keep per type
-MONGO_FULL_KEEP=7
+MONGO_FULL_KEEP=4  # Weekly backups, keep ~1 month
 POSTGRES_KEEP=8
 REDIS_KEEP=8
 
@@ -226,14 +227,19 @@ fi
 # --- 2. Full MongoDB Dump (stream directly via SSH) ---
 # Streams mongodump --archive --gzip over SSH directly to the backup drive.
 # Uses zero disk space on the mongo server. Takes 12+ hours.
+# Runs weekly (MONGO_BACKUP_DAY) to avoid daily 12+ hour dumps.
 # NOTE: No -t flag on docker exec — TTY mangles binary streams.
 log "--- MongoDB full dump (streaming from server) ---"
+
+CURRENT_DOW=$(date '+%w')  # 0=Sunday, 6=Saturday
 
 DUMP_DATE=$(date '+%Y-%m-%d')
 DUMP_FILE="${BACKUP_DRIVE}/mongo_full/mongodump_full_${DUMP_DATE}.gz"
 DUMP_TMP="${DUMP_FILE}.partial"
 
-if [[ -f "${DUMP_FILE}" ]]; then
+if [[ "${CURRENT_DOW}" != "${MONGO_BACKUP_DAY}" ]] && [[ ! -f "${DUMP_TMP}" ]]; then
+    log "Skipping MongoDB dump (runs on day ${MONGO_BACKUP_DAY}, today is day ${CURRENT_DOW})"
+elif [[ -f "${DUMP_FILE}" ]]; then
     log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
 elif [[ -f "${DUMP_TMP}" ]]; then
     log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
@@ -261,7 +267,7 @@ else
                 "MongoDB dump timed out after ${MONGO_DUMP_TIMEOUT} on $(date '+%Y-%m-%d %H:%M').
 
 The mongodump stream from ${MONGO_SECONDARY} did not complete within the allowed time.
-The partial file has been removed. The next nightly run will retry automatically."
+The partial file has been removed. The next weekly run will retry automatically."
         else
             log "ERROR: MongoDB dump FAILED with exit code ${EXIT_CODE}"
             FAILURES="${FAILURES}MongoDB (exit ${EXIT_CODE}); "
@@ -270,7 +276,7 @@ The partial file has been removed. The next nightly run will retry automatically
                 "MongoDB dump failed with exit code ${EXIT_CODE} on $(date '+%Y-%m-%d %H:%M').
 
 The SSH stream from ${MONGO_SECONDARY} exited unexpectedly.
-The partial file has been removed. The next nightly run will retry automatically."
+The partial file has been removed. The next weekly run will retry automatically."
         fi
     fi
 fi
