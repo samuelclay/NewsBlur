@@ -1658,8 +1658,27 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
             [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
         } else {
-            [self openDiscoverFeedsDialogWithFeedIds:feedIds];
+            [self openDiscoverFeedsDialogWithFeedIds:feedIdStrings];
         }
+    }
+}
+
+- (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds {
+    if (@available(iOS 15.0, *)) {
+        UINavigationController *navController = self.feedsNavigationController;
+        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIds];
+        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
+
+        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
+        discoverNavController.navigationBarHidden = YES;
+
+        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:discoverNavController animated:YES completion:nil];
     }
 }
 
