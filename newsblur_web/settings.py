@@ -171,6 +171,7 @@ OAUTH2_PROVIDER = {
         "mcp": "Connect AI agents to read and write your NewsBlur data",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
+    "OAUTH2_VALIDATOR_CLASS": "apps.mcp.validators.RFC8252OAuth2Validator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
     "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
