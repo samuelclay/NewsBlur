@@ -42,7 +42,7 @@ def setup_cli_oauth(apps, schema_editor):
             "public",
             "authorization-code",
             "",
-            "http://localhost",
+            "http://127.0.0.1/callback",
             True,
         ]
         if has_hash:
@@ -66,7 +66,7 @@ def setup_cli_oauth(apps, schema_editor):
         ]
         params = [
             client_id, "NewsBlur CLI", "public", "authorization-code",
-            "", "http://localhost", True,
+            "", "http://127.0.0.1/callback", True,
         ]
         placeholders = ["%s"] * len(params) + ["NOW()", "NOW()", "%s", "%s"]
         extra_params = ["", ""]  # algorithm, post_logout_redirect_uris

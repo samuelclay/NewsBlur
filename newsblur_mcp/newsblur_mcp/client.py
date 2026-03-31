@@ -19,11 +19,18 @@ class NewsBlurClient:
     def __init__(self, bearer_token: str, base_url: str | None = None):
         self.bearer_token = bearer_token
         self._is_archive: bool | None = None
+        url = base_url or NEWSBLUR_BASE_URL
         self._http = httpx.AsyncClient(
-            base_url=base_url or NEWSBLUR_BASE_URL,
+            base_url=url,
             headers={"Authorization": f"Bearer {bearer_token}"},
             timeout=REQUEST_TIMEOUT,
+            verify=not self._is_local(url),
         )
+
+    @staticmethod
+    def _is_local(url: str) -> bool:
+        from urllib.parse import urlparse
+        return urlparse(url).hostname in {"localhost", "127.0.0.1", "::1"}
 
     async def close(self):
         await self._http.aclose()

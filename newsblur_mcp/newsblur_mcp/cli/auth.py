@@ -25,6 +25,18 @@ import httpx
 CLI_OAUTH_CLIENT_ID = "newsblur-cli"
 TOKEN_EXCHANGE_TIMEOUT = 30
 DEFAULT_SERVER = "https://newsblur.com"
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+
+
+def _is_local_server() -> bool:
+    """Check if the configured server URL points to a local dev instance."""
+    parsed = urlparse(get_server_url())
+    return parsed.hostname in LOCAL_HOSTS
+
+
+def _ssl_verify() -> bool:
+    """Return False for local dev servers (self-signed certs), True otherwise."""
+    return not _is_local_server()
 
 
 def get_config_dir() -> Path:
@@ -130,6 +142,7 @@ def refresh_access_token(refresh_token: str) -> dict | None:
                 "client_id": CLI_OAUTH_CLIENT_ID,
             },
             timeout=TOKEN_EXCHANGE_TIMEOUT,
+            verify=_ssl_verify(),
         )
         if resp.status_code == 200:
             token_data = resp.json()
@@ -197,7 +210,7 @@ def login_flow(server: str | None = None) -> dict:
     # Bind to a random available port
     server = HTTPServer(("127.0.0.1", 0), CallbackHandler)
     port = server.server_address[1]
-    redirect_uri = f"http://localhost:{port}/callback"
+    redirect_uri = f"http://127.0.0.1:{port}/callback"
 
     authorize_url = (
         f"{get_server_url()}/oauth/authorize/"
@@ -233,6 +246,7 @@ def login_flow(server: str | None = None) -> dict:
                 "client_id": CLI_OAUTH_CLIENT_ID,
             },
             timeout=TOKEN_EXCHANGE_TIMEOUT,
+            verify=_ssl_verify(),
         )
 
         if resp.status_code != 200:
@@ -311,6 +325,7 @@ def get_auth_status() -> dict:
             f"{get_server_url()}/oauth/user/info/",
             headers={"Authorization": f"Bearer {data.get('access_token', '')}"},
             timeout=10,
+            verify=_ssl_verify(),
         )
         if resp.status_code == 200:
             user_info = resp.json()
