@@ -3922,6 +3922,46 @@ def rename_feed(request):
     return dict(code=1)
 
 
+def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
+    """Find the full flattened path for a folder given its leaf name and immediate parent name.
+
+    flat_folders is the dict from UserSubscriptionFolders.flatten_folders(), where keys are
+    full paths like "Parent - Child - Grandchild". parent_leaf_name is the immediate parent's
+    leaf name (empty string for top-level folders).
+    """
+    for path in flat_folders:
+        parts = path.split(" - ")
+        if parts[-1] != folder_leaf_name:
+            continue
+        if not parent_leaf_name:
+            if len(parts) == 1:
+                return path
+        elif len(parts) >= 2 and parts[-2] == parent_leaf_name:
+            return path
+    return None
+
+
+def _update_classifiers_for_folder_path_change(user_id, old_path, new_path):
+    """Update folder-scoped classifiers when a folder's full path changes (move or rename).
+
+    Updates the moved/renamed folder itself and all of its subfolders.
+    """
+    # Update standard classifiers (exact match on the folder itself)
+    for Cls in [MClassifierTitle, MClassifierText, MClassifierUrl, MClassifierAuthor, MClassifierTag]:
+        Cls.objects(user_id=user_id, scope="folder", folder_name=old_path).update(folder_name=new_path)
+        # Update subfolder classifiers (paths starting with old_path + " - ")
+        old_prefix = old_path + " - "
+        for classifier in Cls.objects(user_id=user_id, scope="folder", folder_name__startswith=old_prefix):
+            classifier.folder_name = new_path + classifier.folder_name[len(old_path) :]
+            classifier.save()
+    # Update prompt classifiers (use folder_id instead of folder_name)
+    MClassifierPrompt.objects(user_id=user_id, folder_id=old_path).update(folder_id=new_path)
+    old_prefix = old_path + " - "
+    for prompt in MClassifierPrompt.objects(user_id=user_id, folder_id__startswith=old_prefix):
+        prompt.folder_id = new_path + prompt.folder_id[len(old_path) :]
+        prompt.save()
+
+
 @ajax_login_required
 @json.json_view
 def rename_folder(request):
@@ -3936,14 +3976,19 @@ def rename_folder(request):
     # renames all, but only in the same folder parent. But nobody should be doing that, right?
     if folder_to_rename and new_folder_name:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+        # Find the full flattened path before renaming so we can update classifiers
+        old_flat = user_sub_folders.flatten_folders()
+        old_path = _find_full_folder_path(old_flat, folder_to_rename, in_folder)
+
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
         # Update folder icon when folder is renamed
         MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
-        # Update folder-scoped classifiers when folder is renamed
-        for Cls in [MClassifierTitle, MClassifierText, MClassifierUrl, MClassifierAuthor, MClassifierTag]:
-            Cls.objects(user_id=request.user.pk, scope="folder", folder_name=folder_to_rename).update(
-                folder_name=new_folder_name
-            )
+        # Update folder-scoped classifiers using full flattened paths
+        if old_path:
+            parts = old_path.split(" - ")
+            parts[-1] = new_folder_name
+            new_path = " - ".join(parts)
+            _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)
         code = 1
     else:
         code = -1
@@ -3993,9 +4038,20 @@ def move_folder_to_folder(request):
     to_folder = request.POST.get("to_folder", "")
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    # Find the full flattened path before moving so we can update classifiers
+    old_flat = user_sub_folders.flatten_folders()
+    old_path = _find_full_folder_path(old_flat, folder_name, in_folder)
+
     user_sub_folders = user_sub_folders.move_folder_to_folder(
         folder_name, in_folder=in_folder, to_folder=to_folder
     )
+
+    # Update folder-scoped classifiers with new folder paths
+    if old_path:
+        new_flat = user_sub_folders.flatten_folders()
+        new_path = _find_full_folder_path(new_flat, folder_name, to_folder)
+        if new_path and old_path != new_path:
+            _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")

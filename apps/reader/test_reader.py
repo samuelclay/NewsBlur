@@ -344,3 +344,117 @@ class Test_Reader(TransactionTestCase):
         tech_folder = [f for f in feeds["folders"] if isinstance(f, dict) and "Technology" in f][0]
         nested_names = [list(f.keys())[0] for f in tech_folder["Technology"] if isinstance(f, dict)]
         self.assertIn("Deep Tech", nested_names)
+
+    def test_move_folder_updates_classifiers(self):
+        """Moving a folder to a new parent should update folder-scoped classifier paths."""
+        from apps.analyzer.models import MClassifierTag
+
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        # Set up folders: "YouTube (no shorts)" at top level with feeds
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"YouTube (no shorts)": [1, 6]}, {"YouTube": [7]}, 2, 3])
+        usf.save()
+
+        # Create a folder-scoped classifier for "YouTube (no shorts)" (top-level path)
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+        MClassifierTag.objects.create(
+            user_id=user.pk,
+            tag="short videos",
+            feed_id=0,
+            score=-1,
+            social_user_id=0,
+            scope="folder",
+            folder_name="YouTube (no shorts)",
+        )
+
+        # Move "YouTube (no shorts)" into "YouTube"
+        response = self.client.post(
+            reverse("move-folder-to-folder"),
+            {"folder_name": "YouTube (no shorts)", "in_folder": "", "to_folder": "YouTube"},
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # Classifier should now have the updated full path
+        classifier = MClassifierTag.objects.get(
+            user_id=user.pk, tag="short videos", scope="folder"
+        )
+        self.assertEqual(classifier.folder_name, "YouTube - YouTube (no shorts)")
+
+        # Clean up
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+
+    def test_move_folder_updates_subfolder_classifiers(self):
+        """Moving a folder should also update classifiers on its subfolders."""
+        from apps.analyzer.models import MClassifierTag
+
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        # Set up folders: "Videos" with subfolder "Shorts" at top level
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Videos": [1, {"Shorts": [6]}]}, {"Archive": [7]}, 2])
+        usf.save()
+
+        # Create classifiers on both "Videos" and "Videos - Shorts"
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+        MClassifierTag.objects.create(
+            user_id=user.pk, tag="tag1", feed_id=0, score=-1,
+            social_user_id=0, scope="folder", folder_name="Videos",
+        )
+        MClassifierTag.objects.create(
+            user_id=user.pk, tag="tag2", feed_id=0, score=-1,
+            social_user_id=0, scope="folder", folder_name="Videos - Shorts",
+        )
+
+        # Move "Videos" into "Archive"
+        response = self.client.post(
+            reverse("move-folder-to-folder"),
+            {"folder_name": "Videos", "in_folder": "", "to_folder": "Archive"},
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # Both classifiers should have updated paths
+        c1 = MClassifierTag.objects.get(user_id=user.pk, tag="tag1", scope="folder")
+        self.assertEqual(c1.folder_name, "Archive - Videos")
+        c2 = MClassifierTag.objects.get(user_id=user.pk, tag="tag2", scope="folder")
+        self.assertEqual(c2.folder_name, "Archive - Videos - Shorts")
+
+        # Clean up
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+
+    def test_rename_nested_folder_updates_classifiers(self):
+        """Renaming a nested folder should update classifier paths using full paths."""
+        from apps.analyzer.models import MClassifierTag
+
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        # Set up nested folders: "Parent" > "Child"
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Parent": [1, {"Child": [6, 7]}]}, 2, 3])
+        usf.save()
+
+        # Create a folder-scoped classifier with the full nested path
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+        MClassifierTag.objects.create(
+            user_id=user.pk, tag="boring", feed_id=0, score=-1,
+            social_user_id=0, scope="folder", folder_name="Parent - Child",
+        )
+
+        # Rename "Child" to "NewChild" inside "Parent"
+        response = self.client.post(
+            reverse("rename-folder"),
+            {"folder_name": "Child", "new_folder_name": "NewChild", "in_folder": "Parent"},
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # Classifier should have the updated path
+        classifier = MClassifierTag.objects.get(
+            user_id=user.pk, tag="boring", scope="folder"
+        )
+        self.assertEqual(classifier.folder_name, "Parent - NewChild")
+
+        # Clean up
+        MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
