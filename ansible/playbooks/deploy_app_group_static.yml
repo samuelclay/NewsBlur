@@ -115,6 +115,19 @@
   until: result.status == 200
   tags: always
 
+- name: Run database migrations
+  run_once: true
+  command: docker exec -t newsblur_web python manage.py migrate --noinput
+  register: migration_result
+  tags: always
+
+- name: Show migration output
+  run_once: true
+  debug:
+    msg: "{{ migration_result.stdout_lines }}"
+  when: migration_result.stdout_lines | length > 0
+  tags: always
+
 - name: Re-enable server in HAProxy and wait for healthy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
   shell: |
