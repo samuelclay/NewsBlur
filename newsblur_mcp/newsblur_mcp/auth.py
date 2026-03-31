@@ -53,7 +53,11 @@ class NewsBlurTokenVerifier(TokenVerifier):
                     return None
 
                 user_info = response.json()
-                logger.info("Token verified for user=%s", user_info.get("user_name", "unknown"))
+                data = user_info.get("data", user_info)
+                username = data.get("user_name") or data.get("name", "unknown")
+                is_premium = bool(data.get("is_premium"))
+                is_archive = bool(data.get("is_archive"))
+                logger.info("Token verified for user=%s premium=%s archive=%s", username, is_premium, is_archive)
 
                 return AccessToken(
                     token=token,
@@ -61,8 +65,10 @@ class NewsBlurTokenVerifier(TokenVerifier):
                     scopes=["read", "write", "mcp"],
                     expires_at=int(time.time()) + (60 * 60 * 24 * 365 * 10),
                     claims={
-                        "sub": str(user_info.get("user_id", "")),
-                        "username": user_info.get("user_name", ""),
+                        "sub": str(data.get("user_id") or data.get("id", "")),
+                        "username": username,
+                        "is_premium": is_premium,
+                        "is_archive": is_archive,
                     },
                 )
         except Exception as e:

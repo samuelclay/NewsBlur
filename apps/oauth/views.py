@@ -244,6 +244,8 @@ def api_user_info(request):
                 "name": user.username,
                 "id": user.pk,
                 "email": user.email,
+                "is_premium": user.profile.is_premium,
+                "is_archive": user.profile.is_archive,
             }
         },
     )

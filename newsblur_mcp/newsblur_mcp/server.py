@@ -4,12 +4,23 @@ Exposes NewsBlur's feeds, stories, and classifiers to AI agents
 via the Model Context Protocol (MCP).
 """
 
+import functools
+import logging
+import time
+
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
 
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
+from newsblur_mcp.log import log_request
 from newsblur_mcp.settings import MCP_HOST, MCP_PORT
+
+# Configure root logger so MCP log output is visible
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+)
 
 auth = NewsBlurOAuthProvider()
 
@@ -21,6 +32,52 @@ mcp = FastMCP(
     ),
     auth=auth,
 )
+
+
+def _get_user_info():
+    """Extract username and premium indicator from the authenticated request."""
+    try:
+        request = get_http_request()
+        user = request.scope.get("user")
+        if user and hasattr(user, "access_token"):
+            claims = user.access_token.claims or {}
+            username = claims.get("username", "")
+            if claims.get("is_archive"):
+                premium = "^"
+            elif claims.get("is_premium"):
+                premium = "*"
+            else:
+                premium = ""
+            return username, premium
+    except Exception:
+        pass
+    return "", ""
+
+
+# Patch mcp.tool to wrap every tool function with request logging
+_original_tool = mcp.tool
+
+
+def _logged_tool(*args, **kwargs):
+    original_decorator = _original_tool(*args, **kwargs)
+
+    def wrapper(func):
+        @functools.wraps(func)
+        async def logged(*fargs, **fkwargs):
+            start = time.time()
+            username, premium = _get_user_info()
+            try:
+                return await func(*fargs, **fkwargs)
+            finally:
+                elapsed = time.time() - start
+                log_request(username, premium, elapsed, func.__name__)
+
+        return original_decorator(logged)
+
+    return wrapper
+
+
+mcp.tool = _logged_tool
 
 
 def get_client() -> NewsBlurClient:
