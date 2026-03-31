@@ -180,14 +180,14 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONPATH=/srv/newsblur_mcp
-      - NEWSBLUR_BASE_URL=http://host.docker.internal
+      - NEWSBLUR_BASE_URL=http://newsblur_web:8000
       - MCP_PORT=8099
       - MCP_HOST=0.0.0.0
       - MCP_OAUTH_CLIENT_ID=newsblur-mcp-server
       - MCP_OAUTH_CLIENT_SECRET=newsblur-mcp-dev-secret
       - MCP_OAUTH_BASE_URL=http://localhost/mcp
       - MCP_OAUTH_UPSTREAM_URL=http://localhost
-      - MCP_OAUTH_INTERNAL_URL=http://host.docker.internal
+      - MCP_OAUTH_INTERNAL_URL=http://newsblur_web:8000
     volumes:
       - ${PWD}/newsblur_mcp/newsblur_mcp:/srv/newsblur_mcp/newsblur_mcp
     depends_on:
