@@ -275,12 +275,15 @@ def couldBeFeedData(data):
 
 def isFeed(uri):
     _debuglog("seeing if %s is a feed" % uri)
-    protocol = urllib.parse.urlparse(uri)
+    try:
+        protocol = urllib.parse.urlparse(uri)
+    except ValueError:
+        return 0
     if protocol[0] not in ("http", "https"):
         return 0
     try:
         data = _gatekeeper.get(uri, check=False)
-    except (KeyError, UnicodeDecodeError):
+    except (KeyError, UnicodeDecodeError, ValueError):
         return False
     count = couldBeFeedData(data)
     return count
@@ -368,7 +371,11 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
             "index.xml",  # MT
             "index.rss",  # Slash
         ]
-        outfeeds.extend(list(filter(isFeed, [urllib.parse.urljoin(fulluri, x) for x in suffixes])))
+        try:
+            guesses = [urllib.parse.urljoin(fulluri, x) for x in suffixes]
+        except ValueError:
+            guesses = []
+        outfeeds.extend(list(filter(isFeed, guesses)))
     if (all or not outfeeds) and querySyndic8:
         # still no luck, search Syndic8 for feeds (requires xmlrpclib)
         _debuglog("still no luck, searching Syndic8")
