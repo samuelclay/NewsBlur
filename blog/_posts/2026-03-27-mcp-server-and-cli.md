@@ -61,7 +61,7 @@ On first use, a browser window opens for you to log in and authorize access. Aut
 
 ### Command-line interface
 
-Everything the MCP server can do is also available from your terminal. Install with pip:
+Everything the MCP server can do is also available from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>. Install with pip:
 
 ```
 pip install newsblur
@@ -140,6 +140,6 @@ newsblur briefing --json | jq '.items[0].section_summaries'
 
 ### Availability
 
-The MCP server and CLI are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. Setup takes one command and one browser authorization.
+The MCP server and CLI are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. Setup takes one command and one browser authorization. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.
 
 If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
