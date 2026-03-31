@@ -71,19 +71,69 @@ Then log in and start using it:
 
 ```bash
 newsblur auth login
+```
+
+**Read stories** from feeds, folders, or everything at once:
+
+```bash
 newsblur stories list                          # unread stories
 newsblur stories list --folder Tech --limit 5  # filter by folder
 newsblur stories search "machine learning"     # full-text search
 newsblur stories saved --tag research          # saved stories by tag
-newsblur briefing                              # daily briefing
+newsblur stories infrequent                    # rarely-publishing feeds
+newsblur stories original 123:abc456           # fetch full article text
+```
+
+**Get your daily briefing** with AI-curated summaries:
+
+```bash
+newsblur briefing                              # today's briefing
+newsblur briefing --limit 1                    # just the latest
+newsblur briefing --json                       # structured output
+```
+
+**Manage feeds and folders:**
+
+```bash
 newsblur feeds list                            # all subscriptions
+newsblur feeds folders                         # folder tree with counts
 newsblur feeds add https://example.com         # subscribe
-newsblur save 123:abc --tag ai                 # save with tags
-newsblur train like --feed 42 --author "Name"  # train classifier
+newsblur feeds add https://blog.com -f Tech    # subscribe into a folder
+newsblur feeds remove 42                       # unsubscribe
+newsblur feeds organize move_feed --feed-id 42 --from News --to Tech
+```
+
+**Take actions on stories:**
+
+```bash
+newsblur save 123:abc --tag ai --tag research  # save with tags
+newsblur unsave 123:abc                        # remove from saved
+newsblur read --feed 42                        # mark feed as read
+newsblur share 123:abc --comment "Worth reading"
+```
+
+**Train your intelligence classifiers:**
+
+```bash
+newsblur train get --feed 42                   # view current training
+newsblur train like --feed 42 --author "Name"  # train a like
+newsblur train dislike --feed 42 --tag sponsor # train a dislike
+```
+
+**Discover new feeds:**
+
+```bash
+newsblur discover search "machine learning"    # search by topic
+newsblur discover similar --feed 42            # find similar feeds
 newsblur discover trending                     # trending feeds
 ```
 
-Output defaults to formatted text, but pass `--json` to get structured output you can pipe to jq or use in scripts. There's also a `--server` flag for self-hosted NewsBlur instances.
+Every command supports `--json` for structured output you can pipe to jq or use in scripts, and `--raw` for unformatted text. There's also a global `--server` flag for self-hosted NewsBlur instances:
+
+```bash
+newsblur --server https://my-newsblur.example.com auth login
+newsblur briefing --json | jq '.items[0].section_summaries'
+```
 
 <!-- SCREENSHOT: Terminal showing newsblur CLI output, maybe `newsblur stories list` with formatted story output -->
 <img src="/assets/mcp-server-cli-output.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
