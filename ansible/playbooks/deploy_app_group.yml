@@ -105,6 +105,17 @@
   delay: 5
   until: result.status == 200
 
+- name: Run database migrations
+  run_once: true
+  command: docker exec -t newsblur_web python manage.py migrate --noinput
+  register: migration_result
+
+- name: Show migration output
+  run_once: true
+  debug:
+    msg: "{{ migration_result.stdout_lines }}"
+  when: migration_result.stdout_lines | length > 0
+
 - name: Pull latest MCP Docker image
   become: yes
   docker_image:
