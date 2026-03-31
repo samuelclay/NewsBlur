@@ -1,0 +1,58 @@
+---
+# Included task file for deploying MCP in one A/B group
+- name: Disable MCP in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state maint" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_mcp_disable
+  retries: 5
+  delay: 3
+  until: haproxy_mcp_disable is not failed
+
+- name: Wait for MCP connections to drain
+  run_once: true
+  pause:
+    seconds: 5
+
+- name: Pull newsblur_web github
+  git:
+    repo: https://github.com/samuelclay/NewsBlur.git
+    dest: /srv/newsblur/
+    version: "{{ git_branch }}"
+
+- name: Pull latest MCP Docker image
+  become: yes
+  docker_image:
+    name: newsblur/newsblur_mcp
+    source: pull
+
+- name: Read MCP OAuth secret from local_settings.py
+  shell: grep -oP "^MCP_OAUTH_CLIENT_SECRET\s*=\s*['\"]\\K[^'\"]*" /srv/newsblur/newsblur_web/local_settings.py
+  register: mcp_secret_result
+  changed_when: false
+
+- name: Set MCP OAuth secret fact
+  set_fact:
+    mcp_oauth_client_id: "newsblur-mcp-server"
+    mcp_oauth_client_secret: "{{ mcp_secret_result.stdout }}"
+
+- include_tasks: ../roles/mcp/tasks/container.yml
+  vars:
+    container_restart: true
+
+- name: Wait for MCP container to be ready
+  uri:
+    url: "http://localhost:8099/health"
+    status_code: [200, 404, 405]
+  register: mcp_result
+  retries: 10
+  delay: 3
+  until: mcp_result.status is defined
+  ignore_errors: yes
+
+- name: Re-enable MCP in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state ready" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_mcp_enable
+  retries: 5
+  delay: 3
+  until: haproxy_mcp_enable is not failed

@@ -459,6 +459,9 @@ web: deploy_web
 deploy_static:
 	ansible-playbook ansible/deploy.yml -l app --tags static
 static: deploy_static
+deploy_mcp:
+	ansible-playbook ansible/deploy.yml -l mcp
+mcp: deploy_mcp
 deploy_node:
 	ansible-playbook ansible/deploy.yml -l node
 node: deploy_node
