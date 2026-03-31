@@ -4,6 +4,7 @@ Includes trending sites, YouTube/Reddit/Podcast search, newsletter conversion, e
 """
 import datetime
 import hashlib
+import json as stdlib_json
 import random
 import re
 from collections import defaultdict
@@ -514,86 +515,102 @@ def trending_sites(request):
 @json.json_view
 def youtube_search(request):
     """
-    Search YouTube channels and playlists using the YouTube Data API v3.
-    Returns results with constructed RSS feed URLs.
+    Search YouTube channels by scraping YouTube's search results page.
+    No API key or quota required. Returns results with constructed RSS feed URLs.
     """
     query = request.GET.get("query", "").strip()
-    search_type = request.GET.get("type", "channel")  # 'channel' or 'playlist'
     max_results = min(int(request.GET.get("limit", 10)), 25)
 
     if not query:
         return {"code": -1, "message": "Please provide a search query.", "results": []}
 
-    if not settings.YOUTUBE_API_KEY or settings.YOUTUBE_API_KEY == "YOUR_YOUTUBE_API_KEY":
-        return {"code": -1, "message": "YouTube API key not configured.", "results": []}
-
-    # Build YouTube Data API v3 search URL
-    api_url = "https://www.googleapis.com/youtube/v3/search"
-    params = {
-        "part": "snippet",
-        "q": query,
-        "type": search_type,
-        "maxResults": max_results,
-        "key": settings.YOUTUBE_API_KEY,
+    # sp=EgIQAg%3D%3D filters to channel results only
+    search_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAg%3D%3D"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
     }
 
     try:
-        response = requests.get(api_url, params=params, timeout=10)
+        response = requests.get(search_url, headers=headers, timeout=10)
         response.raise_for_status()
-        data = response.json()
+        html = response.text
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRYouTube search error: %s" % str(e))
-        return {"code": -1, "message": "YouTube API request failed.", "results": []}
+        return {"code": -1, "message": "YouTube search request failed.", "results": []}
 
-    if "error" in data:
-        error_msg = data["error"].get("message", "Unknown error")
-        logging.user(request, "~FRYouTube API error: %s" % error_msg)
-        return {"code": -1, "message": error_msg, "results": []}
+    # Extract ytInitialData JSON from the page
+    match = re.search(r"var ytInitialData = ({.*?});", html)
+    if not match:
+        logging.user(request, "~FRYouTube search: could not parse results page")
+        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+
+    try:
+        data = stdlib_json.loads(match.group(1))
+    except (stdlib_json.JSONDecodeError, ValueError):
+        logging.user(request, "~FRYouTube search: invalid JSON in results page")
+        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+
+    # Navigate to the search result items
+    contents = (
+        data.get("contents", {})
+        .get("twoColumnSearchResultsRenderer", {})
+        .get("primaryContents", {})
+        .get("sectionListRenderer", {})
+        .get("contents", [])
+    )
 
     results = []
-    for item in data.get("items", []):
-        snippet = item.get("snippet", {})
-        thumbnails = snippet.get("thumbnails", {})
-        thumbnail_url = thumbnails.get("medium", {}).get("url") or thumbnails.get("default", {}).get(
-            "url", ""
-        )
+    for section in contents:
+        items = section.get("itemSectionRenderer", {}).get("contents", [])
+        for item in items:
+            channel = item.get("channelRenderer")
+            if not channel:
+                continue
 
-        if search_type == "channel":
-            channel_id = item.get("id", {}).get("channelId")
-            if channel_id:
-                feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
-                channel_url = f"https://www.youtube.com/channel/{channel_id}"
-                results.append(
-                    {
-                        "id": channel_id,
-                        "type": "channel",
-                        "title": snippet.get("channelTitle") or snippet.get("title", ""),
-                        "description": snippet.get("description", ""),
-                        "thumbnail": thumbnail_url,
-                        "feed_url": feed_url,
-                        "link": channel_url,
-                    }
-                )
-        elif search_type == "playlist":
-            playlist_id = item.get("id", {}).get("playlistId")
-            if playlist_id:
-                feed_url = f"https://www.youtube.com/feeds/videos.xml?playlist_id={playlist_id}"
-                playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
-                results.append(
-                    {
-                        "id": playlist_id,
-                        "type": "playlist",
-                        "title": snippet.get("title", ""),
-                        "description": snippet.get("description", ""),
-                        "thumbnail": thumbnail_url,
-                        "feed_url": feed_url,
-                        "link": playlist_url,
-                        "channel_title": snippet.get("channelTitle", ""),
-                    }
-                )
+            channel_id = channel.get("channelId", "")
+            if not channel_id:
+                continue
+
+            title = channel.get("title", {}).get("simpleText", "")
+            desc_runs = channel.get("descriptionSnippet", {}).get("runs", [])
+            description = "".join(r.get("text", "") for r in desc_runs)
+            # YouTube swaps these fields: subscriberCountText often has the handle,
+            # while videoCountText has the actual subscriber count
+            sub_text = channel.get("videoCountText", {}).get("simpleText", "")
+            if "subscriber" not in sub_text:
+                sub_text = channel.get("subscriberCountText", {}).get("simpleText", "")
+            subscribers = sub_text if "subscriber" in sub_text else ""
+
+            thumbnails = channel.get("thumbnail", {}).get("thumbnails", [])
+            thumbnail_url = thumbnails[-1].get("url", "") if thumbnails else ""
+            # YouTube returns protocol-relative URLs for thumbnails
+            if thumbnail_url.startswith("//"):
+                thumbnail_url = "https:" + thumbnail_url
+
+            feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
+            channel_url = f"https://www.youtube.com/channel/{channel_id}"
+
+            results.append(
+                {
+                    "id": channel_id,
+                    "type": "channel",
+                    "title": title,
+                    "description": description,
+                    "thumbnail": thumbnail_url,
+                    "feed_url": feed_url,
+                    "link": channel_url,
+                    "subscriber_count": subscribers,
+                }
+            )
+
+            if len(results) >= max_results:
+                break
+        if len(results) >= max_results:
+            break
 
     logging.user(
-        request, "~FBYouTube search for '%s' (%s): ~SB%s results" % (query, search_type, len(results))
+        request, "~FBYouTube search for '%s': ~SB%s results" % (query, len(results))
     )
     return {"code": 1, "results": results}
 
