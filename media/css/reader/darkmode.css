@@ -2012,6 +2012,33 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* Mark read inline confirmation */
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-text {
+    color: #999;
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes {
+    background-color: #6C9E29;
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes:hover {
+    background-color: #5D8C22;
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-no {
+    background-color: #444;
+    color: #999;
+    border-color: rgba(255, 255, 255, .08);
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-no:hover {
+    background-color: #555;
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-confirm .NB-confirm-shortcut {
+    opacity: 0.4;
+}
+
 /* Search input field */
 .NB-dark input.NB-search-input[type="text"] {
     border: 1px solid rgba(0, 0, 0, 0.3);

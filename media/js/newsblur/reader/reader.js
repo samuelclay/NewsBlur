@@ -1375,6 +1375,9 @@
                 }
             });
 
+            // Dismiss any pending mark-read confirmation
+            this.dismiss_mark_read_confirm();
+
             // Flush read time for the current story before resetting
             if (NEWSBLUR.ReadTimeTracker && this.active_story) {
                 var story_hash = this.active_story.get('story_hash');
@@ -3161,18 +3164,125 @@
             }
         },
 
+        should_confirm_mark_read: function (type) {
+            var pref = NEWSBLUR.assets.preference('mark_read_river_confirm');
+            // Backward compat with old boolean values
+            if (pref === true) pref = 'folders_only';
+            else if (pref === false) pref = 'never';
+
+            if (pref === 'never') return false;
+            if (pref === 'feeds_folders') return true;
+            if (pref === 'folders_only') return type === 'folder';
+            return false;
+        },
+
+        show_mark_read_confirm: function ($container, callback, options) {
+            if (!$container || !$container.length) {
+                callback();
+                return;
+            }
+
+            options = options || {};
+            if (typeof options === 'string') options = { message: options };
+
+            var message;
+            if (options.message) {
+                message = options.message;
+            } else if (options.days) {
+                message = 'Mark older than ' + options.days + ' day' + (options.days == 1 ? '' : 's') + ' as read?';
+            } else {
+                message = 'Mark all as read?';
+            }
+
+            // Remove any existing confirmation
+            this.dismiss_mark_read_confirm();
+
+            var $buttons = $container.children();
+            $buttons.hide();
+
+            var $confirm = $.make('div', { className: 'NB-feedbar-mark-feed-read-confirm' }, [
+                $.make('span', { className: 'NB-confirm-text' }, message),
+                $.make('span', { className: 'NB-confirm-yes', role: 'button' }, [
+                    'Yes',
+                    $.make('span', { className: 'NB-confirm-shortcut' }, '\u21A9')
+                ]),
+                $.make('span', { className: 'NB-confirm-no', role: 'button' }, [
+                    'No',
+                    $.make('span', { className: 'NB-confirm-shortcut' }, 'esc')
+                ])
+            ]);
+
+            $container.append($confirm);
+            $confirm.css('display', 'flex');
+
+            this._mark_read_confirm_active = true;
+
+            var self = this;
+            var cleanup = function () {
+                $(document).off('keydown.mark_read_confirm');
+                $confirm.remove();
+                $buttons.show();
+                self._mark_read_confirm_active = false;
+            };
+
+            $confirm.find('.NB-confirm-yes').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                cleanup();
+                callback();
+            });
+
+            $confirm.find('.NB-confirm-no').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                cleanup();
+            });
+
+            $(document).on('keydown.mark_read_confirm', function (e) {
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    cleanup();
+                    callback();
+                } else if (e.keyCode === 27) {
+                    e.preventDefault();
+                    cleanup();
+                }
+            });
+        },
+
+        dismiss_mark_read_confirm: function () {
+            if (this._mark_read_confirm_active) {
+                $(document).off('keydown.mark_read_confirm');
+                var $confirm = $('.NB-feedbar-mark-feed-read-confirm');
+                if ($confirm.length) {
+                    $confirm.siblings().show();
+                    $confirm.remove();
+                }
+                this._mark_read_confirm_active = false;
+            }
+        },
+
         maybe_mark_all_as_read: function () {
+            var self = this;
             if (_.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
                 return;
-            } else if (this.flags.social_view) {
-                this.mark_feed_as_read();
-            } else if (this.flags.river_view) {
-                if (this.active_feed == 'river:' && NEWSBLUR.assets.preference('mark_read_river_confirm')) {
-                    this.open_mark_read_modal({ days: 0 });
-                } else {
-                    this.mark_folder_as_read();
-                }
-            } else if (!this.flags.river_view && !this.flags.social_view) {
+            }
+
+            var is_folder = this.flags.river_view && !this.flags.social_view;
+            var type = is_folder ? 'folder' : 'feed';
+
+            if (this.should_confirm_mark_read(type)) {
+                var $container = $('.NB-feedbar-mark-feed-read-container:visible').first();
+                this.show_mark_read_confirm($container, function () {
+                    if (is_folder) {
+                        self.mark_folder_as_read();
+                    } else {
+                        self.mark_feed_as_read();
+                    }
+                });
+            } else if (is_folder) {
+                this.mark_folder_as_read();
+            } else {
                 this.mark_feed_as_read();
             }
         },
@@ -3189,6 +3299,7 @@
         },
 
         mark_folder_as_read: function (folder, days_back, direction) {
+            var self = this;
             var folder = folder || this.active_folder;
             var feeds = folder.feed_ids_in_folder({ unreads_only: true });
 
@@ -3198,9 +3309,11 @@
                     var unread_counts = folder.unread_counts && folder.unread_counts() || folder.folders.unread_counts();
                     var total = unread_counts['nt'] + unread_counts['ps'];
                     if (total > 100) {
-                        if (!window.confirm("This will mark up to " + Inflector.commas(total) + " stories as read. Are you sure?")) {
-                            return;
-                        }
+                        var $container = $('.NB-feedbar-mark-feed-read-container:visible').first();
+                        this.show_mark_read_confirm($container, function () {
+                            self.mark_feeds_as_read(feeds, days_back, direction);
+                        }, 'Mark ' + Inflector.commas(total) + ' stories as read?');
+                        return;
                     }
                 }
             }

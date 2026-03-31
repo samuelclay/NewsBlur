@@ -464,8 +464,19 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         _.delay(_.bind(function () {
             this.flags.double_click = false;
         }, this), 500);
+
+        var self = this;
+        var $container = this.$('.NB-feedbar-mark-feed-read-container');
+        if ($container.length && NEWSBLUR.reader.should_confirm_mark_read('feed')) {
+            NEWSBLUR.reader.show_mark_read_confirm($container, function () {
+                NEWSBLUR.reader.mark_feed_as_read(self.model.id, days);
+                $container.fadeOut(400);
+            }, { days: days });
+            return false;
+        }
+
         NEWSBLUR.reader.mark_feed_as_read(this.model.id, days);
-        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
+        $container.fadeOut(400);
         if (e) {
             return false;
         }

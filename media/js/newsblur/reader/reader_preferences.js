@@ -684,23 +684,29 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Double-clicking an unread count'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-markreadriverconfirm' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-markreadconfirm' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadriverconfirmation-1', type: 'radio', name: 'mark_read_river_confirm', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-markreadriverconfirmation-1' }, [
-                                    'Show confirmation when marking everything read'
+                                $.make('input', { id: 'NB-preference-markreadconfirm-1', type: 'radio', name: 'mark_read_river_confirm', value: 'feeds_folders' }),
+                                $.make('label', { 'for': 'NB-preference-markreadconfirm-1' }, [
+                                    'Show confirmation when marking feeds or folders as read'
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadriverconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-markreadriverconfirm-0' }, [
-                                    'Mark everything as read without confirmation'
+                                $.make('input', { id: 'NB-preference-markreadconfirm-2', type: 'radio', name: 'mark_read_river_confirm', value: 'folders_only' }),
+                                $.make('label', { 'for': 'NB-preference-markreadconfirm-2' }, [
+                                    'Show confirmation only when marking folders as read'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-markreadconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: 'never' }),
+                                $.make('label', { 'for': 'NB-preference-markreadconfirm-0' }, [
+                                    'Mark as read without confirmation'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Marking All Site Stories as read'
+                            'Confirming mark as read'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
@@ -1228,8 +1234,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        var mark_read_pref = NEWSBLUR.Preferences.mark_read_river_confirm;
+        if (mark_read_pref === true) mark_read_pref = 'folders_only';
+        else if (mark_read_pref === false) mark_read_pref = 'never';
         $('input[name=mark_read_river_confirm]', $modal).each(function () {
-            if ($(this).val() == "" + NEWSBLUR.Preferences.mark_read_river_confirm) {
+            if ($(this).val() == mark_read_pref) {
                 $(this).prop('checked', true);
                 return false;
             }
