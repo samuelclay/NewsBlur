@@ -138,21 +138,24 @@ def render_stories(data: dict) -> None:
         if len(content) > 300:
             preview += "..."
 
-        body = Text()
         body_str = f"{subtitle}\n"
         if preview:
             body_str += f"\n{preview}\n"
-        body_str += f"\n{story_hash}"
 
         panel_title = f"[bold]{title}[/bold]"
         if indicator_str:
             panel_title += f"  {indicator_str}"
 
+        subtitle_parts = []
+        if story_hash:
+            subtitle_parts.append(f"[dim]{story_hash}[/dim]")
+        subtitle_parts.append(f"Intelligence: {intel_str}")
+
         panel = Panel(
             body_str,
             title=panel_title,
             title_align="left",
-            subtitle=f"Intelligence: {intel_str}",
+            subtitle=" | ".join(subtitle_parts),
             subtitle_align="right",
             border_style="dim",
             padding=(0, 1),

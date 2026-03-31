@@ -11,11 +11,13 @@ async def _list_feeds(
     include_favicons: bool = False,
 ) -> dict:
     """List all subscribed feeds organized by folder with unread counts."""
-    params = {"flat": "true" if flat else "false"}
-    if include_favicons:
-        params["include_favicons"] = "true"
-
-    resp = await client.get("/reader/feeds", params=params)
+    if flat and not include_favicons:
+        resp = await client.get_feeds()
+    else:
+        params = {"flat": "true" if flat else "false"}
+        if include_favicons:
+            params["include_favicons"] = "true"
+        resp = await client.get("/reader/feeds", params=params)
 
     feeds = {}
     for feed_id, feed_data in resp.get("feeds", {}).items():
@@ -55,7 +57,7 @@ async def _list_folders(
     include_counts: bool = True,
 ) -> dict:
     """List all folder names in the user's subscription structure."""
-    resp = await client.get("/reader/feeds", params={"flat": "true"})
+    resp = await client.get_feeds()
     flat_folders = resp.get("flat_folders", {})
     feeds_data = resp.get("feeds", {})
 
@@ -103,11 +105,10 @@ async def _list_folders_with_feeds(
     include_favicons: bool = False,
 ) -> dict:
     """List all folders with their feeds and unread counts."""
-    params = {"flat": "true"}
-    if include_favicons:
-        params["include_favicons"] = "true"
-
-    resp = await client.get("/reader/feeds", params=params)
+    if not include_favicons:
+        resp = await client.get_feeds()
+    else:
+        resp = await client.get("/reader/feeds", params={"flat": "true", "include_favicons": "true"})
     flat_folders = resp.get("flat_folders", {})
     feeds_data = resp.get("feeds", {})
 

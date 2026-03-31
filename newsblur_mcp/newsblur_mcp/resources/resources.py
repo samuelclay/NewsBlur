@@ -11,7 +11,7 @@ async def feeds_resource(context: Context) -> dict:
     """All subscribed feeds with unread counts, organized by folder."""
     client = get_client()
     try:
-        resp = await client.get("/reader/feeds", params={"flat": "true"})
+        resp = await client.get_feeds()
         feeds = {fid: transform_feed(f) for fid, f in resp.get("feeds", {}).items()}
         return {"feeds": feeds, "folders": resp.get("flat_folders", {})}
     finally:
@@ -34,7 +34,7 @@ async def folders_resource(context: Context) -> dict:
     """Folder tree structure."""
     client = get_client()
     try:
-        resp = await client.get("/reader/feeds", params={"flat": "true"})
+        resp = await client.get_feeds()
         return {"folders": resp.get("flat_folders", {})}
     finally:
         await client.close()

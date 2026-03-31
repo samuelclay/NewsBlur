@@ -11,7 +11,9 @@ from newsblur_mcp.cli.output import render, render_briefing, render_stories
 from newsblur_mcp.cli.runner import async_command, get_authenticated_client
 
 console = Console(stderr=True)
-app = typer.Typer()
+from newsblur_mcp.cli import CONTEXT_SETTINGS
+
+app = typer.Typer(context_settings=CONTEXT_SETTINGS)
 
 
 @app.command("list")

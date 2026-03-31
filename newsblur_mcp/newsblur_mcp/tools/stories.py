@@ -22,7 +22,7 @@ async def _get_stories(
 
     resolved_feed_ids = feed_ids
     if folder and not feed_ids:
-        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        feeds_resp = await client.get_feeds()
         flat_folders = feeds_resp.get("flat_folders", {})
         resolved_feed_ids = flat_folders.get(folder, [])
         if not resolved_feed_ids:
@@ -30,6 +30,7 @@ async def _get_stories(
 
     params = {
         "page": page,
+        "limit": limit,
         "order": order,
         "read_filter": read_filter,
     }
@@ -42,8 +43,8 @@ async def _get_stories(
 
     resp = await client.post("/reader/river_stories", data=params)
 
-    stories = [transform_story(s) for s in resp.get("stories", [])]
-    return paginate(stories, page, has_more=len(stories) >= limit)
+    stories = [transform_story(s) for s in resp.get("stories", [])][:limit]
+    return paginate(stories, page, has_more=len(resp.get("stories", [])) >= limit)
 
 
 @mcp.tool()
@@ -153,7 +154,7 @@ async def _get_read_stories(
 
     resolved_feed_ids = feed_ids
     if folder and not feed_ids:
-        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        feeds_resp = await client.get_feeds()
         flat_folders = feeds_resp.get("flat_folders", {})
         resolved_feed_ids = flat_folders.get(folder, [])
         if not resolved_feed_ids:
@@ -225,7 +226,7 @@ async def _search_stories(
 
     resolved_feed_ids = feed_ids
     if folder and not feed_ids:
-        feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+        feeds_resp = await client.get_feeds()
         flat_folders = feeds_resp.get("flat_folders", {})
         resolved_feed_ids = flat_folders.get(folder, [])
 
@@ -276,7 +277,7 @@ async def _get_infrequent_stories(
     """Load stories from infrequently-publishing feeds."""
     limit = min(limit, MAX_STORIES_PER_PAGE)
 
-    feeds_resp = await client.get("/reader/feeds", params={"flat": "true"})
+    feeds_resp = await client.get_feeds()
     flat_folders = feeds_resp.get("flat_folders", {})
     all_feed_ids = []
     for feed_ids_in_folder in flat_folders.values():
@@ -289,6 +290,7 @@ async def _get_infrequent_stories(
         "feeds": all_feed_ids,
         "infrequent": stories_per_month,
         "page": page,
+        "limit": limit,
         "order": order,
         "read_filter": read_filter,
     }
@@ -297,8 +299,8 @@ async def _get_infrequent_stories(
 
     resp = await client.post("/reader/river_stories", data=params)
 
-    stories = [transform_story(s) for s in resp.get("stories", [])]
-    return paginate(stories, page, has_more=len(stories) >= limit)
+    stories = [transform_story(s) for s in resp.get("stories", [])][:limit]
+    return paginate(stories, page, has_more=len(resp.get("stories", [])) >= limit)
 
 
 @mcp.tool()

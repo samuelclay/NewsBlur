@@ -8,7 +8,9 @@ from rich.console import Console
 from newsblur_mcp.cli.auth import delete_token, get_auth_status, login_flow
 
 console = Console(stderr=True)
-app = typer.Typer()
+from newsblur_mcp.cli import CONTEXT_SETTINGS
+
+app = typer.Typer(context_settings=CONTEXT_SETTINGS)
 
 
 @app.command("login")

@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import typer
 
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
+
 app = typer.Typer(
     name="newsblur",
     help="NewsBlur CLI - read feeds, manage stories, and train classifiers from your terminal.",
     no_args_is_help=True,
+    context_settings=CONTEXT_SETTINGS,
 )
 
 
