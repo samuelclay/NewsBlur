@@ -1,9 +1,11 @@
 package com.newsblur.design
 
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 data class NbExtendedColors(
     // action bar / subscription header backgrounds
@@ -93,7 +95,7 @@ private val DarkExt =
         textDefault = Gray85, // @color/dark_text
         textLink = Color(0xFF319DC5), // @color/dark_linkblue
         textSnippet = Color(0xFFCECECE), // @color/dark_story_content_text
-        textFeedTitle = Gray55, // @color/dark_story_feed_title_text
+        textFeedTitle = Gray65, // @color/dark_story_feed_title_text
         textMeta = Color(0x7FFFFFFF), // @color/half_white
         rowBorder = Gray20, // @color/dark_row_border #333333
         commentDivider = Color(0xFF555555), // @color/dark_story_comment_divider
@@ -117,20 +119,49 @@ private val BlackExt =
         itemBackgroundDarkAlt = Gray07,
     )
 
+// High-contrast variants: brighter text for users with system high-contrast enabled
+private val DarkHighContrastExt =
+    DarkExt.copy(
+        textDefault = White,
+        textSnippet = Gray90, // #E6E6E6
+        textFeedTitle = Gray80, // #CCCCCC
+        textMeta = Color(0xBFFFFFFF),
+        shareBarText = Gray75,
+    )
+
+private val BlackHighContrastExt =
+    DarkHighContrastExt.copy(
+        barBackground = Black,
+        itemBackground = Black,
+        itemBackgroundDarkAlt = Gray07,
+    )
+
 // Hook into your existing theme
 @Composable
 fun ProvideNbExtendedColors(
     variant: NbThemeVariant,
     content: @Composable () -> Unit,
 ) {
+    val context = LocalContext.current
+    val highContrast =
+        try {
+            Settings.Secure.getInt(context.contentResolver, "high_text_contrast_enabled", 0) == 1
+        } catch (_: Exception) {
+            false
+        }
+
     val ext =
         when (variant) {
             NbThemeVariant.Light -> LightExt
             NbThemeVariant.Sepia -> SepiaExt
-            NbThemeVariant.Dark -> DarkExt
-            NbThemeVariant.Black -> BlackExt
+            NbThemeVariant.Dark -> if (highContrast) DarkHighContrastExt else DarkExt
+            NbThemeVariant.Black -> if (highContrast) BlackHighContrastExt else BlackExt
             NbThemeVariant.System ->
-                if (androidx.compose.foundation.isSystemInDarkTheme()) DarkExt else LightExt
+                if (androidx.compose.foundation.isSystemInDarkTheme()) {
+                    if (highContrast) DarkHighContrastExt else DarkExt
+                } else {
+                    LightExt
+                }
         }
     CompositionLocalProvider(LocalNbColors provides ext, content = content)
 }

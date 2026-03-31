@@ -3,6 +3,7 @@ package com.newsblur.util
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
+import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -106,6 +107,14 @@ object EdgeToEdgeUtil {
             .getRootWindowInsets(this)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
             ?.bottom
+
+    @JvmStatic
+    fun isHighContrastTextEnabled(context: Context): Boolean =
+        try {
+            Settings.Secure.getInt(context.contentResolver, "high_text_contrast_enabled", 0) == 1
+        } catch (_: Exception) {
+            false
+        }
 
     private fun shouldUseLightIcons(
         context: Context,
