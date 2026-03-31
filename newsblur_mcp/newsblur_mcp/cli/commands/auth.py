@@ -60,6 +60,19 @@ def status():
         console.print("[green]Authenticated[/green]")
         if info.get("username"):
             console.print(f"  Username: [bold]{info['username']}[/bold]")
+        if info.get("email"):
+            console.print(f"  Email:    {info['email']}")
+        # Premium tier
+        if info.get("is_pro"):
+            console.print("  Tier:     [magenta]Pro[/magenta]")
+        elif info.get("is_archive"):
+            console.print("  Tier:     [blue]Archive[/blue]")
+        elif info.get("is_premium"):
+            console.print("  Tier:     [green]Premium[/green]")
+        else:
+            console.print("  Tier:     [dim]Free[/dim]")
+        if "feed_count" in info:
+            console.print(f"  Feeds:    {info['feed_count']}")
         if info.get("server"):
             console.print(f"  Server:   {info['server']}")
         if info.get("expires_at"):

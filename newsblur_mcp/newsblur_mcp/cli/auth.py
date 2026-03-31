@@ -320,6 +320,7 @@ def get_auth_status() -> dict:
 
     # Verify the token is valid by calling the user info endpoint
     username = None
+    profile = {}
     try:
         resp = httpx.get(
             f"{get_server_url()}/oauth/user/info/",
@@ -330,6 +331,16 @@ def get_auth_status() -> dict:
         if resp.status_code == 200:
             user_info = resp.json()
             username = user_info.get("user_name")
+            info_data = user_info.get("data", {})
+            if info_data:
+                username = username or info_data.get("name")
+                profile = {
+                    "email": info_data.get("email", ""),
+                    "is_premium": info_data.get("is_premium", False),
+                    "is_archive": info_data.get("is_archive", False),
+                    "is_pro": info_data.get("is_pro", False),
+                    "feed_count": info_data.get("feed_count", 0),
+                }
     except Exception:
         pass
 
@@ -339,4 +350,5 @@ def get_auth_status() -> dict:
         "server": get_server_url(),
         "token_path": str(token_path),
         "expires_at": data.get("expires_at"),
+        **profile,
     }
