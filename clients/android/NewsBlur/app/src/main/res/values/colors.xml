@@ -94,7 +94,7 @@
     <color name="story_title_text_sepia">#333333</color>
     <color name="story_title_text_dark">#D0D0D0</color>
     <color name="story_title_text_black">#CCCCCC</color>
-    <color name="dark_story_feed_title_text">@color/gray55</color>
+    <color name="dark_story_feed_title_text">@color/gray65</color>
     <color name="story_content_text">#404040</color>
     <color name="story_content_text_sepia">#404040</color>
     <color name="dark_story_content_text">#CECECE</color>
