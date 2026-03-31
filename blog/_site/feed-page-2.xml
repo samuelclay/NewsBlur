@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-30T15:54:36-04:00</updated>
+  <updated>2026-03-30T23:36:41-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,56 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">New gesture-based layout for the NewsBlur iPad App</title>
+    <link href="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/" rel="alternate" type="text/html" title="New gesture-based layout for the NewsBlur iPad App" />
+    <published>2022-03-28T00:00:00-04:00</published>
+    <updated>2022-03-28T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2022/03/28/redesigned-ios-layout</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/">
+      <![CDATA[<p>We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story content.</p>
+
+<p>Let’s take a look at all of the new features, starting with the improved gesture-based layout engine for navigating between stories and feeds.</p>
+
+<p>
+    <video autoplay="autoplay" loop="true" muted="" playsinline="" width="650" style="width: 650px;border: 2px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;">
+        <source src="/assets/ipad-redesigned-layout-2.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>A whole bunch of new controls and customizations have been added to the settings menu in the story titles menu, which is where you can find these new options for 2-column/3-column/full screen view panes.</p>
+
+<p><img src="/assets/ipad-story-title-customizations.png" /></p>
+
+<p>There’s also a new homescreen widget for showing 3-6 stories on your dashboard.</p>
+
+<p><img src="/assets/ipad-widget.png" /></p>
+
+<p>You can also expect to find feature parity with Android and the web when it comes to the new image preview and content preview options for story titles.</p>
+
+<p><img src="/assets/ipad-image-preview.png" /></p>
+
+<p>You can now save stories and subscribe to feeds from other apps using the NewsBlur Share extension. This includes your saved story tags and associated counts.</p>
+
+<p><img src="/assets/iphone-share-extension.png" style="margin: 0 auto; display: block; width: 450px;" /></p>
+
+<p>This release also contains numerous improvements, subtle refinements, and assorted fixed bugs.</p>
+
+<p>If you have any ideas for how you would like to see the iPad and iPhone app improved, please post ideas to the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. I’m all ears and would love to prioritize improvements or changes that create a better mobile reading experience.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Magazine view offers a new perspective</title>
@@ -1271,44 +1321,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Last day to back Turn Touch: NewsBlur’s beautiful remote</title>
-    <link href="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/" rel="alternate" type="text/html" title="Last day to back Turn Touch: NewsBlur’s beautiful remote" />
-    <published>2017-03-09T05:00:33-05:00</published>
-    <updated>2017-03-09T05:00:33-05:00</updated>
-    <id>https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/">
-      <![CDATA[<p><strong>This is it, the final countdown!</strong></p>
-
-<p>Tonight at 8pm PT the <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">Turn Touch campaign</a> will end and the project will be successfully funded. Judging from the $50,000 raised already, I think Turn Touch has a long life ahead of it.</p>
-
-<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/animated-newsblur-live.gif" alt="" /></a></p>
-
-<h5 id="watch-the-2-minute-demo-on-vimeo"><a href="https://vimeo.com/207556527">Watch the 2 minute demo on Vimeo</a></h5>
-
-<p>Apart from being the only remote control in the world built for a news reader, Turn Touch is the handiest shortcut for your lights, music, and apps. It’s basically a customizable remote with a knack for smart homes.</p>
-
-<p>Supporting Turn Touch is a way of supporting NewsBlur. They are part of the same suite of productivity tools made by the <a href="https://twitter.com/samuelclay">same person</a>. By buying a Turn Touch and backing this Kickstarter, you’re continuing to fund the development of great tools.</p>
-
-<p>So please <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">head to Kickstarter and buy yourself the $59 mahogany remote</a>, even if you do not yet have any smart home devices. This remote is the easiest way to start connecting your home.</p>
-
-<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/padauk-book.jpg" alt="" /></a></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="turntouch" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is it, the final countdown!
 ]]>
     </summary>
     

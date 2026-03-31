@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>MCP Server &amp; CLI: Connect AI agents to your NewsBlur | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="MCP Server &amp; CLI: Connect AI agents to your NewsBlur" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask “what did I miss?” and get a real answer, not a generic summary from a tool that doesn’t know what I care about. The problem has always been that AI assistants can’t see your feeds. They don’t know what you subscribe to, what you’ve trained as interesting, or what you saved last week. They’re working blind." />
+<meta property="og:description" content="I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask “what did I miss?” and get a real answer, not a generic summary from a tool that doesn’t know what I care about. The problem has always been that AI assistants can’t see your feeds. They don’t know what you subscribe to, what you’ve trained as interesting, or what you saved last week. They’re working blind." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/03/27/mcp-server-and-cli/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/03/27/mcp-server-and-cli/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/mcp-server-claude-conversation.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-27T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/mcp-server-claude-conversation.png" />
+<meta property="twitter:title" content="MCP Server &amp; CLI: Connect AI agents to your NewsBlur" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-27T00:00:00-04:00","datePublished":"2026-03-27T00:00:00-04:00","description":"I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask “what did I miss?” and get a real answer, not a generic summary from a tool that doesn’t know what I care about. The problem has always been that AI assistants can’t see your feeds. They don’t know what you subscribe to, what you’ve trained as interesting, or what you saved last week. They’re working blind.","headline":"MCP Server &amp; CLI: Connect AI agents to your NewsBlur","image":"https://blog.newsblur.com/assets/mcp-server-claude-conversation.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/03/27/mcp-server-and-cli/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/03/27/mcp-server-and-cli/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-03-27T00:00:00-04:00" itemprop="datePublished">Mar 27, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">MCP Server &amp; CLI: Connect AI agents to your NewsBlur</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask “what did I miss?” and get a real answer, not a generic summary from a tool that doesn’t know what I care about. The problem has always been that AI assistants can’t see your feeds. They don’t know what you subscribe to, what you’ve trained as interesting, or what you saved last week. They’re working blind.</p>
+
+<p>Today I’m launching the NewsBlur MCP Server. MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible tool can read your feeds, manage your stories, train your classifiers, and organize your subscriptions. It’s your NewsBlur, accessible to your AI agent.</p>
+
+<!-- SCREENSHOT: Claude Code or Claude Desktop showing a conversation where the agent reads NewsBlur feeds and summarizes stories -->
+<p><img src="/assets/mcp-server-claude-conversation.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="22-tools-for-your-agent">22 tools for your agent</h3>
+
+<p>The MCP server exposes 22 tools that cover everything you do in NewsBlur:</p>
+
+<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
+
+<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
+
+<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
+
+<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
+
+<!-- SCREENSHOT: The MCP feature page on newsblur.com showing the 22 tools grid -->
+<p><img src="/assets/mcp-server-tools-grid.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="what-this-looks-like-in-practice">What this looks like in practice</h3>
+
+<p>You ask your agent: “What are my infrequent stories today?” It calls <code class="language-plaintext highlighter-rouge">newsblur_get_infrequent_stories</code> and comes back with a summary of the stories from your low-volume feeds, the ones that publish once a week and are easy to miss in a busy river.</p>
+
+<p>You say: “Save that Stratechery article and tag it ai, investing.” The agent calls <code class="language-plaintext highlighter-rouge">newsblur_save_story</code> with the right story hash and tags. Done.</p>
+
+<p>You ask: “What have I saved about climate policy this month?” It searches your saved stories and gives you a summary you can actually work with.</p>
+
+<p>The agent knows your feeds, your folders, your classifiers, your saved stories. It’s working with your actual NewsBlur data, not guessing.</p>
+
+<h3 id="connect-in-one-command">Connect in one command</h3>
+
+<p>For Claude Code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
+</code></pre></div></div>
+
+<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
+
+<p>On first use, a browser window opens for you to log in and authorize access. Authentication uses OAuth 2.0, the same standard used by third-party apps. Your credentials are never stored on the MCP server, and you can revoke access at any time from your account settings.</p>
+
+<h3 id="command-line-interface">Command-line interface</h3>
+
+<p>Everything the MCP server can do is also available from your terminal. Install with pip:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install newsblur
+</code></pre></div></div>
+
+<p>Then log in and start using it:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth login
+</code></pre></div></div>
+
+<p><strong>Read stories</strong> from feeds, folders, or everything at once:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur stories list                          <span class="c"># unread stories</span>
+newsblur stories list <span class="nt">--folder</span> Tech <span class="nt">--limit</span> 5  <span class="c"># filter by folder</span>
+newsblur stories search <span class="s2">"machine learning"</span>     <span class="c"># full-text search</span>
+newsblur stories saved <span class="nt">--tag</span> research          <span class="c"># saved stories by tag</span>
+newsblur stories infrequent                    <span class="c"># rarely-publishing feeds</span>
+newsblur stories original 123:abc456           <span class="c"># fetch full article text</span>
+</code></pre></div></div>
+
+<p><strong>Get your daily briefing</strong> with AI-curated summaries:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur briefing                              <span class="c"># today's briefing</span>
+newsblur briefing <span class="nt">--limit</span> 1                    <span class="c"># just the latest</span>
+newsblur briefing <span class="nt">--json</span>                       <span class="c"># structured output</span>
+</code></pre></div></div>
+
+<p><strong>Manage feeds and folders:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur feeds list                            <span class="c"># all subscriptions</span>
+newsblur feeds folders                         <span class="c"># folder tree with counts</span>
+newsblur feeds add https://example.com         <span class="c"># subscribe</span>
+newsblur feeds add https://blog.com <span class="nt">-f</span> Tech    <span class="c"># subscribe into a folder</span>
+newsblur feeds remove 42                       <span class="c"># unsubscribe</span>
+newsblur feeds organize move_feed <span class="nt">--feed-id</span> 42 <span class="nt">--from</span> News <span class="nt">--to</span> Tech
+</code></pre></div></div>
+
+<p><strong>Take actions on stories:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur save 123:abc <span class="nt">--tag</span> ai <span class="nt">--tag</span> research  <span class="c"># save with tags</span>
+newsblur unsave 123:abc                        <span class="c"># remove from saved</span>
+newsblur <span class="nb">read</span> <span class="nt">--feed</span> 42                        <span class="c"># mark feed as read</span>
+newsblur share 123:abc <span class="nt">--comment</span> <span class="s2">"Worth reading"</span>
+</code></pre></div></div>
+
+<p><strong>Train your intelligence classifiers:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur train get <span class="nt">--feed</span> 42                   <span class="c"># view current training</span>
+newsblur train like <span class="nt">--feed</span> 42 <span class="nt">--author</span> <span class="s2">"Name"</span>  <span class="c"># train a like</span>
+newsblur train dislike <span class="nt">--feed</span> 42 <span class="nt">--tag</span> sponsor <span class="c"># train a dislike</span>
+</code></pre></div></div>
+
+<p><strong>Discover new feeds:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur discover search <span class="s2">"machine learning"</span>    <span class="c"># search by topic</span>
+newsblur discover similar <span class="nt">--feed</span> 42            <span class="c"># find similar feeds</span>
+newsblur discover trending                     <span class="c"># trending feeds</span>
+</code></pre></div></div>
+
+<p>Every command supports <code class="language-plaintext highlighter-rouge">--json</code> for structured output you can pipe to jq or use in scripts, and <code class="language-plaintext highlighter-rouge">--raw</code> for unformatted text. There’s also a global <code class="language-plaintext highlighter-rouge">--server</code> flag for self-hosted NewsBlur instances:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur <span class="nt">--server</span> https://my-newsblur.example.com auth login
+newsblur briefing <span class="nt">--json</span> | jq <span class="s1">'.items[0].section_summaries'</span>
+</code></pre></div></div>
+
+<!-- SCREENSHOT: Terminal showing newsblur CLI output, maybe `newsblur stories list` with formatted story output -->
+<p><img src="/assets/mcp-server-cli-output.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The MCP server and CLI are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. Setup takes one command and one browser authorization.</p>
+
+<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/03/27/mcp-server-and-cli/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>

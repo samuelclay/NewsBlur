@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>cli-terminal</title>
+    <g id="cli-terminal" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-cli-terminal" transform="translate(12, 18)" fill="#95968E" fill-rule="nonzero">
+            <path d="M10,0 L116,0 C121.523,0 126,4.477 126,10 L126,100 C126,105.523 121.523,110 116,110 L10,110 C4.477,110 0,105.523 0,100 L0,10 C0,4.477 4.477,0 10,0 Z M10,8 C8.895,8 8,8.895 8,10 L8,100 C8,101.105 8.895,102 10,102 L116,102 C117.105,102 118,101.105 118,100 L118,10 C118,8.895 117.105,8 116,8 L10,8 Z"></path>
+            <path d="M28,40 L52,58 L28,76 C26.343,77.657 26.343,80.343 28,82 C29.657,83.657 32.343,83.657 34,82 L62,60 C63.657,58.343 63.657,55.657 62,54 L34,34 C32.343,32.343 29.657,32.343 28,34 C26.343,35.657 26.343,38.343 28,40 Z"></path>
+            <rect x="64" y="74" width="36" height="8" rx="4"></rect>
+        </g>
+    </g>
+</svg>

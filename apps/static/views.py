@@ -97,8 +97,18 @@ def feature_native_apps(request):
     return render(request, "static/feature_native_apps.xhtml")
 
 
-def feature_mcp_cli(request):
-    return render(request, "static/feature_mcp_cli.xhtml")
+def feature_mcp(request):
+    return render(request, "static/feature_mcp.xhtml")
+
+
+def feature_cli(request):
+    return render(request, "static/feature_cli.xhtml")
+
+
+def feature_mcp_cli_redirect(request):
+    from django.shortcuts import redirect
+
+    return redirect("feature-mcp", permanent=True)
 
 
 def feature_story_clustering(request):

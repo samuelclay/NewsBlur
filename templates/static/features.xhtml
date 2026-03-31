@@ -456,15 +456,27 @@
         </div>
     </div>
 
-    <!-- MCP Server & CLI -->
-    <div class="NB-feature-section" id="mcp-cli">
+    <!-- MCP Server -->
+    <div class="NB-feature-section" id="mcp">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-archive">Premium Archive</div>
-            <h2 class="NB-feature-section-name">MCP Server &amp; CLI</h2>
+            <h2 class="NB-feature-section-name">MCP Server</h2>
             <p class="NB-feature-section-description">
-                Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. One command to connect, 18 tools to work with, and pre-built prompt templates for common workflows like daily briefings and inbox triage.
+                Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. 22 tools available with pre-built prompt templates for common workflows like daily briefings and inbox triage.
             </p>
-            <a href="{% url "feature-mcp-cli" %}" class="NB-feature-section-cta">Learn more</a>
+            <a href="{% url "feature-mcp" %}" class="NB-feature-section-cta">Learn more</a>
+        </div>
+    </div>
+
+    <!-- CLI Tool -->
+    <div class="NB-feature-section" id="cli">
+        <div class="NB-feature-section-text">
+            <div class="NB-feature-section-badge NB-feature-badge-archive">Premium Archive</div>
+            <h2 class="NB-feature-section-name">CLI Tool</h2>
+            <p class="NB-feature-section-description">
+                Manage your NewsBlur from the terminal. Read feeds, search stories, manage subscriptions, and train classifiers. Pipe to jq, script your workflows, and automate with <code>--json</code> output. Works with self-hosted instances too.
+            </p>
+            <a href="{% url "feature-cli" %}" class="NB-feature-section-cta">Learn more</a>
         </div>
     </div>
 

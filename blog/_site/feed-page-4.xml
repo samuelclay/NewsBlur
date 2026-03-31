@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-30T15:54:36-04:00</updated>
+  <updated>2026-03-30T23:36:41-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,44 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">The iOS app gets search and saved story tagging</title>
+    <link href="https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging/" rel="alternate" type="text/html" title="The iOS app gets search and saved story tagging" />
+    <published>2014-12-15T12:01:23-05:00</published>
+    <updated>2014-12-15T12:01:23-05:00</updated>
+    <id>https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging/">
+      <![CDATA[<p>This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading later.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20tagging.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20search.png" alt="" /></p>
+
+<p>Here’s the full list of new features:</p>
+
+<ul>
+  <li>Search feeds and folders.</li>
+  <li>Fixing rotation issues so you can watch a video and rotate without losing position.</li>
+  <li>Saved story tagging: add and remove tags with a handy tagging popover.</li>
+  <li>Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc).</li>
+  <li>Progress bar for the Story view when loading a story using the in-app browser.</li>
+  <li>Further UI cleanups and memory fixes/speedups for iOS 8.</li>
+</ul>
+
+<p>It’s a <a href="https://www.newsblur.com/ios">free download</a> from the App Store. And if you are enjoying the app, please leave a 5 star review on the App Store. Every positive review, tweet, and share on Facebook helps.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Offline reading and a dark theme on the Android app</title>
@@ -1005,41 +1043,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Mark as read by number of days and other improvements</title>
-    <link href="https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other/" rel="alternate" type="text/html" title="Mark as read by number of days and other improvements" />
-    <published>2013-09-13T17:05:55-04:00</published>
-    <updated>2013-09-13T17:05:55-04:00</updated>
-    <id>https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/09/13/mark-as-read-by-number-of-days-and-other/">
-      <![CDATA[<p>Here’s a few big improvements for the NewsBlur website.</p>
-
-<ul>
-  <li>The site title bar is now mounted to the bottom of the screen. This will allow you to mark a site/folder as read at any time.</li>
-  <li>
-    <p>Marking as read can go back a configurable amount: 1, 3, 7, and 14 days back.</p>
-  </li>
-  <li>If you’re reading in newest-first order, when you mark a site as read, any newer stories that have come in since you’ve loaded the site will no longer be marked as read.</li>
-  <li>When you add, move, or delete a site or folder, all of your open web browsers will reload to correctly show the change. This allows you to have NewsBlur open at home and at work, knowing they will be synced when you change or add sites.</li>
-</ul>
-
-<p>You may be thinking to yourself, 1, 3, and 7 days back makes sense, but why 14 if the unread limit is at 14 days? Why, having 14 days as an option would only make sense if the full limit was… (stay tuned).</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Here’s a few big improvements for the NewsBlur website.
-]]>
     </summary>
     
   </entry>

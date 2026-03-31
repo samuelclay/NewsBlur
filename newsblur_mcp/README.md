@@ -78,7 +78,7 @@ newsblur --raw feeds list
 
 ## MCP Server
 
-This package also includes an MCP (Model Context Protocol) server for AI assistants. See [NewsBlur MCP](https://newsblur.com/features/mcp-cli) for details.
+This package also includes an MCP (Model Context Protocol) server for AI assistants. See [NewsBlur MCP Server](https://newsblur.com/features/mcp) for details.
 
 ## Requirements
 
@@ -89,4 +89,5 @@ This package also includes an MCP (Model Context Protocol) server for AI assista
 
 - [NewsBlur](https://newsblur.com)
 - [GitHub](https://github.com/samuelclay/NewsBlur)
-- [MCP & CLI Features](https://newsblur.com/features/mcp-cli)
+- [MCP Server](https://newsblur.com/features/mcp)
+- [CLI Tool](https://newsblur.com/features/cli)

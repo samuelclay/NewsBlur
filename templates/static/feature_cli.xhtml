@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-cli{% endblock %}
+{% block title %}CLI Tool - NewsBlur{% endblock %}
+{% block nav_title %}CLI Tool{% endblock %}
+{% block head %}
+    <meta name="description" content="Manage your NewsBlur from the terminal. Read feeds, search stories, train classifiers, and automate workflows with the NewsBlur CLI.">
+    <meta property="og:title" content="CLI Tool - NewsBlur">
+    <meta property="og:description" content="Manage your NewsBlur from the terminal. Read feeds, search stories, train classifiers, and automate workflows.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/mcp-cli.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="CLI Tool - NewsBlur">
+    <meta name="twitter:description" content="Manage your NewsBlur from the terminal. Read feeds, search stories, train classifiers, and automate workflows.">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/mcp-cli.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">Premium Archive</div>
+        <h1 class="NB-feature-detail-title">CLI Tool</h1>
+        <p class="NB-feature-detail-subtitle">Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and train classifiers. Pipe to jq, script your workflows, or just browse your feeds.</p>
+    </div>
+
+    <div class="NB-feature-crossbanner">
+        <img src="{{ MEDIA_URL }}embed/icons/nouns/mcp-agent.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">
+        Looking for the AI agent integration? <a href="{% url "feature-mcp" %}">See the MCP Server &rarr;</a>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-section">
+        <h2>Get started</h2>
+        <div class="NB-cli-steps">
+            <div class="NB-cli-step">
+                <h3>Install</h3>
+                <pre class="NB-feature-detail-code">pip install newsblur</pre>
+            </div>
+
+            <div class="NB-cli-step">
+                <h3>Login</h3>
+                <pre class="NB-feature-detail-code">newsblur auth login</pre>
+                <p class="NB-cli-step-note">Opens your browser to authorize via OAuth. Token stored locally at <code>~/.config/newsblur/</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Read stories</h2>
+        <p class="NB-feature-detail-subtitle">Get unread stories from feeds, folders, or everything at once.</p>
+        <pre class="NB-feature-detail-code">newsblur stories list                          # unread stories
+newsblur stories list --folder Tech --limit 5  # filter by folder
+newsblur stories search "machine learning"     # full-text search
+newsblur stories saved --tag research          # saved stories by tag
+newsblur stories infrequent                    # rarely-publishing feeds
+newsblur stories original 123:abc456           # fetch full article text</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Daily briefing</h2>
+        <p class="NB-feature-detail-subtitle">Get an AI-curated briefing with top stories, infrequent site gems, and long reads.</p>
+        <pre class="NB-feature-detail-code">newsblur briefing                              # today's briefing
+newsblur briefing --limit 1                    # just the latest
+newsblur briefing --json                       # structured output</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Manage feeds and folders</h2>
+        <p class="NB-feature-detail-subtitle">Subscribe, unsubscribe, and organize your feed list.</p>
+        <pre class="NB-feature-detail-code">newsblur feeds list                            # all subscriptions
+newsblur feeds folders                         # folder tree with counts
+newsblur feeds add https://example.com         # subscribe
+newsblur feeds add https://blog.com -f Tech    # subscribe into a folder
+newsblur feeds remove 42                       # unsubscribe
+newsblur feeds organize move_feed --feed-id 42 --from News --to Tech</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Take actions on stories</h2>
+        <p class="NB-feature-detail-subtitle">Save, share, and mark stories as read.</p>
+        <pre class="NB-feature-detail-code">newsblur save 123:abc --tag ai --tag research  # save with tags
+newsblur unsave 123:abc                        # remove from saved
+newsblur read --feed 42                        # mark feed as read
+newsblur share 123:abc --comment "Worth reading"</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Train intelligence</h2>
+        <p class="NB-feature-detail-subtitle">View and update your classifiers to like or dislike authors, tags, titles, and feeds.</p>
+        <pre class="NB-feature-detail-code">newsblur train get --feed 42                   # view current training
+newsblur train like --feed 42 --author "Name"  # train a like
+newsblur train dislike --feed 42 --tag sponsor # train a dislike</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Discover new feeds</h2>
+        <p class="NB-feature-detail-subtitle">Search by topic, find similar feeds, or browse what's trending.</p>
+        <pre class="NB-feature-detail-code">newsblur discover search "machine learning"    # search by topic
+newsblur discover similar --feed 42            # find similar feeds
+newsblur discover trending                     # trending feeds</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Scripting and automation</h2>
+        <p class="NB-feature-detail-subtitle">Every command supports <code>--json</code> for structured output and <code>--raw</code> for unformatted text. Pipe to jq, use in shell scripts, or connect to self-hosted instances.</p>
+        <pre class="NB-feature-detail-code"># Pipe to jq for structured processing
+newsblur stories list --json | jq '.items[].title'
+newsblur briefing --json | jq '.items[0].section_summaries'
+
+# Use with a self-hosted NewsBlur instance
+newsblur --server https://my-newsblur.example.com auth login
+
+# Script common workflows
+newsblur stories list --folder Tech --json | \
+  jq -r '.items[] | "\(.title) - \(.feed_title)"'</pre>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">How does authentication work?</h3>
+            <p class="NB-feature-detail-faq-a">Running <code>newsblur auth login</code> opens your browser for OAuth authorization, the same flow used by third-party apps. Your token is stored locally at <code>~/.config/newsblur/</code> and never sent anywhere except the NewsBlur API.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">CLI access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Can I use it with a self-hosted instance?</h3>
+            <p class="NB-feature-detail-faq-a">Yes. Pass <code>--server https://your-instance.com</code> to any command, or set the <code>NEWSBLUR_SERVER</code> environment variable.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What's the difference between CLI and MCP?</h3>
+            <p class="NB-feature-detail-faq-a">The CLI is a standalone terminal tool you run directly. The <a href="{% url "feature-mcp" %}">MCP server</a> lets AI agents like Claude and Codex connect to your NewsBlur on your behalf. Both use the same underlying API and have the same capabilities.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Want more CLI features?</h3>
+            <p class="NB-feature-detail-faq-a">Have an idea for a new command or workflow? Post it on the <a href="https://forum.newsblur.com">NewsBlur support forum</a> and we'll consider it for a future release.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

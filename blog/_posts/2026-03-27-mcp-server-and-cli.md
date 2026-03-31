@@ -55,7 +55,7 @@ For Claude Desktop, add this to your `claude_desktop_config.json`:
 }
 ```
 
-Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/feature/mcp-cli">MCP feature page</a>.
+Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.
 
 On first use, a browser window opens for you to log in and authorize access. Authentication uses OAuth 2.0, the same standard used by third-party apps. Your credentials are never stored on the MCP server, and you can revoke access at any time from your account settings.
 

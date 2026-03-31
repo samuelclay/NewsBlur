@@ -266,6 +266,145 @@
 
         </div>
       </li><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 27, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/27/mcp-server-and-cli/">
+              MCP Server &amp; CLI: Connect AI agents to your NewsBlur
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask “what did I miss?” and get a real answer, not a generic summary from a tool that doesn’t know what I care about. The problem has always been that AI assistants can’t see your feeds. They don’t know what you subscribe to, what you’ve trained as interesting, or what you saved last week. They’re working blind.</p>
+
+<p>Today I’m launching the NewsBlur MCP Server. MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible tool can read your feeds, manage your stories, train your classifiers, and organize your subscriptions. It’s your NewsBlur, accessible to your AI agent.</p>
+
+<!-- SCREENSHOT: Claude Code or Claude Desktop showing a conversation where the agent reads NewsBlur feeds and summarizes stories -->
+<p><img src="/assets/mcp-server-claude-conversation.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="22-tools-for-your-agent">22 tools for your agent</h3>
+
+<p>The MCP server exposes 22 tools that cover everything you do in NewsBlur:</p>
+
+<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
+
+<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
+
+<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
+
+<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
+
+<!-- SCREENSHOT: The MCP feature page on newsblur.com showing the 22 tools grid -->
+<p><img src="/assets/mcp-server-tools-grid.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="what-this-looks-like-in-practice">What this looks like in practice</h3>
+
+<p>You ask your agent: “What are my infrequent stories today?” It calls <code class="language-plaintext highlighter-rouge">newsblur_get_infrequent_stories</code> and comes back with a summary of the stories from your low-volume feeds, the ones that publish once a week and are easy to miss in a busy river.</p>
+
+<p>You say: “Save that Stratechery article and tag it ai, investing.” The agent calls <code class="language-plaintext highlighter-rouge">newsblur_save_story</code> with the right story hash and tags. Done.</p>
+
+<p>You ask: “What have I saved about climate policy this month?” It searches your saved stories and gives you a summary you can actually work with.</p>
+
+<p>The agent knows your feeds, your folders, your classifiers, your saved stories. It’s working with your actual NewsBlur data, not guessing.</p>
+
+<h3 id="connect-in-one-command">Connect in one command</h3>
+
+<p>For Claude Code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
+</code></pre></div></div>
+
+<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
+
+<p>On first use, a browser window opens for you to log in and authorize access. Authentication uses OAuth 2.0, the same standard used by third-party apps. Your credentials are never stored on the MCP server, and you can revoke access at any time from your account settings.</p>
+
+<h3 id="command-line-interface">Command-line interface</h3>
+
+<p>Everything the MCP server can do is also available from your terminal. Install with pip:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install newsblur
+</code></pre></div></div>
+
+<p>Then log in and start using it:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth login
+</code></pre></div></div>
+
+<p><strong>Read stories</strong> from feeds, folders, or everything at once:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur stories list                          <span class="c"># unread stories</span>
+newsblur stories list <span class="nt">--folder</span> Tech <span class="nt">--limit</span> 5  <span class="c"># filter by folder</span>
+newsblur stories search <span class="s2">"machine learning"</span>     <span class="c"># full-text search</span>
+newsblur stories saved <span class="nt">--tag</span> research          <span class="c"># saved stories by tag</span>
+newsblur stories infrequent                    <span class="c"># rarely-publishing feeds</span>
+newsblur stories original 123:abc456           <span class="c"># fetch full article text</span>
+</code></pre></div></div>
+
+<p><strong>Get your daily briefing</strong> with AI-curated summaries:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur briefing                              <span class="c"># today's briefing</span>
+newsblur briefing <span class="nt">--limit</span> 1                    <span class="c"># just the latest</span>
+newsblur briefing <span class="nt">--json</span>                       <span class="c"># structured output</span>
+</code></pre></div></div>
+
+<p><strong>Manage feeds and folders:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur feeds list                            <span class="c"># all subscriptions</span>
+newsblur feeds folders                         <span class="c"># folder tree with counts</span>
+newsblur feeds add https://example.com         <span class="c"># subscribe</span>
+newsblur feeds add https://blog.com <span class="nt">-f</span> Tech    <span class="c"># subscribe into a folder</span>
+newsblur feeds remove 42                       <span class="c"># unsubscribe</span>
+newsblur feeds organize move_feed <span class="nt">--feed-id</span> 42 <span class="nt">--from</span> News <span class="nt">--to</span> Tech
+</code></pre></div></div>
+
+<p><strong>Take actions on stories:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur save 123:abc <span class="nt">--tag</span> ai <span class="nt">--tag</span> research  <span class="c"># save with tags</span>
+newsblur unsave 123:abc                        <span class="c"># remove from saved</span>
+newsblur <span class="nb">read</span> <span class="nt">--feed</span> 42                        <span class="c"># mark feed as read</span>
+newsblur share 123:abc <span class="nt">--comment</span> <span class="s2">"Worth reading"</span>
+</code></pre></div></div>
+
+<p><strong>Train your intelligence classifiers:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur train get <span class="nt">--feed</span> 42                   <span class="c"># view current training</span>
+newsblur train like <span class="nt">--feed</span> 42 <span class="nt">--author</span> <span class="s2">"Name"</span>  <span class="c"># train a like</span>
+newsblur train dislike <span class="nt">--feed</span> 42 <span class="nt">--tag</span> sponsor <span class="c"># train a dislike</span>
+</code></pre></div></div>
+
+<p><strong>Discover new feeds:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur discover search <span class="s2">"machine learning"</span>    <span class="c"># search by topic</span>
+newsblur discover similar <span class="nt">--feed</span> 42            <span class="c"># find similar feeds</span>
+newsblur discover trending                     <span class="c"># trending feeds</span>
+</code></pre></div></div>
+
+<p>Every command supports <code class="language-plaintext highlighter-rouge">--json</code> for structured output you can pipe to jq or use in scripts, and <code class="language-plaintext highlighter-rouge">--raw</code> for unformatted text. There’s also a global <code class="language-plaintext highlighter-rouge">--server</code> flag for self-hosted NewsBlur instances:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur <span class="nt">--server</span> https://my-newsblur.example.com auth login
+newsblur briefing <span class="nt">--json</span> | jq <span class="s1">'.items[0].section_summaries'</span>
+</code></pre></div></div>
+
+<!-- SCREENSHOT: Terminal showing newsblur CLI output, maybe `newsblur stories list` with formatted story output -->
+<p><img src="/assets/mcp-server-cli-output.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The MCP server and CLI are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. Setup takes one command and one browser authorization.</p>
+
+<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Mar 26, 2026</span>
           <h3>
             <a class="post-link" href="/2026/03/26/refer-and-gift/">
@@ -804,63 +943,6 @@
 <p>Building the discovery page meant curating a lot of feeds. I wrote management commands to discover and verify channels, subreddits, podcasts, and newsletters from real sources. The collection includes over 2,000 YouTube channels, 6,600 subreddits, 7,300 newsletters, 32,000 podcasts, and 14,000 RSS feeds. Over 63,000 feeds in total, all real, verified, and categorized.</p>
 
 <p>The Add + Discover Sites page is available now on the web for all users. If you have feedback or ideas for new categories, platforms, or features, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 2, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/03/02/mini-media-player/">
-              A mini media player for podcasts, audio, and video
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.</p>
-
-<p>So I built a persistent mini media player. It sits at the bottom of your screen and handles audio, video, and YouTube from any story. Play something and it stays with you as you navigate feeds, open folders, or scroll through stories.</p>
-
-<p><img src="/assets/mini-player-feed-list.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>When you open a story that contains audio, video, or a YouTube embed, you’ll see overlay buttons right on the media element: <strong>Play in Mini Media Player</strong>, <strong>Play Next</strong>, and <strong>Play Last</strong>. Click any of them and the mini player appears at the bottom of the screen. If you click the native play button on an audio or video element, it hands off to the mini player automatically.</p>
-
-<p><img src="/assets/mini-player-podcast.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The player has a three-row layout. The top row shows the feed favicon, feed name, and story title (click the title to scroll back to the story). The middle row is a full-width scrubber so you can seek precisely. The bottom row has playback controls: skip back, play/pause, skip forward, a time display, playback speed, and a volume slider that appears on hover.</p>
-
-<h3 id="build-a-queue">Build a queue</h3>
-
-<p>The real power is the queue. As you’re reading through stories, you can add media to your queue with “Play Next” (inserts at the top) or “Play Last” (appends to the end). The queue shows up right below the player with a count of upcoming items. Drag items to reorder them, or remove items you’ve changed your mind about. When the current item finishes, the next one starts automatically.</p>
-
-<p><img src="/assets/mini-player-youtube.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="playback-history">Playback history</h3>
-
-<p>Switch from the “Up Next” tab to the “History” tab to see your last 10 played items. Each entry shows where you left off, so you can pick up a podcast episode right where you stopped. Click any history item to resume it.</p>
-
-<h3 id="settings">Settings</h3>
-
-<p>Click the gear icon in the player to customize your experience:</p>
-
-<p><img src="/assets/mini-player-settings.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<ul>
-  <li><strong>Skip back/forward</strong>: Choose how far to jump (5s, 10s, 15s, 30s, or 60s in each direction)</li>
-  <li><strong>Auto-play</strong>: Automatically play the next queued item when the current one finishes (on by default)</li>
-  <li><strong>Resume position</strong>: Remember where you left off in each episode (on by default)</li>
-  <li><strong>Show on load</strong>: Restore the player when you reload NewsBlur, so you can pick up right where you left off (on by default)</li>
-</ul>
-
-<h3 id="synced-across-reloads">Synced across reloads</h3>
-
-<p>Your playback state, queue, history, and settings are all saved to your NewsBlur account. Reload the page and the player comes back with your queue intact and the current episode paused where you left it. Position data syncs in real time via WebSocket so there’s no lag.</p>
-
-<h3 id="playback-speed">Playback speed</h3>
-
-<p>Click the speed indicator (next to the time display) to cycle through speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x, and 3x. Your speed preference is saved and applied to the next item in your queue automatically.</p>
-
-<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

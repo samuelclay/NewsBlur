@@ -81,6 +81,63 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 2, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/03/02/mini-media-player/">
+              A mini media player for podcasts, audio, and video
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.</p>
+
+<p>So I built a persistent mini media player. It sits at the bottom of your screen and handles audio, video, and YouTube from any story. Play something and it stays with you as you navigate feeds, open folders, or scroll through stories.</p>
+
+<p><img src="/assets/mini-player-feed-list.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>When you open a story that contains audio, video, or a YouTube embed, you’ll see overlay buttons right on the media element: <strong>Play in Mini Media Player</strong>, <strong>Play Next</strong>, and <strong>Play Last</strong>. Click any of them and the mini player appears at the bottom of the screen. If you click the native play button on an audio or video element, it hands off to the mini player automatically.</p>
+
+<p><img src="/assets/mini-player-podcast.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The player has a three-row layout. The top row shows the feed favicon, feed name, and story title (click the title to scroll back to the story). The middle row is a full-width scrubber so you can seek precisely. The bottom row has playback controls: skip back, play/pause, skip forward, a time display, playback speed, and a volume slider that appears on hover.</p>
+
+<h3 id="build-a-queue">Build a queue</h3>
+
+<p>The real power is the queue. As you’re reading through stories, you can add media to your queue with “Play Next” (inserts at the top) or “Play Last” (appends to the end). The queue shows up right below the player with a count of upcoming items. Drag items to reorder them, or remove items you’ve changed your mind about. When the current item finishes, the next one starts automatically.</p>
+
+<p><img src="/assets/mini-player-youtube.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="playback-history">Playback history</h3>
+
+<p>Switch from the “Up Next” tab to the “History” tab to see your last 10 played items. Each entry shows where you left off, so you can pick up a podcast episode right where you stopped. Click any history item to resume it.</p>
+
+<h3 id="settings">Settings</h3>
+
+<p>Click the gear icon in the player to customize your experience:</p>
+
+<p><img src="/assets/mini-player-settings.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Skip back/forward</strong>: Choose how far to jump (5s, 10s, 15s, 30s, or 60s in each direction)</li>
+  <li><strong>Auto-play</strong>: Automatically play the next queued item when the current one finishes (on by default)</li>
+  <li><strong>Resume position</strong>: Remember where you left off in each episode (on by default)</li>
+  <li><strong>Show on load</strong>: Restore the player when you reload NewsBlur, so you can pick up right where you left off (on by default)</li>
+</ul>
+
+<h3 id="synced-across-reloads">Synced across reloads</h3>
+
+<p>Your playback state, queue, history, and settings are all saved to your NewsBlur account. Reload the page and the player comes back with your queue intact and the current episode paused where you left it. Position data syncs in real time via WebSocket so there’s no lag.</p>
+
+<h3 id="playback-speed">Playback speed</h3>
+
+<p>Click the speed indicator (next to the time display) to cycle through speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x, and 3x. Your speed preference is saved and applied to the next item in your queue automatically.</p>
+
+<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Feb 2, 2026</span>
           <h3>
             <a class="post-link" href="/2026/02/02/global-and-folder-scoped-intelligence-training/">
@@ -580,38 +637,6 @@
 <p>The date filters work across all of NewsBlur’s views - individual feeds, folders, saved stories, and the river of news. The filters don’t persist between feeds, so you can set different date ranges for different feeds without the settings interfering with each other.</p>
 
 <p>If you have any feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Feb 2, 2025</span>
-          <h3>
-            <a class="post-link" href="/2025/02/02/discover-related-stories-and-sites/">
-              Discover related stories and sites
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.</p>
-
-<p>Second I’m introducing Discover Sites, which is available at the top of every feed and folder to everybody, both free and premium users. Having tried all of the competing discover sites features, I built the popover dialog that has all the features I wanted. It’s an infinite scroll of related sites, showing the most recent five stories, formatted exactly as your story titles are personally styled. You can read stories from unsubscribed feeds and easily subscribe to them while scrolling through the discover stories dialog.</p>
-
-<p><img src="/assets/discover-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Here’s a set of features I’ve been wanting to build since the very first days of NewsBlur in 2009. I built prototypes of this feature using a few of the modern text tools at the time: nltk (the natural language toolkit), support vector machines, and LDA (Latent Dirichlet Allocation) to group stories by topic. It didn’t work, or it was too slow, and even then not accurate enough. I read the tea leaves and could tell a better tool would come out eventually that was basically a drop-in classifier and topic grouper. Out came word embeddings (word2vec initially, then <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence transformers</a>). And now those transformers are available basically for free.</p>
-
-<p><img src="/assets/discover-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.</p>
-
-<p>And it’s important to note that none of the data presented in the Discover Stories or Discover Sites dialog is trained on your personal data, like feeds that other people subscribe to in relation to any particular site. All of the data is extracted and grouped by the content of the RSS feed’s title, description, and the titles of the first few stories.</p>
-
-<p><img src="/assets/discover-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.</p>
-
-<p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
-
-<p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
 
         </div>
       </li></ul>

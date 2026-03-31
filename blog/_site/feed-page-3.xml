@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-30T15:54:36-04:00</updated>
+  <updated>2026-03-30T23:36:41-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,44 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Last day to back Turn Touch: NewsBlur’s beautiful remote</title>
+    <link href="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/" rel="alternate" type="text/html" title="Last day to back Turn Touch: NewsBlur’s beautiful remote" />
+    <published>2017-03-09T05:00:33-05:00</published>
+    <updated>2017-03-09T05:00:33-05:00</updated>
+    <id>https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/">
+      <![CDATA[<p><strong>This is it, the final countdown!</strong></p>
+
+<p>Tonight at 8pm PT the <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">Turn Touch campaign</a> will end and the project will be successfully funded. Judging from the $50,000 raised already, I think Turn Touch has a long life ahead of it.</p>
+
+<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/animated-newsblur-live.gif" alt="" /></a></p>
+
+<h5 id="watch-the-2-minute-demo-on-vimeo"><a href="https://vimeo.com/207556527">Watch the 2 minute demo on Vimeo</a></h5>
+
+<p>Apart from being the only remote control in the world built for a news reader, Turn Touch is the handiest shortcut for your lights, music, and apps. It’s basically a customizable remote with a knack for smart homes.</p>
+
+<p>Supporting Turn Touch is a way of supporting NewsBlur. They are part of the same suite of productivity tools made by the <a href="https://twitter.com/samuelclay">same person</a>. By buying a Turn Touch and backing this Kickstarter, you’re continuing to fund the development of great tools.</p>
+
+<p>So please <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">head to Kickstarter and buy yourself the $59 mahogany remote</a>, even if you do not yet have any smart home devices. This remote is the easiest way to start connecting your home.</p>
+
+<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/padauk-book.jpg" alt="" /></a></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="turntouch" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is it, the final countdown!
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur</title>
@@ -1009,44 +1047,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[The beauty of NewsBlur is that you can start off with only a handful of subscriptions and naturally work your way up. This is actually the reason that free accounts cut off at 64 sites. When I started building NewsBlur in 2009 I only subscribed to 42 sites. Nowadays it’s...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">The iOS app gets search and saved story tagging</title>
-    <link href="https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging/" rel="alternate" type="text/html" title="The iOS app gets search and saved story tagging" />
-    <published>2014-12-15T12:01:23-05:00</published>
-    <updated>2014-12-15T12:01:23-05:00</updated>
-    <id>https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/12/15/the-ios-app-gets-search-and-saved-story-tagging/">
-      <![CDATA[<p>This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading later.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20tagging.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20search.png" alt="" /></p>
-
-<p>Here’s the full list of new features:</p>
-
-<ul>
-  <li>Search feeds and folders.</li>
-  <li>Fixing rotation issues so you can watch a video and rotate without losing position.</li>
-  <li>Saved story tagging: add and remove tags with a handy tagging popover.</li>
-  <li>Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc).</li>
-  <li>Progress bar for the Story view when loading a story using the in-app browser.</li>
-  <li>Further UI cleanups and memory fixes/speedups for iOS 8.</li>
-</ul>
-
-<p>It’s a <a href="https://www.newsblur.com/ios">free download</a> from the App Store. And if you are enjoying the app, please leave a 5 star review on the App Store. Every positive review, tweet, and share on Facebook helps.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading...]]>
     </summary>
     
   </entry>

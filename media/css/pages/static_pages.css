@@ -871,7 +871,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved,
 .NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
-.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
+.NB-static-feature-mcp .NB-feature-detail-crosslink-mcp,
+.NB-static-feature-cli .NB-feature-detail-crosslink-cli {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -883,7 +884,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
 .NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
-.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
+.NB-static-feature-mcp .NB-feature-detail-crosslink-mcp .NB-feature-detail-crosslink-name,
+.NB-static-feature-cli .NB-feature-detail-crosslink-cli .NB-feature-detail-crosslink-name {
     color: #8a6d1b;
 }
 
@@ -1118,6 +1120,43 @@ pre.NB-feature-detail-code {
     font-size: 14px;
     color: rgba(45, 38, 26, 0.5);
     font-style: italic;
+}
+
+/* Cross-banner linking between related feature pages */
+.NB-feature-crossbanner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    margin-bottom: 32px;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(45, 38, 26, 0.1);
+    border-radius: 8px;
+    font-size: 15px;
+    color: rgba(45, 38, 26, 0.7);
+}
+
+.NB-feature-crossbanner .NB-splash-dropdown-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.NB-feature-crossbanner a {
+    color: #8a6d1b;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-feature-crossbanner a:hover {
+    text-decoration: underline;
+}
+
+/* CLI commands sections */
+.NB-cli-commands-section .NB-feature-detail-subtitle {
+    margin: 0 0 16px 0;
+    max-width: none;
+    text-align: left;
 }
 
 /* CLI Section */
@@ -3773,7 +3812,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved,
 .NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
-.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
+.NB-dark.NB-static-feature-mcp .NB-feature-detail-crosslink-mcp,
+.NB-dark.NB-static-feature-cli .NB-feature-detail-crosslink-cli {
     background: rgba(251, 219, 155, 0.12);
 }
 
@@ -3785,7 +3825,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
-.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
+.NB-dark.NB-static-feature-mcp .NB-feature-detail-crosslink-mcp .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-cli .NB-feature-detail-crosslink-cli .NB-feature-detail-crosslink-name {
     color: #FBDB9B;
 }
 
@@ -4507,6 +4548,17 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark .NB-cli-step-note code {
     background: #2a2a2a;
     color: #c0c0c0;
+}
+
+/* Cross-banner - dark mode */
+.NB-dark .NB-feature-crossbanner {
+    background: rgba(251, 219, 155, 0.08);
+    border-color: rgba(251, 219, 155, 0.15);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-dark .NB-feature-crossbanner a {
+    color: #FBDB9B;
 }
 
 /* Feature detail screenshots - dark mode */

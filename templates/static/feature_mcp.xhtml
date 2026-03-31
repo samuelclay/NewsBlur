@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-mcp{% endblock %}
+{% block title %}MCP Server - NewsBlur{% endblock %}
+{% block nav_title %}MCP Server{% endblock %}
+{% block head %}
+    <meta name="description" content="Connect AI agents to NewsBlur via MCP server. Manage feeds, triage stories, and train classifiers from Claude Code, Codex, or any MCP-compatible tool.">
+    <meta property="og:title" content="MCP Server - NewsBlur">
+    <meta property="og:description" content="Connect AI agents to NewsBlur. Manage feeds, triage stories, and train classifiers from Claude Code, Codex, or any MCP-compatible tool.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/mcp-cli.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="MCP Server - NewsBlur">
+    <meta name="twitter:description" content="Connect AI agents to NewsBlur. Manage feeds, triage stories, and train classifiers from Claude Code, Codex, or any MCP-compatible tool.">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/mcp-cli.png">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">Premium Archive</div>
+        <h1 class="NB-feature-detail-title">MCP Server</h1>
+        <p class="NB-feature-detail-subtitle">Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool.</p>
+    </div>
+
+    <div class="NB-feature-crossbanner">
+        <img src="{{ MEDIA_URL }}embed/icons/nouns/cli-terminal.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-cyan">
+        Looking for the command-line tool? <a href="{% url "feature-cli" %}">See the NewsBlur CLI &rarr;</a>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>What your agent can do</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step"><strong>Read your feeds</strong> &mdash; Get unread stories from any feed or folder, list all your folders and feeds, search across all subscriptions, retrieve saved stories by tag</li>
+            <li class="NB-feature-detail-step"><strong>Daily briefing</strong> &mdash; Get an AI-curated briefing with top stories, infrequent site gems, long reads, and stories matching your classifiers</li>
+            <li class="NB-feature-detail-step"><strong>Take action</strong> &mdash; Mark stories as read, save stories with tags and notes, subscribe to new feeds, share stories to your blurblog</li>
+            <li class="NB-feature-detail-step"><strong>Train intelligence</strong> &mdash; View and update classifiers to like or dislike authors, tags, titles, and feeds</li>
+            <li class="NB-feature-detail-step"><strong>Discover</strong> &mdash; Find new feeds by topic, see trending feeds, find feeds similar to ones you follow</li>
+            <li class="NB-feature-detail-step"><strong>Use prompt templates</strong> &mdash; Pre-built workflows for inbox triage, topic research, and feed health audits</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>22 tools available</h2>
+        <div class="NB-mcp-tools-grid">
+            <div class="NB-mcp-tools-column">
+                <h3 class="NB-mcp-tools-column-heading" data-category="reading">Reading</h3>
+                <ul class="NB-mcp-tools-list">
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_list_feeds</code>
+                        <span class="NB-mcp-tool-desc">All feeds with folders and unread counts</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_stories</code>
+                        <span class="NB-mcp-tool-desc">Load stories from feeds, folders, or all</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_saved_stories</code>
+                        <span class="NB-mcp-tool-desc">Saved stories by tag</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_search_stories</code>
+                        <span class="NB-mcp-tool-desc">Full-text search</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_original_text</code>
+                        <span class="NB-mcp-tool-desc">Full article from source</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_feed_info</code>
+                        <span class="NB-mcp-tool-desc">Feed metadata and stats</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_account_info</code>
+                        <span class="NB-mcp-tool-desc">Account and tier info</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_daily_briefing</code>
+                        <span class="NB-mcp-tool-desc">AI-curated daily briefing with sections</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_get_infrequent_stories</code>
+                        <span class="NB-mcp-tool-desc">Stories from rarely-publishing feeds</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_list_folders</code>
+                        <span class="NB-mcp-tool-desc">Folder tree with unread counts</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="reading">
+                        <code>newsblur_list_folders_with_feeds</code>
+                        <span class="NB-mcp-tool-desc">Complete folder-feed hierarchy</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="NB-mcp-tools-column">
+                <h3 class="NB-mcp-tools-column-heading" data-category="actions">Actions</h3>
+                <ul class="NB-mcp-tools-list">
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_mark_stories_read</code>
+                        <span class="NB-mcp-tool-desc">Mark read by hash, feed, or folder</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_save_story</code>
+                        <span class="NB-mcp-tool-desc">Save with tags, notes, highlights</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_unsave_story</code>
+                        <span class="NB-mcp-tool-desc">Remove from saved</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_subscribe</code>
+                        <span class="NB-mcp-tool-desc">Subscribe by URL</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_unsubscribe</code>
+                        <span class="NB-mcp-tool-desc">Remove subscription</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_organize_feed</code>
+                        <span class="NB-mcp-tool-desc">Move and rename feeds</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="actions">
+                        <code>newsblur_share_story</code>
+                        <span class="NB-mcp-tool-desc">Share to blurblog</span>
+                    </li>
+                </ul>
+                <h3 class="NB-mcp-tools-column-heading NB-mcp-tools-column-heading-intelligence" data-category="intelligence">Intelligence &amp; Discovery</h3>
+                <ul class="NB-mcp-tools-list">
+                    <li class="NB-mcp-tool" data-category="intelligence">
+                        <code>newsblur_train_classifier</code>
+                        <span class="NB-mcp-tool-desc">Train like/dislike by author, tag, title, feed</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="intelligence">
+                        <code>newsblur_get_classifiers</code>
+                        <span class="NB-mcp-tool-desc">View all training data</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="intelligence">
+                        <code>newsblur_discover_feeds</code>
+                        <span class="NB-mcp-tool-desc">Search and trending feeds</span>
+                    </li>
+                    <li class="NB-mcp-tool" data-category="intelligence">
+                        <code>newsblur_manage_notifications</code>
+                        <span class="NB-mcp-tool-desc">Per-feed alerts</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how NB-mcp-examples-section">
+        <h2>See it in action</h2>
+        <p class="NB-feature-detail-examples-intro">Real examples of what it looks like when an AI agent connects to your NewsBlur.</p>
+
+        <div class="NB-mcp-example">
+            <div class="NB-mcp-example-prompt">"What are my infrequent stories today?"</div>
+            <div class="NB-mcp-example-tool">newsblur_get_infrequent_stories</div>
+            <div class="NB-mcp-example-response">
+                <p><strong>Stratechery</strong> &mdash; <em>Agents Over Bubbles</em><br>
+                Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in a bubble.</p>
+                <p><strong>furbo.org</strong> &mdash; <em>Your Mac and a Canon Printer</em><br>
+                Craig Hockenberry deep-dives into why Canon printers constantly go "Offline" on Mac &mdash; broken Bonjour/mDNS firmware &mdash; and presents a permanent workaround.</p>
+                <p><strong>smitten kitchen</strong> &mdash; <em>Black Bean Confetti Salad 2.0</em><br>
+                Deb's spring salad refresh, inspired by a Paris trip where the magnolias were blooming.</p>
+                <p><strong>David Smith</strong> &mdash; <em>Display Zoom Statistics</em><br>
+                Only 1.9% of Widgetsmith users use Display Zoom &mdash; way lower than expected. Helped him decide not to support it for clear widget backgrounds.</p>
+            </div>
+        </div>
+
+        <div class="NB-mcp-example">
+            <div class="NB-mcp-example-prompt">"What are the top stories from my Hardware folder?"</div>
+            <div class="NB-mcp-example-tool">newsblur_get_stories <span class="NB-mcp-example-tool-args">folder: "Hardware"</span></div>
+            <div class="NB-mcp-example-response">
+                <p><strong>Adafruit</strong> &mdash; <em>Ryugu Asteroid Samples Contain All DNA and RNA Building Blocks</em><br>
+                All five nucleobases detected in asteroid Ryugu samples, reinforcing the theory that carbonaceous asteroids seeded early Earth's prebiotic chemistry.</p>
+                <p><strong>Hackaday</strong> &mdash; <em>Hacking The System In A Moral Panic</em><br>
+                Washington State bill HB2320 would require 3D printers to phone home and refuse to print known firearms. Why it's technically infeasible.</p>
+                <p><strong>Adafruit</strong> &mdash; <em>Atari 2600 BASIC Programming Limitations</em><br>
+                Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99.</p>
+                <p><strong>Adafruit</strong> &mdash; <em>FPGA Replacement for Nintendo Arcade PPU</em><br>
+                A cheap, clock-accurate FPGA replacement for the Nintendo arcade Picture Processing Unit on a 2-layer PCB.</p>
+            </div>
+        </div>
+
+        <div class="NB-mcp-example">
+            <div class="NB-mcp-example-prompt">"Save that Stratechery article and tag it ai, investing"</div>
+            <div class="NB-mcp-example-tool">newsblur_save_story <span class="NB-mcp-example-tool-args">tags: ["ai", "investing"]</span></div>
+            <div class="NB-mcp-example-response">
+                <p>Saved <strong>Agents Over Bubbles</strong> by Ben Thompson with tags <code>ai</code> and <code>investing</code>. You can find it in your saved stories any time.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how NB-mcp-setup-section">
+        <h2>Connect in one command</h2>
+
+        <div class="NB-mcp-setup-options">
+            <div class="NB-mcp-setup-option">
+                <h3>Claude Code</h3>
+                <pre class="NB-feature-detail-code">claude mcp add --transport http newsblur https://newsblur.com/mcp/</pre>
+            </div>
+
+            <div class="NB-mcp-setup-option">
+                <h3>Claude Desktop</h3>
+                <p>Add to <code>claude_desktop_config.json</code> under <code>mcpServers</code>:</p>
+                <pre class="NB-feature-detail-code">{
+  "newsblur": {
+    "type": "http",
+    "url": "https://newsblur.com/mcp/"
+  }
+}</pre>
+            </div>
+
+            <div class="NB-mcp-setup-option">
+                <h3>Codex</h3>
+                <p>Add to <code>~/.codex/config.toml</code>:</p>
+                <pre class="NB-feature-detail-code">[mcp_servers.newsblur]
+url = "https://newsblur.com/mcp"</pre>
+            </div>
+
+            <div class="NB-mcp-setup-option">
+                <h3>Cursor</h3>
+                <p>Add to <code>.cursor/mcp.json</code>:</p>
+                <pre class="NB-feature-detail-code">{
+  "mcpServers": {
+    "newsblur": {
+      "type": "http",
+      "url": "https://newsblur.com/mcp/"
+    }
+  }
+}</pre>
+            </div>
+
+            <div class="NB-mcp-setup-option">
+                <h3>Windsurf</h3>
+                <p>Add to <code>~/.codeium/windsurf/mcp_config.json</code>:</p>
+                <pre class="NB-feature-detail-code">{
+  "mcpServers": {
+    "newsblur": {
+      "serverUrl": "https://newsblur.com/mcp/"
+    }
+  }
+}</pre>
+            </div>
+
+            <div class="NB-mcp-setup-option">
+                <h3>Any MCP client</h3>
+                <p>Point your client at the streamable HTTP endpoint:</p>
+                <pre class="NB-feature-detail-code">https://newsblur.com/mcp/</pre>
+                <p>Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically.</p>
+            </div>
+        </div>
+
+        <p class="NB-mcp-setup-note">On first use, a browser window opens for you to log in and authorize access.</p>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What is MCP?</h3>
+            <p class="NB-feature-detail-faq-a">The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets Claude, Codex, and other AI assistants interact with NewsBlur on your behalf.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What can an AI agent do with my NewsBlur?</h3>
+            <p class="NB-feature-detail-faq-a">Anything you can do: read stories, save and tag articles, mark stories as read, train your intelligence filters, subscribe to new feeds, and search your archive. Common workflows include daily briefings, inbox triage, and research across saved stories.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Is my data safe?</h3>
+            <p class="NB-feature-detail-faq-a">The MCP server uses OAuth, the same authentication used by third-party apps. You authorize access through your browser, and you can revoke access at any time. The MCP server never stores your credentials.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">What plan do I need?</h3>
+            <p class="NB-feature-detail-faq-a">MCP server access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription.</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">Want more MCP features?</h3>
+            <p class="NB-feature-detail-faq-a">Have an idea for a new tool or workflow? Post it on the <a href="https://forum.newsblur.com">NewsBlur support forum</a> and we'll consider it for a future release.</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

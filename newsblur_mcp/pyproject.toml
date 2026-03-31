@@ -29,7 +29,7 @@ dependencies = [
 newsblur = "newsblur_mcp.cli:app"
 
 [project.urls]
-Homepage = "https://newsblur.com/features/mcp-cli"
+Homepage = "https://newsblur.com/features/cli"
 Repository = "https://github.com/samuelclay/NewsBlur"
 Issues = "https://github.com/samuelclay/NewsBlur/issues"
 
