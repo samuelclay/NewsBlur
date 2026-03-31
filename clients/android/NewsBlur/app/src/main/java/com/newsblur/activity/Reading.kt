@@ -679,6 +679,9 @@ abstract class Reading :
      * load is not needed and all latches are tripped.
      */
     private fun checkStoryCount(position: Int) {
+        if (fs?.isDailyBriefing == true) {
+            return
+        }
         storyCounts?.let { count ->
             if (AppConstants.VERBOSE_LOG) {
                 Log.d(this.javaClass.name, String.format("story %d of %d selected, stopLoad: %b", position, count, stopLoading))
@@ -714,6 +717,9 @@ abstract class Reading :
     }
 
     private fun triggerRefresh(desiredStoryCount: Int) {
+        if (fs?.isDailyBriefing == true) {
+            return
+        }
         if (!stopLoading) {
             val gotSome =
                 fs?.let { syncServiceState.requestMoreForFeed(it, desiredStoryCount, storyCounts) }

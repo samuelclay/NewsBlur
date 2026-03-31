@@ -573,6 +573,25 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void prepareOrderedReadingSession(@NonNull FeedSet fs, @NonNull List<String> storyHashes) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
+                for (String storyHash : storyHashes) {
+                    if (TextUtils.isEmpty(storyHash)) continue;
+                    ContentValues sessionHashValues = new ContentValues();
+                    sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, storyHash);
+                    dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
+                }
+                setSessionFeedSet(fs);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
     private void insertSingleStoryExtSync(@NonNull Story story) {
         // pick a thumbnail for the story
         story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
@@ -918,6 +937,8 @@ public class BlurDatabaseHelper {
         StringBuilder feedSelection = null;
         if (fs.isAllNormal()) {
             // a null selection is fine for all stories
+        } else if (fs.isDailyBriefing()) {
+            feedSelection = new StringBuilder(DatabaseConstants.STORY_HASH + " IN (SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")");
         } else if (fs.getMultipleFeeds() != null) {
             feedSelection = new StringBuilder(DatabaseConstants.STORY_FEED_ID + " IN ( ");
             feedSelection.append(TextUtils.join(",", fs.getMultipleFeeds()));
@@ -942,6 +963,19 @@ public class BlurDatabaseHelper {
     public int getUnreadCount(@NonNull FeedSet fs, @NonNull StateFilter stateFilter) {
         // if reading in starred-only mode, there are no unreads, since stories vended as starred are never unread
         if (fs.isFilterSaved()) return 0;
+        if (fs.isDailyBriefing()) {
+            String q = "SELECT COUNT(*) FROM " + DatabaseConstants.STORY_TABLE +
+                    " WHERE " + DatabaseConstants.STORY_READ + " = 0" +
+                    " AND " + DatabaseConstants.STORY_HASH + " IN (" +
+                    "SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH +
+                    " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")";
+            Cursor c = dbRO.rawQuery(q, null);
+            try {
+                return c.moveToFirst() ? c.getInt(0) : 0;
+            } finally {
+                c.close();
+            }
+        }
         if (fs.isAllNormal()) {
             return getFeedsUnreadCount(stateFilter, null, null);
         } else if (fs.isAllSocial()) {
@@ -1358,6 +1392,10 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
+        if (fs.isDailyBriefing()) {
+            return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
+        }
+
         StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
 
         if (fs.isAllRead()) {
@@ -1385,6 +1423,9 @@ public class BlurDatabaseHelper {
      * fetched via the API and used to actually select story data when rendering story lists.
      */
     public void prepareReadingSession(@NonNull FeedSet fs, @NonNull StateFilter stateFilter, @NonNull ReadFilter readFilter) {
+        if (fs.isDailyBriefing()) {
+            return;
+        }
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table
         StringBuilder sel = new StringBuilder();
         // any selection args that need to be used within the inner select statement

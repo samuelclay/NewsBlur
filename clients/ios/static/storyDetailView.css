@@ -644,6 +644,46 @@ body.NB-iphone {
     display: block;
 }
 
+.NB-story .NB-briefing-summary table {
+    display: table;
+    width: 100% !important;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary tbody {
+    display: table-row-group;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary tr {
+    display: table-row;
+    clear: none;
+    overflow: visible;
+}
+
+.NB-story .NB-briefing-summary td {
+    display: table-cell;
+    clear: none;
+    overflow: visible;
+    vertical-align: top;
+}
+
+.NB-story .NB-briefing-summary td:first-child {
+    width: 22px !important;
+}
+
+.NB-story .NB-briefing-summary img.NB-briefing-inline-favicon {
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 4px 4px 0 0;
+    position: relative;
+    top: 2px;
+    vertical-align: top;
+}
+
 .NB-story h1, 
 .NB-story h2,
 .NB-story h3,
@@ -1538,4 +1578,155 @@ a.NB-show-profile {
     top: -51px;
     left: 0;
     background-size: 25px 50px;
+}
+
+.NB-story-cluster-detail {
+    max-width: 700px;
+    margin: 0 0 18px;
+    border-top: 1px solid #D6D6D6;
+    border-bottom: 1px solid #D6D6D6;
+    background-color: #F8F8F8;
+}
+
+.NB-story-cluster-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    margin: 0 16px;
+    border-bottom: 1px solid #E4E4E4;
+}
+
+.NB-story-cluster-detail-title {
+    color: #666666;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.NB-clustering-detail-upgrade-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #E9F3FF;
+    color: #1C5DAA;
+    font-size: 11px;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.NB-story-cluster-detail-item,
+.NB-cluster-locked-upsell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 12px 0 32px;
+    text-decoration: none;
+    border-top: 1px solid #E9E9E9;
+    color: #202020;
+}
+
+.NB-story-cluster-detail-item:first-of-type {
+    border-top: 0;
+}
+
+.NB-cluster-feed-border-outer,
+.NB-cluster-feed-border-inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+}
+
+.NB-cluster-feed-border-outer {
+    width: 4px;
+}
+
+.NB-cluster-feed-border-inner {
+    left: 4px;
+    width: 4px;
+}
+
+.NB-cluster-sentiment {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    display: block;
+    object-fit: contain;
+}
+
+.NB-cluster-sentiment.NB-cluster-sentiment-unread {
+    width: 10px;
+    height: 10px;
+}
+
+.NB-cluster-detail-favicon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex: 0 0 auto;
+    background-color: rgba(0, 0, 0, .08);
+}
+
+.NB-cluster-detail-favicon-empty {
+    display: inline-block;
+}
+
+.NB-cluster-detail-title-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: inherit;
+}
+
+.NB-cluster-detail-image {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex: 0 0 auto;
+    background-color: rgba(0, 0, 0, .08);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.NB-cluster-detail-date {
+    flex: 0 0 auto;
+    color: #7E7E7E;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.NB-story-cluster-detail-item.read {
+    color: #6E6E6E;
+}
+
+.NB-story-cluster-detail-item.read .NB-cluster-detail-favicon,
+.NB-story-cluster-detail-item.read .NB-cluster-detail-image,
+.NB-story-cluster-detail-item.read .NB-cluster-sentiment {
+    opacity: .45;
+}
+
+.NB-cluster-locked-upsell {
+    justify-content: space-between;
+    gap: 12px;
+    background-color: #F2F7FF;
+}
+
+.NB-cluster-locked-text {
+    color: #4F5F74;
+    font-size: 12px;
+    font-weight: 600;
 }

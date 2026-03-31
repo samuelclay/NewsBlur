@@ -2,6 +2,10 @@ package com.newsblur.activity
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -19,6 +23,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
+import com.newsblur.util.PrefConstants
 import com.newsblur.util.UIUtils
 import com.newsblur.viewModel.FeedFolderData
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,7 +119,6 @@ class MuteConfig :
     }
 
     private fun syncActiveFeedCount() {
-        // free standard accounts can follow up to 64 sites
         val hasSubscription = prefsRepo.hasSubscription()
         if (!hasSubscription && feeds.isNotEmpty()) {
             var activeSites = 0
@@ -123,16 +127,110 @@ class MuteConfig :
                     activeSites++
                 }
             }
-            val textColorRes = if (activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT) R.color.negative else R.color.positive
-            binding.textSites.setTextColor(ContextCompat.getColor(this, textColorRes))
-            binding.textSites.text = String.format(getString(R.string.mute_config_sites), activeSites, AppConstants.FREE_ACCOUNT_SITE_LIMIT)
+            val isOverLimit = activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT
+            updateHeader(activeSites, isOverLimit)
             showSitesCount()
 
-            if (activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !checkedInitFeedsLimit) {
+            if (isOverLimit && !checkedInitFeedsLimit) {
                 showAccountFeedsLimitDialog(activeSites - AppConstants.FREE_ACCOUNT_SITE_LIMIT)
             }
         } else {
             hideSitesCount()
+        }
+    }
+
+    private fun updateHeader(activeSites: Int, isOverLimit: Boolean) {
+        val theme = prefsRepo.getSelectedTheme()
+        val isDarkSystem = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK ||
+                (theme == PrefConstants.ThemeValue.AUTO && isDarkSystem)
+
+        // Upgrade card colors (sky-blue tint, matching web)
+        val cardBg: Int
+        val cardStroke: Int
+        val upgradeText: Int
+        val subtitleText: Int
+        val arrowTint: Int
+        val iconTint: Int
+        val trackBg: Int
+        val progressLabelColor: Int
+
+        if (theme == PrefConstants.ThemeValue.SEPIA) {
+            cardBg = Color.parseColor("#F0EBE0")
+            cardStroke = Color.parseColor("#D4C8B8")
+            upgradeText = Color.parseColor("#1D4BA6")
+            subtitleText = Color.parseColor("#6B5A45")
+            arrowTint = Color.parseColor("#1D4BA6")
+            iconTint = ContextCompat.getColor(this, R.color.premium_gold)
+            trackBg = Color.parseColor("#E8DDD0")
+            progressLabelColor = Color.parseColor("#6B5A45")
+        } else if (isDark) {
+            cardBg = Color.parseColor("#1A2E3D")
+            cardStroke = Color.parseColor("#2A4A5C")
+            upgradeText = Color.parseColor("#7DD3FC")
+            subtitleText = Color.parseColor("#98989D")
+            arrowTint = Color.parseColor("#7DD3FC")
+            iconTint = ContextCompat.getColor(this, R.color.premium_gold)
+            trackBg = Color.parseColor("#38383A")
+            progressLabelColor = Color.parseColor("#98989D")
+        } else {
+            cardBg = Color.parseColor("#EFF9FF")
+            cardStroke = Color.parseColor("#B3E0F7")
+            upgradeText = Color.parseColor("#0369A1")
+            subtitleText = Color.parseColor("#6B7280")
+            arrowTint = Color.parseColor("#0369A1")
+            iconTint = ContextCompat.getColor(this, R.color.premium_gold)
+            trackBg = Color.parseColor("#E5E7EB")
+            progressLabelColor = Color.parseColor("#6B7280")
+        }
+
+        // Style upgrade card
+        binding.cardUpgrade.setCardBackgroundColor(cardBg)
+        binding.cardUpgrade.strokeColor = cardStroke
+        binding.textUpgrade.setTextColor(upgradeText)
+        binding.textUpgradeSubtitle.setTextColor(subtitleText)
+        binding.imgUpgradeIcon.imageTintList = ColorStateList.valueOf(iconTint)
+        binding.imgUpgradeArrow.imageTintList = ColorStateList.valueOf(arrowTint)
+
+        // Progress bar
+        val limit = AppConstants.FREE_ACCOUNT_SITE_LIMIT
+        val ratio = (activeSites.toFloat() / limit).coerceAtMost(1f)
+        val barColor = if (isOverLimit) Color.parseColor("#DC2626") else Color.parseColor("#16A34A")
+        val countColor = if (isOverLimit) Color.parseColor("#DC2626") else Color.parseColor("#16A34A")
+
+        val trackDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = UIUtils.dp2px(this@MuteConfig, 4).toFloat()
+            setColor(trackBg)
+        }
+        binding.progressTrack.background = trackDrawable
+
+        val barDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = UIUtils.dp2px(this@MuteConfig, 4).toFloat()
+            setColor(barColor)
+        }
+        binding.progressBar.background = barDrawable
+
+        binding.progressBar.post {
+            val trackWidth = binding.progressTrack.width
+            val barWidth = (trackWidth * ratio).toInt()
+            val params = binding.progressBar.layoutParams
+            params.width = barWidth
+            binding.progressBar.layoutParams = params
+        }
+
+        // Count text
+        binding.textSites.text = String.format(getString(R.string.mute_config_sites), activeSites, limit)
+        binding.textSites.setTextColor(countColor)
+
+        // Progress label
+        if (isOverLimit) {
+            binding.textProgressLabel.text = String.format(getString(R.string.mute_config_sites_over), activeSites - limit)
+            binding.textProgressLabel.setTextColor(Color.parseColor("#DC2626"))
+        } else {
+            binding.textProgressLabel.text = String.format(getString(R.string.mute_config_sites_available), limit - activeSites)
+            binding.textProgressLabel.setTextColor(progressLabelColor)
         }
     }
 
@@ -162,11 +260,11 @@ class MuteConfig :
     private fun showSitesCount() {
         val oldLayout = binding.listView.layoutParams
         val newLayout = FrameLayout.LayoutParams(oldLayout)
-        newLayout.topMargin = UIUtils.dp2px(this, 85)
+        newLayout.topMargin = UIUtils.dp2px(this, 180)
         binding.listView.layoutParams = newLayout
         binding.containerSitesCount.visibility = View.VISIBLE
         binding.textResetSites.setOnClickListener { view: View? -> resetToPopularFeeds() }
-        binding.textUpgrade.setOnClickListener { view: View? -> openUpgradeToPremium() }
+        binding.cardUpgrade.setOnClickListener { view: View? -> openUpgradeToPremium() }
     }
 
     private fun hideSitesCount() {
@@ -176,6 +274,7 @@ class MuteConfig :
         binding.listView.layoutParams = newLayout
         binding.containerSitesCount.visibility = View.GONE
         binding.textResetSites.setOnClickListener(null)
+        binding.cardUpgrade.setOnClickListener(null)
     }
 
     // reset to most popular sites based on subscribers

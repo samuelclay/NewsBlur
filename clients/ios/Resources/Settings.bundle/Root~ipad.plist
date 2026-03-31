@@ -381,6 +381,16 @@
 			<string>small_right</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Cluster related stories</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>story_clustering</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Feed list</string>
 			<key>Type</key>

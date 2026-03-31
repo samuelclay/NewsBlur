@@ -1504,13 +1504,14 @@ class Test_Views(BriefingTestCase):
         mock_pipe.execute.return_value = [False]
 
         story = self.make_story(self.feed, "Briefing Summary", content="<div>Summary content</div>")
-        self.make_briefing(summary_story_hash=story.story_hash, curated_hashes=[story.story_hash])
+        self.make_briefing(summary_story_hash=story.story_hash, curated_hashes=[story.story_hash], slot="evening")
 
         response = self.client.get(reverse("load-briefing-stories"))
         data = json.decode(response.content)
         self.assertEqual(len(data["briefings"]), 1)
         self.assertIsNotNone(data["briefings"][0]["summary_story"])
         self.assertEqual(data["briefings"][0]["summary_story"]["story_title"], "Briefing Summary")
+        self.assertEqual(data["briefings"][0]["slot"], "evening")
 
     @patch("apps.briefing.views.redis.Redis")
     def test_non_premium_truncates(self, mock_redis_cls):

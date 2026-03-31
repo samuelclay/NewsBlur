@@ -32,6 +32,8 @@ public class NewsblurWebview extends WebView {
 
     private final NewsblurWebChromeClient webChromeClient;
     private boolean isCustomViewShowing;
+    private long activeVisualStateRequestId;
+    private long completedVisualStateRequestId = -1L;
 
     public ReadingItemFragment fragment;
     // we need the less-abstract activity class in order to manipulate the overlay widgets
@@ -126,6 +128,13 @@ public class NewsblurWebview extends WebView {
         this.assetLoader = assetLoader;
     }
 
+    @Override
+    public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+        activeVisualStateRequestId++;
+        completedVisualStateRequestId = -1L;
+        super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+    }
+
     class NewsblurWebViewClient extends WebViewClient {
 
         @Nullable
@@ -211,7 +220,25 @@ public class NewsblurWebview extends WebView {
 
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
-            if (newProgress == 100) fragment.onWebLoadFinished();
+            if (newProgress == 100) {
+                if (fragment != null) {
+                    fragment.onWebLoadFinished();
+                }
+
+                final long requestId = activeVisualStateRequestId;
+                postVisualStateCallback(requestId, new VisualStateCallback() {
+                    @Override
+                    public void onComplete(long completedRequestId) {
+                        if (completedRequestId != activeVisualStateRequestId) return;
+                        if (completedVisualStateRequestId == completedRequestId) return;
+
+                        completedVisualStateRequestId = completedRequestId;
+                        if (fragment != null) {
+                            fragment.onWebVisualStateReady();
+                        }
+                    }
+                });
+            }
         }
     }
 

@@ -12,9 +12,9 @@ import Foundation
 
 /// A story, wrapping the dictionary representation.
 @MainActor class Story: Identifiable {
-    let id = UUID()
+    let id: String
     let index: Int
-    
+
     var dictionary = AnyDictionary()
     
     var feed: Feed?
@@ -161,14 +161,31 @@ import Foundation
     
     init(index: Int) {
         self.index = index
-        
+
+        // Extract story_hash for stable SwiftUI identity before calling load()
+        if let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection,
+           index < storiesCollection.activeFeedStoryLocations.count,
+           let row = storiesCollection.activeFeedStoryLocations[index] as? Int,
+           let story = storiesCollection.activeFeedStories[row] as? [String : Any],
+           let storyHash = story["story_hash"] as? String, !storyHash.isEmpty {
+            self.id = storyHash
+        } else {
+            self.id = "story-\(index)"
+        }
+
         load()
     }
-    
+
     init(index: Int, dictionary: AnyDictionary) {
         self.index = index
         self.dictionary = dictionary
-        
+
+        if let storyHash = dictionary["story_hash"] as? String, !storyHash.isEmpty {
+            self.id = storyHash
+        } else {
+            self.id = "story-\(index)"
+        }
+
         loadFromDictionary()
     }
     
@@ -234,7 +251,7 @@ import Foundation
         isSaved = dictionary["starred"] as? Bool ?? false
         isShared = dictionary["shared"] as? Bool ?? false
         hash = string(for: "story_hash")
-        
+
         if let intelligence = dictionary["intelligence"] as? [String : Any] {
             score = Int(NewsBlurAppDelegate.computeStoryScore(intelligence))
         }

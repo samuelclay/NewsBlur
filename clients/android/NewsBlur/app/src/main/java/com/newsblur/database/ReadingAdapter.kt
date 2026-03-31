@@ -216,26 +216,18 @@ class ReadingAdapter(
     }
 
     override fun saveState(): Parcelable {
-        if (states.isEmpty()) return Bundle.EMPTY
-        return Bundle().apply {
-            for ((key, value) in states) putParcelable("ss-$key", value)
-        }
+        // Return empty state to avoid TransactionTooLargeException. Fragment arguments
+        // contain full Story objects whose serialized size can exceed the Binder limit.
+        // Fragments are recreated from the story list on restore, so persisting state
+        // is unnecessary.
+        return Bundle.EMPTY
     }
 
     override fun restoreState(
         state: Parcelable?,
         loader: ClassLoader?,
     ) {
-        val bundle = state as? Bundle ?: return
-        bundle.classLoader = loader
-        fragments.clear()
-        states.clear()
-        for (key in bundle.keySet()) {
-            if (key.startsWith("ss-")) {
-                val storyHash = key.removePrefix("ss-")
-                states[storyHash] = bundle.getParcelable(key)
-            }
-        }
+        // Nothing to restore — see saveState().
     }
 
     private fun isNearCurrent(

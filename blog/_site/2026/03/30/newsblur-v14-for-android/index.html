@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing." />
+<meta property="og:description" content="A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/android-14-ask-ai.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-30T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/android-14-ask-ai.png" />
+<meta property="twitter:title" content="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-30T00:00:00-04:00","datePublished":"2026-03-30T00:00:00-04:00","description":"A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.","headline":"NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more","image":"https://blog.newsblur.com/assets/android-14-ask-ai.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-03-30T00:00:00-04:00" itemprop="datePublished">Mar 30, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="ask-ai">Ask AI</h3>
+
+<p>Ask AI brings the same AI-powered Q&amp;A from the web and iOS to Android. Open any story, tap Ask AI, and ask questions about it. Summarize a long article, get background on a developing situation, or fact-check a claim. Pick your preferred AI model and keep the conversation going with follow-ups. The Ask AI sheet matches your current theme and slides up as a bottom sheet, consistent with the share and trainer dialogs.</p>
+
+<p><img src="/assets/android-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="discover-related-sites">Discover related sites</h3>
+
+<p>Discover Related Sites lets you find new feeds related to any feed you’re already subscribed to. Tap the Discover button in the story list header bar, browse what’s available, and preview a feed before subscribing. Duplicate feeds are filtered out so you only see new options.</p>
+
+<p><img src="/assets/android-14-discover.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="daily-briefing">Daily Briefing</h3>
+
+<p>The Daily Briefing generates a personalized summary of your news, organized into sections like Top Stories, Based on Your Interests, and Long Reads. It uses native Android story rows, so it feels like a regular feed rather than a bolted-on feature. Configure your briefing frequency, writing style, and sections from the briefing view in your sidebar.</p>
+
+<p><img src="/assets/android-14-daily-briefing.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="sepia-theme-and-refined-dark-themes">Sepia theme and refined dark themes</h3>
+
+<p>A new Sepia theme brings warmer tones for comfortable long reading sessions. The Dark theme has been lightened to match the iOS gray/medium palette, and the Black theme now uses true absolute black backgrounds for feed and story cells, making it ideal for OLED screens.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-14-sepia.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-dark.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-black.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<h3 id="story-list-header-bar">Story list header bar</h3>
+
+<p>The top of the story list now has a header bar with quick access to Discover, search, display options, and settings. The display and settings controls are split into separate menus so you can change the view without wading through unrelated options.</p>
+
+<p><img src="/assets/android-14-header-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-reading-experience">Redesigned reading experience</h3>
+
+<p>The reading view has been rethought from top to bottom. Story traversal buttons are lifted above the bottom edge for easier thumb access. A new traverse bar with refined icons shows your position and unread count. Story actions are hidden until the story finishes rendering, so you never tap a button before the content is ready. Opening a story from the list now animates smoothly into the reader, and swiping back uses an interactive gesture that tracks your finger.</p>
+
+<p><img src="/assets/android-14-reader.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-preferences-and-menus">Redesigned preferences and menus</h3>
+
+<p>Preferences have been rebuilt as a modern settings screen with inline segments instead of separate dialog pickers. The feed list menu, reading menu, and folder menus have all been redesigned with cleaner styling and better organization. Menus now scale with your device font size, so they stay readable at any accessibility setting.</p>
+
+<p><img src="/assets/android-14-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="premium-archive-and-pro-subscriptions">Premium Archive and Pro subscriptions</h3>
+
+<p>You can now subscribe to Premium Archive and Premium Pro directly from the Android app. An upgrade banner appears in the story list when you’re on a lower tier, showing what you’d unlock by upgrading.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Interactive swipe-back gesture in both the story list and reading view with predictive back support on Android 14+.</li>
+  <li>Feed list aligned with iOS styling, with new collapse-all and expand-all toggles.</li>
+  <li>Story header pills with compact layout and title case formatting.</li>
+  <li>Active reading time tracking per story, synced to your account.</li>
+  <li>Full text and regex classifiers for the Intelligence Trainer.</li>
+  <li>Feed search field themed to match your current theme with autofill disabled.</li>
+  <li>Sync done pill delayed until feeds actually render, so you see the update happen.</li>
+  <li>Story thumbnails enlarged for small sizes and cropping fixed.</li>
+  <li>Status banners at the top of the story list for loading and error states.</li>
+  <li>Mute Sites redesigned with upgrade card and progress bar.</li>
+  <li>Custom folder and feed icon support.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed TransactionTooLargeException crash in the reading pager.</li>
+  <li>Fixed database version mismatch crash on launch.</li>
+  <li>Fixed ItemListMenuPopup crash on small and split-screen displays.</li>
+  <li>Fixed login autofill and app switching losing input.</li>
+  <li>Fixed story row thumbnail cropping.</li>
+  <li>Fixed search pill text vanishing.</li>
+  <li>Fixed story list edge back gesture interference.</li>
+  <li>Brightened story feed titles for better readability.</li>
+</ul>
+
+<p>Coming up next: v14.2 will bring story clustering to Android, so duplicate stories across your feeds get grouped together automatically, just like on the web.</p>
+
+<p>NewsBlur v14 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/03/30/newsblur-v14-for-android/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>

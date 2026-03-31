@@ -29,6 +29,7 @@ public class FeedSet implements Serializable {
     private boolean isAllRead;
     private boolean isGlobalShared;
     private boolean isInfrequent;
+    private boolean isDailyBriefing;
     private boolean isForWidget;
 
     private String folderName;
@@ -90,6 +91,15 @@ public class FeedSet implements Serializable {
     public static FeedSet infrequentFeeds() {
         FeedSet fs = new FeedSet();
         fs.isInfrequent = true;
+        return fs;
+    }
+
+    /**
+     * Convenience constructor for the Daily Briefing pseudo-feed.
+     */
+    public static FeedSet dailyBriefing() {
+        FeedSet fs = new FeedSet();
+        fs.isDailyBriefing = true;
         return fs;
     }
 
@@ -224,6 +234,10 @@ public class FeedSet implements Serializable {
         return this.isInfrequent;
     }
 
+    public boolean isDailyBriefing() {
+        return this.isDailyBriefing;
+    }
+
     public boolean isAllRead() {
         return this.isAllRead;
     }
@@ -338,6 +352,7 @@ public class FeedSet implements Serializable {
         if ( isAllRead && s.isAllRead ) return true;
         if ( isGlobalShared && s.isGlobalShared ) return true;
         if ( isInfrequent && s.isInfrequent ) return true;
+        if ( isDailyBriefing && s.isDailyBriefing ) return true;
         return false;
     }
 
@@ -350,6 +365,7 @@ public class FeedSet implements Serializable {
         if (isGlobalShared) result = 14;
         if (isAllRead) result = 15;
         if (isInfrequent) result = 16;
+        if (isDailyBriefing) result = 18;
         if (feeds != null) result = 31 * result + feeds.hashCode();
         if (socialFeeds != null) result = 37 * result + socialFeeds.hashCode();
         if (folderName != null) result = 41 * result + folderName.hashCode();

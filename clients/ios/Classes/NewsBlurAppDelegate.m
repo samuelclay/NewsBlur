@@ -100,6 +100,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 
+- (void)presentFeedDetailAfterFeedSelection;
+
 @end
 
 @implementation NewsBlurAppDelegate
@@ -158,6 +160,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @synthesize hasLoadedFeedDetail;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedFeedId;
+@synthesize tryFeedStoryTitle;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
@@ -195,6 +198,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @synthesize isPremium;
 @synthesize isPremiumArchive;
 @synthesize isPremiumPro;
+@synthesize briefingEnabled;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -255,6 +259,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     isPremium = NO;
     isPremiumArchive = NO;
     isPremiumPro = NO;
+    briefingEnabled = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -645,6 +650,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
                     self.findingStoryDictionary = nil;
                     self.tryFeedStoryId = storyHash;
                     self.tryFeedFeedId = feedIdStr;
+                    self.tryFeedStoryTitle = nil;
                     [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
                 } else {
                     // Fallback: no notification feeds, open individual feed
@@ -730,6 +736,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         self.findingStoryDictionary = nil;
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
+        self.tryFeedStoryTitle = nil;
         
         [self.storiesCollection reset];
         
@@ -2090,6 +2097,13 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (void)loadFeed:(NSString *)feedId
        withStory:(NSString *)contentId
         animated:(BOOL)animated {
+    [self loadFeed:feedId withStory:contentId storyTitle:nil animated:animated];
+}
+
+- (void)loadFeed:(NSString *)feedId
+       withStory:(NSString *)contentId
+      storyTitle:(NSString *)storyTitle
+        animated:(BOOL)animated {
     NSDictionary *feed = [self getFeed:feedId];
     NSLog(@"loadFeed: %@", feed);
     
@@ -2097,19 +2111,22 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         if (self.tryFeedFeedId) {
             self.tryFeedStoryId = nil;
             self.tryFeedFeedId = nil;
+            self.tryFeedStoryTitle = nil;
         } else {
             self.tryFeedFeedId = feedId;
             self.tryFeedStoryId = contentId;
+            self.tryFeedStoryTitle = storyTitle;
         }
         return;
     }
     
-    self.isTryFeedView = YES;
+    self.isTryFeedView = [TryFeedPresentationDecision isTryFeedPreviewWithFeed:feed];
     self.inFindingStoryMode = YES;
     self.findingStoryStartDate = [NSDate date];
     self.findingStoryDictionary = nil;
     self.tryFeedStoryId = contentId;
     self.tryFeedFeedId = feedId;
+    self.tryFeedStoryTitle = storyTitle;
     
     [self.storiesCollection reset];
     
@@ -2118,6 +2135,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     storiesCollection.activeFolder = nil;
     
     [self reloadFeedsView:NO];
+    self.skipTryFeedCleanup = YES;
+    [self presentFeedDetailAfterFeedSelection];
     
     //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     //        if (!self.isPhone) {
@@ -2137,6 +2156,28 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     //            }];
     //        }
     //    });
+}
+
+- (void)presentFeedDetailAfterFeedSelection {
+    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:self.isPhone
+                                                                                  userInterfaceIdiomPhone:[[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone];
+
+    if (presentation == FeedSelectionPresentationLoadFeedDetail) {
+        [self loadFeedDetailView];
+    } else if (presentation == FeedSelectionPresentationShowFeedsListThenLoadFeedDetail) {
+        [self showFeedsListAnimated:NO];
+        [self hidePopoverAnimated:YES completion:^{
+            void (^showFeedDetail)(void) = ^{
+                [self loadFeedDetailView];
+            };
+
+            if (self.feedsNavigationController.presentedViewController) {
+                [self.feedsNavigationController dismissViewControllerAnimated:YES completion:showFeedDetail];
+            } else {
+                showFeedDetail();
+            }
+        }];
+    }
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -2168,6 +2209,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     self.tryFeedStoryId = contentId;
+    self.tryFeedStoryTitle = nil;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     storiesCollection.isRiverView = NO;
@@ -2206,22 +2248,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
 
     self.skipTryFeedCleanup = YES;
-    if (!self.isPhone) {
-        [self loadFeedDetailView];
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self showFeedsListAnimated:NO];
-        [self hidePopoverAnimated:YES completion:^{
-            if (self.feedsNavigationController.presentedViewController) {
-                [self.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
-                    [self loadFeedDetailView];
-                }];
-            } else {
-                [self loadFeedDetailView];
-            }
-        }];
-    }
+    [self presentFeedDetailAfterFeedSelection];
 }
 
 - (void)addTryFeedToSidebar:(NSDictionary *)feed {
@@ -2282,6 +2309,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     if (self.tryFeedFeedId) {
         [self removeTryFeedFromSidebar];
     }
+    self.tryFeedStoryTitle = nil;
     self.isTryFeedView = NO;
 }
 
@@ -2336,6 +2364,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     storiesCollection.isRiverView = YES;
     
     self.tryFeedStoryId = contentId;
+    self.tryFeedStoryTitle = nil;
     storiesCollection.activeFolder = @"saved_stories";
     
     [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"saved_stories"];
@@ -2393,6 +2422,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
     if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
+    } else if ([folderTitle isEqualToString:@"daily_briefing"]) {
+        return @[];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
         NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
@@ -2555,6 +2586,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
+        } else if ([folder isEqualToString:@"daily_briefing"] || [folderName isEqualToString:@"daily_briefing"]) {
+            feedDetailView.storiesCollection.isDailyBriefing = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"daily_briefing"];
         } else if ([folder isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_searches"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"saved_searches"];
@@ -2742,6 +2776,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         self.findingStoryDictionary = nil;
         self.tryFeedStoryId = nil;
         self.tryFeedFeedId = nil;
+        self.tryFeedStoryTitle = nil;
     }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
@@ -3962,15 +3997,25 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
     int title = [[intelligence objectForKey:@"title"] intValue];
+    int titleRegex = [[intelligence objectForKey:@"title_regex"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
+    int text = [[intelligence objectForKey:@"text"] intValue];
+    int textRegex = [[intelligence objectForKey:@"text_regex"] intValue];
+    int url = [[intelligence objectForKey:@"url"] intValue];
+    int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
+    int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    int score_max = MAX(title, MAX(author, tags));
-    int score_min = MIN(title, MIN(author, tags));
+    // AI prompt classifier takes absolute priority
+    if (prompt != 0) return prompt;
 
-    if (score_max > 0)      score = score_max;
+    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex)))))));
+    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex)))))));
+
+    if (score_min <= -2) score = score_min;
+    else if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
-    
+
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
 
 //    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
@@ -4068,6 +4113,31 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
     
     return [[self feedIdWithoutSearchQuery:feedId] substringFromIndex:prefix.length];
+}
+
+- (NSSet<NSString *> *)subscribedFeedIdsForStoryClusters {
+    NSMutableSet<NSString *> *feedIds = [NSMutableSet set];
+
+    [self.dictFeeds enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        NSDictionary *feed = [obj isKindOfClass:[NSDictionary class]] ? obj : nil;
+        if (!feed || [feed[@"temp"] boolValue]) {
+            return;
+        }
+
+        NSString *feedId = [NSString stringWithFormat:@"%@", key];
+        if (feedId.length) {
+            [feedIds addObject:feedId];
+        }
+    }];
+
+    return [feedIds copy];
+}
+
+- (BOOL)isSubscribedFeedIdForStoryClusters:(NSString *)feedId {
+    NSString *normalizedFeedId = [self feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", feedId ?: @""]];
+    NSDictionary *feed = self.dictFeeds[normalizedFeedId];
+
+    return [feed isKindOfClass:[NSDictionary class]] && ![feed[@"temp"] boolValue];
 }
 
 - (NSDictionary *)getFeedWithId:(id)feedId {
@@ -4267,6 +4337,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Daily Briefing"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -4322,6 +4395,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+            titleImage = [UIImage imageNamed:@"briefing"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -4370,6 +4446,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
+    } else if ([folder isEqualToString:@"daily_briefing"]) {
+        return @"Daily Briefing";
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return @"Widget Site Stories";
     } else if ([folder isEqualToString:@"read_stories"]) {
@@ -4394,6 +4472,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
         return [UIImage imageNamed:@"ak-icon-infrequent.png"];
+    } else if ([folder isEqualToString:@"daily_briefing"]) {
+        return [UIImage imageNamed:@"briefing"];
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_widget.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {

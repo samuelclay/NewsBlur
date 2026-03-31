@@ -30,6 +30,7 @@ import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
+import com.newsblur.design.StoryRowPalette
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
@@ -42,6 +43,7 @@ import com.newsblur.util.GestureAction
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
+import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
@@ -588,6 +590,10 @@ class StoryViewAdapter(
         vh: StoryViewHolder,
         story: Story,
     ) {
+        val isRead = !ignoreReadStatus && story.read
+        val theme = prefsRepo.getSelectedTheme()
+
+        vh.itemView.setBackgroundResource(backgroundResourceFor(story))
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
 
@@ -623,6 +629,7 @@ class StoryViewAdapter(
                 iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
             }
             vh.feedTitleView.text = story.extern_feedTitle
+            vh.feedTitleView.setTextColor(StoryRowPalette.feedTitleArgb(theme, isRead))
             vh.feedIconView.visibility = View.VISIBLE
             vh.feedTitleView.visibility = View.VISIBLE
         } else {
@@ -665,7 +672,7 @@ class StoryViewAdapter(
         )
 
         // read/unread fading
-        if (this.ignoreReadStatus || (!story.read)) {
+        if (!isRead) {
             vh.leftBarOne.background.alpha = 255
             vh.leftBarTwo.background.alpha = 255
             vh.intelDot.imageAlpha = 255
@@ -684,7 +691,7 @@ class StoryViewAdapter(
             vh.thumbViewRight?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
             vh.thumbTileView?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
             vh.feedIconView.imageAlpha = READ_STORY_ALPHA_B255
-            vh.feedTitleView.alpha = READ_STORY_ALPHA
+            vh.feedTitleView.alpha = 1.0f
             vh.storyTitleView.alpha = READ_STORY_ALPHA
             vh.storyDate.alpha = READ_STORY_ALPHA
         }
@@ -973,6 +980,27 @@ class StoryViewAdapter(
     fun notifyAllItemsChanged() {
         notifyItemRangeChanged(0, itemCount)
     }
+
+    private fun backgroundResourceFor(story: Story): Int {
+        if (!story.isBriefingSummary) {
+            return defaultBackgroundResource()
+        }
+
+        return when (prefsRepo.getSelectedTheme()) {
+            ThemeValue.SEPIA -> R.drawable.sepia_daily_briefing_selector_story_background
+            ThemeValue.DARK -> R.drawable.dark_daily_briefing_selector_story_background
+            ThemeValue.BLACK -> R.drawable.black_daily_briefing_selector_story_background
+            else -> R.drawable.daily_briefing_selector_story_background
+        }
+    }
+
+    private fun defaultBackgroundResource(): Int =
+        when (prefsRepo.getSelectedTheme()) {
+            ThemeValue.SEPIA -> R.drawable.sepia_selector_story_background
+            ThemeValue.DARK -> R.drawable.dark_selector_story_background
+            ThemeValue.BLACK -> R.drawable.black_selector_story_background
+            else -> R.drawable.selector_story_background
+        }
 
     interface OnStoryClickListener {
         fun onStoryClicked(

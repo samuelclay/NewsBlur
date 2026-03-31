@@ -292,3 +292,46 @@ del {
 .NB-text-view-premium-only .NB-feed-story-premium-only-divider {
     filter: invert(100%);
 }
+
+.NB-story-cluster-detail {
+    border-top-color: #707070;
+    border-bottom-color: #707070;
+    background-color: #555555;
+}
+
+.NB-story-cluster-detail-header {
+    border-bottom-color: rgba(255, 255, 255, .08);
+}
+
+.NB-story-cluster-detail-title {
+    color: #D0D0D0;
+}
+
+.NB-story-cluster-detail-item,
+.NB-cluster-locked-upsell {
+    color: #F0F0F0;
+    border-top-color: rgba(255, 255, 255, .08);
+}
+
+.NB-story-cluster-detail-item.read {
+    color: #B5B5B5;
+}
+
+.NB-clustering-detail-upgrade-pill {
+    background-color: rgba(162, 200, 248, .18);
+    color: #D8EBFF;
+}
+
+.NB-cluster-detail-date,
+.NB-cluster-locked-text {
+    color: #C6C6C6;
+}
+
+.NB-cluster-detail-favicon,
+.NB-cluster-detail-image {
+    background-color: rgba(255, 255, 255, .08);
+}
+
+.NB-cluster-locked-upsell {
+    background-color: rgba(255, 255, 255, .04);
+}

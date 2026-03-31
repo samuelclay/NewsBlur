@@ -9,6 +9,7 @@ import calendar
 import datetime
 import json as python_json
 import re
+from urllib.parse import urlencode
 
 import dateutil
 import requests
@@ -1901,12 +1902,6 @@ def gift_redeem(request, gift_tier, username, gift_code):
     if not gift:
         return render(request, "profile/gift_redeem.html", {"error": "Invalid gift code."})
 
-    if gift.redeemed_date:
-        return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
-
-    if gift.expires_date and gift.expires_date < datetime.datetime.now():
-        return render(request, "profile/gift_redeem.html", {"error": "This gift has expired."})
-
     # Resolve gifter username for display
     gifter_username = username
     if not gifter_username:
@@ -1919,9 +1914,44 @@ def gift_redeem(request, gift_tier, username, gift_code):
     tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
     tier_display = tier_names.get(gift.gift_tier, "Premium")
 
-    if request.user.is_authenticated:
+    if gift.redeemed_date:
+        # If the current user already redeemed this gift, show them the banner again
+        if request.user.is_authenticated:
+            already_redeemed = MRedeemedCode.objects.filter(
+                user_id=request.user.pk, gift_code__iexact=gift_code
+            ).first()
+            if already_redeemed:
+                # Skip actual redemption, just show the banner
+                pass
+            else:
+                return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
+        else:
+            return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
+    elif gift.expires_date and gift.expires_date < datetime.datetime.now():
+        return render(request, "profile/gift_redeem.html", {"error": "This gift has expired."})
+    elif request.user.is_authenticated:
         MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-        return HttpResponseRedirect(reverse("index"))
+
+    if request.user.is_authenticated:
+        duration_days = gift.duration_days or 365
+        if duration_days >= 365:
+            duration_label = "%d year" % (duration_days // 365)
+            if duration_days // 365 > 1:
+                duration_label += "s"
+        elif duration_days >= 30:
+            duration_label = "%d month" % (duration_days // 30)
+            if duration_days // 30 > 1:
+                duration_label += "s"
+        else:
+            duration_label = "%d days" % duration_days
+        params = urlencode(
+            {
+                "gift_redeemed": tier_display,
+                "gift_duration": duration_label,
+                "gift_from": gifter_username or "",
+            }
+        )
+        return HttpResponseRedirect("%s?%s" % (reverse("index"), params))
 
     # Not logged in: redirect to signup with gift code and gifter context
     response = HttpResponseRedirect("%s?gift=%s" % (reverse("welcome-signup"), gift_code))

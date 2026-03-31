@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-26T19:30:50-04:00</updated>
+  <updated>2026-03-30T15:54:36-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,117 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</title>
+    <link href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" rel="alternate" type="text/html" title="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" />
+    <published>2026-03-30T00:00:00-04:00</published>
+    <updated>2026-03-30T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/">
+      <![CDATA[<p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="ask-ai">Ask AI</h3>
+
+<p>Ask AI brings the same AI-powered Q&amp;A from the web and iOS to Android. Open any story, tap Ask AI, and ask questions about it. Summarize a long article, get background on a developing situation, or fact-check a claim. Pick your preferred AI model and keep the conversation going with follow-ups. The Ask AI sheet matches your current theme and slides up as a bottom sheet, consistent with the share and trainer dialogs.</p>
+
+<p><img src="/assets/android-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="discover-related-sites">Discover related sites</h3>
+
+<p>Discover Related Sites lets you find new feeds related to any feed you’re already subscribed to. Tap the Discover button in the story list header bar, browse what’s available, and preview a feed before subscribing. Duplicate feeds are filtered out so you only see new options.</p>
+
+<p><img src="/assets/android-14-discover.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="daily-briefing">Daily Briefing</h3>
+
+<p>The Daily Briefing generates a personalized summary of your news, organized into sections like Top Stories, Based on Your Interests, and Long Reads. It uses native Android story rows, so it feels like a regular feed rather than a bolted-on feature. Configure your briefing frequency, writing style, and sections from the briefing view in your sidebar.</p>
+
+<p><img src="/assets/android-14-daily-briefing.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="sepia-theme-and-refined-dark-themes">Sepia theme and refined dark themes</h3>
+
+<p>A new Sepia theme brings warmer tones for comfortable long reading sessions. The Dark theme has been lightened to match the iOS gray/medium palette, and the Black theme now uses true absolute black backgrounds for feed and story cells, making it ideal for OLED screens.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-14-sepia.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-dark.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/android-14-black.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<h3 id="story-list-header-bar">Story list header bar</h3>
+
+<p>The top of the story list now has a header bar with quick access to Discover, search, display options, and settings. The display and settings controls are split into separate menus so you can change the view without wading through unrelated options.</p>
+
+<p><img src="/assets/android-14-header-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-reading-experience">Redesigned reading experience</h3>
+
+<p>The reading view has been rethought from top to bottom. Story traversal buttons are lifted above the bottom edge for easier thumb access. A new traverse bar with refined icons shows your position and unread count. Story actions are hidden until the story finishes rendering, so you never tap a button before the content is ready. Opening a story from the list now animates smoothly into the reader, and swiping back uses an interactive gesture that tracks your finger.</p>
+
+<p><img src="/assets/android-14-reader.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="redesigned-preferences-and-menus">Redesigned preferences and menus</h3>
+
+<p>Preferences have been rebuilt as a modern settings screen with inline segments instead of separate dialog pickers. The feed list menu, reading menu, and folder menus have all been redesigned with cleaner styling and better organization. Menus now scale with your device font size, so they stay readable at any accessibility setting.</p>
+
+<p><img src="/assets/android-14-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="premium-archive-and-pro-subscriptions">Premium Archive and Pro subscriptions</h3>
+
+<p>You can now subscribe to Premium Archive and Premium Pro directly from the Android app. An upgrade banner appears in the story list when you’re on a lower tier, showing what you’d unlock by upgrading.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Interactive swipe-back gesture in both the story list and reading view with predictive back support on Android 14+.</li>
+  <li>Feed list aligned with iOS styling, with new collapse-all and expand-all toggles.</li>
+  <li>Story header pills with compact layout and title case formatting.</li>
+  <li>Active reading time tracking per story, synced to your account.</li>
+  <li>Full text and regex classifiers for the Intelligence Trainer.</li>
+  <li>Feed search field themed to match your current theme with autofill disabled.</li>
+  <li>Sync done pill delayed until feeds actually render, so you see the update happen.</li>
+  <li>Story thumbnails enlarged for small sizes and cropping fixed.</li>
+  <li>Status banners at the top of the story list for loading and error states.</li>
+  <li>Mute Sites redesigned with upgrade card and progress bar.</li>
+  <li>Custom folder and feed icon support.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed TransactionTooLargeException crash in the reading pager.</li>
+  <li>Fixed database version mismatch crash on launch.</li>
+  <li>Fixed ItemListMenuPopup crash on small and split-screen displays.</li>
+  <li>Fixed login autofill and app switching losing input.</li>
+  <li>Fixed story row thumbnail cropping.</li>
+  <li>Fixed search pill text vanishing.</li>
+  <li>Fixed story list edge back gesture interference.</li>
+  <li>Brightened story feed titles for better readability.</li>
+</ul>
+
+<p>Coming up next: v14.2 will bring story clustering to Android, so duplicate stories across your feeds get grouped together automatically, just like on the web.</p>
+
+<p>NewsBlur v14 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title>
@@ -1677,52 +1788,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Magazine view offers a new perspective</title>
-    <link href="https://blog.newsblur.com/2022/03/10/magazine-view/" rel="alternate" type="text/html" title="Magazine view offers a new perspective" />
-    <published>2022-03-10T00:00:00-05:00</published>
-    <updated>2022-03-10T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2022/03/10/magazine-view</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2022/03/10/magazine-view/">
-      <![CDATA[<p>Here’s a nice feature that brings a new perspective to your stories. It’s called the Magazine view and features larger images, longer story content previews, and improved legibility of text.</p>
-
-<p>Take a look and see how the Magazine view shwocases stories in a new way:</p>
-
-<p><img src="/assets/magazine-light.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
-
-<p>The Magazine view is also customizable. By default, fonts are a bit larger in the Magazine view. You can still change font sizes as well as customize the position and size of the image preview. There is also a control for how long the story content previews are, all found inside the Style popover.</p>
-
-<p><img src="/assets/style-popover-bottom.png" style="width: 375px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>And in dark mode, these customizations show how tailored you can make NewsBlur look.</p>
-
-<p><img src="/assets/magazine-dark.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
-
-<p>You can access the new Magazine view next to the other story title view layouts.</p>
-
-<p><img src="/assets/magazine-views.png" style="width: 450px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>The Grid view also features improvements to the story content preview. New lines are now preserved in both Magazine and Grid views, so you can capture a bit of longer form stories without opening them up.</p>
-
-<p><img src="/assets/grid-dark.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
-
-<p>Also included are some backend changes to how YouTube videos thumbnail are found, so you should see even more image previews in your feeds.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Here’s a nice feature that brings a new perspective to your stories. It’s called the Magazine view and features larger images, longer story content previews, and improved legibility of text.
-]]>
     </summary>
     
   </entry>

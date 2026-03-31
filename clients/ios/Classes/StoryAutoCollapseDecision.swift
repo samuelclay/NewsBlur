@@ -36,6 +36,19 @@ public enum StoryAutoCollapseBehavior: String {
     case feeds
 }
 
+@objc public enum DailyBriefingPresentationState: Int {
+    case loading
+    case settings
+    case empty
+    case stories
+}
+
+@objc public enum FeedSelectionPresentation: Int {
+    case loadFeedDetail
+    case showFeedsListThenLoadFeedDetail
+    case wait
+}
+
 @objcMembers public final class StorySplitBehaviorDecision: NSObject {
     public class func preferredBehavior(
         for behaviorValue: String?,
@@ -207,6 +220,23 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class FeedSelectionPresentationDecision: NSObject {
+    public class func presentation(
+        isPhone: Bool,
+        userInterfaceIdiomPhone: Bool
+    ) -> FeedSelectionPresentation {
+        if !isPhone {
+            return .loadFeedDetail
+        }
+
+        if userInterfaceIdiomPhone {
+            return .showFeedsListThenLoadFeedDetail
+        }
+
+        return .wait
+    }
+}
+
 @objcMembers public final class StorySidebarRevealGestureDecision: NSObject {
     public class func shouldBeginLeadingEdgeStoryTitlesReveal(
         usesOverlay: Bool,
@@ -236,6 +266,234 @@ public enum StoryAutoCollapseBehavior: String {
         // state should not block the initial reveal gesture.
         let _ = presentation
         return true
+    }
+}
+
+@objcMembers public final class DailyBriefingPresentationDecision: NSObject {
+    public class func presentationState(
+        hasLoadedPreferences: Bool,
+        preferencesEnabled: Bool,
+        isLoadingInitialData: Bool,
+        hasStories: Bool
+    ) -> DailyBriefingPresentationState {
+        if !hasLoadedPreferences || (isLoadingInitialData && !hasStories) {
+            return .loading
+        }
+
+        if !preferencesEnabled {
+            return .settings
+        }
+
+        return hasStories ? .stories : .empty
+    }
+
+    public class func shouldFetchStories(
+        page: Int,
+        hasLoadedPreferences: Bool,
+        preferencesEnabled: Bool
+    ) -> Bool {
+        if page <= 1 {
+            return true
+        }
+
+        return hasLoadedPreferences && preferencesEnabled
+    }
+}
+
+@objcMembers public final class DailyBriefingLinkDecision: NSObject {
+    @objc(storyHashForURL:isDailyBriefing:)
+    public class func storyHash(for url: NSURL?, isDailyBriefing: Bool) -> String? {
+        guard isDailyBriefing, let url = url as URL? else {
+            return nil
+        }
+
+        guard url.path.contains("/briefing") else {
+            return nil
+        }
+
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+
+        return components.queryItems?.first(where: { $0.name == "story" })?.value
+    }
+}
+
+@objcMembers public final class DailyBriefingPaginationDecision: NSObject {
+    public class func shouldPrefetchNextPage(
+        remainingOffset: CGFloat,
+        isDragging: Bool,
+        isDecelerating: Bool
+    ) -> Bool {
+        guard remainingOffset <= 500 else {
+            return false
+        }
+
+        return isDragging || isDecelerating
+    }
+}
+
+@objcMembers public final class FetchingBannerAccessoryLayoutDecision: NSObject {
+    @objc(fixedAccessoryDimensionForOffline:)
+    public class func fixedAccessoryDimension(isOffline: Bool) -> CGFloat {
+        isOffline ? 16 : 0
+    }
+
+    @objc(revealsAccessoryAfterBannerExpansionForOffline:)
+    public class func revealsAccessoryAfterBannerExpansion(isOffline: Bool) -> Bool {
+        !isOffline
+    }
+}
+
+public struct DailyBriefingListGroup: Equatable {
+    public let id: String
+    public let title: String
+    public let dateText: String
+    public let storyHashes: [String]
+
+    public init(id: String, title: String, dateText: String, storyHashes: [String]) {
+        self.id = id
+        self.title = title
+        self.dateText = dateText
+        self.storyHashes = storyHashes
+    }
+}
+
+public struct DailyBriefingListSection: Equatable {
+    public let id: String
+    public let title: String
+    public let dateText: String
+    public let rowLocations: [Int]
+    public let isCollapsed: Bool
+    public let isLoadingSection: Bool
+
+    public init(
+        id: String,
+        title: String,
+        dateText: String,
+        rowLocations: [Int],
+        isCollapsed: Bool,
+        isLoadingSection: Bool
+    ) {
+        self.id = id
+        self.title = title
+        self.dateText = dateText
+        self.rowLocations = rowLocations
+        self.isCollapsed = isCollapsed
+        self.isLoadingSection = isLoadingSection
+    }
+}
+
+public enum DailyBriefingSectionLayoutDecision {
+    public static func defaultCollapsedGroupIDs(for groupIDs: [String]) -> Set<String> {
+        Set(groupIDs.dropFirst())
+    }
+
+    public static func sections(
+        groups: [DailyBriefingListGroup],
+        storyLocationsByHash: [String: Int],
+        collapsedGroupIDs: Set<String>,
+        includesLoadingSection: Bool
+    ) -> [DailyBriefingListSection] {
+        var sections = groups.map { group in
+            DailyBriefingListSection(
+                id: group.id,
+                title: group.title,
+                dateText: group.dateText,
+                rowLocations: group.storyHashes.compactMap { storyLocationsByHash[$0] },
+                isCollapsed: collapsedGroupIDs.contains(group.id),
+                isLoadingSection: false
+            )
+        }
+
+        if includesLoadingSection {
+            sections.append(
+                DailyBriefingListSection(
+                    id: "__loading__",
+                    title: "",
+                    dateText: "",
+                    rowLocations: [],
+                    isCollapsed: false,
+                    isLoadingSection: true
+                )
+            )
+        }
+
+        return sections
+    }
+}
+
+@objcMembers public final class StoryRowLookupDecision: NSObject {
+    public class func storyIndex(
+        for location: Int,
+        isDailyBriefing: Bool,
+        allStoriesCount: Int,
+        visibleStoryLocations: [NSNumber]
+    ) -> NSNumber? {
+        guard location >= 0 else {
+            return nil
+        }
+
+        if isDailyBriefing {
+            guard location < allStoriesCount else {
+                return nil
+            }
+
+            return NSNumber(value: location)
+        }
+
+        guard visibleStoryLocations.indices.contains(location) else {
+            return nil
+        }
+
+        return visibleStoryLocations[location]
+    }
+}
+
+@objcMembers public final class FeedRowLoadingDecision: NSObject {
+    public class func shouldShowLoadingCell(
+        isLegacyTable: Bool,
+        isDailyBriefing: Bool,
+        hasRowDescriptor: Bool,
+        storyLocation: Int,
+        storyCount: Int
+    ) -> Bool {
+        if isLegacyTable && !isDailyBriefing && !hasRowDescriptor {
+            return true
+        }
+
+        if !isLegacyTable && storyLocation >= storyCount {
+            return true
+        }
+
+        return false
+    }
+}
+
+@objcMembers public final class FeedDetailReturnFrameDecision: NSObject {
+    public class func correctedFrame(
+        _ frame: CGRect,
+        containerBounds: CGRect,
+        navigationBarMinY: CGFloat,
+        isPhoneOrCompact: Bool
+    ) -> CGRect {
+        guard isPhoneOrCompact, containerBounds.width > 0 else {
+            return frame
+        }
+
+        var corrected = frame
+
+        if abs(corrected.minX - containerBounds.minX) > 0.5 ||
+            abs(corrected.width - containerBounds.width) > 0.5 {
+            corrected.origin.x = containerBounds.minX
+            corrected.size.width = containerBounds.width
+        }
+
+        if corrected.minY == 0, navigationBarMinY < 0 {
+            corrected.origin.y = -navigationBarMinY
+        }
+
+        return corrected
     }
 }
 
@@ -350,9 +608,236 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class StoryClusterDisplayDecision: NSObject {
+    @objc(isClusterMarkReadEnabledWithUserProfile:)
+    public class func isClusterMarkReadEnabled(userProfile: NSDictionary?) -> Bool {
+        guard let preferences = preferencesDictionary(from: userProfile) else {
+            return false
+        }
+
+        guard let value = preferences["cluster_mark_read"] else {
+            return false
+        }
+
+        return boolValue(from: value)
+    }
+
+    @objc(effectiveClusterReadStatusWithIsClusterRead:parentRead:clusterMarkReadEnabled:isPremiumArchive:)
+    public class func effectiveClusterReadStatus(
+        isClusterRead: Bool,
+        parentRead: Bool,
+        clusterMarkReadEnabled: Bool,
+        isPremiumArchive: Bool
+    ) -> Bool {
+        guard isPremiumArchive, clusterMarkReadEnabled, parentRead else {
+            return isClusterRead
+        }
+
+        return true
+    }
+
+    @objc(updatedClusterStories:parentRead:clusterMarkReadEnabled:isPremiumArchive:)
+    public class func updatedClusterStories(
+        _ clusterStories: NSArray?,
+        parentRead: Bool,
+        clusterMarkReadEnabled: Bool,
+        isPremiumArchive: Bool
+    ) -> NSArray {
+        guard
+            let clusterStories,
+            effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: parentRead,
+                clusterMarkReadEnabled: clusterMarkReadEnabled,
+                isPremiumArchive: isPremiumArchive
+            )
+        else {
+            return clusterStories ?? []
+        }
+
+        return clusterStories.compactMap { item in
+            guard let story = item as? NSDictionary else {
+                return item
+            }
+
+            let updatedStory = NSMutableDictionary(dictionary: story)
+            updatedStory["read_status"] = 1
+            return updatedStory.copy()
+        } as NSArray
+    }
+
+    @objc(indicatorImageNameForScore:)
+    public class func indicatorImageName(forScore score: Int) -> String {
+        if score < 0 {
+            return "indicator-hidden"
+        } else if score > 0 {
+            return "indicator-focus"
+        } else {
+            return "indicator-unread"
+        }
+    }
+
+    @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)
+    public class func visibleClusterStories(
+        _ clusterStories: NSArray?,
+        subscribedFeedIds: NSSet?,
+        isPremiumArchive: Bool
+    ) -> NSArray {
+        guard
+            let clusterStories = clusterStories as? [NSDictionary],
+            let subscribedFeedIds
+        else {
+            return []
+        }
+
+        let allowedFeedIds = Set(subscribedFeedIds.compactMap { stringValue(from: $0) })
+        let visibleClusterStories = clusterStories
+            .filter { clusterStory in
+                guard let feedId = stringValue(from: clusterStory["story_feed_id"]) else {
+                    return false
+                }
+
+                return allowedFeedIds.contains(feedId)
+            }
+            .sorted { lhs, rhs in
+                timestamp(from: lhs) > timestamp(from: rhs)
+            }
+
+        guard !isPremiumArchive, visibleClusterStories.count > 1 else {
+            return visibleClusterStories as NSArray
+        }
+
+        return Array(visibleClusterStories.prefix(1)) as NSArray
+    }
+
+    @objc(canSafelyReloadClusterRowsWithCurrentTableRowCount:visibleStoryRowCount:targetRows:)
+    public class func canSafelyReloadClusterRows(
+        currentTableRowCount: Int,
+        visibleStoryRowCount: Int,
+        targetRows: NSArray?
+    ) -> Bool {
+        guard let targetRows = targetRows as? [NSNumber], !targetRows.isEmpty else {
+            return false
+        }
+
+        let expectedTableRowCount = visibleStoryRowCount + 1
+        guard currentTableRowCount == expectedTableRowCount else {
+            return false
+        }
+
+        return targetRows.allSatisfy { targetRow in
+            let row = targetRow.intValue
+            return row >= 0 && row < currentTableRowCount
+        }
+    }
+
+    private class func preferencesDictionary(from userProfile: NSDictionary?) -> NSDictionary? {
+        guard let preferencesValue = userProfile?["preferences"] else {
+            return nil
+        }
+
+        if let preferences = preferencesValue as? NSDictionary {
+            return preferences
+        }
+
+        guard
+            let preferencesJSON = preferencesValue as? String,
+            let data = preferencesJSON.data(using: .utf8),
+            let preferences = try? JSONSerialization.jsonObject(with: data) as? NSDictionary
+        else {
+            return nil
+        }
+
+        return preferences
+    }
+
+    private class func boolValue(from value: Any) -> Bool {
+        if let boolValue = value as? Bool {
+            return boolValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.boolValue
+        }
+
+        if let stringValue = value as? String {
+            return NSString(string: stringValue).boolValue
+        }
+
+        return false
+    }
+
+    private class func stringValue(from value: Any?) -> String? {
+        guard let value else {
+            return nil
+        }
+
+        if let stringValue = value as? String, !stringValue.isEmpty {
+            return stringValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.stringValue
+        }
+
+        return nil
+    }
+
+    private class func timestamp(from clusterStory: NSDictionary) -> Int {
+        if let timestamp = clusterStory["story_timestamp"] as? NSNumber {
+            return timestamp.intValue
+        }
+
+        if let timestamp = clusterStory["story_timestamp"] as? NSString {
+            return timestamp.integerValue
+        }
+
+        return 0
+    }
+}
+
+@objcMembers public final class TryFeedPresentationDecision: NSObject {
+    @objc(isTryFeedPreviewWithFeed:)
+    public class func isTryFeedPreview(feed: NSDictionary?) -> Bool {
+        guard let value = feed?["temp"] else {
+            return false
+        }
+
+        if let boolValue = value as? Bool {
+            return boolValue
+        }
+
+        if let numberValue = value as? NSNumber {
+            return numberValue.boolValue
+        }
+
+        if let stringValue = value as? String {
+            return NSString(string: stringValue).boolValue
+        }
+
+        return false
+    }
+}
+
 @objcMembers public final class StoryPageRefreshDecision: NSObject {
     public class func shouldBeginRefresh(isRefreshInProgress: Bool) -> Bool {
         !isRefreshInProgress
+    }
+}
+
+@objcMembers public final class DailyBriefingFolderPlacementDecision: NSObject {
+    @objc(orderedFoldersFromFolderNames:isEnabled:)
+    public class func orderedFolders(folderNames: [String], isEnabled: Bool) -> [String] {
+        let foldersWithoutBriefing = folderNames.filter { $0 != "daily_briefing" }
+        let _ = isEnabled
+
+        var orderedFolders = foldersWithoutBriefing
+        let insertionIndex = orderedFolders.firstIndex(of: "infrequent")
+            ?? orderedFolders.firstIndex(of: "everything")
+            ?? 0
+        orderedFolders.insert("daily_briefing", at: insertionIndex)
+
+        return orderedFolders
     }
 }
 

@@ -51,6 +51,8 @@
             android:alwaysRetainTaskState="true"
             android:launchMode="singleTask" />
 
+        <activity android:name=".activity.DailyBriefingActivity" />
+
         <activity
             android:name=".activity.Profile"
             android:label="@string/profile" />
@@ -109,6 +111,10 @@
 
         <activity
             android:name=".activity.AllStoriesReading"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.DailyBriefingReading"
             android:theme="@style/Theme.Translucent" />
 
         <activity

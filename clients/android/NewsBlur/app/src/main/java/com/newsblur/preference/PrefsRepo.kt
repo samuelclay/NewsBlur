@@ -494,6 +494,8 @@ class PrefsRepo(
             return StoryOrder.NEWEST
         } else if (fs.isInfrequent) {
             return getStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isDailyBriefing) {
+            return getStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -525,6 +527,8 @@ class PrefsRepo(
             throw IllegalArgumentException("GlobalShared FeedSet type has fixed ordering")
         } else if (fs.isInfrequent) {
             setStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newOrder)
+        } else if (fs.isDailyBriefing) {
+            setStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newOrder)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -556,6 +560,8 @@ class PrefsRepo(
             return getReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isDailyBriefing) {
+            return getReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         }
         throw IllegalArgumentException("unknown type of feed set")
     }
@@ -586,6 +592,8 @@ class PrefsRepo(
             setReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.isInfrequent) {
             setReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
+        } else if (fs.isDailyBriefing) {
+            setReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -614,6 +622,8 @@ class PrefsRepo(
             return getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isDailyBriefing) {
+            return getStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -645,6 +655,8 @@ class PrefsRepo(
             setStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isInfrequent) {
             setStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle)
+        } else if (fs.isDailyBriefing) {
+            setStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }

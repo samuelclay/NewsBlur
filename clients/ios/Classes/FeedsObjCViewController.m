@@ -50,6 +50,33 @@ static UIImage *NBImageFromColor(UIColor *color) {
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
+static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
+    id explicitFlag = results[@"briefing_enabled"];
+    if (explicitFlag && explicitFlag != [NSNull null]) {
+        return [explicitFlag boolValue];
+    }
+
+    NSDictionary *userProfile = results[@"user_profile"];
+    id preferencesValue = userProfile[@"preferences"];
+    NSDictionary *preferences = nil;
+
+    if ([preferencesValue isKindOfClass:[NSDictionary class]]) {
+        preferences = preferencesValue;
+    } else if ([preferencesValue isKindOfClass:[NSString class]]) {
+        NSData *preferencesData = [(NSString *)preferencesValue dataUsingEncoding:NSUTF8StringEncoding];
+        if (preferencesData) {
+            preferences = [NSJSONSerialization JSONObjectWithData:preferencesData options:0 error:nil];
+        }
+    }
+
+    id fallbackFlag = preferences[@"briefing_enabled"];
+    if (fallbackFlag && fallbackFlag != [NSNull null]) {
+        return [fallbackFlag boolValue];
+    }
+
+    return NO;
+}
+
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
@@ -113,8 +140,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
-                                        /* 1 */ @"infrequent",
-                                        /* 2 */ @"everything"];
+                                        /* 1 */ @"daily_briefing",
+                                        /* 2 */ @"infrequent",
+                                        /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -818,6 +846,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         
         self.isOffline = YES;
         appDelegate.tryFeedStoryId = nil;
+        appDelegate.tryFeedStoryTitle = nil;
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
         
@@ -1012,8 +1041,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
+    [allFolders setValue:@[] forKey:@"daily_briefing"];
 
     appDelegate.dictFolders = allFolders;
+    appDelegate.briefingEnabled = NBBriefingEnabledFromResults(results);
     
     appDelegate.dictInactiveFeeds = [results[@"inactive_feeds"] mutableCopy];
     
@@ -1092,6 +1123,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [appDelegate.dictFoldersArray removeObject:sectionName];
         [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
     }];
+
+    NSArray<NSString *> *orderedFolders = [DailyBriefingFolderPlacementDecision orderedFoldersFromFolderNames:appDelegate.dictFoldersArray
+                                                                                                     isEnabled:appDelegate.briefingEnabled];
+    appDelegate.dictFoldersArray = [orderedFolders mutableCopy];
     
     // Add Widget Site Stories folder to bottom
 //    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
@@ -1758,6 +1793,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+    } else if ([identifier isEqual:@"story_clustering"]) {
+        NSString *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
+        NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
+        [self.appDelegate POST:urlString
+                    parameters:@{@"story_clustering": value}
+                       success:nil
+                       failure:^(__unused NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@"Failed to save story_clustering preference: %@", error);
+        }];
+        [self.appDelegate.feedDetailViewController reload];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
@@ -2288,6 +2333,7 @@ heightForHeaderInSection:(NSInteger)section {
     if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
         section != NewsBlurTopSectionInfrequentSiteStories &&
         section != NewsBlurTopSectionAllStories &&
+        ![folderName isEqualToString:@"daily_briefing"] &&
         ![folderName isEqualToString:@"river_global"] &&
         ![folderName isEqualToString:@"river_blurblogs"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
@@ -2310,6 +2356,11 @@ heightForHeaderInSection:(NSInteger)section {
 
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
+        return 0;
+    }
+
+    if ([folderName isEqualToString:@"daily_briefing"] &&
+        !appDelegate.briefingEnabled) {
         return 0;
     }
 
@@ -2805,6 +2856,7 @@ heightForHeaderInSection:(NSInteger)section {
         if ([folderName isEqualToString:@"dashboard"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"daily_briefing"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||
@@ -2834,6 +2886,7 @@ heightForHeaderInSection:(NSInteger)section {
         if ([folderName isEqualToString:@"dashboard"] ||
             [folderName isEqualToString:@"everything"] ||
             [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"daily_briefing"] ||
             [folderName isEqualToString:@"saved_stories"] ||
             [folderName isEqualToString:@"saved_searches"] ||
             [folderName isEqualToString:@"read_stories"] ||

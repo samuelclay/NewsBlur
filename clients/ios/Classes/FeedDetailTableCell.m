@@ -39,6 +39,8 @@ static UIFont *indicatorFont = nil;
 @synthesize isSaved;
 @synthesize textSize;
 @synthesize isRiverOrSocial;
+@synthesize isClusterStory;
+@synthesize isDailyBriefingSummary;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
@@ -86,6 +88,13 @@ static UIFont *indicatorFont = nil;
 }
 
 - (NSString *)accessibilityLabel {
+    if (self.isClusterStory) {
+        return [NSString stringWithFormat:@"%@, \"%@\", %@",
+                self.siteTitle ?: @"no site",
+                self.storyTitle ?: @"no story",
+                self.storyDate ?: @"no date"];
+    }
+
     NSMutableString *output = [NSMutableString stringWithString:self.siteTitle ?: @"no site"];
     
     [output appendFormat:@", \"%@\"", self.storyTitle ?: @"no story"];
@@ -155,6 +164,149 @@ static UIFont *indicatorFont = nil;
     }
 
     CGContextRef context = UIGraphicsGetCurrentContext();
+    if (cell.isClusterStory) {
+        NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+        BOOL isComfortable = ![spacing isEqualToString:@"compact"];
+        CGFloat comfortMargin = isComfortable ? 4 : 0;
+        UIColor *backgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
+            UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+        UIColor *clusterBackgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xEEF5FD, 0xE7D8C6, 0x38424B, 0x1A1F23) :
+            UIColorFromLightSepiaMediumDarkRGB(0xE8F0F8, 0xECDEC9, 0x363C43, 0x101418);
+        [backgroundColor set];
+        CGContextFillRect(context, r);
+
+        CGFloat clusterIndent = 18.0 + (isHighlighted ? 2.0 : 0);
+        CGFloat trailingInset = 10.0;
+        CGFloat verticalInset = isComfortable ? 2.0 : 0.0;
+        CGRect clusterRect = CGRectMake(clusterIndent,
+                                        verticalInset,
+                                        MAX(r.size.width - clusterIndent - trailingInset, 40.0),
+                                        MAX(r.size.height - (verticalInset * 2.0), 1.0));
+        UIBezierPath *clusterPath = [UIBezierPath bezierPathWithRoundedRect:clusterRect cornerRadius:(isComfortable ? 8.0 : 6.0)];
+        [clusterBackgroundColor setFill];
+        [clusterPath fill];
+        CGContextSaveGState(context);
+        [clusterPath addClip];
+
+        UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+        UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:MAX(fontDescriptor.pointSize - 1, 11)];
+        UIFont *dateFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:10];
+        UIColor *titleColor = cell.isRead ?
+            UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888) :
+            UIColorFromLightSepiaMediumDarkRGB(0x202020, 0x333333, 0xD8D8D8, 0xD0D0D0);
+        UIColor *metaColor = cell.isRead ?
+            UIColorFromLightSepiaMediumDarkRGB(0x9A9A9A, 0x8B7B6B, 0x7F7F7F, 0x707070) :
+            UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x8B7B6B, 0xA0A0A0, 0x8F8F8F);
+        if (isHighlighted) {
+            titleColor = UIColorFromLightSepiaMediumDarkRGB(0x444444, 0x444444, 0xC6C6C6, 0xBCBCBC);
+            metaColor = UIColorFromLightSepiaMediumDarkRGB(0x707070, 0x8B7B6B, 0x8F8F8F, 0x808080);
+        }
+
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+
+        CGFloat feedBarOffset = CGRectGetMinX(clusterRect) + 2.0;
+        CGContextSetStrokeColorWithColor(context, cell.feedColorBarTopBorder.CGColor);
+        CGContextSetAlpha(context, cell.isRead ? 0.15 : 1.0);
+        CGContextSetLineWidth(context, 4.0f);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, feedBarOffset, CGRectGetMinY(clusterRect));
+        CGContextAddLineToPoint(context, feedBarOffset, CGRectGetMaxY(clusterRect));
+        CGContextStrokePath(context);
+
+        CGContextSetStrokeColorWithColor(context, cell.feedColorBar.CGColor);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, feedBarOffset + 4.0f, CGRectGetMinY(clusterRect));
+        CGContextAddLineToPoint(context, feedBarOffset + 4.0f, CGRectGetMaxY(clusterRect));
+        CGContextStrokePath(context);
+        CGContextSetAlpha(context, 1.0);
+
+        CGFloat contentY = CGRectGetMinY(clusterRect) + comfortMargin;
+        CGFloat contentHeight = CGRectGetHeight(clusterRect) - comfortMargin * 2;
+        NSString *indicatorImageName = [StoryClusterDisplayDecision indicatorImageNameForScore:cell.storyScore];
+        UIImage *indicatorImage = [UIImage imageNamed:indicatorImageName];
+        CGFloat indicatorSize = cell.storyScore == 0 ? 10.0 : 12.0;
+        CGFloat indicatorX = CGRectGetMinX(clusterRect) + 11.0;
+        CGFloat indicatorY = contentY + (contentHeight - indicatorSize) / 2.0;
+        [indicatorImage drawInRect:CGRectMake(indicatorX, indicatorY, indicatorSize, indicatorSize)
+                         blendMode:0
+                             alpha:(cell.isRead ? 0.15 : 1.0)];
+
+        UIImage *favicon = [Utilities roundCorneredImage:cell.siteFavicon radius:4 convertToSize:CGSizeMake(16, 16)];
+        if (cell.isRead && favicon) {
+            favicon = [cell imageByApplyingAlpha:favicon withAlpha:0.4];
+        }
+        CGFloat faviconY = contentY + (contentHeight - 16.0) / 2.0;
+        [favicon drawInRect:CGRectMake(CGRectGetMinX(clusterRect) + 26.0, faviconY, 16.0, 16.0)];
+
+        NSString *dateText = cell.storyDate ?: @"";
+        CGSize dateSize = [dateText sizeWithAttributes:@{NSFontAttributeName: dateFont}];
+        CGFloat rightPadding = 12.0;
+        CGFloat dateX = CGRectGetMaxX(clusterRect) - rightPadding - dateSize.width;
+        CGFloat titleRightEdge = dateX - 8.0;
+
+        id cachedImage = cell.storyHash.length ? appDelegate.cachedStoryImages[cell.storyHash] : nil;
+        if (cachedImage && cachedImage != [NSNull null]) {
+            CGRect imageFrame = CGRectMake(dateX - 30.0, contentY + (contentHeight - 24.0) / 2.0, 24.0, 24.0);
+            titleRightEdge = CGRectGetMinX(imageFrame) - 8.0;
+
+            CGContextSaveGState(context);
+            [[UIBezierPath bezierPathWithRoundedRect:imageFrame cornerRadius:4] addClip];
+            UIImage *cachedStoryImage = (UIImage *)cachedImage;
+            CGFloat aspect = cachedStoryImage.size.width / cachedStoryImage.size.height;
+            CGRect drawingFrame = imageFrame;
+            if (imageFrame.size.width / aspect > imageFrame.size.height) {
+                CGFloat height = imageFrame.size.width / aspect;
+                drawingFrame = CGRectMake(imageFrame.origin.x,
+                                          imageFrame.origin.y + ((imageFrame.size.height - height) / 2.0),
+                                          imageFrame.size.width,
+                                          height);
+            } else {
+                CGFloat width = imageFrame.size.height * aspect;
+                drawingFrame = CGRectMake(imageFrame.origin.x + ((imageFrame.size.width - width) / 2.0),
+                                          imageFrame.origin.y,
+                                          width,
+                                          imageFrame.size.height);
+            }
+
+            CGContextClipToRect(context, imageFrame);
+            [cachedStoryImage drawInRect:drawingFrame blendMode:kCGBlendModeNormal alpha:(cell.isRead ? 0.55 : 1.0)];
+            CGContextRestoreGState(context);
+        }
+
+        CGFloat titleX = CGRectGetMinX(clusterRect) + 50.0;
+        CGRect titleFrame = CGRectMake(titleX,
+                                       contentY + (contentHeight - titleFont.lineHeight) / 2.0 - 1.0,
+                                       MAX(titleRightEdge - titleX, 40.0),
+                                       ceil(titleFont.lineHeight));
+        [cell.storyTitle drawWithRect:titleFrame
+                              options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                           attributes:@{NSFontAttributeName: titleFont,
+                                        NSForegroundColorAttributeName: titleColor,
+                                        NSParagraphStyleAttributeName: paragraphStyle}
+                              context:nil];
+
+        CGRect dateFrame = CGRectMake(dateX,
+                                      contentY + (contentHeight - dateFont.lineHeight) / 2.0,
+                                      dateSize.width,
+                                      ceil(dateFont.lineHeight));
+        [dateText drawInRect:dateFrame
+              withAttributes:@{NSFontAttributeName: dateFont,
+                               NSForegroundColorAttributeName: metaColor}];
+
+        UIColor *white = UIColorFromRGB(0xffffff);
+        CGContextSetStrokeColorWithColor(context, [white colorWithAlphaComponent:0.85].CGColor);
+        CGContextSetLineWidth(context, 1.0f);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, CGRectGetMinX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
+        CGContextAddLineToPoint(context, CGRectGetMaxX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
+        CGContextStrokePath(context);
+        CGContextRestoreGState(context);
+
+        return;
+    }
     
     NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
     BOOL isPreviewShown = ![preview isEqualToString:@"none"];
@@ -193,8 +345,15 @@ static UIFont *indicatorFont = nil;
     CGRect dateRect = rect;
     
     UIColor *backgroundColor;
-    backgroundColor = isHighlighted ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+    if (cell.isDailyBriefingSummary) {
+        backgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xDCEAF8, 0xE9DCCB, 0x38414A, 0x30363E) :
+            UIColorFromLightSepiaMediumDarkRGB(0xEAF3FC, 0xF1E6D7, 0x30363E, 0x232830);
+    } else {
+        backgroundColor = isHighlighted ?
+            UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
+            UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+    }
     [backgroundColor set];
     
     CGContextFillRect(context, r);

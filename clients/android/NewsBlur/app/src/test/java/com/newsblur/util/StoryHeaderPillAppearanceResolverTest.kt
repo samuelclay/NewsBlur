@@ -8,13 +8,13 @@ class StoryHeaderPillAppearanceResolverTest {
     fun keeps_expanded_spacing_when_label_is_visible() {
         val appearance =
             StoryHeaderPillAppearanceResolver.resolve(
-                showText = true,
-                expandedPaddingStart = 18,
-                expandedPaddingTop = 7,
-                expandedPaddingEnd = 18,
-                expandedPaddingBottom = 7,
-                expandedIconPadding = 6,
-                compactHorizontalPadding = 8,
+                true,
+                18,
+                7,
+                18,
+                7,
+                6,
+                8,
             )
 
         assertEquals(18, appearance.paddingStart())
@@ -26,13 +26,13 @@ class StoryHeaderPillAppearanceResolverTest {
     fun collapses_to_compact_spacing_when_label_is_hidden() {
         val appearance =
             StoryHeaderPillAppearanceResolver.resolve(
-                showText = false,
-                expandedPaddingStart = 18,
-                expandedPaddingTop = 7,
-                expandedPaddingEnd = 18,
-                expandedPaddingBottom = 7,
-                expandedIconPadding = 6,
-                compactHorizontalPadding = 8,
+                false,
+                18,
+                7,
+                18,
+                7,
+                6,
+                8,
             )
 
         assertEquals(8, appearance.paddingStart())

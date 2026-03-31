@@ -113,6 +113,8 @@
         folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
         folderTitle = @"All Site Stories";
+    } else if ([folderName isEqual:@"daily_briefing"]) {
+        folderTitle = @"Daily Briefing";
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderTitle = @"Widget Site Stories";
     } else if ([folderName isEqual:@"read_stories"]) {
@@ -204,7 +206,7 @@
             }
             [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"daily_briefing"] && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -252,6 +254,14 @@
             folderImageViewX = 7;
         }
         allowLongPress = YES;
+    } else if ([folderName isEqual:@"daily_briefing"]) {
+        folderImage = [UIImage imageNamed:@"briefing"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+        allowLongPress = NO;
     } else if (section == NewsBlurTopSectionAllStories) {
         folderImage = [UIImage imageNamed:@"all-stories"];
         if (!appDelegate.isPhone) {

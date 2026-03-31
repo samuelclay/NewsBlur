@@ -289,6 +289,13 @@ class PreferencesViewModel: ObservableObject {
                             defaultValue: "with_icons"
                         ),
                         subtitle: "Show related feeds in the story list header"
+                    ),
+                    PreferenceItem(
+                        title: "Cluster related stories",
+                        icon: "square.stack.3d.down.right",
+                        iconColor: .indigo,
+                        type: .toggle(key: "story_clustering", defaultValue: true),
+                        subtitle: "Show duplicate stories from other feeds beneath a story title"
                     )
                 ]
             ),

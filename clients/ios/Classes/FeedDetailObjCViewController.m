@@ -35,6 +35,7 @@
 #define kTableViewRowHeight 60;
 #define kTableViewRiverRowHeight 90;
 #define kTableViewShortRowDifference 14;
+static const CGFloat NBDailyBriefingSectionHeaderHeight = 36.0f;
 
 typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 {
@@ -50,6 +51,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     FeedSectionAfter,
     FeedSectionLoading
 };
+
+typedef NS_ENUM(NSUInteger, FeedDetailVisibleRowType)
+{
+    FeedDetailVisibleRowTypeStory = 0,
+    FeedDetailVisibleRowTypeCluster
+};
+
+static NSString * const FeedDetailVisibleRowTypeKey = @"type";
+static NSString * const FeedDetailVisibleRowStoryLocationKey = @"story_location";
+static NSString * const FeedDetailVisibleRowClusterStoryKey = @"cluster_story";
+static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 
 @interface FeedDetailObjCViewController ()
 
@@ -71,8 +83,35 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 @property (nonatomic, strong) UIBarButtonItem *storiesSidebarBarButton;
 @property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
+@property (nonatomic) CFTimeInterval dailyBriefingReloadStartedAt;
+@property (nonatomic) NSTimeInterval dailyBriefingReloadDataMs;
+@property (nonatomic) NSTimeInterval dailyBriefingHeightTotalMs;
+@property (nonatomic) NSTimeInterval dailyBriefingHeightMaxMs;
+@property (nonatomic) NSInteger dailyBriefingHeightMaxRow;
+@property (nonatomic) NSUInteger dailyBriefingHeightCallCount;
+@property (nonatomic) NSTimeInterval dailyBriefingCellTotalMs;
+@property (nonatomic) NSTimeInterval dailyBriefingCellMaxMs;
+@property (nonatomic) NSInteger dailyBriefingCellMaxRow;
+@property (nonatomic) NSUInteger dailyBriefingCellCallCount;
+@property (nonatomic) NSInteger dailyBriefingReloadStoryCount;
+@property (nonatomic) BOOL dailyBriefingDidLogInitialRender;
+@property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
+
+- (BOOL)isClusterMarkReadEnabled;
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
+- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location;
+- (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
+- (void)clearTryFeedSearchState;
 
 @end
+
+static inline CFTimeInterval NBDailyBriefingNow(void) {
+    return CACurrentMediaTime();
+}
+
+static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
+    return (NBDailyBriefingNow() - start) * 1000.0;
+}
 
 @implementation FeedDetailObjCViewController
 
@@ -114,6 +153,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xF2E9DE, 0x383838, 0x222222);
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
+        self.storyTitlesTable.sectionHeaderTopPadding = 0;
     }
     if (!self.isPhone) {
         self.storyTitlesTable.dragDelegate = self;
@@ -286,7 +326,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
         CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
         NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
-        NSDictionary *story = [self getStoryAtLocation:indexPath.row];
+        NSInteger storyLocation = [self storyLocationForIndexPath:indexPath];
+        NSDictionary *story = storyLocation == NSNotFound ? nil : [self getStoryAtLocation:storyLocation];
         if (!story) return YES;
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
@@ -500,8 +541,32 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     appDelegate.fontDescriptorTitleSize = nil;
     self.scrollingMarkReadRow = NSNotFound;
+    self.visibleStoryRows = [self buildVisibleStoryRows];
+    BOOL shouldLogDailyBriefingRender = storiesCollection.isDailyBriefing;
+    if (shouldLogDailyBriefingRender) {
+        self.dailyBriefingReloadStartedAt = NBDailyBriefingNow();
+        self.dailyBriefingReloadDataMs = 0;
+        self.dailyBriefingHeightTotalMs = 0;
+        self.dailyBriefingHeightMaxMs = 0;
+        self.dailyBriefingHeightMaxRow = NSNotFound;
+        self.dailyBriefingHeightCallCount = 0;
+        self.dailyBriefingCellTotalMs = 0;
+        self.dailyBriefingCellMaxMs = 0;
+        self.dailyBriefingCellMaxRow = NSNotFound;
+        self.dailyBriefingCellCallCount = 0;
+        self.dailyBriefingReloadStoryCount = storiesCollection.storyLocationsCount;
+        self.dailyBriefingDidLogInitialRender = NO;
+    }
     
+    CFTimeInterval reloadStartedAt = shouldLogDailyBriefingRender ? NBDailyBriefingNow() : 0;
     [self.storyTitlesTable reloadData];
+    if (shouldLogDailyBriefingRender) {
+        self.dailyBriefingReloadDataMs = NBDailyBriefingElapsedMs(reloadStartedAt);
+        NSLog(@"DailyBriefing iOS render: reloadData rows=%ld reload=%.1fms text_size=%ld",
+              (long)self.dailyBriefingReloadStoryCount,
+              self.dailyBriefingReloadDataMs,
+              (long)self.textSize);
+    }
     
     NSInteger location = storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
@@ -519,8 +584,129 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     appDelegate.fontDescriptorTitleSize = nil;
     self.scrollingMarkReadRow = NSNotFound;
+    self.visibleStoryRows = [self buildVisibleStoryRows];
     
     [self reload];
+}
+
+- (BOOL)shouldShowStoryClustering {
+    if (storiesCollection.isDailyBriefing || !self.isLegacyTable) {
+        return NO;
+    }
+
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"];
+}
+
+- (NSArray<NSDictionary *> *)visibleClusterStoriesForStory:(NSDictionary *)story {
+    NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
+    if (!clusterStories.count || ![self shouldShowStoryClustering]) {
+        return @[];
+    }
+
+    return [StoryClusterDisplayDecision visibleClusterStories:clusterStories
+                                            subscribedFeedIds:[appDelegate subscribedFeedIdsForStoryClusters]
+                                             isPremiumArchive:appDelegate.isPremiumArchive];
+}
+
+- (BOOL)isClusterMarkReadEnabled {
+    return appDelegate.isPremiumArchive &&
+        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:appDelegate.dictUserProfile];
+}
+
+- (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory {
+    BOOL isClusterRead = [clusterStory[@"read_status"] boolValue];
+    BOOL isParentRead = parentStory ? ![storiesCollection isStoryUnread:parentStory] : NO;
+
+    return [StoryClusterDisplayDecision effectiveClusterReadStatusWithIsClusterRead:isClusterRead
+                                                                         parentRead:isParentRead
+                                                             clusterMarkReadEnabled:[self isClusterMarkReadEnabled]
+                                                                   isPremiumArchive:appDelegate.isPremiumArchive];
+}
+
+- (NSArray<NSDictionary *> *)buildVisibleStoryRows {
+    NSInteger storyCount = storiesCollection.storyLocationsCount;
+    if (!storyCount) {
+        return @[];
+    }
+
+    NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithCapacity:(NSUInteger)storyCount];
+    for (NSInteger location = 0; location < storyCount; location++) {
+        [rows addObject:@{
+            FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeStory),
+            FeedDetailVisibleRowStoryLocationKey: @(location)
+        }];
+
+        if (![self shouldShowStoryClustering]) {
+            continue;
+        }
+
+        NSDictionary *story = [self getStoryAtLocation:location];
+        for (NSDictionary *clusterStory in [self visibleClusterStoriesForStory:story]) {
+            [rows addObject:@{
+                FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeCluster),
+                FeedDetailVisibleRowStoryLocationKey: @(location),
+                FeedDetailVisibleRowClusterStoryKey: clusterStory
+            }];
+        }
+    }
+
+    return rows;
+}
+
+- (NSArray<NSDictionary *> *)storyRowDescriptors {
+    if (!self.isLegacyTable || storiesCollection.isDailyBriefing) {
+        return nil;
+    }
+
+    if (self.visibleStoryRows == nil) {
+        self.visibleStoryRows = [self buildVisibleStoryRows];
+    }
+
+    return self.visibleStoryRows;
+}
+
+- (NSDictionary *)storyRowDescriptorForIndexPath:(NSIndexPath *)indexPath {
+    NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
+    if (rowDescriptors == nil) {
+        return nil;
+    }
+
+    if (indexPath.row < 0 || indexPath.row >= (NSInteger)rowDescriptors.count) {
+        return nil;
+    }
+
+    return rowDescriptors[(NSUInteger)indexPath.row];
+}
+
+- (NSDictionary *)clusterStoryForIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+    if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeCluster) {
+        return nil;
+    }
+
+    return rowDescriptor[FeedDetailVisibleRowClusterStoryKey];
+}
+
+- (NSInteger)storyLocationForScrollingAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+    if (rowDescriptor[FeedDetailVisibleRowStoryLocationKey] == nil) {
+        return NSNotFound;
+    }
+
+    return [rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue];
+}
+
+- (void)openClusterStory:(NSDictionary *)clusterStory {
+    NSString *feedId = [NSString stringWithFormat:@"%@", clusterStory[@"story_feed_id"] ?: @""];
+    NSString *storyHash = [NSString stringWithFormat:@"%@", clusterStory[@"story_hash"] ?: @""];
+    NSString *storyTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
+        [clusterStory[@"story_title"] stringByDecodingHTMLEntities] : nil;
+
+    if (!feedId.length || !storyHash.length || ![self.appDelegate isSubscribedFeedIdForStoryClusters:feedId]) {
+        return;
+    }
+
+    [self.appDelegate loadFeed:feedId withStory:storyHash storyTitle:storyTitle animated:NO];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -1084,10 +1270,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.appDelegate hidePopoverAnimated:YES];
     
     if (self.isMovingToParentViewController) {
-        appDelegate.inFindingStoryMode = NO;
-        appDelegate.findingStoryStartDate = nil;
-        appDelegate.findingStoryDictionary = nil;
-        appDelegate.tryFeedStoryId = nil;
+        [self clearTryFeedSearchState];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
 }
@@ -1207,6 +1390,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    if ([self respondsToSelector:@selector(resetDailyBriefingState)]) {
+        [(FeedDetailViewController *)self resetDailyBriefingState];
+    }
+
     [self hideTryFeedSubscribeBanner];
     appDelegate.hasLoadedFeedDetail = NO;
     self.navigationItem.titleView = nil;
@@ -1221,6 +1408,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.currentFetchTask = nil;
     self.fetchRequestId++;
     appDelegate.activeStory = nil;
+    self.visibleStoryRows = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
@@ -1261,6 +1449,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.currentFetchTask cancel];
     self.currentFetchTask = nil;
     self.fetchRequestId++;
+    self.visibleStoryRows = nil;
 
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -1302,6 +1491,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             NSArray *imageURLs = story[@"image_urls"];
             [self.appDelegate cacheStoryImagePlaceholder:storyHash];
             [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
+
+            NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
+            for (NSDictionary *clusterStory in clusterStories) {
+                NSString *clusterStoryHash = clusterStory[@"story_hash"];
+                NSArray *clusterImageURLs = clusterStory[@"image_urls"];
+                if (!clusterStoryHash.length || !clusterImageURLs.count) {
+                    continue;
+                }
+
+                [self.appDelegate cacheStoryImagePlaceholder:clusterStoryHash];
+                [self getFirstImage:clusterImageURLs forStoryHash:clusterStoryHash withManager:manager];
+            }
         }
     }];
     [cacheImagesOperation setQualityOfService:NSQualityOfServiceUtility];
@@ -1361,18 +1562,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
-        if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
+        if (![cell isKindOfClass:[FeedDetailTableCell class]]) continue;
         if ([cell.storyHash isEqualToString:storyHash]) {
             NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
             NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
             
             if (indexPath.row >= numberOfRows) {
                 NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
-                continue;
-            }
-            
-            if (indexPath.row > storiesCollection.storyLocationsCount) {
-                NSLog(@"⚠️ row %@ is greater than the story locations count: %@", @(indexPath.row), @(storiesCollection.storyLocationsCount));  // log
                 continue;
             }
             
@@ -1614,6 +1810,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         NSLog(@"⚠️ Called fetchRiverPage with dashboard; this should never occur");  // log
         return;
     }
+
+    if (storiesCollection.isDailyBriefing) {
+        [(FeedDetailViewController *)self fetchDailyBriefingPage:page withCallback:callback];
+        return;
+    }
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
@@ -1725,10 +1926,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         if (self.appDelegate.inFindingStoryMode) {
             [self informError:@"Can't find the story."];
         }
-        self.appDelegate.tryFeedStoryId = nil;
-        self.appDelegate.inFindingStoryMode = NO;
-        self.appDelegate.findingStoryStartDate = nil;
-        self.appDelegate.findingStoryDictionary = nil;
+        [self clearTryFeedSearchState];
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showFetchingBanner:@"Offline" isOffline:YES];
@@ -1977,6 +2175,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSInteger newStoriesCount = [newStories count];
     BOOL premiumRestriction = !appDelegate.isPremium &&
     storiesCollection.isRiverView &&
+    !storiesCollection.isDailyBriefing &&
     !storiesCollection.isReadView &&
     !storiesCollection.isWidgetView &&
     !storiesCollection.isSocialView &&
@@ -2013,6 +2212,58 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.pageFetching = NO;
 }
 
+- (NSString *)normalizedTryFeedStoryTitle:(NSString *)title {
+    if (![title isKindOfClass:[NSString class]] || !title.length) {
+        return nil;
+    }
+
+    NSString *decodedTitle = [[title stringByDecodingHTMLEntities] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSArray<NSString *> *components = [decodedTitle componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSMutableArray<NSString *> *filteredComponents = [NSMutableArray array];
+    for (NSString *component in components) {
+        if (component.length) {
+            [filteredComponents addObject:component];
+        }
+    }
+
+    return [[filteredComponents componentsJoinedByString:@" "] lowercaseString];
+}
+
+- (BOOL)selectTryFeedStory:(NSDictionary *)story {
+    NSString *storyHash = [story[@"story_hash"] isKindOfClass:[NSString class]] ? story[@"story_hash"] : nil;
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+
+    if (score < appDelegate.selectedIntelligence) {
+        [self changeIntelligence:score];
+    }
+
+    NSInteger locationOfStoryId = storyHash.length ? [storiesCollection locationOfStoryId:storyHash] : -1;
+    if (locationOfStoryId == -1) {
+        NSLog(@"---> Could not find story: %@", storyHash ?: story[@"story_title"]);
+        return NO;
+    }
+
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
+    if (!indexPath) {
+        return NO;
+    }
+
+    if (self.isLegacyTable && self.storyTitlesTable.window != nil && indexPath.row < [self.storyTitlesTable numberOfRowsInSection:0]) {
+        [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
+               animated:NO
+         scrollPosition:UITableViewScrollPositionMiddle];
+        [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
+    }
+
+    self.deferredLoadStoryCount = 1;
+    [self deferredLoadStoryAtRow:indexPath];
+
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [self clearTryFeedSearchState];
+
+    return YES;
+}
+
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
@@ -2043,10 +2294,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         if (appDelegate.inFindingStoryMode) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }
-        appDelegate.inFindingStoryMode = NO;
-        appDelegate.findingStoryStartDate = nil;
-        appDelegate.findingStoryDictionary = nil;
-        appDelegate.tryFeedStoryId = nil;
+        [self clearTryFeedSearchState];
         return;
     }
     
@@ -2088,37 +2336,22 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                                    objectAtIndex:i] objectForKey:@"story_hash"];
         if ([storyHashStr isEqualToString:appDelegate.tryFeedStoryId] ||
             [storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
-            NSDictionary *feed = [storiesCollection.activeFeedStories objectAtIndex:i];
-            
-            NSInteger score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
-            
-            if (score < appDelegate.selectedIntelligence) {
-                [self changeIntelligence:score];
-            }
-            NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
-            if (locationOfStoryId == -1) {
-                NSLog(@"---> Could not find story: %@", storyHashStr);
+            if ([self selectTryFeedStory:[storiesCollection.activeFeedStories objectAtIndex:i]]) {
                 return;
             }
-//            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
-            NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
-            
-            if (self.isLegacyTable && self.storyTitlesTable.window != nil && indexPath.row < [self.storyTitlesTable numberOfRowsInSection:0]) {
-                [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
-                       animated:NO
-                 scrollPosition:UITableViewScrollPositionMiddle];
-                [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
+        }
+    }
+
+    if ((storiesCollection.feedPage >= NBTryFeedTitleFallbackPageCount || self.pageFinished) &&
+        appDelegate.tryFeedStoryTitle.length) {
+        NSString *targetTitle = [self normalizedTryFeedStoryTitle:appDelegate.tryFeedStoryTitle];
+        for (NSDictionary *story in storiesCollection.activeFeedStories) {
+            NSString *candidateTitle = [self normalizedTryFeedStoryTitle:story[@"story_title"]];
+            if (targetTitle.length && [candidateTitle isEqualToString:targetTitle]) {
+                if ([self selectTryFeedStory:story]) {
+                    return;
+                }
             }
-            
-            self.deferredLoadStoryCount = 1;
-            [self deferredLoadStoryAtRow:indexPath];
-            
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            // found the story, reset the two flags.
-            appDelegate.tryFeedStoryId = nil;
-            appDelegate.inFindingStoryMode = NO;
-            appDelegate.findingStoryStartDate = nil;
-            appDelegate.findingStoryDictionary = nil;
         }
     }
 }
@@ -2241,6 +2474,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }];
 }
 
+- (void)clearTryFeedSearchState {
+    appDelegate.inFindingStoryMode = NO;
+    appDelegate.findingStoryStartDate = nil;
+    appDelegate.findingStoryDictionary = nil;
+    appDelegate.tryFeedStoryId = nil;
+    appDelegate.tryFeedStoryTitle = nil;
+    if (!appDelegate.isTryFeedView) {
+        appDelegate.tryFeedFeedId = nil;
+    }
+}
+
 - (void)hideTryFeedSubscribeBanner {
     if (!self.tryFeedBannerView) return;
 
@@ -2330,6 +2574,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         accessoryView = spinner;
     }
 
+    CGFloat accessoryDimension = [FetchingBannerAccessoryLayoutDecision fixedAccessoryDimensionForOffline:isOffline];
+    BOOL revealAccessoryAfterExpansion = [FetchingBannerAccessoryLayoutDecision revealsAccessoryAfterBannerExpansionForOffline:isOffline];
+    accessoryView.alpha = revealAccessoryAfterExpansion ? 0 : 1;
+
     // Title label
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -2362,10 +2610,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         ? self.tryFeedBannerView.bottomAnchor
         : self.storyTitlesHeaderBar.headerContainer.bottomAnchor;
 
-    [NSLayoutConstraint activateConstraints:@[
-        [accessoryView.widthAnchor constraintEqualToConstant:16],
-        [accessoryView.heightAnchor constraintEqualToConstant:16],
-
+    NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray arrayWithArray:@[
         [mainStack.topAnchor constraintEqualToAnchor:banner.topAnchor constant:8],
         [mainStack.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor constant:-8],
         [mainStack.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor constant:12],
@@ -2380,6 +2625,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
+    if (accessoryDimension > 0) {
+        [constraints addObject:[accessoryView.widthAnchor constraintEqualToConstant:accessoryDimension]];
+        [constraints addObject:[accessoryView.heightAnchor constraintEqualToConstant:accessoryDimension]];
+    }
+    [NSLayoutConstraint activateConstraints:constraints];
 
     // Animate in: expand height from 0 so banner slides out from under the header bar,
     // pushing story titles down
@@ -2392,7 +2642,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         collapseHeight.active = NO;
         [self updateTopBannerInsets];
         [self.view layoutIfNeeded];
-    } completion:nil];
+    } completion:^(BOOL finished) {
+        if (!finished || !revealAccessoryAfterExpansion) return;
+
+        [UIView animateWithDuration:0.12 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            accessoryView.alpha = 1;
+        } completion:nil];
+    }];
 }
 
 - (void)hideFetchingBanner {
@@ -2467,6 +2723,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.pageFinished) {
         BOOL premiumRestriction = !appDelegate.isPremium &&
         storiesCollection.isRiverView &&
+        !storiesCollection.isDailyBriefing &&
         !storiesCollection.isReadView &&
         !storiesCollection.isWidgetView &&
         !storiesCollection.isSocialView &&
@@ -2599,24 +2856,163 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark -
 #pragma mark Table View - Feed List
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
-    NSInteger storyCount = storiesCollection.storyLocationsCount;
-    
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (!self.messageView.hidden) {
         return 0;
     }
-    
+
+    if (tableView == self.storyTitlesTable && storiesCollection.isDailyBriefing) {
+        return [(FeedDetailViewController *)self dailyBriefingSectionCount];
+    }
+
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
+    if (!self.messageView.hidden) {
+        return 0;
+    }
+
+    if (tableView == self.storyTitlesTable && storiesCollection.isDailyBriefing) {
+        return [(FeedDetailViewController *)self dailyBriefingNumberOfRowsInSection:section];
+    }
+
+    NSInteger storyCount = self.isLegacyTable ? [self storyRowDescriptors].count : storiesCollection.storyLocationsCount;
+
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (tableView != self.storyTitlesTable || !storiesCollection.isDailyBriefing) {
+        return nil;
+    }
+
+    DailyBriefingSectionInfo *sectionInfo = [(FeedDetailViewController *)self dailyBriefingSectionInfoForSection:section];
+    if (!sectionInfo || sectionInfo.isLoadingSection) {
+        return nil;
+    }
+
+    CGFloat width = CGRectGetWidth(tableView.bounds);
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, NBDailyBriefingSectionHeaderHeight)];
+    headerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xEAECE6, 0xEBDDCC, 0x3A3A3C, 0x2C2C2E);
+
+    UIView *separator = [[UIView alloc] initWithFrame:CGRectMake(0, NBDailyBriefingSectionHeaderHeight - 1, width, 1)];
+    separator.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    separator.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xD9DDD5, 0xD9CDBE, 0x4A4A4C, 0x242426);
+    [headerView addSubview:separator];
+
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
+    UIFont *dateFont = [UIFont fontWithName:@"WhitneySSm-Book" size:MAX(titleFont.pointSize - 1, 10)];
+    UIColor *titleColor = UIColorFromLightSepiaMediumDarkRGB(0x4C4D4A, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
+    UIColor *dateColor = UIColorFromLightSepiaMediumDarkRGB(0x767974, 0x7D6F61, 0xA5A5AA, 0x98989D);
+
+    CGFloat leftInset = 12.0f;
+    CGFloat rightInset = 8.0f;
+    CGFloat disclosureSize = 29.0f;
+    CGFloat dateWidth = MIN(120.0f, ceil([sectionInfo.dateText sizeWithAttributes:@{NSFontAttributeName: dateFont}].width) + 4.0f);
+    CGFloat textHeight = NBDailyBriefingSectionHeaderHeight;
+    CGFloat disclosureX = width - rightInset - disclosureSize;
+    CGFloat dateX = MAX(leftInset + 80.0f, disclosureX - 8.0f - dateWidth);
+    CGFloat titleWidth = MAX(60.0f, dateX - leftInset - 8.0f);
+
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftInset, 0, titleWidth, textHeight)];
+    titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    titleLabel.font = titleFont;
+    titleLabel.textColor = titleColor;
+    titleLabel.backgroundColor = UIColor.clearColor;
+    titleLabel.text = sectionInfo.title;
+    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [headerView addSubview:titleLabel];
+
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(dateX, 0, MAX(0, dateWidth), textHeight)];
+    dateLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    dateLabel.font = dateFont;
+    dateLabel.textColor = dateColor;
+    dateLabel.backgroundColor = UIColor.clearColor;
+    dateLabel.textAlignment = NSTextAlignmentRight;
+    dateLabel.text = sectionInfo.dateText;
+    dateLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [headerView addSubview:dateLabel];
+
+    UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
+    if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleSepia]) {
+        disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
+    } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleMedium]) {
+        disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
+    } else if ([[[ThemeManager themeManager] effectiveTheme] isEqualToString:ThemeStyleDark]) {
+        disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
+    }
+
+    UIImageView *disclosureBorderView = [[UIImageView alloc] initWithFrame:CGRectMake(disclosureX, CGRectGetMidY(headerView.bounds) - disclosureSize/2.0f, disclosureSize, disclosureSize)];
+    disclosureBorderView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    disclosureBorderView.image = disclosureBorder;
+    [headerView addSubview:disclosureBorderView];
+
+    UIImageView *disclosureView = [[UIImageView alloc] initWithFrame:CGRectMake(disclosureX, CGRectGetMidY(headerView.bounds) - disclosureSize/2.0f, disclosureSize, disclosureSize)];
+    disclosureView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    disclosureView.contentMode = UIViewContentModeCenter;
+    disclosureView.image = [UIImage imageNamed:(sectionInfo.isCollapsed ? @"disclosure.png" : @"disclosure_down.png")];
+    [headerView addSubview:disclosureView];
+
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = headerView.bounds;
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    button.tag = section;
+    button.accessibilityLabel = [NSString stringWithFormat:@"%@, %@, %@", sectionInfo.title, sectionInfo.dateText, sectionInfo.isCollapsed ? @"collapsed" : @"expanded"];
+    [button addTarget:self action:@selector(didToggleDailyBriefingSection:) forControlEvents:UIControlEventTouchUpInside];
+    [headerView addSubview:button];
+
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (tableView != self.storyTitlesTable || !storiesCollection.isDailyBriefing) {
+        return 0.0f;
+    }
+
+    DailyBriefingSectionInfo *sectionInfo = [(FeedDetailViewController *)self dailyBriefingSectionInfoForSection:section];
+    return (!sectionInfo || sectionInfo.isLoadingSection) ? 0.01f : NBDailyBriefingSectionHeaderHeight;
+}
+
+- (void)didToggleDailyBriefingSection:(UIButton *)button {
+    if (!storiesCollection.isDailyBriefing) {
+        return;
+    }
+
+    [(FeedDetailViewController *)self toggleDailyBriefingSectionAt:button.tag];
+
+    NSIndexSet *sections = [NSIndexSet indexSetWithIndex:button.tag];
+    [self.storyTitlesTable reloadSections:sections withRowAnimation:UITableViewRowAnimationAutomatic];
+
+    NSInteger location = storiesCollection.locationOfActiveStory;
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+    if (indexPath && location >= 0 && self.view.window != nil) {
+        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger storyCount = storiesCollection.storyLocationsCount;
+    NSDictionary *rowDescriptor = self.isLegacyTable ? [self storyRowDescriptorForIndexPath:indexPath] : nil;
+    BOOL isClusterRow = [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
+    NSInteger location = [self storyLocationForIndexPath:indexPath];
+    NSInteger parentLocation = isClusterRow ? [self storyLocationForScrollingAtIndexPath:indexPath] : location;
+    BOOL shouldMeasureRender = tableView == self.storyTitlesTable &&
+        storiesCollection.isDailyBriefing &&
+        location < storyCount;
+    CFTimeInterval renderStartedAt = shouldMeasureRender ? NBDailyBriefingNow() : 0;
     
     NSString *cellIdentifier;
     NSDictionary *feed ;
     
-    if (indexPath.row >= storiesCollection.storyLocationsCount) {
+    if ([FeedRowLoadingDecision shouldShowLoadingCellWithIsLegacyTable:self.isLegacyTable
+                                                      isDailyBriefing:storiesCollection.isDailyBriefing
+                                                      hasRowDescriptor:rowDescriptor != nil
+                                                         storyLocation:location
+                                                            storyCount:storyCount]) {
         return [self makeLoadingCell];
     }
     
@@ -2644,7 +3040,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             break;
         }
     }
-    NSDictionary *story = [self getStoryAtLocation:indexPath.row];
+    NSDictionary *story = isClusterRow ? rowDescriptor[FeedDetailVisibleRowClusterStoryKey] : [self getStoryAtLocation:location];
+    if (!story) {
+        return [self makeLoadingCell];
+    }
     
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
@@ -2667,21 +3066,28 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSString *title = [story objectForKey:@"story_title"];
     cell.storyTitle = [title stringByDecodingHTMLEntities];
     
-    cell.storyDate = [story objectForKey:@"short_parsed_date"];
+    cell.storyDate = isClusterRow ? [Utilities formatClusterDateFromTimestamp:[[story objectForKey:@"story_timestamp"] integerValue]]
+                                 : [story objectForKey:@"short_parsed_date"];
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
-    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
-    cell.isShared = [[story objectForKey:@"shared"] boolValue];
+    cell.isSaved = !isClusterRow && [[story objectForKey:@"starred"] boolValue];
+    cell.isShared = !isClusterRow && [[story objectForKey:@"shared"] boolValue];
     cell.storyHash = story[@"story_hash"];
     
-    if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
+    if (!isClusterRow && [[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     } else {
         cell.storyAuthor = @"";
     }
     
     cell.storyContent = nil;
-    if (self.textSize != FeedDetailTextSizeTitleOnly) {
-        NSString *content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
+    if (!isClusterRow && self.textSize != FeedDetailTextSizeTitleOnly) {
+        NSString *content = nil;
+        if (storiesCollection.isDailyBriefing &&
+            [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
+            content = story[@"daily_briefing_preview_text"];
+        } else {
+            content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
+        }
         if ([content length] > 500) {
             content = [content substringToIndex:500];
         }
@@ -2714,14 +3120,19 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     cell.hasAlpha = NO;
     
     // undread indicator
-    
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+
+    NSDictionary *parentStory = isClusterRow && parentLocation != NSNotFound ? [self getStoryAtLocation:parentLocation] : nil;
+    int score = isClusterRow ?
+        ([story[@"score"] respondsToSelector:@selector(integerValue)] ? [story[@"score"] integerValue] : 0) :
+        [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
-    
-    cell.isRead = ![storiesCollection isStoryUnread:story];
-    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
+
+    cell.isRead = isClusterRow ? [self isClusterStoryRead:story parentStory:parentStory] : ![storiesCollection isStoryUnread:story];
+    cell.isReadAvailable = !isClusterRow && ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
     cell.textSize = self.textSize;
     cell.isShort = NO;
+    cell.isClusterStory = isClusterRow;
+    cell.isDailyBriefingSummary = !isClusterRow && [story[@"is_daily_briefing_summary"] boolValue];
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     if (!self.isPhoneOrCompact &&
@@ -2731,18 +3142,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     cell.isRiverOrSocial = NO;
-    if (storiesCollection.isRiverView ||
+    if (!isClusterRow && (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
         storiesCollection.isWidgetView ||
         storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
+        storiesCollection.isSocialRiverView)) {
         cell.isRiverOrSocial = YES;
     }
 
     if (!self.isPhoneOrCompact) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-        if (rowIndex == indexPath.row) {
+        if (!isClusterRow && rowIndex == location) {
             [self tableView:tableView selectRowAtIndexPath:indexPath animated:NO];
         }
     }
@@ -2750,6 +3161,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [cell setupGestures];
     
     [cell setNeedsDisplay];
+    if (shouldMeasureRender) {
+        double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
+        self.dailyBriefingCellCallCount += 1;
+        self.dailyBriefingCellTotalMs += elapsedMs;
+        if (elapsedMs > self.dailyBriefingCellMaxMs) {
+            self.dailyBriefingCellMaxMs = elapsedMs;
+            self.dailyBriefingCellMaxRow = location;
+        }
+    }
     
     return cell;
 }
@@ -2809,6 +3229,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 feedTitle = @"All Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 feedTitle = @"Infrequent Site Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
+                feedTitle = @"Daily Briefing";
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
@@ -2838,7 +3260,16 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    if (self.isLegacyTable && rowIndex != NSNotFound) {
+        [self reloadStoryRowsForLocation:rowIndex rowAnimation:UITableViewRowAnimationNone];
+        NSIndexPath *storyIndexPath = [self indexPathForStoryLocation:rowIndex];
+        if (storyIndexPath) {
+            [self.storyTitlesTable selectRowAtIndexPath:storyIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+        return;
+    }
+
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:rowIndex];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     
     if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
@@ -2851,9 +3282,65 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [cell setNeedsDisplay];
 }
 
+- (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location {
+    if (!self.isLegacyTable || location == NSNotFound) {
+        return @[];
+    }
+
+    NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
+    NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray array];
+
+    for (NSInteger row = 0; row < (NSInteger)rowDescriptors.count; row++) {
+        NSDictionary *rowDescriptor = rowDescriptors[(NSUInteger)row];
+        if ([rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue] != location) {
+            continue;
+        }
+
+        [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:FeedSectionBefore]];
+    }
+
+    return indexPaths;
+}
+
+- (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation {
+    if (location == NSNotFound) {
+        return;
+    }
+
+    if (self.isLegacyTable) {
+        self.visibleStoryRows = [self buildVisibleStoryRows];
+        NSArray<NSIndexPath *> *indexPaths = [self indexPathsForStoryLocationIncludingClusterRows:location];
+        if (indexPaths.count) {
+            NSArray<NSNumber *> *targetRows = [indexPaths valueForKey:@"row"];
+            NSInteger currentTableRowCount = [self.storyTitlesTable numberOfRowsInSection:FeedSectionBefore];
+            if ([StoryClusterDisplayDecision canSafelyReloadClusterRowsWithCurrentTableRowCount:currentTableRowCount
+                                                                            visibleStoryRowCount:self.visibleStoryRows.count
+                                                                                      targetRows:targetRows]) {
+                [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:rowAnimation];
+            } else {
+                NSLog(@"Skipping clustered row reload due to table/model row mismatch. table=%ld visible=%ld location=%ld rows=%@",
+                      (long)currentTableRowCount,
+                      (long)self.visibleStoryRows.count,
+                      (long)location,
+                      targetRows);
+                [self.storyTitlesTable reloadData];
+            }
+            return;
+        }
+    }
+
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+    if (indexPath) {
+        [self reloadIndexPath:indexPath withRowAnimation:rowAnimation];
+    }
+}
+
 - (void)changeActiveStoryTitleCellLayout {
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:rowIndex];
+    if (!indexPath) {
+        return;
+    }
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = YES;
     [cell setNeedsLayout];
@@ -2864,14 +3351,29 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < storiesCollection.storyLocationsCount) {
+    NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
+    if (clusterStory) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+        NSInteger location = storiesCollection.locationOfActiveStory;
+        NSIndexPath *activeIndexPath = [self indexPathForStoryLocation:location];
+        if (activeIndexPath && location >= 0 && ![activeIndexPath isEqual:indexPath]) {
+            [tableView selectRowAtIndexPath:activeIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+
+        [self openClusterStory:clusterStory];
+        return;
+    }
+
+    NSInteger selectedLocation = [self storyLocationForIndexPath:indexPath];
+    if (selectedLocation < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         NSInteger location = storiesCollection.locationOfActiveStory;
-        NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
+        NSIndexPath *oldIndexPath = [self indexPathForStoryLocation:location];
         
-        if (location >= 0 && ![oldIndexPath isEqual:indexPath]) {
+        if (location >= 0 && oldIndexPath && ![oldIndexPath isEqual:indexPath]) {
             [self tableView:tableView deselectRowAtIndexPath:oldIndexPath animated:YES];
         }
         
@@ -2885,11 +3387,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (tableView != self.storyTitlesTable) {
         return NO;
     }
-    if (indexPath.section == FeedSectionLoading) {
+    
+    NSInteger location = [self storyLocationForIndexPath:indexPath];
+    if (location >= storiesCollection.storyLocationsCount) {
         return NO;
     }
     
-    NSInteger location = [self storyLocationForIndexPath:indexPath];
     NSDictionary *story = [self getStoryAtLocation:location];
     return story != nil;
 }
@@ -2899,11 +3402,11 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView != self.storyTitlesTable) {
         return nil;
     }
-    if (indexPath.section == FeedSectionLoading) {
-        return nil;
-    }
     
     NSInteger location = [self storyLocationForIndexPath:indexPath];
+    if (location >= storiesCollection.storyLocationsCount) {
+        return nil;
+    }
     NSDictionary *story = [self getStoryAtLocation:location];
     if (!story) {
         return nil;
@@ -2998,7 +3501,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
-                [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
+                [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
@@ -3026,7 +3529,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if (location == storiesCollection.storyLocationsCount) {
-        if (!appDelegate.isPremium && storiesCollection.isRiverView) {
+        if (!appDelegate.isPremium && storiesCollection.isRiverView && !storiesCollection.isDailyBriefing) {
             [appDelegate showPremiumDialog];
         }
     }
@@ -3042,7 +3545,52 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([cell class] == [NBLoadingCell class]) {
         [(NBLoadingCell *)cell animate];
     }
-    if ([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row) {
+    if (tableView == self.storyTitlesTable &&
+        storiesCollection.isDailyBriefing &&
+        !self.dailyBriefingDidLogInitialRender &&
+        [self storyLocationForIndexPath:indexPath] < storiesCollection.storyLocationsCount) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.dailyBriefingDidLogInitialRender || !storiesCollection.isDailyBriefing) {
+                return;
+            }
+
+            NSArray<NSIndexPath *> *visibleRows = [tableView indexPathsForVisibleRows];
+            NSIndexPath *lastVisibleIndexPath = nil;
+            for (NSIndexPath *visibleIndexPath in [visibleRows reverseObjectEnumerator]) {
+                if ([self storyLocationForIndexPath:visibleIndexPath] < storiesCollection.storyLocationsCount) {
+                    lastVisibleIndexPath = visibleIndexPath;
+                    break;
+                }
+            }
+
+            NSInteger currentLocation = [self storyLocationForIndexPath:indexPath];
+            NSInteger lastVisibleLocation = lastVisibleIndexPath ? [self storyLocationForIndexPath:lastVisibleIndexPath] : NSNotFound;
+            if (!lastVisibleIndexPath || currentLocation < lastVisibleLocation) {
+                return;
+            }
+
+            self.dailyBriefingDidLogInitialRender = YES;
+            double totalMs = NBDailyBriefingElapsedMs(self.dailyBriefingReloadStartedAt);
+            double avgHeightMs = self.dailyBriefingHeightCallCount ? self.dailyBriefingHeightTotalMs / self.dailyBriefingHeightCallCount : 0;
+            double avgCellMs = self.dailyBriefingCellCallCount ? self.dailyBriefingCellTotalMs / self.dailyBriefingCellCallCount : 0;
+            NSLog(@"DailyBriefing iOS render: first_screen rows=%ld visible=%lu total=%.1fms height_calls=%lu height_total=%.1fms height_avg=%.2fms height_max=%.1fms@%ld cell_calls=%lu cell_total=%.1fms cell_avg=%.2fms cell_max=%.1fms@%ld",
+                  (long)self.dailyBriefingReloadStoryCount,
+                  (unsigned long)visibleRows.count,
+                  totalMs,
+                  (unsigned long)self.dailyBriefingHeightCallCount,
+                  self.dailyBriefingHeightTotalMs,
+                  avgHeightMs,
+                  self.dailyBriefingHeightMaxMs,
+                  (long)self.dailyBriefingHeightMaxRow,
+                  (unsigned long)self.dailyBriefingCellCallCount,
+                  self.dailyBriefingCellTotalMs,
+                  avgCellMs,
+                  self.dailyBriefingCellMaxMs,
+                  (long)self.dailyBriefingCellMaxRow);
+        });
+    }
+    NSIndexPath *lastVisibleRow = (NSIndexPath *)[[tableView indexPathsForVisibleRows] lastObject];
+    if (lastVisibleRow && [indexPath isEqual:lastVisibleRow]) {
         [self performSelector:@selector(checkScroll)
                    withObject:nil
                    afterDelay:0.1];
@@ -3051,15 +3599,29 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
-    
-    if (storyCount && [self storyLocationForIndexPath:indexPath] == storyCount) {
-        if (!self.pageFinished) return 40;
-        
-        BOOL markReadOnScroll = self.isMarkReadOnScroll;
-        if (markReadOnScroll) {
-            return CGRectGetHeight(self.view.frame) - 40;
+    NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
+    NSInteger location = [self storyLocationForIndexPath:indexPath];
+    BOOL shouldMeasureRender = tableView == self.storyTitlesTable &&
+        storiesCollection.isDailyBriefing &&
+        location < storyCount;
+    CFTimeInterval renderStartedAt = shouldMeasureRender ? NBDailyBriefingNow() : 0;
+    CGFloat rowHeight;
+
+    if (clusterStory) {
+        NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+        BOOL isComfortable = ![spacing isEqualToString:@"compact"];
+        rowHeight = isComfortable ? 42.0f : 36.0f;
+    } else if (storyCount && [self storyLocationForIndexPath:indexPath] == storyCount) {
+        if (!self.pageFinished) {
+            rowHeight = 40;
+        } else {
+            BOOL markReadOnScroll = self.isMarkReadOnScroll;
+            if (markReadOnScroll) {
+                rowHeight = CGRectGetHeight(self.view.frame) - 40;
+            } else {
+                rowHeight = 120;
+            }
         }
-        return 120;
     } else {
         NSInteger height = kTableViewRowHeight;
         if (storiesCollection.isRiverView ||
@@ -3083,36 +3645,47 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize + 1];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
-            return height + font.pointSize * 3.25;
+            rowHeight = height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
                 NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
-                NSString *content = [story[@"story_content"] convertHTML];
-                
-                if (content.length < 10 && [story[@"story_title"] length] < 30) {
-                    return height;
-                } else if (content.length < 50 && [story[@"story_title"] length] < 30) {
-                    return height + font.pointSize * 2;
-                } else if (content.length < 50 && [story[@"story_title"] length] < 40) {
-                    return height + font.pointSize * 3;
-                } else if (content.length < 50 && [story[@"story_title"] length] >= 30) {
-                    return height + font.pointSize * 5;
-                } else if (content.length < 100) {
-                    return height + font.pointSize * 5;
-                } else if (self.textSize == FeedDetailTextSizeMedium) {
-                    return height + font.pointSize * 7;
+                NSUInteger contentLength = 0;
+                if (storiesCollection.isDailyBriefing) {
+                    if ([story[@"daily_briefing_preview_length"] respondsToSelector:@selector(unsignedIntegerValue)]) {
+                        contentLength = [story[@"daily_briefing_preview_length"] unsignedIntegerValue];
+                    }
+                    if (!contentLength && [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
+                        contentLength = [story[@"daily_briefing_preview_text"] length];
+                    }
                 } else {
-                    return height + font.pointSize * 9;
+                    NSString *content = [story[@"story_content"] convertHTML];
+                    contentLength = content.length;
+                }
+                
+                if (contentLength < 10 && [story[@"story_title"] length] < 30) {
+                    rowHeight = height;
+                } else if (contentLength < 50 && [story[@"story_title"] length] < 30) {
+                    rowHeight = height + font.pointSize * 2;
+                } else if (contentLength < 50 && [story[@"story_title"] length] < 40) {
+                    rowHeight = height + font.pointSize * 3;
+                } else if (contentLength < 50 && [story[@"story_title"] length] >= 30) {
+                    rowHeight = height + font.pointSize * 5;
+                } else if (contentLength < 100) {
+                    rowHeight = height + font.pointSize * 5;
+                } else if (self.textSize == FeedDetailTextSizeMedium) {
+                    rowHeight = height + font.pointSize * 7;
+                } else {
+                    rowHeight = height + font.pointSize * 9;
                 }
             } else {
                 NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
                 
                 if ([story[@"story_title"] length] < 30) {
-                    return height + font.pointSize * 3;
+                    rowHeight = height + font.pointSize * 3;
                 } else if ([story[@"story_title"] length] < 50) {
-                    return height + font.pointSize * 4;
+                    rowHeight = height + font.pointSize * 4;
                 } else {
-                    return height + font.pointSize * 5;
+                    rowHeight = height + font.pointSize * 5;
                 }
             }
         } else {
@@ -3131,9 +3704,21 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
 
             CGFloat minHeight = font.pointSize * 3;
-            return MAX(titleOnlyHeight, minHeight);
+            rowHeight = MAX(titleOnlyHeight, minHeight);
         }
     }
+
+    if (shouldMeasureRender) {
+        double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
+        self.dailyBriefingHeightCallCount += 1;
+        self.dailyBriefingHeightTotalMs += elapsedMs;
+        if (elapsedMs > self.dailyBriefingHeightMaxMs) {
+            self.dailyBriefingHeightMaxMs = elapsedMs;
+            self.dailyBriefingHeightMaxRow = location;
+        }
+    }
+
+    return rowHeight;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
@@ -3263,8 +3848,16 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (![storiesCollection.activeFeedStories count]) return;
     
-    if (!self.pageFetching && (maximumOffset - currentOffset <= 500.0 ||
-        (appDelegate.inFindingStoryMode))) {
+    CGFloat remainingOffset = maximumOffset - currentOffset;
+    BOOL shouldFetchNextPage = !self.pageFetching && (remainingOffset <= 500.0 ||
+        (appDelegate.inFindingStoryMode));
+    if (storiesCollection.isDailyBriefing) {
+        shouldFetchNextPage = !self.pageFetching && [DailyBriefingPaginationDecision shouldPrefetchNextPageWithRemainingOffset:remainingOffset
+                                                                                                                isDragging:self.storyTitlesTable.dragging
+                                                                                                            isDecelerating:self.storyTitlesTable.decelerating];
+    }
+
+    if (shouldFetchNextPage) {
         if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
             [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
         } else {
@@ -3278,19 +3871,20 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     BOOL markReadOnScroll = self.isMarkReadOnScroll;
     
     if (indexPath && markReadOnScroll) {
-        NSUInteger topRow = indexPath.row;
+        NSInteger topRow = [self storyLocationForScrollingAtIndexPath:indexPath];
+        if (topRow == NSNotFound) {
+            return;
+        }
         
         if (self.scrollingMarkReadRow == NSNotFound) {
             self.scrollingMarkReadRow = topRow;
         } else if (topRow > self.scrollingMarkReadRow) {
-            for (NSUInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
+            for (NSInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
                 NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
                 NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 
                 if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
-                    NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
-                    NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
-                    [self reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationFade];
+                    [self reloadStoryRowsForLocation:thisRow rowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
@@ -3317,15 +3911,38 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation {
-    if (storyLocation >= [[storiesCollection activeFeedStoryLocations] count]) return nil;
-    id location = [[storiesCollection activeFeedStoryLocations] objectAtIndex:storyLocation];
-    if (!location) return nil;
-    NSInteger row = [location intValue];
-    return [storiesCollection.activeFeedStories objectAtIndex:row];
+    NSNumber *storyIndex = [StoryRowLookupDecision storyIndexFor:storyLocation
+                                                isDailyBriefing:storiesCollection.isDailyBriefing
+                                                 allStoriesCount:storiesCollection.activeFeedStories.count
+                                           visibleStoryLocations:storiesCollection.activeFeedStoryLocations ?: @[]];
+    if (storyIndex == nil) return nil;
+
+    NSInteger row = [storyIndex integerValue];
+    if (row < 0 || row >= (NSInteger)storiesCollection.activeFeedStories.count) return nil;
+
+    id story = [storiesCollection.activeFeedStories objectAtIndex:row];
+    return [story isKindOfClass:[NSDictionary class]] ? story : nil;
 }
 
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath {
-    if (self.isLegacyTable || indexPath.section == FeedSectionBefore) {
+    if (storiesCollection.isDailyBriefing) {
+        return [(FeedDetailViewController *)self dailyBriefingStoryLocationForIndexPath:indexPath];
+    }
+
+    if (self.isLegacyTable) {
+        NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+        if (rowDescriptor == nil) {
+            return storiesCollection.storyLocationsCount;
+        }
+
+        if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster) {
+            return NSNotFound;
+        }
+
+        return [rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue];
+    }
+
+    if (indexPath.section == FeedSectionBefore) {
         return indexPath.row;
     } else if (indexPath.section == FeedSectionSelected) {
         return storiesCollection.indexOfActiveStory;
@@ -3335,6 +3952,26 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location {
+    if (storiesCollection.isDailyBriefing) {
+        return [(FeedDetailViewController *)self indexPathForDailyBriefingStoryLocation:location];
+    }
+
+    if (self.isLegacyTable) {
+        NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
+        for (NSInteger row = 0; row < (NSInteger)rowDescriptors.count; row++) {
+            NSDictionary *rowDescriptor = rowDescriptors[(NSUInteger)row];
+            if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) {
+                continue;
+            }
+
+            if ([rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue] == location) {
+                return [NSIndexPath indexPathForRow:row inSection:FeedSectionBefore];
+            }
+        }
+
+        return nil;
+    }
+
     NSInteger active = storiesCollection.indexOfActiveStory;
     
     if (self.isLegacyTable || active < 0 || location < active) {
@@ -3413,7 +4050,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (indexPath == nil) return;
     
-    NSDictionary *story = [self getStoryAtLocation:indexPath.row];
+    NSInteger storyLocation = [self storyLocationForIndexPath:indexPath];
+    NSDictionary *story = storyLocation == NSNotFound ? nil : [self getStoryAtLocation:storyLocation];
     
     if (!story) return;
 
@@ -3619,15 +4257,19 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
     }
+
+    if (storiesCollection.isDailyBriefing) {
+        UIView *sourceView = self.settingsBarButton.customView ?: self.view;
+        [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:sourceView];
+        return;
+    }
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
     BOOL dashboard = self.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
     BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
-    BOOL river = [self isRiver];
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL social = appDelegate.storiesCollection.isSocialRiverView;
@@ -3912,6 +4554,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     UIView *pillView = self.storyTitlesHeaderBar.discoverPill;
 
+    if (storiesCollection.isDailyBriefing) {
+        [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:pillView];
+        return;
+    }
+
     if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
         NSString *feedId = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
         [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:pillView];
@@ -3942,6 +4589,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)updateStoryTitlesHeaderPillState {
+    [self.storyTitlesHeaderBar setDailyBriefingMode:storiesCollection.isDailyBriefing];
+
     // Update options pill text
     NSString *order = storiesCollection.activeOrder ?: @"newest";
     NSString *readFilter = storiesCollection.activeReadFilter ?: @"all";
@@ -3955,15 +4604,25 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL isWidget = storiesCollection.isWidgetView;
     BOOL isInfrequent = storiesCollection.isInfrequent;
     [self.storyTitlesHeaderBar updateDiscoverVisibilityWithIsRiver:storiesCollection.isRiverView isEverything:isEverything isSocial:isSocial isSaved:isSaved isRead:isRead isWidget:isWidget isInfrequent:isInfrequent];
+    if (storiesCollection.isDailyBriefing) {
+        self.storyTitlesHeaderBar.discoverPill.hidden = NO;
+    }
 
     // Build mark-read menu with timing submenu
-    NSString *collectionTitle = storiesCollection.isRiverView ?
-        ([storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder") :
-        @"this site";
+    NSString *collectionTitle;
+    if (storiesCollection.isDailyBriefing) {
+        collectionTitle = @"daily briefing";
+    } else if (storiesCollection.isRiverView) {
+        collectionTitle = [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder";
+    } else {
+        collectionTitle = @"this site";
+    }
     [self updateMarkReadPillMenu:collectionTitle];
 
     // Update discover pill favicons
-    if (storiesCollection.activeFeed) {
+    if (storiesCollection.isDailyBriefing) {
+        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
+    } else if (storiesCollection.activeFeed) {
         NSArray *similarFeeds = storiesCollection.activeFeed[@"similar_feeds"];
         if ([similarFeeds isKindOfClass:[NSArray class]] && similarFeeds.count > 0) {
             NSArray *feedIds = [similarFeeds subarrayWithRange:NSMakeRange(0, MIN(similarFeeds.count, 5))];
@@ -4490,13 +5149,17 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
     NSInteger offset = 1;
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:rowIndex];
+    if (!indexPath) {
+        return;
+    }
+
     if ([[self.storyTitlesTable visibleCells] count] <= 4) {
         offset = 0;
     }
-    if (offset > rowIndex) offset = rowIndex;
-    
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
-    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
+    if (offset > indexPath.row) offset = indexPath.row;
+
+    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(indexPath.row - offset) inSection:0];
     NSIndexPath *oldIndexPath = storyTitlesTable.indexPathForSelectedRow;
     
     if (indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0]) {
@@ -4772,7 +5435,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #pragma mark - Drag Delegate
 
 - (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
-    NSDictionary *story = [self getStoryAtLocation:indexPath.row];
+    NSInteger storyLocation = [self storyLocationForIndexPath:indexPath];
+    NSDictionary *story = storyLocation == NSNotFound ? nil : [self getStoryAtLocation:storyLocation];
     
     if (!story) return @[];
 

@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *recentlyReadHashes;
 
+- (BOOL)isClusterMarkReadEnabledForStory:(NSDictionary *)story;
+
 @end
 
 @implementation StoriesCollection
@@ -42,6 +44,7 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
+@synthesize isDailyBriefing;
 @synthesize isSavedView;
 @synthesize isReadView;
 @synthesize inSearch;
@@ -72,6 +75,7 @@
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
+    self.isDailyBriefing = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
     self.isWidgetView = NO;
@@ -109,7 +113,14 @@
 }
 
 - (BOOL)isCustomFolder {
-    return self.isRiverView && !self.isEverything && !self.isInfrequent && !self.isSavedView && !self.isReadView && !self.isSocialView && !self.isWidgetView;
+    return self.isRiverView &&
+    !self.isEverything &&
+    !self.isInfrequent &&
+    !self.isDailyBriefing &&
+    !self.isSavedView &&
+    !self.isReadView &&
+    !self.isSocialView &&
+    !self.isWidgetView;
 }
 
 - (BOOL)isCustomFolderOrFeed {
@@ -378,6 +389,8 @@
             return @"NewsBlur Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
+        } else if ([activeFolder isEqualToString:@"daily_briefing"]) {
+            return @"Daily Briefing";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
         } else if ([activeFolder isEqualToString:@"widget_stories"]) {
@@ -604,6 +617,16 @@
 
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    if ([self isClusterMarkReadEnabledForStory:story]) {
+        NSArray *updatedClusterStories = [StoryClusterDisplayDecision
+                                          updatedClusterStories:[story objectForKey:@"cluster_stories"]
+                                          parentRead:YES
+                                          clusterMarkReadEnabled:YES
+                                          isPremiumArchive:self.appDelegate.isPremiumArchive];
+        if (updatedClusterStories) {
+            [newStory setObject:updatedClusterStories forKey:@"cluster_stories"];
+        }
+    }
 
     if ([[appDelegate.activeStory objectForKey:@"story_hash"]
          isEqualToString:[newStory objectForKey:@"story_hash"]]) {
@@ -662,6 +685,14 @@
         [appDelegate.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
     }
     [appDelegate finishMarkAsRead:story];
+}
+
+- (BOOL)isClusterMarkReadEnabledForStory:(NSDictionary *)story {
+    NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
+
+    return self.appDelegate.isPremiumArchive &&
+        clusterStories.count > 0 &&
+        [StoryClusterDisplayDecision isClusterMarkReadEnabledWithUserProfile:self.appDelegate.dictUserProfile];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withId:(NSString *)newStoryIdStr {

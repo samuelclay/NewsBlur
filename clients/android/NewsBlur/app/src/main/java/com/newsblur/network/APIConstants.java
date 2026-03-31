@@ -89,6 +89,9 @@ public class APIConstants {
     public static final String PATH_IMPORT_OPML = "/import/opml_upload";
     public static final String PATH_ASK_AI_QUESTION = "/ask-ai/question";
     public static final String PATH_ASK_AI_TRANSCRIBE = "/ask-ai/transcribe";
+    public static final String PATH_BRIEFING_STORIES = "/briefing/stories";
+    public static final String PATH_BRIEFING_PREFERENCES = "/briefing/preferences";
+    public static final String PATH_BRIEFING_GENERATE = "/briefing/generate";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

@@ -124,6 +124,344 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_daily_briefing_initial_open_fetches_stories_before_preferences_are_known() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: false,
+                preferencesEnabled: false,
+                isLoadingInitialData: true,
+                hasStories: false
+            ),
+            .loading
+        )
+        XCTAssertFalse(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: false,
+                preferencesEnabled: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: false,
+                preferencesEnabled: false
+            )
+        )
+    }
+
+    func test_daily_briefing_with_disabled_preferences_shows_settings_after_the_story_response() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: false,
+                isLoadingInitialData: false,
+                hasStories: false
+            ),
+            .settings
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: true,
+                preferencesEnabled: false
+            )
+        )
+        XCTAssertFalse(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: true,
+                preferencesEnabled: false
+            )
+        )
+    }
+
+    func test_daily_briefing_with_enabled_preferences_loads_stories_then_shows_story_list() {
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: true,
+                isLoadingInitialData: true,
+                hasStories: false
+            ),
+            .loading
+        )
+        XCTAssertEqual(
+            DailyBriefingPresentationDecision.presentationState(
+                hasLoadedPreferences: true,
+                preferencesEnabled: true,
+                isLoadingInitialData: false,
+                hasStories: true
+            ),
+            .stories
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 1,
+                hasLoadedPreferences: true,
+                preferencesEnabled: true
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPresentationDecision.shouldFetchStories(
+                page: 2,
+                hasLoadedPreferences: true,
+                preferencesEnabled: true
+            )
+        )
+    }
+
+    func test_daily_briefing_link_extracts_story_hash_for_internal_navigation() {
+        XCTAssertEqual(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://www.newsblur.com/briefing?story=feed%3A1"),
+                isDailyBriefing: true
+            ),
+            "feed:1"
+        )
+    }
+
+    func test_daily_briefing_link_ignores_non_briefing_urls() {
+        XCTAssertNil(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://example.com/article?story=feed%3A1"),
+                isDailyBriefing: true
+            )
+        )
+        XCTAssertNil(
+            DailyBriefingLinkDecision.storyHash(
+                for: NSURL(string: "https://www.newsblur.com/briefing?story=feed%3A1"),
+                isDailyBriefing: false
+            )
+        )
+    }
+
+    func test_daily_briefing_pagination_waits_for_user_scroll() {
+        XCTAssertFalse(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: false,
+                isDecelerating: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: true,
+                isDecelerating: false
+            )
+        )
+        XCTAssertTrue(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 120,
+                isDragging: false,
+                isDecelerating: true
+            )
+        )
+    }
+
+    func test_daily_briefing_pagination_ignores_far_offsets() {
+        XCTAssertFalse(
+            DailyBriefingPaginationDecision.shouldPrefetchNextPage(
+                remainingOffset: 800,
+                isDragging: true,
+                isDecelerating: true
+            )
+        )
+    }
+
+    func test_fetching_banner_loading_spinner_uses_intrinsic_size_after_banner_reveal() {
+        XCTAssertEqual(
+            FetchingBannerAccessoryLayoutDecision.fixedAccessoryDimension(isOffline: false),
+            0
+        )
+        XCTAssertTrue(
+            FetchingBannerAccessoryLayoutDecision.revealsAccessoryAfterBannerExpansion(isOffline: false)
+        )
+    }
+
+    func test_fetching_banner_offline_icon_keeps_fixed_size_and_shows_immediately() {
+        XCTAssertEqual(
+            FetchingBannerAccessoryLayoutDecision.fixedAccessoryDimension(isOffline: true),
+            16
+        )
+        XCTAssertFalse(
+            FetchingBannerAccessoryLayoutDecision.revealsAccessoryAfterBannerExpansion(isOffline: true)
+        )
+    }
+
+    func test_daily_briefing_folder_appears_before_infrequent_site_stories() {
+        XCTAssertEqual(
+            DailyBriefingFolderPlacementDecision.orderedFolders(
+                folderNames: ["dashboard", "infrequent", "everything", "tech"],
+                isEnabled: true
+            ),
+            ["dashboard", "daily_briefing", "infrequent", "everything", "tech"]
+        )
+    }
+
+    func test_daily_briefing_folder_keeps_its_top_section_slot_when_disabled() {
+        XCTAssertEqual(
+            DailyBriefingFolderPlacementDecision.orderedFolders(
+                folderNames: ["dashboard", "daily_briefing", "infrequent", "everything"],
+                isEnabled: false
+            ),
+            ["dashboard", "daily_briefing", "infrequent", "everything"]
+        )
+    }
+
+    func test_daily_briefing_defaults_only_the_latest_group_to_expanded() {
+        XCTAssertEqual(
+            DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIDs(for: ["latest", "older", "oldest"]),
+            Set(["older", "oldest"])
+        )
+        XCTAssertEqual(
+            DailyBriefingSectionLayoutDecision.defaultCollapsedGroupIDs(for: ["latest"]),
+            []
+        )
+    }
+
+    func test_daily_briefing_section_layout_maps_rows_and_loading_section() {
+        let sections = DailyBriefingSectionLayoutDecision.sections(
+            groups: [
+                DailyBriefingListGroup(
+                    id: "latest",
+                    title: "Morning Briefing",
+                    dateText: "Today, Mar 27",
+                    storyHashes: ["summary", "story-1", "story-2"]
+                ),
+                DailyBriefingListGroup(
+                    id: "older",
+                    title: "Evening Briefing",
+                    dateText: "Yesterday, Mar 26",
+                    storyHashes: ["story-3"]
+                ),
+            ],
+            storyLocationsByHash: [
+                "summary": 0,
+                "story-1": 1,
+                "story-2": 2,
+                "story-3": 3,
+            ],
+            collapsedGroupIDs: ["older"],
+            includesLoadingSection: true
+        )
+
+        XCTAssertEqual(
+            sections,
+            [
+                DailyBriefingListSection(
+                    id: "latest",
+                    title: "Morning Briefing",
+                    dateText: "Today, Mar 27",
+                    rowLocations: [0, 1, 2],
+                    isCollapsed: false,
+                    isLoadingSection: false
+                ),
+                DailyBriefingListSection(
+                    id: "older",
+                    title: "Evening Briefing",
+                    dateText: "Yesterday, Mar 26",
+                    rowLocations: [3],
+                    isCollapsed: true,
+                    isLoadingSection: false
+                ),
+                DailyBriefingListSection(
+                    id: "__loading__",
+                    title: "",
+                    dateText: "",
+                    rowLocations: [],
+                    isCollapsed: false,
+                    isLoadingSection: true
+                ),
+            ]
+        )
+    }
+
+    func test_daily_briefing_story_lookup_uses_raw_story_indexes() {
+        XCTAssertEqual(
+            StoryRowLookupDecision.storyIndex(
+                for: 2,
+                isDailyBriefing: true,
+                allStoriesCount: 4,
+                visibleStoryLocations: []
+            )?.intValue,
+            2
+        )
+    }
+
+    func test_non_briefing_story_lookup_uses_visible_story_locations() {
+        XCTAssertEqual(
+            StoryRowLookupDecision.storyIndex(
+                for: 1,
+                isDailyBriefing: false,
+                allStoriesCount: 10,
+                visibleStoryLocations: [5, 7, 9]
+            )?.intValue,
+            7
+        )
+    }
+
+    func test_daily_briefing_legacy_rows_do_not_fall_back_to_loading_without_row_descriptors() {
+        XCTAssertFalse(
+            FeedRowLoadingDecision.shouldShowLoadingCell(
+                isLegacyTable: true,
+                isDailyBriefing: true,
+                hasRowDescriptor: false,
+                storyLocation: 0,
+                storyCount: 4
+            )
+        )
+    }
+
+    func test_non_briefing_legacy_rows_still_use_loading_when_the_descriptor_is_missing() {
+        XCTAssertTrue(
+            FeedRowLoadingDecision.shouldShowLoadingCell(
+                isLegacyTable: true,
+                isDailyBriefing: false,
+                hasRowDescriptor: false,
+                storyLocation: 0,
+                storyCount: 4
+            )
+        )
+    }
+
+    func test_phone_story_titles_return_frame_snaps_back_to_full_width() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 247, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: 0,
+                isPhoneOrCompact: true
+            ),
+            CGRect(x: 0, y: 0, width: 393, height: 720)
+        )
+    }
+
+    func test_phone_story_titles_return_frame_keeps_regular_width_on_ipad() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 247, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: 0,
+                isPhoneOrCompact: false
+            ),
+            CGRect(x: 0, y: 0, width: 247, height: 720)
+        )
+    }
+
+    func test_phone_story_titles_return_frame_preserves_nav_bar_y_workaround() {
+        XCTAssertEqual(
+            FeedDetailReturnFrameDecision.correctedFrame(
+                CGRect(x: 0, y: 0, width: 393, height: 720),
+                containerBounds: CGRect(x: 0, y: 0, width: 393, height: 852),
+                navigationBarMinY: -59,
+                isPhoneOrCompact: true
+            ),
+            CGRect(x: 0, y: 59, width: 393, height: 720)
+        )
+    }
+
     func test_overlay_in_portrait_with_story_collapses_story_titles() {
         XCTAssertTrue(
             StoryAutoCollapseDecision.shouldCollapse(
@@ -833,6 +1171,212 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 behavior: .overlay,
                 size: CGSize(width: 1032, height: 1376),
                 isMac: false
+            )
+        )
+    }
+
+    func test_feed_selection_on_regular_width_loads_story_titles_immediately() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: false,
+                userInterfaceIdiomPhone: false
+            ),
+            .loadFeedDetail
+        )
+    }
+
+    func test_feed_selection_on_iphone_shows_feed_list_then_story_titles() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: true,
+                userInterfaceIdiomPhone: true
+            ),
+            .showFeedsListThenLoadFeedDetail
+        )
+    }
+
+    func test_feed_selection_on_compact_ipad_waits_for_existing_navigation_flow() {
+        XCTAssertEqual(
+            FeedSelectionPresentationDecision.presentation(
+                isPhone: true,
+                userInterfaceIdiomPhone: false
+            ),
+            .wait
+        )
+    }
+
+    func test_cluster_mark_read_preference_parses_dictionary_user_profile_preferences() {
+        let userProfile: [String: Any] = [
+            "preferences": [
+                "cluster_mark_read": true,
+            ],
+        ]
+
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.isClusterMarkReadEnabled(userProfile: userProfile as NSDictionary)
+        )
+    }
+
+    func test_cluster_mark_read_preference_parses_json_string_user_profile_preferences() {
+        let userProfile: [String: Any] = [
+            "preferences": "{\"cluster_mark_read\": true}",
+        ]
+
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.isClusterMarkReadEnabled(userProfile: userProfile as NSDictionary)
+        )
+    }
+
+    func test_cluster_mark_read_effective_read_status_follows_parent_for_archive_users() {
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: true,
+                isPremiumArchive: true
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: false,
+                isPremiumArchive: true
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.effectiveClusterReadStatus(
+                isClusterRead: false,
+                parentRead: true,
+                clusterMarkReadEnabled: true,
+                isPremiumArchive: false
+            )
+        )
+    }
+
+    func test_cluster_mark_read_updates_cluster_story_metadata_locally() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:2",
+                "read_status": 0,
+                "score": 1,
+            ],
+            [
+                "story_hash": "feed:3",
+                "read_status": 1,
+                "score": 0,
+            ],
+        ]
+
+        let updated = StoryClusterDisplayDecision.updatedClusterStories(
+            clusterStories,
+            parentRead: true,
+            clusterMarkReadEnabled: true,
+            isPremiumArchive: true
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(updated?.count, 2)
+        XCTAssertEqual(updated?.first?["read_status"] as? Int, 1)
+        XCTAssertEqual(updated?.last?["read_status"] as? Int, 1)
+    }
+
+    func test_cluster_story_indicator_names_match_main_story_icons() {
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: -1), "indicator-hidden")
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 1), "indicator-focus")
+        XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 0), "indicator-unread")
+    }
+
+    func test_visible_cluster_stories_exclude_unsubscribed_feeds() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:3",
+                "story_feed_id": 3,
+                "story_timestamp": 100,
+            ],
+            [
+                "story_hash": "feed:2",
+                "story_feed_id": 2,
+                "story_timestamp": 200,
+            ],
+            [
+                "story_hash": "feed:4",
+                "story_feed_id": 4,
+                "story_timestamp": 150,
+            ],
+        ]
+
+        let visible = StoryClusterDisplayDecision.visibleClusterStories(
+            clusterStories,
+            subscribedFeedIds: NSSet(array: ["2", "4"]),
+            isPremiumArchive: true
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(visible?.count, 2)
+        XCTAssertEqual(visible?.map { $0["story_hash"] as? String }, ["feed:2", "feed:4"])
+    }
+
+    func test_visible_cluster_stories_limit_to_one_for_non_archive_users() {
+        let clusterStories: NSArray = [
+            [
+                "story_hash": "feed:3",
+                "story_feed_id": 3,
+                "story_timestamp": 100,
+            ],
+            [
+                "story_hash": "feed:2",
+                "story_feed_id": 2,
+                "story_timestamp": 200,
+            ],
+        ]
+
+        let visible = StoryClusterDisplayDecision.visibleClusterStories(
+            clusterStories,
+            subscribedFeedIds: NSSet(array: ["2", "3"]),
+            isPremiumArchive: false
+        ) as? [[String: Any]]
+
+        XCTAssertEqual(visible?.count, 1)
+        XCTAssertEqual(visible?.first?["story_hash"] as? String, "feed:2")
+    }
+
+    func test_cluster_row_reload_requires_stable_row_counts() {
+        XCTAssertTrue(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 4,
+                targetRows: [1, 2] as NSArray
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 5,
+                targetRows: [1, 2] as NSArray
+            )
+        )
+        XCTAssertFalse(
+            StoryClusterDisplayDecision.canSafelyReloadClusterRows(
+                currentTableRowCount: 5,
+                visibleStoryRowCount: 4,
+                targetRows: [5] as NSArray
+            )
+        )
+    }
+
+    func test_try_feed_preview_only_applies_to_temporary_feeds() {
+        XCTAssertTrue(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "999", "temp": true] as NSDictionary
+            )
+        )
+        XCTAssertFalse(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "123"] as NSDictionary
+            )
+        )
+        XCTAssertFalse(
+            TryFeedPresentationDecision.isTryFeedPreview(
+                feed: ["id": "123", "temp": false] as NSDictionary
             )
         )
     }
