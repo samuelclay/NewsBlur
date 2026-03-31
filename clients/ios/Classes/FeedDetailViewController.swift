@@ -578,23 +578,27 @@ extension FeedDetailViewController: FeedDetailInteraction {
     
     func visible(story: Story) {
         NSLog("🐓 Visible: \(story.debugTitle)")
-        
+
         guard storiesCollection.activeFeedStories != nil, !isDashboard else {
             return
         }
-        
+
         let cacheCount = storyCache.before.count + storyCache.after.count
-        
+
         if cacheCount > 0, story.index >= cacheCount - 5 {
-            let debug = Date()
-            
-            if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
-                fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
+            if storiesCollection.feedPage >= 100 {
+                pageFinished = true
             } else {
-                fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil)
+                let debug = Date()
+
+                if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
+                    fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
+                } else {
+                    fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil)
+                }
+
+                NSLog("🐓 Fetching next page took \(-debug.timeIntervalSinceNow) seconds")
             }
-            
-            NSLog("🐓 Fetching next page took \(-debug.timeIntervalSinceNow) seconds")
         }
         
         scrollingDate = Date()

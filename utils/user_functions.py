@@ -135,7 +135,9 @@ def generate_secret_token(phrase, size=12):
 def extract_user_agent(request):
     user_agent = request.environ.get("HTTP_USER_AGENT", "").lower()
     platform = "------"
-    if "ipad app" in user_agent:
+    if "mac app" in user_agent:
+        platform = "Mac"
+    elif "ipad app" in user_agent:
         platform = "iPad"
     elif "iphone app" in user_agent:
         platform = "iPhone"
