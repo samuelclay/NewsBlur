@@ -86,11 +86,23 @@ def _intelligence_dot(score: int) -> str:
 
 
 def _intelligence_summary(intel: dict) -> str:
-    """Build a compact intelligence indicator string."""
+    """Build a compact intelligence indicator string showing all non-zero classifiers."""
+    keys = ("feed", "author", "tags", "title", "title_regex", "text", "text_regex",
+            "url", "url_regex", "prompt")
+    labels = {
+        "feed": "feed", "author": "author", "tags": "tags", "title": "title",
+        "title_regex": "title-regex", "text": "text", "text_regex": "text-regex",
+        "url": "url", "url_regex": "url-regex", "prompt": "ai-prompt",
+    }
     parts = []
-    for key in ("feed", "author", "tags", "title"):
+    for key in keys:
         score = intel.get(key, 0)
-        parts.append(_intelligence_dot(score))
+        if score > 0:
+            parts.append(f"[green]{labels[key]}:+[/green]")
+        elif score < 0:
+            parts.append(f"[red]{labels[key]}:-[/red]")
+    if not parts:
+        return "[dim]neutral[/dim]"
     return " ".join(parts)
 
 
@@ -119,9 +131,10 @@ def render_stories(data: dict) -> None:
             meta_parts.append(feed_title)
         subtitle = " | ".join(meta_parts)
 
-        # Intelligence scores
+        # Intelligence scores and computed score
         intel = story.get("intelligence", {})
         intel_str = _intelligence_summary(intel)
+        score = story.get("score", 0)
 
         # Status indicators
         indicators = []
@@ -149,7 +162,13 @@ def render_stories(data: dict) -> None:
         subtitle_parts = []
         if story_hash:
             subtitle_parts.append(f"[dim]{story_hash}[/dim]")
-        subtitle_parts.append(f"Intelligence: {intel_str}")
+        if score > 0:
+            score_str = f"[green]Score: {score}[/green]"
+        elif score < 0:
+            score_str = f"[red]Score: {score}[/red]"
+        else:
+            score_str = f"[dim]Score: {score}[/dim]"
+        subtitle_parts.append(f"{score_str} {intel_str}")
 
         panel = Panel(
             body_str,
@@ -167,9 +186,9 @@ def render_stories(data: dict) -> None:
     has_more = data.get("has_more", False)
     count = data.get("count", len(stories))
     if has_more:
-        console.print(f"\n[dim]Page {page} ({count} stories) -- more available, use --page {page + 1}[/dim]")
+        console.print(f"\n[dim]Page {page} ({count} stories) -- more available, use --page {page + 1} or --json for full output[/dim]")
     else:
-        console.print(f"\n[dim]Page {page} ({count} stories)[/dim]")
+        console.print(f"\n[dim]Page {page} ({count} stories) -- use --json for full output[/dim]")
 
 
 def render_feeds_table(data: dict) -> None:
@@ -198,7 +217,7 @@ def render_feeds_table(data: dict) -> None:
 
     console.print(table)
     console.print(f"\n[dim]{data.get('feed_count', len(feeds))} feeds total, "
-                  f"{data.get('starred_count', 0)} saved stories[/dim]")
+                  f"{data.get('starred_count', 0)} saved stories -- use --json for full output[/dim]")
 
 
 def render_folders(data: dict) -> None:
@@ -238,7 +257,7 @@ def render_folders(data: dict) -> None:
                 branch.add(label)
         console.print(tree)
 
-    console.print(f"\n[dim]{data.get('folder_count', len(folders))} folders[/dim]")
+    console.print(f"\n[dim]{data.get('folder_count', len(folders))} folders -- use --json for full output[/dim]")
 
 
 def render_account(data: dict) -> None:
@@ -402,4 +421,4 @@ def render_discover_results(data: dict) -> None:
         table.add_row(title, url, subscribers)
 
     console.print(table)
-    console.print(f"\n[dim]{data.get('count', len(feeds))} feeds found[/dim]")
+    console.print(f"\n[dim]{data.get('count', len(feeds))} feeds found -- use --json for full output[/dim]")
