@@ -6,10 +6,9 @@ from newsblur_mcp.server import mcp, get_client
 
 async def _get_account_info(client: NewsBlurClient) -> dict:
     """Get information about the authenticated user's account."""
-    resp = await client.get_unprotected("/profile/get_preferences")
+    resp = await client.get_unprotected("/oauth/user/info/")
 
-    prefs = resp.get("preferences", {})
-    user = resp.get("user", {})
+    user = resp.get("data", {})
 
     tier = "free"
     if user.get("is_pro"):
@@ -22,7 +21,7 @@ async def _get_account_info(client: NewsBlurClient) -> dict:
     feed_limits = {"free": 64, "premium": 1024, "archive": 4096, "pro": 10000}
 
     return {
-        "username": user.get("username", ""),
+        "username": user.get("name", ""),
         "email": user.get("email", ""),
         "tier": tier,
         "is_premium": user.get("is_premium", False),
