@@ -112,6 +112,18 @@
     source: pull
   when: is_mcp_server | bool
 
+- name: Read MCP OAuth secret from local_settings.py
+  shell: grep -oP "^MCP_OAUTH_CLIENT_SECRET\s*=\s*['\"]\\K[^'\"]*" /srv/newsblur/newsblur_web/local_settings.py
+  register: mcp_secret_result
+  changed_when: false
+  when: is_mcp_server | bool
+
+- name: Set MCP OAuth secret fact
+  set_fact:
+    mcp_oauth_client_id: "newsblur-mcp-server"
+    mcp_oauth_client_secret: "{{ mcp_secret_result.stdout }}"
+  when: is_mcp_server | bool
+
 - include_tasks: ../roles/mcp/tasks/container.yml
   vars:
     container_restart: true
