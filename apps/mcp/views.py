@@ -13,12 +13,12 @@ from django.http import HttpResponse
 
 
 def _get_base_url(request):
-    # Check X-Forwarded-Proto (set by HAProxy for HTTPS), fall back to request scheme
+    # Check X-Forwarded-Proto, fall back to request scheme, default to https in production
     scheme = request.META.get("HTTP_X_FORWARDED_PROTO", "")
     if scheme not in ("http", "https"):
-        scheme = request.scheme
+        scheme = "https" if not settings.DEBUG else request.scheme
     host = request.get_host()  # includes port if non-standard
-    return f"{scheme}://{host}/mcp"
+    return f"{scheme}://{host}/mcp/"
 
 
 def _json_response(data):
@@ -35,9 +35,9 @@ def oauth_authorization_server_metadata(request):
     base_url = _get_base_url(request)
     return _json_response({
         "issuer": base_url,
-        "authorization_endpoint": f"{base_url}/authorize",
-        "token_endpoint": f"{base_url}/token",
-        "registration_endpoint": f"{base_url}/register",
+        "authorization_endpoint": f"{base_url}authorize",
+        "token_endpoint": f"{base_url}token",
+        "registration_endpoint": f"{base_url}register",
         "scopes_supported": ["read", "write", "mcp"],
         "response_types_supported": ["code"],
         "grant_types_supported": ["authorization_code", "refresh_token"],
