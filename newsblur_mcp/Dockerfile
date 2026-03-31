@@ -4,9 +4,12 @@ WORKDIR /srv/newsblur_mcp
 
 RUN pip install --no-cache-dir uv
 
-COPY pyproject.toml README.md ./
+ENV UV_PROJECT_ENVIRONMENT="/usr/local"
+
+COPY pyproject.toml uv.lock README.md ./
 COPY newsblur_mcp/ newsblur_mcp/
-RUN uv pip install --system --no-cache .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
 
 EXPOSE 8099
 
