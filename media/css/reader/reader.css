@@ -3839,11 +3839,11 @@ img.feed_favicon {
 .NB-story-title-list.NB-story-title .story_date {
     position: absolute;
     width: 140px;
-    top: 14px;
+    top: 12px;
     right: 0;
 }
 
-.NB-density-compact.NB-story-title-list.NB-story-title .story_date {
+.NB-density-compact .NB-story-title-list.NB-story-title .story_date {
     top: 6px;
 }
 
