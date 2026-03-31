@@ -22,6 +22,10 @@ groups:
   hcount: inventory_hostname.startswith('happ-count')
   hcount_a: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 1
   hcount_b: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  mcp: inventory_hostname.startswith('happ-count')
+  hmcp: inventory_hostname.startswith('happ-count')
+  hmcp_a: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hmcp_b: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 0
   push: inventory_hostname.startswith('happ-push')
   hpush: inventory_hostname.startswith('happ-push')
   hpush_a: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 1

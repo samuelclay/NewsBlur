@@ -1,0 +1,30 @@
+---
+- name: "{{ 'Restart' if container_restart | default(false) else 'Start' }} NewsBlur MCP Docker container"
+  become: yes
+  docker_container:
+    name: newsblur_mcp
+    image: newsblur/newsblur_mcp
+    container_default_behavior: no_defaults
+    pull: yes
+    env:
+      NEWSBLUR_BASE_URL: "http://newsblur_web:8000"
+      MCP_PORT: "8099"
+      MCP_HOST: "0.0.0.0"
+      MCP_OAUTH_CLIENT_ID: "{{ mcp_oauth_client_id }}"
+      MCP_OAUTH_CLIENT_SECRET: "{{ mcp_oauth_client_secret }}"
+      MCP_OAUTH_BASE_URL: "https://newsblur.com/mcp"
+      MCP_OAUTH_UPSTREAM_URL: "https://newsblur.com"
+      MCP_OAUTH_INTERNAL_URL: "http://newsblur_web:8000"
+    state: started
+    restart: "{{ container_restart | default(false) }}"
+    hostname: "{{ inventory_hostname }}-mcp"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "8099:8099"
+    restart_policy: unless-stopped

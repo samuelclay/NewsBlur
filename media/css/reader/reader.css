@@ -22533,6 +22533,12 @@ h5.NB-classifier-section-header {
     /* blue */
 }
 
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-11 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
+    filter: invert(25%) sepia(70%) saturate(2500%) hue-rotate(230deg) brightness(90%) contrast(105%);
+    /* indigo */
+}
+
 /* Archive tier icons with individual vivid colors */
 .NB-premium-tier-features-archive li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');

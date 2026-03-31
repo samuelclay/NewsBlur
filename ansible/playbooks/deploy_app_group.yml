@@ -4,6 +4,10 @@
   set_fact:
     backend_name: "{{ 'app_count' if inventory_hostname in groups.get('hcount', []) else 'app_refresh' if inventory_hostname in groups.get('hrefresh', []) else 'app_push' if inventory_hostname in groups.get('hpush', []) else 'app_django' if (inventory_hostname in groups.get('hdjango', []) or inventory_hostname in groups.get('staging', [])) else '' }}"
 
+- name: Check if this is an MCP server
+  set_fact:
+    is_mcp_server: "{{ inventory_hostname in groups.get('hmcp', []) }}"
+
 - name: Disable servers in HAProxy (Group {{ group_name }})
   run_once: true
   delegate_to: "{{ item }}"
@@ -30,6 +34,15 @@
   when:
     - disable_consul_services_ie_staging is not defined
     - haproxy_targets | length > 0
+
+- name: Disable MCP in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state maint" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_mcp_disable
+  retries: 5
+  delay: 3
+  until: haproxy_mcp_disable is not failed
+  when: is_mcp_server | bool and disable_consul_services_ie_staging is not defined
 
 - name: Wait for connections to drain
   run_once: true
@@ -92,6 +105,29 @@
   delay: 5
   until: result.status == 200
 
+- name: Pull latest MCP Docker image
+  become: yes
+  docker_image:
+    name: newsblur/newsblur_mcp
+    source: pull
+  when: is_mcp_server | bool
+
+- include_tasks: ../roles/mcp/tasks/container.yml
+  vars:
+    container_restart: true
+  when: is_mcp_server | bool
+
+- name: Wait for MCP container to be ready
+  uri:
+    url: "http://localhost:8099/health"
+    status_code: [200, 404, 405]
+  register: mcp_result
+  retries: 10
+  delay: 3
+  until: mcp_result.status is defined
+  ignore_errors: yes
+  when: is_mcp_server | bool
+
 - name: Re-enable servers in HAProxy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
@@ -114,6 +150,15 @@
   delay: 3
   until: server_state_enabled is not failed and server_state_enabled.stdout != "1"
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+- name: Re-enable MCP in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state ready" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_mcp_enable
+  retries: 5
+  delay: 3
+  until: haproxy_mcp_enable is not failed
+  when: is_mcp_server | bool and disable_consul_services_ie_staging is not defined
 
 - name: Start Consul
   become: yes

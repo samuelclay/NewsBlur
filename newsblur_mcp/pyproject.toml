@@ -1,0 +1,48 @@
+[project]
+name = "newsblur-cli"
+version = "0.1.0"
+description = "NewsBlur CLI and MCP server - manage feeds, stories, and classifiers"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+keywords = ["newsblur", "rss", "cli", "mcp", "feeds", "news"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "fastmcp>=2.0.0",
+    "httpx>=0.27.0",
+    "beautifulsoup4>=4.12.0",
+    "typer>=0.15.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+newsblur = "newsblur_mcp.cli:app"
+
+[project.urls]
+Homepage = "https://newsblur.com/features/mcp-cli"
+Repository = "https://github.com/samuelclay/NewsBlur"
+Issues = "https://github.com/samuelclay/NewsBlur/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "respx>=0.22",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["newsblur_mcp"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

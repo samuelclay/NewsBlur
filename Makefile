@@ -142,7 +142,7 @@ worktree:
 worktree-log:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
-		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node task_celery; \
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node task_celery newsblur_mcp; \
 	else \
 		echo "No worktree configuration found. Run 'make worktree' first."; \
 	fi
@@ -271,11 +271,13 @@ bash:
 debug:
 	docker attach ${newsblur}
 log:
-	docker compose logs -f --tail 20 newsblur_web newsblur_node
+	docker compose logs -f --tail 20 newsblur_web newsblur_node newsblur_mcp
 logweb:
 	docker compose logs -f --tail 20 newsblur_web newsblur_node newsblur_celery
 logcelery:
 	docker compose logs -f --tail 20 newsblur_celery
+logmcp:
+	docker compose logs -f --tail 20 newsblur_mcp
 logtask: logcelery
 logmongo:
 	docker compose logs -f newsblur_db_mongo
@@ -403,6 +405,7 @@ pull:
 	docker pull newsblur/newsblur_python3
 	docker pull newsblur/newsblur_node
 	docker pull newsblur/newsblur_monitor
+	docker pull newsblur/newsblur_mcp
 
 local_build_web:
 	# docker buildx build --load . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
@@ -431,7 +434,9 @@ build_monitor: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 build_deploy: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
-build: build_web build_node build_monitor build_deploy
+build_mcp: buildx_setup
+	docker buildx build ./newsblur_mcp --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+build: build_web build_node build_monitor build_deploy build_mcp
 push_web: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 push_node: buildx_setup
@@ -440,7 +445,9 @@ push_monitor: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 push_deploy: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
-push_images: push_web push_node push_monitor push_deploy
+push_mcp: buildx_setup
+	docker buildx build ./newsblur_mcp --push --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+push_images: push_web push_node push_monitor push_deploy push_mcp
 push: push_images
 
 # Tasks

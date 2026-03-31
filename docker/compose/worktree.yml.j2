@@ -93,6 +93,29 @@ services:
       - default
       - newsblur_default
 
+  newsblur_mcp:
+    container_name: newsblur_mcp_{{ workspace_name }}
+    build:
+      context: ../newsblur_mcp
+    restart: "no"
+    environment:
+      - PYTHONPATH=/srv/newsblur_mcp
+      - NEWSBLUR_BASE_URL=http://host.docker.internal:{{ haproxy_http_port }}
+      - MCP_PORT=8099
+      - MCP_HOST=0.0.0.0
+      - MCP_OAUTH_CLIENT_ID=newsblur-mcp-server
+      - MCP_OAUTH_CLIENT_SECRET=newsblur-mcp-dev-secret
+      - MCP_OAUTH_BASE_URL=http://localhost:{{ haproxy_http_port }}/mcp
+      - MCP_OAUTH_UPSTREAM_URL=http://localhost:{{ haproxy_http_port }}
+      - MCP_OAUTH_INTERNAL_URL=http://host.docker.internal:{{ haproxy_http_port }}
+    volumes:
+      - ${PWD}/newsblur_mcp/newsblur_mcp:/srv/newsblur_mcp/newsblur_mcp
+    depends_on:
+      - newsblur_web
+    networks:
+      - default
+      - newsblur_default
+
   task_celery:
     container_name: newsblur_celery_{{ workspace_name }}
     image: newsblur/newsblur_python3

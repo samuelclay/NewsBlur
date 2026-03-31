@@ -93,3 +93,6 @@ apps/api/ip_addresses.txt
 .worktree
 docs
 plans
+
+# PyPI build artifacts
+newsblur_mcp/dist/

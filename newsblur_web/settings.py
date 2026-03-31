@@ -168,12 +168,16 @@ OAUTH2_PROVIDER = {
         "ifttt": "Pair your NewsBlur account with other services.",
         "email": "Access your email address for account identification.",
         "archive": "Archive your browsing history and query it with AI.",
+        "mcp": "Connect AI agents to read and write your NewsBlur data",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
     "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
 }
+
+# MCP OAuth - secret for the MCP server's upstream OAuth application
+MCP_OAUTH_CLIENT_SECRET = "newsblur-mcp-dev-secret"
 
 # ===========
 # = Logging =
@@ -370,6 +374,7 @@ INSTALLED_APPS = (
     "apps.ask_ai",
     "apps.webfeed",
     "apps.archive_extension",
+    "apps.mcp",
     "apps.archive_assistant",
     "apps.monitor",
     "utils",  # missing models so no migrations

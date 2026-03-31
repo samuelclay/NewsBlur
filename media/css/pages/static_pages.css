@@ -434,6 +434,10 @@ a.NB-splash-dropdown-heading-link:hover,
     filter: invert(25%) sepia(90%) saturate(2500%) hue-rotate(235deg) brightness(0.9);
 }
 
+.NB-splash-dropdown-icon-cyan {
+    filter: invert(55%) sepia(85%) saturate(1800%) hue-rotate(160deg) brightness(1.1);
+}
+
 a.NB-splash-dropdown-item,
 a.NB-splash-dropdown-item:link,
 a.NB-splash-dropdown-item:visited,
@@ -866,7 +870,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-search .NB-feature-detail-crosslink-search,
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved,
-.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
+.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -877,7 +882,8 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 .NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
 .NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
-.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
+.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
     color: #8a6d1b;
 }
 
@@ -906,6 +912,246 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     .NB-feature-detail-crosslinks-grid {
         grid-template-columns: 1fr;
     }
+    .NB-mcp-tools-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---- MCP Feature Detail Page ---- */
+
+/* Code blocks - terminal/code style */
+pre.NB-feature-detail-code {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    margin: 8px 0 16px;
+    line-height: 1.5;
+}
+
+/* Tools grid - two columns */
+.NB-mcp-tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 36px;
+}
+
+.NB-mcp-tools-column-heading {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin: 0 0 8px;
+    display: inline-block;
+}
+
+.NB-mcp-tools-column-heading-intelligence {
+    margin-top: 20px;
+}
+
+.NB-mcp-tools-column-heading[data-category="reading"] {
+    background: rgba(58, 118, 166, 0.1);
+    color: rgba(40, 90, 130, 0.85);
+}
+
+.NB-mcp-tools-column-heading[data-category="actions"] {
+    background: rgba(138, 109, 27, 0.1);
+    color: rgba(120, 95, 20, 0.85);
+}
+
+.NB-mcp-tools-column-heading[data-category="intelligence"] {
+    background: rgba(76, 141, 72, 0.1);
+    color: rgba(50, 110, 48, 0.85);
+}
+
+.NB-mcp-tools-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.NB-mcp-tool {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.NB-mcp-tool:last-child {
+    border-bottom: none;
+}
+
+.NB-mcp-tool code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(45, 38, 26, 0.85);
+    white-space: nowrap;
+}
+
+.NB-mcp-tool-desc {
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.45);
+    line-height: 1.4;
+}
+
+/* MCP conversation examples */
+.NB-feature-detail-examples-intro {
+    font-size: 15px;
+    color: rgba(45, 38, 26, 0.6);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.NB-mcp-example {
+    margin-bottom: 28px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-mcp-example:last-child {
+    margin-bottom: 0;
+}
+
+.NB-mcp-example-prompt {
+    background: #1a1a2e;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 20px;
+    font-style: italic;
+}
+
+.NB-mcp-example-prompt::before {
+    content: "> ";
+    color: rgba(130, 180, 255, 0.7);
+    font-style: normal;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+
+.NB-mcp-example-tool {
+    background: #14142a;
+    color: rgba(130, 180, 255, 0.85);
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    padding: 6px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-mcp-example-tool::before {
+    content: "\25B6\00a0\00a0";
+    font-size: 8px;
+    vertical-align: 1px;
+    opacity: 0.5;
+}
+
+.NB-mcp-example-tool-args {
+    color: rgba(180, 160, 220, 0.7);
+    margin-left: 4px;
+}
+
+.NB-mcp-example-response {
+    background: #fafaf8;
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(45, 38, 26, 0.8);
+}
+
+.NB-mcp-example-response p {
+    margin: 0 0 10px 0;
+}
+
+.NB-mcp-example-response p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-mcp-example-response strong {
+    color: rgba(45, 38, 26, 0.95);
+}
+
+.NB-mcp-example-response em {
+    font-style: normal;
+    color: rgba(45, 38, 26, 0.65);
+}
+
+.NB-mcp-example-response code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Setup section */
+.NB-mcp-setup-options {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.NB-mcp-setup-option h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d261a;
+    margin: 0 0 8px;
+}
+
+.NB-mcp-setup-option p {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.6);
+    margin: 0 0 6px;
+}
+
+.NB-mcp-setup-note {
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.5);
+    font-style: italic;
+}
+
+/* CLI Section */
+.NB-cli-section {
+    margin-top: 48px;
+}
+
+.NB-cli-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.NB-cli-step h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #707070;
+    margin-bottom: 8px;
+}
+
+.NB-cli-step-note {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #808080;
+}
+
+.NB-cli-step-note code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
 }
 
 
@@ -3526,7 +3772,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search,
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved,
-.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps {
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps,
+.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server {
     background: rgba(251, 219, 155, 0.12);
 }
 
@@ -3537,7 +3784,8 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-archive .NB-feature-detail-crosslink-archive .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-saved .NB-feature-detail-crosslink-saved .NB-feature-detail-crosslink-name,
-.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name {
+.NB-dark.NB-static-feature-native-apps .NB-feature-detail-crosslink-native-apps .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-mcp-server .NB-feature-detail-crosslink-mcp-server .NB-feature-detail-crosslink-name {
     color: #FBDB9B;
 }
 
@@ -4160,6 +4408,105 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark .NB-testimonial-author a {
     color: #FBDB9B;
+}
+
+/* MCP feature detail - dark mode */
+.NB-dark pre.NB-feature-detail-code {
+    background: #12121f;
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-feature-detail-connect h3 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-mcp-tool {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-mcp-tools-column-heading[data-category="reading"] {
+    background: rgba(100, 170, 220, 0.15);
+    color: rgba(140, 195, 235, 0.9);
+}
+
+.NB-dark .NB-mcp-tools-column-heading[data-category="actions"] {
+    background: rgba(251, 219, 155, 0.12);
+    color: rgba(251, 219, 155, 0.85);
+}
+
+.NB-dark .NB-mcp-tools-column-heading[data-category="intelligence"] {
+    background: rgba(120, 200, 120, 0.12);
+    color: rgba(140, 210, 140, 0.85);
+}
+
+.NB-dark .NB-mcp-tool code {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.NB-dark .NB-mcp-tool-desc {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* MCP examples - dark mode */
+.NB-dark .NB-feature-detail-examples-intro {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-example {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-mcp-example-prompt {
+    background: #12121f;
+}
+
+.NB-dark .NB-mcp-example-tool {
+    background: #0e0e1a;
+}
+
+.NB-dark .NB-mcp-example-response {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.NB-dark .NB-mcp-example-response strong {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-mcp-example-response em {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-example-response code {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(251, 219, 155, 0.85);
+}
+
+/* MCP setup section - dark mode */
+.NB-dark .NB-mcp-setup-option h3 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-mcp-setup-option p {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-mcp-setup-note {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-cli-step h3 {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-cli-step-note {
+    color: #808080;
+}
+
+.NB-dark .NB-cli-step-note code {
+    background: #2a2a2a;
+    color: #c0c0c0;
 }
 
 /* Feature detail screenshots - dark mode */

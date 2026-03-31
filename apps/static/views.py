@@ -97,6 +97,10 @@ def feature_native_apps(request):
     return render(request, "static/feature_native_apps.xhtml")
 
 
+def feature_mcp_cli(request):
+    return render(request, "static/feature_mcp_cli.xhtml")
+
+
 def feature_story_clustering(request):
     return render(request, "static/feature_story_clustering.xhtml")
 

@@ -69,6 +69,7 @@ frontend public
     use_backend nginx if { path_beg /robots }
     use_backend nginx if { hdr_sub(host) -i blog.localhost }
 
+    use_backend mcp if { path /mcp } || { path_beg /mcp/ }
     use_backend gunicorn unless gunicorn_dead || nginx_dead
 
 backend node_images
@@ -103,6 +104,14 @@ backend nginx
     balance roundrobin
     http-check expect rstatus 200|503
     server nginx newsblur_nginx_{{ workspace_name }}:81 check inter 60000ms resolvers docker init-addr last,libc,none
+
+backend mcp
+    timeout client 1h
+    timeout server 1h
+    timeout tunnel 1h
+    http-request replace-path /mcp$      /
+    http-request replace-path /mcp/(.*)  /\1
+    server newsblur_mcp newsblur_mcp_{{ workspace_name }}:8099 check inter 3000ms resolvers docker init-addr last,libc,none
 
 backend gunicorn
     balance roundrobin
