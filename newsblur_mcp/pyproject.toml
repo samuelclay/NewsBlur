@@ -1,6 +1,6 @@
 [project]
 name = "newsblur-cli"
-version = "0.1.0"
+version = "0.2.0"
 description = "NewsBlur CLI and MCP server - manage feeds, stories, and classifiers"
 readme = "README.md"
 license = "MIT"
