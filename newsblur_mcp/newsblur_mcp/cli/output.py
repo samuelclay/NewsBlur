@@ -330,7 +330,7 @@ def render_briefing(data: dict) -> None:
     page = data.get("page", 1)
     has_more = data.get("has_more", False)
     if has_more:
-        console.print(f"\n[dim]Page {page} — more available, use --page {page + 1}[/dim]")
+        console.print(f"\n[dim]Page {page} — more available, use --page {page + 1} or --json for full output[/dim]")
 
 
 def render_classifiers(data: dict) -> None:
