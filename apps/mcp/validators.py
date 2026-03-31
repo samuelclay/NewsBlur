@@ -9,7 +9,13 @@ from urllib.parse import urlparse
 
 from oauth2_provider.oauth2_validators import OAuth2Validator
 
-LOOPBACK_HOSTS = {"127.0.0.1", "[::1]"}
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "[::1]"}
+
+
+def _normalize_loopback_uri(parsed):
+    """Normalize a loopback URI by stripping port and mapping localhost -> 127.0.0.1."""
+    host = "127.0.0.1" if parsed.hostname == "localhost" else parsed.hostname
+    return parsed._replace(netloc=host).geturl()
 
 
 class RFC8252OAuth2Validator(OAuth2Validator):
@@ -23,13 +29,13 @@ class RFC8252OAuth2Validator(OAuth2Validator):
         if parsed.hostname not in LOOPBACK_HOSTS:
             return False
 
-        # Strip the port and compare against registered URIs
-        portless = parsed._replace(netloc=parsed.hostname).geturl()
+        # Normalize: strip port, map localhost -> 127.0.0.1
+        normalized = _normalize_loopback_uri(parsed)
         for allowed_uri in request.client.redirect_uris.split():
             allowed_parsed = urlparse(allowed_uri)
             if allowed_parsed.hostname in LOOPBACK_HOSTS:
-                allowed_portless = allowed_parsed._replace(netloc=allowed_parsed.hostname).geturl()
-                if portless == allowed_portless:
+                allowed_normalized = _normalize_loopback_uri(allowed_parsed)
+                if normalized == allowed_normalized:
                     return True
 
         return False
