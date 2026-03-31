@@ -640,8 +640,17 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
 
     mark_folder_as_read: function (e, days_back) {
+        var self = this;
+        var $container = this.$('.NB-feedbar-mark-feed-read-container');
+        if ($container.length && NEWSBLUR.reader.should_confirm_mark_read('folder')) {
+            NEWSBLUR.reader.show_mark_read_confirm($container, function () {
+                NEWSBLUR.reader.mark_folder_as_read(self.model, days_back);
+                $container.fadeOut(400);
+            }, { days: days_back });
+            return;
+        }
         NEWSBLUR.reader.mark_folder_as_read(this.model, days_back);
-        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
+        $container.fadeOut(400);
     },
 
     mark_folder_as_read_days: function (e) {
