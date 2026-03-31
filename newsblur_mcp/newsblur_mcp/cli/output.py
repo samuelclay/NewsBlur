@@ -278,12 +278,15 @@ def render_briefing(data: dict) -> None:
     for briefing in briefings:
         briefing_date = briefing.get("briefing_date", "")
         frequency = briefing.get("frequency", "")
-        header = f"Briefing: {briefing_date}"
-        if frequency:
-            header += f" ({frequency})"
+        # Parse the date for a cleaner display
+        date_display = briefing_date
+        try:
+            dt = datetime.fromisoformat(briefing_date.replace("Z", "+00:00"))
+            date_display = dt.strftime("%B %-d, %Y")
+        except (ValueError, AttributeError):
+            pass
+        header = f"Daily Briefing — {date_display}"
 
-        # Section summaries
-        section_summaries = briefing.get("section_summaries", {})
         sections = briefing.get("sections", {})
         stories = briefing.get("curated_stories", [])
 
@@ -292,30 +295,30 @@ def render_briefing(data: dict) -> None:
 
         body_parts = []
 
-        for section_name, summary_text in section_summaries.items():
+        for section_name, section_hashes in sections.items():
+            if body_parts:
+                body_parts.append("")
             body_parts.append(f"[bold]{section_name}[/bold]")
-            if summary_text:
-                body_parts.append(summary_text[:500])
 
-            # Show stories in this section
-            section_hashes = sections.get(section_name, [])
             for sh in section_hashes:
                 story = story_lookup.get(sh)
                 if story:
                     title = story.get("title", "Untitled")
                     feed_title = story.get("feed_title", "")
-                    label = f"  - {title}"
+                    author = story.get("author", "")
+                    # Build attribution: "author, feed" or just "feed"
+                    # Skip author if it matches the feed title
+                    attribution_parts = []
+                    if author and author.lower() != feed_title.lower():
+                        attribution_parts.append(author)
                     if feed_title:
-                        label += f" [dim]({feed_title})[/dim]"
+                        attribution_parts.append(feed_title)
+                    attribution = ", ".join(attribution_parts)
+
+                    label = f"  [green]•[/green] {title}"
+                    if attribution:
+                        label += f"  [dim]— {attribution}[/dim]"
                     body_parts.append(label)
-
-            body_parts.append("")
-
-        # Summary story if present
-        summary_story = briefing.get("summary_story")
-        if summary_story:
-            body_parts.append("[bold]Summary[/bold]")
-            body_parts.append(summary_story.get("content", "")[:500])
 
         body = "\n".join(body_parts).strip()
         if not body:
@@ -327,7 +330,7 @@ def render_briefing(data: dict) -> None:
     page = data.get("page", 1)
     has_more = data.get("has_more", False)
     if has_more:
-        console.print(f"\n[dim]Page {page} -- more available, use --page {page + 1}[/dim]")
+        console.print(f"\n[dim]Page {page} — more available, use --page {page + 1}[/dim]")
 
 
 def render_classifiers(data: dict) -> None:
