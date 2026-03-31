@@ -91,11 +91,19 @@ def transform_briefing(briefing: dict, section_definitions: dict | None = None) 
         if raw.get("feed_title"):
             story["feed_title"] = raw["feed_title"]
 
-    # Convert section summaries from HTML to text
+    # Convert section summaries from HTML to text, stripping the leading <h3>
+    # heading since the section name is already used as a key
     section_summaries = {}
     for key, html in (briefing.get("section_summaries") or {}).items():
         display_name = (section_definitions or {}).get(key, key)
-        section_summaries[display_name] = html_to_text(html) if html else ""
+        if html:
+            soup = BeautifulSoup(html, "html.parser")
+            h3 = soup.find("h3", attrs={"data-section": key})
+            if h3:
+                h3.decompose()
+            section_summaries[display_name] = html_to_text(str(soup))
+        else:
+            section_summaries[display_name] = ""
 
     # Map curated sections (section_key -> story_hashes) to display names
     curated_sections = {}

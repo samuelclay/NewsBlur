@@ -14,10 +14,41 @@ console = Console(stderr=True)
 
 
 def async_command(f):
-    """Decorator that runs an async Typer command synchronously via asyncio.run()."""
+    """Decorator that runs an async Typer command synchronously via asyncio.run().
+
+    Also injects --json and --raw options so they work on every subcommand
+    (not just as global flags before the subcommand name).
+    """
+    # Add --json and --raw as typer options via function annotations
+    import inspect
+
+    sig = inspect.signature(f)
+    params = list(sig.parameters.values())
+    if "json_output" not in sig.parameters:
+        params.append(
+            inspect.Parameter(
+                "json_output",
+                inspect.Parameter.KEYWORD_ONLY,
+                default=typer.Option(False, "--json", is_flag=True, help="Output as JSON"),
+                annotation=bool,
+            )
+        )
+    if "raw_output" not in sig.parameters:
+        params.append(
+            inspect.Parameter(
+                "raw_output",
+                inspect.Parameter.KEYWORD_ONLY,
+                default=typer.Option(False, "--raw", is_flag=True, help="Output unformatted text"),
+                annotation=bool,
+            )
+        )
+    f.__signature__ = sig.replace(parameters=params)
 
     @wraps(f)
     def wrapper(*args, **kwargs):
+        # Remove injected kwargs before passing to the actual function
+        kwargs.pop("json_output", None)
+        kwargs.pop("raw_output", None)
         try:
             return asyncio.run(f(*args, **kwargs))
         except ArchiveRequiredError as e:

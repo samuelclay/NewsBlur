@@ -21,11 +21,18 @@ from rich.tree import Tree
 console = Console()
 
 
+def _flag(ctx: typer.Context, name: str) -> bool:
+    """Check a flag in both the parent (global) and current command context."""
+    if (ctx.obj or {}).get(name):
+        return True
+    return ctx.params.get(f"{name}_output", False)
+
+
 def render(ctx: typer.Context, data, renderer=None):
     """Route output to the appropriate formatter based on CLI flags."""
-    if ctx.obj.get("json"):
+    if _flag(ctx, "json"):
         render_json(data)
-    elif ctx.obj.get("raw"):
+    elif _flag(ctx, "raw"):
         render_raw(data)
     elif renderer:
         renderer(data)
