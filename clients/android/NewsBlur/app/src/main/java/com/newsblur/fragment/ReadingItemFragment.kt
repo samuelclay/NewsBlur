@@ -198,6 +198,8 @@ class ReadingItemFragment :
         if (savedInstanceState != null) {
             savedScrollPosRel = savedInstanceState.getFloat(BUNDLE_SCROLL_POS_REL)
             // we can't actually use the saved scroll position until the webview finishes loading
+        } else {
+            savedScrollPosRel = requireArguments().getFloat(ARG_INITIAL_SCROLL_POS_REL)
         }
 
         story?.let { storyHighlights.addAll(it.highlights) }
@@ -210,6 +212,19 @@ class ReadingItemFragment :
         val heightm = binding.readingScrollview.getChildAt(0).measuredHeight
         val pos = binding.readingScrollview.scrollY
         savedInstanceState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
+    }
+
+    fun currentScrollPosRel(): Float? {
+        if (!::binding.isInitialized || binding.readingScrollview.childCount == 0) {
+            return null
+        }
+
+        val contentHeight = binding.readingScrollview.getChildAt(0).measuredHeight
+        if (contentHeight <= 0) {
+            return null
+        }
+
+        return binding.readingScrollview.scrollY.toFloat() / contentHeight
     }
 
     override fun onDestroyView() {
@@ -1590,6 +1605,7 @@ class ReadingItemFragment :
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
+        private const val ARG_INITIAL_SCROLL_POS_REL = "initialScrollPosRel"
         const val VERTICAL_SCROLL_DISTANCE_DP = 240
 
         @JvmStatic
@@ -1604,6 +1620,7 @@ class ReadingItemFragment :
             classifier: Classifier?,
             displayFeedDetails: Boolean,
             sourceUserId: String?,
+            initialScrollPosRel: Float = 0f,
         ): ReadingItemFragment {
             val readingFragment = ReadingItemFragment()
 
@@ -1618,6 +1635,7 @@ class ReadingItemFragment :
             args.putBoolean("displayFeedDetails", displayFeedDetails)
             args.putSerializable("classifier", classifier)
             args.putString("sourceUserId", sourceUserId)
+            args.putFloat(ARG_INITIAL_SCROLL_POS_REL, initialScrollPosRel)
             readingFragment.arguments = args
 
             return readingFragment

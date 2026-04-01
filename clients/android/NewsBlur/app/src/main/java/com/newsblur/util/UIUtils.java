@@ -23,7 +23,6 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.text.Html;
@@ -241,24 +240,12 @@ public class UIUtils {
     }
 
     /**
-     * Restart an activity. See http://stackoverflow.com/a/11651252/70795
-     * We post this on the Handler to allow onResume to finish before the activity restarts
-     * and avoid an exception.
+     * Recreate an activity in place so Android can restore fragment and scroll state.
      */
     public static void restartActivity(final Activity activity) {
-        new Handler().post(new Runnable() {
-
-            @Override
-            public void run() {
-                Intent intent = activity.getIntent();
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                PendingTransitionUtils.overrideNoExitTransition(activity);
-                activity.finish();
-
-                PendingTransitionUtils.overrideNoEnterTransition(activity);
-                activity.startActivity(intent);
-            }
-        });
+        PendingTransitionUtils.overrideNoExitTransition(activity);
+        activity.recreate();
+        PendingTransitionUtils.overrideNoEnterTransition(activity);
     }
 
     public static void startReadingActivity(Context context, FeedSet fs, String startingHash) {

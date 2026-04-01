@@ -7,6 +7,7 @@ import java.util.Set;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,6 +85,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                                                               OnGroupClickListener,
                                                               OnGroupCollapseListener,
                                                               OnGroupExpandListener {
+    private static final String BUNDLE_LIST_STATE = "folderListState";
 
     @Inject
     FeedUtils feedUtils;
@@ -109,6 +111,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     private boolean isSyncingSearchField = false;
     public boolean firstCursorSeenYet = false;
     private boolean hasShownFeedsLimitDialog = false;
+    @Nullable
+    private Parcelable pendingListState;
+    private boolean hasRestoredListState = false;
 
     // the two-step context menu for feeds requires us to temp store the feed long-pressed so
     // it can be accessed during the sub-menu tap
@@ -133,6 +138,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState == null) {
+            return;
+        }
+        pendingListState = savedInstanceState.getParcelable(BUNDLE_LIST_STATE);
+        hasRestoredListState = false;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (adapter != null) {
@@ -149,10 +164,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         allFoldersViewModel.getSocialFeeds().observe(getViewLifecycleOwner(), socialFeeds -> {
             adapter.setSocialFeeds(socialFeeds);
             pushUnreadCounts();
+            restoreListStateIfReady();
         });
         allFoldersViewModel.getFolders().observe(getViewLifecycleOwner(), foldersResult -> {
             adapter.setFolders(foldersResult);
             pushUnreadCounts();
+            restoreListStateIfReady();
         });
         allFoldersViewModel.getFeeds().observe(getViewLifecycleOwner(), feedQueryResult -> {
             adapter.setFeeds(feedQueryResult);
@@ -161,12 +178,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             firstCursorSeenYet = true;
             pushUnreadCounts();
             checkAccountFeedsLimit();
+            restoreListStateIfReady();
         });
         allFoldersViewModel.getSavedStoryCounts().observe(getViewLifecycleOwner(), savedStoryCountsResult ->
                 adapter.setStarredCount(savedStoryCountsResult));
         allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), savedSearches -> {
             adapter.setSavedSearches(savedSearches);
             checkOpenFolderPreferences();
+            restoreListStateIfReady();
         });
     }
 
@@ -588,6 +607,21 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         com.newsblur.util.Log.d(this, "showing " + adapter.lastFeedCount + " feeds");
     }
 
+    private void restoreListStateIfReady() {
+        if (pendingListState == null || hasRestoredListState || binding == null || !firstCursorSeenYet) {
+            return;
+        }
+
+        binding.folderfeedList.post(() -> {
+            if (pendingListState == null || hasRestoredListState || binding == null) {
+                return;
+            }
+            binding.folderfeedList.onRestoreInstanceState(pendingListState);
+            hasRestoredListState = true;
+            pendingListState = null;
+        });
+    }
+
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         if (adapter.isRowSavedSearches(groupPosition)) {
@@ -791,5 +825,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             return adapter.buildSessionDataSource(activeSession);
         }
         return null;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (binding != null) {
+            outState.putParcelable(BUNDLE_LIST_STATE, binding.folderfeedList.onSaveInstanceState());
+        }
     }
 }

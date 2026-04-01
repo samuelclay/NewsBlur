@@ -110,6 +110,7 @@ abstract class Reading :
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
+    private var restoredStoryScrollPosRel = 0f
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
@@ -187,6 +188,9 @@ abstract class Reading :
         if (savedInstanceBundle != null && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD)
         }
+        if (savedInstanceBundle != null && savedInstanceBundle.containsKey(BUNDLE_CURRENT_SCROLL_POS_REL)) {
+            restoredStoryScrollPosRel = savedInstanceBundle.getFloat(BUNDLE_CURRENT_SCROLL_POS_REL)
+        }
 
         // Only use the storyHash the first time the activity is loaded. Ignore when
         // recreated due to rotation etc.
@@ -224,6 +228,10 @@ abstract class Reading :
         if (startingUnreadCount != 0) {
             savedInstanceState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
         }
+        readingFragment
+            ?.currentScrollPosRel()
+            ?.takeIf { it > 0f }
+            ?.let { savedInstanceState.putFloat(BUNDLE_CURRENT_SCROLL_POS_REL, it) }
     }
 
     override fun onResume() {
@@ -959,6 +967,13 @@ abstract class Reading :
         updateOverlayText()
     }
 
+    fun initialStoryScrollPosRel(storyHash: String): Float =
+        if (this.storyHash == storyHash) {
+            restoredStoryScrollPosRel
+        } else {
+            0f
+        }
+
     override fun onKeyDown(
         keyCode: Int,
         event: KeyEvent,
@@ -1362,6 +1377,7 @@ abstract class Reading :
         const val EXTRA_STORY_HASH = "story_hash"
         const val EXTRA_STORY = "story"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
+        private const val BUNDLE_CURRENT_SCROLL_POS_REL = "current_scroll_pos_rel"
 
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"

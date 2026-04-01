@@ -79,6 +79,7 @@ class ReadingAdapter(
             classifiers[story.feedId],
             showFeedMetadata,
             sourceUserId,
+            activity.initialStoryScrollPosRel(story.storyHash),
         )
 
     override fun instantiateItem(
