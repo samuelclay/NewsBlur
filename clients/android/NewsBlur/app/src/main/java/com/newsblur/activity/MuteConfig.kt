@@ -140,10 +140,8 @@ class MuteConfig :
     }
 
     private fun updateHeader(activeSites: Int, isOverLimit: Boolean) {
-        val theme = prefsRepo.getSelectedTheme()
-        val isDarkSystem = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        val isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK ||
-                (theme == PrefConstants.ThemeValue.AUTO && isDarkSystem)
+        val theme = prefsRepo.getResolvedTheme(this)
+        val isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK
 
         // Upgrade card colors (sky-blue tint, matching web)
         val cardBg: Int

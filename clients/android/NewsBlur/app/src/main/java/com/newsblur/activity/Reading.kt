@@ -451,17 +451,11 @@ abstract class Reading :
         pager.visibility = View.INVISIBLE
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
-        when (prefsRepo.getSelectedTheme()) {
+        when (prefsRepo.getResolvedTheme(this)) {
             ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
             ThemeValue.SEPIA -> pager.setPageMarginDrawable(R.drawable.divider_sepia)
             ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
-            ThemeValue.AUTO -> {
-                when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    Configuration.UI_MODE_NIGHT_YES -> pager.setPageMarginDrawable(R.drawable.divider_dark)
-                    Configuration.UI_MODE_NIGHT_NO -> pager.setPageMarginDrawable(R.drawable.divider_light)
-                    Configuration.UI_MODE_NIGHT_UNDEFINED -> pager.setPageMarginDrawable(R.drawable.divider_light)
-                }
-            }
+            ThemeValue.AUTO -> pager.setPageMarginDrawable(R.drawable.divider_light)
         }
 
         var showFeedMetadata = true

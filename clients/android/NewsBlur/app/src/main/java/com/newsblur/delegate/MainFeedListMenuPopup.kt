@@ -523,14 +523,7 @@ class MainFeedListMenuPopup(
         }
 
     private fun resolvedTheme(): ThemeValue =
-        when (prefsRepo.getSelectedTheme()) {
-            ThemeValue.AUTO -> {
-                val nightModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) ThemeValue.DARK else ThemeValue.LIGHT
-            }
-
-            else -> prefsRepo.getSelectedTheme()
-        }
+        prefsRepo.getResolvedTheme(activity)
 }
 
 private data class MainMenuRow(

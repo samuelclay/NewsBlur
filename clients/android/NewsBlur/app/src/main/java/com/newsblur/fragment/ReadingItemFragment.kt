@@ -1097,7 +1097,7 @@ class ReadingItemFragment :
         }
         val size = prefsRepo.getReadingTextSize()
         val fontCss = prefsRepo.getFont().forWebView(size)
-        val theme = prefsRepo.getSelectedTheme()
+        val theme = prefsRepo.getResolvedTheme(requireContext())
         val nightMask = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -1381,14 +1381,7 @@ private fun MaterialButton.setStoryReadState(
     prefsRepo: PrefsRepo,
     isRead: Boolean,
 ) {
-    var selectedTheme = prefsRepo.getSelectedTheme()
-    if (selectedTheme == ThemeValue.AUTO) {
-        selectedTheme =
-            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                Configuration.UI_MODE_NIGHT_YES -> ThemeValue.DARK
-                else -> ThemeValue.LIGHT
-            }
-    }
+    var selectedTheme = prefsRepo.getResolvedTheme(context)
     val styleResId: Int =
         when (selectedTheme) {
             ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons

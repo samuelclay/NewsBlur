@@ -395,9 +395,8 @@ public class ItemSetFragment extends NbFragment {
         int cardBg, strokeColor, textColor, buttonBg;
         int goldColor = ContextCompat.getColor(requireContext(), R.color.premium_gold);
 
-        PrefConstants.ThemeValue theme = prefsRepo.getSelectedTheme();
-        boolean isDarkSystem = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-        boolean isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK || (theme == PrefConstants.ThemeValue.AUTO && isDarkSystem);
+        PrefConstants.ThemeValue theme = prefsRepo.getResolvedTheme(requireContext());
+        boolean isDark = theme == PrefConstants.ThemeValue.DARK || theme == PrefConstants.ThemeValue.BLACK;
 
         if (theme == PrefConstants.ThemeValue.SEPIA) {
             cardBg = ContextCompat.getColor(requireContext(), R.color.item_background_sepia);

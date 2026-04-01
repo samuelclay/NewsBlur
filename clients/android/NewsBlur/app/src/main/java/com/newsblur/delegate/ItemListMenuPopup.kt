@@ -735,14 +735,7 @@ class ItemListMenuPopup(
         }
 
     private fun resolvedTheme(): PrefConstants.ThemeValue =
-        when (activity.prefsRepo.getSelectedTheme()) {
-            PrefConstants.ThemeValue.AUTO -> {
-                val nightModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) PrefConstants.ThemeValue.DARK else PrefConstants.ThemeValue.LIGHT
-            }
-
-            else -> activity.prefsRepo.getSelectedTheme()
-        }
+        activity.prefsRepo.getResolvedTheme(activity)
 }
 
 private data class ActionRow(

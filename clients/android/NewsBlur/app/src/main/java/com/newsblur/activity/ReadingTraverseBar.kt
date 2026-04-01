@@ -20,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import com.newsblur.R
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 
@@ -301,9 +302,14 @@ class ReadingTraverseBar(
     private fun resolveTheme(selectedTheme: ThemeValue): ThemeValue =
         when (selectedTheme) {
             ThemeValue.AUTO -> {
-                when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    Configuration.UI_MODE_NIGHT_YES -> ThemeValue.DARK
-                    else -> ThemeValue.LIGHT
+                val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+                val nightFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                if (nightFlags == Configuration.UI_MODE_NIGHT_YES) {
+                    val name = prefs.getString(PrefConstants.THEME_DARK_VARIANT, ThemeValue.DARK.name)!!
+                    ThemeValue.valueOf(name)
+                } else {
+                    val name = prefs.getString(PrefConstants.THEME_LIGHT_VARIANT, ThemeValue.LIGHT.name)!!
+                    ThemeValue.valueOf(name)
                 }
             }
 

@@ -57,6 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -133,12 +134,8 @@ private fun rememberDailyBriefingPalette(): DailyBriefingPalette {
 
 @Composable
 private fun rememberDailyBriefingSectionPalette(prefsRepo: PrefsRepo): DailyBriefingSectionPalette {
-    val selectedTheme = prefsRepo.getSelectedTheme()
-    val effectiveTheme =
-        when (selectedTheme) {
-            ThemeValue.AUTO -> if (isSystemInDarkTheme()) ThemeValue.DARK else ThemeValue.LIGHT
-            else -> selectedTheme
-        }
+    val context = LocalContext.current
+    val effectiveTheme = prefsRepo.getResolvedTheme(context)
 
     return remember(effectiveTheme) {
         when (effectiveTheme) {

@@ -834,11 +834,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private StoryHeaderPalette storyHeaderPalette() {
-        PrefConstants.ThemeValue theme = prefsRepo.getSelectedTheme();
-        if (theme == PrefConstants.ThemeValue.AUTO) {
-            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-            theme = nightModeFlags == Configuration.UI_MODE_NIGHT_YES ? PrefConstants.ThemeValue.DARK : PrefConstants.ThemeValue.LIGHT;
-        }
+        PrefConstants.ThemeValue theme = prefsRepo.getResolvedTheme(this);
 
         if (theme == PrefConstants.ThemeValue.SEPIA) {
             return new StoryHeaderPalette(

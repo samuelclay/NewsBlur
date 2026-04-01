@@ -35,16 +35,7 @@ fun discoverThemePalette(
     context: Context,
     prefsRepo: PrefsRepo,
 ): DiscoverThemePalette {
-    var theme = prefsRepo.getSelectedTheme()
-    if (theme == PrefConstants.ThemeValue.AUTO) {
-        val nightModeFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        theme =
-            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                PrefConstants.ThemeValue.DARK
-            } else {
-                PrefConstants.ThemeValue.LIGHT
-            }
-    }
+    val theme = prefsRepo.getResolvedTheme(context)
 
     return when (theme) {
         PrefConstants.ThemeValue.SEPIA ->
