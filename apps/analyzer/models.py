@@ -23,6 +23,7 @@ from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
 from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
+from utils.story_functions import strip_tags
 
 # Regex timeout in seconds to prevent ReDoS attacks
 REGEX_TIMEOUT = 0.1  # 100ms
@@ -513,7 +514,10 @@ def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
     if not story_content:
         return score
 
-    story_content_lower = story_content.lower()
+    # Strip HTML tags so classifiers match visible text, not raw HTML.
+    # Users train on rendered text, so tags like <em>/<a> inside a phrase
+    # must not break substring matching.
+    story_content_lower = strip_tags(story_content).lower()
 
     for classifier in classifiers:
         if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
@@ -586,6 +590,9 @@ def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
     story_content = story.get("story_content", "")
     if not story_content:
         return score
+
+    # Strip HTML tags so regex matches visible text, not raw HTML
+    story_content = strip_tags(story_content)
 
     for classifier in classifiers:
         if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):

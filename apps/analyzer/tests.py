@@ -216,6 +216,31 @@ class Test_Classifiers(TransactionTestCase):
 
         self.assertEqual(score, 1)
 
+    def test_apply_classifier_texts_html_tags_stripped(self):
+        """Text classifiers should match visible text, ignoring inline HTML tags."""
+        MClassifierText.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            text="Fragen, Kritik, Anregungen? Sie erreichen uns unter wasjetzt@zeit.de.",
+            score=-1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "News",
+            "story_content": (
+                '<em>Fragen, Kritik, Anregungen? Sie erreichen uns unter </em>'
+                '<a href="mailto:wasjetzt@zeit.de"><em>wasjetzt@zeit.de</em></a>.'
+            ),
+        }
+
+        classifiers = list(MClassifierText.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_texts(classifiers, story)
+
+        self.assertEqual(score, -1)
+
     def test_apply_classifier_authors(self):
         MClassifierAuthor.objects.create(
             user_id=self.user.pk,
