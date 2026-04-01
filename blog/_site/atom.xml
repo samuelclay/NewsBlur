@@ -1,69 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-03-31T22:39:25-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-04-01T17:43:15-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">The NewsBlur MCP Server and CLI Tool</title><link href="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/" rel="alternate" type="text/html" title="The NewsBlur MCP Server and CLI Tool" /><published>2026-04-01T00:00:00-04:00</published><updated>2026-04-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/01/mcp-server-and-cli</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/"><![CDATA[<p>NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping two new ways to interact with your NewsBlur: an MCP server that lets AI agents read your feeds, manage stories, and train classifiers on your behalf, and a command-line tool that puts your entire NewsBlur in your terminal. One is for your AI. The other is for you. Both use the same 22 operations, and both work right now.</p>
+</subtitle><entry><title type="html">The NewsBlur CLI Tool, AI Skill, and MCP Server</title><link href="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/" rel="alternate" type="text/html" title="The NewsBlur CLI Tool, AI Skill, and MCP Server" /><published>2026-04-01T00:00:00-04:00</published><updated>2026-04-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/01/mcp-server-and-cli</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/"><![CDATA[<p>NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.</p>
 
-<p>MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible agent can read your feeds, manage your stories, train your classifiers, and organize your subscriptions.</p>
+<h3 id="quickstart">Quickstart</h3>
 
-<!-- SCREENSHOT: Claude Code or Claude Desktop showing a conversation where the agent reads NewsBlur feeds and summarizes stories -->
-<p><img src="/assets/mcp-server-claude-conversation.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+<p><strong>CLI tool</strong> — install and log in:</p>
 
-<h3 id="22-tools-for-your-agent">22 tools for your agent</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv pip <span class="nb">install </span>newsblur-cli
+newsblur auth login
+</code></pre></div></div>
 
-<p>The MCP server exposes 22 tools that cover everything you do in NewsBlur:</p>
+<p><strong>AI skill</strong> — install into Claude Code, Cursor, Windsurf, or any Skills-compatible tool:</p>
 
-<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
+</code></pre></div></div>
 
-<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
-
-<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
-
-<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
-
-<!-- SCREENSHOT: The MCP feature page on newsblur.com showing the 22 tools grid -->
-<p><img src="/assets/mcp-server-tools-grid.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="what-this-looks-like-in-practice">What this looks like in practice</h3>
-
-<p>You ask your agent: “What are my infrequent stories today?” It calls <code class="language-plaintext highlighter-rouge">newsblur_get_infrequent_stories</code> and comes back with a summary of the stories from your low-volume feeds, the ones that publish once a week and are easy to miss in a busy river.</p>
-
-<p>You say: “Save that Stratechery article and tag it ai, investing.” The agent calls <code class="language-plaintext highlighter-rouge">newsblur_save_story</code> with the right story hash and tags. Done.</p>
-
-<p>You ask: “What have I saved about climate policy this month?” It searches your saved stories and gives you a summary you can actually work with.</p>
-
-<p>The agent knows your feeds, your folders, your classifiers, your saved stories. It’s working with your actual NewsBlur data, not guessing.</p>
-
-<h3 id="connect-in-one-command">Connect in one command</h3>
-
-<p>For Claude Code:</p>
+<p><strong>MCP server</strong> — connect from Claude Code, Claude Desktop, Codex, or any MCP client:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
 </code></pre></div></div>
 
-<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
+<p>All three require a <a href="https://newsblur.com/?next=premium">Premium Archive</a> or Premium Pro subscription. On first use, a browser window opens for OAuth authorization. Your token is stored locally and you can revoke access at any time.</p>
 
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
+<hr />
 
-<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
+<h3 id="cli-tool">CLI tool</h3>
 
-<p>On first use, a browser window opens for you to log in and authorize access. Authentication uses OAuth 2.0, the same standard used by third-party apps. Your credentials are never stored on the MCP server, and you can revoke access at any time from your account settings.</p>
-
-<h3 id="command-line-interface">Command-line interface</h3>
-
-<p>Everything the MCP server can do is also available from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>. Install with pip:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv pip install newsblur-cli
-</code></pre></div></div>
-
-<p>Then log in and start using it:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth login
-</code></pre></div></div>
+<p>Everything you do in NewsBlur, from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>.</p>
 
 <p><strong>Read stories</strong> from feeds, folders, or everything at once:</p>
 
@@ -120,8 +83,57 @@ newsblur discover trending                     <span class="c"># trending feeds<
 newsblur briefing <span class="nt">--json</span> | jq <span class="s1">'.items[0].section_summaries'</span>
 </code></pre></div></div>
 
-<!-- SCREENSHOT: Terminal showing newsblur CLI output, maybe `newsblur stories list` with formatted story output -->
-<p><img src="/assets/mcp-server-cli-output.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+<p><img src="/assets/mcp-cli.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="ai-skill">AI skill</h3>
+
+<p>The CLI is great on its own, but it’s even better when your AI agent knows every command. The NewsBlur CLI skill teaches your agent the full command reference: every subcommand, every flag, every output format. Install it with one command and your agent can read feeds, search stories, train classifiers, and manage subscriptions on your behalf.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">npx skills add</code> command works with any tool that supports the Skills standard: Claude Code, Cursor, Windsurf, and dozens more.</p>
+
+<p><img src="/assets/mcp-skill-top.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
+<img src="/assets/mcp-skill-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
+
+<p>The skill has a major advantage over the MCP server for agents that support it: context efficiency. The MCP server returns raw JSON that lands in your agent’s context window. Ask for your saved ESP32 stories and you’ll burn through nearly 40,000 tokens on a single response. The skill runs the CLI instead, which returns clean, formatted text. Same query, same results, about a third of the tokens. In testing, the MCP server used 39,553 tokens for a saved stories query. The same query through the skill used 11,735.</p>
+
+<p>If your tool supports skills, use the skill. If it only supports MCP, use the MCP server. If you just want to script your NewsBlur from the terminal, use the CLI directly.</p>
+
+<h3 id="mcp-server">MCP server</h3>
+
+<p>MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible agent can read your feeds, manage your stories, train your classifiers, and organize your subscriptions.</p>
+
+<p><img src="/assets/mcp-stories-query.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
+<img src="/assets/mcp-stories-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
+
+<p>The server exposes 22 tools that cover everything you do in NewsBlur:</p>
+
+<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
+
+<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
+
+<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
+
+<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
+
+<p>For Claude Code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
+</code></pre></div></div>
+
+<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
 
 <h3 id="readonly-mode">Readonly mode</h3>
 
@@ -143,9 +155,9 @@ newsblur auth login
 
 <h3 id="availability">Availability</h3>
 
-<p>The MCP server and CLI are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. Setup takes one command and one browser authorization. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
+<p>The CLI, AI skill, and MCP server are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
 
-<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping two new ways to interact with your NewsBlur: an MCP server that lets AI agents read your feeds, manage stories, and train classifiers on your behalf, and a command-line tool that puts your entire NewsBlur in your terminal. One is for your AI. The other is for you. Both use the same 22 operations, and both work right now.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mcp-server-claude-conversation.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mcp-server-claude-conversation.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</title><link href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" rel="alternate" type="text/html" title="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" /><published>2026-03-30T00:00:00-04:00</published><updated>2026-03-30T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"><![CDATA[<p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
+<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mcp-cli.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mcp-cli.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</title><link href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" rel="alternate" type="text/html" title="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" /><published>2026-03-30T00:00:00-04:00</published><updated>2026-03-30T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"><![CDATA[<p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
 
 <p>Here’s what’s new.</p>
 
