@@ -8,8 +8,8 @@ data class CursorFilters(
     val storyOrder: StoryOrder,
 ) {
     constructor(prefsRepo: PrefsRepo, fs: FeedSet) : this(
-        stateFilter = prefsRepo.getStateFilter(),
-        readFilter = prefsRepo.getReadFilter(fs),
+        stateFilter = fs.stateFilterOverride ?: prefsRepo.getStateFilter(),
+        readFilter = fs.readFilterOverride ?: prefsRepo.getReadFilter(fs),
         storyOrder = prefsRepo.getStoryOrder(fs),
     )
 }

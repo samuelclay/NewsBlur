@@ -1,6 +1,7 @@
 package com.newsblur.util
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -19,6 +20,8 @@ class StoryClusterNavigationDecisionTest {
         decision as StoryClusterNavigationTarget.DirectReading
         assertEquals("1", decision.feedSet.singleFeed)
         assertEquals("1:cluster-story", decision.storyHash)
+        assertEquals(StateFilter.ALL, decision.feedSet.stateFilterOverride)
+        assertEquals(ReadFilter.ALL, decision.feedSet.readFilterOverride)
     }
 
     @Test
@@ -36,5 +39,21 @@ class StoryClusterNavigationDecisionTest {
         assertEquals("2", decision.feedSet.singleFeed)
         assertEquals(AppConstants.ROOT_FOLDER, decision.folderName)
         assertEquals("2:cluster-story", decision.storyHash)
+        assertEquals(StateFilter.ALL, decision.feedSet.stateFilterOverride)
+        assertEquals(ReadFilter.ALL, decision.feedSet.readFilterOverride)
+    }
+
+    @Test
+    fun target_feed_set_overrides_visibility_filters() {
+        val plainFeedSet = FeedSet.singleFeed("7")
+        val targetFeedSet =
+            StoryClusterNavigationDecision.resolve(
+                currentFeedSet = FeedSet.singleFeed("1"),
+                currentFolderName = AppConstants.ROOT_FOLDER,
+                targetFeedId = "7",
+                storyHash = "7:hidden-story",
+            ) as StoryClusterNavigationTarget.FeedListReading
+
+        assertNotEquals(plainFeedSet, targetFeedSet.feedSet)
     }
 }

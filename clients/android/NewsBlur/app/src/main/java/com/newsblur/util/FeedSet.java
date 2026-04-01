@@ -37,6 +37,8 @@ public class FeedSet implements Serializable {
     private String searchFeedId;
     private boolean isFilterSaved = false;
     private boolean muted = false;
+    private StateFilter stateFilterOverride;
+    private ReadFilter readFilterOverride;
 
     private FeedSet() {
         // must use factory methods
@@ -312,6 +314,24 @@ public class FeedSet implements Serializable {
 
     public boolean isMuted() { return this.muted; }
 
+    public void setStateFilterOverride(@Nullable StateFilter stateFilterOverride) {
+        this.stateFilterOverride = stateFilterOverride;
+    }
+
+    @Nullable
+    public StateFilter getStateFilterOverride() {
+        return stateFilterOverride;
+    }
+
+    public void setReadFilterOverride(@Nullable ReadFilter readFilterOverride) {
+        this.readFilterOverride = readFilterOverride;
+    }
+
+    @Nullable
+    public ReadFilter getReadFilterOverride() {
+        return readFilterOverride;
+    }
+
     /**
      * Gets a flat set of feed IDs that can be passed to API calls that take raw numeric IDs or
      * social IDs prefixed with "social:". Returns an empty set for feed sets that don't track
@@ -346,6 +366,8 @@ public class FeedSet implements Serializable {
         if ( !FeedUtils.textUtilsEquals(searchQuery, s.searchQuery)) return false;
         if ( !FeedUtils.textUtilsEquals(folderName, s.folderName)) return false;
         if ( isFilterSaved != s.isFilterSaved ) return false;
+        if ( stateFilterOverride != s.stateFilterOverride ) return false;
+        if ( readFilterOverride != s.readFilterOverride ) return false;
         if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
         if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
         if ( (savedTags != null) && (s.savedTags != null) && s.savedTags.equals(savedTags) ) return true;
@@ -372,6 +394,8 @@ public class FeedSet implements Serializable {
         if (searchQuery != null) result = 43 * result + searchQuery.hashCode();
         if (savedTags != null) result = 53 * result + savedTags.hashCode();
         if (isFilterSaved) result = 59 * result;
+        if (stateFilterOverride != null) result = 61 * result + stateFilterOverride.hashCode();
+        if (readFilterOverride != null) result = 67 * result + readFilterOverride.hashCode();
         return result;
     }
 

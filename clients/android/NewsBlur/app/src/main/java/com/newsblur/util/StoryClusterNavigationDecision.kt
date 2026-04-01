@@ -22,8 +22,13 @@ object StoryClusterNavigationDecision {
     ): StoryClusterNavigationTarget? {
         if (targetFeedId.isNullOrBlank() || storyHash.isNullOrBlank()) return null
 
-        val targetFeedSet = FeedSet.singleFeed(targetFeedId)
-        if (currentFeedSet == targetFeedSet) {
+        val baseTargetFeedSet = FeedSet.singleFeed(targetFeedId)
+        val targetFeedSet =
+            FeedSet.singleFeed(targetFeedId).apply {
+                stateFilterOverride = StateFilter.ALL
+                readFilterOverride = ReadFilter.ALL
+            }
+        if (currentFeedSet == baseTargetFeedSet) {
             return StoryClusterNavigationTarget.DirectReading(
                 feedSet = targetFeedSet,
                 storyHash = storyHash,
