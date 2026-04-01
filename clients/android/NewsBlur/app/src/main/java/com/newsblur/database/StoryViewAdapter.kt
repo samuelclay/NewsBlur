@@ -845,9 +845,26 @@ class StoryViewAdapter(
                         val boundThumbnailStyle = thumbnailStyle
                         val verticalInsetPx = UIUtils.dp2px(context, 8)
 
+                        // For recycled views that already have a measured height, compute the
+                        // target thumbnail height immediately so the view never appears as a
+                        // 1px sliver.  Fresh views (height 0) still start at 1 so the
+                        // thumbnail does not influence the first row measurement.
+                        val existingHeight = vh.itemView.height
+                        val initialHeight = if (existingHeight > 0) {
+                            val maxAllowed = (existingHeight - verticalInsetPx).coerceAtLeast(1)
+                            val scaled = (existingHeight * layout.rowHeightFraction).roundToInt()
+                            if (maxAllowed >= smallMinHeightPx) {
+                                scaled.coerceAtLeast(smallMinHeightPx).coerceAtMost(maxAllowed)
+                            } else {
+                                maxAllowed
+                            }
+                        } else {
+                            layout.fixedHeightPx ?: 1
+                        }
+
                         targetThumbView.setExpandedLayout(
                             layout.widthPx,
-                            layout.fixedHeightPx ?: 1,
+                            initialHeight,
                             layout.leftMarginPx,
                             layout.topMarginPx,
                             layout.rightMarginPx,
@@ -882,11 +899,13 @@ class StoryViewAdapter(
                         val boundStoryHash = story.storyHash
                         val boundThumbnailStyle = thumbnailStyle
 
-                        // Keep the large image from influencing measurement; once the text lays out,
-                        // resize the image to the row's established height.
+                        // For recycled views, use the existing row height so the thumbnail
+                        // doesn't flash at 1px.  For fresh views, start at 1 so the text
+                        // content determines the initial row height.
+                        val initialHeight = vh.itemView.height.coerceAtLeast(1)
                         targetThumbView.setExpandedLayout(
                             layout.widthPx,
-                            1,
+                            initialHeight,
                             layout.leftMarginPx,
                             layout.topMarginPx,
                             layout.rightMarginPx,

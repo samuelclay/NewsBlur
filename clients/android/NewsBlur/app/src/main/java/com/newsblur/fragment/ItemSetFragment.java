@@ -558,12 +558,19 @@ public class ItemSetFragment extends NbFragment {
         if (prefsRepo.isMarkReadOnFeedScroll()) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
             int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
+            // when scrolled to the bottom, the last story is fully visible but never scrolls off-screen,
+            // so extend markEnd to include all remaining visible stories
+            int lastCompletelyVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+            int storyCount = adapter.getStoryCount();
+            if (storyCount > 0 && lastCompletelyVisible >= storyCount - 1) {
+                markEnd = Math.max(markEnd, storyCount - 1);
+            }
             if (markEnd > lastAutoMarkIndex) {
+                int prevIndex = lastAutoMarkIndex;
                 lastAutoMarkIndex = markEnd;
-                // iterate backwards through that row, marking read
-                for (int i = 0; i < columnCount; i++) {
-                    int index = markEnd - i;
-                    Story story = adapter.getStory(index);
+                // mark all stories between the previous mark position and the new one
+                for (int i = prevIndex + 1; i <= markEnd; i++) {
+                    Story story = adapter.getStory(i);
                     if (story != null) {
                         feedUtils.markStoryAsRead(story, requireContext());
                     }
