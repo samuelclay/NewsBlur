@@ -17,6 +17,7 @@ import com.newsblur.di.IconLoader
 import com.newsblur.di.ThumbnailLoader
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.util.DailyBriefingDeepLink
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
@@ -32,6 +33,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DailyBriefingActivity : NbActivity() {
+    companion object {
+        private const val STATE_PENDING_LINKED_STORY_HASH = "pending_linked_story_hash"
+        private const val STATE_HAS_OPENED_LINKED_STORY = "has_opened_linked_story"
+    }
+
     @Inject
     lateinit var feedUtils: FeedUtils
 
@@ -45,6 +51,8 @@ class DailyBriefingActivity : NbActivity() {
 
     private lateinit var binding: ActivityDailyBriefingBinding
     private lateinit var viewModel: DailyBriefingViewModel
+    private var pendingLinkedStoryHash: String? = null
+    private var hasOpenedLinkedStory = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +64,11 @@ class DailyBriefingActivity : NbActivity() {
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener {
             viewModel.showSettings()
         }
+        pendingLinkedStoryHash =
+            savedInstanceState?.getString(STATE_PENDING_LINKED_STORY_HASH)
+                ?: intent.getStringExtra(DailyBriefingDeepLink.EXTRA_STORY_HASH)
+                ?: DailyBriefingDeepLink.storyHash(intent?.data)
+        hasOpenedLinkedStory = savedInstanceState?.getBoolean(STATE_HAS_OPENED_LINKED_STORY) ?: false
 
         binding.dailyBriefingCompose.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         binding.dailyBriefingCompose.setContent {
@@ -93,8 +106,36 @@ class DailyBriefingActivity : NbActivity() {
                         } else {
                             View.GONE
                         }
+                    handlePendingLinkedStory(state)
                 }
             }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_PENDING_LINKED_STORY_HASH, pendingLinkedStoryHash)
+        outState.putBoolean(STATE_HAS_OPENED_LINKED_STORY, hasOpenedLinkedStory)
+    }
+
+    private fun handlePendingLinkedStory(state: com.newsblur.viewModel.DailyBriefingUiState) {
+        val storyHash = pendingLinkedStoryHash ?: return
+        if (hasOpenedLinkedStory) return
+
+        if (state.groups.any { group -> group.storyHashes.contains(storyHash) }) {
+            hasOpenedLinkedStory = true
+            pendingLinkedStoryHash = null
+            openStory(storyHash)
+            return
+        }
+
+        if (state.isLoadingInitialData || state.isLoadingMore) {
+            return
+        }
+
+        val lastGroupId = state.groups.lastOrNull()?.briefingId
+        if (state.hasNextPage && lastGroupId != null) {
+            viewModel.loadMoreIfNeeded(lastGroupId)
         }
     }
 

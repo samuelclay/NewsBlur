@@ -12,6 +12,7 @@ import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.AppConstants
+import com.newsblur.util.DailyBriefingDeepLink
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -38,11 +39,12 @@ class LoginActivity : FragmentActivity() {
     }
 
     private fun onAuthCompleted() {
-        val startMain =
-            Intent(this, Main::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-        startActivity(startMain)
+        val startDestination =
+            DailyBriefingDeepLink.createLaunchIntent(this, intent?.data)
+                ?: Intent(this, Main::class.java)
+
+        startDestination.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(startDestination)
         finish()
     }
 

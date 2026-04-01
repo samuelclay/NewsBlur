@@ -10,6 +10,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncServiceState
+import com.newsblur.util.DailyBriefingDeepLink
 import com.newsblur.util.Log
 import com.newsblur.util.NotificationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,14 +57,21 @@ class InitActivity : AppCompatActivity() {
 
     // see if a user is already logged in; if so, jump to the Main activity
     private fun userAuthCheck() {
+        val briefingIntent = DailyBriefingDeepLink.createLaunchIntent(this, intent?.data)
         if (prefsRepo.hasCookie()) {
             SubscriptionSyncService.schedule(this)
-            val mainIntent = Intent(this, Main::class.java)
-            startActivity(mainIntent)
+            startActivity(briefingIntent ?: Intent(this, Main::class.java))
         } else {
-            val loginActivityIntent = Intent(this, LoginActivity::class.java)
+            val loginActivityIntent =
+                Intent(this, LoginActivity::class.java).apply {
+                    if (briefingIntent != null) {
+                        action = intent?.action
+                        data = intent?.data
+                    }
+                }
             startActivity(loginActivityIntent)
         }
+        finish()
     }
 
     // now before there is any chance at all of an activity hitting the DB and crashing when it

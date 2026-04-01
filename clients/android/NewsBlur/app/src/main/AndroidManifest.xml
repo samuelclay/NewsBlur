@@ -40,6 +40,30 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
 
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="newsblur.com"
+                    android:pathPrefix="/briefing" />
+                <data
+                    android:scheme="https"
+                    android:host="www.newsblur.com"
+                    android:pathPrefix="/briefing" />
+                <data
+                    android:scheme="http"
+                    android:host="newsblur.com"
+                    android:pathPrefix="/briefing" />
+                <data
+                    android:scheme="http"
+                    android:host="www.newsblur.com"
+                    android:pathPrefix="/briefing" />
+            </intent-filter>
+
         </activity>
 
         <activity
