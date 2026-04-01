@@ -39,15 +39,12 @@ logging.basicConfig(
     format="%(message)s",
 )
 
-auth = NewsBlurOAuthProvider()
-
 mcp = FastMCP(
     "NewsBlur",
     instructions=(
         "Connect AI agents to NewsBlur for reading feeds, managing stories, "
         "training classifiers, and organizing subscriptions."
     ),
-    auth=auth,
 )
 
 
@@ -144,6 +141,7 @@ import newsblur_mcp.prompts.prompts  # noqa: F401, E402
 
 
 def main():
+    mcp.auth = NewsBlurOAuthProvider()
     mcp.run(
         transport="streamable-http",
         host=MCP_HOST,
