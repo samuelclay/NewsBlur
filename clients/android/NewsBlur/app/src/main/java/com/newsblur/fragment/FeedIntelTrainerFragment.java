@@ -18,6 +18,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogTrainfeedBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
@@ -34,6 +35,9 @@ public class FeedIntelTrainerFragment extends DialogFragment {
 
     @Inject
     BlurDatabaseHelper dbHelper;
+
+    @Inject
+    PrefsRepo prefsRepo;
 
     private Feed feed;
     private FeedSet fs;
@@ -58,6 +62,8 @@ public class FeedIntelTrainerFragment extends DialogFragment {
 
         View v = getLayoutInflater().inflate(R.layout.dialog_trainfeed, null);
         binding = DialogTrainfeedBinding.bind(v);
+
+        UIUtils.setupIntelExplainer(v, prefsRepo.getResolvedTheme(requireContext()));
 
         // display known title classifiers
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {

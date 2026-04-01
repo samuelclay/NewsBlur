@@ -26,6 +26,11 @@
         android:textStyle="bold" />
 
     <include
+        layout="@layout/include_intel_explainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
         android:id="@+id/train_content"
         layout="@layout/dialog_trainstory"
         android:layout_width="match_parent"

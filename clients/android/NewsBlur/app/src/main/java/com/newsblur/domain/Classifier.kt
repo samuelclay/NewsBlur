@@ -31,16 +31,16 @@ class Classifier : Serializable {
         val values = ValueMultimap()
 
         authors.forEach { (key, value) ->
-            values.put(buildAPITupleKey(value, AUTHOR_POSTFIX), key)
+            buildAPITupleKey(value, AUTHOR_POSTFIX)?.let { values.put(it, key) }
         }
         title.forEach { (key, value) ->
-            values.put(buildAPITupleKey(value, TITLE_POSTFIX), key)
+            buildAPITupleKey(value, TITLE_POSTFIX)?.let { values.put(it, key) }
         }
         tags.forEach { (key, value) ->
-            values.put(buildAPITupleKey(value, TAG_POSTFIX), key)
+            buildAPITupleKey(value, TAG_POSTFIX)?.let { values.put(it, key) }
         }
         feeds.forEach { (key, value) ->
-            values.put(buildAPITupleKey(value, FEED_POSTFIX), key)
+            buildAPITupleKey(value, FEED_POSTFIX)?.let { values.put(it, key) }
         }
 
         return values
@@ -49,13 +49,15 @@ class Classifier : Serializable {
     private fun buildAPITupleKey(
         action: Int,
         postfix: String,
-    ): String =
+    ): String? =
         when (action) {
             LIKE -> LIKE_PREFIX + postfix
             DISLIKE -> DISLIKE_PREFIX + postfix
+            SUPER_DISLIKE -> SUPER_DISLIKE_PREFIX + postfix
             CLEAR_LIKE -> CLEAR_LIKE_PREFIX + postfix
             CLEAR_DISLIKE -> CLEAR_DISLIKE_PREFIX + postfix
-            else -> throw IllegalArgumentException("invalid classifier action type")
+            CLEAR_SUPER_DISLIKE -> CLEAR_SUPER_DISLIKE_PREFIX + postfix
+            else -> null
         }
 
     fun getContentValues(): List<ContentValues> {
@@ -116,8 +118,10 @@ class Classifier : Serializable {
 
         const val LIKE: Int = 1
         const val DISLIKE: Int = -1
+        const val SUPER_DISLIKE: Int = -2
         const val CLEAR_DISLIKE: Int = 3
         const val CLEAR_LIKE: Int = 4
+        const val CLEAR_SUPER_DISLIKE: Int = 5
 
         // API key postfix/prefix constants
         private const val AUTHOR_POSTFIX = "author"
@@ -126,8 +130,10 @@ class Classifier : Serializable {
         private const val TAG_POSTFIX = "tag"
         private const val LIKE_PREFIX = "like_"
         private const val DISLIKE_PREFIX = "dislike_"
+        private const val SUPER_DISLIKE_PREFIX = "super_dislike_"
         private const val CLEAR_LIKE_PREFIX = "remove_like_"
         private const val CLEAR_DISLIKE_PREFIX = "remove_dislike_"
+        private const val CLEAR_SUPER_DISLIKE_PREFIX = "remove_super_dislike_"
 
         @JvmStatic
         fun fromCursor(cursor: Cursor): Classifier {

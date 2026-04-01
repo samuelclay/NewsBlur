@@ -15,13 +15,27 @@
     />
 
     <ImageButton
-        android:id="@+id/intel_row_dislike"
+        android:id="@+id/intel_row_super_dislike"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/intel_row_clear"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_marginRight="4dp"
-        android:layout_marginLeft="6dp"
+        android:layout_marginLeft="2dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_thumb_down_double_yellow"
+        android:contentDescription="@string/intel_super_dislike"
+    />
+
+    <ImageButton
+        android:id="@+id/intel_row_dislike"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/intel_row_super_dislike"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/ic_thumb_down_yellow"

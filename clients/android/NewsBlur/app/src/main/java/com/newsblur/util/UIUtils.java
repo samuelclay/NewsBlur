@@ -54,6 +54,7 @@ import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
+import com.newsblur.util.PrefConstants;
 
 public class UIUtils {
 
@@ -430,8 +431,15 @@ public class UIUtils {
             classifier.put(key, Classifier.DISLIKE);
             colourIntelDialogRow(row, classifier, key);
         });
+        row.findViewById(R.id.intel_row_super_dislike).setOnClickListener(v -> {
+            classifier.put(key, Classifier.SUPER_DISLIKE);
+            colourIntelDialogRow(row, classifier, key);
+        });
         row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
-            if (Objects.equals(classifier.get(key), Classifier.DISLIKE)) {
+            Integer current = classifier.get(key);
+            if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(current)) {
+                classifier.put(key, Classifier.CLEAR_SUPER_DISLIKE);
+            } else if (Integer.valueOf(Classifier.DISLIKE).equals(current)) {
                 classifier.put(key, Classifier.CLEAR_DISLIKE);
             } else {
                 classifier.put(key, Classifier.CLEAR_LIKE);
@@ -444,16 +452,137 @@ public class UIUtils {
         if (Integer.valueOf(Classifier.LIKE).equals(classifier.get(key))) {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else
-        if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
+        } else if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(classifier.get(key))) {
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_crimson);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
+        } else if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
+            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
         } else {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
+        }
+    }
+
+    /**
+     * Themes and wires up the intel explainer banner, including the info toggle
+     * that expands/collapses the examples section.
+     */
+    public static void setupIntelExplainer(View root, PrefConstants.ThemeValue theme) {
+        View explainer = root.findViewById(R.id.intel_explainer_root);
+        if (explainer == null) return;
+
+        boolean isDark = (theme == PrefConstants.ThemeValue.DARK ||
+                          theme == PrefConstants.ThemeValue.BLACK);
+
+        // Hierarchy pill backgrounds
+        int superBg = isDark ? 0x406B0001 : 0x186B0001;
+        int likeBg = isDark ? 0x4034912E : 0x1834912E;
+        int dislikeBg = isDark ? 0x40A90103 : 0x18A90103;
+        int barBg = isDark ? 0x20FFFFFF : 0x10000000;
+
+        // Text colors
+        int superColor = isDark ? 0xFFFF6B6B : 0xFF6B0001;
+        int likeColor = isDark ? 0xFF7ECE72 : 0xFF34912E;
+        int dislikeColor = isDark ? 0xFFE87272 : 0xFFA90103;
+        int separatorColor = isDark ? 0xFF777777 : 0xFFAAAAAA;
+        int lineColor = isDark ? 0xFF555555 : 0xFFCCCCCC;
+        int headerColor = isDark ? 0xFFCCCCCC : 0xFF555555;
+        int bodyColor = isDark ? 0xFFAAAAAA : 0xFF777777;
+        int dividerColor = isDark ? 0xFF555555 : 0xFFDDDDDD;
+        int infoColor = isDark ? 0xFF777777 : 0xFFBBBBBB;
+
+        float density = root.getResources().getDisplayMetrics().density;
+        float pillRadius = 6f * density;
+        float barRadius = 8f * density;
+
+        // Style the hierarchy bar background
+        View hierarchyBar = root.findViewById(R.id.explainer_hierarchy_bar);
+        stylePill(hierarchyBar, barBg, barRadius);
+
+        // Style the hierarchy pills
+        stylePill(root.findViewById(R.id.explainer_pill_super), superBg, pillRadius);
+        stylePill(root.findViewById(R.id.explainer_pill_like), likeBg, pillRadius);
+        stylePill(root.findViewById(R.id.explainer_pill_dislike), dislikeBg, pillRadius);
+
+        ((TextView) root.findViewById(R.id.explainer_label_super)).setTextColor(superColor);
+        ((TextView) root.findViewById(R.id.explainer_label_like)).setTextColor(likeColor);
+        ((TextView) root.findViewById(R.id.explainer_label_dislike)).setTextColor(dislikeColor);
+
+        // Separator text and lines
+        ((TextView) root.findViewById(R.id.explainer_sep_1)).setTextColor(separatorColor);
+        ((TextView) root.findViewById(R.id.explainer_sep_2)).setTextColor(separatorColor);
+        root.findViewById(R.id.explainer_line_1a).setBackgroundColor(lineColor);
+        root.findViewById(R.id.explainer_line_1b).setBackgroundColor(lineColor);
+        root.findViewById(R.id.explainer_line_2a).setBackgroundColor(lineColor);
+        root.findViewById(R.id.explainer_line_2b).setBackgroundColor(lineColor);
+
+        // Info toggle - entire hierarchy bar and root are clickable
+        TextView infoToggle = root.findViewById(R.id.explainer_info_toggle);
+        infoToggle.setTextColor(infoColor);
+        View examples = root.findViewById(R.id.explainer_examples);
+        View.OnClickListener toggleClick = v -> {
+            if (examples.getVisibility() == View.VISIBLE) {
+                examples.setVisibility(View.GONE);
+            } else {
+                examples.setVisibility(View.VISIBLE);
+            }
+        };
+        explainer.setOnClickListener(toggleClick);
+        hierarchyBar.setClickable(true);
+        hierarchyBar.setOnClickListener(toggleClick);
+
+        // Style the expanded examples section
+        root.findViewById(R.id.explainer_divider).setBackgroundColor(dividerColor);
+
+        ((TextView) root.findViewById(R.id.explainer_example1_header)).setTextColor(headerColor);
+        ((TextView) root.findViewById(R.id.explainer_example2_header)).setTextColor(headerColor);
+        ((TextView) root.findViewById(R.id.explainer_ex1_arrow)).setTextColor(bodyColor);
+        ((TextView) root.findViewById(R.id.explainer_ex2_arrow)).setTextColor(bodyColor);
+        ((TextView) root.findViewById(R.id.explainer_ex1_result)).setTextColor(likeColor);
+        ((TextView) root.findViewById(R.id.explainer_ex2_result)).setTextColor(superColor);
+
+        int iconSize = (int) (12 * density);
+
+        // Example 1 pills: dislike, dislike, like (like wins)
+        styleExamplePill(root.findViewById(R.id.explainer_ex1_pill1), dislikeBg, dislikeColor, pillRadius, R.drawable.ic_thumb_down_red, iconSize);
+        styleExamplePill(root.findViewById(R.id.explainer_ex1_pill2), dislikeBg, dislikeColor, pillRadius, R.drawable.ic_thumb_down_red, iconSize);
+        styleExamplePill(root.findViewById(R.id.explainer_ex1_pill3), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
+
+        // Example 2 pills: like, like, super dislike (super dislike wins)
+        styleExamplePill(root.findViewById(R.id.explainer_ex2_pill1), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
+        styleExamplePill(root.findViewById(R.id.explainer_ex2_pill2), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
+        styleExamplePill(root.findViewById(R.id.explainer_ex2_pill3), superBg, superColor, pillRadius, R.drawable.ic_thumb_down_double_crimson, iconSize);
+    }
+
+    private static void stylePill(View pill, int bgColor, float radius) {
+        android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+        bg.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        bg.setCornerRadius(radius);
+        bg.setColor(bgColor);
+        pill.setBackground(bg);
+    }
+
+    private static void styleExamplePill(TextView pill, int bgColor, int textColor, float radius, int iconRes, int iconSize) {
+        android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+        bg.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        bg.setCornerRadius(radius);
+        bg.setColor(bgColor);
+        pill.setBackground(bg);
+        pill.setTextColor(textColor);
+        Drawable icon = pill.getContext().getDrawable(iconRes);
+        if (icon != null) {
+            icon.setBounds(0, 0, iconSize, iconSize);
+            pill.setCompoundDrawables(null, null, icon, null);
+            pill.setCompoundDrawablePadding((int) (3 * pill.getResources().getDisplayMetrics().density));
         }
     }
 

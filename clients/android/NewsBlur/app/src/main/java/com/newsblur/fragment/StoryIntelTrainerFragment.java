@@ -112,16 +112,25 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
             newTitleTraining = Classifier.LIKE;
             contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_green);
             contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            contentBinding.intelTitleSuperDislike.setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
         });
         contentBinding.intelTitleDislike.setOnClickListener(v -> {
             newTitleTraining = Classifier.DISLIKE;
             contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
+            contentBinding.intelTitleSuperDislike.setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
+        });
+        contentBinding.intelTitleSuperDislike.setOnClickListener(v -> {
+            newTitleTraining = Classifier.SUPER_DISLIKE;
+            contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            contentBinding.intelTitleSuperDislike.setBackgroundResource(R.drawable.ic_thumb_down_double_crimson);
         });
         contentBinding.intelTitleClear.setOnClickListener(v -> {
             newTitleTraining = null;
             contentBinding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             contentBinding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            contentBinding.intelTitleSuperDislike.setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
         });
 
         // scan trained title fragments for this feed and see if any apply to this story
@@ -189,6 +198,8 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
         binding.cancelButton.setRippleColor(android.content.res.ColorStateList.valueOf(borderColor));
         binding.saveButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accentColor));
         binding.saveButton.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white));
+
+        UIUtils.setupIntelExplainer(binding.getRoot(), theme);
     }
 
     private android.graphics.drawable.GradientDrawable makeRoundedRect(int color, float radiusDp) {

@@ -19,6 +19,7 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.FeedApi
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.StoryApi
+import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
@@ -296,7 +297,15 @@ open class SyncService :
                 if ((ra.tried > 0) && (syncServiceState.pendingFeed != null)) continue@actionsLoop
 
                 Log.d(this, "attempting action: " + ra.toContentValues())
-                val response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
+                val response: NewsBlurResponse?
+                try {
+                    response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
+                } catch (e: Exception) {
+                    Log.e(this.javaClass.name, "Discarding reading action that threw unexpected exception", e)
+                    dbHelper.clearAction(id)
+                    syncServiceState.lastActionCount--
+                    continue@actionsLoop
+                }
 
                 if (response == null) {
                     Log.e(this.javaClass.name, "Discarding reading action with client-side error.")

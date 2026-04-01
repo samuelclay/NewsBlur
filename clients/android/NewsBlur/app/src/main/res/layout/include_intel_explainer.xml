@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/intel_explainer_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="6dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Hierarchy bar: horizontally scrollable so it never collapses -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/explainer_hierarchy_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="4dp">
+
+            <!-- Super Dislike pill -->
+            <LinearLayout
+                android:id="@+id/explainer_pill_super"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/explainer_label_super"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explainer_super_dislike"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginStart="3dp"
+                    android:src="@drawable/ic_thumb_down_double_crimson"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <!-- Separator 1 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="1dp">
+                <View
+                    android:id="@+id/explainer_line_1a"
+                    android:layout_width="8dp"
+                    android:layout_height="1dp" />
+                <TextView
+                    android:id="@+id/explainer_sep_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="3dp"
+                    android:text="@string/explainer_beats"
+                    android:textSize="8sp"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06" />
+                <View
+                    android:id="@+id/explainer_line_1b"
+                    android:layout_width="8dp"
+                    android:layout_height="1dp" />
+            </LinearLayout>
+
+            <!-- Like pill -->
+            <LinearLayout
+                android:id="@+id/explainer_pill_like"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/explainer_label_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explainer_like"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="3dp"
+                    android:src="@drawable/ic_thumb_up_green"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <!-- Separator 2 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="1dp">
+                <View
+                    android:id="@+id/explainer_line_2a"
+                    android:layout_width="8dp"
+                    android:layout_height="1dp" />
+                <TextView
+                    android:id="@+id/explainer_sep_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="3dp"
+                    android:text="@string/explainer_beats"
+                    android:textSize="8sp"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06" />
+                <View
+                    android:id="@+id/explainer_line_2b"
+                    android:layout_width="8dp"
+                    android:layout_height="1dp" />
+            </LinearLayout>
+
+            <!-- Dislike pill -->
+            <LinearLayout
+                android:id="@+id/explainer_pill_dislike"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/explainer_label_dislike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explainer_dislike"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="3dp"
+                    android:src="@drawable/ic_thumb_down_red"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <!-- Info icon -->
+            <TextView
+                android:id="@+id/explainer_info_toggle"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:gravity="center"
+                android:layout_marginStart="2dp"
+                android:text="\u24D8"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- Expandable examples section (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/explainer_examples"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="4dp">
+
+        <View
+            android:id="@+id/explainer_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Example 1: Like beats dislikes -->
+        <TextView
+            android:id="@+id/explainer_example1_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/explainer_example1_header"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex1_pill1"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="tech"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp" />
+            <TextView
+                android:id="@+id/explainer_ex1_pill2"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="review"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp" />
+            <TextView
+                android:id="@+id/explainer_ex1_pill3"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="John Gruber"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+            <TextView
+                android:id="@+id/explainer_ex1_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u2192"
+                android:textSize="12sp"
+                android:layout_marginEnd="6dp" />
+            <TextView
+                android:id="@+id/explainer_ex1_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_example1_result"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <!-- Example 2: Super dislike beats everything -->
+        <TextView
+            android:id="@+id/explainer_example2_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/explainer_example2_header"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex2_pill1"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="John Gruber"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp" />
+            <TextView
+                android:id="@+id/explainer_ex2_pill2"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="Apple"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp" />
+            <TextView
+                android:id="@+id/explainer_ex2_pill3"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="sponsored"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex2_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u2192"
+                android:textSize="12sp"
+                android:layout_marginEnd="6dp" />
+            <TextView
+                android:id="@+id/explainer_ex2_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_example2_result"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
