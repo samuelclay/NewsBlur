@@ -94,6 +94,7 @@
             this.constants = {
                 FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
                 FILL_OUT_PAGES: 100,
+                FILL_OUT_PAGES_FIND_STORY_TITLE: 5,
                 FILL_OUT_PAGES_SEARCH_STORY_TITLE: 10,
                 FIND_NEXT_UNREAD_STORY_TRIES: 100,
                 RIVER_STORIES_FOR_STANDARD_ACCOUNT: 3,
@@ -794,18 +795,30 @@
             options = _.extend({}, options);
             var story_id = this.flags['select_story_in_feed'] || options['story_id'];
             var story_title = this.flags['select_story_title_in_feed'] || options['story_title'];
-            var story = NEWSBLUR.assets.stories.get(story_id);
+            var loaded_page_count = this.counts['select_story_in_feed'] + 1;
+            var allow_title_fallback = (loaded_page_count >= this.constants.FILL_OUT_PAGES_FIND_STORY_TITLE ||
+                NEWSBLUR.assets.stories.no_more_stories);
+            var story = NEWSBLUR.story_selection_utils &&
+                NEWSBLUR.story_selection_utils.find_story_by_hash_or_title(NEWSBLUR.assets.stories, {
+                    story_id: story_id,
+                    story_title: story_title,
+                    allow_title_fallback: allow_title_fallback
+                });
+            if (!story) story = NEWSBLUR.assets.stories.get(story_id);
             if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
             NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
 
             if (story) {
+                this.ensure_story_is_visible_in_feed(story);
                 this.counts['select_story_in_feed'] = 0;
                 this.flags['select_story_in_feed'] = null;
+                this.flags['select_story_title_in_feed'] = null;
                 _.delay(_.bind(function () {
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
                 }, this), 100);
-            } else if ((this.counts['select_story_in_feed'] == this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
-                story_title) {
+            } else if ((loaded_page_count >= this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
+                story_title &&
+                !this.flags.search) {
                 // Still not found but because we have a story title, we can search for it.
                 NEWSBLUR.reader.flags.searching = true;
                 NEWSBLUR.reader.flags.search = story_title;
@@ -824,6 +837,26 @@
             } else {
                 this.counts['select_story_in_feed'] = 0;
                 this.flags['select_story_in_feed'] = null;
+                this.flags['select_story_title_in_feed'] = null;
+            }
+        },
+
+        ensure_story_is_visible_in_feed: function (story) {
+            if (!story) return;
+            if (story.score() >= this.get_unread_view_score()) return;
+
+            if (NEWSBLUR.app.story_titles_header) {
+                for (var i = 0; i < 2 && story.score() < this.get_unread_view_score(); i++) {
+                    NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+                }
+            }
+
+            if (story.score() < this.get_unread_view_score()) {
+                story.set('visible', true);
+                NEWSBLUR.assets.stories.trigger('render:intelligence', { temporary: true });
+                if (NEWSBLUR.app.story_titles) {
+                    NEWSBLUR.app.story_titles.fill_out();
+                }
             }
         },
 

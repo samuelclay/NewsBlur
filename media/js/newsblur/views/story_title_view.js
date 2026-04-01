@@ -728,11 +728,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             var story_hash = this.model.get('story_hash');
             var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
             if (story) {
+                NEWSBLUR.reader.ensure_story_is_visible_in_feed(story);
                 story.set('selected', true, { 'click_on_story_title': true });
             } else {
                 var feed_id = this.model.get('story_feed_id');
                 if (feed_id) {
-                    NEWSBLUR.reader.open_feed(feed_id, { 'story_id': story_hash });
+                    NEWSBLUR.reader.open_feed(feed_id, {
+                        'story_id': story_hash,
+                        'story_title': this.model.get('story_title')
+                    });
                 }
             }
             return;
@@ -837,7 +841,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 var $source = $(
                     '<div class="NB-story-title NB-story-title-cluster ' + score_class + read_class +
                     (has_image ? ' NB-has-image' : '') + '" ' +
-                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '" data-story-title="' + _.escape(title) + '">' +
                     '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
                     '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
                     '<a class="story_title">' +
@@ -867,7 +871,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 }
                 var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class +
                     (has_cluster_image ? ' NB-has-cluster-image' : '') + '" ' +
-                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '" data-story-title="' + _.escape(title) + '">' +
                     '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
                     '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
                     '<div class="NB-cluster-sentiment"></div>' +
@@ -887,17 +891,22 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.stopPropagation();
 
         var story_hash = $(e.currentTarget).data('story-hash');
+        var story_title = $(e.currentTarget).data('story-title');
         if (!story_hash) return;
 
         // Check if this story is in the current collection
         var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
         if (story) {
+            NEWSBLUR.reader.ensure_story_is_visible_in_feed(story);
             story.set('selected', true, { 'click_on_story_title': true });
         } else {
             // Open the feed containing this story
             var feed_id = $(e.currentTarget).data('feed-id');
             if (feed_id) {
-                NEWSBLUR.reader.open_feed(feed_id, { 'story_id': story_hash });
+                NEWSBLUR.reader.open_feed(feed_id, {
+                    'story_id': story_hash,
+                    'story_title': story_title
+                });
             }
         }
     },
