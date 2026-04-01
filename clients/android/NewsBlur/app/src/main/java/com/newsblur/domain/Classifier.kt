@@ -23,9 +23,34 @@ class Classifier : Serializable {
     @SerializedName("feeds")
     val feeds: MutableMap<String, Int> = mutableMapOf()
 
+    @JvmField
+    @SerializedName("texts")
+    val texts: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
+    @SerializedName("text_regex")
+    val textRegex: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
+    @SerializedName("urls")
+    val urls: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
+    @SerializedName("url_regex")
+    val urlRegex: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
+    @SerializedName("title_regex")
+    val titleRegex: MutableMap<String, Int> = mutableMapOf()
+
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
     var feedId: String? = null
+
+    fun hasHighlights(): Boolean =
+        authors.isNotEmpty() || tags.isNotEmpty() || title.isNotEmpty() ||
+            texts.isNotEmpty() || textRegex.isNotEmpty() || urls.isNotEmpty() ||
+            urlRegex.isNotEmpty() || titleRegex.isNotEmpty()
 
     fun getAPITuples(): ValueMultimap {
         val values = ValueMultimap()
@@ -41,6 +66,12 @@ class Classifier : Serializable {
         }
         feeds.forEach { (key, value) ->
             buildAPITupleKey(value, FEED_POSTFIX)?.let { values.put(it, key) }
+        }
+        texts.forEach { (key, value) ->
+            buildAPITupleKey(value, TEXT_POSTFIX)?.let { values.put(it, key) }
+        }
+        urls.forEach { (key, value) ->
+            buildAPITupleKey(value, URL_POSTFIX)?.let { values.put(it, key) }
         }
 
         return values
@@ -107,6 +138,61 @@ class Classifier : Serializable {
             valuesList.add(feedValues)
         }
 
+        texts.forEach { (key, value) ->
+            val textValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, TEXT)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(textValues)
+        }
+
+        textRegex.forEach { (key, value) ->
+            val regexValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, TEXT_REGEX)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(regexValues)
+        }
+
+        urls.forEach { (key, value) ->
+            val urlValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, URL)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(urlValues)
+        }
+
+        urlRegex.forEach { (key, value) ->
+            val regexValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, URL_REGEX)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(regexValues)
+        }
+
+        titleRegex.forEach { (key, value) ->
+            val regexValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, TITLE_REGEX)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(regexValues)
+        }
+
         return valuesList
     }
 
@@ -115,6 +201,11 @@ class Classifier : Serializable {
         const val FEED: Int = 1
         const val TITLE: Int = 2
         const val TAG: Int = 3
+        const val TEXT: Int = 4
+        const val TEXT_REGEX: Int = 5
+        const val URL: Int = 6
+        const val URL_REGEX: Int = 7
+        const val TITLE_REGEX: Int = 8
 
         const val LIKE: Int = 1
         const val DISLIKE: Int = -1
@@ -128,6 +219,8 @@ class Classifier : Serializable {
         private const val FEED_POSTFIX = "feed"
         private const val TITLE_POSTFIX = "title"
         private const val TAG_POSTFIX = "tag"
+        private const val TEXT_POSTFIX = "text"
+        private const val URL_POSTFIX = "url"
         private const val LIKE_PREFIX = "like_"
         private const val DISLIKE_PREFIX = "dislike_"
         private const val SUPER_DISLIKE_PREFIX = "super_dislike_"
@@ -152,6 +245,11 @@ class Classifier : Serializable {
                     TITLE -> classifier.title[key] = value
                     FEED -> classifier.feeds[key] = value
                     TAG -> classifier.tags[key] = value
+                    TEXT -> classifier.texts[key] = value
+                    TEXT_REGEX -> classifier.textRegex[key] = value
+                    URL -> classifier.urls[key] = value
+                    URL_REGEX -> classifier.urlRegex[key] = value
+                    TITLE_REGEX -> classifier.titleRegex[key] = value
                 }
             }
 

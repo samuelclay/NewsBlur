@@ -823,6 +823,12 @@ class ReadingItemFragment :
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
                         chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
                     }
+
+                    Classifier.SUPER_DISLIKE -> {
+                        chip.setChipBackgroundColorResource(R.color.tag_dark_red)
+                        chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
+                        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_double_crimson)
+                    }
                 }
             }
 
@@ -842,18 +848,32 @@ class ReadingItemFragment :
 
         if (!TextUtils.isEmpty(story!!.authors)) {
             binding.readingItemAuthors.text = "•   " + story!!.authors
-            if (classifier != null && classifier!!.authors.containsKey(story!!.authors)) {
-                when (classifier!!.authors[story!!.authors]) {
-                    Classifier.LIKE -> binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
-                    Classifier.DISLIKE ->
-                        binding.readingItemAuthors.setTextColor(
-                            ContextCompat.getColor(requireContext(), R.color.negative),
-                        )
-
-                    else ->
-                        binding.readingItemAuthors.setTextColor(
-                            UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
-                        )
+            binding.readingItemAuthors.compoundDrawablePadding = UIUtils.dp2px(requireContext(), 4)
+            val authorScore = if (classifier != null) classifier!!.authors[story!!.authors] else null
+            when (authorScore) {
+                Classifier.LIKE -> {
+                    binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
+                    val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
+                    icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
+                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                }
+                Classifier.DISLIKE -> {
+                    binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.negative))
+                    val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
+                    icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
+                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                }
+                Classifier.SUPER_DISLIKE -> {
+                    binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.super_negative))
+                    val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_double_crimson)
+                    icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 14), UIUtils.dp2px(requireContext(), 14))
+                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                }
+                else -> {
+                    binding.readingItemAuthors.setTextColor(
+                        UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
+                    )
+                    binding.readingItemAuthors.setCompoundDrawables(null, null, null, null)
                 }
             }
         }
@@ -1109,6 +1129,7 @@ class ReadingItemFragment :
                     themeValue = theme,
                     nightMask = nightMask,
                     enableHighlights = enableHighlights,
+                    classifier = classifier,
                 )
             val newHash = (html to highlights).hashCode()
             synchronized(webViewContentMutex) {

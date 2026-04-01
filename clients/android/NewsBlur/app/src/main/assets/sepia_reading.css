@@ -58,6 +58,18 @@ del {
     box-shadow: 0 0 0 1px rgba(139, 123, 107, 0.18);
 }
 
+.NB-classifier-highlight-positive {
+    background-color: #c8e0c5;
+}
+
+.NB-classifier-highlight-negative {
+    background-color: #e8c0b8;
+}
+
+.NB-classifier-highlight-super-negative {
+    background-color: #d8a8a0;
+}
+
 @media(prefers-color-scheme: dark) {
     body, html {
         background-color: #FAF3E8;

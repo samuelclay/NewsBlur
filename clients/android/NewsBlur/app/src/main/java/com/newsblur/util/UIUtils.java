@@ -398,6 +398,7 @@ public class UIUtils {
 
     private static final String POSIT_HILITE_FORMAT = "<span style=\"color: #33AA33\">%s</span>";
     private static final String NEGAT_HILITE_FORMAT = "<span style=\"color: #AA3333\">%s</span>";
+    private static final String SUPER_NEGAT_HILITE_FORMAT = "<span style=\"color: #6B0001\">%s</span>";
 
     /**
      * Alter a story title string to highlight intel training hits as positive or negative based
@@ -408,8 +409,9 @@ public class UIUtils {
         for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
             if (rule.getValue() == Classifier.LIKE) {
                 result = result.replace(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
-            }
-            if (rule.getValue() == Classifier.DISLIKE) {
+            } else if (rule.getValue() == Classifier.SUPER_DISLIKE) {
+                result = result.replace(rule.getKey(), String.format(SUPER_NEGAT_HILITE_FORMAT, rule.getKey()));
+            } else if (rule.getValue() == Classifier.DISLIKE) {
                 result = result.replace(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
             }
         }
@@ -638,6 +640,12 @@ public class UIUtils {
     }
 
     public static void handleUri(Context context, PrefsRepo prefsRepo, Uri uri) {
+        Intent briefingIntent = DailyBriefingDeepLink.createLaunchIntent(context, uri);
+        if (briefingIntent != null) {
+            context.startActivity(briefingIntent);
+            return;
+        }
+
         DefaultBrowser defaultBrowser = prefsRepo.getDefaultBrowser();
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);

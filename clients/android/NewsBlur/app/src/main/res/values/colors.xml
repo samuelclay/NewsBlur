@@ -176,9 +176,11 @@
     <color name="feed_list_search_hint">#8F918B</color>
     
     <color name="negative">#CC2A2E</color>
+    <color name="super_negative">#6B0001</color>
 
     <color name="tag_red">#D89595</color>
     <color name="tag_red_text">#FFFFFF</color>
+    <color name="tag_dark_red">#B06060</color>
     <color name="tag_green">#AACFA6</color>
     <color name="tag_green_text">#FFFFFF</color>
     <color name="tag_gray">#E0E0DE</color>

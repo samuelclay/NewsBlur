@@ -52,3 +52,15 @@ del {
   border-radius: .20em;
   box-shadow: 0 0 0 1px rgba(255, 214, 10, 0.40);
 }
+
+.NB-classifier-highlight-positive {
+    background-color: #2d5a2b !important;
+}
+
+.NB-classifier-highlight-negative {
+    background-color: #6b2a2a !important;
+}
+
+.NB-classifier-highlight-super-negative {
+    background-color: #5a1a1a !important;
+}

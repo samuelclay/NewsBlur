@@ -2,9 +2,11 @@ package com.newsblur.util
 
 import android.content.res.Configuration
 import android.text.TextUtils
+import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
@@ -45,6 +47,7 @@ object StoryUtil {
         themeValue: PrefConstants.ThemeValue,
         nightMask: Int,
         enableHighlights: Boolean,
+        classifier: Classifier? = null,
     ): String =
         withContext(Dispatchers.Default) {
             val sb = StringBuilder(8 * 1024)
@@ -72,12 +75,37 @@ object StoryUtil {
 
             sb.append("</head><body><div class=\"NB-story\">")
             sb.append(storyHtml)
+            sb.append("<script src=\"mark.min.js\"></script>")
             if (enableHighlights) {
-                sb.append("<script src=\"mark.min.js\"></script>")
                 sb.append("<script src=\"storyHighlights.js\"></script>")
+            }
+            sb.append("<script src=\"classifierHighlights.js\"></script>")
+            if (classifier != null && classifier.hasHighlights()) {
+                sb.append("<script>document.addEventListener('DOMContentLoaded',function(){NB_applyClassifiers(")
+                sb.append(classifierToJson(classifier))
+                sb.append(");});</script>")
             }
             sb.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
             sb.append("</div></body></html>")
             sb.toString()
         }
+
+    fun classifierToJson(classifier: Classifier): String {
+        val json = JSONObject()
+        fun putMap(name: String, map: Map<String, Int>) {
+            if (map.isEmpty()) return
+            val obj = JSONObject()
+            for ((key, value) in map) obj.put(key, value)
+            json.put(name, obj)
+        }
+        putMap("authors", classifier.authors)
+        putMap("tags", classifier.tags)
+        putMap("titles", classifier.title)
+        putMap("title_regex", classifier.titleRegex)
+        putMap("texts", classifier.texts)
+        putMap("text_regex", classifier.textRegex)
+        putMap("urls", classifier.urls)
+        putMap("url_regex", classifier.urlRegex)
+        return json.toString()
+    }
 }
