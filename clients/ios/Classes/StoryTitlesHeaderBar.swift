@@ -550,6 +550,7 @@ class StoryTitlesHeaderBar: NSObject {
             setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.accessibilityLabel = "Related Sites"
+            discoverPill.isHidden = false
             optionsPill.isHidden = false
             searchPill.isHidden = false
             markReadContainer.isHidden = false

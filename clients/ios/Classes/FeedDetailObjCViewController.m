@@ -150,7 +150,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.dashboardSingleMode = NO;
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xF2E9DE, 0x383838, 0x222222);
+    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
         self.storyTitlesTable.sectionHeaderTopPadding = 0;
@@ -4605,7 +4605,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.storyTitlesHeaderBar updateOptionsPillWithOrder:order readFilter:readFilter];
 
     // Update discover pill visibility
-    BOOL isEverything = storiesCollection.isEverything;
+    BOOL isEverything = storiesCollection.isEverything && storiesCollection.isRiverView;
     BOOL isSocial = storiesCollection.isSocialRiverView || storiesCollection.isSocialView;
     BOOL isSaved = storiesCollection.isSavedView;
     BOOL isRead = storiesCollection.isReadView;
@@ -5252,7 +5252,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xF2E9DE, 0x383838, 0x222222);
+    self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
     if (@available(iOS 13.0, *)) {
         self.storyTitlesTable.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
     }

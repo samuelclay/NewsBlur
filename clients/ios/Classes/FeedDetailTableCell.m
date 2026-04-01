@@ -179,7 +179,7 @@ static UIFont *indicatorFont = nil;
 
         CGFloat clusterIndent = 18.0 + (isHighlighted ? 2.0 : 0);
         CGFloat trailingInset = 10.0;
-        CGFloat verticalInset = isComfortable ? 2.0 : 0.0;
+        CGFloat verticalInset = 0.0;
         CGRect clusterRect = CGRectMake(clusterIndent,
                                         verticalInset,
                                         MAX(r.size.width - clusterIndent - trailingInset, 40.0),
@@ -296,13 +296,6 @@ static UIFont *indicatorFont = nil;
               withAttributes:@{NSFontAttributeName: dateFont,
                                NSForegroundColorAttributeName: metaColor}];
 
-        UIColor *white = UIColorFromRGB(0xffffff);
-        CGContextSetStrokeColorWithColor(context, [white colorWithAlphaComponent:0.85].CGColor);
-        CGContextSetLineWidth(context, 1.0f);
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, CGRectGetMinX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
-        CGContextAddLineToPoint(context, CGRectGetMaxX(clusterRect), CGRectGetMinY(clusterRect) + 0.5f);
-        CGContextStrokePath(context);
         CGContextRestoreGState(context);
 
         return;
@@ -664,16 +657,6 @@ static UIFont *indicatorFont = nil;
         CGContextAddPath(context, path.CGPath);
         CGContextDrawPath(context, kCGPathStroke);
         CGContextRestoreGState(context);
-    } else {
-        // top border
-        CGContextSetLineWidth(context, 1.0f);
-        
-        CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
-        
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0.0f, 0.5f);
-        CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
-        CGContextStrokePath(context);
     }
     
     // story indicator
