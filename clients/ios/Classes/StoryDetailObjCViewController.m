@@ -1262,6 +1262,26 @@
     return result;
 }
 
+- (NSString *)scoreIconHtml:(int)score {
+    static NSString *thumbsUpBase64 = @"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTUwcHgiIGhlaWdodD0iMTUwcHgiIHZpZXdCb3g9IjAgMCAxNTAgMTUwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPnRodW1icy11cDwvdGl0bGU+CiAgICA8ZyBpZD0idGh1bWJzLXVwIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0ibm91bi10aHVtYnMtdXAtMjAwMzU5Mi05NTk3OEUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNzgyNiwgMTguNDc4MykiIGZpbGw9IiNGRkMwMjEiPgogICAgICAgICAgICA8cGF0aCBkPSJNNDguMDg0NjQ3OCw0MC40NjU3MDMzIEw0OC4wODQ2NDc4LDEwNy42Nzg5NTkgQzUyLjMwNzMwOTEsMTEwLjY1NjE5NiA1NS4wNDMwOTk1LDExMy4wNDM0NzggNjEuMTA5OTk0MSwxMTMuMDQzNDc4IEwxMTAuODI2NDI2LDExMy4wNDM0NzggQzEyMC43MDMzNzMsMTEzLjA0MzQ3OCAxMjcuMzU1Nzk0LDEwNS41NTM3OTkgMTI0Ljc2NDIxLDk3Ljg3MDcwNzQgQzEyOS42MzI2NDcsOTMuMDM3NDExNSAxMzAuODYwMzU5LDg3LjQxMDUwMzcgMTI3Ljg3ODEzNSw4MS42MDgxMTExIEMxMzIuMzgxMTYxLDc1LjUzOTc5NzYgMTMyLjk5Mjg5Nyw2OS4wMzcxNDM3IDEyOC4xMTYwMzIsNjIuOTY4OTE4NSBDMTM1LjQxNDMzNyw1MS43MzI0MTMgMTI4Ljc0NDc1NSwzOC43MjMzOTU4IDExMi41MDQ1MzksMzguNzIzMzk1OCBMOTIuNjQ0MDY3MiwzOC43MjMzOTU4IEM5Mi42NjUzMDc3LDMwLjc5MjEzNDUgOTIuMTQ3MDMzMywxNy44MzQ3ODI1IDg4Ljc3Mzk4MywxMC41MjA0MTE4IEM4MS44NzQ5MTA1LC00LjQ0MTI4MjcyIDYwLjI3NzQzNTUsLTIuNjc0OTUzMTYgNjAuOTUyNzkxNiwxMC45NTUwOTY3IEM2MC4zMzY4MDM4LDIxLjY4NzMxNTEgNTcuMTkzMjAwNiwzMi4zNDc5OTcxIDQ4LjA4NDY0NzgsNDAuNDY1MTY0NiBNMCwzOC45NzgyNjgzIEwwLDExMy4wNDMxMTYgTDQwLjE3NDQ0NDIsMTEzLjA0MzExNiBMNDAuMTc0NDQ0MiwzOC45NzgyNjgzIEwwLDM4Ljk3ODI2ODMgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=";
+    static NSString *thumbsDownBase64 = @"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTUwcHgiIGhlaWdodD0iMTUwcHgiIHZpZXdCb3g9IjAgMCAxNTAgMTUwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPnRodW1icy1kb3duPC90aXRsZT4KICAgIDxnIGlkPSJ0aHVtYnMtZG93biIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Im5vdW4tdGh1bWJzLXVwLTIwMDM1OTItOTU5NzhFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3NS41NDM1LCA3NSkgcm90YXRlKC0xODApIHRyYW5zbGF0ZSgtNzUuNTQzNSwgLTc1KXRyYW5zbGF0ZSg5Ljc4MjYsIDE4LjQ3ODMpIiBmaWxsPSIjRkZDMDIxIj4KICAgICAgICAgICAgPHBhdGggZD0iTTQ4LjA4NDY0NzgsNDAuNDY1NzAzMyBMNDguMDg0NjQ3OCwxMDcuNjc4OTU5IEM1Mi4zMDczMDkxLDExMC42NTYxOTYgNTUuMDQzMDk5NSwxMTMuMDQzNDc4IDYxLjEwOTk5NDEsMTEzLjA0MzQ3OCBMMTEwLjgyNjQyNiwxMTMuMDQzNDc4IEMxMjAuNzAzMzczLDExMy4wNDM0NzggMTI3LjM1NTc5NCwxMDUuNTUzNzk5IDEyNC43NjQyMSw5Ny44NzA3MDc0IEMxMjkuNjMyNjQ3LDkzLjAzNzQxMTUgMTMwLjg2MDM1OSw4Ny40MTA1MDM3IDEyNy44NzgxMzUsODEuNjA4MTExMSBDMTMyLjM4MTE2MSw3NS41Mzk3OTc2IDEzMi45OTI4OTcsNjkuMDM3MTQzNyAxMjguMTE2MDMyLDYyLjk2ODkxODUgQzEzNS40MTQzMzcsNTEuNzMyNDEzIDEyOC43NDQ3NTUsMzguNzIzMzk1OCAxMTIuNTA0NTM5LDM4LjcyMzM5NTggTDkyLjY0NDA2NzIsMzguNzIzMzk1OCBDOTIuNjY1MzA3NywzMC43OTIxMzQ1IDkyLjE0NzAzMzMsMTcuODM0NzgyNSA4OC43NzM5ODMsMTAuNTIwNDExOCBDODEuODc0OTEwNSwtNC40NDEyODI3MiA2MC4yNzc0MzU1LC0yLjY3NDk1MzE2IDYwLjk1Mjc5MTYsMTAuOTU1MDk2NyBDNjAuMzM2ODAzOCwyMS42ODczMTUxIDU3LjE5MzIwMDYsMzIuMzQ3OTk3MSA0OC4wODQ2NDc4LDQwLjQ2NTE2NDYgTS0yLjkzMzE1OTUzZS0xNCwzOC45NzgyNjgzIEwtMi45MzMxNTk1M2UtMTQsMTEzLjA0MzExNiBMNDAuMTc0NDQ0MiwxMTMuMDQzMTE2IEw0MC4xNzQ0NDQyLDM4Ljk3ODI2ODMgTC0yLjkzMzE1OTUzZS0xNCwzOC45NzgyNjgzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+";
+
+    if (score >= 1) {
+        return [NSString stringWithFormat:@"<img src=\"data:image/svg+xml;base64,%@\" class=\"NB-score-icon NB-score-icon-like\" />",
+                thumbsUpBase64];
+    } else if (score <= -2) {
+        return [NSString stringWithFormat:@"<span class=\"NB-score-icon-double\">"
+                "<img src=\"data:image/svg+xml;base64,%@\" class=\"NB-score-icon NB-score-icon-super-dislike NB-score-icon-super-dislike-back\" />"
+                "<img src=\"data:image/svg+xml;base64,%@\" class=\"NB-score-icon NB-score-icon-super-dislike\" />"
+                "</span>",
+                thumbsDownBase64, thumbsDownBase64];
+    } else if (score <= -1) {
+        return [NSString stringWithFormat:@"<img src=\"data:image/svg+xml;base64,%@\" class=\"NB-score-icon NB-score-icon-dislike\" />",
+                thumbsDownBase64];
+    }
+    return @"";
+}
+
 - (NSString *)getHeader {
     NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
                                                           objectForKey:@"story_feed_id"]];
@@ -1276,11 +1296,13 @@
             int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
+            NSString *authorIcon = [self scoreIconHtml:authorScore];
             storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
-                           "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>",
+                           "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@%@</a>",
                            author,
                            authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
-                           author];
+                           author,
+                           authorIcon];
         }
     }
     NSString *storyTags = @"";
@@ -1292,11 +1314,13 @@
                 int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
+                NSString *tagIcon = [self scoreIconHtml:tagScore];
                 NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
-                                     "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
+                                     "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@%@</a>",
                                      tag,
                                      tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
-                                     tag];
+                                     tag,
+                                     tagIcon];
                 [tagStrings addObject:tagHtml];
             }
             storyTags = [NSString
@@ -1350,11 +1374,13 @@
     for (NSString *titleClassifier in titleClassifiers) {
         if ([storyTitle containsString:titleClassifier]) {
             int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
+            NSString *titleIcon = [self scoreIconHtml:titleScore];
             storyTitle = [storyTitle
                           stringByReplacingOccurrencesOfString:titleClassifier
-                          withString:[NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
+                          withString:[NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@%@</span>",
                                        titleScore > 0 ? @"positive" : titleScore < 0 ? @"negative" : @"",
-                                       titleClassifier]];
+                                       titleClassifier,
+                                       titleIcon]];
         }
     }
 
@@ -1368,12 +1394,14 @@
         if (!error && regex) {
             int regexScore = [[titleRegexClassifiers objectForKey:pattern] intValue];
             NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:storyTitle options:0 range:NSMakeRange(0, storyTitle.length)];
+            NSString *regexIcon = [self scoreIconHtml:regexScore];
             // Apply replacements in reverse order to preserve indices
             for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
                 NSString *matchedText = [storyTitle substringWithRange:match.range];
-                NSString *replacement = [NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
+                NSString *replacement = [NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@%@</span>",
                                          regexScore > 0 ? @"positive" : regexScore < 0 ? @"negative" : @"",
-                                         matchedText];
+                                         matchedText,
+                                         regexIcon];
                 storyTitle = [storyTitle stringByReplacingCharactersInRange:match.range withString:replacement];
             }
         }
@@ -1430,17 +1458,20 @@
                 matchedAfter = [NSString stringWithFormat:@"%@\u2026", [matchedAfter substringToIndex:afterMax - 1]];
             }
 
+            NSString *urlIcon = [self scoreIconHtml:matchScore];
             storyUrlMatch = [NSString stringWithFormat:@"<div class=\"NB-story-url-match\">"
                              "<span class=\"NB-story-url NB-score-%d\">"
                              "<span class=\"NB-story-url-label\">URL: </span>"
                              "<span class=\"NB-story-url-before\">%@</span>"
                              "<span class=\"NB-story-url-matched\">%@</span>"
                              "<span class=\"NB-story-url-after\">%@</span>"
+                             "%@"
                              "</span></div>",
                              matchScore,
                              matchedBefore,
                              matchedText,
-                             matchedAfter];
+                             matchedAfter,
+                             urlIcon];
         }
     }
 

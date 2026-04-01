@@ -564,6 +564,75 @@ body.NB-iphone {
     padding: 2px 5px;
     border-radius: 3px;
 }
+
+#NB-story .NB-classifier-highlight-super-negative {
+    background-color: #E8A0A0;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+/* Score icons (thumbs up/down) */
+.NB-score-icon {
+    width: 10px;
+    height: 10px;
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-top: -2px;
+    display: inline;
+}
+.NB-score-icon-like {
+    filter: brightness(0) saturate(100%) invert(39%) sepia(96%) saturate(520%) hue-rotate(80deg) brightness(95%) contrast(87%);
+}
+.NB-score-icon-dislike {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(96%) saturate(5400%) hue-rotate(358deg) brightness(85%) contrast(120%);
+}
+.NB-score-icon-super-dislike {
+    filter: brightness(0) saturate(100%) invert(8%) sepia(96%) saturate(5400%) hue-rotate(358deg) brightness(75%) contrast(120%);
+}
+.NB-score-icon-double {
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 12px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+.NB-score-icon-double .NB-score-icon {
+    position: absolute;
+    margin-left: 0;
+}
+.NB-score-icon-double .NB-score-icon-super-dislike-back {
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+.NB-score-icon-double .NB-score-icon:last-child {
+    top: 3px;
+    left: 4px;
+}
+
+/* Story body images default to display:none until loadImages() classifies them.
+   Inline classifier icons are injected after that pass, so they must opt out. */
+.NB-story img.NB-score-icon,
+.NB-story .NB-score-icon-double img.NB-score-icon {
+    display: inline-block !important;
+    width: 10px !important;
+    height: 10px !important;
+    max-width: none !important;
+    margin: 0 0 0 4px !important;
+    vertical-align: middle;
+}
+
+.NB-story .NB-score-icon-double img.NB-score-icon {
+    margin-left: 0 !important;
+}
+
+.NB-story-tag-positive .NB-score-icon,
+.NB-story-tag-negative .NB-score-icon {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
 .NB-story-tag.pressed .NB-highlight,
 .NB-user-tag.pressed .NB-highlight,
 .NB-story-author.pressed .NB-highlight,

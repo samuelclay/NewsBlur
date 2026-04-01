@@ -46,7 +46,7 @@ import Foundation
         let words = keys.filter { lowercasedTitle.contains($0.lowercased()) }
         let sorted = words.sorted()
         
-        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return sorted.map { training(name: $0, classifierKey: "titles", score: classifiers[$0] as? Int ?? 0) }
     }
 
     var titleRegexes: [Feed.Training] {
@@ -58,7 +58,7 @@ import Foundation
         let matches = keys.filter { regexMatches($0, in: title) }
         let sorted = matches.sorted()
         
-        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return sorted.map { training(name: $0, classifierKey: "title_regex", score: classifiers[$0] as? Int ?? 0) }
     }
     
     var authors: [Feed.Training] {
@@ -66,7 +66,7 @@ import Foundation
             return []
         }
         
-        return [Feed.Training(name: author, count: 0, score: Feed.Score(rawValue: classifiers[author] as? Int ?? 0) ?? .none)]
+        return [training(name: author, classifierKey: "authors", score: classifiers[author] as? Int ?? 0)]
     }
     
     var tags: [Feed.Training] {
@@ -74,7 +74,7 @@ import Foundation
             return []
         }
         
-        return tags.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return tags.map { training(name: $0, classifierKey: "tags", score: classifiers[$0] as? Int ?? 0) }
     }
 
     var texts: [Feed.Training] {
@@ -87,7 +87,7 @@ import Foundation
         let matches = keys.filter { content.contains($0.lowercased()) }
         let sorted = matches.sorted()
         
-        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return sorted.map { training(name: $0, classifierKey: "texts", score: classifiers[$0] as? Int ?? 0) }
     }
 
     var textRegexes: [Feed.Training] {
@@ -99,7 +99,7 @@ import Foundation
         let matches = keys.filter { regexMatches($0, in: contentHTML) }
         let sorted = matches.sorted()
         
-        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return sorted.map { training(name: $0, classifierKey: "text_regex", score: classifiers[$0] as? Int ?? 0) }
     }
 
     var urls: [Feed.Training] {
@@ -111,7 +111,7 @@ import Foundation
             let permalinkLower = permalink.lowercased()
             let keys = classifiers.keys.compactMap { $0 as? String }
             let matches = keys.filter { permalinkLower.contains($0.lowercased()) }
-            return matches.sorted().map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+            return matches.sorted().map { training(name: $0, classifierKey: "urls", score: classifiers[$0] as? Int ?? 0) }
         }
 
         var segments = [String]()
@@ -130,8 +130,7 @@ import Foundation
         }
 
         return segments.map { segment in
-            let score = classifiers?[segment] as? Int ?? 0
-            return Feed.Training(name: segment, count: 0, score: Feed.Score(rawValue: score) ?? .none)
+            training(name: segment, classifierKey: "urls", score: classifiers?[segment] as? Int ?? 0)
         }
     }
 
@@ -144,7 +143,7 @@ import Foundation
         let matches = keys.filter { regexMatches($0, in: permalink) }
         let sorted = matches.sorted()
         
-        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+        return sorted.map { training(name: $0, classifierKey: "url_regex", score: classifiers[$0] as? Int ?? 0) }
     }
     
     var isSelected: Bool {
@@ -276,6 +275,21 @@ import Foundation
         } catch {
             return false
         }
+    }
+
+    private func training(name: String, classifierKey: String, score: Int) -> Feed.Training {
+        let scopeInfo = ClassifierScopeResolver.resolveInfo(
+            from: feed?.classifiers,
+            classifierKey: classifierKey,
+            name: name
+        )
+        return Feed.Training(
+            name: name,
+            count: 0,
+            score: Feed.Score(rawValue: score) ?? .none,
+            scope: scopeInfo.scope,
+            folderName: scopeInfo.folderName
+        )
     }
 }
 

@@ -196,9 +196,19 @@ typealias AnyDictionary = [AnyHashable : Any]
         }
         
         let userItems = classifiers.map {
-            Training(name: $0.key as! String,
-                     count: 0,
-                     score: Score(rawValue: $0.value as? Int ?? 0) ?? .none)
+            let name = $0.key as! String
+            let scopeInfo = ClassifierScopeResolver.resolveInfo(
+                from: self.classifiers,
+                classifierKey: key,
+                name: name
+            )
+            return Training(
+                name: name,
+                count: 0,
+                score: Score(rawValue: $0.value as? Int ?? 0) ?? .none,
+                scope: scopeInfo.scope,
+                folderName: scopeInfo.folderName
+            )
         }
         
         return userItems.sorted()

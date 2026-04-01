@@ -83,12 +83,12 @@ struct TrainerView: View {
                         WrappingHStack(models: titles) { title in
                             classifierRow(
                                 capsule: TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count, showsScope: true, scope: scopeBinding(for: "title", name: title.name, default: title.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                    handleScopeChange(classifierType: "title", name: title.name, score: title.score, newScope: newScope)
+                                    handleScopeChange(classifierType: "title", name: title.name, score: title.score, defaultScope: title.scope, defaultFolderName: title.folderName, newScope: newScope)
                                 }),
                                 score: title.score,
-                                onTap: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) },
-                                onDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .dislike ? 0 : -1, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) },
-                                onSuperDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .superDislike ? 0 : -2, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) }
+                                onTap: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0, scope: currentScope(for: "title", name: title.name, default: title.scope).rawValue, folderName: currentFolderName(for: "title", name: title.name, default: title.scope, defaultFolderName: title.folderName)) },
+                                onDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .dislike ? 0 : -1, scope: currentScope(for: "title", name: title.name, default: title.scope).rawValue, folderName: currentFolderName(for: "title", name: title.name, default: title.scope, defaultFolderName: title.folderName)) },
+                                onSuperDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .superDislike ? 0 : -2, scope: currentScope(for: "title", name: title.name, default: title.scope).rawValue, folderName: currentFolderName(for: "title", name: title.name, default: title.scope, defaultFolderName: title.folderName)) }
                             )
                         }
 
@@ -96,12 +96,12 @@ struct TrainerView: View {
                             WrappingHStack(models: titleRegexes) { item in
                                 classifierRow(
                                     capsule: TrainerCapsule(score: item.score, header: "Title", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "title_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                        handleScopeChange(classifierType: "title_regex", name: item.name, score: item.score, newScope: newScope)
+                                        handleScopeChange(classifierType: "title_regex", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
                                     }),
                                     score: item.score,
-                                    onTap: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onSuperDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                    onTap: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "title_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "title_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "title_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "title_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "title_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "title_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
                                 )
                             }
                         }
@@ -119,12 +119,12 @@ struct TrainerView: View {
                     WrappingHStack(models: authors) { author in
                         classifierRow(
                             capsule: TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                handleScopeChange(classifierType: "author", name: author.name, score: author.score, newScope: newScope)
+                                handleScopeChange(classifierType: "author", name: author.name, score: author.score, defaultScope: author.scope, defaultFolderName: author.folderName, newScope: newScope)
                             }),
                             score: author.score,
-                            onTap: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) },
-                            onDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .dislike ? 0 : -1, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) },
-                            onSuperDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .superDislike ? 0 : -2, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) }
+                            onTap: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
+                            onDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .dislike ? 0 : -1, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
+                            onSuperDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .superDislike ? 0 : -2, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) }
                         )
                     }
                     .listRowBackground(rowBackground)
@@ -136,12 +136,12 @@ struct TrainerView: View {
                     WrappingHStack(models: tags) { tag in
                         classifierRow(
                             capsule: TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count, showsScope: true, scope: scopeBinding(for: "tag", name: tag.name, default: tag.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                handleScopeChange(classifierType: "tag", name: tag.name, score: tag.score, newScope: newScope)
+                                handleScopeChange(classifierType: "tag", name: tag.name, score: tag.score, defaultScope: tag.scope, defaultFolderName: tag.folderName, newScope: newScope)
                             }),
                             score: tag.score,
-                            onTap: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) },
-                            onDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .dislike ? 0 : -1, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) },
-                            onSuperDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .superDislike ? 0 : -2, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) }
+                            onTap: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, scope: currentScope(for: "tag", name: tag.name, default: tag.scope).rawValue, folderName: currentFolderName(for: "tag", name: tag.name, default: tag.scope, defaultFolderName: tag.folderName)) },
+                            onDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .dislike ? 0 : -1, scope: currentScope(for: "tag", name: tag.name, default: tag.scope).rawValue, folderName: currentFolderName(for: "tag", name: tag.name, default: tag.scope, defaultFolderName: tag.folderName)) },
+                            onSuperDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .superDislike ? 0 : -2, scope: currentScope(for: "tag", name: tag.name, default: tag.scope).rawValue, folderName: currentFolderName(for: "tag", name: tag.name, default: tag.scope, defaultFolderName: tag.folderName)) }
                         )
                     }
                     .listRowBackground(rowBackground)
@@ -155,12 +155,12 @@ struct TrainerView: View {
                             WrappingHStack(models: texts) { item in
                                 classifierRow(
                                     capsule: TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "text", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                        handleScopeChange(classifierType: "text", name: item.name, score: item.score, newScope: newScope)
+                                        handleScopeChange(classifierType: "text", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
                                     }),
                                     score: item.score,
-                                    onTap: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onSuperDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) }
+                                    onTap: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
                                 )
                             }
                         }
@@ -169,12 +169,12 @@ struct TrainerView: View {
                             WrappingHStack(models: textRegexes) { item in
                                 classifierRow(
                                     capsule: TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "text_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                        handleScopeChange(classifierType: "text_regex", name: item.name, score: item.score, newScope: newScope)
+                                        handleScopeChange(classifierType: "text_regex", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
                                     }),
                                     score: item.score,
-                                    onTap: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onSuperDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                    onTap: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "text_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
                                 )
                             }
                         }
@@ -194,12 +194,12 @@ struct TrainerView: View {
                             WrappingHStack(models: urls) { item in
                                 classifierRow(
                                     capsule: TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "url", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                        handleScopeChange(classifierType: "url", name: item.name, score: item.score, newScope: newScope)
+                                        handleScopeChange(classifierType: "url", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
                                     }),
                                     score: item.score,
-                                    onTap: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onSuperDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) }
+                                    onTap: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
                                 )
                             }
                         }
@@ -208,12 +208,12 @@ struct TrainerView: View {
                             WrappingHStack(models: urlRegexes) { item in
                                 classifierRow(
                                     capsule: TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "url_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                        handleScopeChange(classifierType: "url_regex", name: item.name, score: item.score, newScope: newScope)
+                                        handleScopeChange(classifierType: "url_regex", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
                                     }),
                                     score: item.score,
-                                    onTap: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) },
-                                    onSuperDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                    onTap: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "url_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
                                 )
                             }
                         }
@@ -512,25 +512,64 @@ struct TrainerView: View {
     // MARK: - Scope
 
     func scopeBinding(for type: String, name: String, default defaultScope: ClassifierScope) -> Binding<ClassifierScope> {
-        let key = "\(type):\(name)"
+        let key = ClassifierScopeResolver.overrideKey(type: type, name: name)
         return Binding(
             get: { scopeOverrides[key] ?? defaultScope },
             set: { scopeOverrides[key] = $0 }
         )
     }
 
-    func currentScope(for type: String, name: String) -> ClassifierScope {
-        return scopeOverrides["\(type):\(name)"] ?? .feed
+    func currentScope(for type: String, name: String, default defaultScope: ClassifierScope) -> ClassifierScope {
+        return ClassifierScopeResolver.effectiveScope(
+            overrides: scopeOverrides,
+            type: type,
+            name: name,
+            default: defaultScope
+        )
     }
 
-    func handleScopeChange(classifierType: String, name: String, score: Feed.Score, newScope: ClassifierScope) {
-        let key = "\(classifierType):\(name)"
-        let oldScope = scopeOverrides[key] ?? .feed
-        let oldFolderName = (oldScope == .folder) ? currentFolderName : ""
+    func currentFolderName(
+        for type: String,
+        name: String,
+        default defaultScope: ClassifierScope,
+        defaultFolderName: String
+    ) -> String {
+        let key = ClassifierScopeResolver.overrideKey(type: type, name: name)
+        if let overrideScope = scopeOverrides[key] {
+            return overrideScope == .folder ? currentFolderName : ""
+        }
+        return defaultScope == .folder ? defaultFolderName : ""
+    }
+
+    func handleScopeChange(
+        classifierType: String,
+        name: String,
+        score: Feed.Score,
+        defaultScope: ClassifierScope,
+        defaultFolderName: String,
+        newScope: ClassifierScope
+    ) {
+        let key = ClassifierScopeResolver.overrideKey(type: classifierType, name: name)
+        let oldScope = currentScope(for: classifierType, name: name, default: defaultScope)
+        let oldFolderName = currentFolderName(
+            for: classifierType,
+            name: name,
+            default: defaultScope,
+            defaultFolderName: defaultFolderName
+        )
         scopeOverrides[key] = newScope
 
         guard let feedId = feed?.id else { return }
-        cache.appDelegate.changeClassifierScope(classifierType, value: name, feedId: feedId, score: Int(score.rawValue), oldScope: oldScope.rawValue, oldFolderName: oldFolderName, scope: newScope.rawValue, folderName: currentFolderName)
+        cache.appDelegate.changeClassifierScope(
+            classifierType,
+            value: name,
+            feedId: feedId,
+            score: Int(score.rawValue),
+            oldScope: oldScope.rawValue,
+            oldFolderName: oldFolderName,
+            scope: newScope.rawValue,
+            folderName: newScope == .folder ? currentFolderName : ""
+        )
     }
 
     // MARK: - Classifiers

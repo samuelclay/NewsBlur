@@ -17,12 +17,16 @@ let package = Package(
         .target(
             name: "StoryAutoCollapseDecision",
             path: "Classes",
-            sources: ["StoryAutoCollapseDecision.swift"]
+            sources: ["StoryAutoCollapseDecision.swift", "ClassifierScope.swift"]
         ),
         .testTarget(
             name: "StoryAutoCollapseDecisionTests",
             dependencies: ["StoryAutoCollapseDecision"],
             path: "Tests/StoryAutoCollapseDecisionTests"
+        ),
+        .testTarget(
+            name: "StoryDetailHighlightTests",
+            path: "Tests/StoryDetailHighlightTests"
         ),
     ]
 )

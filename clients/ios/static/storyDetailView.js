@@ -240,6 +240,19 @@ function notifyLoaded() {
     window.location = url;
 }
 
+function scoreIconHtml(score) {
+    var thumbsUp = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTUwcHgiIGhlaWdodD0iMTUwcHgiIHZpZXdCb3g9IjAgMCAxNTAgMTUwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPnRodW1icy11cDwvdGl0bGU+CiAgICA8ZyBpZD0idGh1bWJzLXVwIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0ibm91bi10aHVtYnMtdXAtMjAwMzU5Mi05NTk3OEUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNzgyNiwgMTguNDc4MykiIGZpbGw9IiNGRkMwMjEiPgogICAgICAgICAgICA8cGF0aCBkPSJNNDguMDg0NjQ3OCw0MC40NjU3MDMzIEw0OC4wODQ2NDc4LDEwNy42Nzg5NTkgQzUyLjMwNzMwOTEsMTEwLjY1NjE5NiA1NS4wNDMwOTk1LDExMy4wNDM0NzggNjEuMTA5OTk0MSwxMTMuMDQzNDc4IEwxMTAuODI2NDI2LDExMy4wNDM0NzggQzEyMC43MDMzNzMsMTEzLjA0MzQ3OCAxMjcuMzU1Nzk0LDEwNS41NTM3OTkgMTI0Ljc2NDIxLDk3Ljg3MDcwNzQgQzEyOS42MzI2NDcsOTMuMDM3NDExNSAxMzAuODYwMzU5LDg3LjQxMDUwMzcgMTI3Ljg3ODEzNSw4MS42MDgxMTExIEMxMzIuMzgxMTYxLDc1LjUzOTc5NzYgMTMyLjk5Mjg5Nyw2OS4wMzcxNDM3IDEyOC4xMTYwMzIsNjIuOTY4OTE4NSBDMTM1LjQxNDMzNyw1MS43MzI0MTMgMTI4Ljc0NDc1NSwzOC43MjMzOTU4IDExMi41MDQ1MzksMzguNzIzMzk1OCBMOTIuNjQ0MDY3MiwzOC43MjMzOTU4IEM5Mi42NjUzMDc3LDMwLjc5MjEzNDUgOTIuMTQ3MDMzMywxNy44MzQ3ODI1IDg4Ljc3Mzk4MywxMC41MjA0MTE4IEM4MS44NzQ5MTA1LC00LjQ0MTI4MjcyIDYwLjI3NzQzNTUsLTIuNjc0OTUzMTYgNjAuOTUyNzkxNiwxMC45NTUwOTY3IEM2MC4zMzY4MDM4LDIxLjY4NzMxNTEgNTcuMTkzMjAwNiwzMi4zNDc5OTcxIDQ4LjA4NDY0NzgsNDAuNDY1MTY0NiBNMCwzOC45NzgyNjgzIEwwLDExMy4wNDMxMTYgTDQwLjE3NDQ0NDIsMTEzLjA0MzExNiBMNDAuMTc0NDQ0MiwzOC45NzgyNjgzIEwwLDM4Ljk3ODI2ODMgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=";
+    var thumbsDown = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTUwcHgiIGhlaWdodD0iMTUwcHgiIHZpZXdCb3g9IjAgMCAxNTAgMTUwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPnRodW1icy1kb3duPC90aXRsZT4KICAgIDxnIGlkPSJ0aHVtYnMtZG93biIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Im5vdW4tdGh1bWJzLXVwLTIwMDM1OTItOTU5NzhFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3NS41NDM1LCA3NSkgcm90YXRlKC0xODApIHRyYW5zbGF0ZSgtNzUuNTQzNSwgLTc1KXRyYW5zbGF0ZSg5Ljc4MjYsIDE4LjQ3ODMpIiBmaWxsPSIjRkZDMDIxIj4KICAgICAgICAgICAgPHBhdGggZD0iTTQ4LjA4NDY0NzgsNDAuNDY1NzAzMyBMNDguMDg0NjQ3OCwxMDcuNjc4OTU5IEM1Mi4zMDczMDkxLDExMC42NTYxOTYgNTUuMDQzMDk5NSwxMTMuMDQzNDc4IDYxLjEwOTk5NDEsMTEzLjA0MzQ3OCBMMTEwLjgyNjQyNiwxMTMuMDQzNDc4IEMxMjAuNzAzMzczLDExMy4wNDM0NzggMTI3LjM1NTc5NCwxMDUuNTUzNzk5IDEyNC43NjQyMSw5Ny44NzA3MDc0IEMxMjkuNjMyNjQ3LDkzLjAzNzQxMTUgMTMwLjg2MDM1OSw4Ny40MTA1MDM3IDEyNy44NzgxMzUsODEuNjA4MTExMSBDMTMyLjM4MTE2MSw3NS41Mzk3OTc2IDEzMi45OTI4OTcsNjkuMDM3MTQzNyAxMjguMTE2MDMyLDYyLjk2ODkxODUgQzEzNS40MTQzMzcsNTEuNzMyNDEzIDEyOC43NDQ3NTUsMzguNzIzMzk1OCAxMTIuNTA0NTM5LDM4LjcyMzM5NTggTDkyLjY0NDA2NzIsMzguNzIzMzk1OCBDOTIuNjY1MzA3NywzMC43OTIxMzQ1IDkyLjE0NzAzMzMsMTcuODM0NzgyNSA4OC43NzM5ODMsMTAuNTIwNDExOCBDODEuODc0OTEwNSwtNC40NDEyODI3MiA2MC4yNzc0MzU1LC0yLjY3NDk1MzE2IDYwLjk1Mjc5MTYsMTAuOTU1MDk2NyBDNjAuMzM2ODAzOCwyMS42ODczMTUxIDU3LjE5MzIwMDYsMzIuMzQ3OTk3MSA0OC4wODQ2NDc4LDQwLjQ2NTE2NDYgTS0yLjkzMzE1OTUzZS0xNCwzOC45NzgyNjgzIEwtMi45MzMxNTk1M2UtMTQsMTEzLjA0MzExNiBMNDAuMTc0NDQ0MiwxMTMuMDQzMTE2IEw0MC4xNzQ0NDQyLDM4Ljk3ODI2ODMgTC0yLjkzMzE1OTUzZS0xNCwzOC45NzgyNjgzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+";
+    if (score >= 1) {
+        return '<img src="' + thumbsUp + '" class="NB-score-icon NB-score-icon-like" />';
+    } else if (score <= -2) {
+        return '<span class="NB-score-icon-double"><img src="' + thumbsDown + '" class="NB-score-icon NB-score-icon-super-dislike NB-score-icon-super-dislike-back" /><img src="' + thumbsDown + '" class="NB-score-icon NB-score-icon-super-dislike" /></span>';
+    } else if (score <= -1) {
+        return '<img src="' + thumbsDown + '" class="NB-score-icon NB-score-icon-dislike" />';
+    }
+    return '';
+}
+
 function applyClassifierHighlights(classifiers) {
     try {
         if (!classifiers) return;
@@ -255,23 +268,35 @@ function applyClassifierHighlights(classifiers) {
 
                 Object.keys(texts).forEach(function (classifierText) {
                     var score = texts[classifierText];
-                    var className = score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                    var className = score > 0 ? "NB-classifier-highlight-positive" : (score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                    var iconHtml = scoreIconHtml(score);
                     instance.mark(classifierText, {
                         className: className,
                         separateWordSearch: false,
                         acrossElements: true,
-                        caseSensitive: false
+                        caseSensitive: false,
+                        each: function (element) {
+                            if (iconHtml) {
+                                element.insertAdjacentHTML('beforeend', iconHtml);
+                            }
+                        }
                     });
                 });
-                
+
                 Object.keys(textRegex).forEach(function (pattern) {
                     try {
                         var score = textRegex[pattern];
-                        var className = score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                        var className = score > 0 ? "NB-classifier-highlight-positive" : (score <= -2 ? "NB-classifier-highlight-super-negative" : "NB-classifier-highlight-negative");
+                        var iconHtml = scoreIconHtml(score);
                         var regex = new RegExp(pattern, 'gi');
                         instance.markRegExp(regex, {
                             className: className,
-                            acrossElements: true
+                            acrossElements: true,
+                            each: function (element) {
+                                if (iconHtml) {
+                                    element.insertAdjacentHTML('beforeend', iconHtml);
+                                }
+                            }
                         });
                     } catch (e) {
                         // Invalid regex pattern, skip
