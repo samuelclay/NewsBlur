@@ -36,6 +36,7 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
+import android.content.res.Configuration
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StateFilter
@@ -757,6 +758,17 @@ class PrefsRepo(
 
     fun setSelectedTheme(value: ThemeValue) {
         prefs.edit { putString(PrefConstants.THEME, value.name) }
+    }
+
+    /**
+     * Returns the effective theme, resolving [ThemeValue.AUTO] to
+     * [ThemeValue.DARK] or [ThemeValue.LIGHT] based on the system night mode.
+     */
+    fun getResolvedTheme(context: Context): ThemeValue {
+        val selected = getSelectedTheme()
+        if (selected != ThemeValue.AUTO) return selected
+        val nightFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) ThemeValue.DARK else ThemeValue.LIGHT
     }
 
     fun getStateFilter(): StateFilter =

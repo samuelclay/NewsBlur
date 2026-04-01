@@ -591,7 +591,7 @@ class StoryViewAdapter(
         story: Story,
     ) {
         val isRead = !ignoreReadStatus && story.read
-        val theme = prefsRepo.getSelectedTheme()
+        val theme = prefsRepo.getResolvedTheme(context)
 
         vh.itemView.setBackgroundResource(backgroundResourceFor(story))
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
@@ -986,7 +986,7 @@ class StoryViewAdapter(
             return defaultBackgroundResource()
         }
 
-        return when (prefsRepo.getSelectedTheme()) {
+        return when (prefsRepo.getResolvedTheme(context)) {
             ThemeValue.SEPIA -> R.drawable.sepia_daily_briefing_selector_story_background
             ThemeValue.DARK -> R.drawable.dark_daily_briefing_selector_story_background
             ThemeValue.BLACK -> R.drawable.black_daily_briefing_selector_story_background
@@ -995,7 +995,7 @@ class StoryViewAdapter(
     }
 
     private fun defaultBackgroundResource(): Int =
-        when (prefsRepo.getSelectedTheme()) {
+        when (prefsRepo.getResolvedTheme(context)) {
             ThemeValue.SEPIA -> R.drawable.sepia_selector_story_background
             ThemeValue.DARK -> R.drawable.dark_selector_story_background
             ThemeValue.BLACK -> R.drawable.black_selector_story_background

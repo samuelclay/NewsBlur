@@ -57,8 +57,8 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 ### Build and Install
 - Run Android Gradle commands from `clients/android/NewsBlur`
 - Set `JAVA_HOME` explicitly before Gradle commands or the build may pick the wrong JDK and fail with `invalid source release: 21`
-- Working command: `env JAVA_HOME=/opt/homebrew/opt/openjdk ./gradlew :app:installDebug`
-- Fast compile-only verification: `env JAVA_HOME=/opt/homebrew/opt/openjdk ./gradlew :app:compileDebugJavaWithJavac --rerun-tasks`
+- Working command: `env JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:installDebug`
+- Fast compile-only verification: `env JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugJavaWithJavac --rerun-tasks`
 - Reinstalling with `installDebug` preserves the existing logged-in emulator app state
 - Do **not** run `connectedDebugAndroidTest` on a shared or logged-in emulator unless explicitly asked. It installs the instrumentation APK and can replace the app in a way that costs the current login/session state. Use `:app:installDebug` for normal build/install work, and only run instrumentation tests on a disposable emulator.
 

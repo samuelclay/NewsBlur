@@ -58,7 +58,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.let { NewsBlurBottomSheet.expandWithTheme(it, prefsRepo.getSelectedTheme()) }
+        dialog?.let { NewsBlurBottomSheet.expandWithTheme(it, prefsRepo.getResolvedTheme(requireContext())) }
     }
 
     override fun onCreateView(
@@ -78,7 +78,7 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
 
                     AskAiSheet(
                         state = state,
-                        theme = prefsRepo.getSelectedTheme(),
+                        theme = prefsRepo.getResolvedTheme(requireContext()),
                         onQuestionSelected = viewModel::sendQuestion,
                         onCustomQuestionChanged = viewModel::updateCustomQuestion,
                         onAskCustomQuestion = { viewModel.sendQuestion(AskAiQuestionType.CUSTOM) },

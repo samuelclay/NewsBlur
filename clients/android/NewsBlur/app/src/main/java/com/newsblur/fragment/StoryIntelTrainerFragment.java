@@ -22,6 +22,7 @@ import com.newsblur.design.ReaderSheetPalette;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NewsBlurBottomSheet;
@@ -73,7 +74,7 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null) {
-            NewsBlurBottomSheet.expandWithTheme(dialog, prefsRepo.getSelectedTheme());
+            NewsBlurBottomSheet.expandWithTheme(dialog, prefsRepo.getResolvedTheme(requireContext()));
         }
     }
 
@@ -176,10 +177,11 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
     }
 
     private void bindTheme() {
-        int borderColor = ReaderSheetPalette.borderArgb(prefsRepo.getSelectedTheme());
-        int textPrimaryColor = ReaderSheetPalette.textPrimaryArgb(prefsRepo.getSelectedTheme());
-        int textSecondaryColor = ReaderSheetPalette.textSecondaryArgb(prefsRepo.getSelectedTheme());
-        int accentColor = ReaderSheetPalette.accentArgb(prefsRepo.getSelectedTheme());
+        PrefConstants.ThemeValue theme = prefsRepo.getResolvedTheme(requireContext());
+        int borderColor = ReaderSheetPalette.borderArgb(theme);
+        int textPrimaryColor = ReaderSheetPalette.textPrimaryArgb(theme);
+        int textSecondaryColor = ReaderSheetPalette.textSecondaryArgb(theme);
+        int accentColor = ReaderSheetPalette.accentArgb(theme);
 
         binding.sheetDragHandle.setBackground(makeRoundedRect(borderColor, 2f));
         binding.sheetTitle.setTextColor(textPrimaryColor);
