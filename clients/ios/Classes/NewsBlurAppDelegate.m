@@ -631,33 +631,39 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
             }];
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-            [self popToRootWithCompletion:^{
-                // Check if user has any feeds with notifications enabled
-                NSMutableArray *notificationFeeds = [NSMutableArray array];
-                for (NSString *fid in self.dictActiveFeeds) {
-                    NSDictionary *feed = [self.dictActiveFeeds objectForKey:fid];
-                    if (![feed isKindOfClass:[NSDictionary class]]) continue;
-                    NSArray *types = [feed objectForKey:@"notification_types"];
-                    if (types && [types count] > 0) {
-                        [notificationFeeds addObject:fid];
-                    }
-                }
-
-                if (notificationFeeds.count > 0) {
-                    // Open notification river with story finding mode
-                    self.inFindingStoryMode = YES;
-                    self.findingStoryStartDate = [NSDate date];
-                    self.findingStoryDictionary = nil;
-                    self.tryFeedStoryId = storyHash;
-                    self.tryFeedFeedId = feedIdStr;
-                    self.tryFeedStoryTitle = nil;
-                    [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
-                } else {
-                    // Fallback: no notification feeds, open individual feed
-                    [self loadFeed:feedIdStr withStory:storyHash animated:NO];
-                }
+            BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
+            if (isDailyBriefing) {
+                [self openDailyBriefingWithStoryHash:storyHash];
                 if (completionHandler) completionHandler();
-            }];
+            } else {
+                [self popToRootWithCompletion:^{
+                    // Check if user has any feeds with notifications enabled
+                    NSMutableArray *notificationFeeds = [NSMutableArray array];
+                    for (NSString *fid in self.dictActiveFeeds) {
+                        NSDictionary *feed = [self.dictActiveFeeds objectForKey:fid];
+                        if (![feed isKindOfClass:[NSDictionary class]]) continue;
+                        NSArray *types = [feed objectForKey:@"notification_types"];
+                        if (types && [types count] > 0) {
+                            [notificationFeeds addObject:fid];
+                        }
+                    }
+
+                    if (notificationFeeds.count > 0) {
+                        // Open notification river with story finding mode
+                        self.inFindingStoryMode = YES;
+                        self.findingStoryStartDate = [NSDate date];
+                        self.findingStoryDictionary = nil;
+                        self.tryFeedStoryId = storyHash;
+                        self.tryFeedFeedId = feedIdStr;
+                        self.tryFeedStoryTitle = nil;
+                        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
+                    } else {
+                        // Fallback: no notification feeds, open individual feed
+                        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+                    }
+                    if (completionHandler) completionHandler();
+                }];
+            }
         } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
             if (completionHandler) completionHandler();
         }
@@ -3071,14 +3077,16 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 #pragma mark Siri Shortcuts
 
 - (void)handleUserActivity:(NSUserActivity *)activity {
-    if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
+    if ([activity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self handleUniversalLink:activity.webpageURL];
+    } else if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self.feedsViewController refreshFeedList];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
-        
+
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
@@ -3086,14 +3094,56 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
-        
+
         //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
-        
+
         if (folder != nil) {
             [self loadFolder:folder feedID:feedID];
         }
+    }
+}
+
+- (void)handleUniversalLink:(NSURL *)url {
+    if (!url) return;
+
+    NSString *path = url.path;
+    if ([path hasPrefix:@"/briefing"]) {
+        // Extract story hash from query parameter: /briefing?story=hash
+        NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+        NSString *storyHash = nil;
+        for (NSURLQueryItem *item in components.queryItems) {
+            if ([item.name isEqualToString:@"story"]) {
+                storyHash = item.value;
+                break;
+            }
+        }
+        [self openDailyBriefingWithStoryHash:storyHash];
+    }
+}
+
+- (void)openDailyBriefingWithStoryHash:(NSString *)storyHash {
+    void (^handler)(void) = ^{
+        if (!self.activeUsername) return;
+
+        [self popToRootWithCompletion:^{
+            if (storyHash.length > 0) {
+                self.inFindingStoryMode = YES;
+                self.findingStoryStartDate = [NSDate date];
+                self.findingStoryDictionary = nil;
+                self.tryFeedStoryId = storyHash;
+                self.tryFeedFeedId = nil;
+                self.tryFeedStoryTitle = nil;
+            }
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"daily_briefing"];
+        }];
+    };
+
+    if (!self.activeUsername) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), handler);
+    } else {
+        handler();
     }
 }
 

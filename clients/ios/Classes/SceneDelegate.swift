@@ -81,7 +81,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let url = URLContexts.first?.url else {
             return
         }
-        
+
         appDelegate.open(url)
+    }
+
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        appDelegate.handleUserActivity(userActivity)
     }
 }

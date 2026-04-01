@@ -431,6 +431,8 @@ class MUserFeedNotification(mongo.Document):
             }
             if image_url:
                 custom_data["image_url"] = image_url
+            if usersub.feed.is_daily_briefing:
+                custom_data["is_daily_briefing"] = True
 
             payload = IOSPayload(
                 alert=alert,

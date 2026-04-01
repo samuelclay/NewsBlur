@@ -405,6 +405,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 
 - (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion;
 
+- (void)handleUserActivity:(NSUserActivity *)activity;
+- (void)openDailyBriefingWithStoryHash:(NSString *)storyHash;
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
