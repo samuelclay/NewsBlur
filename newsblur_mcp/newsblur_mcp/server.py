@@ -8,13 +8,21 @@ import functools
 import logging
 import time
 
+import sentry_sdk
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
 
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 from newsblur_mcp.log import log_request
-from newsblur_mcp.settings import MCP_HOST, MCP_PORT
+from newsblur_mcp.settings import MCP_HOST, MCP_PORT, SENTRY_DSN
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=0.01,
+        send_default_pii=True,
+    )
 
 # Configure root logger so MCP log output is visible
 logging.basicConfig(

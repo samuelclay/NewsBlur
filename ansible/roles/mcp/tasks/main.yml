@@ -11,10 +11,17 @@
   register: mcp_secret_result
   changed_when: false
 
-- name: Set MCP OAuth secret fact
+- name: Read MCP Sentry DSN from local_settings.py
+  shell: grep -oP "^MCP_SENTRY_DSN\s*=\s*['\"]\\K[^'\"]*" /srv/newsblur/newsblur_web/local_settings.py
+  register: mcp_sentry_result
+  changed_when: false
+  ignore_errors: yes
+
+- name: Set MCP secret facts
   set_fact:
     mcp_oauth_client_id: "newsblur-mcp-server"
     mcp_oauth_client_secret: "{{ mcp_secret_result.stdout }}"
+    mcp_sentry_dsn: "{{ mcp_sentry_result.stdout | default('') }}"
 
 - name: Update to latest NewsBlur MCP Docker image
   become: yes

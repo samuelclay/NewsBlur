@@ -30,3 +30,6 @@ MCP_OAUTH_UPSTREAM_URL = os.environ.get("MCP_OAUTH_UPSTREAM_URL", NEWSBLUR_BASE_
 # Internal URL for server-to-server calls (token exchange, verification)
 # Bypasses TLS to avoid self-signed cert issues in dev
 MCP_OAUTH_INTERNAL_URL = os.environ.get("MCP_OAUTH_INTERNAL_URL", NEWSBLUR_BASE_URL)
+
+# Sentry error tracking
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
