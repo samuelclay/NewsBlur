@@ -21,7 +21,6 @@ import mongoengine as mongo
 import pynliner
 import redis
 import requests
-import tweepy
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -2170,7 +2169,6 @@ class MSharedStory(mongo.DynamicDocument):
             except MSharedStory.DoesNotExist:
                 story_values.update(story_db)
                 shared_story = MSharedStory.objects.create(**story_values)
-                shared_story.post_to_service("twitter")
                 shared += 1
                 shared_feed_ids.append(story.story_feed_id)
                 publish_new_stories = True
@@ -2521,7 +2519,7 @@ class MSharedStory(mongo.DynamicDocument):
         logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
 
         if service == "twitter":
-            posted = social_service.post_to_twitter(self)
+            logging.user(user, "~BM~FYTwitter/X posting is no longer supported.")
         elif service == "facebook":
             posted = social_service.post_to_facebook(self)
 
@@ -2814,10 +2812,10 @@ class MSocialServices(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         return {
             "twitter": {
-                "twitter_username": self.twitter_username,
-                "twitter_picture_url": self.twitter_picture_url,
-                "twitter_uid": self.twitter_uid,
-                "syncing": self.syncing_twitter,
+                "twitter_username": None,
+                "twitter_picture_url": None,
+                "twitter_uid": None,
+                "syncing": False,
             },
             "facebook": {
                 "facebook_uid": self.facebook_uid,
@@ -2873,12 +2871,7 @@ class MSocialServices(mongo.Document):
         return image_name and self.upload_picture_url
 
     def twitter_api(self):
-        twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
-        twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
-        auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-        auth.set_access_token(self.twitter_access_key, self.twitter_access_secret)
-        api = tweepy.API(auth)
-        return api
+        return None
 
     def facebook_api(self):
         graph = facebook.GraphAPI(access_token=self.facebook_access_token, version="3.1")
@@ -2886,83 +2879,11 @@ class MSocialServices(mongo.Document):
 
     def sync_twitter_friends(self):
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BG~FMTwitter import starting...")
-
-        api = self.twitter_api()
-        try:
-            twitter_user = api.me()
-        except tweepy.TweepError as e:
-            api = None
-
-        if not api:
-            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no api access.")
-            self.syncing_twitter = False
-            self.save()
-            return
-
-        self.twitter_picture_url = twitter_user.profile_image_url_https
-        self.twitter_username = twitter_user.screen_name
-        self.twitter_refreshed_date = datetime.datetime.utcnow()
-        self.syncing_twitter = False
-        self.save()
-
-        profile = MSocialProfile.get_user(self.user_id)
-        profile.location = profile.location or twitter_user.location
-        profile.bio = profile.bio or twitter_user.description
-        profile.website = profile.website or twitter_user.url
-        profile.save()
-        profile.count_follows()
-
-        if not profile.photo_url or not profile.photo_service:
-            self.set_photo("twitter")
-
-        try:
-            friend_ids = list(str(friend.id) for friend in list(tweepy.Cursor(api.friends).items()))
-        except tweepy.TweepError as e:
-            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: %s" % e)
-            return
-        if not friend_ids:
-            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
-        self.twitter_friend_ids = friend_ids
-        self.save()
-
-        following = self.follow_twitter_friends()
-
-        if not following:
-            logging.user(user, "~BG~FMTwitter import finished.")
+        logging.user(user, "~BG~FMTwitter import skipped: Twitter/X support has been removed.")
+        self.disconnect_twitter()
 
     def follow_twitter_friends(self):
-        social_profile = MSocialProfile.get_user(self.user_id)
-        following = []
-        followers = 0
-
-        if not self.autofollow:
-            return following
-
-        # Follow any friends already on NewsBlur
-        user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
-        for user_social_service in user_social_services:
-            followee_user_id = user_social_service.user_id
-            socialsub = social_profile.follow_user(followee_user_id)
-            if socialsub:
-                following.append(followee_user_id)
-
-        # Friends already on NewsBlur should follow back
-        # following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
-        # for following_user in following_users:
-        #     if following_user.autofollow:
-        #         following_user_profile = MSocialProfile.get_user(following_user.user_id)
-        #         following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-        #         followers += 1
-
-        user = User.objects.get(pk=self.user_id)
-        logging.user(
-            user,
-            "~BG~FMTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs"
-            % (len(self.twitter_friend_ids), len(following), followers),
-        )
-
-        return following
+        return []
 
     def sync_facebook_friends(self):
         user = User.objects.get(pk=self.user_id)
@@ -3040,6 +2961,12 @@ class MSocialServices(mongo.Document):
     def disconnect_twitter(self):
         self.syncing_twitter = False
         self.twitter_uid = None
+        self.twitter_access_key = None
+        self.twitter_access_secret = None
+        self.twitter_friend_ids = []
+        self.twitter_picture_url = None
+        self.twitter_username = None
+        self.twitter_refresh_date = None
         self.save()
 
     def disconnect_facebook(self):
@@ -3071,68 +2998,15 @@ class MSocialServices(mongo.Document):
 
     @classmethod
     def sync_all_twitter_photos(cls, days=14, everybody=False):
-        if everybody:
-            sharers = [ss.user_id for ss in MSocialServices.objects.all().only("user_id")]
-        elif days:
-            week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-            shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
-            sharers = sorted(set([s.user_id for s in shares]))
-        print(" ---> %s sharing user_ids" % len(sorted(sharers)))
-
-        for user_id in sharers:
-            try:
-                profile = MSocialProfile.objects.get(user_id=user_id)
-            except MSocialProfile.DoesNotExist:
-                continue
-            if not profile.photo_service == "twitter":
-                continue
-            ss = MSocialServices.objects.get(user_id=user_id)
-            try:
-                ss.sync_twitter_photo()
-                print(" ---> Syncing %s" % user_id)
-            except Exception as e:
-                print(" ***> Exception on %s: %s" % (user_id, e))
+        print(" ---> Twitter/X support has been removed.")
 
     def sync_twitter_photo(self):
-        profile = MSocialProfile.get_user(self.user_id)
-
-        if profile.photo_service != "twitter":
-            return
-
-        user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~FCSyncing Twitter profile photo...")
-
-        try:
-            api = self.twitter_api()
-            me = api.me()
-        except (tweepy.TweepError, TypeError) as e:
-            logging.user(user, "~FRException (%s): ~FCsetting to blank profile photo" % e)
-            self.twitter_picture_url = None
-            self.set_photo("nothing")
-            return
-
-        self.twitter_picture_url = me.profile_image_url_https
-        self.save()
-        self.set_photo("twitter")
+        return
 
     def post_to_twitter(self, shared_story):
-        message = shared_story.generate_post_to_service_message(truncate=280)
-        shared_story.calculate_image_sizes()
-
-        try:
-            api = self.twitter_api()
-            filename = self.fetch_image_file_for_twitter(shared_story)
-            if filename:
-                api.update_with_media(filename, status=message)
-                os.remove(filename)
-            else:
-                api.update_status(status=message)
-        except (tweepy.TweepError, requests.exceptions.RequestException) as e:
-            user = User.objects.get(pk=self.user_id)
-            logging.user(user, "~FRTwitter error: ~SB%s" % e)
-            return
-
-        return True
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FYTwitter/X posting is no longer supported.")
+        return
 
     def fetch_image_file_for_twitter(self, shared_story):
         if not shared_story.image_urls:

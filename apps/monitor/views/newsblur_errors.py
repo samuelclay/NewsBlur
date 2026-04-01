@@ -8,7 +8,7 @@ class Errors(View):
     def get(self, request):
         statistics = MStatistics.all()
         data = {
-            "feed_success": statistics["feeds_fetched"],
+            "feed_success": statistics.get("feeds_fetched", 0),
         }
         chart_name = "errors"
         chart_type = "counter"

@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 
 from apps.profile.models import MGiftCode, MSentEmail, Profile, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.social.models import MActivity, MInteraction, MSocialServices
+from apps.social.models import MActivity, MInteraction
 from newsblur_web.celeryapp import app
 from utils import log as logging
 
@@ -149,12 +149,6 @@ def CleanupUser(user_id):
     UserSubscriptionFolders.compact_for_user(user_id)
     UserSubscription.refresh_stale_feeds(user_id)
 
-    try:
-        ss = MSocialServices.objects.get(user_id=user_id)
-    except MSocialServices.DoesNotExist:
-        logging.debug(" ---> ~FRCleaning up user, can't find social_services for user_id: ~SB%s" % user_id)
-        return
-    ss.sync_twitter_photo()
 
 
 @app.task(name="clean-spam")

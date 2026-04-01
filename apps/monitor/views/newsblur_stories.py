@@ -7,8 +7,8 @@ from apps.rss_feeds.models import MStarredStory, MStory
 class Stories(View):
     def get(self, request):
         data = {
-            "stories": MStory.objects._collection.count(),
-            "starred_stories": MStarredStory.objects._collection.count(),
+            "stories": MStory.objects._collection.count_documents({}),
+            "starred_stories": MStarredStory.objects._collection.count_documents({}),
         }
         chart_name = "stories"
         chart_type = "counter"

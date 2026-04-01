@@ -3,7 +3,7 @@
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
-    image: newsblur/newsblur_python3
+    image: "newsblur/newsblur_python3:{{ newsblur_image_tag | default('latest') }}"
     state: started
     pull: yes
     restart: "{{ container_restart | default(false) }}"

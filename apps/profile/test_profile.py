@@ -22,7 +22,7 @@ class Test_Profile(TestCase):
     def test_create_account(self):
         resp = self.client.get(reverse("load-feeds"))
         response = json.decode(resp.content)
-        self.assertEquals(response["authenticated"], False)
+        self.assertEqual(response["authenticated"], False)
 
         response = self.client.post(
             reverse("welcome-signup"),
@@ -32,11 +32,11 @@ class Test_Profile(TestCase):
                 "signup-email": "test@newsblur.com",
             },
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
         resp = self.client.get(reverse("load-feeds"))
         response = json.decode(resp.content)
-        self.assertEquals(response["authenticated"], True)
+        self.assertEqual(response["authenticated"], True)
 
 
 class Test_TierProtection(TestCase):

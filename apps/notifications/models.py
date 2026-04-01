@@ -65,6 +65,7 @@ class MUserNotificationTokens(mongo.Document):
 
     user_id = mongo.IntField()
     ios_tokens = mongo.ListField(mongo.StringField(max_length=1024))
+    android_tokens = mongo.ListField(mongo.StringField(max_length=1024), default=list)
     use_sandbox = mongo.BooleanField(default=False)
 
     meta = {
@@ -616,6 +617,7 @@ class MUserClassifierNotification(mongo.Document):
                     "feed_id",
                     "folder_name",
                 ],
+                "name": "uniq_user_classifier_scope",
                 "unique": True,
             },
         ],

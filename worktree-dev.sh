@@ -353,7 +353,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     echo ""
     echo -e "${GREEN}Development workflow:${NC}"
     echo "  - Python/JS/CSS auto-reload (no restart needed)"
-    echo "  - Add packages to requirements.txt, run 'make deps'"
+    echo "  - Add packages with uv, commit pyproject.toml and uv.lock, then run 'make deps'"
     echo "  - Use 'make log' to follow logs"
     echo "  - Use 'make shell' for Django shell"
     echo "  - Use 'make test' to run tests"

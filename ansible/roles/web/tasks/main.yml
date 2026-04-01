@@ -66,7 +66,7 @@
 - name: Update to latest NewsBlur Web Docker image
   become: yes
   docker_image:
-    name: newsblur/newsblur_python3
+    name: "newsblur/newsblur_python3:{{ newsblur_image_tag | default('latest') }}"
     source: pull
 
 - include_tasks: container.yml

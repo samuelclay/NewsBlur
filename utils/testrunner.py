@@ -1,47 +1,54 @@
-import os
-
 from django.test.runner import DiscoverRunner
 from django.test.utils import setup_databases
-from mongoengine.connection import connect, disconnect
+from mongoengine.connection import disconnect_all
+
+from utils.test_mongo import configure_test_mongo_connection
 
 
 class TestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
-        db_name = "newsblur_test"
-        disconnect()
+        from django.conf import settings
 
-        # Use Docker MongoDB settings when in Docker environment
-        if os.getenv("DOCKERBUILD"):
-            connect(db_name, host="newsblur_db_mongo", port=29019, connect=False)
-        else:
-            connect(db_name, host="127.0.0.1", port=27017, connect=False)
+        db_name = configure_test_mongo_connection(settings)
 
         print("Creating test-database: " + db_name)
 
         result = setup_databases(self.verbosity, self.interactive, **kwargs)
 
         # Ensure Site exists for subdomain middleware
-        from django.conf import settings
+        # Use get_or_create to avoid conflicts with fixtures that may also create Sites
         from django.contrib.sites.models import Site
 
-        Site.objects.update_or_create(
-            pk=settings.SITE_ID, defaults={"domain": "testserver", "name": "Test Server"}
-        )
+        try:
+            Site.objects.get_or_create(
+                pk=settings.SITE_ID, defaults={"domain": "testserver", "name": "Test Server"}
+            )
+        except Exception:
+            # Site may already exist from fixtures or previous test runs
+            pass
 
         return result
 
     def teardown_databases(self, old_config, **kwargs):
         import pymongo
+        from django.conf import settings
 
-        # Use Docker MongoDB settings when in Docker environment
-        if os.getenv("DOCKERBUILD"):
-            conn = pymongo.MongoClient("newsblur_db_mongo", 29019)
-        else:
-            conn = pymongo.MongoClient("127.0.0.1", 27017)
+        # Disconnect mongoengine test alias
+        try:
+            disconnect_all()
+        except Exception:
+            pass
 
-        db_name = "newsblur_test"
-        conn.drop_database(db_name)
-        print("Dropping test-database: %s" % db_name)
+        mongo_config = dict(getattr(settings, "MONGO_DB", {}))
+        db_name = mongo_config.pop("name", getattr(settings, "MONGO_DB_NAME", "newsblur_test"))
+        host = mongo_config.get("host", "127.0.0.1:27017")
+        conn = pymongo.MongoClient(host)
+        try:
+            conn.drop_database(db_name)
+            print("Dropping test-database: %s" % db_name)
+        finally:
+            conn.close()
+
         return super(TestRunner, self).teardown_databases(old_config, **kwargs)
 
 

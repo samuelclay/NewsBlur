@@ -22,7 +22,12 @@ from django.shortcuts import render
 from apps.profile.models import Profile
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
-from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts
+from apps.rss_feeds.models import (
+    Feed,
+    MStarredStory,
+    MStarredStoryCounts,
+    UNSUPPORTED_SOCIAL_FEED_MESSAGE,
+)
 from apps.rss_feeds.text_importer import TextImporter
 from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription
 from utils import json_functions as json
@@ -30,6 +35,34 @@ from utils import log as logging
 from utils.feed_functions import relative_timesince
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import required_params
+
+
+def _unsupported_social_feed_response():
+    return HttpResponse(
+        json.encode(
+            {
+                "code": -1,
+                "message": UNSUPPORTED_SOCIAL_FEED_MESSAGE,
+                "story": None,
+            }
+        ),
+        content_type="text/plain",
+    )
+
+
+def _find_story_feed(request, action, story_url, rss_url=None):
+    feed = None
+
+    if rss_url:
+        logging.user(request.user, "~FBFinding feed (%s): %s" % (action, rss_url))
+        if not Feed.is_unsupported_feed_url(rss_url):
+            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
+    if not feed:
+        logging.user(request.user, "~FBFinding feed (%s): %s" % (action, story_url))
+        if not Feed.is_unsupported_feed_url(story_url):
+            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+
+    return feed
 
 
 @json.json_view
@@ -371,12 +404,9 @@ def share_story(request, token=None):
     if feed_id:
         feed = Feed.get_by_id(feed_id)
     else:
-        if rss_url:
-            logging.user(request.user, "~FBFinding feed (share_story): %s" % rss_url)
-            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
-        if not feed:
-            logging.user(request.user, "~FBFinding feed (share_story): %s" % story_url)
-            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+        feed = _find_story_feed(request, "share_story", story_url, rss_url=rss_url)
+        if not feed and Feed.is_unsupported_feed_url(story_url):
+            return _unsupported_social_feed_response()
         if feed:
             feed_id = feed.pk
 
@@ -505,12 +535,9 @@ def save_story(request, token=None):
     if feed_id:
         feed = Feed.get_by_id(feed_id)
     else:
-        if rss_url:
-            logging.user(request.user, "~FBFinding feed (save_story): %s" % rss_url)
-            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
-        if not feed:
-            logging.user(request.user, "~FBFinding feed (save_story): %s" % story_url)
-            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+        feed = _find_story_feed(request, "save_story", story_url, rss_url=rss_url)
+        if not feed and Feed.is_unsupported_feed_url(story_url):
+            return _unsupported_social_feed_response()
         if feed:
             feed_id = feed.pk
 

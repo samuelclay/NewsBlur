@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 urlpatterns = [
-    url(r"^analyze$", views.analyze, name="webfeed-analyze"),
-    url(r"^subscribe$", views.subscribe, name="webfeed-subscribe"),
-    url(r"^reanalyze$", views.reanalyze, name="webfeed-reanalyze"),
+    re_path(r"^analyze$", views.analyze, name="webfeed-analyze"),
+    re_path(r"^subscribe$", views.subscribe, name="webfeed-subscribe"),
+    re_path(r"^reanalyze$", views.reanalyze, name="webfeed-reanalyze"),
 ]

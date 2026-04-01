@@ -233,11 +233,14 @@ def discover_feeds(request, feed_id=None):
     offset = (page - 1) * limit
 
     if request.method == "GET" and feed_id:
-        similar_feed_ids = list(
-            Feed.get_by_id(feed_id)
-            .count_similar_feeds(force=True, offset=offset, limit=limit)
-            .values_list("pk", flat=True)
-        )
+        similar_feeds = Feed.get_by_id(feed_id).count_similar_feeds(force=True, offset=offset, limit=limit)
+        if hasattr(similar_feeds, "values_list"):
+            similar_feed_ids = list(similar_feeds.values_list("pk", flat=True))
+        else:
+            similar_feed_ids = [
+                similar_feed.pk if hasattr(similar_feed, "pk") else int(similar_feed)
+                for similar_feed in similar_feeds
+            ]
     elif request.method == "POST":
         feed_ids = request.POST.getlist("feed_ids")
         similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)

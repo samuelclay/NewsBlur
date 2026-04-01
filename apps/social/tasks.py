@@ -54,8 +54,7 @@ def EmailStoryReshares(shared_story_id):
 
 @app.task()
 def SyncTwitterFriends(user_id):
-    social_services = MSocialServices.objects.get(user_id=user_id)
-    social_services.sync_twitter_friends()
+    logging.debug(" ---> Twitter/X support has been removed. Skipping SyncTwitterFriends.")
 
 
 @app.task()

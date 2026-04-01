@@ -76,6 +76,7 @@ from utils.story_functions import (
 from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
+UNSUPPORTED_SOCIAL_FEED_MESSAGE = "Twitter/X feeds are no longer supported."
 
 
 class Feed(models.Model):
@@ -553,6 +554,38 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
 
     @classmethod
+    def is_unsupported_feed_url(cls, url):
+        if not url:
+            return False
+
+        try:
+            normalized_url = urlnorm.normalize(url)
+        except Exception:
+            normalized_url = url
+
+        if not normalized_url:
+            return False
+        if "://" not in normalized_url and not normalized_url.startswith("//"):
+            normalized_url = f"https://{normalized_url}"
+
+        hostname = (urllib.parse.urlparse(normalized_url).hostname or "").lower()
+
+        unsupported_hosts = {
+            "twitter.com",
+            "www.twitter.com",
+            "mobile.twitter.com",
+            "x.com",
+            "www.x.com",
+            "mobile.x.com",
+        }
+
+        return (
+            hostname in unsupported_hosts
+            or hostname.endswith(".twitter.com")
+            or hostname.endswith(".x.com")
+        )
+
+    @classmethod
     def get_feed_by_url(self, *args, **kwargs):
         return self.get_feed_from_url(*args, **kwargs)
 
@@ -584,8 +617,9 @@ class Feed(models.Model):
                 return cls.objects.filter(feed_address=url)[0]
             except cls.DoesNotExist:
                 return None
-        if url and re.match("(https?://)?twitter.com/\w+/?", url):
-            without_rss = True
+        if cls.is_unsupported_feed_url(url):
+            logging.debug(" ---> Unsupported social feed URL: %s" % url)
+            return None
         if url and re.match(r"(https?://)?(www\.)?facebook.com/\w+/?$", url):
             without_rss = True
         # Turn url @username@domain.com into domain.com/users/username.rss
@@ -593,7 +627,7 @@ class Feed(models.Model):
             username, domain = url[1:].split("@")
             url = f"https://{domain}/users/{username}.rss"
         if url and "youtube.com/user/" in url:
-            username = re.search("youtube.com/user/(\w+)", url).group(1)
+            username = re.search(r"youtube.com/user/(\w+)", url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             without_rss = True
         if url and "youtube.com/@" in url:
@@ -601,7 +635,7 @@ class Feed(models.Model):
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             without_rss = True
         if url and "youtube.com/channel/" in url:
-            channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
+            channel_id = re.search(r"youtube.com/channel/([-_\w]+)", url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
             without_rss = True
         if url and "youtube.com/feeds" in url:
@@ -3927,13 +3961,13 @@ class MStory(mongo.Document):
         )
         for video_thumbnail in video_thumbnails:
             video_src = video_thumbnail.get("src")
-            video_id = re.search(".*?youtube.com/embed/([A-Za-z0-9\-_]+)", video_src)
+            video_id = re.search(r".*?youtube.com/embed/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?youtube.com/v/([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?youtube.com/v/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?ytimg.com/vi/([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?ytimg.com/vi/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
                 logging.debug(f" ***> Couldn't find youtube url in {video_thumbnail}: {video_src}")
                 continue

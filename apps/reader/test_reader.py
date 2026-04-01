@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
@@ -8,7 +8,7 @@ from apps.reader.models import UserSubscriptionFolders
 from utils import json_functions as json
 
 
-class Test_Reader(TransactionTestCase):
+class Test_Reader(TestCase):
     fixtures = [
         "apps/rss_feeds/fixtures/initial_data.json",
         "apps/rss_feeds/fixtures/rss_feeds.json",
@@ -222,7 +222,7 @@ class Test_Reader(TransactionTestCase):
         usf.compact()
         compact_folders = usf.folders
 
-        self.assertNotEquals(dupe_folders, compact_folders)
+        self.assertNotEqual(dupe_folders, compact_folders)
 
     def test_compact_user_subscription_folders2(self):
         user = User.objects.all()[0]
@@ -233,7 +233,7 @@ class Test_Reader(TransactionTestCase):
         usf.compact()
         compact_folders = usf.folders
 
-        self.assertNotEquals(dupe_folders, compact_folders)
+        self.assertNotEqual(dupe_folders, compact_folders)
 
     def test_save_feed_chooser(self):
         """Test save_feed_chooser endpoint handles parameters correctly."""

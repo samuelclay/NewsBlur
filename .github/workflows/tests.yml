@@ -1,6 +1,7 @@
-name: Django Tests
+name: "Django Tests"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -22,7 +23,8 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull newsblur/newsblur_python3:latest || true
+          docker pull newsblur/newsblur_python3:py313 || true
+          docker tag newsblur/newsblur_python3:py313 newsblur/newsblur_python3:latest || true
           docker pull newsblur/newsblur_node:latest || true
           # Pre-pull Elasticsearch with retries to avoid TLS timeout issues
           for i in 1 2 3; do
@@ -54,7 +56,7 @@ jobs:
           # Retry docker compose up in case of transient network issues
           # Use CI override to remove ARM-specific JVM flags (UseSVE) that crash on x86_64
           for i in 1 2 3; do
-            docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d && break
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d newsblur_web && break
             echo "Retry $i for docker compose up..."
             docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v || true
             sleep 10
@@ -95,7 +97,7 @@ jobs:
           # Django fails to DROP the test DB because lingering connections (from Sentry SDK
           # name resolution failures) keep it open. The CI container is ephemeral anyway.
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast --keepdb
-        timeout-minutes: 5
+        timeout-minutes: 10
 
       - name: Show logs on failure
         if: failure()

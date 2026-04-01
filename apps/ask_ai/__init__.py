@@ -4,4 +4,4 @@ Supports multiple providers (Claude, GPT, Gemini, Grok). Responses are processed
 asynchronously via Celery and cached with zlib compression in MongoDB.
 """
 
-default_app_config = "apps.ask_ai.apps.AskAiConfig"
+# Django 4.1+ automatically discovers app configs, no default_app_config needed

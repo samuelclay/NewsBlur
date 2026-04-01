@@ -328,22 +328,40 @@ lint:
 	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree,.claude
 	
 deps:
-	docker exec -t newsblur_web pip install -U uv
-	docker exec -t newsblur_web uv pip install -r requirements.txt
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	if [ -d ".git" ]; then \
+		CONTAINER_NAME="newsblur_web"; \
+	else \
+		CONTAINER_NAME="newsblur_web_$$WORKSPACE_NAME"; \
+	fi; \
+	docker exec -t $$CONTAINER_NAME sh -lc "cd /srv/newsblur && UV_PROJECT_ENVIRONMENT=/venv uv sync --locked"; \
+	docker exec -t $$CONTAINER_NAME sh -lc "cd /srv/newsblur && UV_PROJECT_ENVIRONMENT=/venv uv export --locked --no-hashes -o config/requirements.txt"
 
 jekyll_build:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll build
 	
-# runs tests
-# Usage: make test [SCOPE=apps.reader] [ARGS="--noinput -v 2"]
+# runs Django tests
+# Usage: make test [SCOPE=apps] [ARGS="-v 1 --failfast"]
 SCOPE ?= apps
-ARGS ?= --noinput -v 1 --failfast
+ARGS ?= -v 1 --failfast
 test:
 	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
 
+# runs Django tests (legacy alias)
+# Usage: make test-django [SCOPE=apps.reader] [ARGS="-v 2"]
+test-django:
+	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
+
+# runs tests with pytest
+# Usage: make test-pytest [PYTEST_SCOPE=apps] [PYTEST_ARGS="-v --tb=short"]
+PYTEST_SCOPE ?= apps
+PYTEST_ARGS ?= -v --tb=short
+test-pytest:
+	docker compose exec -T newsblur_web pytest $(PYTEST_SCOPE) $(PYTEST_ARGS)
+
 # runs river stories tests with query profiling
 test-river:
-	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
+	docker compose exec -T newsblur_web pytest apps/reader/test_river_stories.py -v
 
 keys:
 	@if [ -f "config/certificates/localhost.pem" ]; then \
@@ -409,7 +427,7 @@ pull:
 
 local_build_web:
 	# docker buildx build --load . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-	docker build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	docker build $(if $(filter 1 true yes,$(NO_CACHE)),--no-cache,) . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 
 # Ensure buildx builder exists for multi-platform builds
 # The default 'docker' driver doesn't support multi-platform; we need 'docker-container'
@@ -426,27 +444,33 @@ buildx_setup:
 buildx_clean:
 	docker buildx prune -f
 
+BUILDX_NO_CACHE_FLAG := $(if $(filter 1 true yes,$(NO_CACHE)),--no-cache,)
+
 build_web: buildx_setup
-	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: buildx_setup
-	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: buildx_setup
-	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 build_deploy: buildx_setup
-	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 build_mcp: buildx_setup
-	docker buildx build ./newsblur_mcp --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+	docker buildx build ./newsblur_mcp $(BUILDX_NO_CACHE_FLAG) --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
 build: build_web build_node build_monitor build_deploy build_mcp
 push_web: buildx_setup
-	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+push_web_py313: buildx_setup
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3:py313
 push_node: buildx_setup
-	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 push_monitor: buildx_setup
-	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 push_deploy: buildx_setup
-	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+push_deploy_py313: buildx_setup
+	docker buildx build . $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --build-arg BASE_IMAGE=newsblur/newsblur_python3:py313 --tag=newsblur/newsblur_deploy:py313
 push_mcp: buildx_setup
-	docker buildx build ./newsblur_mcp --push --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
+	docker buildx build ./newsblur_mcp $(BUILDX_NO_CACHE_FLAG) --push --platform linux/amd64,linux/arm64 --file=newsblur_mcp/Dockerfile --tag=newsblur/newsblur_mcp
 push_cli:
 	gh workflow run publish-cli.yml -f dry_run=false
 push_images: push_web push_node push_monitor push_deploy push_mcp

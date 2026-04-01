@@ -117,7 +117,6 @@ try:
     )
 except:
     pass
-import tweepy
 
 from apps.categories.models import MCategory
 from apps.reader.tasks import MarkStoriesAsUnread
@@ -3746,20 +3745,9 @@ def add_url(request):
     elif any([(banned_url in url) for banned_url in BANNED_URLS]):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
-    elif re.match("(https?://)?twitter.com/\w+/?$", url):
-        if not request.user.profile.is_premium:
-            message = "You must be a premium subscriber to add Twitter feeds."
-            code = -1
-        else:
-            # Check if Twitter API is active for user
-            ss = MSocialServices.get_user(request.user.pk)
-            try:
-                if not ss.twitter_uid:
-                    raise tweepy.TweepError("No API token")
-                ss.twitter_api().me()
-            except tweepy.TweepError:
-                code = -1
-                message = "Your Twitter connection isn't setup. Go to Manage - Friends/Followers and reconnect Twitter."
+    elif re.match(r"(https?://)?(twitter|x)\.com/\w+/?$", url):
+        code = -1
+        message = "Twitter/X feeds are no longer supported."
 
     if code == -1:
         return dict(code=code, message=message)

@@ -75,7 +75,6 @@ from utils.story_functions import (
     pre_process_story,
     strip_tags,
 )
-from utils.twitter_fetcher import TwitterFetcher
 from utils.youtube_fetcher import YoutubeFetcher
 
 
@@ -271,21 +270,12 @@ class FetchFeed:
                     % (self.feed.log_title[:30])
                 )
             self.fpf = feedparser.parse(processed_youtube_feed, sanitize_html=False)
-        elif re.match(r"(https?)?://twitter.com/\w+/?", clean_address):
-            twitter_feed = self.fetch_twitter(address)
-            if not twitter_feed:
-                logging.debug(
-                    "   ***> [%-30s] ~FRTwitter fetch failed: %s" % (self.feed.log_title[:30], address)
-                )
-                return FEED_ERRHTTP, None
-            # Apply encoding preprocessing to special feed content
-            processed_twitter_feed = preprocess_feed_encoding(twitter_feed)
-            if processed_twitter_feed != twitter_feed:
-                logging.debug(
-                    "   ---> [%-30s] ~FGApplied encoding correction to Twitter feed"
-                    % (self.feed.log_title[:30])
-                )
-            self.fpf = feedparser.parse(processed_twitter_feed)
+        elif Feed.is_unsupported_feed_url(clean_address):
+            logging.debug(
+                "   ***> [%-30s] ~FRTwitter/X feeds are no longer supported: %s"
+                % (self.feed.log_title[:30], address)
+            )
+            return FEED_ERRHTTP, None
         elif re.match(r"(.*?)facebook.com/\w+/?$", clean_address):
             facebook_feed = self.fetch_facebook()
             if not facebook_feed:
@@ -611,10 +601,6 @@ class FetchFeed:
             identity = current_process._identity[0]
 
         return identity
-
-    def fetch_twitter(self, address=None):
-        twitter_fetcher = TwitterFetcher(self.feed, self.options)
-        return twitter_fetcher.fetch(address)
 
     def fetch_facebook(self):
         facebook_fetcher = FacebookFetcher(self.feed, self.options)

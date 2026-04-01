@@ -1,7 +1,9 @@
 import os
+import sys
 
 DOCKERBUILD = os.getenv("DOCKERBUILD")
 from newsblur_web.settings import *
+from utils.test_mongo import configure_test_mongo_connection
 
 # Use PostgreSQL for tests to avoid SQLite concurrency issues
 DATABASES["default"] = {
@@ -68,6 +70,7 @@ else:
     }
 
 MONGO_DATABASE_NAME = "test_newsblur"
+configure_test_mongo_connection(sys.modules[__name__])
 
 SOUTH_TESTS_MIGRATE = False
 DAYS_OF_UNREAD = 9999

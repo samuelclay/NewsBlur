@@ -6,12 +6,11 @@ import urllib.parse
 import urllib.request
 
 import lxml.html
-import tweepy
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from mongoengine.queryset import NotUniqueError, OperationError
@@ -27,10 +26,16 @@ from apps.analyzer.models import (
     compute_story_score,
 )
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
-from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts, MStory
+from apps.rss_feeds.models import (
+    Feed,
+    MStarredStory,
+    MStarredStoryCounts,
+    MStory,
+    UNSUPPORTED_SOCIAL_FEED_MESSAGE,
+)
 from apps.rss_feeds.text_importer import TextImporter
 from apps.social.models import MSharedStory, MSocialServices, MSocialSubscription
-from apps.social.tasks import SyncFacebookFriends, SyncTwitterFriends
+from apps.social.tasks import SyncFacebookFriends
 from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
@@ -42,61 +47,8 @@ from vendor import facebook
 @login_required
 @render_to("social/social_connect.xhtml")
 def twitter_connect(request):
-    twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
-    twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
-
-    oauth_token = request.GET.get("oauth_token")
-    oauth_verifier = request.GET.get("oauth_verifier")
-    denied = request.GET.get("denied")
-    if denied:
-        logging.user(request, "~BB~FRDenied Twitter connect")
-        return {"error": "Denied! Try connecting again."}
-    elif oauth_token and oauth_verifier:
-        try:
-            auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-            auth.request_token = request.session["twitter_request_token"]
-            # auth.set_request_token(oauth_token, oauth_verifier)
-            auth.get_access_token(oauth_verifier)
-            api = tweepy.API(auth)
-            twitter_user = api.me()
-        except (tweepy.TweepError, IOError) as e:
-            logging.user(request, "~BB~FRFailed Twitter connect: %s" % e)
-            return dict(error="Twitter has returned an error. Try connecting again.")
-
-        # Be sure that two people aren't using the same Twitter account.
-        existing_user = MSocialServices.objects.filter(twitter_uid=str(twitter_user.id))
-        if existing_user and existing_user[0].user_id != request.user.pk:
-            try:
-                user = User.objects.get(pk=existing_user[0].user_id)
-                logging.user(request, "~BB~FRFailed Twitter connect, another user: %s" % user.username)
-                return dict(
-                    error=(
-                        "Another user (%s, %s) has "
-                        "already connected with those Twitter credentials."
-                        % (user.username, user.email or "no email")
-                    )
-                )
-            except User.DoesNotExist:
-                existing_user.delete()
-
-        social_services = MSocialServices.get_user(request.user.pk)
-        social_services.twitter_uid = str(twitter_user.id)
-        social_services.twitter_access_key = auth.access_token
-        social_services.twitter_access_secret = auth.access_token_secret
-        social_services.syncing_twitter = True
-        social_services.save()
-
-        SyncTwitterFriends.delay(user_id=request.user.pk)
-
-        logging.user(request, "~BB~FRFinishing Twitter connect")
-        return {}
-    else:
-        # Start the OAuth process
-        auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-        auth_url = auth.get_authorization_url()
-        request.session["twitter_request_token"] = auth.request_token
-        logging.user(request, "~BB~FRStarting Twitter connect: %s" % auth.request_token)
-        return {"next": auth_url}
+    logging.user(request, "~BB~FRTwitter/X connect attempted after support removal")
+    return {"error": "Twitter/X integration is no longer supported."}
 
 
 @login_required
@@ -190,47 +142,15 @@ def facebook_disconnect(request):
 @ajax_login_required
 @json.json_view
 def follow_twitter_account(request):
-    username = request.POST["username"]
-    code = 1
-    message = "OK"
-
-    logging.user(request, "~BB~FR~SKFollowing Twitter: %s" % username)
-
-    if username not in ["samuelclay", "newsblur"]:
-        return HttpResponseForbidden()
-
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    try:
-        api = social_services.twitter_api()
-        api.create_friendship(username)
-    except tweepy.TweepError as e:
-        code = -1
-        message = e
-
-    return {"code": code, "message": message}
+    logging.user(request, "~BB~FRTwitter/X follow attempted after support removal")
+    return {"code": -1, "message": "Twitter/X integration is no longer supported."}
 
 
 @ajax_login_required
 @json.json_view
 def unfollow_twitter_account(request):
-    username = request.POST["username"]
-    code = 1
-    message = "OK"
-
-    logging.user(request, "~BB~FRUnfollowing Twitter: %s" % username)
-
-    if username not in ["samuelclay", "newsblur"]:
-        return HttpResponseForbidden()
-
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    try:
-        api = social_services.twitter_api()
-        api.destroy_friendship(username)
-    except tweepy.TweepError as e:
-        code = -1
-        message = e
-
-    return {"code": code, "message": message}
+    logging.user(request, "~BB~FRTwitter/X unfollow attempted after support removal")
+    return {"code": -1, "message": "Twitter/X integration is no longer supported."}
 
 
 @oauth_login_required
@@ -705,6 +625,8 @@ def api_share_new_story(request):
 
     if not story_url:
         return {"errors": [{"message": "Invalid story URL"}]}
+    if Feed.is_unsupported_feed_url(story_url):
+        return {"errors": [{"message": UNSUPPORTED_SOCIAL_FEED_MESSAGE}]}
 
     logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
@@ -820,6 +742,8 @@ def api_save_new_story(request):
 
     if not story_url:
         return {"errors": [{"message": "Invalid story URL"}]}
+    if Feed.is_unsupported_feed_url(story_url):
+        return {"errors": [{"message": UNSUPPORTED_SOCIAL_FEED_MESSAGE}]}
 
     logging.user(request.user, "~FBFinding feed (api_save_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url)

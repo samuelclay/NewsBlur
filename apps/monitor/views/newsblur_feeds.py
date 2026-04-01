@@ -28,8 +28,8 @@ class Feeds(View):
             "feeds": feeds_count,
             "subscriptions": subscriptions_count,
             "pro_subscriptions": pro_subscriptions_count,
-            "profiles": MSocialProfile.objects._collection.count(),
-            "social_subscriptions": MSocialSubscription.objects._collection.count(),
+            "profiles": MSocialProfile.objects._collection.count_documents({}),
+            "social_subscriptions": MSocialSubscription.objects._collection.count_documents({}),
         }
         chart_name = "feeds"
         chart_type = "counter"

@@ -97,23 +97,23 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         sub = PushSubscription.objects.subscribe(
             "topic", feed, hub="hub", callback="callback", lease_seconds=2000
         )
-        self.assertEquals(len(self.signals), 2)
-        self.assertEquals(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
-        self.assertEquals(self.signals[1], (verified, {"sender": sub}))
-        self.assertEquals(sub.hub, "hub")
-        self.assertEquals(sub.topic, "topic")
-        self.assertEquals(sub.verified, True)
+        self.assertEqual(len(self.signals), 2)
+        self.assertEqual(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
+        self.assertEqual(self.signals[1], (verified, {"sender": sub}))
+        self.assertEqual(sub.hub, "hub")
+        self.assertEqual(sub.topic, "topic")
+        self.assertEqual(sub.verified, True)
         rough_expires = datetime.now() + timedelta(seconds=2000)
-        self.assert_(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
-        self.assertEquals(len(self.requests), 1)
+        self.assertTrue(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
+        self.assertEqual(len(self.requests), 1)
         request = self.requests[0]
-        self.assertEquals(request[0], "hub")
-        self.assertEquals(request[1]["hub.mode"], "subscribe")
-        self.assertEquals(request[1]["hub.topic"], "topic")
-        self.assertEquals(request[1]["hub.callback"], "callback")
-        self.assertEquals(request[1]["hub.verify"], ["async", "sync"])
-        self.assertEquals(request[1]["hub.verify_token"], sub.verify_token)
-        self.assertEquals(request[1]["hub.lease_seconds"], 2000)
+        self.assertEqual(request[0], "hub")
+        self.assertEqual(request[1]["hub.mode"], "subscribe")
+        self.assertEqual(request[1]["hub.topic"], "topic")
+        self.assertEqual(request[1]["hub.callback"], "callback")
+        self.assertEqual(request[1]["hub.verify"], ["async", "sync"])
+        self.assertEqual(request[1]["hub.verify_token"], sub.verify_token)
+        self.assertEqual(request[1]["hub.lease_seconds"], 2000)
 
     def test_async_verify(self):
         """
@@ -127,22 +127,22 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         sub = PushSubscription.objects.subscribe(
             "topic", feed, hub="hub", callback="callback", lease_seconds=2000
         )
-        self.assertEquals(len(self.signals), 1)
-        self.assertEquals(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
-        self.assertEquals(sub.hub, "hub")
-        self.assertEquals(sub.topic, "topic")
-        self.assertEquals(sub.verified, False)
+        self.assertEqual(len(self.signals), 1)
+        self.assertEqual(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
+        self.assertEqual(sub.hub, "hub")
+        self.assertEqual(sub.topic, "topic")
+        self.assertEqual(sub.verified, False)
         rough_expires = datetime.now() + timedelta(seconds=2000)
-        self.assert_(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
-        self.assertEquals(len(self.requests), 1)
+        self.assertTrue(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
+        self.assertEqual(len(self.requests), 1)
         request = self.requests[0]
-        self.assertEquals(request[0], "hub")
-        self.assertEquals(request[1]["hub.mode"], "subscribe")
-        self.assertEquals(request[1]["hub.topic"], "topic")
-        self.assertEquals(request[1]["hub.callback"], "callback")
-        self.assertEquals(request[1]["hub.verify"], ["async", "sync"])
-        self.assertEquals(request[1]["hub.verify_token"], sub.verify_token)
-        self.assertEquals(request[1]["hub.lease_seconds"], 2000)
+        self.assertEqual(request[0], "hub")
+        self.assertEqual(request[1]["hub.mode"], "subscribe")
+        self.assertEqual(request[1]["hub.topic"], "topic")
+        self.assertEqual(request[1]["hub.callback"], "callback")
+        self.assertEqual(request[1]["hub.verify"], ["async", "sync"])
+        self.assertEqual(request[1]["hub.verify_token"], sub.verify_token)
+        self.assertEqual(request[1]["hub.lease_seconds"], 2000)
 
     def test_least_seconds_default(self):
         """
@@ -155,10 +155,10 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         )
         sub = PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback")
         rough_expires = datetime.now() + timedelta(seconds=864000)
-        self.assert_(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
-        self.assertEquals(len(self.requests), 1)
+        self.assertTrue(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
+        self.assertEqual(len(self.requests), 1)
         request = self.requests[0]
-        self.assertEquals(request[1]["hub.lease_seconds"], 864000)
+        self.assertEqual(request[1]["hub.lease_seconds"], 864000)
 
     def test_error_on_subscribe_raises_URLError(self):
         """
@@ -171,7 +171,7 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         try:
             PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback")
         except urllib.error.URLError as e:
-            self.assertEquals(e.reason, "error subscribing to topic on hub:\nerror data")
+            self.assertEqual(e.reason, "error subscribing to topic on hub:\nerror data")
         else:
             self.fail("subscription did not raise URLError exception")
 
@@ -195,12 +195,12 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
             },
         )
 
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.content, b"challenge")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"challenge")
         sub = PushSubscription.objects.get(pk=sub.pk)
-        self.assertEquals(sub.verified, True)
-        self.assertEquals(len(self.signals), 1)
-        self.assertEquals(self.signals[0], (verified, {"sender": sub}))
+        self.assertEqual(sub.verified, True)
+        self.assertEqual(len(self.signals), 1)
+        self.assertEqual(self.signals[0], (verified, {"sender": sub}))
 
     def test_404(self):
         """
@@ -229,8 +229,8 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
                     "hub.verify_token": verify_token[1:],
                 },
             )
-            self.assertEquals(response.status_code, 404)
-            self.assertEquals(len(self.signals), 0)
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(len(self.signals), 0)
 
             response = self.client.get(
                 reverse("push-callback", args=(sub.pk,)),
@@ -242,8 +242,8 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
                     "hub.verify_token": verify_token[1:],
                 },
             )
-            self.assertEquals(response.status_code, 404)
-            self.assertEquals(len(self.signals), 0)
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(len(self.signals), 0)
 
             response = self.client.get(
                 reverse("push-callback", args=(sub.pk,)),
@@ -255,8 +255,8 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
                     "hub.verify_token": verify_token,
                 },
             )
-            self.assertEquals(response.status_code, 404)
-            self.assertEquals(len(self.signals), 0)
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(len(self.signals), 0)
 
             response = self.client.get(
                 reverse("push-callback", args=(sub.pk,)),
@@ -268,8 +268,8 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
                     "hub.verify_token": verify_token[:-5],
                 },
             )
-            self.assertEquals(response.status_code, 404)
-            self.assertEquals(len(self.signals), 0)
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(len(self.signals), 0)
         finally:
             # Re-enable logging after test
             logging.disable(logging.NOTSET)
@@ -346,8 +346,8 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         response = self.client.post(
             reverse("push-callback", args=(sub.pk,)), update_data, "application/atom+xml"
         )
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.content, b"OK")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"OK")
 
     def test_update_with_changed_hub(self):
         update_data = """<?xml version="1.0"?>
@@ -382,8 +382,8 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         response = self.client.post(
             reverse("push-callback", args=(sub.pk,)), update_data, "application/atom+xml"
         )
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.content, b"OK")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"OK")
 
     def test_update_with_changed_self(self):
         update_data = """<?xml version="1.0"?>
@@ -418,8 +418,8 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         response = self.client.post(
             reverse("push-callback", kwargs={"push_id": sub.pk}), update_data, "application/atom+xml"
         )
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.content, b"OK")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"OK")
 
     def test_update_with_changed_hub_and_self(self):
         update_data = """<?xml version="1.0"?>
@@ -452,5 +452,5 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         response = self.client.post(
             reverse("push-callback", args=(sub.pk,)), update_data, "application/atom+xml"
         )
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.content, b"OK")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"OK")
