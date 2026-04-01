@@ -1,6 +1,6 @@
 ---
-# Included task file for deploying MCP in one A/B group
-- name: Disable MCP in HAProxy (Group {{ group_name }})
+# Included task file for deploying MCP server
+- name: Disable MCP in HAProxy
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state maint" | socat stdio /var/run/haproxy.sock'
   register: haproxy_mcp_disable
@@ -9,7 +9,6 @@
   until: haproxy_mcp_disable is not failed
 
 - name: Wait for MCP connections to drain
-  run_once: true
   pause:
     seconds: 5
 
@@ -49,7 +48,7 @@
   until: mcp_result.status is defined
   ignore_errors: yes
 
-- name: Re-enable MCP in HAProxy (Group {{ group_name }})
+- name: Re-enable MCP in HAProxy
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state ready" | socat stdio /var/run/haproxy.sock'
   register: haproxy_mcp_enable

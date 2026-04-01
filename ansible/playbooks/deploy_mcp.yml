@@ -1,28 +1,13 @@
 ---
-# Deploy MCP servers using A/B groups (same pattern as deploy_app.yml)
+# Deploy MCP server (single instance on happ-count-1)
 
-# Deploy Group A (odd servers)
-- name: DEPLOY MCP -> Group A (odd servers)
-  hosts: hmcp_a
+- name: DEPLOY MCP
+  hosts: hmcp
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
     - roles/letsencrypt/defaults/main.yml
   vars:
     haproxy_host: hwww
-    group_name: A
-  tasks:
-    - include_tasks: deploy_mcp_group.yml
-
-# Deploy Group B (even servers)
-- name: DEPLOY MCP -> Group B (even servers)
-  hosts: hmcp_b
-  gather_facts: false
-  vars_files:
-    - ../env_vars/base.yml
-    - roles/letsencrypt/defaults/main.yml
-  vars:
-    haproxy_host: hwww
-    group_name: B
   tasks:
     - include_tasks: deploy_mcp_group.yml
