@@ -22,12 +22,18 @@ struct TrainerView: View {
 
     @State private var scopeOverrides: [String: ClassifierScope] = [:]
 
+    @State private var showExplainerExamples = false
+
     var body: some View {
         VStack(alignment: .leading) {
-            Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
-                .font(font(named: "WhitneySSm-Medium", size: 16))
-                .foregroundColor(textColor)
-                .padding()
+            VStack(alignment: .leading, spacing: 4) {
+                Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
+                    .font(font(named: "WhitneySSm-Medium", size: 16))
+                    .foregroundColor(textColor)
+
+                explainerBanner
+            }
+            .padding()
 
             List {
                 Section(content: {
@@ -75,28 +81,28 @@ struct TrainerView: View {
                         }
 
                         WrappingHStack(models: titles) { title in
-                            Button(action: {
-                                cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName)
-                            }, label: {
-                                TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count, showsScope: true, scope: scopeBinding(for: "title", name: title.name, default: title.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                            classifierRow(
+                                capsule: TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count, showsScope: true, scope: scopeBinding(for: "title", name: title.name, default: title.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                     handleScopeChange(classifierType: "title", name: title.name, score: title.score, newScope: newScope)
-                                })
-                            })
-                            .buttonStyle(BorderlessButtonStyle())
-                            .padding([.top, .bottom], 5)
+                                }),
+                                score: title.score,
+                                onTap: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) },
+                                onDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .dislike ? 0 : -1, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) },
+                                onSuperDislike: { cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: title.score == .superDislike ? 0 : -2, scope: currentScope(for: "title", name: title.name).rawValue, folderName: currentFolderName) }
+                            )
                         }
 
                         if !titleRegexes.isEmpty {
                             WrappingHStack(models: titleRegexes) { item in
-                                Button(action: {
-                                    cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName)
-                                }, label: {
-                                    TrainerCapsule(score: item.score, header: "Title", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "title_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "Title", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "title_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                         handleScopeChange(classifierType: "title_regex", name: item.name, score: item.score, newScope: newScope)
-                                    })
-                                })
-                                .buttonStyle(BorderlessButtonStyle())
-                                .padding([.top, .bottom], 5)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onSuperDislike: { cache.appDelegate.toggleTitleRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "title_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                )
                             }
                         }
 
@@ -111,15 +117,15 @@ struct TrainerView: View {
 
                 Section(content: {
                     WrappingHStack(models: authors) { author in
-                        Button(action: {
-                            cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName)
-                        }, label: {
-                            TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                        classifierRow(
+                            capsule: TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                 handleScopeChange(classifierType: "author", name: author.name, score: author.score, newScope: newScope)
-                            })
-                        })
-                        .buttonStyle(BorderlessButtonStyle())
-                        .padding([.top, .bottom], 5)
+                            }),
+                            score: author.score,
+                            onTap: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) },
+                            onDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .dislike ? 0 : -1, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) },
+                            onSuperDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .superDislike ? 0 : -2, scope: currentScope(for: "author", name: author.name).rawValue, folderName: currentFolderName) }
+                        )
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -128,15 +134,15 @@ struct TrainerView: View {
 
                 Section(content: {
                     WrappingHStack(models: tags) { tag in
-                        Button(action: {
-                            cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName)
-                        }, label: {
-                            TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count, showsScope: true, scope: scopeBinding(for: "tag", name: tag.name, default: tag.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                        classifierRow(
+                            capsule: TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count, showsScope: true, scope: scopeBinding(for: "tag", name: tag.name, default: tag.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                 handleScopeChange(classifierType: "tag", name: tag.name, score: tag.score, newScope: newScope)
-                            })
-                        })
-                        .buttonStyle(BorderlessButtonStyle())
-                        .padding([.top, .bottom], 5)
+                            }),
+                            score: tag.score,
+                            onTap: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) },
+                            onDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .dislike ? 0 : -1, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) },
+                            onSuperDislike: { cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id, score: tag.score == .superDislike ? 0 : -2, scope: currentScope(for: "tag", name: tag.name).rawValue, folderName: currentFolderName) }
+                        )
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -147,29 +153,29 @@ struct TrainerView: View {
                     VStack(alignment: .leading) {
                         if !texts.isEmpty {
                             WrappingHStack(models: texts) { item in
-                                Button(action: {
-                                    cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName)
-                                }, label: {
-                                    TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "text", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "text", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                         handleScopeChange(classifierType: "text", name: item.name, score: item.score, newScope: newScope)
-                                    })
-                                })
-                                .buttonStyle(BorderlessButtonStyle())
-                                .padding([.top, .bottom], 5)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onSuperDislike: { cache.appDelegate.toggleTextClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text", name: item.name).rawValue, folderName: currentFolderName) }
+                                )
                             }
                         }
 
                         if !textRegexes.isEmpty {
                             WrappingHStack(models: textRegexes) { item in
-                                Button(action: {
-                                    cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName)
-                                }, label: {
-                                    TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "text_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "Text", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "text_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                         handleScopeChange(classifierType: "text_regex", name: item.name, score: item.score, newScope: newScope)
-                                    })
-                                })
-                                .buttonStyle(BorderlessButtonStyle())
-                                .padding([.top, .bottom], 5)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onSuperDislike: { cache.appDelegate.toggleTextRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "text_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                )
                             }
                         }
 
@@ -186,29 +192,29 @@ struct TrainerView: View {
                     VStack(alignment: .leading) {
                         if !urls.isEmpty {
                             WrappingHStack(models: urls) { item in
-                                Button(action: {
-                                    cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName)
-                                }, label: {
-                                    TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "url", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, showsScope: true, scope: scopeBinding(for: "url", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                         handleScopeChange(classifierType: "url", name: item.name, score: item.score, newScope: newScope)
-                                    })
-                                })
-                                .buttonStyle(BorderlessButtonStyle())
-                                .padding([.top, .bottom], 5)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onSuperDislike: { cache.appDelegate.toggleUrlClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url", name: item.name).rawValue, folderName: currentFolderName) }
+                                )
                             }
                         }
 
                         if !urlRegexes.isEmpty {
                             WrappingHStack(models: urlRegexes) { item in
-                                Button(action: {
-                                    cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName)
-                                }, label: {
-                                    TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "url_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "URL", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "url_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
                                         handleScopeChange(classifierType: "url_regex", name: item.name, score: item.score, newScope: newScope)
-                                    })
-                                })
-                                .buttonStyle(BorderlessButtonStyle())
-                                .padding([.top, .bottom], 5)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) },
+                                    onSuperDislike: { cache.appDelegate.toggleUrlRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "url_regex", name: item.name).rawValue, folderName: currentFolderName) }
+                                )
                             }
                         }
 
@@ -258,6 +264,184 @@ struct TrainerView: View {
         addingTitle = ""
     }
 
+    // MARK: - Classifier Row
+
+    func classifierRow(capsule: TrainerCapsule, score: Feed.Score, onTap: @escaping () -> Void, onDislike: @escaping () -> Void, onSuperDislike: @escaping () -> Void) -> some View {
+        Button(action: onTap) {
+            TrainerCapsule(score: capsule.score, header: capsule.header, image: capsule.image, value: capsule.value, count: capsule.count, isRegex: capsule.isRegex, showsScope: capsule.showsScope, scope: capsule.$scope, isPremiumArchive: capsule.isPremiumArchive, onScopeChanged: capsule.onScopeChanged, onDislike: onDislike, onSuperDislike: onSuperDislike)
+        }
+        .buttonStyle(BorderlessButtonStyle())
+        .padding([.top, .bottom], 5)
+    }
+
+    // MARK: - Explainer Banner
+
+    var superDislikeColor: Color {
+        Color.themed([0x6B0001, 0x6B0001, 0xFF6B6B, 0xFF6B6B])
+    }
+
+    var likeColor: Color {
+        Color.themed([0x34912E, 0x34912E, 0x7ECE72, 0x7ECE72])
+    }
+
+    var dislikeColor: Color {
+        Color.themed([0xA90103, 0xA90103, 0xE87272, 0xE87272])
+    }
+
+    var separatorTextColor: Color {
+        Color.themed([0xAAAAAA, 0xAAAAAA, 0x777777, 0x777777])
+    }
+
+    var explainerLineColor: Color {
+        Color.themed([0xCCCCCC, 0xCCCCCC, 0x555555, 0x555555])
+    }
+
+    var explainerBodyColor: Color {
+        Color.themed([0x777777, 0x777777, 0xAAAAAA, 0xAAAAAA])
+    }
+
+    var explainerBanner: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: { withAnimation { showExplainerExamples.toggle() } }) {
+                HStack(spacing: 0) {
+                    explainerHierarchyChain
+                    Spacer()
+                    Text("\u{24D8}")
+                        .font(.system(size: 14))
+                        .foregroundColor(separatorTextColor)
+                }
+                .padding(.vertical, 5)
+                .padding(.horizontal, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.themed([0x000000, 0x000000, 0xFFFFFF, 0xFFFFFF]).opacity(0.06))
+                )
+            }
+            .buttonStyle(PlainButtonStyle())
+
+            if showExplainerExamples {
+                explainerExamples
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+
+    var explainerHierarchyChain: some View {
+        HStack(spacing: 0) {
+            explainerPill("Super dislike", color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
+            explainerSeparator
+            explainerPill("Like", color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
+            explainerSeparator
+            explainerPill("Dislike", color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
+        }
+    }
+
+    func explainerPill(_ label: String, color: Color, bgOpacity: Double, icon: String, iconSize: CGFloat, isSuperDislike: Bool = false) -> some View {
+        HStack(spacing: 3) {
+            Text(label)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(color)
+            if isSuperDislike {
+                DoubleThumbsDownIcon(size: iconSize + 2, color: color)
+            } else {
+                Image(systemName: icon)
+                    .font(.system(size: iconSize))
+                    .foregroundColor(color)
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(color.opacity(bgOpacity))
+        )
+    }
+
+    var explainerSeparator: some View {
+        HStack(spacing: 3) {
+            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
+            Text("BEATS")
+                .font(.system(size: 7, weight: .medium))
+                .tracking(0.5)
+                .foregroundColor(separatorTextColor)
+            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
+        }
+        .padding(.horizontal, 1)
+    }
+
+    var explainerExamples: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Divider()
+                .padding(.top, 6)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Like beats any number of dislikes:")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(textColor)
+
+                HStack(spacing: 4) {
+                    examplePill("tech", color: dislikeColor, icon: "hand.thumbsdown.fill")
+                    examplePill("review", color: dislikeColor, icon: "hand.thumbsdown.fill")
+                    examplePill("John Gruber", color: likeColor, icon: "hand.thumbsup.fill")
+                }
+
+                HStack(spacing: 6) {
+                    Text("\u{2192}")
+                        .font(.system(size: 12))
+                        .foregroundColor(explainerBodyColor)
+                    Text("Story is shown (like wins)")
+                        .font(.system(size: 10, weight: .medium))
+                        .italic()
+                        .foregroundColor(likeColor)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Super dislike beats any number of likes:")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(textColor)
+
+                HStack(spacing: 4) {
+                    examplePill("John Gruber", color: likeColor, icon: "hand.thumbsup.fill")
+                    examplePill("Apple", color: likeColor, icon: "hand.thumbsup.fill")
+                    examplePill("sponsored", color: superDislikeColor, icon: "hand.thumbsdown.fill", isSuperDislike: true)
+                }
+
+                HStack(spacing: 6) {
+                    Text("\u{2192}")
+                        .font(.system(size: 12))
+                        .foregroundColor(explainerBodyColor)
+                    Text("Story is hidden (super dislike wins)")
+                        .font(.system(size: 10, weight: .medium))
+                        .italic()
+                        .foregroundColor(superDislikeColor)
+                }
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    func examplePill(_ label: String, color: Color, icon: String, isSuperDislike: Bool = false) -> some View {
+        HStack(spacing: 3) {
+            Text(label)
+                .font(.system(size: 10))
+                .foregroundColor(color)
+            if isSuperDislike {
+                DoubleThumbsDownIcon(size: 10, color: color)
+            } else {
+                Image(systemName: icon)
+                    .font(.system(size: 8))
+                    .foregroundColor(color)
+            }
+        }
+        .padding(.horizontal, 8)
+        .frame(height: 22)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(color.opacity(0.1))
+        )
+    }
+
     var feedOrStoryLowercase: String {
         return interaction.isStoryTrainer ? "story" : "site"
     }
@@ -297,13 +481,7 @@ struct TrainerView: View {
             return .none
         }
 
-        if score > 0 {
-            return .like
-        } else if score < 0 {
-            return .dislike
-        } else {
-            return .none
-        }
+        return Feed.Score(rawValue: score) ?? (score > 0 ? .like : score < 0 ? .dislike : .none)
     }
 
     var titleWords: [String] {
