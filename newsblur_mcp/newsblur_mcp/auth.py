@@ -14,6 +14,7 @@ import httpx
 from fastmcp.server.auth import TokenVerifier
 from fastmcp.server.auth.auth import AccessToken
 from fastmcp.server.auth.oauth_proxy import OAuthProxy
+from key_value.aio.stores.redis import RedisStore
 from pydantic import AnyHttpUrl
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ from newsblur_mcp.settings import (
     MCP_OAUTH_CLIENT_SECRET,
     MCP_OAUTH_INTERNAL_URL,
     MCP_OAUTH_UPSTREAM_URL,
+    MCP_REDIS_URL,
 )
 from newsblur_mcp.ui import patch_fastmcp_ui
 
@@ -96,6 +98,10 @@ class NewsBlurOAuthProvider(OAuthProxy):
 
         token_verifier = NewsBlurTokenVerifier(upstream_base_url=internal_url)
 
+        # Shared Redis store so client registrations survive restarts
+        # and are consistent across multiple MCP server instances
+        redis_store = RedisStore(url=MCP_REDIS_URL)
+
         super().__init__(
             # Browser redirect — user sees this URL
             upstream_authorization_endpoint=f"{upstream_url}/oauth/authorize/",
@@ -109,4 +115,5 @@ class NewsBlurOAuthProvider(OAuthProxy):
             require_authorization_consent=False,
             forward_pkce=False,
             valid_scopes=["read", "write", "mcp"],
+            client_storage=redis_store,
         )

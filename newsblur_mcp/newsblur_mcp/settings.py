@@ -14,6 +14,9 @@ MAX_STORIES_PER_PAGE = 50
 # HTTP client settings
 REQUEST_TIMEOUT = 30.0
 
+# Redis for shared OAuth client/token storage across MCP instances
+MCP_REDIS_URL = os.environ.get("MCP_REDIS_URL", "redis://localhost:6579/5")
+
 # OAuth settings for upstream Django OAuth2 proxy
 MCP_OAUTH_CLIENT_ID = os.environ.get("MCP_OAUTH_CLIENT_ID", "newsblur-mcp-server")
 MCP_OAUTH_CLIENT_SECRET = os.environ.get("MCP_OAUTH_CLIENT_SECRET", "newsblur-mcp-dev-secret")

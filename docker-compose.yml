@@ -188,6 +188,7 @@ services:
       - MCP_OAUTH_BASE_URL=http://localhost/mcp
       - MCP_OAUTH_UPSTREAM_URL=http://localhost
       - MCP_OAUTH_INTERNAL_URL=http://newsblur_web:8000
+      - MCP_REDIS_URL=redis://newsblur_db_redis:6579/5
     volumes:
       - ${PWD}/newsblur_mcp/newsblur_mcp:/srv/newsblur_mcp/newsblur_mcp
     depends_on:
