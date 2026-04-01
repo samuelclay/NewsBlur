@@ -49,6 +49,13 @@
     </div>
 
     <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Claude Code skill</h2>
+        <p class="NB-feature-detail-subtitle">Install the NewsBlur CLI skill to give Claude Code full knowledge of every command and flag. Claude will use the CLI on your behalf to read feeds, manage stories, and train classifiers.</p>
+        <pre class="NB-feature-detail-code">npx skills add samuelclay/newsblur-cli-skill</pre>
+        <p class="NB-cli-step-note">Source: <a href="https://github.com/samuelclay/newsblur-cli-skill">github.com/samuelclay/newsblur-cli-skill</a></p>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
         <h2>Read stories</h2>
         <p class="NB-feature-detail-subtitle">Get unread stories from feeds, folders, or everything at once.</p>
         <pre class="NB-feature-detail-code">newsblur stories list                          # unread stories
@@ -116,13 +123,6 @@ newsblur --server https://my-newsblur.example.com auth login
 # Script common workflows
 newsblur stories list --folder Tech --json | \
   jq -r '.items[] | "\(.title) - \(.feed_title)"'</pre>
-    </div>
-
-    <div class="NB-feature-detail-how NB-cli-commands-section">
-        <h2>Claude Code skill</h2>
-        <p class="NB-feature-detail-subtitle">Install the NewsBlur CLI skill to give Claude Code full knowledge of every command and flag. Claude will use the CLI on your behalf to read feeds, manage stories, and train classifiers.</p>
-        <pre class="NB-feature-detail-code">npx skills add samuelclay/NewsBlur@newsblur-cli</pre>
-        <p class="NB-cli-step-note">Source: <a href="https://github.com/samuelclay/NewsBlur/tree/main/skills/newsblur-cli">github.com/samuelclay/NewsBlur/skills/newsblur-cli</a></p>
     </div>
 
     <div class="NB-feature-detail-faq">

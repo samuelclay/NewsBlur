@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "newsblur-cli": {
+      "source": "samuelclay/newsblur-cli-skill",
+      "sourceType": "github",
+      "computedHash": "6609040841ce3bb0e3e6e1cd0d89306de72323f083666c3a7112d9d7589c16bb"
+    }
+  }
+}
