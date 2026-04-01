@@ -13,6 +13,24 @@ from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 console = Console(stderr=True)
 
 
+class ReadonlyError(Exception):
+    """Raised when a write operation is attempted in readonly mode."""
+    pass
+
+
+def require_writable() -> None:
+    """Raise ReadonlyError if readonly mode is enabled.
+
+    Call this at the top of any command that modifies data.
+    """
+    from newsblur_mcp.cli.auth import get_readonly
+
+    if get_readonly():
+        raise ReadonlyError(
+            "Readonly mode is enabled. Disable it with: newsblur auth readonly --off"
+        )
+
+
 def async_command(f):
     """Decorator that runs an async Typer command synchronously via asyncio.run().
 
@@ -51,6 +69,9 @@ def async_command(f):
         kwargs.pop("raw_output", None)
         try:
             return asyncio.run(f(*args, **kwargs))
+        except ReadonlyError as e:
+            console.print(f"[yellow]Readonly mode:[/yellow] {e}")
+            raise typer.Exit(1)
         except ArchiveRequiredError as e:
             console.print(f"[red]Premium Archive required:[/red] {e}")
             raise typer.Exit(1)

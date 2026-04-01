@@ -8,7 +8,7 @@ import typer
 from rich.console import Console
 
 from newsblur_mcp.cli.output import render
-from newsblur_mcp.cli.runner import async_command, get_authenticated_client
+from newsblur_mcp.cli.runner import async_command, get_authenticated_client, require_writable
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -34,6 +34,7 @@ async def mark_read(
     ),
 ):
     """Mark stories as read by hash, feed, or folder."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.actions import _mark_stories_read
@@ -61,6 +62,7 @@ async def save(
     notes: Optional[str] = typer.Option(None, "--notes", "-n", help="Personal notes about the story"),
 ):
     """Save/star a story for later reference."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.actions import _save_story
@@ -86,6 +88,7 @@ async def unsave(
     story_hash: str = typer.Argument(..., help="Story hash to unsave"),
 ):
     """Remove a story from saved/starred stories."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.actions import _unsave_story
@@ -109,6 +112,7 @@ async def share(
     ),
 ):
     """Share a story to your Blurblog."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.actions import _share_story

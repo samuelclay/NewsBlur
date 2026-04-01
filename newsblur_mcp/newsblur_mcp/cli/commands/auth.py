@@ -5,7 +5,7 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 
-from newsblur_mcp.cli.auth import delete_token, get_auth_status, login_flow
+from newsblur_mcp.cli.auth import delete_token, get_auth_status, get_readonly, login_flow, set_readonly
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -51,6 +51,47 @@ def logout(
     console.print("[green]Logged out.[/green] Stored credentials removed.")
 
 
+@app.command("readonly")
+def readonly(
+    on: bool = typer.Option(False, "--on", help="Enable readonly mode (block all write operations)"),
+    off: bool = typer.Option(False, "--off", help="Disable readonly mode (requires re-login)"),
+):
+    """Enable or disable readonly mode.
+
+    Readonly mode blocks all write operations (save, share, train, subscribe, etc.).
+    This is useful when giving an AI agent access to your NewsBlur without
+    allowing it to modify anything.
+
+    Disabling readonly mode requires re-authentication. This is intentional:
+    it prevents an AI agent from silently turning off readonly and making
+    changes without your knowledge.
+    """
+    if on and off:
+        console.print("[red]Cannot use both --on and --off.[/red]")
+        raise typer.Exit(1)
+    if not on and not off:
+        # Show current state
+        if get_readonly():
+            console.print("[yellow]Readonly mode is ON[/yellow]")
+            console.print("  Write operations are blocked.")
+            console.print("  Disable with: [bold]newsblur auth readonly --off[/bold]")
+        else:
+            console.print("Readonly mode is [green]off[/green]")
+            console.print("  Enable with: [bold]newsblur auth readonly --on[/bold]")
+        return
+
+    if on:
+        set_readonly(True)
+        console.print("[yellow]Readonly mode enabled.[/yellow]")
+        console.print("  All write operations are now blocked.")
+        console.print("  Your login session is still active for read operations.")
+    else:
+        set_readonly(False)
+        console.print("[green]Readonly mode disabled.[/green]")
+        console.print("  You have been logged out and must re-authenticate.")
+        console.print("  Run [bold]newsblur auth login[/bold] to log back in.")
+
+
 @app.command("status")
 def status():
     """Show current authentication status."""
@@ -73,6 +114,8 @@ def status():
             console.print("  Tier:     [dim]Free[/dim]")
         if "feed_count" in info:
             console.print(f"  Feeds:    {info['feed_count']}")
+        if get_readonly():
+            console.print("  Readonly: [yellow]ON[/yellow] (write operations blocked)")
         if info.get("server"):
             console.print(f"  Server:   {info['server']}")
         if info.get("expires_at"):

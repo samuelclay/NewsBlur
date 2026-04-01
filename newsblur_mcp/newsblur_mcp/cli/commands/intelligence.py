@@ -8,7 +8,7 @@ import typer
 from rich.console import Console
 
 from newsblur_mcp.cli.output import render, render_classifiers
-from newsblur_mcp.cli.runner import async_command, get_authenticated_client
+from newsblur_mcp.cli.runner import async_command, get_authenticated_client, require_writable
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -54,6 +54,7 @@ async def train_like(
     ),
 ):
     """Train the classifier to like (boost) stories matching criteria."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.classifiers import _train_classifier
@@ -96,6 +97,7 @@ async def train_dislike(
     ),
 ):
     """Train the classifier to dislike (suppress) stories matching criteria."""
+    require_writable()
     client = get_authenticated_client()
     try:
         from newsblur_mcp.tools.classifiers import _train_classifier
