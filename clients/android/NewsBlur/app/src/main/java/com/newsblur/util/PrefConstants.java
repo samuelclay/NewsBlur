@@ -99,6 +99,8 @@ public class PrefConstants {
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
 
     public static final String THEME = "theme";
+    public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
+    public static final String THEME_DARK_VARIANT = "theme_dark_variant";
     public enum ThemeValue {
         AUTO,
         LIGHT,

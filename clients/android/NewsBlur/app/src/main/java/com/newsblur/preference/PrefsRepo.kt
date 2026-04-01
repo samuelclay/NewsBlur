@@ -758,17 +758,32 @@ class PrefsRepo(
 
     fun setSelectedTheme(value: ThemeValue) {
         prefs.edit { putString(PrefConstants.THEME, value.name) }
+        // Track the most recently used light/dark variant for Auto mode
+        when (value) {
+            ThemeValue.LIGHT, ThemeValue.SEPIA ->
+                prefs.edit { putString(PrefConstants.THEME_LIGHT_VARIANT, value.name) }
+            ThemeValue.DARK, ThemeValue.BLACK ->
+                prefs.edit { putString(PrefConstants.THEME_DARK_VARIANT, value.name) }
+            ThemeValue.AUTO -> {} // no variant to track
+        }
     }
 
     /**
-     * Returns the effective theme, resolving [ThemeValue.AUTO] to
-     * [ThemeValue.DARK] or [ThemeValue.LIGHT] based on the system night mode.
+     * Returns the effective theme, resolving [ThemeValue.AUTO] to the user's
+     * preferred light variant (LIGHT or SEPIA) or dark variant (DARK or BLACK)
+     * based on the system night mode.
      */
     fun getResolvedTheme(context: Context): ThemeValue {
         val selected = getSelectedTheme()
         if (selected != ThemeValue.AUTO) return selected
         val nightFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) ThemeValue.DARK else ThemeValue.LIGHT
+        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) {
+            val darkVariant = prefs.getString(PrefConstants.THEME_DARK_VARIANT, ThemeValue.DARK.name)!!
+            ThemeValue.valueOf(darkVariant)
+        } else {
+            val lightVariant = prefs.getString(PrefConstants.THEME_LIGHT_VARIANT, ThemeValue.LIGHT.name)!!
+            ThemeValue.valueOf(lightVariant)
+        }
     }
 
     fun getStateFilter(): StateFilter =

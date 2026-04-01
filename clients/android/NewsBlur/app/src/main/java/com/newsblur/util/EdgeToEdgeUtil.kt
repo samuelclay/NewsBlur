@@ -28,14 +28,12 @@ object EdgeToEdgeUtil {
                 ThemeValue.DARK -> if (translucent) R.style.NewsBlurDarkTheme_Translucent else R.style.NewsBlurDarkTheme
                 ThemeValue.BLACK -> if (translucent) R.style.NewsBlurBlackTheme_Translucent else R.style.NewsBlurBlackTheme
                 ThemeValue.AUTO -> {
-                    val nightModeFlags = (
-                        this.resources.configuration.uiMode
-                            and Configuration.UI_MODE_NIGHT_MASK
-                    )
-                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                        if (translucent) R.style.NewsBlurDarkTheme_Translucent else R.style.NewsBlurDarkTheme
-                    } else {
-                        if (translucent) R.style.NewsBlurTheme_Translucent else R.style.NewsBlurTheme
+                    val resolved = resolveAutoTheme(this)
+                    when (resolved) {
+                        ThemeValue.SEPIA -> if (translucent) R.style.NewsBlurSepiaTheme_Translucent else R.style.NewsBlurSepiaTheme
+                        ThemeValue.BLACK -> if (translucent) R.style.NewsBlurBlackTheme_Translucent else R.style.NewsBlurBlackTheme
+                        ThemeValue.DARK -> if (translucent) R.style.NewsBlurDarkTheme_Translucent else R.style.NewsBlurDarkTheme
+                        else -> if (translucent) R.style.NewsBlurTheme_Translucent else R.style.NewsBlurTheme
                     }
                 }
             }
@@ -116,6 +114,18 @@ object EdgeToEdgeUtil {
             false
         }
 
+    private fun resolveAutoTheme(context: Context): ThemeValue {
+        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+        val nightFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) {
+            val name = prefs.getString(PrefConstants.THEME_DARK_VARIANT, ThemeValue.DARK.name)!!
+            ThemeValue.valueOf(name)
+        } else {
+            val name = prefs.getString(PrefConstants.THEME_LIGHT_VARIANT, ThemeValue.LIGHT.name)!!
+            ThemeValue.valueOf(name)
+        }
+    }
+
     private fun shouldUseLightIcons(
         context: Context,
         theme: ThemeValue,
@@ -124,8 +134,8 @@ object EdgeToEdgeUtil {
             ThemeValue.LIGHT, ThemeValue.SEPIA -> true
             ThemeValue.DARK, ThemeValue.BLACK -> false
             ThemeValue.AUTO -> {
-                val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-                nightMode != Configuration.UI_MODE_NIGHT_YES
+                val resolved = resolveAutoTheme(context)
+                resolved == ThemeValue.LIGHT || resolved == ThemeValue.SEPIA
             }
         }
 
