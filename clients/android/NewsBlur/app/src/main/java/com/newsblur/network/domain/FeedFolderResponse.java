@@ -45,6 +45,7 @@ public class FeedFolderResponse {
     public long premiumExpire;
     public boolean isStaff;
 	public int starredCount;
+    public Boolean storyClustering;
 
     public String shareExtToken;
 	
@@ -71,6 +72,12 @@ public class FeedFolderResponse {
             }
             if (profile.has("is_pro")) {
                 this.isPro = profile.get("is_pro").getAsBoolean();
+            }
+            if (profile.has("preferences")) {
+                JsonObject preferences = parsePreferences(profile.get("preferences"));
+                if (preferences != null && preferences.has("story_clustering")) {
+                    this.storyClustering = preferences.get("story_clustering").getAsBoolean();
+                }
             }
         }
 
@@ -168,6 +175,29 @@ public class FeedFolderResponse {
 
         parseTime = System.currentTimeMillis() - startTime;
 	}
+
+    private JsonObject parsePreferences(JsonElement preferencesElement) {
+        if (preferencesElement == null || preferencesElement.isJsonNull()) {
+            return null;
+        }
+
+        if (preferencesElement.isJsonObject()) {
+            return preferencesElement.getAsJsonObject();
+        }
+
+        if (preferencesElement.isJsonPrimitive() && preferencesElement.getAsJsonPrimitive().isString()) {
+            try {
+                JsonElement parsedElement = JsonParser.parseString(preferencesElement.getAsString());
+                if (parsedElement != null && parsedElement.isJsonObject()) {
+                    return parsedElement.getAsJsonObject();
+                }
+            } catch (Exception e) {
+                Log.w(this.getClass().getName(), "Could not parse user preferences JSON", e);
+            }
+        }
+
+        return null;
+    }
 	
 	/**
      * Parses a folder, which is a list of feeds and/or more folders.

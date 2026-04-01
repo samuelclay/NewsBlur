@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.compose.SettingsScreen
 import com.newsblur.compose.SettingsUiState
@@ -28,11 +29,15 @@ import com.newsblur.compose.buildSettingsUiState
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -49,6 +54,9 @@ class SettingsFragment : Fragment() {
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+
+    @Inject
+    lateinit var userApi: UserApi
 
     private var uiState by mutableStateOf(SettingsUiState())
 
@@ -116,6 +124,10 @@ class SettingsFragment : Fragment() {
             handleNotificationsPreferenceChange(value)
             return
         }
+        if (key == PrefConstants.STORY_CLUSTERING) {
+            saveStoryClusteringPreference(value)
+            return
+        }
         prefsRepo.putBoolean(key, value)
         refreshUiState()
     }
@@ -153,6 +165,31 @@ class SettingsFragment : Fragment() {
     private fun updateNotificationsPreference(enabled: Boolean) {
         prefsRepo.putBoolean(PrefConstants.ENABLE_NOTIFICATIONS, enabled)
         refreshUiState()
+    }
+
+    private fun saveStoryClusteringPreference(enabled: Boolean) {
+        val previousValue = prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true)
+        prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, enabled)
+        refreshUiState()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val saved =
+                withContext(Dispatchers.IO) {
+                    userApi.setBooleanPreference(PrefConstants.STORY_CLUSTERING, enabled)
+                }
+
+            if (saved) {
+                syncServiceState.resetFetchState(syncServiceState.lastFeedSet)
+                syncServiceState.forceFeedsFolders()
+                triggerSync(requireContext())
+            } else {
+                prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, previousValue)
+                refreshUiState()
+                Toast
+                    .makeText(requireContext(), R.string.settings_story_clustering_save_failed, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
     private fun showNotificationRationaleDialog() {

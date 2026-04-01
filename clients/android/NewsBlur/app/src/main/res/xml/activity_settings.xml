@@ -57,6 +57,10 @@
             android:defaultValue="true"
             android:key="enable_row_infrequent_stories"
             android:title="@string/settings_enable_row_infrequent_stories" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_daily_briefing"
+            android:title="@string/settings_enable_row_daily_briefing" />
     </PreferenceCategory>
 
     <PreferenceCategory 
@@ -96,6 +100,11 @@
             android:key="pref_mark_read_on_scroll"
             android:title="@string/settings_mark_read_on_feed_scroll"
             android:summary="@string/settings_mark_read_on_feed_scroll_sum" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="story_clustering"
+            android:title="@string/settings_story_clustering"
+            android:summary="@string/settings_story_clustering_summary" />
         <ListPreference
             android:key="pref_show_content_preview_style"
             android:title="@string/settings_content_preview"

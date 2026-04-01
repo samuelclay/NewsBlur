@@ -294,7 +294,7 @@ public class ItemSetFragment extends NbFragment {
      * some info about the story list when it is ready.
      */
     public void storyThawCompleted(int indexOfLastUnread) {
-        this.indexOfLastUnread = indexOfLastUnread;
+        this.indexOfLastUnread = (indexOfLastUnread >= 0) ? adapter.getDisplayPositionForStoryIndex(indexOfLastUnread) : -1;
         this.fullFlingComplete = false;
         // we don't actually calculate list speed until it has some stories
         setupAnimSpeeds();
@@ -305,9 +305,10 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void scrollToPosition(int position) {
+        int layoutPosition = adapter.getDisplayPositionForStoryIndex(position);
         int layoutTotalPositions = layoutManager.getItemCount() - 1;
-        if (position > 0 && position <= layoutTotalPositions) {
-            layoutManager.scrollToPosition(position);
+        if (layoutPosition > 0 && layoutPosition <= layoutTotalPositions) {
+            layoutManager.scrollToPosition(layoutPosition);
         }
     }
 

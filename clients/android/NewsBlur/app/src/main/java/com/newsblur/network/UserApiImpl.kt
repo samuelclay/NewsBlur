@@ -113,6 +113,19 @@ class UserApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
+    override suspend fun setBooleanPreference(
+        key: String,
+        value: Boolean,
+    ): Boolean {
+        val values =
+            ContentValues().apply {
+                put(key, value.toString())
+            }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_PREFERENCE)
+        val response: APIResponse = networkClient.post(urlString, values)
+        return !response.isError
+    }
+
     override suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse? {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_IMPORT_OPML)
         val response: APIResponse = networkClient.post(urlString, requestBody)

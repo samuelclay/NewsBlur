@@ -213,6 +213,54 @@
                     android:layout_marginTop="12dp"
                     android:scrollbars="none" />
 
+                <View
+                    android:id="@+id/reading_story_cluster_divider"
+                    style="?android:divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/reading_story_cluster_container"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/reading_story_cluster_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05"
+                        android:paddingStart="16dp"
+                        android:paddingBottom="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/reading_story_cluster_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/reading_story_cluster_more"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
                 <include layout="@layout/reading_item_actions" />
 
             </LinearLayout>

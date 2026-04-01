@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 5;
+	static final int VERSION = 6;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);

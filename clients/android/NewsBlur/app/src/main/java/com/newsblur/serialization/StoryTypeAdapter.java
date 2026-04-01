@@ -51,10 +51,15 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         if (story.friendsComments == null) story.friendsComments = new Comment[]{};
         if (story.friendsShares == null) story.friendsShares = new Comment[]{};
         if (story.imageUrls == null) story.imageUrls = new String[]{};
+        if (story.clusterStories == null) story.clusterStories = new Story.ClusterStory[]{};
 
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;
         story.starredTimestamp = story.starredTimestamp * 1000;
+        for (Story.ClusterStory clusterStory : story.clusterStories) {
+            if (clusterStory == null) continue;
+            clusterStory.timestamp = clusterStory.timestamp * 1000;
+        }
 
         // due to android.os.TransactionTooLargeException and
         // android.database.sqlite.SQLiteBlobTooBigException

@@ -83,6 +83,7 @@ public class APIConstants {
     public static final String PATH_DISCOVER_SIMILAR = "/discover/similar/";
     public static final String PATH_DISCOVER_SIMILAR_FEEDS = "/discover/similar/feeds/";
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
+    public static final String PATH_SET_PREFERENCE = "/profile/set_preference";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
     public static final String PATH_EXPORT_OPML = "/import/opml_export";

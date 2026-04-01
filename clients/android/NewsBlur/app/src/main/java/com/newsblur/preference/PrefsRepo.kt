@@ -436,6 +436,8 @@ class PrefsRepo(
 
     fun isEnableRowInfrequent() = prefs.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true)
 
+    fun isEnableRowDailyBriefing() = prefs.getBoolean(PrefConstants.ENABLE_ROW_DAILY_BRIEFING, true)
+
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
 
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)

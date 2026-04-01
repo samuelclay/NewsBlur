@@ -30,5 +30,10 @@ interface UserApi {
         productId: String?,
     ): NewsBlurResponse?
 
+    suspend fun setBooleanPreference(
+        key: String,
+        value: Boolean,
+    ): Boolean
+
     suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse?
 }

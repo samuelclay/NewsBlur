@@ -100,6 +100,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
+    public static final String EXTRA_AUTO_OPEN_STORY = "auto_open_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     public static final String EXTRA_SESSION_DATA = "session_data";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
@@ -180,7 +181,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false);
-        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
+        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
+            getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             launchReadingActivity(fs, hash);
         } else if (prefsRepo.isAutoOpenFirstUnread()) {

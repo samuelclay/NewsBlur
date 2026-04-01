@@ -476,6 +476,8 @@ people together to talk about the world.</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
     <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
     <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories folder</string>
+    <string name="settings_enable_row_daily_briefing">Show Daily Briefing</string>
+    <string name="settings_enable_row_daily_briefing_sum">Show the Daily Briefing folder</string>
 
     <string name="settings_cat_story_list">Story List</string>
     <string name="settings_cat_story_layout">Story Layout</string>
@@ -550,6 +552,14 @@ people together to talk about the world.</string>
         <item quantity="one">%s story/mo</item>
         <item quantity="other">%s stories/mo</item>
     </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="one">Also published by %d site</item>
+        <item quantity="other">Also published by %d sites</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="one">+ %d more site</item>
+        <item quantity="other">+ %d more sites</item>
+    </plurals>
     <string-array name="mark_newer_read_options">
         <item>Mark newer stories read</item>
         <item>Cancel</item>
@@ -560,6 +570,9 @@ people together to talk about the world.</string>
 
     <string name="settings_mark_read_on_feed_scroll">Mark story titles read on scroll</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
+    <string name="settings_story_clustering">Cluster related stories</string>
+    <string name="settings_story_clustering_summary">Show grouped duplicates in story titles and the reading view</string>
+    <string name="settings_story_clustering_save_failed">Couldn\'t save story clustering preference</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
     <string name="settings_mark_story_read_title">Mark stories read</string>
@@ -630,6 +643,7 @@ people together to talk about the world.</string>
     <string name="settings_when_opening_site_title">When opening a site</string>
     <string name="settings_when_opening_site_stories">Show stories</string>
     <string name="settings_when_opening_site_first_story">Open first story</string>
+    <string name="story_cluster_upgrade_archive">Premium Archive</string>
 
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>

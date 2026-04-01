@@ -18,6 +18,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -66,10 +69,15 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadingTextSize
 import com.newsblur.util.StoryChangesState
+import com.newsblur.util.StoryClusterDisplayDecision
+import com.newsblur.util.StoryClusterNavigationDecision
+import com.newsblur.util.StoryClusterNavigationTarget
+import com.newsblur.util.StoryClusterThemeStyle
 import com.newsblur.util.StoryUtil
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import com.newsblur.view.StoryThumbnailView
 import com.newsblur.viewModel.ReadingItemViewModel
 import com.newsblur.web.WebviewActionType
 import dagger.hilt.android.AndroidEntryPoint
@@ -144,6 +152,7 @@ class ReadingItemFragment :
     private var contentHash = 0
     private val storyHighlights = mutableSetOf<String>()
     private var hasCompletedInitialStoryRender = false
+    private val clusterThumbnailLoader by lazy(LazyThreadSafetyMode.NONE) { ImageLoader.asThumbnailLoader(requireContext(), storyImageCache) }
 
     // these three flags are progressively set by async callbacks and unioned
     // to set isLoadFinished, when we trigger any final UI tricks.
@@ -800,6 +809,7 @@ class ReadingItemFragment :
         binding.readingItemTitle.setOnClickListener { openBrowser() }
 
         setupTagsAndIntel()
+        setupClusterStories()
     }
 
     private fun setupTagsAndIntel() {
@@ -900,6 +910,245 @@ class ReadingItemFragment :
 
         binding.readingItemUserTags.visibility = View.VISIBLE
     }
+
+    private fun setupClusterStories() {
+        binding.readingStoryClusterList.removeAllViews()
+
+        val currentStory = story
+        if (currentStory == null || !StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)) {
+            hideClusterStories()
+            return
+        }
+
+        val subscribedFeedIds = dbHelper.getAllActiveFeeds()
+        val allClusterStories =
+            StoryClusterDisplayDecision.visibleClusterStories(
+                clusterStories = currentStory.clusterStories,
+                subscribedFeedIds = subscribedFeedIds,
+                isPremiumArchive = true,
+            )
+        if (allClusterStories.isEmpty()) {
+            hideClusterStories()
+            return
+        }
+
+        val visibleClusterStories =
+            StoryClusterDisplayDecision.visibleClusterStories(
+                clusterStories = currentStory.clusterStories,
+                subscribedFeedIds = subscribedFeedIds,
+                isPremiumArchive = isArchiveUser(),
+            )
+        val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
+
+        binding.readingStoryClusterDivider.setBackgroundColor(palette.detailSectionBorderColor)
+        binding.readingStoryClusterContainer.setBackgroundColor(palette.detailSectionColor)
+        binding.readingStoryClusterTitle.setTextColor(palette.metaColor)
+
+        binding.readingStoryClusterTitle.text =
+            resources.getQuantityString(R.plurals.story_cluster_header, allClusterStories.size, allClusterStories.size)
+
+        visibleClusterStories.forEachIndexed { index, clusterStory ->
+            val clusterView =
+                layoutInflater.inflate(R.layout.view_story_cluster_item, binding.readingStoryClusterList, false)
+
+            bindClusterItemView(
+                clusterView = clusterView,
+                clusterStory = clusterStory,
+                showDivider = index > 0,
+                maxTitleLines = 1,
+                onClick = {
+                    when (
+                        val target =
+                            StoryClusterNavigationDecision.resolve(
+                                currentFeedSet = fs,
+                                currentFolderName = feedUtils.currentFolderName,
+                                targetFeedId = clusterStory.feedId,
+                                storyHash = clusterStory.storyHash,
+                            )
+                    ) {
+                        is StoryClusterNavigationTarget.DirectReading -> {
+                            UIUtils.startReadingActivity(requireContext(), target.feedSet, target.storyHash)
+                        }
+
+                        is StoryClusterNavigationTarget.FeedListReading -> {
+                            val feed = feedUtils.getFeed(clusterStory.feedId)
+                            if (feed == null) {
+                                UIUtils.startReadingActivity(requireContext(), target.feedSet, target.storyHash)
+                                return@bindClusterItemView
+                            }
+                            feedUtils.currentFolderName =
+                                if (target.folderName == AppConstants.ROOT_FOLDER) {
+                                    null
+                                } else {
+                                    target.folderName
+                                }
+                            FeedItemsList.startStoryActivity(requireContext(), target.feedSet, feed, target.folderName, target.storyHash)
+                        }
+
+                        null -> Unit
+                    }
+                },
+            )
+
+            binding.readingStoryClusterList.addView(clusterView)
+        }
+
+        val hiddenCount = allClusterStories.size - visibleClusterStories.size
+        if (!isArchiveUser() && hiddenCount > 0) {
+            binding.readingStoryClusterMore.text =
+                resources.getQuantityString(R.plurals.story_cluster_more_sites, hiddenCount, hiddenCount) +
+                    "  •  " +
+                    getString(R.string.story_cluster_upgrade_archive)
+            binding.readingStoryClusterMore.visibility = View.VISIBLE
+            binding.readingStoryClusterMore.setBackground(
+                StoryClusterThemeStyle.roundedBackground(
+                    palette.upgradePillColor,
+                    UIUtils.dp2px(requireContext(), 999).toFloat(),
+                ),
+            )
+            binding.readingStoryClusterMore.setTextColor(palette.upgradeTextColor)
+            val horizontalPadding = UIUtils.dp2px(requireContext(), 10)
+            val verticalPadding = UIUtils.dp2px(requireContext(), 6)
+            binding.readingStoryClusterMore.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+            binding.readingStoryClusterMore.setOnClickListener {
+                UIUtils.startSubscriptionActivity(requireContext())
+            }
+        } else {
+            binding.readingStoryClusterMore.visibility = View.GONE
+            binding.readingStoryClusterMore.setOnClickListener(null)
+        }
+
+        binding.readingStoryClusterDivider.visibility = View.VISIBLE
+        binding.readingStoryClusterContainer.visibility = View.VISIBLE
+    }
+
+    private fun hideClusterStories() {
+        binding.readingStoryClusterDivider.visibility = View.GONE
+        binding.readingStoryClusterContainer.visibility = View.GONE
+        binding.readingStoryClusterMore.visibility = View.GONE
+        binding.readingStoryClusterMore.setOnClickListener(null)
+    }
+
+    private fun bindClusterItemView(
+        clusterView: View,
+        clusterStory: Story.ClusterStory,
+        showDivider: Boolean,
+        maxTitleLines: Int,
+        onClick: () -> Unit,
+    ) {
+        val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
+        val rowView: View = clusterView.findViewById(R.id.story_cluster_detail_row)
+        val dividerView: View = clusterView.findViewById(R.id.story_cluster_detail_divider)
+        val outerBar: View = clusterView.findViewById(R.id.story_cluster_bar_outer)
+        val innerBar: View = clusterView.findViewById(R.id.story_cluster_bar_inner)
+        val sentimentView: ImageView = clusterView.findViewById(R.id.story_cluster_sentiment)
+        val feedIconView: ImageView = clusterView.findViewById(R.id.story_cluster_feed_icon)
+        val previewView: StoryThumbnailView = clusterView.findViewById(R.id.story_cluster_preview)
+        val dateView: TextView = clusterView.findViewById(R.id.story_cluster_date)
+        val titleView: TextView = clusterView.findViewById(R.id.story_cluster_title)
+
+        sentimentView.setImageResource(StoryClusterDisplayDecision.indicatorDrawableRes(clusterStory.score))
+
+        val feed = feedUtils.getFeed(clusterStory.feedId)
+        rowView.setBackgroundColor(palette.detailSectionColor)
+        dividerView.visibility = if (showDivider) View.VISIBLE else View.GONE
+        dividerView.setBackgroundColor(palette.detailRowBorderColor)
+        outerBar.setBackgroundColor(UIUtils.decodeColourValue(feed?.faviconColor, Color.GRAY))
+        innerBar.setBackgroundColor(UIUtils.decodeColourValue(feed?.faviconFade, Color.LTGRAY))
+
+        val sentimentSize = if (clusterStory.score == 0) 10 else 12
+        sentimentView.layoutParams =
+            sentimentView.layoutParams.apply {
+                width = UIUtils.dp2px(requireContext(), sentimentSize)
+                height = UIUtils.dp2px(requireContext(), sentimentSize)
+            }
+
+        dateView.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        dateView.setTextColor(if (clusterStory.read) palette.readMetaColor else palette.metaColor)
+
+        titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")
+        titleView.maxLines = maxTitleLines
+        titleView.setTextColor(if (clusterStory.read) palette.readTitleColor else palette.titleColor)
+
+        bindClusterFeedIcon(feed, feedIconView)
+        bindClusterPreview(
+            previewView = previewView,
+            titleView = titleView,
+            dateView = dateView,
+            thumbnailUrl = clusterStory.thumbnailUrl ?: feedUtils.getStoryThumbnailUrl(clusterStory.storyHash),
+            isRead = clusterStory.read,
+        )
+
+        outerBar.alpha = if (clusterStory.read) 0.15f else 1.0f
+        innerBar.alpha = if (clusterStory.read) 0.15f else 1.0f
+        sentimentView.imageAlpha = if (clusterStory.read) 38 else 255
+        feedIconView.imageAlpha = if (clusterStory.read) 102 else 255
+        dateView.alpha = 1.0f
+        titleView.alpha = 1.0f
+
+        clusterView.setOnClickListener { onClick() }
+    }
+
+    private fun bindClusterPreview(
+        previewView: StoryThumbnailView,
+        titleView: TextView,
+        dateView: TextView,
+        thumbnailUrl: String?,
+        isRead: Boolean,
+    ) {
+        if (thumbnailUrl.isNullOrBlank()) {
+            updateClusterTitleEndAnchor(titleView, dateView.id)
+            previewView.visibility = View.GONE
+            previewView.setImageDrawable(null)
+            return
+        }
+
+        updateClusterTitleEndAnchor(titleView, previewView.id)
+        previewView.visibility = View.VISIBLE
+        previewView.imageAlpha = if (isRead) 115 else 255
+        previewView.setImageDrawable(null)
+        clusterThumbnailLoader.displayImage(
+            thumbnailUrl,
+            previewView,
+            UIUtils.dp2px(requireContext(), 48),
+            true,
+        )
+    }
+
+    private fun updateClusterTitleEndAnchor(
+        titleView: TextView,
+        anchorId: Int,
+    ) {
+        val params = titleView.layoutParams as RelativeLayout.LayoutParams
+        params.addRule(RelativeLayout.START_OF, anchorId)
+        titleView.layoutParams = params
+    }
+
+    private fun bindClusterFeedIcon(
+        feed: com.newsblur.domain.Feed?,
+        target: ImageView,
+    ) {
+        if (feed == null) {
+            target.visibility = View.GONE
+            return
+        }
+
+        val customFeedIcon: CustomIcon? = BlurDatabaseHelper.getFeedIcon(feed.feedId)
+        if (customFeedIcon != null) {
+            val iconSize = UIUtils.dp2px(requireContext(), 16)
+            val iconBitmap = CustomIconRenderer.renderIcon(requireContext(), customFeedIcon, iconSize)
+            if (iconBitmap != null) {
+                target.setImageBitmap(iconBitmap)
+            } else {
+                iconLoader.displayImage(feed.faviconUrl, target)
+            }
+        } else {
+            iconLoader.displayImage(feed.faviconUrl, target)
+        }
+        target.visibility = View.VISIBLE
+    }
+
+    private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
     private fun createTagChip(
         tag: String,

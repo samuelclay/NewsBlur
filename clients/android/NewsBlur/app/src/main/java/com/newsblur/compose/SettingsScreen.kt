@@ -91,6 +91,7 @@ import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.StoryContentPreviewStyle
+import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.VolumeKeyNavigation
@@ -106,6 +107,7 @@ data class SettingsUiState(
     val feedListOrder: String = FeedListOrder.ALPHABETICAL.name,
     val enableRowGlobalShared: Boolean = true,
     val enableRowInfrequentStories: Boolean = true,
+    val enableRowDailyBriefing: Boolean = true,
     val defaultStoryOrder: String = StoryOrder.NEWEST.name,
     val defaultReadFilter: String = ReadFilter.ALL.name,
     val markAllReadConfirmation: String = MarkAllReadConfirmation.FOLDER_ONLY.name,
@@ -113,6 +115,7 @@ data class SettingsUiState(
     val loadNextOnMarkRead: Boolean = false,
     val autoOpenFirstUnread: Boolean = false,
     val markReadOnScroll: Boolean = false,
+    val storyClustering: Boolean = true,
     val storyContentPreviewStyle: String = StoryContentPreviewStyle.MEDIUM.name,
     val thumbnailStyle: String = ThumbnailStyle.RIGHT_LARGE.name,
     val markStoryReadBehavior: String = MarkStoryReadBehavior.IMMEDIATELY.name,
@@ -148,6 +151,7 @@ fun buildSettingsUiState(
         feedListOrder = prefsRepo.getFeedListOrder().name,
         enableRowGlobalShared = prefsRepo.isEnableRowGlobalShared(),
         enableRowInfrequentStories = prefsRepo.isEnableRowInfrequent(),
+        enableRowDailyBriefing = prefsRepo.isEnableRowDailyBriefing(),
         defaultStoryOrder = prefsRepo.getDefaultStoryOrder().name,
         defaultReadFilter =
             sharedPreferences.getString(
@@ -159,6 +163,7 @@ fun buildSettingsUiState(
         loadNextOnMarkRead = prefsRepo.loadNextOnMarkRead(),
         autoOpenFirstUnread = prefsRepo.isAutoOpenFirstUnread(),
         markReadOnScroll = prefsRepo.isMarkReadOnFeedScroll(),
+        storyClustering = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
         storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle().name,
         thumbnailStyle = prefsRepo.getThumbnailStyle().name,
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior().name,
@@ -473,6 +478,16 @@ fun SettingsScreen(
                 palette = palette,
                 onCheckedChange = { onBooleanChanged(PrefConstants.STORIES_MARK_READ_ON_SCROLL, it) },
             )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_story_clustering),
+                icon = Icons.Rounded.Article,
+                iconColor = NewsblurIndigo,
+                checked = state.storyClustering,
+                subtitle = stringResource(R.string.settings_story_clustering_summary),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.STORY_CLUSTERING, it) },
+            )
         }
 
         SettingsSection(
@@ -536,6 +551,16 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.settings_enable_row_infrequent_stories_sum),
                 palette = palette,
                 onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_enable_row_daily_briefing),
+                icon = Icons.Rounded.AutoAwesome,
+                iconColor = NewsblurOrange,
+                checked = state.enableRowDailyBriefing,
+                subtitle = stringResource(R.string.settings_enable_row_daily_briefing_sum),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_DAILY_BRIEFING, it) },
             )
         }
 

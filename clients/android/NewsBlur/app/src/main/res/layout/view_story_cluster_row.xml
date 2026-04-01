@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/story_cluster_row_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/story_cluster_row_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="10dp"
+        android:paddingEnd="12dp"
+        android:clipToOutline="true">
+
+        <View
+            android:id="@+id/story_cluster_row_bar_outer"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true" />
+
+        <View
+            android:id="@+id/story_cluster_row_bar_inner"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/story_cluster_row_bar_outer" />
+
+        <ImageView
+            android:id="@+id/story_cluster_row_sentiment"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="11dp" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/story_cluster_row_feed_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="3dp"
+            android:layout_toEndOf="@id/story_cluster_row_sentiment"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
+
+        <TextView
+            android:id="@+id/story_cluster_row_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textSize="11sp"
+            android:textStyle="normal" />
+
+        <com.newsblur.view.StoryThumbnailView
+            android:id="@+id/story_cluster_row_preview"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="6dp"
+            android:layout_toStartOf="@id/story_cluster_row_date"
+            android:background="@drawable/shape_rounded_corners_4dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/story_cluster_row_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/story_cluster_row_feed_icon"
+            android:layout_toStartOf="@id/story_cluster_row_preview"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="normal" />
+
+    </RelativeLayout>
+
+</FrameLayout>

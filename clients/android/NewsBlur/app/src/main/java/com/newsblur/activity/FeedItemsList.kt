@@ -305,6 +305,26 @@ class FeedItemsList : ItemsList() {
         }
 
         @JvmStatic
+        fun startStoryActivity(
+            context: Context,
+            feedSet: FeedSet,
+            feed: Feed?,
+            folderName: String?,
+            storyHash: String,
+        ) {
+            Intent(context, FeedItemsList::class.java)
+                .apply {
+                    putExtra(EXTRA_FEED, feed)
+                    putExtra(EXTRA_FOLDER_NAME, folderName)
+                    putExtra(EXTRA_FEED_SET, feedSet)
+                    putExtra(EXTRA_STORY_HASH, storyHash)
+                    putExtra(EXTRA_AUTO_OPEN_STORY, true)
+                }.also { intent ->
+                    context.startActivity(intent)
+                }
+        }
+
+        @JvmStatic
         fun startTryFeedActivity(
             context: Context,
             feed: Feed,

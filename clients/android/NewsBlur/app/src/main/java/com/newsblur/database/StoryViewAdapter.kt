@@ -47,6 +47,10 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
+import com.newsblur.util.StoryClusterDisplayDecision
+import com.newsblur.util.StoryClusterNavigationDecision
+import com.newsblur.util.StoryClusterNavigationTarget
+import com.newsblur.util.StoryClusterThemeStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.StoryUtil.getNewestStoryTimestamp
@@ -86,6 +90,8 @@ class StoryViewAdapter(
     private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
+    private val displayItems = mutableListOf<DisplayItem>()
+    private val storyDisplayPositions = mutableListOf<Int>()
 
     private var oldScrollState: Parcelable? = null
     private val userId: String?
@@ -104,6 +110,8 @@ class StoryViewAdapter(
     private var spacingStyle: SpacingStyle
     private val storyOrder: StoryOrder
     private val prefsRepo: PrefsRepo
+    private var activeFeedIds: Set<String>? = null
+    private val clusterThumbnailUrls = mutableMapOf<String, String?>()
 
     @Volatile
     private var lastLoadId: Long = -1L
@@ -203,22 +211,21 @@ class StoryViewAdapter(
     override fun getItemCount(): Int = storyCount + footerViews.size
 
     val storyCount: Int
-        get() =
-            if (fs != null && UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-                min(3.0, stories.size.toDouble()).toInt()
-            } else {
-                stories.size
-            }
+        get() = visibleDisplayItemCount()
 
     val rawStoryCount: Int
         get() = stories.size
 
     override fun getItemViewType(position: Int): Int {
         if (position >= storyCount) return VIEW_TYPE_FOOTER
-        return if (listStyle == StoryListStyle.LIST) {
-            VIEW_TYPE_STORY_ROW
-        } else {
-            VIEW_TYPE_STORY_TILE
+        return when (displayItems.getOrNull(position)) {
+            is DisplayItem.ClusterRow -> VIEW_TYPE_CLUSTER_ROW
+            else ->
+                if (listStyle == StoryListStyle.LIST) {
+                    VIEW_TYPE_STORY_ROW
+                } else {
+                    VIEW_TYPE_STORY_TILE
+                }
         }
     }
 
@@ -227,8 +234,7 @@ class StoryViewAdapter(
             return (footerViews[position - storyCount].hashCode().toLong())
         }
 
-        if (position >= stories.size || position < 0) return 0
-        return stories[position].storyHash.hashCode().toLong()
+        return displayItems.getOrNull(position)?.stableId ?: 0L
     }
 
     fun submitStories(
@@ -239,6 +245,8 @@ class StoryViewAdapter(
         skipBackFillingStories: Boolean,
     ) {
         lastLoadId = loadId
+        activeFeedIds = null
+        clusterThumbnailUrls.clear()
 
         oldScrollState?.let { this.oldScrollState = it }
 
@@ -246,10 +254,11 @@ class StoryViewAdapter(
         diffJob =
             adapterScope.launch {
                 val filtered = applySkipBackfill(incoming = stories, skip = skipBackFillingStories)
+                val newDisplayItems = buildDisplayItems(filtered)
 
                 val diff =
                     try {
-                        DiffUtil.calculateDiff(StoryListDiffer(filtered), false)
+                        DiffUtil.calculateDiff(DisplayItemDiffer(newDisplayItems), false)
                     } catch (e: Exception) {
                         Log.e(this@StoryViewAdapter, "error diffing: ${e.message}", e)
                         return@launch
@@ -263,6 +272,9 @@ class StoryViewAdapter(
                     synchronized(this@StoryViewAdapter) {
                         this@StoryViewAdapter.stories.clear()
                         this@StoryViewAdapter.stories.addAll(filtered)
+                        this@StoryViewAdapter.displayItems.clear()
+                        this@StoryViewAdapter.displayItems.addAll(newDisplayItems)
+                        rebuildStoryDisplayPositions()
                         diff.dispatchUpdatesTo(this@StoryViewAdapter)
                         val lm = rv.layoutManager
                         if (lm != null) {
@@ -276,6 +288,28 @@ class StoryViewAdapter(
                     }
                 }
             }
+    }
+
+    private fun buildDisplayItems(stories: List<Story>): List<DisplayItem> {
+        val showClusterRows = listStyle == StoryListStyle.LIST && StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)
+        val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
+        val isArchiveUser = isArchiveUser()
+
+        return buildList {
+            stories.forEachIndexed { storyIndex, story ->
+                add(DisplayItem.StoryRow(story, storyIndex))
+
+                if (!showClusterRows || story.isBriefingSummary) return@forEachIndexed
+
+                StoryClusterDisplayDecision.visibleClusterStories(
+                    clusterStories = story.clusterStories,
+                    subscribedFeedIds = subscribedFeedIds,
+                    isPremiumArchive = isArchiveUser,
+                ).forEach { clusterStory ->
+                    add(DisplayItem.ClusterRow(clusterStory, storyIndex, story.storyHash))
+                }
+            }
+        }
     }
 
     private fun applySkipBackfill(
@@ -300,31 +334,39 @@ class StoryViewAdapter(
         }
     }
 
-    private inner class StoryListDiffer(
-        private val newStories: List<Story>,
+    private inner class DisplayItemDiffer(
+        private val newDisplayItems: List<DisplayItem>,
     ) : DiffUtil.Callback() {
         override fun areContentsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
-        ): Boolean = newStories[newItemPosition].isChanged(stories[oldItemPosition])
+        ): Boolean = newDisplayItems[newItemPosition].contentMatches(displayItems[oldItemPosition])
 
         override fun areItemsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
-        ): Boolean = newStories[newItemPosition].storyHash == stories[oldItemPosition].storyHash
+        ): Boolean =
+            newDisplayItems[newItemPosition].stableId == displayItems[oldItemPosition].stableId &&
+                newDisplayItems[newItemPosition]::class == displayItems[oldItemPosition]::class
 
-        override fun getNewListSize(): Int = newStories.size
+        override fun getNewListSize(): Int = newDisplayItems.size
 
-        override fun getOldListSize(): Int = stories.size
+        override fun getOldListSize(): Int = displayItems.size
     }
 
     @Synchronized
     fun getStory(position: Int): Story? =
-        if (position >= stories.size || position < 0) {
+        if (position >= storyCount || position < 0) {
             null
         } else {
-            stories[position]
+            when (val item = displayItems[position]) {
+                is DisplayItem.StoryRow -> item.story
+                is DisplayItem.ClusterRow -> stories.getOrNull(item.parentStoryIndex)
+            }
         }
+
+    fun getDisplayPositionForStoryIndex(storyIndex: Int): Int =
+        storyDisplayPositions.getOrNull(storyIndex) ?: storyIndex
 
     fun setTextSize(textSize: Float) {
         this.textSize = textSize
@@ -341,6 +383,9 @@ class StoryViewAdapter(
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_tile, viewGroup, false)
             v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
             return StoryTileViewHolder(v)
+        } else if (viewType == VIEW_TYPE_CLUSTER_ROW) {
+            val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_cluster_row, viewGroup, false)
+            return ClusterRowViewHolder(v)
         } else if (viewType == VIEW_TYPE_STORY_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_row, viewGroup, false)
             v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -549,25 +594,73 @@ class StoryViewAdapter(
         var storySnippet: TextView = view.findViewById(R.id.story_item_content)
     }
 
+    inner class ClusterRowViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view),
+        View.OnClickListener {
+        val root: View = view.findViewById(R.id.story_cluster_row_root)
+        val card: View = view.findViewById(R.id.story_cluster_row_card)
+        val outerBar: View = view.findViewById(R.id.story_cluster_row_bar_outer)
+        val innerBar: View = view.findViewById(R.id.story_cluster_row_bar_inner)
+        val sentiment: ImageView = view.findViewById(R.id.story_cluster_row_sentiment)
+        val feedIcon: ImageView = view.findViewById(R.id.story_cluster_row_feed_icon)
+        val preview: StoryThumbnailView = view.findViewById(R.id.story_cluster_row_preview)
+        val title: TextView = view.findViewById(R.id.story_cluster_row_title)
+        val date: TextView = view.findViewById(R.id.story_cluster_row_date)
+
+        var clusterStory: Story.ClusterStory? = null
+        var previewLoader: PhotoToLoad? = null
+
+        init {
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            val story = clusterStory ?: return
+            val now = SystemClock.elapsedRealtime()
+            if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
+            val feedId = story.feedId ?: return
+            val storyHash = story.storyHash ?: return
+            lastStoryOpenElapsedRealtime = now
+
+            when (
+                val target =
+                    StoryClusterNavigationDecision.resolve(
+                        currentFeedSet = fs,
+                        currentFolderName = feedUtils.currentFolderName,
+                        targetFeedId = feedId,
+                        storyHash = storyHash,
+                    )
+            ) {
+                is StoryClusterNavigationTarget.DirectReading -> {
+                    listener.onStoryClicked(target.feedSet, target.storyHash)
+                }
+
+                is StoryClusterNavigationTarget.FeedListReading -> {
+                    val feed = feedUtils.getFeed(feedId)
+                    if (feed == null) {
+                        listener.onStoryClicked(target.feedSet, target.storyHash)
+                        return
+                    }
+                    feedUtils.currentFolderName =
+                        if (target.folderName == AppConstants.ROOT_FOLDER) {
+                            null
+                        } else {
+                            target.folderName
+                        }
+                    FeedItemsList.startStoryActivity(context, target.feedSet, feed, target.folderName, target.storyHash)
+                }
+
+                null -> Unit
+            }
+        }
+    }
+
     override fun onBindViewHolder(
         viewHolder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        if (viewHolder is StoryViewHolder) {
-            if (position >= stories.size || position < 0) return
-
-            val story = stories[position]
-            viewHolder.story = story
-
-            bindCommon(viewHolder, story)
-
-            if (viewHolder is StoryRowViewHolder) {
-                bindRow(viewHolder, story)
-            } else {
-                val vhTile = viewHolder as StoryTileViewHolder
-                bindTile(vhTile, story)
-            }
-        } else {
+        if (position >= storyCount || position < 0) {
             val vh = viewHolder as FooterViewHolder
             vh.innerView.removeAllViews()
             val targetFooter = footerViews[position - storyCount]
@@ -580,6 +673,25 @@ class StoryViewAdapter(
             if (oldFooterHolder is ViewGroup) oldFooterHolder.removeAllViews()
 
             vh.innerView.addView(targetFooter)
+            return
+        }
+
+        when (val item = displayItems[position]) {
+            is DisplayItem.StoryRow -> {
+                val story = item.story
+                val storyHolder = viewHolder as StoryViewHolder
+                storyHolder.story = story
+                bindCommon(storyHolder, story)
+
+                if (storyHolder is StoryRowViewHolder) {
+                    bindRow(storyHolder, story)
+                } else {
+                    bindTile(storyHolder as StoryTileViewHolder, story)
+                }
+            }
+            is DisplayItem.ClusterRow -> {
+                bindClusterRow(viewHolder as ClusterRowViewHolder, item)
+            }
         }
     }
 
@@ -947,9 +1059,195 @@ class StoryViewAdapter(
         if (viewHolder is StoryViewHolder) {
             if (viewHolder.thumbLoader != null) viewHolder.thumbLoader?.cancel = true
         }
+        if (viewHolder is ClusterRowViewHolder) {
+            viewHolder.previewLoader?.cancel = true
+        }
         if (viewHolder is FooterViewHolder) {
             viewHolder.innerView.removeAllViews()
         }
+    }
+
+    private fun bindClusterRow(
+        vh: ClusterRowViewHolder,
+        item: DisplayItem.ClusterRow,
+    ) {
+        val clusterStory = item.clusterStory
+        vh.clusterStory = clusterStory
+
+        val theme = prefsRepo.getResolvedTheme(context)
+        val palette = StoryClusterThemeStyle.palette(theme)
+        val isComfortable = spacingStyle == SpacingStyle.COMFORTABLE
+        val isRead = clusterStory.read
+        val feed = feedUtils.getFeed(clusterStory.feedId)
+        val rowHeight = UIUtils.dp2px(context, if (isComfortable) 42 else 36)
+        val verticalInset = 0
+
+        vh.root.setBackgroundColor(palette.listBackgroundColor)
+        vh.root.layoutParams =
+            vh.root.layoutParams.apply {
+                height = rowHeight
+            }
+        vh.card.background =
+            StoryClusterThemeStyle.roundedBackground(
+                palette.listCardColor,
+                UIUtils.dp2px(context, if (isComfortable) 8 else 6).toFloat(),
+            )
+        (vh.card.layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
+            params.topMargin = verticalInset
+            params.bottomMargin = verticalInset
+            vh.card.layoutParams = params
+        }
+        vh.outerBar.setBackgroundColor(UIUtils.decodeColourValue(feed?.faviconColor, Color.GRAY))
+        vh.innerBar.setBackgroundColor(UIUtils.decodeColourValue(feed?.faviconFade, Color.LTGRAY))
+
+        vh.sentiment.setImageResource(StoryClusterDisplayDecision.indicatorDrawableRes(clusterStory.score))
+        val sentimentSize = if (clusterStory.score == 0) 10 else 12
+        vh.sentiment.layoutParams =
+            vh.sentiment.layoutParams.apply {
+                width = UIUtils.dp2px(context, sentimentSize)
+                height = UIUtils.dp2px(context, sentimentSize)
+            }
+
+        vh.title.text = UIUtils.fromHtml(clusterStory.title ?: "")
+        vh.date.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        vh.title.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
+        vh.date.textSize = textSize * 10f
+        vh.title.setTextColor(if (isRead) palette.readTitleColor else palette.titleColor)
+        vh.date.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
+
+        bindFeedIcon(feed, vh.feedIcon, 16)
+        bindClusterPreview(vh, clusterStory.thumbnailUrl ?: clusterThumbnailUrl(clusterStory.storyHash), isRead)
+
+        vh.outerBar.alpha = if (isRead) CLUSTER_READ_BAR_ALPHA else 1.0f
+        vh.innerBar.alpha = if (isRead) CLUSTER_READ_BAR_ALPHA else 1.0f
+        vh.sentiment.imageAlpha = if (isRead) CLUSTER_READ_SENTIMENT_ALPHA_B255 else 255
+        vh.feedIcon.imageAlpha = if (isRead) CLUSTER_READ_FEED_ICON_ALPHA_B255 else 255
+        vh.title.alpha = 1.0f
+        vh.date.alpha = 1.0f
+    }
+
+    private fun bindClusterPreview(
+        vh: ClusterRowViewHolder,
+        thumbnailUrl: String?,
+        isRead: Boolean,
+    ) {
+        vh.previewLoader?.cancel = true
+        if (thumbnailUrl.isNullOrBlank()) {
+            updateClusterTitleEndAnchor(vh.title, vh.date.id)
+            vh.preview.visibility = View.GONE
+            vh.preview.setImageDrawable(null)
+            vh.previewLoader = null
+            return
+        }
+
+        updateClusterTitleEndAnchor(vh.title, vh.preview.id)
+        vh.preview.visibility = View.VISIBLE
+        vh.preview.imageAlpha = if (isRead) CLUSTER_READ_PREVIEW_ALPHA_B255 else 255
+        vh.preview.setImageDrawable(null)
+        vh.previewLoader =
+            thumbnailLoader.displayImage(
+                thumbnailUrl,
+                vh.preview,
+                UIUtils.dp2px(context, 48),
+                true,
+            )
+    }
+
+    private fun updateClusterTitleEndAnchor(
+        titleView: TextView,
+        anchorId: Int,
+    ) {
+        val params = titleView.layoutParams as RelativeLayout.LayoutParams
+        params.addRule(RelativeLayout.START_OF, anchorId)
+        titleView.layoutParams = params
+    }
+
+    private fun clusterThumbnailUrl(storyHash: String?): String? {
+        if (storyHash.isNullOrBlank()) return null
+        if (clusterThumbnailUrls.containsKey(storyHash)) {
+            return clusterThumbnailUrls[storyHash]
+        }
+
+        return feedUtils.getStoryThumbnailUrl(storyHash).also { clusterThumbnailUrls[storyHash] = it }
+    }
+
+    private fun bindFeedIcon(
+        feed: com.newsblur.domain.Feed?,
+        target: ImageView,
+        sizeDp: Int,
+    ) {
+        if (feed == null) {
+            target.visibility = View.GONE
+            return
+        }
+
+        val customFeedIcon: CustomIcon? = BlurDatabaseHelper.getFeedIcon(feed.feedId)
+        if (customFeedIcon != null) {
+            val iconSize = UIUtils.dp2px(context, sizeDp)
+            val iconBitmap = CustomIconRenderer.renderIcon(context, customFeedIcon, iconSize)
+            if (iconBitmap != null) {
+                target.setImageBitmap(iconBitmap)
+            } else {
+                iconLoader.displayImage(feed.faviconUrl, target)
+            }
+        } else {
+            iconLoader.displayImage(feed.faviconUrl, target)
+        }
+        target.visibility = View.VISIBLE
+    }
+
+    private fun subscribedFeedIds(): Set<String> {
+        val cached = activeFeedIds
+        if (cached != null) {
+            return cached
+        }
+
+        return feedUtils.getActiveFeedIds().also { activeFeedIds = it }
+    }
+
+    private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
+
+    private fun visibleDisplayItemCount(): Int {
+        if (fs == null || !UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
+            return displayItems.size
+        }
+
+        val visibleStories = min(3.0, stories.size.toDouble()).toInt()
+        if (visibleStories <= 0) {
+            return 0
+        }
+
+        var seenStories = 0
+        displayItems.forEachIndexed { index, item ->
+            if (item is DisplayItem.StoryRow) {
+                seenStories++
+                if (seenStories == visibleStories) {
+                    var end = index + 1
+                    while (end < displayItems.size && displayItems[end] is DisplayItem.ClusterRow) {
+                        end++
+                    }
+                    return end
+                }
+            }
+        }
+
+        return displayItems.size
+    }
+
+    private fun rebuildStoryDisplayPositions() {
+        storyDisplayPositions.clear()
+        displayItems.forEachIndexed { displayIndex, item ->
+            if (item is DisplayItem.StoryRow) {
+                storyDisplayPositions.add(displayIndex)
+            }
+        }
+    }
+
+    private fun rebuildDisplayItemsFromCurrentStories() {
+        activeFeedIds = null
+        displayItems.clear()
+        displayItems.addAll(buildDisplayItems(stories))
+        rebuildStoryDisplayPositions()
     }
 
     internal inner class StoryViewGestureDetector(
@@ -997,7 +1295,8 @@ class StoryViewAdapter(
     }
 
     fun notifyAllItemsChanged() {
-        notifyItemRangeChanged(0, itemCount)
+        rebuildDisplayItemsFromCurrentStories()
+        notifyDataSetChanged()
     }
 
     private fun backgroundResourceFor(story: Story): Int {
@@ -1028,10 +1327,38 @@ class StoryViewAdapter(
         )
     }
 
+    private sealed interface DisplayItem {
+        val stableId: Long
+
+        fun contentMatches(other: DisplayItem): Boolean
+
+        data class StoryRow(
+            val story: Story,
+            val storyIndex: Int,
+        ) : DisplayItem {
+            override val stableId: Long = story.storyHash.hashCode().toLong()
+
+            override fun contentMatches(other: DisplayItem): Boolean =
+                other is StoryRow && story.isChanged(other.story)
+        }
+
+        data class ClusterRow(
+            val clusterStory: Story.ClusterStory,
+            val parentStoryIndex: Int,
+            val parentStoryHash: String,
+        ) : DisplayItem {
+            override val stableId: Long = "$parentStoryHash:${clusterStory.storyHash}".hashCode().toLong()
+
+            override fun contentMatches(other: DisplayItem): Boolean =
+                other is ClusterRow && clusterStory == other.clusterStory
+        }
+    }
+
     companion object {
         const val VIEW_TYPE_STORY_TILE: Int = 1
         const val VIEW_TYPE_STORY_ROW: Int = 2
         const val VIEW_TYPE_FOOTER: Int = 3
+        const val VIEW_TYPE_CLUSTER_ROW: Int = 4
 
         private const val DEFAULT_TEXT_SIZE_STORY_FEED_TITLE = 13f
         private const val DEFAULT_TEXT_SIZE_STORY_TITLE = 14f
@@ -1040,5 +1367,9 @@ class StoryViewAdapter(
 
         private const val READ_STORY_ALPHA = 0.35f
         private const val READ_STORY_ALPHA_B255 = (255f * READ_STORY_ALPHA).toInt()
+        private const val CLUSTER_READ_BAR_ALPHA = 0.15f
+        private const val CLUSTER_READ_PREVIEW_ALPHA_B255 = (255f * 0.55f).toInt()
+        private const val CLUSTER_READ_SENTIMENT_ALPHA_B255 = (255f * 0.15f).toInt()
+        private const val CLUSTER_READ_FEED_ICON_ALPHA_B255 = (255f * 0.4f).toInt()
     }
 }

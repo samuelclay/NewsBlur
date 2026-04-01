@@ -739,7 +739,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (prefsRepo.isEnableRowInfrequent() && (currentState != StateFilter.SAVED)) topLevelRows.add(INFREQUENT_SITE_STORIES_GROUP_KEY);
         topLevelRows.add(ALL_STORIES_GROUP_KEY);
         if (currentState != StateFilter.SAVED) {
-            topLevelRows = new ArrayList<String>(DailyBriefingFolderPlacementDecision.orderedFolderNames(topLevelRows));
+            topLevelRows = new ArrayList<String>(DailyBriefingFolderPlacementDecision.orderedFolderNames(topLevelRows, prefsRepo.isEnableRowDailyBriefing()));
         }
         for (String topLevelRow : topLevelRows) {
             addSpecialRow(topLevelRow);

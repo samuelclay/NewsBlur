@@ -587,6 +587,8 @@ class FeedUtils(
 
     fun getStoryContent(hash: String?): String? = dbHelper.getStoryContent(hash)
 
+    fun getStoryThumbnailUrl(hash: String?): String? = dbHelper.getStoryThumbnailUrl(hash)
+
     /**
      * Because story objects have to join on the feeds table to get feed metadata, there are times
      * where standalone stories are missing this info and it must be re-fetched.  This is costly
@@ -595,6 +597,8 @@ class FeedUtils(
     fun getFeedTitle(feedId: String?): String? = dbHelper.getFeed(feedId)?.title ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }?.title
 
     fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId) ?: tryFeedStore.get()?.takeIf { it.feedId == feedId }
+
+    fun getActiveFeedIds(): Set<String> = dbHelper.getAllActiveFeeds()
 
     fun openStatistics(
         context: Context?,

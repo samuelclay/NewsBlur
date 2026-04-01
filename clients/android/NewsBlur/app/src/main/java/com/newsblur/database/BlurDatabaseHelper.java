@@ -1264,6 +1264,23 @@ public class BlurDatabaseHelper {
     }
 
     @Nullable
+    public String getStoryThumbnailUrl(@Nullable String hash) {
+        String q = "SELECT " + DatabaseConstants.STORY_THUMBNAIL_URL +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ?" +
+                " LIMIT 1";
+        Cursor c = dbRO.rawQuery(q, new String[]{hash});
+        if (c.moveToFirst()) {
+            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_THUMBNAIL_URL));
+            c.close();
+            return result;
+        } else {
+            c.close();
+            return null;
+        }
+    }
+
+    @Nullable
     public String getStoryHighlights(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_HIGHLIGHTS +
                 " FROM " + DatabaseConstants.STORY_TABLE +

@@ -61,6 +61,43 @@ class DailyBriefingDecisionsTest {
     }
 
     @Test
+    fun `daily briefing folder is hidden when disabled`() {
+        assertEquals(
+            listOf(
+                AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY,
+                AppConstants.ALL_STORIES_GROUP_KEY,
+                "tech",
+            ),
+            DailyBriefingFolderPlacementDecision.orderedFolderNames(
+                listOf(
+                    AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY,
+                    AppConstants.ALL_STORIES_GROUP_KEY,
+                    "tech",
+                ),
+                isEnabled = false,
+            ),
+        )
+    }
+
+    @Test
+    fun `daily briefing folder is removed when disabled even if already present`() {
+        assertEquals(
+            listOf(
+                AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY,
+                AppConstants.ALL_STORIES_GROUP_KEY,
+            ),
+            DailyBriefingFolderPlacementDecision.orderedFolderNames(
+                listOf(
+                    AppConstants.DAILY_BRIEFING_GROUP_KEY,
+                    AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY,
+                    AppConstants.ALL_STORIES_GROUP_KEY,
+                ),
+                isEnabled = false,
+            ),
+        )
+    }
+
+    @Test
     fun `presentation state remains loading until preferences or stories are ready`() {
         assertEquals(
             DailyBriefingPresentationState.LOADING,

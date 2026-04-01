@@ -178,6 +178,22 @@ public class StoryUtils {
         }
     }
 
+    public static String formatRelativeShortDate(long timestampMillis) {
+        long now = System.currentTimeMillis();
+        long diffMs = now - timestampMillis;
+        if (diffMs < 0) diffMs = 0;
+        long diffHours = Math.round(diffMs / (double) DateUtils.HOUR_IN_MILLIS);
+        if (diffHours < 1) {
+            long diffMinutes = Math.round(diffMs / (double) DateUtils.MINUTE_IN_MILLIS);
+            return diffMinutes + "m ago";
+        } else if (diffHours < 24) {
+            return diffHours + "h ago";
+        } else {
+            long diffDays = Math.round(diffMs / (double) DateUtils.DAY_IN_MILLIS);
+            return diffDays + "d ago";
+        }
+    }
+
     public static boolean hasOldTimestamp(long storyTimestamp) {
         return (System.currentTimeMillis() - storyTimestamp) > (2 * DateUtils.DAY_IN_MILLIS);
     }

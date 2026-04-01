@@ -44,9 +44,14 @@ object DailyBriefingPresentationDecision {
 
 object DailyBriefingFolderPlacementDecision {
     @JvmStatic
-    fun orderedFolderNames(folderNames: List<String>): List<String> {
+    fun orderedFolderNames(folderNames: List<String>, isEnabled: Boolean = true): List<String> {
         val foldersWithoutBriefing =
             folderNames.filterNot { it == AppConstants.DAILY_BRIEFING_GROUP_KEY }
+
+        if (!isEnabled) {
+            return foldersWithoutBriefing
+        }
+
         val insertionIndex =
             foldersWithoutBriefing.indexOf(AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY)
                 .takeIf { it >= 0 }

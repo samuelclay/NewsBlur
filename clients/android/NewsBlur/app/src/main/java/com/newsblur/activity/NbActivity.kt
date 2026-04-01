@@ -65,7 +65,9 @@ open class NbActivity : AppCompatActivity() {
         finishIfNotLoggedIn()
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            // Translucent reading/list transitions can leave activities underneath in STARTED,
+            // which causes hidden screens to react to sync updates and fight over the reading session.
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 NbSyncManager.state.collect {
                     handleSyncUpdate(it)
                 }

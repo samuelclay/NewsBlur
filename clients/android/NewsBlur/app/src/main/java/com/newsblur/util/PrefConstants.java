@@ -70,6 +70,7 @@ public class PrefConstants {
     public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
+    public static final String STORY_CLUSTERING = "story_clustering";
     public static final String SPACING_STYLE = "pref_spacing_style";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
@@ -94,6 +95,7 @@ public class PrefConstants {
 
     public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
+    public static final String ENABLE_ROW_DAILY_BRIEFING = "enable_row_daily_briefing";
 
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";

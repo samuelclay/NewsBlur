@@ -3,6 +3,7 @@ package com.newsblur.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,6 +103,9 @@ public class Story implements Serializable {
     @SerializedName("has_modifications")
     public boolean hasModifications;
 
+    @SerializedName("cluster_stories")
+    public ClusterStory[] clusterStories = new ClusterStory[]{};
+
     // NOTE: this is parsed and saved to the DB, but is *not* generally un-thawed when stories are fetched back from the DB
     @SerializedName("image_urls")
     public String[] imageUrls;
@@ -165,10 +169,11 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_IMAGE_URLS, StoryUtil.nullSafeJoin(",", imageUrls));
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
         values.put(DatabaseConstants.STORY_SHARED_DATE, sharedTimestamp);
-		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
+        values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
         values.put(DatabaseConstants.STORY_THUMBNAIL_URL, thumbnailUrl);
         values.put(DatabaseConstants.STORY_INFREQUENT, infrequent);
         values.put(DatabaseConstants.STORY_HAS_MODIFICATIONS, hasModifications);
+        values.put(DatabaseConstants.STORY_CLUSTER_STORIES, DatabaseConstants.JsonHelper.toJson(clusterStories));
 		return values;
 	}
 
@@ -203,6 +208,8 @@ public class Story implements Serializable {
         story.sharedTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE));
 		story.thumbnailUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_THUMBNAIL_URL));
 		story.hasModifications = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_HAS_MODIFICATIONS)) > 0;
+        String clusterStoriesJson = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CLUSTER_STORIES));
+        story.clusterStories = ClusterStory.fromJson(clusterStoriesJson);
 		return story;
 	}
 
@@ -338,6 +345,7 @@ public class Story implements Serializable {
         if (!Arrays.deepEquals(s.publicComments, publicComments)) return false;
         if (!Arrays.deepEquals(s.friendsComments, friendsComments)) return false;
         if (!Arrays.deepEquals(s.friendsShares, friendsShares)) return false;
+        if (!Arrays.deepEquals(s.clusterStories, clusterStories)) return false;
         if (s.intelligence.calcTotalIntel() != intelligence.calcTotalIntel()) return false;
         return true;
     }
@@ -383,6 +391,83 @@ public class Story implements Serializable {
             return thumbnail;
         }
         return null;
+    }
+
+    public static class ClusterStory implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        @SerializedName("story_feed_id")
+        public String feedId;
+
+        @SerializedName("story_hash")
+        public String storyHash;
+
+        @SerializedName("story_title")
+        public String title;
+
+        @SerializedName("story_timestamp")
+        public long timestamp;
+
+        @SerializedName("story_authors")
+        public String authors;
+
+        @SerializedName("score")
+        public int score;
+
+        @SerializedName("read_status")
+        public boolean read;
+
+        @SerializedName("image_urls")
+        public String[] imageUrls;
+
+        @SerializedName("secure_image_thumbnails")
+        public Map<String, String> secureImageThumbnails;
+
+        public String getThumbnailUrl() {
+            if (imageUrls == null || imageUrls.length == 0) return null;
+            String thumbnail = imageUrls[0];
+            if (thumbnail.startsWith("http://") && secureImageThumbnails != null && secureImageThumbnails.containsKey(thumbnail)) {
+                thumbnail = secureImageThumbnails.get(thumbnail);
+            }
+            return thumbnail;
+        }
+
+        public static ClusterStory[] fromJson(String json) {
+            if (TextUtils.isEmpty(json)) {
+                return new ClusterStory[]{};
+            }
+
+            ClusterStory[] clusterStories = DatabaseConstants.JsonHelper.fromJson(json, ClusterStory[].class);
+            if (clusterStories == null) {
+                return new ClusterStory[]{};
+            }
+
+            return clusterStories;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof ClusterStory)) return false;
+
+            ClusterStory clusterStory = (ClusterStory) other;
+            return timestamp == clusterStory.timestamp &&
+                score == clusterStory.score &&
+                read == clusterStory.read &&
+                Objects.equals(feedId, clusterStory.feedId) &&
+                Objects.equals(storyHash, clusterStory.storyHash) &&
+                Objects.equals(title, clusterStory.title) &&
+                Objects.equals(authors, clusterStory.authors) &&
+                Arrays.equals(imageUrls, clusterStory.imageUrls);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(feedId, storyHash, title, timestamp, authors, score, read);
+            result = 31 * result + Arrays.hashCode(imageUrls);
+            return result;
+        }
     }
 
 }
