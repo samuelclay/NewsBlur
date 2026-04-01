@@ -37,7 +37,7 @@
         <div class="NB-cli-steps">
             <div class="NB-cli-step">
                 <h3>Install</h3>
-                <pre class="NB-feature-detail-code">pip install newsblur</pre>
+                <pre class="NB-feature-detail-code">uv pip install newsblur-cli</pre>
             </div>
 
             <div class="NB-cli-step">
@@ -90,7 +90,7 @@ newsblur share 123:abc --comment "Worth reading"</pre>
     <div class="NB-feature-detail-how NB-cli-commands-section">
         <h2>Train intelligence</h2>
         <p class="NB-feature-detail-subtitle">View and update your classifiers to like or dislike authors, tags, titles, and feeds.</p>
-        <pre class="NB-feature-detail-code">newsblur train get --feed 42                   # view current training
+        <pre class="NB-feature-detail-code">newsblur train show --feed 42                  # view current training
 newsblur train like --feed 42 --author "Name"  # train a like
 newsblur train dislike --feed 42 --tag sponsor # train a dislike</pre>
     </div>
@@ -116,6 +116,13 @@ newsblur --server https://my-newsblur.example.com auth login
 # Script common workflows
 newsblur stories list --folder Tech --json | \
   jq -r '.items[] | "\(.title) - \(.feed_title)"'</pre>
+    </div>
+
+    <div class="NB-feature-detail-how NB-cli-commands-section">
+        <h2>Claude Code skill</h2>
+        <p class="NB-feature-detail-subtitle">Install the NewsBlur CLI skill to give Claude Code full knowledge of every command and flag. Claude will use the CLI on your behalf to read feeds, manage stories, and train classifiers.</p>
+        <pre class="NB-feature-detail-code">npx skills add samuelclay/NewsBlur@newsblur-cli</pre>
+        <p class="NB-cli-step-note">Source: <a href="https://github.com/samuelclay/NewsBlur/tree/main/skills/newsblur-cli">github.com/samuelclay/NewsBlur/skills/newsblur-cli</a></p>
     </div>
 
     <div class="NB-feature-detail-faq">

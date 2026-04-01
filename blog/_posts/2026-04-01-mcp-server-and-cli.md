@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "MCP Server & CLI: Connect AI agents to your NewsBlur"
+title: "The NewsBlur MCP Server and CLI Tool"
 tags: ["web"]
 ---
 
-I read a lot of feeds. Hundreds of them, across dozens of folders. Some mornings I can sit down and work through everything. Other mornings I want to ask "what did I miss?" and get a real answer, not a generic summary from a tool that doesn't know what I care about. The problem has always been that AI assistants can't see your feeds. They don't know what you subscribe to, what you've trained as interesting, or what you saved last week. They're working blind.
+NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I'm shipping two new ways to interact with your NewsBlur: an MCP server that lets AI agents read your feeds, manage stories, and train classifiers on your behalf, and a command-line tool that puts your entire NewsBlur in your terminal. One is for your AI. The other is for you. Both use the same 22 operations, and both work right now.
 
-Today I'm launching the NewsBlur MCP Server. MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible tool can read your feeds, manage your stories, train your classifiers, and organize your subscriptions. It's your NewsBlur, accessible to your AI agent.
+MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible agent can read your feeds, manage your stories, train your classifiers, and organize your subscriptions.
 
 <!-- SCREENSHOT: Claude Code or Claude Desktop showing a conversation where the agent reads NewsBlur feeds and summarizes stories -->
 <img src="/assets/mcp-server-claude-conversation.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
@@ -64,7 +64,7 @@ On first use, a browser window opens for you to log in and authorize access. Aut
 Everything the MCP server can do is also available from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>. Install with pip:
 
 ```
-pip install newsblur
+uv pip install newsblur-cli
 ```
 
 Then log in and start using it:
@@ -115,7 +115,7 @@ newsblur share 123:abc --comment "Worth reading"
 **Train your intelligence classifiers:**
 
 ```bash
-newsblur train get --feed 42                   # view current training
+newsblur train show --feed 42                  # view current training
 newsblur train like --feed 42 --author "Name"  # train a like
 newsblur train dislike --feed 42 --tag sponsor # train a dislike
 ```
@@ -137,6 +137,26 @@ newsblur briefing --json | jq '.items[0].section_summaries'
 
 <!-- SCREENSHOT: Terminal showing newsblur CLI output, maybe `newsblur stories list` with formatted story output -->
 <img src="/assets/mcp-server-cli-output.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
+
+### Readonly mode
+
+Giving an AI agent access to your NewsBlur is powerful, but maybe you want to start with guardrails. The CLI has a readonly mode that blocks all write operations: no saving, no sharing, no training, no subscribing, no marking as read. Your agent can read your feeds and search your stories, but it cannot change anything.
+
+```bash
+newsblur auth readonly --on
+```
+
+With readonly on, any write command returns an error instead of executing. The agent sees your data but cannot touch it.
+
+The important part is what happens when you turn it off. Disabling readonly mode logs you out and requires you to re-authenticate in the browser:
+
+```bash
+newsblur auth readonly --off
+# "You have been logged out and must re-authenticate."
+newsblur auth login
+```
+
+This is deliberate. An AI agent cannot silently toggle readonly off and start making changes. Only a human sitting at a browser can re-authorize write access. If you hand the CLI to an agent and want to be sure it stays read-only, it will.
 
 ### Availability
 
