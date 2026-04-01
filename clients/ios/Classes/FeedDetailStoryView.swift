@@ -102,21 +102,22 @@ struct StoryPagesView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ storyPagesViewController: StoryPagesViewController, context: Context) {
+        NSLog("📍 StoryPagesView.updateUIViewController called, story=\(story.hash), currentPage=\(storyPagesViewController.currentPage.activeStoryId ?? "nil")")
         storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
-        
+
         interaction.reading(story: story)
-        
+
         let size = storyPagesViewController.currentPage.webView.scrollView.contentSize
-        
+
         storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: 1000)
-        
+
         storyPagesViewController.currentPage.webView.evaluateJavaScript(
             "document.body.lastChild.getBoundingClientRect().bottom + window.scrollY"
         ) { (result, _) in
             guard let height = result as? CGFloat, height > 0 else {
                 return
             }
-            
+
             storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: height + 80)
         }
     }

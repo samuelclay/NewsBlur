@@ -1971,8 +1971,10 @@
     }
     self.scrollView.scrollsToTop = NO;
     
+    NSLog(@"📍 setStoryFromScroll: force=%d isDragging=%d scrollingToPage=%ld currentPage=%ld nearestNumber=%ld", force, self.isDraggingScrollview, (long)self.scrollingToPage, (long)currentPage.pageIndex, (long)nearestNumber);
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
+        NSLog(@"📍 setStoryFromScroll: ENTERING update block (will call updatePageWithActiveStory:YES)");
         self.scrollingToPage = -1;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
         
