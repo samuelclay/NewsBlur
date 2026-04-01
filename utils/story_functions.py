@@ -386,8 +386,42 @@ def fix_responsive_embeds(content):
     return re.sub(r"(<div\b[^>]*>)(.*?)</div>", fix_wrapper, content, flags=re.IGNORECASE | re.DOTALL)
 
 
+def restore_instagram_data_attributes(content):
+    """Restore data-instgrm-permalink on Instagram embed blockquotes.
+
+    feedparser's sanitizer strips data-* attributes, which removes the
+    data-instgrm-permalink that Instagram's embeds.js needs to render the embed.
+    This reconstructs it from the <a href> inside each blockquote.
+    """
+    if "instagram-media" not in content:
+        return content
+
+    def add_permalink(match):
+        tag = match.group(0)
+        if "data-instgrm-permalink" in tag:
+            return tag
+        inner_end = match.end()
+        blockquote_end = content.find("</blockquote>", match.start())
+        if blockquote_end == -1:
+            return tag
+        block_content = content[match.start():blockquote_end]
+        href_match = re.search(
+            r'href="(https://www\.instagram\.com/(?:reel|p)/[^"]+)"', block_content
+        )
+        if href_match:
+            url = href_match.group(1)
+            return tag.replace(
+                'class="instagram-media"',
+                f'class="instagram-media" data-instgrm-permalink="{url}" data-instgrm-version="14"',
+            )
+        return tag
+
+    return re.sub(r'<blockquote[^>]*class="instagram-media"[^>]*>', add_permalink, content)
+
+
 def attach_media_scripts(content):
     if "instagram-media" in content and "<script" not in content:
+        content = restore_instagram_data_attributes(content)
         content += '<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script><script>(function(){if(window.instgrm)window.instgrm.Embeds.process()})()</script>'
     if "twitter-tweet" in content and "<script" not in content:
         content += '<script id="twitter-wjs" type="text/javascript" async defer src="https://platform.twitter.com/widgets.js"></script>'
