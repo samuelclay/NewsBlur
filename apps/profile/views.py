@@ -376,7 +376,7 @@ def get_view_setting(request):
 @json.json_view
 def set_collapsed_folders(request):
     code = 1
-    collapsed_folders = request.POST["collapsed_folders"]
+    collapsed_folders = request.POST.get("collapsed_folders", "[]")
 
     request.user.profile.collapsed_folders = collapsed_folders
     request.user.profile.save()
