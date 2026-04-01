@@ -17,11 +17,20 @@ from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 from newsblur_mcp.log import log_request
 from newsblur_mcp.settings import MCP_HOST, MCP_PORT, SENTRY_DSN
 
+def _before_send(event, hint):
+    """Filter out noisy uvicorn warnings that aren't real errors."""
+    message = (event.get("logentry") or {}).get("message", "")
+    if "ASGI callable returned without completing response" in message:
+        return None
+    return event
+
+
 if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         traces_sample_rate=0.01,
         send_default_pii=True,
+        before_send=_before_send,
     )
 
 # Configure root logger so MCP log output is visible

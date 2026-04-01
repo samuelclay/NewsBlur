@@ -112,7 +112,7 @@ class NewsBlurOAuthProvider(OAuthProxy):
             token_verifier=token_verifier,
             base_url=base_url,
             issuer_url=base_url,
-            require_authorization_consent=False,
+            require_authorization_consent="external",
             forward_pkce=False,
             valid_scopes=["read", "write", "mcp"],
             client_storage=redis_store,
