@@ -15,7 +15,7 @@
       MCP_OAUTH_BASE_URL: "https://newsblur.com/mcp"
       MCP_OAUTH_UPSTREAM_URL: "https://newsblur.com"
       MCP_OAUTH_INTERNAL_URL: "http://newsblur_web:8000"
-      MCP_REDIS_URL: "redis://redis-session.service.consul:6579/5"
+      MCP_REDIS_URL: "redis://db-redis-session.service.nyc1.consul:6382/5"
     state: started
     restart: "{{ container_restart | default(false) }}"
     hostname: "{{ inventory_hostname }}-mcp"
