@@ -75,6 +75,7 @@ from utils.story_functions import (
     pre_process_story,
     strip_tags,
 )
+from utils.bluesky_fetcher import enrich_bluesky_entries, is_bluesky_feed
 from utils.twitter_fetcher import TwitterFetcher
 from utils.youtube_fetcher import YoutubeFetcher
 
@@ -874,6 +875,10 @@ class ProcessFeed:
                         )
 
         self.feed_entries = self.fpf.entries
+
+        # Enrich Bluesky feeds with images from the AT Protocol API
+        if is_bluesky_feed(self.feed.feed_address):
+            enrich_bluesky_entries(self.feed.feed_address, self.feed_entries)
 
         # Check if caller requested a specific max_stories limit (e.g. bootstrap_popular_feeds)
         max_entries = MAX_ENTRIES_TO_PROCESS

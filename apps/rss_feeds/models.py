@@ -247,6 +247,10 @@ class Feed(models.Model):
         return "news.google.com" in self.feed_address
 
     @property
+    def is_bluesky_feed(self):
+        return "bsky.app/profile/" in self.feed_address
+
+    @property
     def is_daily_briefing(self):
         return self.feed_address.startswith("daily-briefing:")
 
