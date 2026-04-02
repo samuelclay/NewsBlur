@@ -2720,8 +2720,11 @@ color: #fff;
 /* Story comment teaser (Top of story) and story comment (bottom of story) color */
 .NB-dark .NB-story-comments-shares-teaser,
 .NB-dark .NB-feed-story-comments {
+    background-color: #303739;
+    color: #c0c0c0;
     border-color: #18191A;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
+    box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .3);
 }
 
 /* Story comment border color */
