@@ -80,6 +80,91 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Apr 2, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/04/02/natural-language-text-and-image-classifiers/">
+              Natural language text and image classifiers: Train your feeds with plain English
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The Intelligence Trainer has always worked with exact matches. You type a keyword, a tag, an author name, and NewsBlur filters on that literal string. Regex mode added flexibility, but you still need to know exactly what to type. If you want to hide clickbait, you’d have to enumerate every clickbait pattern you can think of. If you want to focus on stories about local government accountability, good luck expressing that as a regex.</p>
+
+<p>Natural language classifiers let you describe what you want in plain English. Instead of matching keywords, NewsBlur sends your description and each story to an AI model that understands what you mean. Write “stories about practical cooking techniques, not restaurant reviews” and it just works. Write “product launch announcements” and it finds them regardless of how each site phrases it. And with image classifiers, you can filter on what’s actually shown in a story’s photos, not just what’s written in the text.</p>
+
+<h3 id="text-classifiers">Text classifiers</h3>
+
+<p>Open the Intelligence Trainer on any feed and you’ll see a new section: <strong>Natural Language Text Classifier</strong>. Type a description of what you want to focus on or hide, and press Enter. Not sure if your prompt will catch the right stories? Click <strong>Test on this story</strong> to see how the classifier would score it before you save, so you can refine your wording.</p>
+
+<p><img src="/assets/nl-text-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Your prompt is saved as a classifier pill, just like title and author classifiers. Toggle it between focus (green) and hidden (red) to control whether matching stories are promoted or suppressed. You can add multiple prompts per feed, and each one works independently.</p>
+
+<p>When you save a new prompt, NewsBlur immediately classifies your recent stories against it. Within a few seconds, you’ll see stories re-sort as the classifications come in. From then on, every new story is classified as it arrives.</p>
+
+<p>The classifier sends each story’s title and content to the AI model along with your description. The model decides whether the story matches, doesn’t match, or is clearly the opposite of what you described. That three-way classification means a “focus” prompt can also actively hide stories that are the antithesis of your interest.</p>
+
+<p>When a text classifier matches, you’ll see a colored pill in the story header showing which prompt matched.</p>
+
+<p><img src="/assets/nl-classifier-story-pills-text.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="image-classifiers">Image classifiers</h3>
+
+<p>Image classifiers work the same way, but they look at the photos in each story instead of the text. Describe what you want to see (or hide) visually, and the AI model examines each image to decide if it matches.</p>
+
+<p><img src="/assets/nl-image-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Some examples:</p>
+
+<ul>
+  <li><strong>“Charts and data visualizations”</strong> — Focus on stories with graphs, tables, or infographics</li>
+  <li><strong>“Screenshots of user interfaces”</strong> — Find product announcements that include actual UI screenshots</li>
+  <li><strong>“Nature and landscape photography”</strong> — Surface photography posts in mixed-content feeds</li>
+  <li><strong>“Memes”</strong> — Hide (or focus on) image macros and memes</li>
+</ul>
+
+<p>The image classifier is strict about what counts as a match. It only triggers when the subject is literally visible as the main focus of the image, not when something is vaguely related or appears in a logo or watermark. “Food photos” matches a photo of a plate of pasta, not a restaurant storefront.</p>
+
+<p>Image classifier matches also show as pills in the story header, just like text classifiers.</p>
+
+<p><img src="/assets/nl-classifier-story-pills-image.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="combining-with-classifier-notifications">Combining with classifier notifications</h3>
+
+<p>Natural language classifiers become even more powerful when paired with <a href="/2026/03/27/super-dislikes-and-classifier-notifications/">per-classifier notifications</a>. Set up a text classifier like “breaking news about AI regulation” on a high-volume news feed, then attach a notification to that classifier pill. You’ll get a push notification or email only when a story matches your natural language description, not every time the feed publishes.</p>
+
+<p>This turns NewsBlur into a semantic alert system. Instead of monitoring keywords, you’re monitoring concepts. A classifier for “security vulnerabilities in open source libraries” will catch stories whether they say “CVE,” “zero-day,” “supply chain attack,” or any other phrasing. Add a notification and you have a monitoring pipeline that understands what you care about.</p>
+
+<h3 id="scoping">Scoping</h3>
+
+<p>Like all classifiers in NewsBlur, natural language classifiers support three scope levels:</p>
+
+<ul>
+  <li><strong>Per site</strong> — Applies only to the feed you’re training (default)</li>
+  <li><strong>Per folder</strong> — Applies to every feed in the folder</li>
+  <li><strong>Global</strong> — Applies to every feed you subscribe to</li>
+</ul>
+
+<p>A global text classifier like “sponsored content” can hide promotional stories across your entire feed list with a single prompt.</p>
+
+<h3 id="usage-based-billing">Usage-based billing</h3>
+
+<p>Natural language classifiers use AI models to evaluate every story, which means there’s a real cost per classification. Rather than bundling this into a fixed subscription tier, NewsBlur uses usage-based billing so you only pay for what you use.</p>
+
+<p>Text classifications cost roughly a tenth of a cent per story. Image classifications cost more because they process image data, roughly half a cent per story. The actual cost depends on story length and image count, but for a typical feed publishing 30 stories a month with one text classifier, you’d pay about 5 cents a month.</p>
+
+<p>You can set a monthly spending limit to cap your costs. If you hit the limit, classification pauses until the next billing cycle. Your existing cached results still show, but new stories won’t be classified until the limit resets.</p>
+
+<p><img src="/assets/nl-classifier-billing.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Natural language text and image classifiers are available now on the web for Premium subscribers with usage-based billing enabled. Enable it from <strong>Manage &gt; Account</strong> to get started.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Apr 1, 2026</span>
           <h3>
             <a class="post-link" href="/2026/04/01/mcp-server-and-cli/">
@@ -879,100 +964,6 @@ newsblur auth login
 </ul>
 
 <p>NewsBlur for iOS 26, iPadOS 26, and macOS Tahoe is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 4, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/03/04/add-and-discover-sites/">
-              Add + Discover Sites: YouTube, Reddit, podcasts, newsletters, and thousands of feeds to explore
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>NewsBlur has always been great at reading feeds. But finding new ones? That was mostly on you. The old “Add Site” dialog was a search box and not much else. If you already had a feed URL, it worked fine. If you were looking for something new to read, you were on your own.</p>
-
-<p>The new <strong>Add + Discover Sites</strong> page changes that. It’s a full-page discovery experience with eight tabs covering YouTube channels, Reddit communities, podcasts, newsletters, Google News topics, trending sites, popular feeds, and of course the classic search-and-subscribe workflow. There are over 50,000 curated feeds to browse, all organized into dozens of categories and subcategories.</p>
-
-<p><img src="/assets/add-site-full-page.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="eight-ways-to-find-feeds">Eight ways to find feeds</h3>
-
-<p>The tab bar across the top gives you eight different lenses into the world of RSS:</p>
-
-<!-- SCREENSHOT: Tab bar showing all eight tabs with icons -->
-<p><img src="/assets/add-site-tabs.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<ul>
-  <li>
-    <p><strong>Search</strong> — The classic search bar, now with semantic search and autocomplete. Type a topic or URL and get instant suggestions. Below the search results you’ll find trending feeds ranked by a hybrid algorithm that combines subscription velocity, read engagement, and subscriber counts.</p>
-  </li>
-  <li>
-    <p><strong>Web Feed</strong> — Create RSS feeds from any website. This one gets its own blog post.</p>
-  </li>
-  <li>
-    <p><strong>Popular Sites</strong> — Thousands of curated RSS feeds organized into categories like Technology, Science, News, and Business. Each category has subcategories for drilling down further.</p>
-  </li>
-  <li>
-    <p><strong>YouTube</strong> — Over 2,000 verified YouTube channels converted to RSS feeds. Browse by category or search for specific channels. Subscribe and read YouTube in your feed reader the way it should be.</p>
-  </li>
-  <li>
-    <p><strong>Reddit</strong> — Nearly 6,000 real subreddits across 47 categories. From r/programming to r/sourdough, you can subscribe to any subreddit as an RSS feed.</p>
-  </li>
-  <li>
-    <p><strong>Newsletters</strong> — Newsletters from Substack, Medium, Ghost, Beehiiv, and other platforms. Platform pills let you filter by newsletter provider if you have a preference.</p>
-  </li>
-  <li>
-    <p><strong>Podcasts</strong> — Popular podcasts organized by genre. Search for shows or browse the curated collection.</p>
-  </li>
-  <li>
-    <p><strong>Google News</strong> — Eight preset topics (World, Business, Technology, Sports, and more) that create feeds from Google News. One click to subscribe.</p>
-  </li>
-</ul>
-
-<h3 id="categories-and-subcategories">Categories and subcategories</h3>
-
-<p>Most tabs are organized with a two-level taxonomy. Click a category pill at the top to filter, then drill into subcategories for more specific browsing. YouTube’s Technology category, for example, breaks down into Programming, AI &amp; Machine Learning, Gadgets, and more.</p>
-
-<!-- SCREENSHOT: Category pills and subcategory rows showing two-level taxonomy -->
-<p><img src="/assets/add-site-categories.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The categories are consistent across tabs where it makes sense, so you can explore Technology feeds across YouTube, Reddit, Popular Sites, and Podcasts without having to rethink the navigation each time.</p>
-
-<h3 id="grid-view-and-list-view">Grid view and list view</h3>
-
-<p>Every tab supports two viewing modes. Grid view shows feed cards with thumbnails, descriptions, subscriber counts, and freshness indicators. List view compresses things into a denser layout when you want to scan quickly.</p>
-
-<!-- SCREENSHOT: Side by side of grid view and list view showing the same feeds -->
-<p><img src="/assets/add-site-grid-list.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>A style popover in the top right lets you toggle between views. Your preference is saved per tab.</p>
-
-<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
-
-<p>Every feed card has a <strong>Try</strong> button that instantly fetches the feed and shows you the actual stories. No commitment, no subscribing. Just a quick look at what you’d get. If you like what you see, the subscribe button is right there with a folder picker.</p>
-
-<!-- SCREENSHOT: Try feed preview showing story cards from a YouTube channel or popular site -->
-<p><img src="/assets/add-site-try-feed.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>A breadcrumb link at the top takes you back to where you were browsing when you’re done previewing.</p>
-
-<h3 id="the-new-add-site-popover">The new Add Site popover</h3>
-
-<p>If you don’t need the full discovery page, the popover that appears when you click “+” in the sidebar has been redesigned too. It still has the quick URL input for when you have a feed address handy, but now it also shows freshness indicators and has buttons to jump into any of the discovery tabs.</p>
-
-<!-- SCREENSHOT: Redesigned Add Site popover showing quick add input and discovery buttons -->
-<p><img src="/assets/add-site-popover.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="semantic-search">Semantic search</h3>
-
-<p>The search tab uses Elasticsearch to find feeds by name with fuzzy matching. Type “cooking” and you’ll get cooking blogs, YouTube cooking channels, cooking subreddits, and cooking podcasts. It searches across all feed types, not just traditional RSS. If Elasticsearch doesn’t find anything, the search falls back to a database query so you’ll always get results.</p>
-
-<h3 id="where-all-these-feeds-came-from">Where all these feeds came from</h3>
-
-<p>Building the discovery page meant curating a lot of feeds. I wrote management commands to discover and verify channels, subreddits, podcasts, and newsletters from real sources. The collection includes over 2,000 YouTube channels, 6,600 subreddits, 7,300 newsletters, 32,000 podcasts, and 14,000 RSS feeds. Over 63,000 feeds in total, all real, verified, and categorized.</p>
-
-<p>The Add + Discover Sites page is available now on the web for all users. If you have feedback or ideas for new categories, platforms, or features, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

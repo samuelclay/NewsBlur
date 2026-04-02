@@ -12,7 +12,7 @@
   <link href="/feed-page-6.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-01T17:43:15-04:00</updated>
+  <updated>2026-04-02T15:54:45-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,35 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Upping unread stories to 30 days for premium accounts</title>
+    <link href="https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium/" rel="alternate" type="text/html" title="Upping unread stories to 30 days for premium accounts" />
+    <published>2013-09-16T17:09:14-04:00</published>
+    <updated>2013-09-16T17:09:14-04:00</updated>
+    <id>https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2013/09/16/upping-unread-stories-to-30-days-for-premium/">
+      <![CDATA[<p>While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this was simple: you have a week to read a story, and have a second week as a grace period.</p>
+
+<p>But after scaling out to tens of thousands of users, a new pattern emerged. Some users would go on vacation for two weeks at a time and then want to catch up on everything they missed. Some users only check RSS once a month. Some users just want to leave lightly updated feeds alone until they have free time to read them, and that can take a few weeks to get to.</p>
+
+<p>Starting today, all premium users are automatically upgraded to 30 days of unread stories. Free standard users will remain at 14 days. I wish I could have offered the full 30 days to everybody, but after testing that out, my server and performance graphs all made a very scary movement up.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/30d_mongodb_page_faults-day.png" alt="" /></p>
+
+<p>With the new 30 day unread interval in place, NewsBlur has a great track record in listening to user feedback and working out a solution, however large the task may be.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Mark as read by number of days and other improvements</title>
@@ -1320,36 +1349,6 @@ margin-right: 24px;
     
     <summary type="html">
       <![CDATA[The iPhone app is now only a few days away from launching. But it took 3 weeks of sitting around in the App Store approval queue before getting here. During that time, I started working on the new customizations that folks have been asking for.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Blar: A new Android app for NewsBlur</title>
-    <link href="https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur/" rel="alternate" type="text/html" title="Blar: A new Android app for NewsBlur" />
-    <published>2011-08-09T09:44:00-04:00</published>
-    <updated>2011-08-09T09:44:00-04:00</updated>
-    <id>https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/08/09/blar-a-new-android-app-for-newsblur/">
-      <![CDATA[<p>This Summer is shaping up to be the season for mobile apps. Blar, a new Android client for NewsBlur, has just been released. It’s available on the Android Market here: <a href="https://market.android.com/details?id=bitwrit.Blar">https://market.android.com/details?id=bitwrit.Blar</a>. It is created by Harris Munir, who you can contact <a href="http://harrism.com/">through his site</a>.</p>
-
-<figure class="tmblr-full" data-orig-height="700" data-orig-width="420"><img src="https://64.media.tumblr.com/5022e90b07be6d54d1798dc7036e72fa/e520a0dc9c3b17fb-4e/s540x810/11513499eba16ad5eb2bc3af9dc6e36b853218ae.png" data-orig-height="700" data-orig-width="420" /></figure>
-
-<p>The source code to Blar is also released under <a href="https://bitbucket.org/harris/blar/src/f9f8458a73c6/license.txt">a fair license</a> on Bitbucket: <a href="https://bitbucket.org/harris/blar/">https://bitbucket.org/harris/blar/</a>.</p>
-
-<p>In other news, the official NewsBlur iPhone app is nearly finished and is ready to be beta tested. If you are a premium user, <a href="mailto:samuel@ofbrooklyn.com">email me your UUID and username</a> and I will send you your own free copy of the NewsBlur iPhone app. Just know that it is under heavy development and might change for the better in the near-term future.</p>
-
-<p>Blar was created using the just released <a href="http://www.newbslur.com/api">NewsBlur API</a>. If you create your own mobile app, bookmarklet, browser extension, or even desktop client, I’ll feature it either on the dashboard of every user or the Goodies section. I’m also happy to assist you in making the app, and even making new API endpoints for you if you wish. Just let me know and keep the NewsBlur apps rolling.</p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[This Summer is shaping up to be the season for mobile apps. Blar, a new Android client for NewsBlur, has just been released. It’s available on the Android Market here: https://market.android.com/details?id=bitwrit.Blar. It is created by Harris Munir, who you can contact through his site.
 ]]>
     </summary>
     

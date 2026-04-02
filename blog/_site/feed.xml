@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-01T17:43:15-04:00</updated>
+  <updated>2026-04-02T15:54:45-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,101 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Natural language text and image classifiers: Train your feeds with plain English</title>
+    <link href="https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers/" rel="alternate" type="text/html" title="Natural language text and image classifiers: Train your feeds with plain English" />
+    <published>2026-04-02T00:00:00-04:00</published>
+    <updated>2026-04-02T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers/">
+      <![CDATA[<p>The Intelligence Trainer has always worked with exact matches. You type a keyword, a tag, an author name, and NewsBlur filters on that literal string. Regex mode added flexibility, but you still need to know exactly what to type. If you want to hide clickbait, you’d have to enumerate every clickbait pattern you can think of. If you want to focus on stories about local government accountability, good luck expressing that as a regex.</p>
+
+<p>Natural language classifiers let you describe what you want in plain English. Instead of matching keywords, NewsBlur sends your description and each story to an AI model that understands what you mean. Write “stories about practical cooking techniques, not restaurant reviews” and it just works. Write “product launch announcements” and it finds them regardless of how each site phrases it. And with image classifiers, you can filter on what’s actually shown in a story’s photos, not just what’s written in the text.</p>
+
+<h3 id="text-classifiers">Text classifiers</h3>
+
+<p>Open the Intelligence Trainer on any feed and you’ll see a new section: <strong>Natural Language Text Classifier</strong>. Type a description of what you want to focus on or hide, and press Enter. Not sure if your prompt will catch the right stories? Click <strong>Test on this story</strong> to see how the classifier would score it before you save, so you can refine your wording.</p>
+
+<p><img src="/assets/nl-text-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Your prompt is saved as a classifier pill, just like title and author classifiers. Toggle it between focus (green) and hidden (red) to control whether matching stories are promoted or suppressed. You can add multiple prompts per feed, and each one works independently.</p>
+
+<p>When you save a new prompt, NewsBlur immediately classifies your recent stories against it. Within a few seconds, you’ll see stories re-sort as the classifications come in. From then on, every new story is classified as it arrives.</p>
+
+<p>The classifier sends each story’s title and content to the AI model along with your description. The model decides whether the story matches, doesn’t match, or is clearly the opposite of what you described. That three-way classification means a “focus” prompt can also actively hide stories that are the antithesis of your interest.</p>
+
+<p>When a text classifier matches, you’ll see a colored pill in the story header showing which prompt matched.</p>
+
+<p><img src="/assets/nl-classifier-story-pills-text.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="image-classifiers">Image classifiers</h3>
+
+<p>Image classifiers work the same way, but they look at the photos in each story instead of the text. Describe what you want to see (or hide) visually, and the AI model examines each image to decide if it matches.</p>
+
+<p><img src="/assets/nl-image-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Some examples:</p>
+
+<ul>
+  <li><strong>“Charts and data visualizations”</strong> — Focus on stories with graphs, tables, or infographics</li>
+  <li><strong>“Screenshots of user interfaces”</strong> — Find product announcements that include actual UI screenshots</li>
+  <li><strong>“Nature and landscape photography”</strong> — Surface photography posts in mixed-content feeds</li>
+  <li><strong>“Memes”</strong> — Hide (or focus on) image macros and memes</li>
+</ul>
+
+<p>The image classifier is strict about what counts as a match. It only triggers when the subject is literally visible as the main focus of the image, not when something is vaguely related or appears in a logo or watermark. “Food photos” matches a photo of a plate of pasta, not a restaurant storefront.</p>
+
+<p>Image classifier matches also show as pills in the story header, just like text classifiers.</p>
+
+<p><img src="/assets/nl-classifier-story-pills-image.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="combining-with-classifier-notifications">Combining with classifier notifications</h3>
+
+<p>Natural language classifiers become even more powerful when paired with <a href="/2026/03/27/super-dislikes-and-classifier-notifications/">per-classifier notifications</a>. Set up a text classifier like “breaking news about AI regulation” on a high-volume news feed, then attach a notification to that classifier pill. You’ll get a push notification or email only when a story matches your natural language description, not every time the feed publishes.</p>
+
+<p>This turns NewsBlur into a semantic alert system. Instead of monitoring keywords, you’re monitoring concepts. A classifier for “security vulnerabilities in open source libraries” will catch stories whether they say “CVE,” “zero-day,” “supply chain attack,” or any other phrasing. Add a notification and you have a monitoring pipeline that understands what you care about.</p>
+
+<h3 id="scoping">Scoping</h3>
+
+<p>Like all classifiers in NewsBlur, natural language classifiers support three scope levels:</p>
+
+<ul>
+  <li><strong>Per site</strong> — Applies only to the feed you’re training (default)</li>
+  <li><strong>Per folder</strong> — Applies to every feed in the folder</li>
+  <li><strong>Global</strong> — Applies to every feed you subscribe to</li>
+</ul>
+
+<p>A global text classifier like “sponsored content” can hide promotional stories across your entire feed list with a single prompt.</p>
+
+<h3 id="usage-based-billing">Usage-based billing</h3>
+
+<p>Natural language classifiers use AI models to evaluate every story, which means there’s a real cost per classification. Rather than bundling this into a fixed subscription tier, NewsBlur uses usage-based billing so you only pay for what you use.</p>
+
+<p>Text classifications cost roughly a tenth of a cent per story. Image classifications cost more because they process image data, roughly half a cent per story. The actual cost depends on story length and image count, but for a typical feed publishing 30 stories a month with one text classifier, you’d pay about 5 cents a month.</p>
+
+<p>You can set a monthly spending limit to cap your costs. If you hit the limit, classification pauses until the next billing cycle. Your existing cached results still show, but new stories won’t be classified until the limit resets.</p>
+
+<p><img src="/assets/nl-classifier-billing.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Natural language text and image classifiers are available now on the web for Premium subscribers with usage-based billing enabled. Enable it from <strong>Manage &gt; Account</strong> to get started.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The Intelligence Trainer has always worked with exact matches. You type a keyword, a tag, an author name, and NewsBlur filters on that literal string. Regex mode added flexibility, but you still need to know exactly what to type. If you want to hide clickbait, you’d have to enumerate every...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">The NewsBlur CLI Tool, AI Skill, and MCP Server</title>
@@ -1864,59 +1959,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons</title>
-    <link href="https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022/" rel="alternate" type="text/html" title="2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons" />
-    <published>2022-07-01T00:00:00-04:00</published>
-    <updated>2022-07-01T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022/">
-      <![CDATA[<p>The launch of the new <a href="/2022/07/01/premium-archive-subscription/">Premium Archive subscription tier</a> also includes the 2022 redesign. You’ll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.</p>
-
-<p><img src="/assets/premium-archive-dashboard-comfortable.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
-
-<p>The latest redesign style has more accomodations for spacing and padding around each story title element. The result is a cleaner story title with easier to read headlines. The author has been moved and restyled to be next to the story date. Favicons and unread status indicators have been swapped, and font sizes, colors, and weights have been adjusted.</p>
-
-<p><img src="/assets/premium-archive-dashboard-compact.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
-
-<p>If you find the interface to be too airy, there is a setting in the main Manage menu allowing you to switch between Comfortable and Compact. The compact interface is denser than before, giving power users a highly detailed view.</p>
-
-<p>Transitions have also been added to help you feel the difference. And there are new animations during many of the transitions that accompany changing settings.</p>
-
-<p>
-    <video autoplay="" loop="" playsinline="" muted="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
-        <source src="/assets/premium-archive-grid.mp4" type="video/mp4" />
-    </video>
-</p>
-
-<p>And lastly, this redesign comes with a suite of all new icons. The goal with this icon redesign is to bring a consistent weight to each icon as well as vectorize them with SVG so they look good at all resolutions.</p>
-
-<p><img src="/assets/premium-archive-manage-menu.png" style="width: 275px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>A notable icon change is the unread indicator, which now has different size icons for both unread stories and focus stories, giving focus stories more depth.</p>
-
-<p><img src="/assets/premium-archive-unread-dark.png" style="width: 375px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
-
-<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>I tried to find every icon, so if you spot a dialog or menu that you’d like to see given some more love, reach out on the support forum.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[The launch of the new Premium Archive subscription tier also includes the 2022 redesign. You’ll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.
-]]>
     </summary>
     
   </entry>
