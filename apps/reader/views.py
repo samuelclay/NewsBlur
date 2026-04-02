@@ -1042,23 +1042,24 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
             for sh in story_hashes:
                 if sh in cached:
                     score = cached[sh]
-                    if score != 0:
-                        # Any non-zero cached score means the prompt matched.
-                        # Apply polarity from classifier_type.
-                        effective_score = 0
-                        if prompt.classifier_type == "focus":
-                            effective_score = 1
-                        elif prompt.classifier_type == "hidden":
-                            effective_score = -1
-                        if effective_score != 0:
-                            prompt_scores[sh] = effective_score
-                            prompt_details[sh].append(
-                                {
-                                    "prompt": prompt.prompt,
-                                    "score": effective_score,
-                                    "include_images": prompt.include_images,
-                                }
-                            )
+                    # The AI returns 1 (Focus/match), 0 (Neutral), or -1 (Hidden).
+                    # Only apply the score when the AI's result aligns with the
+                    # classifier's intent: focus classifiers use AI score 1,
+                    # hidden classifiers use AI score -1.
+                    effective_score = 0
+                    if prompt.classifier_type == "focus" and score == 1:
+                        effective_score = 1
+                    elif prompt.classifier_type == "hidden" and score == -1:
+                        effective_score = -1
+                    if effective_score != 0:
+                        prompt_scores[sh] = effective_score
+                        prompt_details[sh].append(
+                            {
+                                "prompt": prompt.prompt,
+                                "score": effective_score,
+                                "include_images": prompt.include_images,
+                            }
+                        )
                 else:
                     uncached_hashes.add(sh)
 

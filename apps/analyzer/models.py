@@ -1031,13 +1031,14 @@ class MClassifierPrompt(mongo.Document):
             Updated classifications dictionary
         """
         for story_id, result in results.items():
-            # Any non-zero result means the AI matched the prompt.
-            # The classifier_type determines the polarity of the score.
-            if result != 0:
-                if classifier_type == "focus":
-                    classifications[story_id] = 1
-                elif classifier_type == "hidden":
-                    classifications[story_id] = -1
+            # The AI returns 1 (Focus/match), 0 (Neutral), or -1 (Hidden/anti-match).
+            # Use the AI's polarity directly: Focus classifiers use 1 for matches,
+            # Hidden classifiers use -1 for matches. Ignore results that don't
+            # align with the classifier's intent (e.g., AI returns -1 for a focus classifier).
+            if classifier_type == "focus" and result == 1:
+                classifications[story_id] = 1
+            elif classifier_type == "hidden" and result == -1:
+                classifications[story_id] = -1
 
         return classifications
 
@@ -1204,12 +1205,14 @@ def get_classifiers_for_user(
             tags_scope[t.tag] = info
 
     # Fetch prompt classifiers for this user/feed, split into content vs image dicts
-    prompt_params = {"user_id": user.pk}
-    if feed_id and not isinstance(feed_id, list):
-        prompt_params["feed_id"] = feed_id
+    # Include both feed-specific and folder-level (feed_id=0) prompts
     prompts_dict = {}
     image_prompts_dict = {}
-    for p in MClassifierPrompt.objects.filter(**prompt_params):
+    if feed_id and not isinstance(feed_id, list):
+        prompts = MClassifierPrompt.objects.filter(user_id=user.pk, feed_id__in=[feed_id, 0])
+    else:
+        prompts = MClassifierPrompt.objects.filter(user_id=user.pk)
+    for p in prompts:
         score = 1 if p.classifier_type == "focus" else -1
         if p.include_images:
             image_prompts_dict[p.prompt] = score

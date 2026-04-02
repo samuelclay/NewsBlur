@@ -251,7 +251,9 @@ var classifier_prototype = {
             this.make_modal_title();
         }
 
-        this.reload_modal();
+        this.reload_modal(_.bind(function () {
+            this.load_prompt_classifiers();
+        }, this));
     },
 
     reload_modal: function (callback) {
@@ -4670,14 +4672,14 @@ var classifier_prototype = {
                         className: 'NB-manage-filter-type-prompt' + (this.manage_filter_types === 'prompt' ? ' NB-active' : '') + (counts.type_prompt === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'prompt'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'AI Content'),
+                        $.make('span', { className: 'NB-type-label' }, 'Content Filter'),
                         $.make('span', { className: 'NB-type-count' }, counts.type_prompt)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-image_prompt' + (this.manage_filter_types === 'image_prompt' ? ' NB-active' : '') + (counts.type_image_prompt === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'image_prompt'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'AI Image'),
+                        $.make('span', { className: 'NB-type-label' }, 'Image Filter'),
                         $.make('span', { className: 'NB-type-count' }, counts.type_image_prompt)
                     ])
                 ])
@@ -4919,8 +4921,8 @@ var classifier_prototype = {
         var type_label = type.charAt(0).toUpperCase() + type.slice(1);
         if (type === 'feed') type_label = 'Site';
         if (type === 'url') type_label = 'URL';
-        if (type === 'prompt') type_label = 'AI Content';
-        if (type === 'image_prompt') type_label = 'AI Image';
+        if (type === 'prompt') type_label = 'Content Filter';
+        if (type === 'image_prompt') type_label = 'Image Filter';
 
         var effective_scope = scope || 'feed';
 

@@ -5656,6 +5656,8 @@ body {
     display: inline-flex;
     align-items: center;
     vertical-align: middle;
+    margin: 6px 0 0 0;
+    align-self: start;
 }
 
 .NB-feed-story .NB-feed-story-ai-classifiers .NB-middot {

@@ -406,7 +406,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(prompt_classifiers, function(pc) { %>\
                                 <div class="NB-feed-story-ai-classifier NB-score-<%= pc.score %>" data-prompt-type="<%= pc.include_images ? \'image\' : \'content\' %>">\
-                                    <span class="NB-feed-story-ai-classifier-label"><%= pc.include_images ? \'AI Image\' : \'AI Content\' %></span>: <%= pc.prompt %>\
+                                    <span class="NB-feed-story-ai-classifier-label"><%= pc.include_images ? \'Image Filter\' : \'Content Filter\' %></span>: <%= pc.prompt %>\
                                 </div>\
                             <% }) %>\
                         </div>\
