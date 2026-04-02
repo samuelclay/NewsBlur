@@ -2,7 +2,10 @@
 
 package com.newsblur.database
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Parcelable
 import android.os.SystemClock
 import android.text.TextUtils
@@ -97,6 +100,7 @@ class StoryViewAdapter(
 
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
+    private var pendingHighlightStoryHash: String? = null
     private val userId: String?
 
     private val iconLoader: ImageLoader
@@ -291,7 +295,8 @@ class StoryViewAdapter(
                                     val first = llm?.findFirstVisibleItemPosition() ?: -1
                                     val last = llm?.findLastVisibleItemPosition() ?: -1
                                     if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
-                                        llm?.scrollToPosition(pos)
+                                        val topOffset = (rv.height * 0.15f).toInt()
+                                        llm?.scrollToPositionWithOffset(pos, topOffset)
                                     }
                                 } else {
                                     lm.onRestoreInstanceState(scrollState)
@@ -301,6 +306,14 @@ class StoryViewAdapter(
                                 this@StoryViewAdapter.oldScrollState = null
                             } else {
                                 lm.onRestoreInstanceState(scrollState)
+                            }
+                        }
+                        val highlightHash = pendingHighlightStoryHash
+                        if (highlightHash != null) {
+                            pendingHighlightStoryHash = null
+                            val highlightPos = getDisplayPositionForStoryHash(highlightHash)
+                            if (highlightPos >= 0) {
+                                animateReturnHighlight(rv, highlightPos)
                             }
                         }
                     }
@@ -402,6 +415,48 @@ class StoryViewAdapter(
 
     fun setPendingScrollStoryHash(storyHash: String?) {
         pendingScrollStoryHash = storyHash
+    }
+
+    fun setPendingHighlightStoryHash(storyHash: String?) {
+        pendingHighlightStoryHash = storyHash
+    }
+
+    private fun highlightColorForTheme(): Int =
+        when (prefsRepo.getResolvedTheme(context)) {
+            ThemeValue.SEPIA -> 0xFFEEE0CE.toInt()
+            ThemeValue.DARK -> 0xFF606060.toInt()
+            ThemeValue.BLACK -> 0xFF606060.toInt()
+            else -> 0xFFFFFDEF.toInt()
+        }
+
+    private fun defaultColorForTheme(): Int =
+        when (prefsRepo.getResolvedTheme(context)) {
+            ThemeValue.SEPIA -> 0xFFF3E2CB.toInt()
+            ThemeValue.DARK -> 0xFF4F4F4F.toInt()
+            ThemeValue.BLACK -> 0xFF000000.toInt()
+            else -> 0xFFF4F4F4.toInt()
+        }
+
+    private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
+        rv.post {
+            val vh = rv.findViewHolderForAdapterPosition(position) ?: return@post
+            val story = (vh as? StoryViewHolder)?.story
+            val highlightColor = highlightColorForTheme()
+            val defaultColor = defaultColorForTheme()
+            val animator = ValueAnimator.ofObject(ArgbEvaluator(), highlightColor, defaultColor)
+            animator.duration = 1000
+            animator.addUpdateListener { anim ->
+                vh.itemView.background = ColorDrawable(anim.animatedValue as Int)
+            }
+            animator.addListener(object : android.animation.AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    if (story != null) {
+                        vh.itemView.setBackgroundResource(backgroundResourceFor(story))
+                    }
+                }
+            })
+            animator.start()
+        }
     }
 
     fun setTextSize(textSize: Float) {
