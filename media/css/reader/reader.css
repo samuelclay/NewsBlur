@@ -13729,6 +13729,19 @@ form.opml_import_form input {
     color: white;
 }
 
+/* Subtitle explainer inside section */
+.NB-classifier-section-explainer {
+    font-size: 11px;
+    line-height: 1.3;
+    color: #999;
+    font-style: italic;
+    margin: -12px 0 10px 0;
+}
+
+.NB-dark .NB-classifier-section-explainer {
+    color: #777;
+}
+
 /* Help icon to left of input */
 .NB-classifier-help-icon {
     font-size: 16px;
