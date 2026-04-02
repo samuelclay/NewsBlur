@@ -76,20 +76,13 @@ Make sure to properly escape quotes in the description for the nested shell comm
 
 Report the Feature ID and that it's live on production.
 
-### Step 7: Write 4-5 tweet options
+### Step 7: Write tweet sets
 
-Write 4-5 tweets about the feature for the user to post. Each tweet should:
+Write 3-5 **sets** of tweets (each set is 2-3 tweets that work as a thread or standalone posts). Each tweet should:
 - Be under 280 characters (excluding the URL, which Twitter shortens)
 - End with the blog post URL on its own line
-- Vary in angle: some covering both features, some focusing on one, some with concrete examples, some short and punchy
 - Follow the writing style rules above (no em dashes, no AI slop)
 
-Present all tweet options as plain text in the conversation, clearly numbered with the full text.
+Vary each set by angle: some covering both features, some focusing on one, some with concrete examples, some short and punchy.
 
-### Step 8: Ask the user to pick tweets
-
-Use AskUserQuestion (multi-select, no previews) to ask which 2-3 tweets they want to use. Use descriptive labels that summarize the angle of each tweet.
-
-### Step 9: Present final tweets
-
-Display the selected tweets clearly formatted and ready to copy.
+Present all sets as plain text in the conversation, clearly numbered and ready to copy. Do NOT use AskUserQuestion for tweet selection. The user will copy the set they want directly.
