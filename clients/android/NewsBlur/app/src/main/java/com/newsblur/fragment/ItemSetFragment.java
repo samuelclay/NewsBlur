@@ -313,6 +313,10 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void scrollToStoryHashIfOffScreen(@Nullable String storyHash) {
+        // Set pending hash so the adapter can scroll after the async data reload
+        // that onResume() triggers via hasUpdated(), surviving the race condition.
+        adapter.setPendingScrollStoryHash(storyHash);
+
         int layoutPosition = adapter.getDisplayPositionForStoryHash(storyHash);
         int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
         int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();

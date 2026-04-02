@@ -25,6 +25,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
@@ -35,6 +36,7 @@ import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
 import com.newsblur.util.CustomIconRenderer
+import com.newsblur.fragment.ReturnedStoryScrollDecider
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
@@ -94,6 +96,7 @@ class StoryViewAdapter(
     private val storyDisplayPositions = mutableListOf<Int>()
 
     private var oldScrollState: Parcelable? = null
+    private var pendingScrollStoryHash: String? = null
     private val userId: String?
 
     private val iconLoader: ImageLoader
@@ -278,7 +281,22 @@ class StoryViewAdapter(
                         diff.dispatchUpdatesTo(this@StoryViewAdapter)
                         val lm = rv.layoutManager
                         if (lm != null) {
-                            if (oldScrollState != null) {
+                            val pendingHash = pendingScrollStoryHash
+                            if (pendingHash != null) {
+                                pendingScrollStoryHash = null
+                                val pos = getDisplayPositionForStoryHash(pendingHash)
+                                if (pos >= 0) {
+                                    lm.onRestoreInstanceState(scrollState)
+                                    val llm = lm as? LinearLayoutManager
+                                    val first = llm?.findFirstVisibleItemPosition() ?: -1
+                                    val last = llm?.findLastVisibleItemPosition() ?: -1
+                                    if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
+                                        llm?.scrollToPosition(pos)
+                                    }
+                                } else {
+                                    lm.onRestoreInstanceState(scrollState)
+                                }
+                            } else if (oldScrollState != null) {
                                 lm.onRestoreInstanceState(oldScrollState)
                                 this@StoryViewAdapter.oldScrollState = null
                             } else {
@@ -380,6 +398,10 @@ class StoryViewAdapter(
         }
 
         return -1
+    }
+
+    fun setPendingScrollStoryHash(storyHash: String?) {
+        pendingScrollStoryHash = storyHash
     }
 
     fun setTextSize(textSize: Float) {
