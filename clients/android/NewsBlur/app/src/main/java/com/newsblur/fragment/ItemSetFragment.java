@@ -312,6 +312,16 @@ public class ItemSetFragment extends NbFragment {
         }
     }
 
+    public void scrollToStoryHashIfOffScreen(@Nullable String storyHash) {
+        int layoutPosition = adapter.getDisplayPositionForStoryHash(storyHash);
+        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+        int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+
+        if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(layoutPosition, firstVisiblePosition, lastVisiblePosition)) {
+            layoutManager.scrollToPosition(layoutPosition);
+        }
+    }
+
     protected FeedSet getFeedSet() {
         return ((ItemsList) requireActivity()).getFeedSet();
     }

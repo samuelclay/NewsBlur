@@ -1066,10 +1066,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void handleReadingActivityResult(ActivityResult result) {
         if (result.getData() != null) {
-            int lastReadingPosition = result.getData().getIntExtra(Reading.LAST_READING_POS, -1);
-            if (lastReadingPosition > 1) {
-                Log.d(this.getClass().getName(), "Scrolling to last reading position " + lastReadingPosition);
-                itemSetFragment.scrollToPosition(lastReadingPosition);
+            String lastReadingStoryHash = result.getData().getStringExtra(Reading.LAST_READING_STORY_HASH);
+            if (lastReadingStoryHash != null) {
+                Log.d(this.getClass().getName(), "Checking returned story position for " + lastReadingStoryHash);
+                itemSetFragment.scrollToStoryHashIfOffScreen(lastReadingStoryHash);
             }
         }
     }

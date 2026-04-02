@@ -1130,6 +1130,9 @@ abstract class Reading :
                     com.newsblur.util.Log
                         .d(this@Reading.javaClass.name, "Finish reading at position $position")
                     putExtra(LAST_READING_POS, position)
+                    readingAdapter?.getStory(position)?.storyHash?.let { storyHash ->
+                        putExtra(LAST_READING_STORY_HASH, storyHash)
+                    }
                 }
             },
         )
@@ -1389,6 +1392,7 @@ abstract class Reading :
         private const val OVERLAY_MIN_WIDTH_DP = 355
 
         const val LAST_READING_POS = "last_reading_pos"
+        const val LAST_READING_STORY_HASH = "last_reading_story_hash"
         private const val READING_BACK_SWIPE_TRIGGER_RATIO = 0.33f
         private const val READING_BACK_SWIPE_DIRECTION_RATIO = 1.2f
         private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L

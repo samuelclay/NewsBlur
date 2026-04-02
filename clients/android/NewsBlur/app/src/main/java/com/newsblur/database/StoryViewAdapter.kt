@@ -368,6 +368,20 @@ class StoryViewAdapter(
     fun getDisplayPositionForStoryIndex(storyIndex: Int): Int =
         storyDisplayPositions.getOrNull(storyIndex) ?: storyIndex
 
+    @Synchronized
+    fun getDisplayPositionForStoryHash(storyHash: String?): Int {
+        if (storyHash.isNullOrBlank()) return -1
+
+        displayItems.forEachIndexed { index, item ->
+            when (item) {
+                is DisplayItem.StoryRow -> if (item.story.storyHash == storyHash) return index
+                is DisplayItem.ClusterRow -> if (item.clusterStory.storyHash == storyHash) return index
+            }
+        }
+
+        return -1
+    }
+
     fun setTextSize(textSize: Float) {
         this.textSize = textSize
     }
