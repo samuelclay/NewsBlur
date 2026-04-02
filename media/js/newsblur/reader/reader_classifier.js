@@ -1112,7 +1112,7 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', { className: 'NB-content-filter-header' }, [
                     $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
-                    'AI Content Filter'
+                    'Natural Language Text Classifier'
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -1362,7 +1362,7 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', { className: 'NB-image-filter-header' }, [
                     $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
-                    'AI Image Filter'
+                    'Natural Language Image Classifier'
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
