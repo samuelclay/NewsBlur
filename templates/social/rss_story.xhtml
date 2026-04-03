@@ -11,7 +11,7 @@
     {% if shared_story.comments %}
     <tr>
         <td>
-            {{ shared_story.comments }}
+            {{ shared_story.comments|safe }}
         </td>
     </tr>
     {% endif %}
