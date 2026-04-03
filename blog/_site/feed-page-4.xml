@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-02T15:54:45-04:00</updated>
+  <updated>2026-04-03T16:58:03-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,64 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Bigger story previews with the new Grid view</title>
+    <link href="https://blog.newsblur.com/2015/03/13/bigger-story-previews-with-the-new-grid-view/" rel="alternate" type="text/html" title="Bigger story previews with the new Grid view" />
+    <published>2015-03-13T11:03:38-04:00</published>
+    <updated>2015-03-13T11:03:38-04:00</updated>
+    <id>https://blog.newsblur.com/2015/03/13/bigger-story-previews-with-the-new-grid-view</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/03/13/bigger-story-previews-with-the-new-grid-view/">
+      <![CDATA[<p>There are currently three ways to read stories on NewsBlur:</p>
+
+<ul>
+  <li>List view: every story is a single line and read inline</li>
+  <li>Split view: two panes of stories, one for story titles and the other for story content</li>
+  <li>Full view: every story is fully expanded and ready for reading</li>
+</ul>
+
+<p>Each of these views has its own benefits and drawbacks, and each of these views can be further customized. The Split view, for instance, can place story titles on top, below, or to the left of the story content. The Full view can auto-truncate stories so that you only see a couple paragraphs at a time so long stories don’t overwhelm you.</p>
+
+<p>Today I’m launching a new view: the Grid view.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/grid%201.png" alt="" /></p>
+
+<p>The Grid view is half-way between the Full view and the List view. It provides big previews of the images from a story as well as several lines of content. It’s not as overwhelming as the Full view and it doesn’t force every story on a single line.</p>
+
+<p>You can also customize the Grid view to only show as many stories per line as you like.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/grid%202.png" alt="" /></p>
+
+<p>Choose between 1, 2, 3, or 4 stories per line, or stick with automatically scaling the number of stories based on how wide your browser is.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/grid%203.png" alt="" /></p>
+
+<p>The Grid view is perfect for sites and folders that contain a lot of images. And because you can now preview a larger part of the story, it makes sense to add a new preference that allows you to mark stories as read as you scroll without having to open up the story.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/grid%204.png" alt="" /></p>
+
+<p>However, the Grid view is not perfect for all feeds. That’s why I’m introducing another big change today. The four views are now saved on a per-feed and per-folder basis. You can choose a default layout in Preferences, but each feed/folder overrides that preference.</p>
+
+<p>This can become a bit complicated if you have a lot of overrides and want to instead just reset all of your layouts. So you can now reset both layouts and views for all feeds and folders right from the Preferences dialog.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/grid%205.png" alt="" /></p>
+
+<p>I hope you enjoy this new story layout. And as always, tell your friends about NewsBlur. World of mouth is killer and it’s how NewsBlur is able to be a success.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[There are currently three ways to read stories on NewsBlur:
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Organize your subscriptions with the new Organizer</title>
@@ -1018,44 +1076,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give the NewsBlur iOS app a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Offline reading with the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app/" rel="alternate" type="text/html" title="Offline reading with the NewsBlur iOS app" />
-    <published>2013-09-17T12:46:00-04:00</published>
-    <updated>2013-09-17T12:46:00-04:00</updated>
-    <id>https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/09/17/offline-reading-with-the-newsblur-ios-app/">
-      <![CDATA[<p>Today I’m launching <a href="http://www.newsblur.com/ios">version 3.0 of the iPhone and iPad app for NewsBlur</a>. This major update brings loads of big features that combine to make the world’s best iOS news reader with the fastest sync in town.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_offline.png" alt="" /></p>
-
-<ul>
-  <li>Offline support - stories and images are downloaded quickly and in parallel.</li>
-  <li>Syncing - read stories offline or with little connectivity.</li>
-  <li>Preferences - override global order/read filter settings, configure offline, and other options.</li>
-  <li>Send to - rewritten to include single-tap Instapaper/Readability/Pocket integration.</li>
-  <li>Saved and shared stories now show the proper icon.</li>
-  <li>Activities/interactions have been rewritten to be easier on the eyes.</li>
-  <li>A major performance improvement when returning to the app and when initially syncing.</li>
-</ul>
-
-<p>The biggest feature since this Spring’s redesign is finally here. As always, <a href="http://www.newsblur.com/ios">the iOS app is a free download</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[Today I’m launching version 3.0 of the iPhone and iPad app for NewsBlur. This major update brings loads of big features that combine to make the world’s best iOS news reader with the fastest sync in town.
 ]]>
     </summary>
     

@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-04-02T15:54:45-04:00</updated>
+  <updated>2026-04-03T16:58:03-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,52 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Customizing the reader, step 1: story titles</title>
+    <link href="https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles/" rel="alternate" type="text/html" title="Customizing the reader, step 1: story titles" />
+    <published>2011-09-30T09:40:30-04:00</published>
+    <updated>2011-09-30T09:40:30-04:00</updated>
+    <id>https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2011/09/30/customizing-the-reader-step-1-story-titles/">
+      <![CDATA[<p>The iPhone app is now only a few days away from launching. But it took 3 weeks of sitting around in the App Store approval queue before getting here. During that time, I started working on the new customizations that folks have been asking for.</p>
+
+<p>The first of these customizations is the story title pane. Most other readers allow you to position it wherever you like, and NewsBlur is now joining them in giving you that freedom.</p>
+
+<p>You can change the positioning under Manage &gt; Preferences.</p>
+
+<p><img src="http://cl.ly/AZwr/story_titles_pane_1.png" alt="" /></p>
+
+<h2 id="left-positioning">Left positioning</h2>
+
+<p><img src="http://cl.ly/AYS0/story_titles_pane_2.png" alt="" /></p>
+
+<h2 id="top-positioning">Top positioning</h2>
+
+<p><img src="http://cl.ly/AZ2J/story_titles_pane_3.png" alt="" /></p>
+
+<h2 id="bottom-positioning">Bottom positioning</h2>
+
+<p>The old tried and true, this is the default and what you’re already used to.</p>
+
+<p><img src="http://cl.ly/AZ3q/story_titles_pane_4.png" alt="" /></p>
+
+<p>I hope you like these new positions. There are a few other niceties in this release, namely that resizing window panes is now a live operation, showing you the content stretching in realtime.</p>
+
+<p>There’s a lot more customizations coming out soon. Follow me on GitHub to watch them happen: <a href="http://github.com/samuelclay">http://github.com/samuelclay</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[The iPhone app is now only a few days away from launching. But it took 3 weeks of sitting around in the App Store approval queue before getting here. During that time, I started working on the new customizations that folks have been asking for.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Blar: A new Android app for NewsBlur</title>

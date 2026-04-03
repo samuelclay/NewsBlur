@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-02T15:54:45-04:00</updated>
+  <updated>2026-04-03T16:58:03-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,65 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever</title>
+    <link href="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/" rel="alternate" type="text/html" title="NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever" />
+    <published>2022-07-01T00:00:00-04:00</published>
+    <updated>2022-07-01T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2022/07/01/premium-archive-subscription</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/">
+      <![CDATA[<p>For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.</p>
+
+<p>The NewsBlur Premium Archive subscription offers you the following:</p>
+
+<ul>
+  <li><img src="/assets/icons8/icons8-bursts-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Everything in the premium subscription, of course</li>
+  <li><img src="/assets/icons8/icons8-relax-with-book-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Choose when stories are automatically marked as read</li>
+  <li><img src="/assets/icons8/icons8-filing-cabinet-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Every story from every site is archived and searchable forever</li>
+  <li><img src="/assets/icons8/icons8-quadcopter-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Feeds that support paging are back-filled in for a complete archive</li>
+  <li><img src="/assets/icons8/icons8-rss-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Export trained stories from folders as RSS feeds</li>
+  <li><img src="/assets/icons8/icons8-calendar-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Stories can stay unread forever</li>
+</ul>
+
+<p>You can now enjoy a new preference for exactly when stories are marked as read:</p>
+
+<p><img src="/assets/premium-archive-mark-read-date.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>A technical note about the backfilling of your archive:</p>
+
+<blockquote>
+<p>NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. </p>
+
+<p>A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.</p>
+</blockquote>
+
+<p>NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.</p>
+
+<p>The launch of the new Premium Archive subscription tier also contains the <a href="/2022/07/01/dashboard-redesign-2022/">2022 redesign</a>, which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.</p>
+
+<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
+
+<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>How’s that for an archive?</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons</title>
@@ -1304,45 +1363,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur’s Twitter support just got a whole lot better</title>
-    <link href="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/" rel="alternate" type="text/html" title="NewsBlur’s Twitter support just got a whole lot better" />
-    <published>2017-05-09T05:30:03-04:00</published>
-    <updated>2017-05-09T05:30:03-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/">
-      <![CDATA[<p>It was a little under a year ago that I declared <a href="http://blog.newsblur.com/2021/06/21/2016-06-01-twitters-back-baby.html">Twitter back, baby</a> on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole lot better.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_upgrade.png" alt="" /></p>
-
-<p>Notice that NewsBlur now natively supports expanding truncated URLs (no more t.co links).</p>
-
-<p>And NewsBlur also supports native quoted tweets, where a user links to a tweet in their own tweet. NewsBlur expands the quoted tweet and blockquotes it for convenience.</p>
-
-<p>Plus retweets now show both the original tweet author and the retweeting author. This means that you can quickly scan tweets and see where the retweet originated from. And retweeted tweets that quote their own tweets also get expanded.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_retweets.png" alt="" /></p>
-
-<p>It’s almost as if NewsBlur is inching closer and closer to becoming its own full fledged Twitter client. While NewsBlur already hit <a href="http://www.catb.org/jargon/html/Z/Zawinskis-Law.html">Zawinski’s Law</a> (“Every program attempts to expand until it can read mail. Those programs which cannot so expand are replaced by ones which can.”) by supporting <a href="http://blog.newsblur.com/2021/06/21/2016-07-01-newsletters-in-your-newsblur.html">email-newsletters-to-rss</a>, Twitter is coming up fast.</p>
-
-<p>Speaking of which, I have this idea I’ve been noodling about better supporting Twitter habits that need to become less of a habit. I want to be able to automatically follow people from my Twitter tweetstream in NewsBlur based the frequency of their posting. I want to be able to infrequently dip into Twitter but still read the tweets from people who only post once a week or once a day.</p>
-
-<p>In other words, I want Twitter, the RSS killer, to better integrate with an RSS reader so that I can pull out the good stuff from the unending flow of tweets. RSS means never missing anything, but Twitter’s main use case is anathema to how we use RSS. I don’t like to preannounce features, but this one intrigues me and if you agree, please share this story to let me know or to give me feedback on how you would like to see NewsBlur be a better Twitter client.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[It was a little under a year ago that I declared Twitter back, baby on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole...]]>
     </summary>
     
   </entry>
