@@ -22,7 +22,12 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
 
     render: function () {
-        var comments = this.model.get('comments').replace(/\n+/g, '<br><br>');
+        var raw_comments = this.model.get('comments') || '';
+        var extracted = NEWSBLUR.Views.StoryShareView.prototype.extract_quote_from_comments(raw_comments);
+        var quote_html = extracted.quote
+            ? '<blockquote>' + extracted.quote.replace(/\n/g, '<br>') + '</blockquote>'
+            : '';
+        var comments = quote_html + extracted.comments.replace(/\n+/g, '<br><br>');
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
         var has_likes = _.any(this.model.get('liking_users'));
         var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);

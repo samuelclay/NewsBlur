@@ -6,6 +6,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         "click .NB-sideoption-share-unshare": "mark_story_as_unshared",
         "click .NB-sideoption-share-crosspost-twitter": "toggle_twitter",
         "click .NB-sideoption-share-crosspost-facebook": "toggle_facebook",
+        "click .NB-sideoption-share-quote-remove": "remove_quote",
         "keypress .NB-sideoption-share-comments": "autosize",
         "keyup .NB-sideoption-share-comments": "update_share_button_label",
         "keydown .NB-sideoption-share-comments": "maybe_close"
@@ -14,14 +15,24 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     initialize: function () {
         this.sideoptions_view = this.options.sideoptions_view;
         this.model.story_share_view = this;
+        this.pending_quote = null;
     },
 
     render: function () {
+        var shared_comments = this.model.get("shared_comments") || "";
+        var extracted = this.extract_quote_from_comments(shared_comments);
+
         this.$el.html(this.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
-            profile: NEWSBLUR.assets.user_profile
+            profile: NEWSBLUR.assets.user_profile,
+            quote: extracted.quote,
+            comments_without_quote: extracted.comments
         }));
+
+        if (extracted.quote) {
+            this.pending_quote = extracted.quote;
+        }
 
         return this;
     },
@@ -30,13 +41,63 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     <div class="NB-sideoption-share-wrapper">\
         <div class="NB-sideoption-share">\
             <div class="NB-sideoption-share-wordcount"></div>\
+            <% if (quote) { %>\
+            <div class="NB-sideoption-share-quote">\
+                <div class="NB-sideoption-share-quote-remove">&times;</div>\
+                <blockquote><%= quote %></blockquote>\
+            </div>\
+            <% } %>\
             <div class="NB-sideoption-share-title">Comments:</div>\
-            <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
+            <textarea class="NB-sideoption-share-comments"><%= comments_without_quote %></textarea>\
             <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
             <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
         </div>\
     </div>\
     '),
+
+    set_quote: function (text) {
+        this.pending_quote = text;
+        var $share = this.$('.NB-sideoption-share');
+        this.$('.NB-sideoption-share-quote').remove();
+
+        var $blockquote = $(document.createElement('blockquote')).text(text);
+        var $quote = $.make('div', { className: 'NB-sideoption-share-quote' }, [
+            $.make('div', { className: 'NB-sideoption-share-quote-remove' }, '\u00d7'),
+            $blockquote[0]
+        ]);
+        $share.find('.NB-sideoption-share-title').before($quote);
+    },
+
+    remove_quote: function () {
+        this.pending_quote = null;
+        this.$('.NB-sideoption-share-quote').remove();
+        this.resize({ resize_open: true });
+        this.update_share_button_label();
+    },
+
+    extract_quote_from_comments: function (comments) {
+        if (!comments) return { quote: '', comments: '' };
+
+        var match = comments.match(/^<blockquote>([\s\S]*?)<\/blockquote>\s*/);
+        if (match) {
+            return {
+                quote: match[1],
+                comments: comments.substring(match[0].length)
+            };
+        }
+        return { quote: '', comments: comments };
+    },
+
+    build_comments_with_quote: function (comments) {
+        if (this.pending_quote) {
+            var quote_html = '<blockquote>' + _.escape(this.pending_quote) + '</blockquote>';
+            if (comments) {
+                return quote_html + '\n' + comments;
+            }
+            return quote_html;
+        }
+        return comments;
+    },
 
     toggle_feed_story_share_dialog: function (options) {
         options = options || {};
@@ -207,7 +268,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
         var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
-        var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
+        var raw_comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
+        var comments = this.build_comments_with_quote(raw_comments);
         if (this.options.on_social_page) {
             var source_user_id = NEWSBLUR.Globals.blurblog_user_id;
         } else if (_.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
@@ -268,6 +330,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
 
     post_share_story: function (shared, data) {
+        this.pending_quote = null;
         this.model.set("shared", shared);
         this.model.trigger('change:comments', data);
 
@@ -282,7 +345,15 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
         $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
-        $comments_sideoptions.val(this.model.get('shared_comments'));
+
+        // Extract quote from shared_comments so textarea only shows the comment
+        var shared_comments = this.model.get('shared_comments') || '';
+        var extracted = this.extract_quote_from_comments(shared_comments);
+        $comments_sideoptions.val(extracted.comments);
+        this.$('.NB-sideoption-share-quote').remove();
+        if (extracted.quote) {
+            this.set_quote(extracted.quote);
+        }
 
         if (this.options.on_social_page) {
             this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));
@@ -354,7 +425,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
 
         $share_button.removeClass('NB-saving').removeClass('NB-disabled');
 
-        if (!_.string.isBlank($comment_input.val())) {
+        if (!_.string.isBlank($comment_input.val()) || this.pending_quote) {
             $share_button.text('Share with comment');
         } else {
             $share_button.text('Share');

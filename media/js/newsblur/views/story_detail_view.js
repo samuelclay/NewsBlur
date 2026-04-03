@@ -42,6 +42,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-highlight-selection": "highlight_selected_text",
         "click .NB-unhighlight-selection": "unhighlight_selected_text",
         "click .NB-train-selection": "train_selected_text",
+        "click .NB-quote-selection": "quote_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-super-negative": "show_classifier_highlight_menu",
@@ -109,10 +110,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.share_view = this.sideoptions_view.share_view;
 
         params['story_save_view'] = this.sideoptions_view.save_view.render();
-        params['story_share_view'] = this.sideoptions_view.share_view.template({
+        var shared_comments = this.model.get("shared_comments") || "";
+        var extracted = this.share_view.extract_quote_from_comments(shared_comments);
+        if (extracted.quote) this.share_view.pending_quote = extracted.quote;
+        params['story_share_view'] = this.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
-            profile: NEWSBLUR.assets.user_profile
+            profile: NEWSBLUR.assets.user_profile,
+            quote: extracted.quote,
+            comments_without_quote: extracted.comments
         });
         this.$el.html(this.template(params));
 
@@ -558,8 +564,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     render_comments: function () {
-        var $original_comments = this.$('.NB-feed-story-comments-container,.NB-feed-story-comments');
-        var $original_shares = this.$('.NB-feed-story-shares-container,.NB-feed-story-shares');
+        var $original_comments = this.$('.NB-feed-story-comments-container').first();
+        if (!$original_comments.length) {
+            $original_comments = this.$('.NB-feed-story-comments').first();
+        }
+        var $original_shares = this.$('.NB-feed-story-shares-container').first();
+        if (!$original_shares.length) {
+            $original_shares = this.$('.NB-feed-story-shares').first();
+        }
 
         if (this.model.get("comment_count") || this.model.get("share_count")) {
             var comments_view = new NEWSBLUR.Views.StoryCommentsView({ model: this.model });
@@ -1310,7 +1322,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             "done": _.bind(function () {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
                 console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
-                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-quote-selection'>Quote</span><br><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
                     appendTo: this.el,
@@ -1354,7 +1366,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     show_unhighlight_tooltip: function ($highlight) {
         this.$highlight = $highlight;
-        $highlight.attr('title', "<span class='NB-unhighlight-selection'>Unhighlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        this.serialized_highlight = _.string.trim($highlight.text());
+        $highlight.attr('title', "<span class='NB-unhighlight-selection'>Unhighlight</span><span class='NB-train-selection'>Train</span><span class='NB-quote-selection'>Quote</span><br><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($highlight.get(0), {
             // delay: 100,
             appendTo: this.el,
@@ -1394,7 +1407,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         // Show the highlight/train/search menu
-        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-quote-selection'>Quote</span><br><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($mark.get(0), {
             appendTo: this.el,
             arrow: true,
@@ -1504,6 +1517,41 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
 
+    quote_selected_text: function () {
+        var quote_text = this.serialized_highlight;
+        if (!quote_text) return false;
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        var $doc = this.$(".NB-feed-story-content");
+        $doc.removeAttr('id');
+        this.apply_starred_story_selections();
+
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.selection) {
+            document.selection.empty();
+        }
+
+        // Set the quote on the share view and open it
+        if (this.share_view) {
+            this.share_view.set_quote(quote_text);
+            this.share_view.toggle_feed_story_share_dialog({ animate_scroll: true, resize_open: true });
+        }
+
+        return true;
+    },
+
     show_search_highlight_menu: function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1520,7 +1568,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         // Show the highlight/train/search menu
-        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-quote-selection'>Quote</span><br><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($mark.get(0), {
             appendTo: this.el,
             arrow: true,

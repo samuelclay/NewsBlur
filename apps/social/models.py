@@ -59,7 +59,7 @@ from utils import s3_utils
 from utils.feed_functions import chunks, relative_timesince
 from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
-from utils.story_functions import linkify, strip_tags, truncate_chars
+from utils.story_functions import linkify, strip_tags, strip_tags_preserve_blockquote, truncate_chars
 from vendor import facebook
 
 try:
@@ -1861,7 +1861,7 @@ class MSharedStory(mongo.DynamicDocument):
         self.story_title = strip_tags(self.story_title)
         self.story_hash = self.feed_guid_hash
 
-        self.comments = linkify(strip_tags(self.comments))
+        self.comments = linkify(strip_tags_preserve_blockquote(self.comments))
         for reply in self.replies:
             reply.comments = linkify(strip_tags(reply.comments))
 

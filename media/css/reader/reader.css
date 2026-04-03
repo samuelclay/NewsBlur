@@ -5121,7 +5121,7 @@ body {
     padding: .5em 1.5em;
     margin: 0px;
     background-color: #f7faf6;
-    border-radius: 4px;
+    border-radius: 0;
 }
 
 .NB-feed-story .NB-feed-story-content iframe,
@@ -6064,6 +6064,7 @@ body {
 .NB-highlight-selection,
 .NB-unhighlight-selection,
 .NB-train-selection,
+.NB-quote-selection,
 .NB-search-site-selection,
 .NB-search-folder-selection {
     padding: 6px 10px;
@@ -6077,6 +6078,7 @@ body {
 .NB-highlight-selection:hover,
 .NB-unhighlight-selection:hover,
 .NB-train-selection:hover,
+.NB-quote-selection:hover,
 .NB-search-site-selection:hover,
 .NB-search-folder-selection:hover {
     cursor: pointer;
@@ -6086,6 +6088,7 @@ body {
 .NB-highlight-selection:active,
 .NB-unhighlight-selection:active,
 .NB-train-selection:active,
+.NB-quote-selection:active,
 .NB-search-site-selection:active,
 .NB-search-folder-selection:active {
     color: rgba(255, 255, 255, 0.8);
@@ -6696,6 +6699,18 @@ body {
 .NB-story-comment .NB-story-comment-content {
     clear: both;
     padding: 0 0 6px 0;
+}
+
+.NB-story-comment .NB-story-comment-content blockquote {
+    margin: 0 0 8px 0;
+    padding: 8px 10px;
+    border-left: 3px solid #a0a0a0;
+    border-radius: 0;
+    background: #f0f0f0;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #606060;
 }
 
 .NB-feed-story-endbar {
@@ -7329,6 +7344,41 @@ body {
 .NB-sideoption-share {
     padding: 9px 12px;
     border: 1px solid #DBE6EA;
+}
+
+.NB-sideoption-share .NB-sideoption-share-quote {
+    position: relative;
+    margin: 0 0 8px;
+    padding: 0;
+}
+
+.NB-sideoption-share .NB-sideoption-share-quote blockquote {
+    margin: 0;
+    padding: 8px 24px 8px 10px;
+    border-left: 3px solid #a0a0a0;
+    border-radius: 0;
+    background: #f0f0f0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #505050;
+    white-space: pre-line;
+    font-style: italic;
+    text-align: left;
+}
+
+.NB-sideoption-share .NB-sideoption-share-quote-remove {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #a0a0a0;
+    line-height: 1;
+    z-index: 1;
+}
+
+.NB-sideoption-share .NB-sideoption-share-quote-remove:hover {
+    color: #404040;
 }
 
 .NB-sideoption-share .NB-sideoption-share-title {

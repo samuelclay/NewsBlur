@@ -139,6 +139,7 @@ from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
     strip_tags,
+    strip_tags_preserve_blockquote,
 )
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
@@ -1395,7 +1396,7 @@ def load_single_feed(request, feed_id):
                     shared_stories[story["story_hash"]]["shared_date"], user.profile.timezone
                 )
                 story["shared_date"] = format_story_link_date__long(shared_date, now)
-                story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
+                story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
         else:
             story["read_status"] = 1
 
@@ -1834,7 +1835,7 @@ def load_starred_stories(request):
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading starred stories: ~SB%s stories %s" % (len(stories), search_log))
@@ -2322,7 +2323,7 @@ def load_read_stories(request):
             story["starred_timestamp"] = int(starred_date.timestamp())
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading read stories: ~SB%s stories %s" % (len(stories), search_log))

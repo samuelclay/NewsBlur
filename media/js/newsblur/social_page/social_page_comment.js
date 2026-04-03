@@ -44,7 +44,8 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
             this.$el.addClass('NB-hidden');
             $edit.removeClass('NB-hidden');
             $del.removeClass('NB-hidden');
-            $input.html(this.model.get('comments')).focus();
+            var extracted = NEWSBLUR.Views.StoryShareView.prototype.extract_quote_from_comments(this.model.get('comments'));
+            $input.html(extracted.comments).focus();
         }, this));
     },
 

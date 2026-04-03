@@ -72,6 +72,7 @@ from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
     strip_tags,
+    strip_tags_preserve_blockquote,
 )
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import is_true, render_to, required_params
@@ -287,7 +288,7 @@ def load_social_stories(request, user_id, username=None):
             story["user_tags"] = starred_stories[story["story_hash"]]["user_tags"]
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
 
         story["intelligence"] = {
             "feed": apply_classifier_feeds(
@@ -536,7 +537,7 @@ def load_river_blurblog(request):
                 shared_stories[story["story_hash"]]["shared_date"], user.profile.timezone
             )
             story["shared_date"] = format_story_link_date__long(shared_date, now)
-            story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
             if (
                 shared_stories[story["story_hash"]]["shared_date"] < user.profile.unread_cutoff
                 or story["story_hash"] not in unread_feed_story_hashes
@@ -972,7 +973,7 @@ def mark_story_as_shared(request):
             starred_stories[0]["starred_date"], request.user.profile.timezone
         )
         story["starred_date"] = format_story_link_date__long(starred_date, now)
-    story["shared_comments"] = strip_tags(shared_story["comments"] or "")
+    story["shared_comments"] = strip_tags_preserve_blockquote(shared_story["comments"] or "")
     story["shared_by_user"] = True
     story["shared"] = True
     shared_date = localtime_for_timezone(shared_story["shared_date"], request.user.profile.timezone)

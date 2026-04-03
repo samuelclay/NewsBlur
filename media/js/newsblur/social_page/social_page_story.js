@@ -56,10 +56,15 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
                     model: this.model,
                     on_social_page: true
                 });
+                var shared_comments = this.model.get("shared_comments") || "";
+                var extracted = this.share_view.extract_quote_from_comments(shared_comments);
+                if (extracted.quote) this.share_view.pending_quote = extracted.quote;
                 $sideoptions.append($(this.share_view.template({
                     story: this.model,
                     social_services: NEWSBLUR.assets.social_services,
-                    profile: NEWSBLUR.assets.user_profile
+                    profile: NEWSBLUR.assets.user_profile,
+                    quote: extracted.quote,
+                    comments_without_quote: extracted.comments
                 })));
             }, this), 50);
         }

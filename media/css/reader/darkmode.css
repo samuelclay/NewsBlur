@@ -2630,6 +2630,20 @@ color: #fff;
     color: #c0c0c0;
 }
 
+.NB-dark .NB-sideoption-share-quote blockquote {
+    background: #2a2d2e;
+    border-left-color: #606060;
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-sideoption-share-quote-remove {
+    color: #707070;
+}
+
+.NB-dark .NB-sideoption-share-quote-remove:hover {
+    color: #c0c0c0;
+}
+
 .NB-dark .NB-sideoption-discover .segmented-control-item a {
     color: #c0c0c0;
 }
@@ -2749,6 +2763,12 @@ background: #191b1c;
 .NB-dark .NB-story-comment-content,
 .NB-dark .NB-story-comment-reply-content {
     color: #c0c0c0;
+}
+
+.NB-dark .NB-story-comment-content blockquote {
+    background: #2a2d2e;
+    border-left-color: #606060;
+    color: #b0b0b0;
 }
 
 

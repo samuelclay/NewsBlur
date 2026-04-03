@@ -436,6 +436,21 @@ def strip_tags(html):
     return strip_tags_django(html)
 
 
+def strip_tags_preserve_blockquote(html):
+    if not html:
+        return ""
+    # Extract blockquote, strip tags from the rest, then reassemble
+    match = re.match(r"^<blockquote>(.*?)</blockquote>\s*(.*)", html, re.DOTALL)
+    if match:
+        quote_text = strip_tags_django(match.group(1))
+        rest = strip_tags_django(match.group(2))
+        result = "<blockquote>" + quote_text + "</blockquote>"
+        if rest:
+            result += "\n" + rest
+        return result
+    return strip_tags_django(html)
+
+
 def html_to_text(html_content):
     """
     Convert HTML content to plain text for AI processing.

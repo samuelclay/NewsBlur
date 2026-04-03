@@ -5,6 +5,7 @@ NEWSBLUR.Models.Comment = Backbone.Model.extend({
     initialize: function () {
         this.bind('change:replies', this.changes_replies);
         this.bind('change:comments', this.strip_html_in_comments);
+        this.strip_html_in_comments();
         this.changes_replies();
     },
 
@@ -15,11 +16,25 @@ NEWSBLUR.Models.Comment = Backbone.Model.extend({
     },
 
     strip_html_in_comments: function () {
-        this.attributes['comments'] = this.strip_html(this.get('comments'));
+        var comments = this.get('comments');
+        if (comments) {
+            this.attributes['comments'] = this.strip_html(comments);
+        }
     },
 
     strip_html: function (html) {
-        return html.replace(/<\/?[^>]+(>|$)/g, "");
+        // Preserve leading blockquote, strip all other HTML
+        var quote = '';
+        var rest = html;
+        var match = html.match(/^<blockquote>([\s\S]*?)<\/blockquote>\s*/);
+        if (match) {
+            quote = '<blockquote>' + match[1].replace(/<\/?[^>]+(>|$)/g, "") + '</blockquote>';
+            rest = html.substring(match[0].length);
+        }
+        rest = rest.replace(/<\/?[^>]+(>|$)/g, "");
+        if (quote && rest) return quote + '\n' + rest;
+        if (quote) return quote;
+        return rest;
     }
 
 
