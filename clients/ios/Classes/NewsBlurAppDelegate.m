@@ -204,6 +204,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
 @synthesize notificationFeedIds;
+@synthesize pendingDailyBriefingStoryHash;
 
 @synthesize database;
 @synthesize categories;
@@ -2339,7 +2340,15 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (void)backgroundLoadNotificationStory {
-    if (self.inFindingStoryMode) {
+    NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
+                                                                                pendingFolder:self.pendingFolder];
+
+    if (self.pendingDailyBriefingStoryHash != nil && [startupFolder isEqualToString:@"daily_briefing"]) {
+        NSString *storyHash = self.pendingDailyBriefingStoryHash.length ? self.pendingDailyBriefingStoryHash : nil;
+        self.pendingDailyBriefingStoryHash = nil;
+        self.pendingFolder = nil;
+        [self openDailyBriefingWithStoryHash:storyHash];
+    } else if (self.inFindingStoryMode) {
         if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             if (!self.isPhone) {
                 [self.feedsViewController selectWidgetStories];
@@ -2356,8 +2365,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if (!self.isPhone && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
-    } else if (self.pendingFolder != nil) {
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
+    } else if (startupFolder != nil) {
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:startupFolder];
     }
     
     self.pendingFolder = nil;
@@ -3128,27 +3137,24 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (void)openDailyBriefingWithStoryHash:(NSString *)storyHash {
-    void (^handler)(void) = ^{
-        if (!self.activeUsername) return;
-
-        [self popToRootWithCompletion:^{
-            if (storyHash.length > 0) {
-                self.inFindingStoryMode = YES;
-                self.findingStoryStartDate = [NSDate date];
-                self.findingStoryDictionary = nil;
-                self.tryFeedStoryId = storyHash;
-                self.tryFeedFeedId = nil;
-                self.tryFeedStoryTitle = nil;
-            }
-            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"daily_briefing"];
-        }];
-    };
-
     if (!self.activeUsername) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), handler);
-    } else {
-        handler();
+        self.pendingDailyBriefingStoryHash = [DailyBriefingStartupDecision pendingStoryHashForStoryHash:storyHash];
+        return;
     }
+
+    self.pendingDailyBriefingStoryHash = nil;
+
+    [self popToRootWithCompletion:^{
+        if (storyHash.length > 0) {
+            self.inFindingStoryMode = YES;
+            self.findingStoryStartDate = [NSDate date];
+            self.findingStoryDictionary = nil;
+            self.tryFeedStoryId = storyHash;
+            self.tryFeedFeedId = nil;
+            self.tryFeedStoryTitle = nil;
+        }
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"daily_briefing"];
+    }];
 }
 
 - (void)donateRefresh {

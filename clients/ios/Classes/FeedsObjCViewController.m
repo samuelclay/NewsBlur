@@ -1203,7 +1203,9 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
         [self cacheFeedRowLocations];
     }
     
-    if (appDelegate.pendingFolder != nil) {
+    if (appDelegate.pendingDailyBriefingStoryHash != nil) {
+        [self loadNotificationStory];
+    } else if (appDelegate.pendingFolder != nil) {
         if ([appDelegate splitUnreadCountForFolder:appDelegate.pendingFolder].nt > 0) {
             [self loadNotificationStory];
         }

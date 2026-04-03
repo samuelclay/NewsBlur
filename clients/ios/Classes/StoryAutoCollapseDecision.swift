@@ -319,6 +319,25 @@ public enum StoryAutoCollapseBehavior: String {
     }
 }
 
+@objcMembers public final class DailyBriefingStartupDecision: NSObject {
+    @objc(pendingStoryHashForStoryHash:)
+    public class func pendingStoryHash(for storyHash: String?) -> String? {
+        storyHash ?? ""
+    }
+
+    @objc(startupFolderWithPendingStoryHash:pendingFolder:)
+    public class func startupFolder(
+        pendingStoryHash: String?,
+        pendingFolder: String?
+    ) -> String? {
+        if pendingStoryHash != nil {
+            return "daily_briefing"
+        }
+
+        return pendingFolder
+    }
+}
+
 @objcMembers public final class DailyBriefingPaginationDecision: NSObject {
     public class func shouldPrefetchNextPage(
         remainingOffset: CGFloat,

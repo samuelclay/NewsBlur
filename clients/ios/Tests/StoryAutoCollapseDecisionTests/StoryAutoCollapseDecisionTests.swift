@@ -236,6 +236,30 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_deferred_daily_briefing_navigation_keeps_briefing_folder_over_app_opening_folder() {
+        XCTAssertEqual(
+            DailyBriefingStartupDecision.startupFolder(
+                pendingStoryHash: DailyBriefingStartupDecision.pendingStoryHash(for: "feed:1"),
+                pendingFolder: "everything"
+            ),
+            "daily_briefing"
+        )
+    }
+
+    func test_deferred_daily_briefing_navigation_preserves_links_without_story_hash() {
+        XCTAssertEqual(
+            DailyBriefingStartupDecision.pendingStoryHash(for: nil),
+            ""
+        )
+        XCTAssertEqual(
+            DailyBriefingStartupDecision.startupFolder(
+                pendingStoryHash: DailyBriefingStartupDecision.pendingStoryHash(for: nil),
+                pendingFolder: "everything"
+            ),
+            "daily_briefing"
+        )
+    }
+
     func test_daily_briefing_pagination_waits_for_user_scroll() {
         XCTAssertFalse(
             DailyBriefingPaginationDecision.shouldPrefetchNextPage(
