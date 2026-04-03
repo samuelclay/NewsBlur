@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Introducing Premium Pro: high-frequency fetching and precision regex filtering"
+title: "Introducing Premium Pro: high-frequency fetching for instant notifications"
 tags: ["web"]
 ---
 
 Some of you don't just read the news. You monitor it. You're tracking competitors, watching for security disclosures, following regulatory changes, or covering a beat where being 30 minutes late means you missed the story. NewsBlur has always been a great reader, but for people who need it to be a monitoring tool, I wanted to build something that takes feed fetching and filtering seriously.
 
-Premium Pro is the new top tier. It includes everything in <a href="https://newsblur.com/pricing/archive">Premium Archive</a> and adds three things that matter when speed and precision are the priority: high-frequency fetching, regex-powered training, and a 10,000 site limit.
+Premium Pro is the new top tier. It includes everything in <a href="https://newsblur.com/pricing/archive">Premium Archive</a> and adds two things that matter when speed is the priority: high-frequency fetching and a 10,000 site limit. And when you pair that with Premium Archive features like classifier-driven notifications, Pro becomes a real-time monitoring system.
 
 ### Every feed fetched every 5 minutes
 
@@ -29,25 +29,20 @@ Notifications go to every platform at once: iOS push notifications, Android push
 <!-- SCREENSHOT: Notification settings modal for a feed showing channel toggles and Focus filter -->
 <img src="/assets/pro-notification-settings.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
-### Train stories with regular expressions
+### Classifier-driven notifications, supercharged by Pro
 
-The Intelligence Trainer already lets you filter stories by author, tag, title, text, and URL. But exact phrase matching has limits. If you want to catch "iPhone" and "iPad" and "MacBook" in one classifier, you need three separate entries. With regex mode, that's just `iPhone|iPad|MacBook`.
+Premium Archive recently added the ability to attach notifications directly to individual classifiers. Train a tag, author, title keyword, or phrase, and turn on notifications for that specific classifier. Track a specific author across a folder of feeds. Watch for a tag like "layoffs" or "acquisition" across your entire account. Get pinged the moment a story about a competitor shows up anywhere in your subscriptions. Classifier notifications work at every scope: per-feed, per-folder, or global across all your feeds.
 
-<!-- SCREENSHOT: Regex mode toggle in the Intelligence Trainer showing a pattern -->
-<img src="/assets/pro-regex-training.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
+These classifiers now come in three flavors. Standard classifiers match exact tags, authors, and keywords. Regex classifiers let you write patterns like `\bCVE-\d{4}-\d+\b` to catch any CVE identifier, or `iPhone|iPad|MacBook` to track multiple products in a single classifier. And natural language classifiers let you describe what you're looking for in plain English, like "stories about startup funding rounds over $50M" or "any mention of regulatory action against tech companies." All three types can have notifications attached.
 
-Regex patterns work on titles, body text, and URLs. Some examples of what you can build:
+<!-- SCREENSHOT: Classifier notification popover showing a trained tag with notification toggle -->
+<img src="/assets/pro-classifier-notification.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
-- **Security monitoring**: `\bCVE-\d{4}-\d+\b` matches any CVE identifier
-- **Multi-product tracking**: `iPhone|iPad|MacBook|Vision Pro` in one classifier
-- **Filtering sponsored content**: `/sponsored/|/partner/` on URLs to hide or highlight paid posts
-- **Price alerts**: `\$\d{1,3}(,\d{3})*\.\d{2}` to catch dollar amounts in stories
-
-The trainer validates patterns in real-time and includes a help popover with syntax examples. Regex matching is case-insensitive, so `apple` catches "Apple", "APPLE", and "apple". I wrote more about regex mode in the <a href="/2026/01/22/intelligence-trainer-overhaul/">Intelligence Trainer overhaul post</a>.
+On their own, classifier notifications are already useful. But on Pro, where every feed is checked every 5 minutes, they become something else entirely. Create a natural language classifier for exactly the kind of story you're watching for, attach a notification, and within minutes of that story appearing in any of your feeds, you have a push notification on your phone. That's the difference between knowing about something the same day and knowing about it the same hour. If you're already using classifier notifications on Premium Archive, Pro is what makes them fast enough for real monitoring.
 
 ### Follow up to 10,000 sites
 
-Pro raises the feed limit to 10,000. Premium supports 1,024 sites, Archive supports 4,096, and Pro takes it to 10,000. If you need comprehensive coverage across industries, beats, competitors, or research domains, this is the ceiling you've been looking for.
+Pro raises the feed limit to 10,000. Premium supports 1,024 sites, Premium Archive supports 4,096, and Pro takes it to 10,000. If you need comprehensive coverage across industries, beats, competitors, or research domains, this is the ceiling you've been looking for.
 
 ### Everything in Archive, included
 
@@ -57,6 +52,6 @@ You also get priority support, so when you need help, you're at the front of the
 
 ### Pricing
 
-Premium Pro is $29/month. It's monthly rather than yearly because the high-frequency fetching infrastructure costs more to operate. You're paying for dedicated polling of up to 10,000 feeds every 5 minutes, and the regex processing that runs against every incoming story. If your work depends on being the first to know, Pro pays for itself.
+Premium Pro is $29/month. It's monthly rather than yearly because the high-frequency fetching infrastructure costs more to operate. You're paying for dedicated polling of up to 10,000 feeds every 5 minutes. If your work depends on being the first to know, Pro pays for itself.
 
 You can upgrade from the <a href="https://newsblur.com/?next=premium">Premium page</a> on the web. If you have feedback or ideas for Pro, I'd love to hear them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
