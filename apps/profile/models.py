@@ -1756,10 +1756,10 @@ class Profile(models.Model):
             return False
 
         if partial:
-            stripe_payments[0].refund(amount=1200)
+            stripe.Refund.create(charge=stripe_payments[0].id, amount=1200)
             refunded = 12
         else:
-            stripe_payments[0].refund()
+            stripe.Refund.create(charge=stripe_payments[0].id)
             self.cancel_premium_stripe()
             refunded = stripe_payments[0].amount / 100
 
