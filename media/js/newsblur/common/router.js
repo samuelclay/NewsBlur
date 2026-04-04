@@ -159,6 +159,12 @@ NEWSBLUR.Router = Backbone.Router.extend({
         } else if (folder_name == "global blurblogs") {
             options['global'] = true;
             NEWSBLUR.reader.open_river_blurblogs_stories(options);
+        } else if (folder_name == "widely read stories") {
+            options['trending_type'] = 'well_read';
+            NEWSBLUR.reader.open_trending_stories(options);
+        } else if (folder_name == "long reads") {
+            options['trending_type'] = 'long_reads';
+            NEWSBLUR.reader.open_trending_stories(options);
         } else {
             var folder = NEWSBLUR.assets.get_folder(folder_name);
             if (folder) {

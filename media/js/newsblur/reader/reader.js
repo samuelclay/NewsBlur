@@ -48,6 +48,8 @@
                 $river_infrequent_header: $('.NB-feeds-header-river-infrequent'),
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
+                $river_well_read_header: $('.NB-feeds-header-river-well-read'),
+                $river_long_reads_header: $('.NB-feeds-header-river-long-reads'),
                 $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $river_briefing_admin_header: $('.NB-feeds-header-river-briefing-admin'),
                 $archive_header: $('.NB-feeds-header-archive'),
@@ -1438,6 +1440,8 @@
                 'briefing_view': false,
                 'briefing_admin_view': false,
                 'briefing_section': null,
+                'trending_view': false,
+                'trending_type': null,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
                 'reloading_feeds': false,
@@ -1487,6 +1491,8 @@
             this.$s.$river_infrequent_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
+            this.$s.$river_well_read_header.removeClass('NB-selected');
+            this.$s.$river_long_reads_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$river_briefing_admin_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
@@ -1589,6 +1595,10 @@
                 this.active_feed == 'river:global') {
                 options.global = true;
                 this.open_river_blurblogs_stories(options);
+            } else if (this.flags['trending_view'] &&
+                this.active_feed && this.active_feed.indexOf('trending:') == 0) {
+                options.trending_type = this.flags.trending_type;
+                this.open_trending_stories(options);
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
@@ -2854,6 +2864,105 @@
             }
         },
 
+        // =============================
+        // = Trending Stories Feature =
+        // =============================
+
+        open_trending_stories: function (options) {
+            options = options || {};
+            var trending_type = options.trending_type || 'well_read';
+            var folder_title = trending_type == 'long_reads' ? 'Long Reads' : 'Widely Read Stories';
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'trending:' + trending_type;
+            this.active_folder = new Backbone.Model({
+                id: this.active_feed,
+                folder_title: folder_title,
+                fake: true,
+                show_options: true
+            });
+
+            if (trending_type == 'long_reads') {
+                this.$s.$river_long_reads_header.addClass('NB-selected');
+            } else {
+                this.$s.$river_well_read_header.addClass('NB-selected');
+            }
+
+            this.iframe_scroll = null;
+            this.flags['opening_feed'] = true;
+            this.$s.$layout.addClass('NB-view-river');
+            this.flags.river_view = true;
+            this.flags.trending_view = true;
+            this.flags.trending_type = trending_type;
+            if (options.story_id) {
+                this.flags['select_story_in_feed'] = options.story_id;
+            }
+
+            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
+                explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.switch_taskbar_view(this.story_view);
+            this.switch_story_layout();
+            this.setup_mousemove_on_views();
+            this.make_feed_title_in_stories();
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
+
+            if (!options.silent) {
+                var slug = folder_title.replace(/ /g, '-').toLowerCase();
+                var url = "folder/" + slug;
+                if (!_.string.include(window.location.pathname, url)) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
+            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
+                NEWSBLUR.app.story_list.show_loading(options);
+            } else {
+                NEWSBLUR.app.story_titles.show_loading(options);
+            }
+            NEWSBLUR.app.taskbar_info.hide_stories_error();
+
+            this.model.fetch_trending_stories(this.active_feed, 1,
+                { 'trending_type': trending_type },
+                _.bind(this.post_open_trending_stories, this),
+                NEWSBLUR.app.taskbar_info.show_stories_error, true);
+        },
+
+        post_open_trending_stories: function (data, first_load) {
+            if (!data) {
+                return NEWSBLUR.app.taskbar_info.show_stories_error(data);
+            }
+
+            if (this.active_feed && _.isString(this.active_feed) &&
+                this.active_feed.indexOf('trending:') != -1) {
+                this.flags['opening_feed'] = false;
+                NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
+                this.flags['story_titles_loaded'] = true;
+                if (this.counts['find_next_unread_on_page_of_feed_stories_load']) {
+                    this.show_next_unread_story(true);
+                } else if (this.counts['find_last_unread_on_page_of_feed_stories_load']) {
+                    this.show_last_unread_story(true);
+                } else if (this.counts['select_story_in_feed'] ||
+                    this.flags['select_story_in_feed']) {
+                    this.select_story_in_feed();
+                }
+                if (first_load) {
+                    this.find_story_with_action_preference_on_open_feed();
+                    this.position_mouse_indicator();
+                }
+                NEWSBLUR.app.taskbar_info.hide_stories_progress_bar();
+                if (NEWSBLUR.Globals.is_anonymous) {
+                    this.show_tryout_signup_button();
+                }
+            }
+        },
+
         // ===================
         // = Archive Feature =
         // ===================
@@ -3834,6 +3943,12 @@
             } else if (this.active_feed == 'read') {
                 this.model.fetch_read_stories(this.counts['page'], _.bind(this.post_open_read_stories, this),
                     NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else if (this.flags['trending_view'] && this.active_feed && this.active_feed.indexOf('trending:') == 0) {
+                this.model.fetch_trending_stories(this.active_feed,
+                    this.counts['page'],
+                    { 'trending_type': this.flags.trending_type },
+                    _.bind(this.post_open_trending_stories, this),
+                    NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
                 this.model.fetch_river_blurblogs_stories(this.active_feed,
                     this.counts['page'],
@@ -3886,6 +4001,10 @@
                 feed_title = "All Site Stories";
             } else if (feed_id == 'river:global') {
                 feed_title = "Global Shared Stories";
+            } else if (feed_id == 'trending:well_read') {
+                feed_title = "Widely Read Stories";
+            } else if (feed_id == 'trending:long_reads') {
+                feed_title = "Long Reads";
             } else if (feed_id == 'river:blurblogs') {
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {

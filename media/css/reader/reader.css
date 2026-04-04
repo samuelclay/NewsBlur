@@ -39813,6 +39813,11 @@ span.NB-briefing-inline-favicon {
     display: none;
 }
 
+/* reader.css: Well-Read Stories and Long Reads — staff-only trending story feeds */
+.NB-feeds-header-river-well-read-container,
+.NB-feeds-header-river-long-reads-container {
+    display: none;
+}
 .NB-briefing-admin-meta {
     font-size: 11px;
     color: #999;

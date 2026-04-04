@@ -1,4 +1,6 @@
 import datetime
+import logging
+import time
 
 import redis
 from django.conf import settings
@@ -325,3 +327,163 @@ class RTrendingStory:
         filtered = [s for s in all_stories if s["reader_count"] >= min_readers]
         filtered.sort(key=lambda x: x["avg_seconds_per_reader"], reverse=True)
         return filtered[:limit]
+
+    # --- Permanent trending lists ---
+    # These sorted sets accumulate story_hashes over time, scored by story_date timestamp.
+    # Once a story qualifies, it stays on the list permanently (capped at 10,000).
+    # Populated during the Prometheus trending scrape (once per hour).
+
+    WELL_READ_KEY = "trending:well_read"
+    LONG_READS_KEY = "trending:long_reads"
+    MAX_LIST_SIZE = 10000
+    WELL_READ_MIN_READERS = 3
+
+    @classmethod
+    def refresh_trending_lists(cls):
+        """Scan current trending data and add qualifying stories to the permanent lists.
+
+        Called during the Prometheus trending scrape. Stories that qualify:
+        - Well-Read: 3+ readers (any read time)
+        - Long Reads: mirrors Grafana (>=3 readers, sorted by avg read time, top 20)
+        """
+        from apps.rss_feeds.models import MStory
+
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+
+        # Well-Read Stories: all stories with 3+ readers from the last 7 days
+        well_read_stories = cls.get_trending_stories_detailed(days=7, limit=200)
+        well_read_qualifying = [s for s in well_read_stories if s["reader_count"] >= cls.WELL_READ_MIN_READERS]
+
+        # Long Reads: top stories by avg read time with >=3 readers (mirrors Grafana)
+        long_read_stories = cls.get_long_reads(days=7, limit=20, min_readers=3)
+
+        # Collect all story hashes we need to look up dates for
+        all_hashes = set()
+        for s in well_read_qualifying:
+            all_hashes.add(s["story_hash"])
+        for s in long_read_stories:
+            all_hashes.add(s["story_hash"])
+
+        if not all_hashes:
+            return
+
+        # Check which hashes are already in the permanent lists to avoid unnecessary DB lookups
+        pipe = r.pipeline()
+        for h in all_hashes:
+            pipe.zscore(cls.WELL_READ_KEY, h)
+        for h in all_hashes:
+            pipe.zscore(cls.LONG_READS_KEY, h)
+        scores = pipe.execute()
+        n = len(all_hashes)
+        hash_list = list(all_hashes)
+        existing_well_read = {hash_list[i] for i in range(n) if scores[i] is not None}
+        existing_long_reads = {hash_list[i] for i in range(n) if scores[n + i] is not None}
+
+        # Find hashes that need story_date lookup
+        new_well_read = {s["story_hash"] for s in well_read_qualifying} - existing_well_read
+        new_long_reads = {s["story_hash"] for s in long_read_stories} - existing_long_reads
+        need_dates = new_well_read | new_long_reads
+
+        # Look up story dates from MongoDB
+        story_dates = {}
+        if need_dates:
+            for story in MStory.objects(story_hash__in=list(need_dates)).only("story_hash", "story_date"):
+                if story.story_date:
+                    story_dates[story.story_hash] = story.story_date.timestamp()
+                else:
+                    story_dates[story.story_hash] = time.time()
+
+        # Add new stories to permanent lists
+        pipe = r.pipeline()
+        added_well_read = 0
+        added_long_reads = 0
+
+        for story_hash in new_well_read:
+            score = story_dates.get(story_hash, time.time())
+            pipe.zadd(cls.WELL_READ_KEY, {story_hash: score}, nx=True)
+            added_well_read += 1
+
+        for story_hash in new_long_reads:
+            score = story_dates.get(story_hash, time.time())
+            pipe.zadd(cls.LONG_READS_KEY, {story_hash: score}, nx=True)
+            added_long_reads += 1
+
+        # Cap the lists at MAX_LIST_SIZE by removing oldest entries
+        pipe.zremrangebyrank(cls.WELL_READ_KEY, 0, -(cls.MAX_LIST_SIZE + 1))
+        pipe.zremrangebyrank(cls.LONG_READS_KEY, 0, -(cls.MAX_LIST_SIZE + 1))
+
+        pipe.execute()
+
+        if added_well_read or added_long_reads:
+            logging.debug(
+                "Trending lists refreshed: +%s well-read, +%s long-reads" % (added_well_read, added_long_reads)
+            )
+
+    @classmethod
+    def get_well_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
+        """Get paginated story hashes from the permanent well-read list."""
+        return cls._get_permanent_list_hashes(
+            cls.WELL_READ_KEY, offset, limit, order, read_filter, user_id
+        )
+
+    @classmethod
+    def get_long_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
+        """Get paginated story hashes from the permanent long-reads list."""
+        return cls._get_permanent_list_hashes(
+            cls.LONG_READS_KEY, offset, limit, order, read_filter, user_id
+        )
+
+    @classmethod
+    def _get_permanent_list_hashes(cls, key, offset, limit, order, read_filter, user_id):
+        """Fetch story hashes from a permanent trending sorted set with optional read filtering.
+
+        Overfetches and filters for unread mode since we can't do cross-Redis-instance set ops.
+        """
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+
+        if read_filter == "all" or not user_id:
+            # Simple pagination, no read filtering needed
+            if order == "oldest":
+                results = r.zrange(key, offset, offset + limit - 1)
+            else:
+                results = r.zrevrange(key, offset, offset + limit - 1)
+            return [h.decode() if isinstance(h, bytes) else h for h in results]
+
+        # For unread filtering, overfetch and check read state
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        read_key = "RS:%s" % user_id
+
+        # Overfetch to account for read stories being filtered out
+        fetch_size = max(limit * 5, 100)
+        batch_offset = 0
+        collected = []
+        skipped = 0
+
+        while len(collected) < offset + limit:
+            if order == "oldest":
+                batch = r.zrange(key, batch_offset, batch_offset + fetch_size - 1)
+            else:
+                batch = r.zrevrange(key, batch_offset, batch_offset + fetch_size - 1)
+
+            if not batch:
+                break
+
+            hashes = [h.decode() if isinstance(h, bytes) else h for h in batch]
+
+            # Batch check read state
+            pipe = r2.pipeline()
+            for h in hashes:
+                pipe.sismember(read_key, h)
+            read_states = pipe.execute()
+
+            for h, is_read in zip(hashes, read_states):
+                if not is_read:
+                    collected.append(h)
+
+            batch_offset += fetch_size
+
+            # Safety valve: don't scan more than the entire list
+            if batch_offset > cls.MAX_LIST_SIZE:
+                break
+
+        return collected[offset : offset + limit]

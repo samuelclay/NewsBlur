@@ -5472,6 +5472,135 @@ def trending_feeds(request):
     return {"trending_feeds": result}
 
 
+@json.json_view
+def load_trending_stories(request):
+    """
+    Load stories from the permanent trending lists (Well-Read Stories or Long Reads).
+
+    GET Parameters:
+        trending_type: "well_read" or "long_reads"
+        page: Page number (default 1)
+        limit: Stories per page (default 12)
+        order: "newest" or "oldest" (default "newest")
+        read_filter: "all" or "unread" (default "all")
+    """
+    user = get_user(request)
+    trending_type = request.GET.get("trending_type", "well_read")
+    page = max(int(request.GET.get("page", 1)), 1)
+    limit = min(int(request.GET.get("limit", 12)), 100)
+    order = request.GET.get("order", "newest")
+    read_filter = request.GET.get("read_filter", "all")
+    offset = (page - 1) * limit
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    nowtz = now
+
+    user_id = user.pk if user.is_authenticated else None
+
+    if trending_type == "long_reads":
+        story_hashes = RTrendingStory.get_long_read_story_hashes(
+            offset=offset, limit=limit, order=order, read_filter=read_filter, user_id=user_id
+        )
+    else:
+        story_hashes = RTrendingStory.get_well_read_story_hashes(
+            offset=offset, limit=limit, order=order, read_filter=read_filter, user_id=user_id
+        )
+
+    mstories = MStory.objects(story_hash__in=story_hashes).order_by()
+    stories = Feed.format_stories(mstories)
+
+    # Sort stories to match the order from the sorted set
+    story_hash_order = {h: i for i, h in enumerate(story_hashes)}
+    stories.sort(key=lambda s: story_hash_order.get(s["story_hash"], 999))
+
+    # Look up read state from Redis
+    r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_key = "RS:%s" % user.pk if user.is_authenticated else None
+    read_hashes = set()
+    if read_key and stories:
+        pipe = r2.pipeline()
+        for s in stories:
+            pipe.sismember(read_key, s["story_hash"])
+        results = pipe.execute()
+        read_hashes = {s["story_hash"] for s, is_read in zip(stories, results) if is_read}
+
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk if user.is_authenticated else 0, check_all=True)
+
+    # Get feed metadata for stories
+    story_feed_ids = list(set(s["story_feed_id"] for s in stories))
+    usersub_ids = []
+    if user.is_authenticated:
+        usersub_ids = [
+            us["feed__pk"]
+            for us in UserSubscription.objects.filter(
+                user__pk=user.pk, feed__pk__in=story_feed_ids
+            ).values("feed__pk")
+        ]
+    unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
+    unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
+    unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
+
+    # Look up starred stories
+    story_hash_list = [s["story_hash"] for s in stories]
+    starred_stories = {}
+    shared_stories = {}
+    if user.is_authenticated:
+        starred_stories = dict(
+            [
+                (story.story_hash, story)
+                for story in MStarredStory.objects(
+                    user_id=user.pk, story_hash__in=story_hash_list
+                ).hint([("user_id", 1), ("story_hash", 1)])
+            ]
+        )
+        shared_stories = dict(
+            [
+                (story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
+                for story in MSharedStory.objects(
+                    user_id=user.pk, story_hash__in=story_hash_list
+                )
+                .hint([("story_hash", 1)])
+                .only("story_hash", "shared_date", "comments")
+            ]
+        )
+
+    for story in stories:
+        story["read_status"] = 1 if story["story_hash"] in read_hashes else 0
+        story_date = localtime_for_timezone(story["story_date"], user.profile.timezone)
+        story["short_parsed_date"] = format_story_link_date__short(story_date, nowtz)
+        story["long_parsed_date"] = format_story_link_date__long(story_date, nowtz)
+        if story["story_hash"] in starred_stories:
+            story["starred"] = True
+            starred_story = Feed.format_story(starred_stories[story["story_hash"]])
+            starred_date = localtime_for_timezone(starred_story["starred_date"], user.profile.timezone)
+            story["starred_date"] = format_story_link_date__long(starred_date, now)
+            story["starred_timestamp"] = int(starred_date.timestamp())
+        if story["story_hash"] in shared_stories:
+            story["shared"] = True
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
+        story["intelligence"] = {
+            "feed": 1,
+            "author": 0,
+            "tags": 0,
+            "title": 0,
+            "title_regex": 0,
+            "text": 0,
+            "text_regex": 0,
+            "url": 0,
+            "url_regex": 0,
+        }
+
+    type_label = "long reads" if trending_type == "long_reads" else "well-read"
+    logging.user(request, "~FCLoading ~SB%s~SN %s stories (p. %s)" % (len(stories), type_label, page))
+
+    return {
+        "stories": stories,
+        "user_profiles": user_profiles,
+        "feeds": unsub_feeds,
+    }
+
+
 @ajax_login_required
 @json.json_view
 def save_feed_auto_mark_read(request):

@@ -13,6 +13,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
         "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
         "click .NB-feeds-header-river-global": "open_river_global_stories",
+        "click .NB-feeds-header-river-well-read": "open_well_read_stories",
+        "click .NB-feeds-header-river-long-reads": "open_long_reads_stories",
         "click .NB-feeds-header-river-dashboard": "show_splash_page",
         "click .NB-feeds-header-archive": "open_archive",
         "click .NB-feeds-header-add-site": "open_add_site",
@@ -283,6 +285,14 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_river_global_stories: function () {
         return NEWSBLUR.reader.open_river_blurblogs_stories({ 'global': true });
+    },
+
+    open_well_read_stories: function () {
+        return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'well_read' });
+    },
+
+    open_long_reads_stories: function () {
+        return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'long_reads' });
     },
 
     open_archive: function () {
