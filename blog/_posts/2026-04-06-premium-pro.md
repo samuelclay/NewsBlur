@@ -23,11 +23,9 @@ Fast fetching only matters if you find out about new stories quickly. NewsBlur h
 
 Notifications go to every platform at once: iOS push notifications, Android push notifications, browser notifications on the web, Mac notifications, and email. Set up a few critical feeds with notifications enabled and you have a real-time alerting pipeline built on RSS.
 
-<!-- SCREENSHOT: Collage showing notifications arriving simultaneously on iOS, Android, Mac, web browser, and email -->
-<img src="/assets/pro-notifications-all-platforms.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
+<!-- SCREENSHOT: iOS push notifications from NewsBlur -->
+<img src="/assets/pro-notifications-all-platforms.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
-<!-- SCREENSHOT: Notification settings modal for a feed showing channel toggles and Focus filter -->
-<img src="/assets/pro-notification-settings.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 ### Classifier-driven notifications, supercharged by Pro
 
@@ -35,8 +33,8 @@ Premium Archive recently added the ability to attach notifications directly to i
 
 These classifiers now come in three flavors. Standard classifiers match exact tags, authors, and keywords. Regex classifiers let you write patterns like `\bCVE-\d{4}-\d+\b` to catch any CVE identifier, or `iPhone|iPad|MacBook` to track multiple products in a single classifier. And natural language classifiers let you describe what you're looking for in plain English, like "stories about startup funding rounds over $50M" or "any mention of regulatory action against tech companies." All three types can have notifications attached.
 
-<!-- SCREENSHOT: Classifier notification popover showing a trained tag with notification toggle -->
-<img src="/assets/pro-classifier-notification.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
+<!-- SCREENSHOT: Classifier tag with Notify on Match popover -->
+<img src="/assets/pro-classifier-notification.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 On their own, classifier notifications are already useful. But on Pro, where every feed is checked every 5 minutes, they become something else entirely. Create a natural language classifier for exactly the kind of story you're watching for, attach a notification, and within minutes of that story appearing in any of your feeds, you have a push notification on your phone. That's the difference between knowing about something the same day and knowing about it the same hour. If you're already using classifier notifications on Premium Archive, Pro is what makes them fast enough for real monitoring.
 

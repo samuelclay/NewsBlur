@@ -12,7 +12,7 @@
   <link href="/feed-page-6.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-03T16:58:03-04:00</updated>
+  <updated>2026-04-03T19:39:59-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,50 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">The NewsBlur iPhone and iPad app meets iOS 7</title>
+    <link href="https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/" rel="alternate" type="text/html" title="The NewsBlur iPhone and iPad app meets iOS 7" />
+    <published>2013-10-28T09:53:00-04:00</published>
+    <updated>2013-10-28T09:53:00-04:00</updated>
+    <id>https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2013/10/28/the-newsblur-iphone-and-ipad-app-meets-ios-7/">
+      <![CDATA[<p>Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give <a href="http://www.newsblur.com/ios">the NewsBlur iOS app</a> a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v3.5.png" alt="" /></p>
+
+<ul>
+  <li>Entire interface has been redesigned for iOS 7.</li>
+  <li>Gestures galore: mark stories as read/unread, save stories, mark feeds as read, train feeds.</li>
+  <li>Long press a feed or folder to choose a mark as read date: 1 day, 3 days, 7 days, 14 days. Works offline, too!</li>
+  <li>Long press a story title to send it to a third-party read later service.</li>
+  <li>New view layout for iPad: move story titles to the bottom in portrait.</li>
+  <li>Significantly improved scrolling speeds on the feed list and story list.</li>
+  <li>You can now unread stories that were read while offline.</li>
+  <li>Faster marking of folders as read.</li>
+  <li>Fixed numerous bugs related to reading stories while offline.</li>
+</ul>
+
+<p>The iPad app also has a new view for extra-wide reading while in portrait orientation.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v3.5%20iPad.png" alt="" /></p>
+
+<p>I hope you enjoy this latest update. And stay tuned for the next update coming soon which will include even more iOS 7 features: Dynamic Text Size and Background Updates. <a href="http://www.newsblur.com/ios">The NewsBlur iOS app</a> is and will always be free.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give the NewsBlur iOS app a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Offline reading with the NewsBlur iOS app</title>
@@ -1307,41 +1351,6 @@ margin-right: 24px;
     <summary type="html">
       <![CDATA[Twelve months can be a quick flyby if you don’t stop to write everything down. Luckily, a habit I’ve kept since July 2009, when I started recording monthly goals for my project, is still going strong.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A Social Feed Reader</title>
-    <link href="https://blog.newsblur.com/2011/10/26/a-social-feed-reader/" rel="alternate" type="text/html" title="A Social Feed Reader" />
-    <published>2011-10-26T11:41:23-04:00</published>
-    <updated>2011-10-26T11:41:23-04:00</updated>
-    <id>https://blog.newsblur.com/2011/10/26/a-social-feed-reader</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2011/10/26/a-social-feed-reader/">
-      <![CDATA[<p>NewsBlur was released exactly one year ago. You can read the initial reaction on Hacker News: <a href="http://news.ycombinator.com/item?id=1834305.">http://news.ycombinator.com/item?id=1834305.</a> Since then, so much has changed and all for the better. Usage is up—way, way up. Premium users are helping the site run. Load times are approaching the goal of less than 100 ms (0.10 sec) per page. In short, things couldn’t be better.</p>
-
-<p>Recently, my main competitor, Google Reader, announced plans to decommission the social features of the site and integrate them into Google+. While Google is busy refocusing on what’s important to them, many users feel left behind. My goal with NewsBlur is to make a better, complete experience for reading sites. This includes social features that make reading a social experience.</p>
-
-<p>Social is a major planned feature. It’s highly prioritized right after I build two other big ticket items: mobile and search. The mobile iPhone app is wrapping up and is already at version 1.1 on the App Store, although I have not publicly launched it because it still needs a few more features (specifically, training and the river of news) to be considered feature-complete.</p>
-
-<p>Once that’s out the door, I have to build search to be able to support social. Search won’t be impossible, since the UI design decisions are fairly straight-foward, and the backend is a no-brainer in terms of design. But it’ll take some time to get right, make fast, and get integrated into the massive database that is quickly accumulating.</p>
-
-<p>After that, I have so many social ideas swimming in my head that I’m ready to drown. I’ve had these social features planned since day one. But I never built them because I needed to make a proof-of-concept first, to be sure that social features would be even feasible.</p>
-
-<p>Also, you can’t discount the immense network effort that building social features would bring. I’m a solo indie developer working on this part-time. Having social features would crush my servers if used as much as I think they would. But know that I am planning some wonderful features to be released as soon as the pieces are in place. Look for the first inkling in the new year.</p>
-
-<p>Let me know on Twitter what your ideas of a good social experience are: <a href="http://twitter.com/samuelclay">@samuelclay</a>.</p>
-
-<p>Sam Clay</p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur was released exactly one year ago. You can read the initial reaction on Hacker News: http://news.ycombinator.com/item?id=1834305. Since then, so much has changed and all for the better. Usage is up—way, way up. Premium users are helping the site run. Load times are approaching the goal of less than 100...]]>
     </summary>
     
   </entry>
