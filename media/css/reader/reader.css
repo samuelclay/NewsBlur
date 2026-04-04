@@ -6075,6 +6075,16 @@ body {
     transition: background-color 0.2s ease-out;
 }
 
+.NB-highlight-selection svg,
+.NB-unhighlight-selection svg,
+.NB-train-selection svg,
+.NB-quote-selection svg,
+.NB-search-site-selection svg,
+.NB-search-folder-selection svg {
+    vertical-align: -2px;
+    margin-right: 2px;
+}
+
 .NB-highlight-selection:hover,
 .NB-unhighlight-selection:hover,
 .NB-train-selection:hover,
