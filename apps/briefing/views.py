@@ -21,6 +21,7 @@ from apps.briefing.models import (
 )
 from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
+from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
 from utils import log as logging
@@ -146,6 +147,12 @@ def load_briefing_stories(request):
             feeds_by_id = {}
             for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title", "favicon_color"):
                 feeds_by_id[feed.pk] = feed
+            user_titles = dict(
+                UserSubscription.objects.filter(user=user, feed_id__in=feed_ids)
+                .exclude(user_title__isnull=True)
+                .exclude(user_title="")
+                .values_list("feed_id", "user_title")
+            )
 
             for story_hash in curated_hashes:
                 story = stories_by_hash.get(story_hash)
@@ -154,7 +161,7 @@ def load_briefing_stories(request):
                     story_dict["read_status"] = 1 if story_hash in read_hashes else 0
                     feed = feeds_by_id.get(story.story_feed_id)
                     if feed:
-                        story_dict["feed_title"] = feed.feed_title
+                        story_dict["feed_title"] = user_titles.get(feed.pk, feed.feed_title)
                         story_dict["favicon_color"] = feed.favicon_color
                         story_dict["feed_id"] = feed.pk
                     curated_stories.append(story_dict)

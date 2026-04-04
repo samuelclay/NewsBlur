@@ -863,8 +863,15 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         if s["story_hash"] in hash_to_cluster:
             all_cluster_feed_ids.add(s["story_feed_id"])
     feeds_by_id = {}
+    user_titles = {}
     if all_cluster_feed_ids:
         feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_cluster_feed_ids)}
+        user_titles = dict(
+            UserSubscription.objects.filter(user=user, feed_id__in=all_cluster_feed_ids)
+            .exclude(user_title__isnull=True)
+            .exclude(user_title="")
+            .values_list("feed_id", "user_title")
+        )
 
     off_page_metadata = {}
     if off_page_hashes:
@@ -892,7 +899,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     "story_title": story.story_title or "",
                     "story_date": story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "",
                     "story_timestamp": str(int(story.story_date.timestamp())) if story.story_date else "",
-                    "feed_title": feed.feed_title if feed else "",
+                    "feed_title": user_titles.get(story.story_feed_id, feed.feed_title) if feed else "",
                     "story_authors": story.story_author_name or "",
                 }
 
@@ -997,7 +1004,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     "story_title": s.get("story_title", ""),
                     "story_date": s.get("story_date", ""),
                     "story_timestamp": s.get("story_timestamp", ""),
-                    "feed_title": feed.feed_title if feed else "",
+                    "feed_title": user_titles.get(s["story_feed_id"], feed.feed_title) if feed else "",
                     "story_authors": s.get("story_authors", ""),
                     "intelligence": s.get("intelligence", {"feed": 0, "author": 0, "tags": 0, "title": 0}),
                     "score": s.get("score", 0),
@@ -1059,8 +1066,12 @@ def attach_cluster_data_to_stories(stories, user):
 
     from apps.reader.models import UserSubscription
 
-    user_feed_ids = set(
-        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    user_subs = UserSubscription.objects.filter(user=user, active=True)
+    user_feed_ids = set(user_subs.values_list("feed_id", flat=True))
+    user_titles = dict(
+        user_subs.exclude(user_title__isnull=True)
+        .exclude(user_title="")
+        .values_list("feed_id", "user_title")
     )
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -1129,7 +1140,7 @@ def attach_cluster_data_to_stories(stories, user):
                     "story_title": story.story_title or "",
                     "story_date": (story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else ""),
                     "story_timestamp": (str(int(story.story_date.timestamp())) if story.story_date else ""),
-                    "feed_title": feed.feed_title if feed else "",
+                    "feed_title": user_titles.get(story.story_feed_id, feed.feed_title) if feed else "",
                     "story_authors": story.story_author_name or "",
                     "intelligence": {"feed": 0, "author": 0, "tags": 0, "title": 0},
                     "score": 0,
