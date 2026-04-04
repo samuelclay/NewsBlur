@@ -289,6 +289,18 @@ NEWSBLUR.utils = {
             if (selected_folder_title == "river:infrequent") {
                 $option.attr('selected', true);
             }
+
+            var $option = $.make('option', { value: 'trending:well_read' }, "Widely Read Stories");
+            $options.append($option);
+            if (selected_folder_title == "trending:well_read") {
+                $option.attr('selected', true);
+            }
+
+            var $option = $.make('option', { value: 'trending:long_reads' }, "Long Reads");
+            $options.append($option);
+            if (selected_folder_title == "trending:long_reads") {
+                $option.attr('selected', true);
+            }
         }
 
         // Only show Top Level if not filtering, or if it contains filtered feeds

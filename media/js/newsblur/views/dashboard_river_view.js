@@ -19,6 +19,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             this.options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
         } else if (this.model.get('river_id') == "river:global") {
             this.options.global_feed = true;
+        } else if (_.string.startsWith(this.model.get('river_id'), 'trending:')) {
+            this.options.trending_type = this.model.get('river_id').replace('trending:', '');
         }
 
         NEWSBLUR.assets.feeds.unbind(null, null, this);
@@ -240,6 +242,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         options = _.extend({
             global_feed: this.options.global_feed,
             infrequent: this.options.infrequent,
+            trending_type: this.options.trending_type,
             query: this.options.query,
         }, options || {});
         if (options.feed_selector) return;
@@ -248,6 +251,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (!feeds.length) return;
         if (!this.$stories.length) return;
         if (this.model.get('river_id') == "river:global") feeds = [];
+        if (_.string.startsWith(this.model.get('river_id'), 'trending:')) feeds = [];
 
         // console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds, options, this.$stories.length]);
         this.page = 1;
@@ -363,6 +367,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         } else if (river_id == "river:global") {
             NEWSBLUR.reader.open_river_blurblogs_stories(_.extend({
                 global: true
+            }, options));
+        } else if (_.string.startsWith(river_id, 'trending:')) {
+            NEWSBLUR.reader.open_trending_stories(_.extend({
+                trending_type: river_id.replace('trending:', '')
             }, options));
         } else if (_.string.startsWith(river_id, 'river:')) {
             var folder = NEWSBLUR.assets.get_folder(river_id.replace('river:', ''));

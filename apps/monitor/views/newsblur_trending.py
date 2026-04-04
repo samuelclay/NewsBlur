@@ -23,6 +23,12 @@ class TrendingFeeds(View):
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
+        # Refresh permanent trending lists on every scrape (not gated by cache)
+        try:
+            RTrendingStory.refresh_trending_lists()
+        except Exception:
+            pass
+
         cached = r.get(CACHE_KEY)
         if cached:
             return HttpResponse(cached, content_type="text/plain")
@@ -234,12 +240,6 @@ class TrendingFeeds(View):
         # Self-monitoring: track how long this endpoint takes to respond
         elapsed_ms = (time.time() - start_time) * 1000
         formatted_data["scrape_duration"] = f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
-
-        # Refresh permanent trending lists (for Well-Read Stories and Long Reads feeds)
-        try:
-            RTrendingStory.refresh_trending_lists()
-        except Exception:
-            pass  # Don't let trending list refresh break the Prometheus endpoint
 
         context = {
             "data": formatted_data,
