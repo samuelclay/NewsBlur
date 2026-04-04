@@ -1037,7 +1037,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
 
             if (data.feeds) {
-                var river = _.any(['river:', 'social:'], function (prefix) {
+                var river = _.any(['river:', 'social:', 'trending:'], function (prefix) {
                     return _.isString(feed_id) && _.string.startsWith(feed_id, prefix);
                 });
                 if (river) _.each(data.feeds, function (feed) { feed.temp = true; });
@@ -1047,7 +1047,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             callback(data);
         };
 
-        if (_.string.startsWith(feed_id, 'river:global')) {
+        if (_.string.startsWith(feed_id, 'trending:')) {
+            options.trending_type = feed_id.replace('trending:', '');
+            this.make_request('/reader/trending_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        } else if (_.string.startsWith(feed_id, 'river:global')) {
             this.make_request('/social/river_stories', options, pre_callback, error_callback, {
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'

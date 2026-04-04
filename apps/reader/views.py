@@ -5527,17 +5527,80 @@ def load_trending_stories(request):
 
     # Get feed metadata for stories
     story_feed_ids = list(set(s["story_feed_id"] for s in stories))
-    usersub_ids = []
-    if user.is_authenticated:
-        usersub_ids = [
-            us["feed__pk"]
-            for us in UserSubscription.objects.filter(
-                user__pk=user.pk, feed__pk__in=story_feed_ids
-            ).values("feed__pk")
-        ]
+    usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=story_feed_ids)
+    usersub_ids = [sub.feed_id for sub in usersubs]
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
+
+    # Load classifiers for feeds the user has trained
+    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+    found_trained_feed_ids = list(set(trained_feed_ids) & set(story_feed_ids))
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
+    folder_feed_ids = None
+
+    if found_trained_feed_ids or has_scoped:
+        if found_trained_feed_ids:
+            classifier_feeds = list(
+                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
+            )
+            classifier_authors = list(
+                MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_titles = list(
+                MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_tags = list(
+                MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_texts = list(
+                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_urls = list(
+                MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+        else:
+            classifier_feeds = []
+            classifier_authors = []
+            classifier_titles = []
+            classifier_tags = []
+            classifier_texts = []
+            classifier_urls = []
+
+        if has_scoped:
+            scoped = load_scoped_classifiers(user.pk)
+            classifier_titles.extend(scoped["titles"])
+            classifier_texts.extend(scoped["texts"])
+            classifier_urls.extend(scoped["urls"])
+            classifier_authors.extend(scoped["authors"])
+            classifier_tags.extend(scoped["tags"])
+            try:
+                usf = UserSubscriptionFolders.objects.get(user=user)
+                flat_folders = usf.flatten_folders()
+                folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
+            except UserSubscriptionFolders.DoesNotExist:
+                folder_feed_ids = {}
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
+        classifier_texts = []
+        classifier_urls = []
+
+    classifiers = sort_classifiers_by_feed(
+        user=user,
+        feed_ids=story_feed_ids,
+        classifier_feeds=classifier_feeds,
+        classifier_authors=classifier_authors,
+        classifier_titles=classifier_titles,
+        classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
+        folder_feed_ids=folder_feed_ids,
+    )
+
+    user_is_pro = user.profile.is_pro
 
     # Look up starred stories
     story_hash_list = [s["story_hash"] for s in stories]
@@ -5580,24 +5643,47 @@ def load_trending_stories(request):
                 shared_stories[story["story_hash"]]["comments"]
             )
         story["intelligence"] = {
-            "feed": 1,
-            "author": 0,
-            "tags": 0,
-            "title": 0,
-            "title_regex": 0,
-            "text": 0,
-            "text_regex": 0,
-            "url": 0,
-            "url_regex": 0,
+            "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
+            "text": (
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(
+                classifier_urls,
+                story,
+                user_is_premium=user.profile.is_premium,
+                folder_feed_ids=folder_feed_ids,
+            ),
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
         }
+        story["score"] = UserSubscription.score_story(story["intelligence"])
 
-    type_label = "long reads" if trending_type == "long_reads" else "well-read"
+    type_label = "long reads" if trending_type == "long_reads" else "widely-read"
     logging.user(request, "~FCLoading ~SB%s~SN %s stories (p. %s)" % (len(stories), type_label, page))
 
     return {
         "stories": stories,
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
+        "classifiers": classifiers,
     }
 
 
