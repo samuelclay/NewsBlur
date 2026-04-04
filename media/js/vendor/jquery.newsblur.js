@@ -254,6 +254,10 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-shares.svg';
                 if (feed_id == 'river:global')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/global-shares.svg';
+                if (feed_id == 'trending:well_read')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/blaze.svg';
+                if (feed_id == 'trending:long_reads')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/moon.svg';
                 if (_.string.startsWith(feed_id, 'river:')) {
                     var folder_title = feed_id.substring('river:'.length);
                     var folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(folder_title);

@@ -183,6 +183,8 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
   - Classes prefixed with `Test_`
   - Methods prefixed with `test_`
 
+- **Icons**: When you need new SVG icons, check `media/img/icons/phosphor-fill/` and `media/img/icons/remix-fill/` for existing icons before sourcing externally. Copy to `media/img/icons/nouns/` with `fill="#95968e"` to match the UI icon color.
+
 - **Prioritize readability over performance**
 - **Leave no TODOs or placeholders**
 - **Always reference file names in comments**
