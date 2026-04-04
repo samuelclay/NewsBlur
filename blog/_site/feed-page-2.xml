@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-03T16:58:03-04:00</updated>
+  <updated>2026-04-03T19:39:59-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,43 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Introducing the Grid view on iOS</title>
+    <link href="https://blog.newsblur.com/2023/12/06/ios-grid-view/" rel="alternate" type="text/html" title="Introducing the Grid view on iOS" />
+    <published>2023-12-06T00:00:00-05:00</published>
+    <updated>2023-12-06T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2023/12/06/ios-grid-view</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2023/12/06/ios-grid-view/">
+      <![CDATA[<p>The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
+<img src="/assets/ipad-grid-1.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>Just like on the web, you can customize how many stories you see and how large each story is, giving you the freedom to read stories with large thumbnails or small image previews.</p>
+
+<p><img src="/assets/ipad-grid-2.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>It even works on iPhone!</p>
+
+<p><img src="/assets/iphone-grid.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>If you have any other ideas you’d like to see on iPad and iPhone, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
+
+<p>This is a huge release and has been a year in the making. Coming up soon: a new Mac app and intelligent feed discovery.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
+
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever</title>
@@ -1311,58 +1348,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     <summary type="html">
       <![CDATA[Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Add your own Custom CSS and Custom JavaScript to NewsBlur on the web</title>
-    <link href="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/" rel="alternate" type="text/html" title="Add your own Custom CSS and Custom JavaScript to NewsBlur on the web" />
-    <published>2017-05-22T05:00:41-04:00</published>
-    <updated>2017-05-22T05:00:41-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
-      <![CDATA[<p>Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two new fields: Custom CSS and Custom Javascript.</p>
-
-<p>Head to <em>Manage &gt; Account &gt; Custom CSS/JS</em>. And here’s what you can do with this new feature.</p>
-
-<p><strong>Install an unofficial dark theme for NewsBlur</strong></p>
-
-<figure class="tmblr-full" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"><img style="width: 650px;" data-orig-height="960" data-orig-width="1098" src="https://userstyles.org/style_screenshots/124890_after.png" /></figure>
-
-<p>Over on Stylish, a community for custom CSS, there are <a href="https://userstyles.org/styles/browse?search_terms=newsblur">a bunch of stylesheets that change how NewsBlur looks</a>. Have you ever wanted a dark theme? There’s a few and <a href="https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike">the most popular is made by NewsBlur user Splike</a>. (Note: you will have to remove the @moz delcaraction along with the surrounding {}’s at the top and bottom lines.)</p>
-
-<p><strong>Hide that module or link that you don’t want to see on NewsBlur</strong></p>
-
-<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png" /></figure>
-
-<p>Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/* Hides the Global Shared Stories feed */
-.NB-feeds-header-river-global-container { 
-    display: none !important; 
-}
-
-/* Hides the Dashboard River */
-.NB-module-river {
-    display: none !important;
-}
-</code></pre></div></div>
-
-<p><strong>Run a custom script</strong></p>
-
-<p>Ok, to be 100% truthful, I have no idea why you’d want to run custom JavaScript on NewsBlur. But if you figure out a reason please let me know! Either <a href="http://samuel@newsblur.com">shoot me an email</a> or mention it to <a href="https://twitter.com/newsblur">@newsblur on Twitter</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two...]]>
     </summary>
     
   </entry>
