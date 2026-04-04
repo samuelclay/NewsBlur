@@ -6,10 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.DialogFragment
-import com.google.android.gms.tasks.Task
-import com.google.android.play.core.review.ReviewInfo
-import com.google.android.play.core.review.ReviewManager
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.di.IconLoader
@@ -30,21 +26,6 @@ import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-internal enum class FeedItemsBackAction {
-    FINISH_STORY_LIST,
-    LAUNCH_REVIEW,
-}
-
-internal fun resolveFeedItemsBackAction(
-    hasReviewInfo: Boolean,
-    isGestureNavigation: Boolean,
-): FeedItemsBackAction =
-    if (hasReviewInfo && !isGestureNavigation) {
-        FeedItemsBackAction.LAUNCH_REVIEW
-    } else {
-        FeedItemsBackAction.FINISH_STORY_LIST
-    }
-
 @AndroidEntryPoint
 class FeedItemsList : ItemsList() {
     @Inject
@@ -56,8 +37,7 @@ class FeedItemsList : ItemsList() {
     private var isTryFeed = false
     private var tryFeedUrl: String? = null
 
-    private var reviewManager: ReviewManager? = null
-    private var reviewInfo: ReviewInfo? = null
+    private val reviewHelper by lazy { InAppReviewHelper(this, prefsRepo) }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -68,27 +48,11 @@ class FeedItemsList : ItemsList() {
         }
 
         updateTryFeedBanner()
-        checkInAppReview()
+        reviewHelper.check()
     }
 
     override fun interceptBackPress(isGestureNavigation: Boolean): Boolean =
-        when (
-            resolveFeedItemsBackAction(
-                hasReviewInfo = reviewInfo != null,
-                isGestureNavigation = isGestureNavigation,
-            )
-        ) {
-            FeedItemsBackAction.LAUNCH_REVIEW -> {
-                val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
-                flow.addOnCompleteListener { _: Task<Void?>? ->
-                    prefsRepo.setInAppReviewed()
-                    finish()
-                }
-                true
-            }
-
-            FeedItemsBackAction.FINISH_STORY_LIST -> false
-        }
+        reviewHelper.interceptBackPress(isGestureNavigation) { finish() }
 
     override fun shouldResetReadingSessionOnCreate(): Boolean =
         intent?.getBooleanExtra(EXTRA_IS_TRY_FEED, false) == true
@@ -264,19 +228,6 @@ class FeedItemsList : ItemsList() {
             }
         }
         iconLoader.displayImage(feed.faviconUrl, binding.itemlistTryFeedIcon)
-    }
-
-    private fun checkInAppReview() {
-        if (!prefsRepo.hasInAppReviewed()) {
-            reviewManager = ReviewManagerFactory.create(this)
-            reviewManager
-                ?.requestReviewFlow()
-                ?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        reviewInfo = task.getResult()
-                    }
-                }
-        }
     }
 
     companion object {
