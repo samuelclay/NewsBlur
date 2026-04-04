@@ -184,7 +184,7 @@ def select_briefing_stories(
     feed_title_map = {}
     for sub in user_subs:
         if sub.feed:
-            feed_title_map[sub.feed_id] = sub.feed.feed_title
+            feed_title_map[sub.feed_id] = sub.user_title or sub.feed.feed_title
 
     stories_by_hash = {}
     for batch_start in range(0, len(candidate_hashes), 100):
