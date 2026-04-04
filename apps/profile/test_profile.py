@@ -164,6 +164,83 @@ class Test_ArchiveRedisThrottling(TestCase):
         )
 
 
+class Test_SetupPremiumHistoryStripe(TestCase):
+    """Tests for Stripe subscription handling in setup_premium_history (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="stripehisttest", password="password", email="stripehisttest@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = "cus_test123"
+        self.profile.save()
+
+    def _make_plan(self, active=True, plan_id="price_premium"):
+        plan = MagicMock()
+        plan.active = active
+        plan.id = plan_id
+        return plan
+
+    def _make_subscription(self, plan=None, cancel_at=None, items_data=None):
+        sub = MagicMock()
+        sub.plan = plan
+        sub.cancel_at = cancel_at
+        if items_data is not None:
+            sub.get.return_value = MagicMock(data=items_data)
+        else:
+            sub.get.return_value = None
+        return sub
+
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_stripe_subscription_with_none_plan_no_crash(
+        self, mock_paypal_ids, mock_stripe_ids, mock_customer, mock_charges, mock_subs
+    ):
+        """Stripe subscriptions with plan=None should not raise AttributeError."""
+        mock_customer.return_value = MagicMock(id="cus_test123")
+        mock_charges.return_value = MagicMock(data=[])
+
+        # Subscription with plan=None and no items fallback - the original crash
+        sub = self._make_subscription(plan=None, items_data=None)
+        mock_subs.return_value = MagicMock(data=[sub])
+
+        from apps.profile.models import StripeIds
+
+        StripeIds.objects.create(user=self.user, stripe_id="cus_test123")
+
+        # Should not raise AttributeError: 'NoneType' object has no attribute 'active'
+        self.profile.setup_premium_history()
+
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_stripe_subscription_with_none_plan_uses_items_fallback(
+        self, mock_paypal_ids, mock_stripe_ids, mock_customer, mock_charges, mock_subs
+    ):
+        """Stripe subscriptions with plan=None should fall back to items.data[0].plan."""
+        mock_customer.return_value = MagicMock(id="cus_test123")
+        mock_charges.return_value = MagicMock(data=[])
+
+        item_plan = self._make_plan(active=True, plan_id="price_premium_from_items")
+        sub = self._make_subscription(plan=None, cancel_at=None, items_data=[MagicMock(plan=item_plan)])
+        mock_subs.return_value = MagicMock(data=[sub])
+
+        from apps.profile.models import StripeIds
+
+        StripeIds.objects.create(user=self.user, stripe_id="cus_test123")
+
+        self.profile.setup_premium_history()
+
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.active_provider, "stripe")
+        self.assertTrue(self.profile.premium_renewal)
+
+
 class Test_AndroidSubscriptionActivation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

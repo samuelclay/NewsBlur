@@ -1355,8 +1355,15 @@ class Profile(models.Model):
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
 
                 for subscription in stripe_subscriptions:
-                    if subscription.plan.active:
-                        active_plan = subscription.plan.id
+                    plan = subscription.plan
+                    if not plan:
+                        # Newer subscriptions may not have a top-level plan;
+                        # fall back to the first item's plan (apps/profile/models.py)
+                        items = subscription.get("items")
+                        if items and items.data:
+                            plan = items.data[0].plan
+                    if plan and plan.active:
+                        active_plan = plan.id
                         active_provider = "stripe"
                         if not subscription.cancel_at:
                             premium_renewal = True
