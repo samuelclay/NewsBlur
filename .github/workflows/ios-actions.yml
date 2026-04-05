@@ -35,6 +35,11 @@ jobs:
             RUN_CLANG_STATIC_ANALYZER=NO \
             -resultBundlePath TestResults/NewsBlurTests.xcresult
 
+      - name: Reset simulator before iOS UI smoke tests
+        run: |
+          xcrun simctl shutdown all || true
+          xcrun simctl erase all || true
+
       - name: Run iOS UI smoke tests
         run: |
           xcodebuild test \

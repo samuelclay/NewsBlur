@@ -1,12 +1,31 @@
 import XCTest
 
 final class AddSiteUITests: XCTestCase {
+    private var app: XCUIApplication!
+
     override func setUpWithError() throws {
         continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments += [
+            "-newsblur-ui-testing",
+            "-newsblur-ui-test-screen",
+            "add-site",
+            "-ApplePersistenceIgnoreState",
+            "YES",
+        ]
+        if app.state != .notRunning {
+            app.terminate()
+        }
+    }
+
+    override func tearDownWithError() throws {
+        if app.state != .notRunning {
+            app.terminate()
+        }
+        app = nil
     }
 
     func test_addSiteSheetLaunchesInUiTestMode() {
-        let app = makeApp()
         app.launch()
 
         XCTAssertTrue(app.otherElements["add-site-header"].waitForExistence(timeout: 10))
@@ -15,7 +34,6 @@ final class AddSiteUITests: XCTestCase {
     }
 
     func test_addSiteAutocompleteSelectionAndSubmitDismissesSheet() {
-        let app = makeApp()
         app.launch()
 
         let urlField = app.textFields["add-site-url-field"]
@@ -35,16 +53,6 @@ final class AddSiteUITests: XCTestCase {
         addButton.tap()
 
         XCTAssertTrue(urlField.waitForDisappearance(timeout: 10))
-    }
-
-    private func makeApp() -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments += [
-            "-newsblur-ui-testing",
-            "-newsblur-ui-test-screen",
-            "add-site",
-        ]
-        return app
     }
 }
 
