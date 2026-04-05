@@ -11708,7 +11708,742 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 443
+        "y": 444
+      },
+      "id": 283,
+      "panels": [],
+      "title": "AI Classifier Billing",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Actual API cost for running text and image classifiers today",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "orange",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 445
+      },
+      "id": 284,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=\"story_classification\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Text",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=\"vision_classification\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Image",
+          "refId": "B"
+        }
+      ],
+      "title": "Today's Classifier Cost",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Revenue from billing users today (actual cost × 1.5 markup)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 0.1
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 445
+      },
+      "id": 285,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"} * 1.5",
+          "instant": true,
+          "legendFormat": "Text",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"} * 1.5",
+          "instant": true,
+          "legendFormat": "Image",
+          "refId": "B"
+        }
+      ],
+      "title": "Today's Revenue",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Profit margin today (revenue minus our cost, from the 50% markup)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": -1
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 445
+      },
+      "id": 286,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"} * 0.5 + llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"} * 0.5",
+          "instant": true,
+          "legendFormat": "Margin",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Margin",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Total classifier runs today (all users)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 445
+      },
+      "id": 287,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=\"story_classification\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Text",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=\"vision_classification\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Image",
+          "refId": "B"
+        }
+      ],
+      "title": "Today's Runs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Unique users with usage-based billing who ran classifiers today",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 445
+      },
+      "id": 288,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"billing_users\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Today",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"billing_users\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "This Week",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"billing_users\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "This Month",
+          "refId": "C"
+        }
+      ],
+      "title": "Billing Users",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Monthly revenue from billing users (actual cost × 1.5 markup)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 445
+      },
+      "id": 289,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"monthly\"} + llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"monthly\"}) * 1.5",
+          "instant": true,
+          "legendFormat": "Revenue",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=\"story_classification\",period=\"monthly\"} + llm_costs{metric=\"cost_usd\",feature=\"vision_classification\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "Our Cost",
+          "refId": "B"
+        }
+      ],
+      "title": "Monthly Revenue",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Our API cost vs revenue (cost × 1.5) from billing users over time. Gap between lines = margin.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Revenue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Our Cost"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 450
+      },
+      "id": 290,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"} + llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}) * 1.5",
+          "legendFormat": "Revenue",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=\"story_classification\",period=\"daily\"} + llm_costs{metric=\"cost_usd\",feature=\"vision_classification\",period=\"daily\"}",
+          "legendFormat": "Our Cost",
+          "refId": "B"
+        }
+      ],
+      "title": "Cost vs Revenue",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Classifier runs per day: all users vs billing users, text vs image",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 450
+      },
+      "id": 291,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=\"story_classification\",period=\"daily\"}",
+          "legendFormat": "Text (all)",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=\"vision_classification\",period=\"daily\"}",
+          "legendFormat": "Image (all)",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"}",
+          "legendFormat": "Text (billed)",
+          "refId": "C"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}",
+          "legendFormat": "Image (billed)",
+          "refId": "D"
+        }
+      ],
+      "title": "Classifier Runs by Type",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Actual API cost for text vs image classifiers (billing users only)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 4,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 450
+      },
+      "id": 292,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"}",
+          "legendFormat": "Text",
+          "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}",
+          "legendFormat": "Image",
+          "refId": "B"
+        }
+      ],
+      "title": "Billed Cost by Type",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 458
       },
       "id": 161,
       "panels": [],
