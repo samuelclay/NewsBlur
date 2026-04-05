@@ -54,6 +54,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #endif
         
         appDelegate.prepareViewControllers()
+
+        if #available(iOS 16.0, *) {
+            Task { @MainActor in
+                NewsBlurUITestHarness.configureIfNeeded(appDelegate: self.appDelegate)
+            }
+        }
     }
     
 #if targetEnvironment(macCatalyst)

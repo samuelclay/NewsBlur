@@ -182,6 +182,7 @@ struct AddSiteView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(AddSiteColors.cardBackground)
+        .accessibilityIdentifier("add-site-header")
     }
 
     // MARK: - URL Input Row (bottom)
@@ -210,6 +211,7 @@ struct AddSiteView: View {
                             viewModel.onSearchTextChanged()
                         }
                     }
+                    .accessibilityIdentifier("add-site-url-field")
 
                 if viewModel.isSearching {
                     ProgressView()
@@ -239,6 +241,7 @@ struct AddSiteView: View {
                     )
                     .cornerRadius(8)
             }
+            .accessibilityIdentifier("add-site-submit-button")
             .disabled(viewModel.searchText.isEmpty || viewModel.isAdding)
         }
     }
@@ -286,6 +289,7 @@ struct AddSiteView: View {
                         .stroke(AddSiteColors.border, lineWidth: 1)
                 )
             }
+            .accessibilityIdentifier("add-site-folder-menu")
 
             Spacer().frame(width: 8)
 
@@ -305,6 +309,7 @@ struct AddSiteView: View {
                             .stroke(viewModel.showAddFolder ? AddSiteColors.accent : AddSiteColors.border, lineWidth: 1)
                     )
             }
+            .accessibilityIdentifier("add-site-folder-toggle")
         }
     }
 
@@ -351,6 +356,7 @@ struct AddSiteView: View {
         .padding(10)
         .background(AddSiteColors.errorText.opacity(0.1))
         .cornerRadius(8)
+        .accessibilityIdentifier("add-site-error-message")
     }
 
     // MARK: - Adding View
@@ -372,15 +378,16 @@ struct AddSiteView: View {
     private var autocompleteList: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(viewModel.autocompleteResults) { result in
-                    autocompleteRow(result)
+                ForEach(Array(viewModel.autocompleteResults.enumerated()), id: \.element.id) { index, result in
+                    autocompleteRow(result, index: index)
                 }
             }
         }
         .padding(.top, 8)
+        .accessibilityIdentifier("add-site-autocomplete-list")
     }
 
-    private func autocompleteRow(_ result: AutocompleteResult) -> some View {
+    private func autocompleteRow(_ result: AutocompleteResult, index: Int) -> some View {
         Button(action: { viewModel.selectAutocompleteResult(result) }) {
             HStack(spacing: 10) {
                 faviconImage(result.favicon)
@@ -415,6 +422,7 @@ struct AddSiteView: View {
             .padding(.vertical, 10)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier("add-site-autocomplete-row-\(index)")
         .background(AddSiteColors.cardBackground)
         .overlay(
             Rectangle()

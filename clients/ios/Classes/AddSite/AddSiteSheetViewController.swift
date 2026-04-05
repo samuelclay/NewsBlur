@@ -11,6 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 @objc class AddSiteSheetViewController: BaseViewController {
     private static var sharedViewModel: AddSiteViewModel?
+    static var viewModelFactory: (() -> AddSiteViewModel)?
 
     private var hostingController: UIHostingController<AddSiteView>?
     private var viewModel: AddSiteViewModel?
@@ -19,6 +20,7 @@ import SwiftUI
     @objc var initialFeedAddress: String?
     @objc var onDismiss: (() -> Void)?
     @objc var onSuccess: (() -> Void)?
+    @objc var shouldReloadFeedsOnSuccess = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +40,7 @@ import SwiftUI
             viewModel.errorMessage = nil
             viewModel.addedSuccess = false
         } else {
-            viewModel = AddSiteViewModel()
+            viewModel = Self.viewModelFactory?() ?? AddSiteViewModel()
             if let address = initialFeedAddress, !address.isEmpty {
                 viewModel.searchText = address
             }
@@ -112,7 +114,9 @@ import SwiftUI
                 Self.sharedViewModel = nil
                 self.dismiss(animated: true) {
                     self.onSuccess?()
-                    self.appDelegate?.reloadFeedsView(false)
+                    if self.shouldReloadFeedsOnSuccess {
+                        self.appDelegate?.reloadFeedsView(false)
+                    }
                 }
             }
         }
