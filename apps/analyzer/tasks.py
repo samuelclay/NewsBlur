@@ -16,10 +16,9 @@ def EmailPopularityQuery(pk):
 
 @app.task()
 def ClassifyStoriesWithPrompt(user_id, story_hashes):
-    """Classify stories with AI prompt classifiers in the background.
+    """Classify specific stories for a single user (used when a prompt is created/updated).
 
-    Loads stories from MongoDB, runs them through the user's prompt classifiers,
-    and caches results in Redis. Idempotent — cached stories are skipped.
+    Retroactively classifies recent stories when a user adds a new prompt classifier.
     """
     from apps.analyzer.models import MClassifierPrompt
     from apps.rss_feeds.models import Feed, MStory
@@ -41,3 +40,5 @@ def ClassifyStoriesWithPrompt(user_id, story_hashes):
     )
 
     MClassifierPrompt.classify_stories(user_id, stories, feed_ids=feed_ids)
+
+

@@ -140,6 +140,15 @@ class RLLMCosts:
                 pipe.sadd(billing_users_key, user_id)
                 pipe.expireat(billing_users_key, expiry)
 
+                # Per-user breakdown for billing users
+                user_prefix = f"{cls.KEY_PREFIX}:{date_key}:billing_user:{user_id}:{feature}"
+                pipe.incrby(f"{user_prefix}:tokens", total_tokens)
+                pipe.incrby(f"{user_prefix}:cost", cost_micro)
+                pipe.incr(f"{user_prefix}:requests")
+                pipe.expireat(f"{user_prefix}:tokens", expiry)
+                pipe.expireat(f"{user_prefix}:cost", expiry)
+                pipe.expireat(f"{user_prefix}:requests", expiry)
+
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
@@ -479,6 +488,71 @@ class RLLMCosts:
             "weekly_billing_users": len(weekly_billing_users_set) if weekly_billing_users_set else 0,
             "monthly_billing_users": len(monthly_billing_users_set) if monthly_billing_users_set else 0,
         }
+
+    @classmethod
+    def get_billing_user_stats(cls, days=30):
+        """
+        Get per-user breakdown of classifier costs for billing users.
+
+        Returns dict of {user_id: {feature: {tokens, cost_usd, requests}}}
+        aggregated over the given number of days.
+        """
+        r = cls._get_redis()
+        today = datetime.date.today()
+
+        # First, collect all billing user IDs across the period
+        billing_user_keys = []
+        for day_offset in range(days):
+            date = today - datetime.timedelta(days=day_offset)
+            date_key = cls._date_key(date)
+            billing_user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:billing_users")
+
+        try:
+            all_user_ids = r.sunion(*billing_user_keys)
+        except Exception:
+            return {}
+
+        if not all_user_ids:
+            return {}
+
+        # For each user, fetch their per-feature stats across all days
+        all_keys = []
+        key_metadata = []  # (user_id, feature, metric)
+
+        for user_id_bytes in all_user_ids:
+            user_id = int(user_id_bytes)
+            for day_offset in range(days):
+                date = today - datetime.timedelta(days=day_offset)
+                date_key = cls._date_key(date)
+                for feature in cls.CLASSIFIER_FEATURES:
+                    for metric in cls.METRICS:
+                        all_keys.append(
+                            f"{cls.KEY_PREFIX}:{date_key}:billing_user:{user_id}:{feature}:{metric}"
+                        )
+                        key_metadata.append((user_id, feature, metric))
+
+        if not all_keys:
+            return {}
+
+        values = r.mget(all_keys)
+
+        # Aggregate per user
+        user_stats = {}
+        for i, value in enumerate(values):
+            if value is not None:
+                user_id, feature, metric = key_metadata[i]
+                if user_id not in user_stats:
+                    user_stats[user_id] = {}
+                if feature not in user_stats[user_id]:
+                    user_stats[user_id][feature] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+
+                val = int(value)
+                if metric == "cost":
+                    user_stats[user_id][feature]["cost_usd"] += val / 1_000_000
+                else:
+                    user_stats[user_id][feature][metric] += val
+
+        return user_stats
 
     @classmethod
     def get_unique_users_for_period(cls, days=1):

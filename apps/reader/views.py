@@ -72,7 +72,6 @@ from apps.analyzer.models import (
     load_scoped_classifiers,
     sort_classifiers_by_feed,
 )
-from apps.analyzer.tasks import ClassifyStoriesWithPrompt
 from apps.notifications.models import MUserFeedNotification
 from apps.profile.models import (
     MCustomStyling,
@@ -991,12 +990,15 @@ def refresh_feed(request, feed_id):
 
 
 def get_prompt_scores_or_queue(user, stories, feed_ids):
-    """Get cached AI prompt classifier scores, queueing uncached stories for async classification.
+    """Read cached AI prompt classifier scores (cache-read-only).
+
+    Classification happens at FeedFetch time, not at read time.
+    This function only reads from Redis cache and returns whatever
+    scores are available. Uncached stories get no score.
 
     Returns dict with:
       "scores": {story_hash: prompt_score} - aggregate score per story
       "details": {story_hash: [{"prompt": text, "score": int, "include_images": bool}]}
-    Uncached stories get score 0 and a Celery task is fired to classify them in the background.
     """
     empty_result = {"scores": {}, "details": {}}
     if not stories or not feed_ids:
@@ -1021,10 +1023,9 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     for story in stories:
         stories_by_feed[story["story_feed_id"]].append(story)
 
-    # Check cache for all prompts and collect uncached story hashes
+    # Check cache for all prompts
     prompt_scores = {}  # {story_hash: aggregated_score}
     prompt_details = defaultdict(list)  # {story_hash: [{prompt, score, include_images}]}
-    uncached_hashes = set()
 
     for feed_id, feed_stories in stories_by_feed.items():
         story_hashes = [s["story_hash"] for s in feed_stories]
@@ -1061,12 +1062,6 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
                                 "include_images": prompt.include_images,
                             }
                         )
-                else:
-                    uncached_hashes.add(sh)
-
-    # Queue async classification for uncached stories
-    if uncached_hashes:
-        ClassifyStoriesWithPrompt.delay(user.pk, list(uncached_hashes))
 
     return {"scores": prompt_scores, "details": dict(prompt_details)}
 
