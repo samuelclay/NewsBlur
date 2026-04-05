@@ -12032,12 +12032,186 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Per-user breakdown of AI classifier usage and revenue for billing customers (30-day aggregate)",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cost"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Revenue"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 453
+      },
+      "id": 293,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Cost"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "llm_costs{metric=\"cost_usd\",billing=\"user\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "llm_costs{metric=\"revenue_usd\",billing=\"user\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "llm_costs{metric=\"text_requests\",billing=\"user\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "llm_costs{metric=\"vision_requests\",billing=\"user\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "llm_costs{metric=\"total_stories\",billing=\"user\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "E"
+        }
+      ],
+      "title": "Per-User Billing Breakdown",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "billing": true,
+              "instance": true,
+              "job": true,
+              "metric": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "username": "User",
+              "Value #A": "Cost",
+              "Value #B": "Revenue",
+              "Value #C": "Text Classifiers",
+              "Value #D": "Vision Classifiers",
+              "Value #E": "Total Stories"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 453
+        "y": 461
       },
       "id": 161,
       "panels": [],
@@ -12215,7 +12389,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 454
+        "y": 462
       },
       "id": 162,
       "options": {
@@ -12470,7 +12644,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 464
+        "y": 472
       },
       "id": 208,
       "options": {
@@ -12571,7 +12745,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 484
+        "y": 492
       },
       "id": 163,
       "options": {
@@ -12641,7 +12815,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 484
+        "y": 492
       },
       "id": 164,
       "options": {
@@ -12711,7 +12885,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 484
+        "y": 492
       },
       "id": 165,
       "options": {
@@ -12802,7 +12976,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 492
+        "y": 500
       },
       "id": 166,
       "options": {
@@ -12890,7 +13064,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 492
+        "y": 500
       },
       "id": 167,
       "options": {
@@ -12957,7 +13131,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 500
+        "y": 508
       },
       "id": 168,
       "options": {
@@ -13027,7 +13201,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 500
+        "y": 508
       },
       "id": 169,
       "options": {
@@ -13067,7 +13241,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 508
+        "y": 516
       },
       "id": 171,
       "panels": [],
@@ -13201,7 +13375,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 474
+        "y": 482
       },
       "id": 172,
       "options": {
@@ -13300,7 +13474,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 509
+        "y": 517
       },
       "id": 173,
       "options": {
@@ -13370,7 +13544,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 509
+        "y": 517
       },
       "id": 174,
       "options": {
@@ -13462,7 +13636,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 509
+        "y": 517
       },
       "id": 175,
       "options": {
@@ -13503,7 +13677,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 560
+        "y": 568
       },
       "id": 176,
       "panels": [],
@@ -13580,7 +13754,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 561
+        "y": 569
       },
       "id": 177,
       "options": {
@@ -13672,7 +13846,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 561
+        "y": 569
       },
       "id": 178,
       "options": {
@@ -13960,7 +14134,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 569
+        "y": 577
       },
       "id": 211,
       "options": {
@@ -14038,7 +14212,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 581
+        "y": 589
       },
       "id": 212,
       "panels": [],
@@ -14107,7 +14281,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 582
+        "y": 590
       },
       "id": 213,
       "options": {
@@ -14206,7 +14380,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 590
+        "y": 598
       },
       "id": 216,
       "options": {
@@ -14243,7 +14417,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 598
+        "y": 606
       },
       "id": 218,
       "panels": [],
@@ -14308,7 +14482,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 599
+        "y": 607
       },
       "id": 219,
       "options": {
@@ -14345,7 +14519,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 607
+        "y": 615
       },
       "id": 266,
       "panels": [],
@@ -14414,7 +14588,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 608
+        "y": 616
       },
       "id": 267,
       "options": {
@@ -14508,7 +14682,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 608
+        "y": 616
       },
       "id": 268,
       "options": {
@@ -14546,7 +14720,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 616
+        "y": 624
       },
       "id": 239,
       "panels": [],
@@ -14614,7 +14788,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 617
+        "y": 625
       },
       "id": 240,
       "options": {
@@ -14743,7 +14917,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 617
+        "y": 625
       },
       "id": 241,
       "options": {
@@ -14872,7 +15046,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 617
+        "y": 625
       },
       "id": 242,
       "options": {
@@ -15001,7 +15175,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 625
+        "y": 633
       },
       "id": 243,
       "options": {
@@ -15130,7 +15304,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 625
+        "y": 633
       },
       "id": 270,
       "options": {
@@ -15247,7 +15421,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 625
+        "y": 633
       },
       "id": 271,
       "options": {
@@ -15297,7 +15471,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 527
+        "y": 535
       },
       "id": 249,
       "panels": [],
@@ -15332,7 +15506,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 528
+        "y": 536
       },
       "id": 250,
       "options": {
@@ -15394,7 +15568,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 528
+        "y": 536
       },
       "id": 251,
       "options": {
@@ -15456,7 +15630,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 528
+        "y": 536
       },
       "id": 252,
       "options": {
@@ -15518,7 +15692,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 536
+        "y": 544
       },
       "id": 253,
       "options": {
@@ -15580,7 +15754,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 536
+        "y": 544
       },
       "id": 254,
       "options": {
@@ -15642,7 +15816,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 536
+        "y": 544
       },
       "id": 255,
       "options": {
@@ -15734,7 +15908,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 544
+        "y": 552
       },
       "id": 256,
       "options": {
@@ -15845,7 +16019,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 544
+        "y": 552
       },
       "id": 257,
       "options": {
@@ -15904,7 +16078,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 552
+        "y": 560
       },
       "id": 258,
       "options": {
@@ -15966,7 +16140,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 552
+        "y": 560
       },
       "id": 259,
       "options": {
@@ -16028,7 +16202,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 552
+        "y": 560
       },
       "id": 260,
       "options": {
@@ -16090,7 +16264,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 552
+        "y": 560
       },
       "id": 261,
       "options": {
@@ -16134,7 +16308,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 626
+        "y": 634
       },
       "id": 276,
       "panels": [],
@@ -16177,7 +16351,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 627
+        "y": 635
       },
       "id": 277,
       "options": {
@@ -16241,7 +16415,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 627
+        "y": 635
       },
       "id": 278,
       "options": {
@@ -16293,7 +16467,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 635
+        "y": 643
       },
       "id": 279,
       "panels": [],
@@ -16370,7 +16544,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 636
+        "y": 644
       },
       "id": 280,
       "options": {
@@ -16523,7 +16697,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 636
+        "y": 644
       },
       "id": 281,
       "options": {
@@ -16652,7 +16826,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 636
+        "y": 644
       },
       "id": 282,
       "options": {
