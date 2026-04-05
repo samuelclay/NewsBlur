@@ -18,7 +18,7 @@ final class NewsBlurUITestHarness {
     }
 
     private static var didScheduleScenario = false
-    private static var didLoadReaderFixture = false
+    private static var didLoadFeedFixture = false
 
     static func configureIfNeeded(appDelegate: NewsBlurAppDelegate) {
         guard isEnabled, !didScheduleScenario else { return }
@@ -29,7 +29,7 @@ final class NewsBlurUITestHarness {
         case "add-site":
             didScheduleScenario = true
             AddSiteSheetViewController.viewModelFactory = { makeAddSiteViewModel() }
-            presentAddSite(on: appDelegate, remainingRetries: 20)
+            configureAddSite(on: appDelegate, remainingRetries: 20)
         case "reader":
             didScheduleScenario = true
             configureReader(on: appDelegate, remainingRetries: 20)
@@ -85,6 +85,27 @@ final class NewsBlurUITestHarness {
         feedsNavigationController.present(navigationController, animated: false)
     }
 
+    private static func configureAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        guard remainingRetries > 0 else { return }
+        guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
+        guard feedsNavigationController.viewIfLoaded?.window != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureAddSite(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+
+        if let presentedViewController = feedsNavigationController.presentedViewController {
+            presentedViewController.dismiss(animated: false) {
+                configureAddSite(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+
+        loadFixtureFeedList(on: appDelegate)
+        presentAddSite(on: appDelegate, remainingRetries: remainingRetries)
+    }
+
     private static func retryPresentingAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             presentAddSite(on: appDelegate, remainingRetries: remainingRetries - 1)
@@ -106,8 +127,18 @@ final class NewsBlurUITestHarness {
             return
         }
 
-        guard !didLoadReaderFixture else { return }
-        didLoadReaderFixture = true
+        loadFixtureFeedList(on: appDelegate)
+    }
+
+    private static func retryConfiguringReader(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            configureReader(on: appDelegate, remainingRetries: remainingRetries - 1)
+        }
+    }
+
+    private static func loadFixtureFeedList(on appDelegate: NewsBlurAppDelegate) {
+        guard !didLoadFeedFixture else { return }
+        didLoadFeedFixture = true
 
         ReaderUITestURLProtocol.installIfNeeded()
         appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
@@ -115,12 +146,6 @@ final class NewsBlurUITestHarness {
         ReaderUITestFixtures.prepareAppState(for: appDelegate)
         appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
         appDelegate.feedsViewController.finishLoadingFeedList(withDict: ReaderUITestFixtures.feedListResponse(), finished: true)
-    }
-
-    private static func retryConfiguringReader(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            configureReader(on: appDelegate, remainingRetries: remainingRetries - 1)
-        }
     }
 
     private static func makeAddSiteViewModel() -> AddSiteViewModel {

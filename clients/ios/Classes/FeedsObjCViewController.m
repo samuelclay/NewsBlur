@@ -48,38 +48,6 @@ static UIImage *NBImageFromColor(UIColor *color) {
     return image;
 }
 
-static NSString *NBAccessibilitySlug(NSString *value) {
-    if (value.length == 0) {
-        return @"unknown";
-    }
-
-    NSMutableString *slug = [NSMutableString string];
-    BOOL lastWasSeparator = NO;
-
-    for (NSUInteger index = 0; index < value.length; index++) {
-        unichar character = [value characterAtIndex:index];
-        NSCharacterSet *alphanumeric = [NSCharacterSet alphanumericCharacterSet];
-
-        if ([alphanumeric characterIsMember:character]) {
-            [slug appendFormat:@"%C", (unichar)tolower(character)];
-            lastWasSeparator = NO;
-        } else if (!lastWasSeparator) {
-            [slug appendString:@"-"];
-            lastWasSeparator = YES;
-        }
-    }
-
-    while ([slug hasPrefix:@"-"]) {
-        [slug deleteCharactersInRange:NSMakeRange(0, 1)];
-    }
-
-    while ([slug hasSuffix:@"-"]) {
-        [slug deleteCharactersInRange:NSMakeRange(slug.length - 1, 1)];
-    }
-
-    return slug.length ? slug : @"unknown";
-}
-
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
@@ -2086,9 +2054,7 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     } else {
         cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed", cell.feedTitle];
     }
-    cell.accessibilityIdentifier = [NSString stringWithFormat:@"feed-row-%@-%@",
-                                    NBAccessibilitySlug(folderName),
-                                    feedIdStr];
+    cell.accessibilityIdentifier = [NSString stringWithFormat:@"feed-row-%@", feedIdStr];
     
     [cell setNeedsDisplay];
     
