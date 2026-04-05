@@ -34,3 +34,20 @@ final class AddSiteSheetViewControllerTests: XCTestCase {
         return mirror.children.first?.value as? AddSiteViewModel
     }
 }
+
+@available(iOS 15.0, *)
+@MainActor
+final class DetailViewControllerTests: XCTestCase {
+    func test_collapseToSingleColumnDoesNotRequireLoadedView() throws {
+        let detailController = try XCTUnwrap(
+            UIStoryboard(name: "MainInterface", bundle: nil)
+                .instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController
+        )
+
+        XCTAssertFalse(detailController.isViewLoaded)
+
+        detailController.collapseToSingleColumn()
+
+        XCTAssertFalse(detailController.isViewLoaded)
+    }
+}
