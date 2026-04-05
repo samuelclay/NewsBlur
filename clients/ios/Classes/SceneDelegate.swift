@@ -36,6 +36,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         appDelegate.window = window
+
+        if #available(iOS 16.0, *) {
+            NewsBlurUITestHarness.prepareLaunchEnvironmentIfNeeded(appDelegate: self.appDelegate)
+        }
         
 #if targetEnvironment(macCatalyst)
         guard let windowScene = scene as? UIWindowScene, let titlebar = windowScene.titlebar else {

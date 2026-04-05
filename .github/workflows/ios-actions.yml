@@ -22,30 +22,40 @@ jobs:
       - name: Run iOS Swift package tests
         run: swift test --parallel
 
-      - name: Run iOS app-hosted tests
+      - name: Build iOS Xcode test bundles
         run: |
           mkdir -p TestResults
-          xcodebuild test \
+          xcodebuild build-for-testing \
             -project NewsBlur.xcodeproj \
             -scheme NewsBlur \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            RUN_CLANG_STATIC_ANALYZER=NO
+
+      - name: Run iOS app-hosted tests
+        run: |
+          xcodebuild test-without-building \
+            -project NewsBlur.xcodeproj \
+            -scheme NewsBlur \
+            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -derivedDataPath DerivedData \
+            -parallel-testing-enabled NO \
             -only-testing:NewsBlurTests \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             RUN_CLANG_STATIC_ANALYZER=NO \
             -resultBundlePath TestResults/NewsBlurTests.xcresult
 
-      - name: Reset simulator before iOS UI smoke tests
-        run: |
-          xcrun simctl shutdown all || true
-          xcrun simctl erase all || true
-
       - name: Run iOS UI smoke tests
         run: |
-          xcodebuild test \
+          xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
             -scheme NewsBlur \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -derivedDataPath DerivedData \
+            -parallel-testing-enabled NO \
             -only-testing:NewsBlurUITests \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
