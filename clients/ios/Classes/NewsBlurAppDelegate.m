@@ -1865,6 +1865,31 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [self clearNetworkManager];
 }
 
+- (void)setCustomDomainForTesting:(NSString *)urlString {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (urlString.length) {
+        [defaults setObject:urlString forKey:@"custom_domain"];
+    } else {
+        [defaults removeObjectForKey:@"custom_domain"];
+    }
+    self.cachedURL = nil;
+}
+
+- (void)replaceUnreadCountsForTesting:(NSArray<NSDictionary *> *)unreadRows {
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        for (NSDictionary *row in unreadRows) {
+            NSString *feedId = [NSString stringWithFormat:@"%@", row[@"feed_id"] ?: @""];
+            NSNumber *positive = row[@"ps"] ?: @0;
+            NSNumber *neutral = row[@"nt"] ?: @0;
+            NSNumber *negative = row[@"ng"] ?: @0;
+
+            [db executeUpdate:@"DELETE FROM unread_counts WHERE feed_id = ?", feedId];
+            [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES (?, ?, ?, ?)",
+             feedId, positive, neutral, negative];
+        }
+    }];
+}
+
 - (void)clearNetworkManager {
     for (NSString *networkOperationIdentifier in self.networkBackgroundTasks) {
         [self endNetworkOperation:networkOperationIdentifier];
