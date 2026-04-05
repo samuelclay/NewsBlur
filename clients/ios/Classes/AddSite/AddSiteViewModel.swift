@@ -9,6 +9,21 @@
 import Foundation
 import Combine
 
+protocol AddSiteViewModelAppEnvironment: AnyObject {
+    var url: String? { get }
+    var dictFoldersArray: Any? { get }
+}
+
+final class DefaultAddSiteViewModelAppEnvironment: AddSiteViewModelAppEnvironment {
+    var url: String? {
+        NewsBlurAppDelegate.shared()?.url
+    }
+
+    var dictFoldersArray: Any? {
+        NewsBlurAppDelegate.shared()?.dictFoldersArray
+    }
+}
+
 struct AutocompleteResult: Identifiable {
     let id: String
     let label: String
@@ -43,16 +58,28 @@ class AddSiteViewModel: ObservableObject {
     var onResultsAppeared: (() -> Void)?
     var onResultsCleared: (() -> Void)?
 
-    private let appDelegate = NewsBlurAppDelegate.shared()!
+    private let appEnvironment: AddSiteViewModelAppEnvironment
+    private let session: URLSession
+    private let cookieStorage: HTTPCookieStorage
     private var searchCache: [String: [AutocompleteResult]] = [:]
     private var debounceTimer: Timer?
+
+    init(
+        appEnvironment: AddSiteViewModelAppEnvironment = DefaultAddSiteViewModelAppEnvironment(),
+        session: URLSession = .shared,
+        cookieStorage: HTTPCookieStorage = .shared
+    ) {
+        self.appEnvironment = appEnvironment
+        self.session = session
+        self.cookieStorage = cookieStorage
+    }
 
     var displayFolder: String {
         selectedFolder.isEmpty ? "— Top Level —" : extractFolderName(selectedFolder)
     }
 
     var folders: [String] {
-        guard let allFolders = appDelegate.dictFoldersArray as? [String] else { return [] }
+        guard let allFolders = appEnvironment.dictFoldersArray as? [String] else { return [] }
         let excluded: Set<String> = [
             "saved_searches", "saved_stories", "read_stories", "widget_stories",
             "river_blurblogs", "river_global", "dashboard", "infrequent", "everything"
@@ -124,7 +151,7 @@ class AddSiteViewModel: ObservableObject {
 
         isSearching = true
 
-        let baseURL = appDelegate.url ?? "https://www.newsblur.com"
+        let baseURL = appEnvironment.url ?? "https://www.newsblur.com"
         let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? term
         guard let url = URL(string: "\(baseURL)/rss_feeds/feed_autocomplete?term=\(encoded)&v=2&format=full&limit=10") else {
             isSearching = false
@@ -133,14 +160,14 @@ class AddSiteViewModel: ObservableObject {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        if let cookies = HTTPCookieStorage.shared.cookies(for: url) {
+        if let cookies = cookieStorage.cookies(for: url) {
             let cookieHeaders = HTTPCookie.requestHeaderFields(with: cookies)
             for (key, value) in cookieHeaders {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        session.dataTask(with: request) { [weak self] data, response, error in
             Task { @MainActor [weak self] in
                 guard let self = self else { return }
                 self.isSearching = false
@@ -174,7 +201,7 @@ class AddSiteViewModel: ObservableObject {
         errorMessage = nil
         autocompleteResults = []
 
-        let baseURL = appDelegate.url ?? "https://www.newsblur.com"
+        let baseURL = appEnvironment.url ?? "https://www.newsblur.com"
         guard let url = URL(string: "\(baseURL)/reader/add_url") else {
             isAdding = false
             errorMessage = "Invalid URL"
@@ -203,14 +230,14 @@ class AddSiteViewModel: ObservableObject {
         }
         request.httpBody = bodyParts.joined(separator: "&").data(using: .utf8)
 
-        if let cookies = HTTPCookieStorage.shared.cookies(for: url) {
+        if let cookies = cookieStorage.cookies(for: url) {
             let cookieHeaders = HTTPCookie.requestHeaderFields(with: cookies)
             for (key, value) in cookieHeaders {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        session.dataTask(with: request) { [weak self] data, response, error in
             Task { @MainActor [weak self] in
                 guard let self = self else { return }
                 self.isAdding = false
