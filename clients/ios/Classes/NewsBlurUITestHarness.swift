@@ -145,11 +145,13 @@ private enum ReaderUITestFixtures {
         let defaults = UserDefaults.standard
 
         [
+            "folderCollapsed:everything",
             "folderCollapsed:Tech",
             "folderCollapsed:Tech ▸ Swift",
             "folderCollapsed:Culture",
         ].forEach { defaults.removeObject(forKey: $0) }
 
+        defaults.set("feeds", forKey: "app_opening")
         defaults.set("title", forKey: "feed_list_sort_order")
         defaults.set(false, forKey: "show_infrequent_site_stories")
         defaults.set(false, forKey: "show_global_shared_stories")

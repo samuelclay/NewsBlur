@@ -12,6 +12,38 @@
 #import "UnreadCountView.h"
 #import "NewsBlur-Swift.h"
 
+static NSString *NBAccessibilitySlug(NSString *value) {
+    if (value.length == 0) {
+        return @"unknown";
+    }
+
+    NSMutableString *slug = [NSMutableString string];
+    BOOL lastWasSeparator = NO;
+
+    for (NSUInteger index = 0; index < value.length; index++) {
+        unichar character = [value characterAtIndex:index];
+        NSCharacterSet *alphanumeric = [NSCharacterSet alphanumericCharacterSet];
+
+        if ([alphanumeric characterIsMember:character]) {
+            [slug appendFormat:@"%C", (unichar)tolower(character)];
+            lastWasSeparator = NO;
+        } else if (!lastWasSeparator) {
+            [slug appendString:@"-"];
+            lastWasSeparator = YES;
+        }
+    }
+
+    while ([slug hasPrefix:@"-"]) {
+        [slug deleteCharactersInRange:NSMakeRange(0, 1)];
+    }
+
+    while ([slug hasSuffix:@"-"]) {
+        [slug deleteCharactersInRange:NSMakeRange(slug.length - 1, 1)];
+    }
+
+    return slug.length ? slug : @"unknown";
+}
+
 @implementation FolderTitleView
 
 @synthesize appDelegate;
@@ -156,6 +188,8 @@
     invisibleHeaderButton.alpha = .2;
     invisibleHeaderButton.backgroundColor = self.selectionColor;
     invisibleHeaderButton.tag = section;
+    invisibleHeaderButton.accessibilityIdentifier = [NSString stringWithFormat:@"folder-header-%@",
+                                                     NBAccessibilitySlug(folderName)];
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
     invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController
