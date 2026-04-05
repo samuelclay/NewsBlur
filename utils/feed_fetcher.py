@@ -1436,7 +1436,7 @@ class FeedFetcherWorker:
                                 % (feed.log_title[:30], time.time() - start_cleanup)
                             )
                         try:
-                            self.count_unreads_for_subscribers(feed)
+                            self.count_unreads_for_subscribers(feed, new_story_count=ret_entries.get("new", 0))
                         except TimeoutError:
                             logging.debug(
                                 "   ---> [%-30s] Unread count took too long..." % (feed.log_title[:30],)
@@ -1811,7 +1811,7 @@ class FeedFetcherWorker:
         except redis.ConnectionError:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
 
-    def count_unreads_for_subscribers(self, feed):
+    def count_unreads_for_subscribers(self, feed, new_story_count=0):
         subscriber_expire = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
 
         user_subs = UserSubscription.objects.filter(
@@ -1865,14 +1865,15 @@ class FeedFetcherWorker:
             )
             self.calculate_feed_scores_with_stories(user_subs, stories)
 
-            # AI prompt classifiers: classify new stories for subscribers with prompts
-            try:
-                self.classify_stories_for_subscribers(feed, stories)
-            except TimeoutError:
-                logging.debug(
-                    "   ---> [%-30s] ~BR~FRAI classification took too long, skipping"
-                    % (feed.log_title[:30],)
-                )
+            # AI prompt classifiers: classify only new stories for subscribers with prompts
+            if new_story_count > 0:
+                try:
+                    self.classify_stories_for_subscribers(feed, stories, new_story_count)
+                except TimeoutError:
+                    logging.debug(
+                        "   ---> [%-30s] ~BR~FRAI classification took too long, skipping"
+                        % (feed.log_title[:30],)
+                    )
         elif self.options.get("mongodb_replication_lag"):
             logging.debug(
                 "   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag"
@@ -1886,12 +1887,11 @@ class FeedFetcherWorker:
             sub.calculate_feed_scores(silent=silent, stories=stories)
 
     @timelimit(30)
-    def classify_stories_for_subscribers(self, feed, stories):
-        """Classify stories with AI prompt classifiers for all applicable subscribers.
+    def classify_stories_for_subscribers(self, feed, stories, new_story_count):
+        """Classify only new stories with AI prompt classifiers for applicable subscribers.
 
+        Only classifies stories that arrived in this fetch (no backlog).
         Runs inline during feed processing so results are cached before users read.
-        Only classifies the newest stories (up to 30) since older stories are already
-        cached from previous fetches. The cache in _run_classifier provides idempotency.
         """
         from apps.analyzer.models import MClassifierPrompt
 
@@ -1899,19 +1899,17 @@ class FeedFetcherWorker:
         if not user_ids:
             return
 
-        # Only classify the newest stories, not the entire unread window.
-        # Limit to avoid sending thousands of stories to the LLM on feeds with
-        # large backlogs. The cache in _run_classifier skips already-classified stories.
-        max_stories = 30
-        recent_stories = sorted(stories, key=lambda s: s.get("story_date", ""), reverse=True)[:max_stories]
+        # Only classify stories that are new from this fetch, not the backlog.
+        # Stories are unsorted from MongoDB, so sort by date and take the newest N.
+        new_stories = sorted(stories, key=lambda s: s.get("story_date", ""), reverse=True)[:new_story_count]
 
         logging.debug(
-            "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN stories (of %s) for ~SB%s~SN prompt users"
-            % (feed.log_title[:30], len(recent_stories), len(stories), len(user_ids))
+            "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN new stories for ~SB%s~SN prompt users"
+            % (feed.log_title[:30], len(new_stories), len(user_ids))
         )
 
         for user_id in user_ids:
-            MClassifierPrompt.classify_stories(user_id, recent_stories, feed_ids=[feed.pk])
+            MClassifierPrompt.classify_stories(user_id, new_stories, feed_ids=[feed.pk])
 
 
 class Dispatcher:
