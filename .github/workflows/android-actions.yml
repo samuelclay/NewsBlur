@@ -62,3 +62,24 @@ jobs:
 
       - name: Run iOS Swift package tests
         run: swift test --parallel
+
+      - name: Run iOS app-hosted tests
+        run: |
+          mkdir -p TestResults
+          xcodebuild test \
+            -project NewsBlur.xcodeproj \
+            -scheme NewsBlur \
+            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -only-testing:NewsBlurTests \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            RUN_CLANG_STATIC_ANALYZER=NO \
+            -resultBundlePath TestResults/NewsBlurTests.xcresult
+
+      - name: Upload iOS xcresult
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: ios-newsblur-tests-xcresult
+          path: clients/ios/TestResults/NewsBlurTests.xcresult
+          if-no-files-found: ignore

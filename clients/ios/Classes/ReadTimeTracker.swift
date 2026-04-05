@@ -7,6 +7,13 @@
 
 import UIKit
 
+typealias ReadTimeTrackerPostHandler = (
+    _ urlString: String,
+    _ parameters: [String: Any],
+    _ success: @escaping () -> Void,
+    _ failure: @escaping () -> Void
+) -> Void
+
 @objcMembers
 class ReadTimeTracker: NSObject {
     static let shared = ReadTimeTracker()
@@ -20,6 +27,7 @@ class ReadTimeTracker: NSObject {
     private var lastActivity: Date = Date()
     private var timer: Timer?
     private var isAppActive: Bool = true
+    var postReadTimesHandler: ReadTimeTrackerPostHandler?
 
     private override init() {
         super.init()
@@ -106,13 +114,26 @@ class ReadTimeTracker: NSObject {
     }
 
     func flushReadTimes() {
-        guard let json = consumeQueuedReadTimesJSON(),
-              let appDelegate = NewsBlurAppDelegate.shared else {
+        guard let json = consumeQueuedReadTimesJSON() else {
+            return
+        }
+
+        let restoreQueuedReadTimes: () -> Void = { [weak self] in
+            self?.restoreQueuedReadTimes(json: json)
+        }
+
+        guard let appDelegate = NewsBlurAppDelegate.shared else {
+            restoreQueuedReadTimes()
             return
         }
 
         let urlString = "\(appDelegate.url ?? "")/reader/mark_story_hashes_as_read"
         let params: [String: Any] = ["read_times": json]
+
+        if let postReadTimesHandler {
+            postReadTimesHandler(urlString, params, {}, restoreQueuedReadTimes)
+            return
+        }
 
         appDelegate.post(urlString, parameters: params, success: { _, _ in
         }, failure: { [weak self] _, _ in
@@ -139,5 +160,20 @@ class ReadTimeTracker: NSObject {
 
     @objc private func appWillResignActive() {
         isAppActive = false
+    }
+}
+
+extension ReadTimeTracker {
+    func resetForTesting() {
+        stopTracking()
+        readTimes.removeAll()
+        queuedReadTimes.removeAll()
+        lastActivity = Date()
+        isAppActive = true
+        postReadTimesHandler = nil
+    }
+
+    func tickForTesting() {
+        tick()
     }
 }

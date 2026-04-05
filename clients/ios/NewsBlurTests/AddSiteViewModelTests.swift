@@ -1,0 +1,141 @@
+import XCTest
+
+@testable import NewsBlur
+
+@MainActor
+final class AddSiteViewModelTests: XCTestCase {
+    private final class MockAppEnvironment: AddSiteViewModelAppEnvironment {
+        var url: String?
+        var dictFoldersArray: Any?
+
+        init(url: String?, folders: [String]) {
+            self.url = url
+            self.dictFoldersArray = folders
+        }
+    }
+
+    private final class MockURLProtocol: URLProtocol {
+        static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+
+        override class func canInit(with request: URLRequest) -> Bool {
+            true
+        }
+
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+            request
+        }
+
+        override func startLoading() {
+            guard let handler = Self.requestHandler else {
+                client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse))
+                return
+            }
+
+            do {
+                let (response, data) = try handler(request)
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client?.urlProtocol(self, didLoad: data)
+                client?.urlProtocolDidFinishLoading(self)
+            } catch {
+                client?.urlProtocol(self, didFailWithError: error)
+            }
+        }
+
+        override func stopLoading() {}
+    }
+
+    override func tearDown() {
+        MockURLProtocol.requestHandler = nil
+        super.tearDown()
+    }
+
+    func test_foldersFiltersSystemFolders() {
+        let environment = MockAppEnvironment(
+            url: "https://www.newsblur.com",
+            folders: ["everything", "saved_stories", "Tech", "Top \u{25B8} iOS"]
+        )
+        let viewModel = AddSiteViewModel(appEnvironment: environment)
+
+        XCTAssertEqual(viewModel.folders, ["Tech", "Top \u{25B8} iOS"])
+        XCTAssertEqual(viewModel.displayFolder, "— Top Level —")
+    }
+
+    func test_addSiteMarksSuccessAndBuildsExpectedRequest() async throws {
+        let environment = MockAppEnvironment(url: "https://example.com", folders: [])
+        let viewModel = AddSiteViewModel(
+            appEnvironment: environment,
+            session: makeSession()
+        )
+
+        MockURLProtocol.requestHandler = { request in
+            XCTAssertEqual(request.url?.absoluteString, "https://example.com/reader/add_url")
+            XCTAssertEqual(request.httpMethod, "POST")
+
+            let body = String(data: try XCTUnwrap(request.httpBody), encoding: .utf8)
+            XCTAssertTrue(body?.contains("folder=Tech") == true)
+            XCTAssertTrue(body?.contains("url=https://example.com/feed") == true)
+            XCTAssertTrue(body?.contains("new_folder=Swift") == true)
+
+            let response = try XCTUnwrap(
+                HTTPURLResponse(url: try XCTUnwrap(request.url), statusCode: 200, httpVersion: nil, headerFields: nil)
+            )
+            let data = try JSONSerialization.data(withJSONObject: ["code": 1])
+            return (response, data)
+        }
+
+        viewModel.searchText = "https://example.com/feed"
+        viewModel.selectedFolder = "Tech"
+        viewModel.showAddFolder = true
+        viewModel.newFolderName = "Swift"
+
+        viewModel.addSite()
+
+        await waitUntil { viewModel.addedSuccess && !viewModel.isAdding }
+        XCTAssertNil(viewModel.errorMessage)
+    }
+
+    func test_addSiteSurfacesServerErrors() async {
+        let environment = MockAppEnvironment(url: "https://example.com", folders: [])
+        let viewModel = AddSiteViewModel(
+            appEnvironment: environment,
+            session: makeSession()
+        )
+
+        MockURLProtocol.requestHandler = { request in
+            let response = try XCTUnwrap(
+                HTTPURLResponse(url: try XCTUnwrap(request.url), statusCode: 200, httpVersion: nil, headerFields: nil)
+            )
+            let data = try JSONSerialization.data(withJSONObject: ["code": -1, "message": "Already subscribed"])
+            return (response, data)
+        }
+
+        viewModel.searchText = "https://example.com/feed"
+        viewModel.addSite()
+
+        await waitUntil { viewModel.errorMessage == "Already subscribed" && !viewModel.isAdding }
+        XCTAssertFalse(viewModel.addedSuccess)
+    }
+
+    private func makeSession() -> URLSession {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        return URLSession(configuration: configuration)
+    }
+
+    private func waitUntil(
+        timeout: TimeInterval = 1.0,
+        condition: @escaping () -> Bool
+    ) async {
+        let deadline = Date().addingTimeInterval(timeout)
+
+        while Date() < deadline {
+            if condition() {
+                return
+            }
+
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+
+        XCTFail("Timed out waiting for condition")
+    }
+}
