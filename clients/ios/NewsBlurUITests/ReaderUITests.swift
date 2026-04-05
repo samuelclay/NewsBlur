@@ -13,16 +13,6 @@ final class ReaderUITests: XCTestCase {
             "-ApplePersistenceIgnoreState",
             "YES",
         ]
-        if app.state != .notRunning {
-            app.terminate()
-        }
-    }
-
-    override func tearDownWithError() throws {
-        if app.state != .notRunning {
-            app.terminate()
-        }
-        app = nil
     }
 
     func test_readerLaunchShowsFixtureFoldersAndFeeds() {
@@ -30,12 +20,12 @@ final class ReaderUITests: XCTestCase {
 
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
-        XCTAssertTrue(reveal(folderButton("everything"), in: feedsList))
-        XCTAssertTrue(reveal(folderButton("tech"), in: feedsList))
-        XCTAssertTrue(reveal(folderButton("culture"), in: feedsList))
-        XCTAssertTrue(reveal(feedCell(folder: "everything", feedID: "910001"), in: feedsList))
-        XCTAssertTrue(reveal(feedCell(folder: "tech-swift", feedID: "910002"), in: feedsList))
-        XCTAssertTrue(reveal(feedCell(folder: "culture", feedID: "910003"), in: feedsList))
+        XCTAssertTrue(reveal(folderButton(named: "All Site Stories"), in: feedsList))
+        XCTAssertTrue(reveal(folderButton(named: "Tech"), in: feedsList))
+        XCTAssertTrue(reveal(folderButton(named: "Culture"), in: feedsList))
+        XCTAssertTrue(reveal(feedCell("910001"), in: feedsList))
+        XCTAssertTrue(reveal(feedCell("910002"), in: feedsList))
+        XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
     func test_selectingFolderLoadsRiverStories() {
@@ -44,7 +34,7 @@ final class ReaderUITests: XCTestCase {
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let techFolder = folderButton("tech")
+        let techFolder = folderButton(named: "Tech")
         XCTAssertTrue(reveal(techFolder, in: feedsList))
         techFolder.tap()
 
@@ -60,7 +50,7 @@ final class ReaderUITests: XCTestCase {
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let swiftFeed = feedCell(folder: "tech-swift", feedID: "910002")
+        let swiftFeed = feedCell("910002")
         XCTAssertTrue(reveal(swiftFeed, in: feedsList))
         swiftFeed.tap()
 
@@ -79,7 +69,7 @@ final class ReaderUITests: XCTestCase {
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let swiftFeed = feedCell(folder: "tech-swift", feedID: "910002")
+        let swiftFeed = feedCell("910002")
         XCTAssertTrue(reveal(swiftFeed, in: feedsList))
         swiftFeed.tap()
 
@@ -108,7 +98,7 @@ final class ReaderUITests: XCTestCase {
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let swiftFeed = feedCell(folder: "tech-swift", feedID: "910002")
+        let swiftFeed = feedCell("910002")
         XCTAssertTrue(reveal(swiftFeed, in: feedsList))
         swiftFeed.tap()
 
@@ -132,12 +122,13 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory))
     }
 
-    private func folderButton(_ slug: String) -> XCUIElement {
-        app.buttons.matching(identifier: "folder-header-\(slug)").firstMatch
+    private func folderButton(named title: String) -> XCUIElement {
+        let predicate = NSPredicate(format: "label BEGINSWITH %@", "\(title) folder")
+        return app.buttons.matching(predicate).firstMatch
     }
 
-    private func feedCell(folder: String, feedID: String) -> XCUIElement {
-        app.tables["feeds-list"].cells.matching(identifier: "feed-row-\(folder)-\(feedID)").firstMatch
+    private func feedCell(_ feedID: String) -> XCUIElement {
+        app.tables["feeds-list"].cells.matching(identifier: "feed-row-\(feedID)").firstMatch
     }
 
     private func storyCell(_ storyHash: String) -> XCUIElement {

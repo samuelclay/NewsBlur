@@ -13,16 +13,6 @@ final class AddSiteUITests: XCTestCase {
             "-ApplePersistenceIgnoreState",
             "YES",
         ]
-        if app.state != .notRunning {
-            app.terminate()
-        }
-    }
-
-    override func tearDownWithError() throws {
-        if app.state != .notRunning {
-            app.terminate()
-        }
-        app = nil
     }
 
     func test_addSiteSheetLaunchesInUiTestMode() {
