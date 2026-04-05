@@ -11825,12 +11825,12 @@
       },
       "targets": [
         {
-          "expr": "(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"} + llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}) * 1.5",
+          "expr": "sum(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=~\"story_classification|vision_classification\",period=\"daily\"}) * 1.5",
           "legendFormat": "Revenue",
           "refId": "A"
         },
         {
-          "expr": "llm_costs{metric=\"cost_usd\",billing=\"\",feature=\"story_classification\",period=\"daily\"} + llm_costs{metric=\"cost_usd\",billing=\"\",feature=\"vision_classification\",period=\"daily\"}",
+          "expr": "sum(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=~\"story_classification|vision_classification\",period=\"daily\"})",
           "legendFormat": "Our Cost",
           "refId": "B"
         }
@@ -12177,19 +12177,52 @@
       "title": "Per-User Billing Breakdown",
       "transformations": [
         {
-          "id": "merge",
-          "options": {}
+          "id": "joinByField",
+          "options": {
+            "byField": "username",
+            "mode": "outer"
+          }
         },
         {
           "id": "organize",
           "options": {
             "excludeByName": {
               "Time": true,
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "Time 5": true,
               "__name__": true,
+              "__name__ 1": true,
+              "__name__ 2": true,
+              "__name__ 3": true,
+              "__name__ 4": true,
+              "__name__ 5": true,
               "billing": true,
+              "billing 1": true,
+              "billing 2": true,
+              "billing 3": true,
+              "billing 4": true,
+              "billing 5": true,
               "instance": true,
+              "instance 1": true,
+              "instance 2": true,
+              "instance 3": true,
+              "instance 4": true,
+              "instance 5": true,
               "job": true,
-              "metric": true
+              "job 1": true,
+              "job 2": true,
+              "job 3": true,
+              "job 4": true,
+              "job 5": true,
+              "metric": true,
+              "metric 1": true,
+              "metric 2": true,
+              "metric 3": true,
+              "metric 4": true,
+              "metric 5": true
             },
             "indexByName": {},
             "renameByName": {
