@@ -99,6 +99,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
+@property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
 
 - (void)presentFeedDetailAfterFeedSelection;
 
@@ -1875,6 +1876,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     self.cachedURL = nil;
 }
 
+- (void)setNetworkProtocolClassesForTesting:(NSArray<Class> *)protocolClasses {
+    _networkProtocolClassesForTesting = [protocolClasses copy];
+}
+
 - (void)replaceUnreadCountsForTesting:(NSArray<NSDictionary *> *)unreadRows {
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         for (NSDictionary *row in unreadRows) {
@@ -1898,7 +1903,14 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     self.networkBackgroundTasks = [NSMutableDictionary new];
     
     [networkManager invalidateSessionCancelingTasks:YES];
-    networkManager = [AFHTTPSessionManager manager];
+
+    NSURLSessionConfiguration *configuration = nil;
+    if (self.networkProtocolClassesForTesting.count) {
+        configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        configuration.protocolClasses = self.networkProtocolClassesForTesting;
+    }
+
+    networkManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
     [networkManager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     

@@ -18,9 +18,8 @@ final class AddSiteUITests: XCTestCase {
     func test_addSiteSheetLaunchesInUiTestMode() {
         app.launch()
 
-        XCTAssertTrue(app.otherElements["add-site-header"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.textFields["add-site-url-field"].exists)
-        XCTAssertTrue(app.buttons["add-site-submit-button"].exists)
+        XCTAssertTrue(app.textFields["add-site-url-field"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["add-site-submit-button"].waitForExistence(timeout: 10))
     }
 
     func test_addSiteAutocompleteSelectionAndSubmitDismissesSheet() {

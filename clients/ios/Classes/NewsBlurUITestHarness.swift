@@ -17,8 +17,37 @@ final class NewsBlurUITestHarness {
         static let screen = "-newsblur-ui-test-screen"
     }
 
+    private enum ReaderScenario {
+        case list
+        case techFolder
+        case cultureFolder
+        case swiftFeed
+        case swiftStoryOne
+    }
+
+    private static var didPrepareLaunchEnvironment = false
     private static var didScheduleScenario = false
     private static var didLoadFeedFixture = false
+
+    static func prepareLaunchEnvironmentIfNeeded(appDelegate: NewsBlurAppDelegate) {
+        guard isEnabled, !didPrepareLaunchEnvironment else { return }
+
+        didPrepareLaunchEnvironment = true
+        UIView.setAnimationsEnabled(false)
+
+        switch requestedScreen {
+        case "add-site":
+            installReaderFixtureNetwork(on: appDelegate)
+            ReaderUITestFixtures.prepareAppState(for: appDelegate)
+            appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
+        case let screen? where readerScenario(for: screen) != nil:
+            installReaderFixtureNetwork(on: appDelegate)
+            ReaderUITestFixtures.prepareAppState(for: appDelegate)
+            appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
+        default:
+            break
+        }
+    }
 
     static func configureIfNeeded(appDelegate: NewsBlurAppDelegate) {
         guard isEnabled, !didScheduleScenario else { return }
@@ -30,9 +59,13 @@ final class NewsBlurUITestHarness {
             didScheduleScenario = true
             AddSiteSheetViewController.viewModelFactory = { makeAddSiteViewModel() }
             configureAddSite(on: appDelegate, remainingRetries: 20)
-        case "reader":
+        case let screen? where readerScenario(for: screen) != nil:
             didScheduleScenario = true
-            configureReader(on: appDelegate, remainingRetries: 20)
+            configureReader(
+                on: appDelegate,
+                scenario: readerScenario(for: screen) ?? .list,
+                remainingRetries: 20
+            )
         default:
             break
         }
@@ -112,40 +145,111 @@ final class NewsBlurUITestHarness {
         }
     }
 
-    private static func configureReader(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+    private static func configureReader(
+        on appDelegate: NewsBlurAppDelegate,
+        scenario: ReaderScenario,
+        remainingRetries: Int
+    ) {
         guard remainingRetries > 0 else { return }
         guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
         guard feedsNavigationController.viewIfLoaded?.window != nil else {
-            retryConfiguringReader(on: appDelegate, remainingRetries: remainingRetries)
+            retryConfiguringReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries)
             return
         }
 
         if let presentedViewController = feedsNavigationController.presentedViewController {
             presentedViewController.dismiss(animated: false) {
-                configureReader(on: appDelegate, remainingRetries: remainingRetries - 1)
+                configureReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries - 1)
             }
             return
         }
 
         loadFixtureFeedList(on: appDelegate)
+        applyReaderScenario(scenario, on: appDelegate, remainingRetries: remainingRetries)
     }
 
-    private static func retryConfiguringReader(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+    private static func retryConfiguringReader(
+        on appDelegate: NewsBlurAppDelegate,
+        scenario: ReaderScenario,
+        remainingRetries: Int
+    ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            configureReader(on: appDelegate, remainingRetries: remainingRetries - 1)
+            configureReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries - 1)
         }
     }
 
     private static func loadFixtureFeedList(on appDelegate: NewsBlurAppDelegate) {
         guard !didLoadFeedFixture else { return }
+        guard let feedsViewController = appDelegate.feedsViewController else { return }
         didLoadFeedFixture = true
 
-        ReaderUITestURLProtocol.installIfNeeded()
-        appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
-        appDelegate.resetNetworkManagerForTesting()
+        installReaderFixtureNetwork(on: appDelegate)
         ReaderUITestFixtures.prepareAppState(for: appDelegate)
         appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
-        appDelegate.feedsViewController.finishLoadingFeedList(withDict: ReaderUITestFixtures.feedListResponse(), finished: true)
+        feedsViewController.loadViewIfNeeded()
+        appDelegate.feedsNavigationController.loadViewIfNeeded()
+        appDelegate.feedsNavigationController.view.layoutIfNeeded()
+
+        DispatchQueue.main.async {
+            if appDelegate.dictFeeds == nil {
+                feedsViewController.fetchFeedList(false)
+            } else {
+                feedsViewController.reloadFeedTitlesTable()
+                feedsViewController.refreshHeaderCounts()
+            }
+            feedsViewController.view.layoutIfNeeded()
+        }
+    }
+
+    private static func installReaderFixtureNetwork(on appDelegate: NewsBlurAppDelegate) {
+        ReaderUITestURLProtocol.installIfNeeded()
+        appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
+        appDelegate.setNetworkProtocolClassesForTesting([ReaderUITestURLProtocol.self])
+        appDelegate.resetNetworkManagerForTesting()
+    }
+
+    private static func applyReaderScenario(
+        _ scenario: ReaderScenario,
+        on appDelegate: NewsBlurAppDelegate,
+        remainingRetries: Int
+    ) {
+        guard remainingRetries > 0 else { return }
+        guard appDelegate.dictFeeds != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                applyReaderScenario(scenario, on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+
+        switch scenario {
+        case .list:
+            return
+        case .techFolder:
+            appDelegate.feedsViewController.selectFolder("Tech")
+        case .cultureFolder:
+            appDelegate.feedsViewController.selectFolder("Culture")
+        case .swiftFeed:
+            appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: "Tech ▸ Swift")
+        case .swiftStoryOne:
+            appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: "ui-story-swift-1", animated: false)
+        }
+    }
+
+    private static func readerScenario(for screen: String) -> ReaderScenario? {
+        switch screen {
+        case "reader":
+            return .list
+        case "reader-folder-tech":
+            return .techFolder
+        case "reader-folder-culture":
+            return .cultureFolder
+        case "reader-feed-swift":
+            return .swiftFeed
+        case "reader-story-swift-1":
+            return .swiftStoryOne
+        default:
+            return nil
+        }
     }
 
     private static func makeAddSiteViewModel() -> AddSiteViewModel {
@@ -200,7 +304,7 @@ private enum ReaderUITestFixtures {
         ]
     }
 
-    static func feedListResponse() -> [AnyHashable: Any] {
+    static func feedListResponse() -> [String: Any] {
         let response: [String: Any] = [
             "user": "ui-test-user",
             "share_ext_token": "ui-test-token",
@@ -256,10 +360,21 @@ private enum ReaderUITestFixtures {
             throw URLError(.badURL)
         }
 
-        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
         let payload: [String: Any]
 
-        if url.path == "/reader/river_stories/" {
+        if url.path == "/reader/feeds" {
+            payload = feedListResponse()
+        } else if url.path == "/reader/refresh_feeds" {
+            payload = refreshFeedsResponse()
+        } else if url.path == "/reader/favicons" {
+            payload = faviconsResponse(for: url)
+        } else if url.path.hasPrefix("/reader/river_stories") {
             payload = riverStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/feed/") {
             let requestedFeedID = feedID(from: url)
@@ -279,6 +394,17 @@ private enum ReaderUITestFixtures {
         }
 
         return (response, try JSONSerialization.data(withJSONObject: payload))
+    }
+
+    private static func refreshFeedsResponse() -> [String: Any] {
+        [
+            "feeds": [
+                techFeedId: unreadCount(ps: 0, nt: 2, ng: 0),
+                swiftFeedId: unreadCount(ps: 0, nt: 4, ng: 0),
+                cultureFeedId: unreadCount(ps: 0, nt: 1, ng: 0),
+            ],
+            "social_feeds": [:],
+        ]
     }
 
     private static func riverStoriesResponse(for url: URL) -> [String: Any] {
@@ -310,6 +436,19 @@ private enum ReaderUITestFixtures {
             "feed_authors": [],
             "user_profiles": [],
         ]
+    }
+
+    private static func faviconsResponse(for url: URL) -> [String: Any] {
+        let requestedFeedIds = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?
+            .filter { $0.name == "feed_ids" }
+            .compactMap(\.value)
+
+        let feedIds = requestedFeedIds?.isEmpty == false
+            ? requestedFeedIds ?? []
+            : [techFeedId, swiftFeedId, cultureFeedId]
+
+        return Dictionary(uniqueKeysWithValues: feedIds.map { ($0, NSNull()) })
     }
 
     private static func feedStoriesResponse(feedID: String?, stories: [[String: Any]]) -> [String: Any] {
@@ -353,6 +492,14 @@ private enum ReaderUITestFixtures {
             "ng": 0,
             "favicon_fade": "707070",
             "favicon_color": "707070",
+        ]
+    }
+
+    private static func unreadCount(ps: Int, nt: Int, ng: Int) -> [String: Any] {
+        [
+            "ps": ps,
+            "nt": nt,
+            "ng": ng,
         ]
     }
 
@@ -543,7 +690,12 @@ private final class AddSiteUITestURLProtocol: URLProtocol {
             throw URLError(.badURL)
         }
 
-        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
 
         switch url.path {
         case "/rss_feeds/feed_autocomplete":
