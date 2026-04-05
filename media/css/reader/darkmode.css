@@ -2094,6 +2094,11 @@ text-shadow: none;
     background-color: #434543;
 }
 
+.NB-dark .NB-sidebar {
+    --nb-sidebar-sticky-feedlist-background: #434543;
+    --nb-sidebar-sticky-feedlist-selected-background: #4d6d95;
+}
+
 .NB-dark .NB-feedlist .feed {
     /* border-top: 1px solid #434543; */
     /* border-bottom: 1px solid #434543; */

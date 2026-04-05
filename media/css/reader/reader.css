@@ -579,6 +579,16 @@ hr {
     height: auto;
 }
 
+.NB-sidebar {
+    --nb-sidebar-primary-sticky-top: 0px;
+    --nb-sidebar-primary-sticky-height: 34px;
+    --nb-sidebar-secondary-sticky-height: 34px;
+    --nb-sidebar-secondary-sticky-top: calc(var(--nb-sidebar-primary-sticky-top) + var(--nb-sidebar-primary-sticky-height));
+    --nb-sidebar-folder-sticky-top: calc(var(--nb-sidebar-secondary-sticky-top) + var(--nb-sidebar-secondary-sticky-height));
+    --nb-sidebar-sticky-feedlist-background: #F7F8F5;
+    --nb-sidebar-sticky-feedlist-selected-background: #FFFFD2;
+}
+
 .NB-theme-feed-size-xs .NB-feedlist {
     font-size: 11px;
 }
@@ -626,6 +636,13 @@ hr {
     letter-spacing: 0.5px;
     cursor: pointer;
     position: relative;
+}
+
+.NB-feedlist .folder_title.NB-sticky-sidebar-folder {
+    position: sticky;
+    top: var(--nb-sidebar-folder-sticky-top);
+    z-index: 2;
+    background-color: var(--nb-sidebar-sticky-feedlist-background);
 }
 
 .NB-feedlist li.folder .NB-folder-icon {
@@ -1207,7 +1224,12 @@ img.feed_favicon {
     background: none;
 }
 
-.NB-feedlist .folder_title.NB-toplevel.NB-no-hover {
+.NB-feedlist .folder_title.NB-sticky-sidebar-folder:hover,
+.NB-feedlist .folder_title.NB-sticky-sidebar-folder.NB-no-hover {
+    background-color: var(--nb-sidebar-sticky-feedlist-background);
+}
+
+.NB-feedlist .folder_title.NB-toplevel.NB-no-hover:not(.NB-sticky-sidebar-folder) {
     background: inherit;
 }
 
@@ -1240,6 +1262,12 @@ img.feed_favicon {
 
 .NB-feedlist .folder.NB-selected>.folder_title {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+
+.NB-feedlist .folder.NB-selected > .folder_title.NB-sticky-sidebar-folder,
+.NB-feedlist .folder.NB-selected > .folder_title.NB-sticky-sidebar-folder:hover,
+.NB-feedlist .folder.NB-selected > .folder_title.NB-sticky-sidebar-folder.NB-no-hover {
+    background-color: var(--nb-sidebar-sticky-feedlist-selected-background);
 }
 
 .NB-feedlist .feed.NB-feed-selector-selected {
@@ -7670,9 +7698,19 @@ body {
 /* ================ */
 
 .NB-feeds-header-wrapper {
+    position: relative;
+}
+
+.NB-feeds-header-container.NB-sticky-sidebar-primary {
     position: sticky;
-    top: 0;
-    z-index: 1;
+    top: var(--nb-sidebar-primary-sticky-top);
+    z-index: 4;
+}
+
+.NB-feeds-header-container.NB-sticky-sidebar-section {
+    position: sticky;
+    top: var(--nb-sidebar-secondary-sticky-top);
+    z-index: 3;
 }
 
 .NB-feeds-header-user {

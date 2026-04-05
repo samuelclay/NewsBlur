@@ -46,21 +46,21 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     <div class="NB-button NB-feeds-list-retry">Retry</div>
                 </div>
 
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-dashboard-container NB-sticky-sidebar-primary">
+                    <div class="NB-feeds-header NB-feeds-header-river-dashboard NB-empty" role="link">
+                        <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/home.svg" />
+                        <div class="NB-feeds-header-title">
+                            NewsBlur Dashboard
+                        </div>
+                    </div>
+                </div>
+
                 <div class="NB-feeds-header-wrapper">
 
-                    <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container">
+                    <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container NB-sticky-sidebar-section">
                         <div class="NB-feeds-header NB-feeds-header-tryfeed">
                             <img class="NB-feeds-header-icon" src="" />
                             <div class="NB-feeds-header-title"></div>
-                        </div>
-                    </div>
-
-                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-dashboard-container">
-                        <div class="NB-feeds-header NB-feeds-header-river-dashboard NB-empty" role="link">
-                            <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/home.svg" />
-                            <div class="NB-feeds-header-title">
-                                NewsBlur Dashboard
-                            </div>
                         </div>
                     </div>
 
@@ -103,22 +103,22 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         </div>
                     </div>
                     
-                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container">
-                        <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
-                            <div class="NB-feeds-header-count unread_count"></div>
-                            <img class="NB-feeds-header-icon" src="" />
-                            <div class="NB-feeds-header-title">
-                                All Site Stories
-                            </div>
-                            <div class="NB-feedlist-toggle-all-icon" title="Collapse All Folders"></div>
-                        </div>
-                    </div>
+                </div>
 
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container NB-sticky-sidebar-section">
+                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
+                        <div class="NB-feeds-header-count unread_count"></div>
+                        <img class="NB-feeds-header-icon" src="" />
+                        <div class="NB-feeds-header-title">
+                            All Site Stories
+                        </div>
+                        <div class="NB-feedlist-toggle-all-icon" title="Collapse All Folders"></div>
+                    </div>
                 </div>
 
                 <ul class="folder NB-feedlist" id="feed_list"></ul>
                 
-                <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
+                <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-read" role="link">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -127,7 +127,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-archive-container NB-hidden">
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-archive-container NB-hidden NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-archive NB-empty" role="link">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -137,7 +137,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-global-container">
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-global-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-river-global NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
@@ -147,7 +147,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-well-read-container">
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-well-read-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-river-well-read NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
@@ -158,7 +158,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-long-reads-container">
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-long-reads-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-river-long-reads NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
@@ -169,7 +169,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-blurblogs-container">
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-blurblogs-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
@@ -185,7 +185,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 </div>
                 
                 
-                <div class="NB-feeds-header-container NB-feeds-header-searches-container NB-hidden">
+                <div class="NB-feeds-header-container NB-feeds-header-searches-container NB-hidden NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-searches">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -198,7 +198,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     <ul class="NB-searches-feeds NB-feedlist"></ul>
                 </div>
                 
-                <div class="NB-feeds-header-container NB-feeds-header-starred-container">
+                <div class="NB-feeds-header-container NB-feeds-header-starred-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-starred NB-empty" role="link">
                         <div class="NB-feeds-header-count feed_counts_floater unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
