@@ -36,19 +36,6 @@ def index(requst):
     pass
 
 
-def _get_recent_story_hashes(feed_id, hours=24):
-    """Get story hashes from the last N hours for a feed from Redis."""
-    import time
-
-    try:
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        cutoff = int(time.time()) - hours * 60 * 60
-        hashes = r.zrangebyscore(f"zF:{feed_id}", cutoff, "+inf")
-        return [h.decode("utf-8") if isinstance(h, bytes) else h for h in hashes]
-    except redis.ConnectionError:
-        return []
-
-
 @require_POST
 @ajax_login_required
 @json.json_view
@@ -289,14 +276,7 @@ def save_classifier(request):
                     classifier.classifier_type = classifier_type
                     classifier.save()
 
-    # Queue async classification for recent stories when a prompt classifier is added
-    has_new_prompt = any(opinion in post for opinion in prompt_opinions if "remove_" not in opinion)
-    if has_new_prompt and feed_id:
-        from apps.analyzer.tasks import ClassifyStoriesWithPrompt
-
-        recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
-        if recent_hashes:
-            ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
+    # Prompt classifiers only apply to new stories going forward (no backlog classification)
 
     # Update has_scoped_classifiers flag on profile
     if scope != "feed":
@@ -362,13 +342,7 @@ def save_prompt_classifier(request):
             except UserSubscription.DoesNotExist:
                 pass
 
-        # Queue async classification for recent stories
-        if feed_id:
-            from apps.analyzer.tasks import ClassifyStoriesWithPrompt
-
-            recent_hashes = _get_recent_story_hashes(feed_id, hours=24)
-            if recent_hashes:
-                ClassifyStoriesWithPrompt.delay(request.user.pk, recent_hashes)
+        # Prompt classifiers only apply to new stories going forward (no backlog classification)
     else:
         return {"code": -1, "message": "Missing prompt or prompt_id"}
 

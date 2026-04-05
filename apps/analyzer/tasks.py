@@ -14,31 +14,3 @@ def EmailPopularityQuery(pk):
     query.send_email()
 
 
-@app.task()
-def ClassifyStoriesWithPrompt(user_id, story_hashes):
-    """Classify specific stories for a single user (used when a prompt is created/updated).
-
-    Retroactively classifies recent stories when a user adds a new prompt classifier.
-    """
-    from apps.analyzer.models import MClassifierPrompt
-    from apps.rss_feeds.models import Feed, MStory
-
-    if not story_hashes:
-        return
-
-    stories_db = MStory.objects(story_hash__in=story_hashes)
-    stories = Feed.format_stories(stories_db)
-
-    if not stories:
-        return
-
-    feed_ids = list(set(s["story_feed_id"] for s in stories))
-
-    logging.debug(
-        " -> ~BB~FCClassifying ~SB%s~SN stories for user ~SB%s~SN across ~SB%s~SN feeds"
-        % (len(stories), user_id, len(feed_ids))
-    )
-
-    MClassifierPrompt.classify_stories(user_id, stories, feed_ids=feed_ids)
-
-
