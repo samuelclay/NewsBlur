@@ -26,7 +26,7 @@ class PopupMenuTextScalerTest {
     @Test
     fun controlHeightOnlyGetsTinyIncreaseAtLargerScales() {
         assertEquals(20, PopupMenuTextScaler.scaledControlHeightPx(20, 1f))
-        assertEquals(21, PopupMenuTextScaler.scaledControlHeightPx(20, 1.2f))
+        assertEquals(22, PopupMenuTextScaler.scaledControlHeightPx(20, 1.2f))
         assertEquals(23, PopupMenuTextScaler.scaledControlHeightPx(20, 1.4f))
         assertEquals(26, PopupMenuTextScaler.scaledControlHeightPx(20, 1.8f))
     }

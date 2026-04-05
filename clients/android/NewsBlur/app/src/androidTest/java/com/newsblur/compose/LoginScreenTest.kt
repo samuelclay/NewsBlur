@@ -15,8 +15,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.newsblur.design.NbThemeVariant
-import com.newsblur.design.NewsBlurTheme
-import com.newsblur.design.loginAuthPalette
 import com.newsblur.viewModel.LoginRegisterViewModel
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthMode
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthPhase
@@ -141,11 +139,11 @@ class LoginScreenTest {
         height: Dp = 900.dp,
     ) {
         composeRule.setContent {
-            NewsBlurTheme(variant = NbThemeVariant.Light, dynamic = false) {
+            LoginScreenTestHarness.LightTheme {
                 Box(modifier = Modifier.size(width = 393.dp, height = height)) {
-                    LoginScreenContent(
+                    LoginScreenTestHarness.Content(
                         variant = NbThemeVariant.Light,
-                        palette = loginAuthPalette(NbThemeVariant.Light),
+                        palette = LoginScreenTestHarness.lightPalette(),
                         uiState = uiState,
                         username = username,
                         password = password,

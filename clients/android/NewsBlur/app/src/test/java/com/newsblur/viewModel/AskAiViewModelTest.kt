@@ -62,7 +62,10 @@ class AskAiViewModelTest {
             every { socketClient.subscribe("ask_ai:error", capture(errorHandler)) } just runs
             coEvery { askAiApi.sendQuestion(any()) } returns AskAiQuestionResponse(code = 1, message = "Processing question")
 
-            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            val viewModel =
+                AskAiViewModel(askAiApi, prefsRepo, socketClient).apply {
+                    ioDispatcher = dispatcherRule.dispatcher
+                }
             viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
             viewModel.sendQuestion(AskAiQuestionType.BULLETS)
             advanceUntilIdle()
@@ -134,7 +137,10 @@ class AskAiViewModelTest {
             coEvery { askAiApi.sendQuestion(any()) } returns
                 AskAiQuestionResponse(code = -1, message = "You've used your Ask AI request this week.")
 
-            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            val viewModel =
+                AskAiViewModel(askAiApi, prefsRepo, socketClient).apply {
+                    ioDispatcher = dispatcherRule.dispatcher
+                }
             viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
             viewModel.sendQuestion(AskAiQuestionType.CONTEXT)
             advanceUntilIdle()
@@ -162,7 +168,10 @@ class AskAiViewModelTest {
             every { socketClient.subscribe("ask_ai:error", any()) } just runs
             coEvery { askAiApi.sendQuestion(any()) } returns AskAiQuestionResponse(code = 1, message = "Processing question")
 
-            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            val viewModel =
+                AskAiViewModel(askAiApi, prefsRepo, socketClient).apply {
+                    ioDispatcher = dispatcherRule.dispatcher
+                }
             viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
             viewModel.sendQuestion(AskAiQuestionType.ARGUMENTS)
             advanceUntilIdle()
@@ -204,7 +213,10 @@ class AskAiViewModelTest {
             every { socketClient.subscribe("ask_ai:error", any()) } just runs
             coEvery { askAiApi.sendQuestion(capture(requests)) } returns AskAiQuestionResponse(code = 1, message = "Processing question")
 
-            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            val viewModel =
+                AskAiViewModel(askAiApi, prefsRepo, socketClient).apply {
+                    ioDispatcher = dispatcherRule.dispatcher
+                }
             viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
             viewModel.updateCustomQuestion("What changed in the leadership team?")
             viewModel.sendFollowUp()
@@ -250,7 +262,10 @@ class AskAiViewModelTest {
             every { socketClient.subscribe("ask_ai:error", any()) } just runs
             coEvery { askAiApi.sendQuestion(capture(requests)) } returns AskAiQuestionResponse(code = 1, message = "Processing question")
 
-            val viewModel = AskAiViewModel(askAiApi, prefsRepo, socketClient)
+            val viewModel =
+                AskAiViewModel(askAiApi, prefsRepo, socketClient).apply {
+                    ioDispatcher = dispatcherRule.dispatcher
+                }
             viewModel.initialize(storyHash = "story-hash", storyTitle = "Atlassian story")
             viewModel.sendQuestion(AskAiQuestionType.SENTENCE)
             advanceUntilIdle()

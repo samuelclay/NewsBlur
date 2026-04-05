@@ -73,3 +73,14 @@ fun ThemeValue.toVariant(): NbThemeVariant =
         ThemeValue.BLACK -> NbThemeVariant.Black
         ThemeValue.AUTO -> NbThemeVariant.System
     }
+
+object NbThemes {
+    @Composable
+    fun Apply(
+        variant: NbThemeVariant,
+        dynamic: Boolean = true,
+        content: @Composable () -> Unit,
+    ) {
+        NewsBlurTheme(variant = variant, dynamic = dynamic, content = content)
+    }
+}

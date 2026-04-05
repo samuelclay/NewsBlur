@@ -1,5 +1,6 @@
 package com.newsblur.viewModel
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.askai.AskAiMessage
@@ -35,6 +36,9 @@ class AskAiViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(AskAiUiState())
         val uiState: StateFlow<AskAiUiState> = _uiState.asStateFlow()
+
+        @VisibleForTesting
+        internal var ioDispatcher = Dispatchers.IO
 
         private val conversationHistory = mutableListOf<AskAiMessage>()
         private var pendingHistoryQuestion: AskAiMessage? = null
@@ -141,7 +145,7 @@ class AskAiViewModel
 
             viewModelScope.launch {
                 val response =
-                    withContext(Dispatchers.IO) {
+                    withContext(ioDispatcher) {
                         askAiApi.transcribeAudio(file)
                     }
                 file.delete()
@@ -355,7 +359,7 @@ class AskAiViewModel
 
             viewModelScope.launch {
                 val response =
-                    withContext(Dispatchers.IO) {
+                    withContext(ioDispatcher) {
                         askAiApi.sendQuestion(
                             AskAiQuestionRequest(
                                 storyHash = story.storyHash,

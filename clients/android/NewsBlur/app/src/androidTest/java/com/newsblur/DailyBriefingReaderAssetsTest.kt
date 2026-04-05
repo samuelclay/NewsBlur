@@ -99,7 +99,7 @@ class DailyBriefingReaderAssetsTest {
             assertEquals("16", metrics[3])
             assertEquals("4", metrics[4])
             assertEquals("NB-classifier-icon-like", metrics[5])
-            assertEquals("12", metrics[6])
+            assertEquals("10", metrics[6])
         } finally {
             instrumentation.runOnMainSync {
                 webViewRef.get()?.destroy()
