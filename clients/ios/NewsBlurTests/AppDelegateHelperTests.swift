@@ -53,12 +53,14 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(defaults.string(forKey: "feed:2:mark_read_filter"), "scroll")
     }
 
-    func test_upgradeSettings_doesNotMigrateCurrentReleases() {
+    func test_upgradeSettings_doesNotOverwriteCurrentReleases() {
         defaults.set(true, forKey: "default_scroll_read_filter")
+        defaults.set("selection", forKey: "default_mark_read_filter")
+        defaults.set(false, forKey: "override_mark_read_filter")
 
         AppDelegateHelper.shared.upgradeSettings(from: 154)
 
-        XCTAssertNil(defaults.object(forKey: "default_mark_read_filter"))
-        XCTAssertNil(defaults.object(forKey: "override_mark_read_filter"))
+        XCTAssertEqual(defaults.string(forKey: "default_mark_read_filter"), "selection")
+        XCTAssertFalse(defaults.bool(forKey: "override_mark_read_filter"))
     }
 }
