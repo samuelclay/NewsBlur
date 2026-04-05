@@ -114,8 +114,9 @@ public class ItemSetFragment extends NbFragment {
     // rarely thereafter
     private boolean fleuronResized = false;
 
-    // de-dupe the massive stream of scrolling data to auto-mark read
-    private int lastAutoMarkIndex = -1;
+    // track the last auto-marked story by hash so unread-only list shrinkage doesn't renumber us
+    @Nullable
+    private String lastAutoMarkStoryHash;
 
     public int indexOfLastUnread = -1;
     public boolean fullFlingComplete = false;
@@ -572,27 +573,32 @@ public class ItemSetFragment extends NbFragment {
         }
 
         if (prefsRepo.isMarkReadOnFeedScroll()) {
-            // we want the top row of stories that is partially obscured. go back one from the first fully visible
-            int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
-            // when scrolled to the bottom, the last story is fully visible but never scrolls off-screen,
-            // so extend markEnd to include all remaining visible stories
+            int firstCompletelyVisible = layoutManager.findFirstCompletelyVisibleItemPosition();
             int lastCompletelyVisible = layoutManager.findLastCompletelyVisibleItemPosition();
             int storyCount = adapter.getStoryCount();
-            if (storyCount > 0 && lastCompletelyVisible >= storyCount - 1) {
-                markEnd = Math.max(markEnd, storyCount - 1);
-            }
-            if (markEnd > lastAutoMarkIndex) {
-                int prevIndex = lastAutoMarkIndex;
-                lastAutoMarkIndex = markEnd;
+            int lastAutoMarkPosition = getLastAutoMarkPosition();
+            int markEnd = AutoMarkReadRangeDecider.findMarkEnd(
+                    firstCompletelyVisible,
+                    lastCompletelyVisible,
+                    storyCount,
+                    lastAutoMarkPosition
+            );
+            if (markEnd > lastAutoMarkPosition) {
                 // mark all stories between the previous mark position and the new one
-                for (int i = prevIndex + 1; i <= markEnd; i++) {
+                for (int i = lastAutoMarkPosition + 1; i <= markEnd; i++) {
                     Story story = adapter.getStory(i);
                     if (story != null) {
+                        lastAutoMarkStoryHash = story.storyHash;
                         feedUtils.markStoryAsRead(story, requireContext());
                     }
                 }
             }
         }
+    }
+
+    private int getLastAutoMarkPosition() {
+        if (lastAutoMarkStoryHash == null) return -1;
+        return adapter.getDisplayPositionForStoryHash(lastAutoMarkStoryHash);
     }
 
     private void ensureSufficientStories() {
