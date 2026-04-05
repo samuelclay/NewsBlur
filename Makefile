@@ -71,12 +71,29 @@ android-emulator:
 		echo "Android emulator binary not found at $(ANDROID_EMULATOR)"; \
 		exit 1; \
 	fi; \
+	AVD_DIR="$${ANDROID_AVD_HOME:-$${ANDROID_SDK_HOME:-$$HOME/.android}/avd}"; \
+	AVD="$(ANDROID_AVD)"; \
+	if [ ! -f "$$AVD_DIR/$$AVD.ini" ]; then \
+		if [ "$$AVD" = "NewsBlur_API_36" ]; then \
+			FALLBACK_AVD=$$(find "$$AVD_DIR" -maxdepth 1 -name '*.ini' -print 2>/dev/null | sed 's#.*/##; s#\.ini$$##' | sort | head -n 1); \
+			if [ -n "$$FALLBACK_AVD" ]; then \
+				echo "Configured AVD $$AVD not found in $$AVD_DIR. Falling back to $$FALLBACK_AVD."; \
+				AVD="$$FALLBACK_AVD"; \
+			else \
+				echo "Configured AVD $$AVD not found in $$AVD_DIR and no local AVDs are installed."; \
+				exit 1; \
+			fi; \
+		else \
+			echo "Configured AVD $$AVD not found in $$AVD_DIR."; \
+			exit 1; \
+		fi; \
+	fi; \
 	if adb devices | grep -q '^emulator-[0-9][0-9]*[[:space:]]'; then \
 		echo "Android emulator already running."; \
 		SERIAL=$$(adb devices | awk '/^emulator-[0-9]+\tdevice$$/ {print $$1; exit}'); \
 	else \
-		echo "Starting Android emulator for AVD $(ANDROID_AVD)..."; \
-		nohup "$(ANDROID_EMULATOR)" -avd "$(ANDROID_AVD)" >/tmp/newsblur-android-emulator.log 2>&1 & \
+		echo "Starting Android emulator for AVD $$AVD..."; \
+		nohup "$(ANDROID_EMULATOR)" -avd "$$AVD" >/tmp/newsblur-android-emulator.log 2>&1 & \
 		echo $$! > /tmp/newsblur-android-emulator.pid; \
 		echo "Emulator booting in background. Log: /tmp/newsblur-android-emulator.log"; \
 		SERIAL=""; \
