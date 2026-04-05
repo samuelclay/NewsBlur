@@ -1890,6 +1890,8 @@ class FeedFetcherWorker:
         """Classify stories with AI prompt classifiers for all applicable subscribers.
 
         Runs inline during feed processing so results are cached before users read.
+        Only classifies the newest stories (up to 30) since older stories are already
+        cached from previous fetches. The cache in _run_classifier provides idempotency.
         """
         from apps.analyzer.models import MClassifierPrompt
 
@@ -1897,13 +1899,19 @@ class FeedFetcherWorker:
         if not user_ids:
             return
 
+        # Only classify the newest stories, not the entire unread window.
+        # Limit to avoid sending thousands of stories to the LLM on feeds with
+        # large backlogs. The cache in _run_classifier skips already-classified stories.
+        max_stories = 30
+        recent_stories = sorted(stories, key=lambda s: s.get("story_date", ""), reverse=True)[:max_stories]
+
         logging.debug(
-            "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN stories for ~SB%s~SN prompt users"
-            % (feed.log_title[:30], len(stories), len(user_ids))
+            "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN stories (of %s) for ~SB%s~SN prompt users"
+            % (feed.log_title[:30], len(recent_stories), len(stories), len(user_ids))
         )
 
         for user_id in user_ids:
-            MClassifierPrompt.classify_stories(user_id, stories, feed_ids=[feed.pk])
+            MClassifierPrompt.classify_stories(user_id, recent_stories, feed_ids=[feed.pk])
 
 
 class Dispatcher:
