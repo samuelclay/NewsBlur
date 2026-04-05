@@ -1861,6 +1861,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [self clearNetworkManager];
 }
 
+- (void)resetNetworkManagerForTesting {
+    [self clearNetworkManager];
+}
+
 - (void)clearNetworkManager {
     for (NSString *networkOperationIdentifier in self.networkBackgroundTasks) {
         [self endNetworkOperation:networkOperationIdentifier];

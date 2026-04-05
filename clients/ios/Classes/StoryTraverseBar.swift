@@ -144,6 +144,11 @@ class StoryTraverseBar: NSObject {
         installHighlightHandler(previousButton)
         installHighlightHandler(nextButton)
 
+        previousButton.accessibilityIdentifier = "story-traverse-previous-button"
+        previousButton.accessibilityLabel = "Previous story"
+        nextButton.accessibilityIdentifier = "story-traverse-next-button"
+        nextButton.accessibilityLabel = "Next story"
+
         // On Catalyst, buttons are inset from the pill edge; round their corners
         // so the highlight background matches the pill's inner curve.
         if macEdgePadding > 0 {
@@ -438,6 +443,7 @@ class StoryTraverseBar: NSObject {
 
     func updateNextShowDone(_ showDone: Bool) {
         let tint = ThemeManager.shared?.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+        nextButton.accessibilityLabel = showDone ? "Done with stories" : "Next story"
 
         #if targetEnvironment(macCatalyst)
         nextLabelView?.text = showDone ? "Done" : "Next"

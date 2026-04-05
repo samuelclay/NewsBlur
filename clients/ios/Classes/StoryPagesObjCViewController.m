@@ -39,6 +39,7 @@
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
 @property (nonatomic, strong) UIBarButtonItem *temporaryFullScreenButton;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
+@property (nonatomic, strong) UIView *uiTestStoryStateProbeView;
 
 @end
 
@@ -319,6 +320,25 @@
             [sbBg.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
         ]];
         self.statusBarBackgroundView = sbBg;
+    }
+
+    if (!self.uiTestStoryStateProbeView) {
+        UIView *probeView = [[UIView alloc] init];
+        probeView.translatesAutoresizingMaskIntoConstraints = NO;
+        probeView.userInteractionEnabled = NO;
+        probeView.isAccessibilityElement = YES;
+        probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
+        probeView.accessibilityIdentifier = @"story-current-story";
+        probeView.accessibilityLabel = @"No story selected";
+        probeView.alpha = 0.01;
+        [self.view addSubview:probeView];
+        [NSLayoutConstraint activateConstraints:@[
+            [probeView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [probeView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [probeView.widthAnchor constraintEqualToConstant:1],
+            [probeView.heightAnchor constraintEqualToConstant:1],
+        ]];
+        self.uiTestStoryStateProbeView = probeView;
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -2066,6 +2086,7 @@
     [self updateStoryTitleNavigationButtons];
     
     [self setNextPreviousButtons];
+    [self updateUITestStoryStateProbe];
     
     if (updateFeedDetail) {
         [appDelegate changeActiveFeedDetailRow];
@@ -2117,6 +2138,19 @@
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     [self.traverseBar updateProgress:progress];
+}
+
+- (void)updateUITestStoryStateProbe {
+    if (!self.uiTestStoryStateProbeView) {
+        return;
+    }
+
+    NSDictionary *activeStory = appDelegate.activeStory;
+    NSString *storyTitle = [activeStory[@"story_title"] isKindOfClass:[NSString class]] ? activeStory[@"story_title"] : nil;
+    NSString *storyHash = [activeStory[@"story_hash"] isKindOfClass:[NSString class]] ? activeStory[@"story_hash"] : nil;
+
+    self.uiTestStoryStateProbeView.accessibilityLabel = storyTitle.length ? storyTitle : @"No story selected";
+    self.uiTestStoryStateProbeView.accessibilityValue = storyHash;
 }
 
 - (void)setTextButton {
