@@ -110,10 +110,10 @@ final class NewsBlurUITestHarness {
         didLoadReaderFixture = true
 
         ReaderUITestURLProtocol.installIfNeeded()
-        appDelegate.url = ReaderUITestFixtures.baseURL.absoluteString
+        appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
         appDelegate.resetNetworkManagerForTesting()
         ReaderUITestFixtures.prepareAppState(for: appDelegate)
-        ReaderUITestFixtures.seedUnreadCounts(for: appDelegate)
+        appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
         appDelegate.feedsViewController.finishLoadingFeedList(withDict: ReaderUITestFixtures.feedListResponse(), finished: true)
     }
 
@@ -165,25 +165,15 @@ private enum ReaderUITestFixtures {
         appDelegate.storiesCollection.reset()
     }
 
-    static func seedUnreadCounts(for appDelegate: NewsBlurAppDelegate) {
-        let unreadRows: [(String, Int, Int, Int)] = [
-            (techFeedId, 0, 2, 0),
-            (swiftFeedId, 0, 4, 0),
-            (cultureFeedId, 0, 1, 0),
+    static func unreadCountRows() -> [[String: Any]] {
+        [
+            ["feed_id": techFeedId, "ps": 0, "nt": 2, "ng": 0],
+            ["feed_id": swiftFeedId, "ps": 0, "nt": 4, "ng": 0],
+            ["feed_id": cultureFeedId, "ps": 0, "nt": 1, "ng": 0],
         ]
-
-        appDelegate.database.inDatabase { database in
-            for row in unreadRows {
-                _ = database.executeUpdate("DELETE FROM unread_counts WHERE feed_id = ?", withArgumentsIn: [row.0])
-                _ = database.executeUpdate(
-                    "INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES (?, ?, ?, ?)",
-                    withArgumentsIn: [row.0, row.1, row.2, row.3]
-                )
-            }
-        }
     }
 
-    static func feedListResponse() -> NSDictionary {
+    static func feedListResponse() -> [AnyHashable: Any] {
         let response: [String: Any] = [
             "user": "ui-test-user",
             "share_ext_token": "ui-test-token",
@@ -231,7 +221,7 @@ private enum ReaderUITestFixtures {
             "starred_counts": [],
         ]
 
-        return response as NSDictionary
+        return response
     }
 
     static func response(for request: URLRequest) throws -> (HTTPURLResponse, Data) {
