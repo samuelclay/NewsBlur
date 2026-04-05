@@ -71,10 +71,11 @@ final class AddSiteViewModelTests: XCTestCase {
             XCTAssertEqual(request.url?.absoluteString, "https://example.com/reader/add_url")
             XCTAssertEqual(request.httpMethod, "POST")
 
-            let body = String(data: try XCTUnwrap(request.httpBody), encoding: .utf8)
-            XCTAssertTrue(body?.contains("folder=Tech") == true)
-            XCTAssertTrue(body?.contains("url=https://example.com/feed") == true)
-            XCTAssertTrue(body?.contains("new_folder=Swift") == true)
+            let body = try XCTUnwrap(Self.requestBody(for: request))
+            let fields = Self.formFields(from: body)
+            XCTAssertEqual(fields["folder"], "Tech")
+            XCTAssertEqual(fields["url"], "https://example.com/feed")
+            XCTAssertEqual(fields["new_folder"], "Swift")
 
             let response = try XCTUnwrap(
                 HTTPURLResponse(url: try XCTUnwrap(request.url), statusCode: 200, httpVersion: nil, headerFields: nil)
@@ -120,6 +121,44 @@ final class AddSiteViewModelTests: XCTestCase {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
         return URLSession(configuration: configuration)
+    }
+
+    private static func requestBody(for request: URLRequest) -> Data? {
+        if let body = request.httpBody {
+            return body
+        }
+
+        guard let stream = request.httpBodyStream else {
+            return nil
+        }
+
+        stream.open()
+        defer { stream.close() }
+
+        let bufferSize = 1024
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: bufferSize)
+
+        while stream.hasBytesAvailable {
+            let readCount = stream.read(&buffer, maxLength: bufferSize)
+            guard readCount > 0 else { break }
+            data.append(buffer, count: readCount)
+        }
+
+        return data.isEmpty ? nil : data
+    }
+
+    private static func formFields(from body: Data) -> [String: String] {
+        let bodyString = String(decoding: body, as: UTF8.self)
+        return bodyString
+            .split(separator: "&")
+            .reduce(into: [:]) { result, pair in
+                let components = pair.split(separator: "=", maxSplits: 1).map(String.init)
+                guard let key = components.first else { return }
+                let value = components.count > 1 ? components[1] : ""
+                let decodedValue = value.removingPercentEncoding ?? value
+                result[key] = decodedValue
+            }
     }
 
     private func waitUntil(
