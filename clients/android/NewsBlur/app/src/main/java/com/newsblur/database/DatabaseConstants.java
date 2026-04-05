@@ -2,7 +2,6 @@ package com.newsblur.database;
 
 import java.util.List;
 
-import android.text.TextUtils;
 import android.provider.BaseColumns;
 
 import com.google.gson.Gson;
@@ -372,7 +371,7 @@ public class DatabaseConstants {
 	};
 
     private static final String STORY_COLUMNS = 
-        TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
+        String.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
 	public static final String STORY_QUERY_BASE_0 =

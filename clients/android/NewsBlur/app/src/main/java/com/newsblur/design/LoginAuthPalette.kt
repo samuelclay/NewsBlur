@@ -241,3 +241,7 @@ fun loginAuthPalette(variant: NbThemeVariant): LoginAuthPalette =
 
         NbThemeVariant.System -> loginAuthPalette(NbThemeVariant.Light)
     }
+
+object LoginAuthPalettes {
+    fun of(variant: NbThemeVariant): LoginAuthPalette = loginAuthPalette(variant)
+}

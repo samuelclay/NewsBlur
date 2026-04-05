@@ -96,8 +96,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
 import com.newsblur.design.LoginAuthPalette
+import com.newsblur.design.LoginAuthPalettes
 import com.newsblur.design.NbThemeVariant
-import com.newsblur.design.loginAuthPalette
+import com.newsblur.design.NbThemes
 import com.newsblur.viewModel.LoginRegisterViewModel
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthMode
 import kotlinx.coroutines.delay
@@ -164,7 +165,7 @@ fun LoginScreen(
         } else {
             variant
         }
-    val palette = remember(resolvedVariant) { loginAuthPalette(resolvedVariant) }
+    val palette = remember(resolvedVariant) { LoginAuthPalettes.of(resolvedVariant) }
 
     val usernameFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
@@ -278,9 +279,9 @@ internal fun LoginScreenContent(
     passwordFocusRequester: FocusRequester? = null,
     emailFocusRequester: FocusRequester? = null,
     showShaderBackground: Boolean = true,
-) {
-    val context = LocalContext.current
-    val scrollState = rememberScrollState()
+    ) {
+        val context = LocalContext.current
+        val scrollState = rememberScrollState()
     val resolvedVariant =
         if (variant == NbThemeVariant.System && androidx.compose.foundation.isSystemInDarkTheme()) {
             NbThemeVariant.Dark
@@ -536,6 +537,58 @@ internal fun LoginScreenContent(
                 onSave = onSaveCustomServer,
             )
         }
+    }
+}
+
+object LoginScreenTestHarness {
+    @Composable
+    fun LightTheme(content: @Composable () -> Unit) {
+        NbThemes.Apply(variant = NbThemeVariant.Light, dynamic = false, content = content)
+    }
+
+    fun lightPalette(): LoginAuthPalette = LoginAuthPalettes.of(NbThemeVariant.Light)
+
+    @Composable
+    fun Content(
+        variant: NbThemeVariant,
+        palette: LoginAuthPalette,
+        uiState: LoginRegisterViewModel.UiState,
+        username: String,
+        password: String,
+        email: String,
+        customServerValue: String,
+        showCustomServerDialog: Boolean,
+        onUsernameChange: (String) -> Unit,
+        onPasswordChange: (String) -> Unit,
+        onEmailChange: (String) -> Unit,
+        onSelectMode: (AuthMode) -> Unit,
+        onSubmit: () -> Unit,
+        onOpenForgotPassword: () -> Unit,
+        onOpenCustomServerDialog: () -> Unit,
+        onDismissCustomServerDialog: () -> Unit,
+        onSaveCustomServer: (String) -> Unit,
+        showShaderBackground: Boolean = false,
+    ) {
+        LoginScreenContent(
+            variant = variant,
+            palette = palette,
+            uiState = uiState,
+            username = username,
+            password = password,
+            email = email,
+            customServerValue = customServerValue,
+            showCustomServerDialog = showCustomServerDialog,
+            onUsernameChange = onUsernameChange,
+            onPasswordChange = onPasswordChange,
+            onEmailChange = onEmailChange,
+            onSelectMode = onSelectMode,
+            onSubmit = onSubmit,
+            onOpenForgotPassword = onOpenForgotPassword,
+            onOpenCustomServerDialog = onOpenCustomServerDialog,
+            onDismissCustomServerDialog = onDismissCustomServerDialog,
+            onSaveCustomServer = onSaveCustomServer,
+            showShaderBackground = showShaderBackground,
+        )
     }
 }
 
