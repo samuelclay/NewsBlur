@@ -1288,6 +1288,10 @@ private extension DetailViewController {
     }
 
     func checkViewControllers() {
+        guard isViewLoaded else {
+            return
+        }
+
         let isTop = layout == .top
         
 #if targetEnvironment(macCatalyst)
