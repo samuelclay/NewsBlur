@@ -822,6 +822,16 @@ class MClassifierPrompt(mongo.Document):
             pass
 
     @classmethod
+    def feed_has_prompt_subscribers(cls, feed_id):
+        """Quick check: do any users have prompt classifiers for this feed (or global)?
+
+        Returns set of user_ids with applicable prompts, or empty set.
+        """
+        feed_users = set(cls.objects.filter(feed_id=feed_id).distinct("user_id"))
+        global_users = set(cls.objects.filter(feed_id=0).distinct("user_id"))
+        return feed_users | global_users
+
+    @classmethod
     def get_prompts_for_user(cls, user_id, feed_ids=None, folder_ids=None):
         """
         Get all applicable prompt classifiers for a user and specific feeds/folders.
@@ -881,6 +891,9 @@ class MClassifierPrompt(mongo.Document):
         """
         Apply AI-based classification to a list of stories based on user's prompts.
         Uses Redis caching so each story is only classified once per prompt.
+
+        Called at FeedFetch time for each subscriber with prompt classifiers,
+        so stories are always from a single feed.
 
         Args:
             user_id: The ID of the user
@@ -951,10 +964,6 @@ class MClassifierPrompt(mongo.Document):
         if folder_ids and folder_prompts:
             for folder_id in folder_ids:
                 if folder_id in folder_prompts:
-                    folder_stories = []
-                    for feed_id, feed_stories in stories_by_feed.items():
-                        folder_stories.extend(feed_stories)
-
                     for prompt in folder_prompts[folder_id]:
                         # For folder prompts, classify per-feed for correct cache keys
                         for feed_id, feed_stories in stories_by_feed.items():

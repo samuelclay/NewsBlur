@@ -1864,6 +1864,15 @@ class FeedFetcherWorker:
                 )
             )
             self.calculate_feed_scores_with_stories(user_subs, stories)
+
+            # AI prompt classifiers: classify new stories for subscribers with prompts
+            try:
+                self.classify_stories_for_subscribers(feed, stories)
+            except TimeoutError:
+                logging.debug(
+                    "   ---> [%-30s] ~BR~FRAI classification took too long, skipping"
+                    % (feed.log_title[:30],)
+                )
         elif self.options.get("mongodb_replication_lag"):
             logging.debug(
                 "   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag"
@@ -1875,6 +1884,26 @@ class FeedFetcherWorker:
         for sub in user_subs:
             silent = False if getattr(self.options, "verbose", 0) >= 2 else True
             sub.calculate_feed_scores(silent=silent, stories=stories)
+
+    @timelimit(30)
+    def classify_stories_for_subscribers(self, feed, stories):
+        """Classify stories with AI prompt classifiers for all applicable subscribers.
+
+        Runs inline during feed processing so results are cached before users read.
+        """
+        from apps.analyzer.models import MClassifierPrompt
+
+        user_ids = MClassifierPrompt.feed_has_prompt_subscribers(feed.pk)
+        if not user_ids:
+            return
+
+        logging.debug(
+            "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN stories for ~SB%s~SN prompt users"
+            % (feed.log_title[:30], len(stories), len(user_ids))
+        )
+
+        for user_id in user_ids:
+            MClassifierPrompt.classify_stories(user_id, stories, feed_ids=[feed.pk])
 
 
 class Dispatcher:
