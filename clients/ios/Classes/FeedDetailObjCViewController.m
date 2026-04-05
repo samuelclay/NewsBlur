@@ -151,6 +151,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
+    self.storyTitlesTable.accessibilityIdentifier = @"story-titles-list";
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
         self.storyTitlesTable.sectionHeaderTopPadding = 0;
@@ -3080,6 +3081,8 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     cell.isSaved = !isClusterRow && [[story objectForKey:@"starred"] boolValue];
     cell.isShared = !isClusterRow && [[story objectForKey:@"shared"] boolValue];
     cell.storyHash = story[@"story_hash"];
+    NSString *storyIdentifier = [story[@"story_hash"] isKindOfClass:[NSString class]] ? story[@"story_hash"] : [NSString stringWithFormat:@"%@", @(location)];
+    cell.accessibilityIdentifier = [NSString stringWithFormat:@"story-row-%@", storyIdentifier];
     
     if (!isClusterRow && [[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];

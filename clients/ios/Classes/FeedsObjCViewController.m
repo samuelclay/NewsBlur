@@ -205,6 +205,7 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
 
     [searchContainerView addSubview:self.searchField];
     self.feedTitlesTable.tableHeaderView = searchContainerView;
+    self.feedTitlesTable.accessibilityIdentifier = @"feeds-list";
     
     userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
@@ -2053,6 +2054,7 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     } else {
         cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed", cell.feedTitle];
     }
+    cell.accessibilityIdentifier = [NSString stringWithFormat:@"feed-row-%@", feedIdStr];
     
     [cell setNeedsDisplay];
     

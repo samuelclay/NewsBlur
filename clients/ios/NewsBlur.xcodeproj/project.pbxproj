@@ -1442,6 +1442,7 @@
 			D1E2F3A40516273849A00012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0007 /* XCTest.framework */; };
 			D1E2F3A40516273849A00013 /* NewsBlurUITestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00003 /* NewsBlurUITestHarness.swift */; };
 			D1E2F3A40516273849A00014 /* NewsBlurUITestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00003 /* NewsBlurUITestHarness.swift */; };
+			D1E2F3A40516273849A00015 /* ReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00016 /* ReaderUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2434,6 +2435,7 @@
 			D1E2F3A40516273849A00001 /* NewsBlurUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewsBlurUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 			D1E2F3A40516273849A00002 /* AddSiteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSiteUITests.swift; sourceTree = "<group>"; };
 			D1E2F3A40516273849A00003 /* NewsBlurUITestHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsBlurUITestHarness.swift; sourceTree = "<group>"; };
+			D1E2F3A40516273849A00016 /* ReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderUITests.swift; sourceTree = "<group>"; };
 			KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 			PREM1EW5W1FT000000000001 /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2743,6 +2745,7 @@
 				isa = PBXGroup;
 				children = (
 					D1E2F3A40516273849A00002 /* AddSiteUITests.swift */,
+					D1E2F3A40516273849A00016 /* ReaderUITests.swift */,
 				);
 				path = NewsBlurUITests;
 				sourceTree = SOURCE_ROOT;
@@ -5684,6 +5687,7 @@
 				buildActionMask = 2147483647;
 				files = (
 					D1E2F3A40516273849A00011 /* AddSiteUITests.swift in Sources */,
+					D1E2F3A40516273849A00015 /* ReaderUITests.swift in Sources */,
 				);
 				runOnlyForDeploymentPostprocessing = 0;
 			};
