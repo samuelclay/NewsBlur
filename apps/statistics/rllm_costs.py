@@ -46,7 +46,9 @@ class RLLMCosts:
         return int(expiry.strftime("%s"))
 
     @classmethod
-    def record(cls, provider, model, feature, input_tokens, output_tokens, cost_usd, user_id=None):
+    def record(
+        cls, provider, model, feature, input_tokens, output_tokens, cost_usd, user_id=None, is_billing_user=False
+    ):
         """
         Record an LLM API call in Redis.
 
@@ -58,6 +60,7 @@ class RLLMCosts:
             output_tokens: Number of output tokens
             cost_usd: Cost in USD (float)
             user_id: Optional user ID for tracking unique users
+            is_billing_user: Whether this user has usage-based billing enabled
         """
         r = cls._get_redis()
         date_key = cls._date_key()
@@ -123,6 +126,20 @@ class RLLMCosts:
         # Register model name for fast lookup (avoids scan_iter on 150K+ keys)
         pipe.sadd(f"{cls.KEY_PREFIX}:known_models", model_safe)
 
+        # Track billing-user classifier costs separately for revenue metrics
+        if is_billing_user and feature in cls.CLASSIFIER_FEATURES:
+            billing_prefix = f"{cls.KEY_PREFIX}:{date_key}:billing:{feature}"
+            pipe.incrby(f"{billing_prefix}:tokens", total_tokens)
+            pipe.incrby(f"{billing_prefix}:cost", cost_micro)
+            pipe.incr(f"{billing_prefix}:requests")
+            pipe.expireat(f"{billing_prefix}:tokens", expiry)
+            pipe.expireat(f"{billing_prefix}:cost", expiry)
+            pipe.expireat(f"{billing_prefix}:requests", expiry)
+            if user_id:
+                billing_users_key = f"{cls.KEY_PREFIX}:{date_key}:billing_users"
+                pipe.sadd(billing_users_key, user_id)
+                pipe.expireat(billing_users_key, expiry)
+
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
@@ -132,6 +149,7 @@ class RLLMCosts:
         "ask_ai",
         "daily_briefing",
         "story_classification",
+        "vision_classification",
         "transcription",
         "webfeed",
         "search_story_embedding",
@@ -147,6 +165,7 @@ class RLLMCosts:
         "backfill_underpopulated_feeds",
         "generate_popular_feeds_taxonomy",
     ]
+    CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
     METRICS = ["tokens", "cost", "requests"]
 
     @classmethod
@@ -356,11 +375,20 @@ class RLLMCosts:
                     all_keys.append(f"{prefix}:feature:{feature}:{metric}")
                     key_metadata.append((day_offset, f"feature:{feature}", metric))
 
+            # Billing-user classifier cost keys
+            for feature in cls.CLASSIFIER_FEATURES:
+                for metric in cls.METRICS:
+                    all_keys.append(f"{prefix}:billing:{feature}:{metric}")
+                    key_metadata.append((day_offset, f"billing:{feature}", metric))
+
         # Build user set keys for all 30 days
         user_keys = []
+        billing_user_keys = []
         for day_offset in range(30):
             date = today - datetime.timedelta(days=day_offset)
-            user_keys.append(f"{cls.KEY_PREFIX}:{cls._date_key(date)}:users")
+            date_key = cls._date_key(date)
+            user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:users")
+            billing_user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:billing_users")
 
         # Pipeline: 1 MGET + known models set + user operations = 1 round-trip
         pipe = r.pipeline()
@@ -369,6 +397,10 @@ class RLLMCosts:
         pipe.scard(user_keys[0])
         pipe.sunion(*user_keys[:7])
         pipe.sunion(*user_keys[:30])
+        # Billing user counts
+        pipe.scard(billing_user_keys[0])
+        pipe.sunion(*billing_user_keys[:7])
+        pipe.sunion(*billing_user_keys[:30])
         results = pipe.execute()
 
         values = results[0]
@@ -376,6 +408,9 @@ class RLLMCosts:
         daily_users = results[2]
         weekly_users_set = results[3]
         monthly_users_set = results[4]
+        daily_billing_users = results[5]
+        weekly_billing_users_set = results[6]
+        monthly_billing_users_set = results[7]
 
         # Partition metrics into daily/weekly/monthly buckets
         daily = {}
@@ -440,6 +475,9 @@ class RLLMCosts:
             "daily_users": daily_users,
             "weekly_users": len(weekly_users_set) if weekly_users_set else 0,
             "monthly_users": len(monthly_users_set) if monthly_users_set else 0,
+            "daily_billing_users": daily_billing_users,
+            "weekly_billing_users": len(weekly_billing_users_set) if weekly_billing_users_set else 0,
+            "monthly_billing_users": len(monthly_billing_users_set) if monthly_billing_users_set else 0,
         }
 
     @classmethod
