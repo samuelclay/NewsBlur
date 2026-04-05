@@ -36,6 +36,8 @@ from zebra.signals import (
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
     zebra_webhook_customer_subscription_updated,
+    zebra_webhook_invoice_payment_failed,
+    zebra_webhook_invoice_payment_succeeded,
 )
 
 from apps.ask_ai.usage import AskAIUsageTracker
@@ -3811,6 +3813,79 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
 
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
+
+
+def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
+    """Notify staff when a usage billing threshold invoice is auto-charged."""
+    from apps.profile.tasks import EmailStaffNotification
+
+    invoice = full_json["data"]["object"]
+    billing_reason = invoice.get("billing_reason", "")
+
+    # Only handle threshold-triggered invoices (from $50 billing_thresholds)
+    if billing_reason != "threshold":
+        return
+
+    stripe_customer_id = invoice.get("customer")
+    amount_cents = invoice.get("amount_paid", 0)
+    amount_dollars = amount_cents / 100.0
+    invoice_id = invoice.get("id", "unknown")
+
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_customer_id)
+        username = profile.user.username
+        logging.user(
+            profile.user,
+            "~BC~SB~FBStripe usage billing threshold invoice paid: $%.2f" % amount_dollars,
+        )
+    except Profile.DoesNotExist:
+        username = "unknown (stripe: %s)" % stripe_customer_id
+
+    EmailStaffNotification.delay(
+        event_type="usage_billing_threshold_charged",
+        subject="Usage billing auto-charge: %s charged $%.2f" % (username, amount_dollars),
+        body="User %s was auto-charged $%.2f for AI classifier usage (threshold invoice).\n"
+        "Invoice: %s\nStripe customer: %s" % (username, amount_dollars, invoice_id, stripe_customer_id),
+    )
+
+
+def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
+    """Notify staff when a usage billing threshold invoice payment fails."""
+    from apps.profile.tasks import EmailStaffNotification
+
+    invoice = full_json["data"]["object"]
+    billing_reason = invoice.get("billing_reason", "")
+
+    if billing_reason != "threshold":
+        return
+
+    stripe_customer_id = invoice.get("customer")
+    amount_cents = invoice.get("amount_due", 0)
+    amount_dollars = amount_cents / 100.0
+    invoice_id = invoice.get("id", "unknown")
+
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_customer_id)
+        username = profile.user.username
+        logging.user(
+            profile.user,
+            "~FC~SB~FRStripe usage billing threshold invoice FAILED: $%.2f" % amount_dollars,
+        )
+    except Profile.DoesNotExist:
+        username = "unknown (stripe: %s)" % stripe_customer_id
+
+    EmailStaffNotification.delay(
+        event_type="usage_billing_threshold_failed",
+        subject="FAILED usage billing charge: %s $%.2f" % (username, amount_dollars),
+        body="User %s FAILED to pay $%.2f for AI classifier usage (threshold invoice).\n"
+        "Invoice: %s\nStripe customer: %s\n\n"
+        "Action needed: check if their payment method is valid."
+        % (username, amount_dollars, invoice_id, stripe_customer_id),
+    )
+
+
+zebra_webhook_invoice_payment_succeeded.connect(stripe_usage_billing_invoice_paid)
+zebra_webhook_invoice_payment_failed.connect(stripe_usage_billing_invoice_failed)
 
 
 def change_password(user, old_password, new_password, only_check=False):
