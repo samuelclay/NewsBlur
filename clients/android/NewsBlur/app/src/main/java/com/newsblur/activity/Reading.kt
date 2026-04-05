@@ -86,6 +86,22 @@ internal fun resolveOverlayRightAction(
         OverlayRightAction.FINISH_READING
     }
 
+internal data class ReadingConfigChangeRestore(
+    val storyHash: String,
+    val scrollPosRel: Float,
+)
+
+internal fun createReadingConfigChangeRestore(
+    storyHash: String?,
+    scrollPosRel: Float?,
+): ReadingConfigChangeRestore? =
+    storyHash?.let {
+        ReadingConfigChangeRestore(
+            storyHash = it,
+            scrollPosRel = scrollPosRel ?: 0f,
+        )
+    }
+
 @AndroidEntryPoint
 abstract class Reading :
     NbActivity(),
@@ -111,6 +127,7 @@ abstract class Reading :
     private var stopLoading = false
     private var unreadSearchActive = false
     private var restoredStoryScrollPosRel = 0f
+    private var pendingConfigChangeRestore: ReadingConfigChangeRestore? = null
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
@@ -270,6 +287,18 @@ abstract class Reading :
         isMultiWindowModeHack = isInMultiWindowMode
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        pendingConfigChangeRestore = captureReadingConfigChangeRestore()
+        pendingConfigChangeRestore?.let { restore ->
+            storyHash = restore.storyHash
+            restoredStoryScrollPosRel = restore.scrollPosRel
+            isRestoringState = true
+        }
+
+        super.onConfigurationChanged(newConfig)
+        restoreReadingAfterConfigurationChange()
+    }
+
     private fun setupViews() {
         // this value is expensive to compute but doesn't change during a single runtime
         overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
@@ -296,6 +325,42 @@ abstract class Reading :
             updateBackSwipeGestureExclusion()
         }
         updateBackSwipeGestureExclusion()
+    }
+
+    private fun captureReadingConfigChangeRestore(): ReadingConfigChangeRestore? =
+        createReadingConfigChangeRestore(
+            storyHash = currentReadingStoryHash(),
+            scrollPosRel = readingFragment?.prepareForConfigurationChange(),
+        )
+
+    private fun currentReadingStoryHash(): String? =
+        if (pager == null || readingAdapter == null) {
+            storyHash
+        } else {
+            readingAdapter!!.getStory(pager!!.currentItem)?.storyHash ?: storyHash
+        }
+
+    private fun restoreReadingAfterConfigurationChange() {
+        val restore = pendingConfigChangeRestore ?: return
+        binding.root.post {
+            val pager = pager
+            val adapter = readingAdapter
+            if (pager == null || adapter == null) {
+                pendingConfigChangeRestore = null
+                isRestoringState = false
+                return@post
+            }
+
+            val restorePosition = adapter.findHash(restore.storyHash)
+            if (restorePosition >= 0) {
+                pager.setCurrentItem(restorePosition, false)
+                onPageSelected(restorePosition)
+            }
+
+            storyHash = null
+            pendingConfigChangeRestore = null
+            isRestoringState = false
+        }
     }
 
     private fun setupListeners() {

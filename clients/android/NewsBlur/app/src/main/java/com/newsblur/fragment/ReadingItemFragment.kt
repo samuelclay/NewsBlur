@@ -227,6 +227,12 @@ class ReadingItemFragment :
         return binding.readingScrollview.scrollY.toFloat() / contentHeight
     }
 
+    fun prepareForConfigurationChange(): Float {
+        val scrollPosRel = currentScrollPosRel() ?: savedScrollPosRel
+        savedScrollPosRel = scrollPosRel
+        return scrollPosRel
+    }
+
     override fun onDestroyView() {
         sampledQueue?.close()
         super.onDestroyView()
