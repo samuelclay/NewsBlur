@@ -22,13 +22,53 @@ jobs:
       - name: Run iOS Swift package tests
         run: swift test --parallel
 
+      - name: Select and boot iOS simulator
+        run: |
+          IOS_SIMULATOR_UDID="$(
+            python3 - <<'PY'
+            import json
+            import re
+            import subprocess
+
+            data = json.loads(
+                subprocess.check_output(
+                    ["xcrun", "simctl", "list", "devices", "available", "--json"],
+                    text=True,
+                )
+            )
+
+            best = None
+            for runtime, devices in data["devices"].items():
+                if not runtime.startswith("com.apple.CoreSimulator.SimRuntime.iOS-"):
+                    continue
+
+                version = tuple(int(part) for part in re.findall(r"\d+", runtime))
+                for device in devices:
+                    if device.get("name") != "iPhone 16e" or not device.get("isAvailable", False):
+                        continue
+
+                    candidate = (version, device["udid"])
+                    if best is None or candidate[0] > best[0]:
+                        best = candidate
+
+            if best is None:
+                raise SystemExit("Unable to find an available iPhone 16e simulator")
+
+            print(best[1])
+            PY
+          )"
+
+          echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$IOS_SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+
       - name: Build iOS Xcode test bundles
         run: |
           mkdir -p TestResults
           xcodebuild build-for-testing \
             -project NewsBlur.xcodeproj \
             -scheme NewsBlur \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -destination "id=$IOS_SIMULATOR_UDID" \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
@@ -39,7 +79,7 @@ jobs:
           xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
             -scheme NewsBlur \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -destination "id=$IOS_SIMULATOR_UDID" \
             -derivedDataPath DerivedData \
             -parallel-testing-enabled NO \
             -only-testing:NewsBlurTests \
@@ -53,7 +93,7 @@ jobs:
           xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
             -scheme NewsBlur \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16e' \
+            -destination "id=$IOS_SIMULATOR_UDID" \
             -derivedDataPath DerivedData \
             -parallel-testing-enabled NO \
             -only-testing:NewsBlurUITests \
