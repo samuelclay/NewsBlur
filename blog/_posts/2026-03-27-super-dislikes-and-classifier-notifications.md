@@ -17,7 +17,7 @@ A super dislike is a new third state for classifiers. The regular thumbs down hi
 <!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
 <img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
-The priority order is now: AI prompt classifiers > super dislike > thumbs up > thumbs down > feed score. This means super dislikes are the strongest manual signal you can set, second only to AI classifiers.
+The priority order is now: natural language prompt classifiers > super dislike > thumbs up > thumbs down > feed score. This means super dislikes are the strongest manual signal you can set, second only to natural language classifiers.
 
 #### How to use it
 

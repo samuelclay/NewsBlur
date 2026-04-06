@@ -3844,7 +3844,7 @@ def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
     EmailStaffNotification.delay(
         event_type="usage_billing_threshold_charged",
         subject="Usage billing auto-charge: %s charged $%.2f" % (username, amount_dollars),
-        body="User %s was auto-charged $%.2f for AI classifier usage (threshold invoice).\n"
+        body="User %s was auto-charged $%.2f for natural language classifier usage (threshold invoice).\n"
         "Invoice: %s\nStripe customer: %s" % (username, amount_dollars, invoice_id, stripe_customer_id),
     )
 
@@ -3877,7 +3877,7 @@ def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
     EmailStaffNotification.delay(
         event_type="usage_billing_threshold_failed",
         subject="FAILED usage billing charge: %s $%.2f" % (username, amount_dollars),
-        body="User %s FAILED to pay $%.2f for AI classifier usage (threshold invoice).\n"
+        body="User %s FAILED to pay $%.2f for natural language classifier usage (threshold invoice).\n"
         "Invoice: %s\nStripe customer: %s\n\n"
         "Action needed: check if their payment method is valid."
         % (username, amount_dollars, invoice_id, stripe_customer_id),

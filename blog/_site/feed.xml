@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-05T23:41:10-04:00</updated>
+  <updated>2026-04-06T00:02:26-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -587,7 +587,7 @@ newsblur auth login
 <!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
 <p><img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
 
-<p>The priority order is now: AI prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to AI classifiers.</p>
+<p>The priority order is now: natural language prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to natural language classifiers.</p>
 
 <h4 id="how-to-use-it">How to use it</h4>
 

@@ -257,10 +257,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-usage-billing-status' },
                                 NEWSBLUR.Globals.is_usage_billing
-                                    ? 'Usage-based billing is enabled for AI classifiers.'
+                                    ? 'Usage-based billing is enabled for natural language classifiers.'
                                     : (NEWSBLUR.Globals.is_self_hosted_ai
-                                        ? 'AI classifiers are using your instance\'s API keys.'
-                                        : 'Set up usage-based billing to use AI content and image filters.')
+                                        ? 'Natural language classifiers are using your instance\'s API keys.'
+                                        : 'Set up usage-based billing to use natural language content and image filters.')
                             ),
                             (NEWSBLUR.Globals.can_use_ai_classifiers && $.make('div', { className: 'NB-usage-billing-current-spend-section' })),
                             (NEWSBLUR.Globals.is_usage_billing
@@ -287,7 +287,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'AI classifier billing'
+                            'Natural language classifier billing'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-usage-billing-history' }, [
