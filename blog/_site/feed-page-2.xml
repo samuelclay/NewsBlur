@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-03T19:39:59-04:00</updated>
+  <updated>2026-04-05T23:40:11-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,57 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur&apos;s native macOS App offers news notifications directly on your desktop</title>
+    <link href="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/" rel="alternate" type="text/html" title="NewsBlur&apos;s native macOS App offers news notifications directly on your desktop" />
+    <published>2024-10-22T00:00:00-04:00</published>
+    <updated>2024-10-22T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2024/10/22/newsblur-macos-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/">
+      <![CDATA[<p>If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.</p>
+
+<p>Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.</p>
+
+<p><img src="/assets/macos-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.</p>
+
+<p><img src="/assets/macos-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>It’s configurable and supports ay=utomatic hiding and showing of the feed list so you can focus on the stories you want to read. Use your mouse to swipe left and right on both stories and to swap which pane is visible.</p>
+
+<p><img src="/assets/macos-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>In the Grid view, you can swipe right with your mouse to temporarily show the feed list, giving you a compact view of your news stories without having to give up screen real estate.</p>
+
+<p><img src="/assets/macos-4.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>Training is supported natively, so you can hide those stories you don’t want to see while highlighting those thast you do.</p>
+
+<p><img src="/assets/macos-5.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>It’s important to be able to train, because you can set notifications to be sent from either your Unread list or your Focus list, ensuring you only see the notifications from sites you want to see. And clicking on those native macOS notifications takes you directly to the story in the new macOS app.</p>
+
+<p><img src="/assets/macos-6.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
+
+<p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Introducing the Grid view on iOS</title>
@@ -1310,44 +1361,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur now supports the new JSON Feed spec</title>
-    <link href="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/" rel="alternate" type="text/html" title="NewsBlur now supports the new JSON Feed spec" />
-    <published>2017-05-23T05:00:11-04:00</published>
-    <updated>2017-05-23T05:00:11-04:00</updated>
-    <id>https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/">
-      <![CDATA[<p>Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.</p>
-
-<p>From the <a href="https://jsonfeed.org">JSON Feed spec</a> authors:</p>
-
-<p>We — Manton Reece and Brent Simmons — have noticed that JSON has become the developers’ choice for APIs, and that developers will often go out of their way to avoid XML. JSON is simpler to read and write, and it’s less prone to bugs.</p>
-
-<p><strong>Starting today, NewsBlur now officially supports the new JSON Feed spec</strong>. And there’s nothing extra you have to do. This means if a website syndicates their stories with the easy-to-write and easy-to-read JSON format, you can read it on NewsBlur. It should make no difference to you, since you’re reading the end product. But to website developers everywhere, supporting JSON Feeds is so much easier than supporting XML-based RSS/Atom.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/json-feeds.png" alt="" /></p>
-
-<p>Daring Fireball, as pictured above, supports the new JSON Feed. To you, the reader, it should look no different than any other RSS feed. But to the developer, publishing this as a JSON Feed instead of XML is an order of magnitude easier and quicker.</p>
-
-<p>This spec is a terrific effort by open web advocates to make it easier to keep the web open and free by lowering the cost to writing and publishing.</p>
-
-<p>Try it for yourself, just subscribe to this feed: <a href="https://daringfireball.net/feeds/json">https://daringfireball.net/feeds/json</a>. Even viewing it in a web browser is more pleasant than its <a href="https://daringfireball.net/feeds/main">XML counterpart</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.
-]]>
     </summary>
     
   </entry>

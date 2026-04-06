@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-03T19:39:59-04:00</updated>
+  <updated>2026-04-05T23:40:11-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,36 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Reply to shared stories that have no comment</title>
+    <link href="https://blog.newsblur.com/2015/06/02/reply-to-shared-stories-that-have-no-comment/" rel="alternate" type="text/html" title="Reply to shared stories that have no comment" />
+    <published>2015-06-02T05:30:28-04:00</published>
+    <updated>2015-06-02T05:30:28-04:00</updated>
+    <id>https://blog.newsblur.com/2015/06/02/reply-to-shared-stories-that-have-no-comment</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/06/02/reply-to-shared-stories-that-have-no-comment/">
+      <![CDATA[<p>Used to be that a friend shares a story without commenting on it and you’d be out of luck in trying to reply or thank them for sharing it.</p>
+
+<p>Not anymore! Comment-less shares now have the ability to be replied to and favorited. Take a look at this recent story on <a href="http://popular.newsblur.com/story/a-plea-for-culinary-/ee1275">The People Have Spoken</a>.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/commentless%20reply.png" alt="" /></p>
+
+<p>These new comments are immediately available on the web and will be coming to iOS and Android shortly.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Used to be that a friend shares a story without commenting on it and you’d be out of luck in trying to reply or thank them for sharing it.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A real solution to the deprecated YouTube API</title>
@@ -1033,45 +1063,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[This week brings us a minor, but major, update for the NewsBlur iOS app. Several new features, some due to new APIs in iOS 7, have made it into the app.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Version 3.0 of the NewsBlur Android App</title>
-    <link href="https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app/" rel="alternate" type="text/html" title="Version 3.0 of the NewsBlur Android App" />
-    <published>2013-11-18T16:51:00-05:00</published>
-    <updated>2013-11-18T16:51:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/11/18/version-3-0-of-the-newsblur-android-app/">
-      <![CDATA[<p>Hot on the heels of <a href="http://blog.newsblur.com/2021/06/21/2013-10-28-the-newsblur-iphone-and-ipad-app-meets-ios-7.html">version 3.0 of the NewsBlur iOS app</a> comes <a href="http://www.newsblur.com/android">the next version of the Android app</a>. A bunch of new features have made it into this release, including the new story navigation pane and the text view.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Android%20v3.png" alt="" /></p>
-
-<p>Here’s what you can see today in the Android app:</p>
-
-<ul>
-  <li>New story traversal buttons make it easy to flip between stories.</li>
-  <li>New text view fetches and parses the story from the original site.</li>
-  <li>New logo.</li>
-  <li>Public comments are now be hidden in preferences.</li>
-  <li>Ability to unsave stories.</li>
-  <li>Numerous bugs squashed and crashes fixed.</li>
-</ul>
-
-<p>Thanks to our Android developer <a href="http://twitter.com/ojiikun">Daniel</a>, the next version is already starting development, so shout out to <a href="http://twitter.com/newsblur">@newsblur</a> with your feedback and ideas for new features.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Hot on the heels of version 3.0 of the NewsBlur iOS app comes the next version of the Android app. A bunch of new features have made it into this release, including the new story navigation pane and the text view.
 ]]>
     </summary>
     

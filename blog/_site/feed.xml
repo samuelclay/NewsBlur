@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-03T19:39:59-04:00</updated>
+  <updated>2026-04-05T23:40:11-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -86,6 +86,60 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Some of you don’t just read the news. You monitor it. You’re tracking competitors, watching for security disclosures, following regulatory changes, or covering a beat where being 30 minutes late means you missed the story. NewsBlur has always been a great reader, but for people who need it to be...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Widely Read Stories and Long Reads: surfacing stories worth your time</title>
+    <link href="https://blog.newsblur.com/2026/04/05/widely-read-stories-and-long-reads/" rel="alternate" type="text/html" title="Widely Read Stories and Long Reads: surfacing stories worth your time" />
+    <published>2026-04-05T00:00:00-04:00</published>
+    <updated>2026-04-05T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/04/05/widely-read-stories-and-long-reads</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/04/05/widely-read-stories-and-long-reads/">
+      <![CDATA[<p>There are two questions I keep coming back to when I open my reader: what are other people reading right now, and what’s worth setting aside time for? Not what’s trending on social media or what an algorithm thinks will get clicks. What are actual readers spending their time on?</p>
+
+<p>Two new feeds in the sidebar answer those questions: <strong>Widely Read Stories</strong> and <strong>Long Reads</strong>. Both are ranked by actual reading time rather than clicks or social shares.</p>
+
+<h3 id="widely-read-stories">Widely Read Stories</h3>
+
+<p>This feed collects stories that three or more NewsBlur readers have spent meaningful time with over the past week. “Meaningful time” means at least 3 seconds of actual reading, so quick scrolls and accidental opens don’t count. The list is refreshed every hour and stories are sorted by publish date, so you see the latest widely read articles first.</p>
+
+<p><img src="/assets/widely-read-stories.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Think of it as a window into what the NewsBlur community is reading right now. It’s not an algorithm trying to maximize engagement. It’s just the stories that real people are spending their time on.</p>
+
+<h3 id="long-reads">Long Reads</h3>
+
+<p>The Long Reads feed takes a different angle. Instead of counting readers, it ranks stories by average time spent per reader. A story that five people each read for four minutes ranks higher than a story that fifty people glanced at for thirty seconds. This naturally surfaces longer, deeper articles that reward sustained attention.</p>
+
+<p><img src="/assets/long-reads.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="your-classifiers-apply-here-too">Your classifiers apply here too</h3>
+
+<p>These aren’t just raw lists of stories. When you open Widely Read Stories or Long Reads, your trained classifiers run against every story. Tags, authors, titles, and text classifiers all apply, so stories from feeds you’ve trained show up with the same green and red intelligence scoring you see everywhere else in NewsBlur. If you’ve trained a tag as interesting or an author as disliked, those scores carry through into the trending feeds.</p>
+
+<p><img src="/assets/widely-read-classifiers.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="dashboard-support">Dashboard support</h3>
+
+<p>Both feeds are available as dashboard river options. Open your dashboard settings, pick “Widely Read Stories” or “Long Reads” from the river dropdown, and the feed appears as a panel alongside your other dashboard rivers.</p>
+
+<p><img src="/assets/widely-read-dashboard.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Widely Read Stories and Long Reads are available now on the web. Look for them in the sidebar below Global Shared Stories. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[There are two questions I keep coming back to when I open my reader: what are other people reading right now, and what’s worth setting aside time for? Not what’s trending on social media or what an algorithm thinks will get clicks. What are actual readers spending their time on?...]]>
     </summary>
     
   </entry>
@@ -1919,57 +1973,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur&apos;s native macOS App offers news notifications directly on your desktop</title>
-    <link href="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/" rel="alternate" type="text/html" title="NewsBlur&apos;s native macOS App offers news notifications directly on your desktop" />
-    <published>2024-10-22T00:00:00-04:00</published>
-    <updated>2024-10-22T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2024/10/22/newsblur-macos-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/">
-      <![CDATA[<p>If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.</p>
-
-<p>Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.</p>
-
-<p><img src="/assets/macos-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.</p>
-
-<p><img src="/assets/macos-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s configurable and supports ay=utomatic hiding and showing of the feed list so you can focus on the stories you want to read. Use your mouse to swipe left and right on both stories and to swap which pane is visible.</p>
-
-<p><img src="/assets/macos-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>In the Grid view, you can swipe right with your mouse to temporarily show the feed list, giving you a compact view of your news stories without having to give up screen real estate.</p>
-
-<p><img src="/assets/macos-4.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Training is supported natively, so you can hide those stories you don’t want to see while highlighting those thast you do.</p>
-
-<p><img src="/assets/macos-5.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s important to be able to train, because you can set notifications to be sent from either your Unread list or your Focus list, ensuring you only see the notifications from sites you want to see. And clicking on those native macOS notifications takes you directly to the story in the new macOS app.</p>
-
-<p><img src="/assets/macos-6.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="macos" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.
-]]>
     </summary>
     
   </entry>
