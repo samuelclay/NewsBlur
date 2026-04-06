@@ -233,26 +233,14 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        // Show Well-Read Stories and Long Reads for staff users only
-        if (NEWSBLUR.Globals.is_staff) {
-            $('.NB-feeds-header-river-well-read-container').css({
-                'display': 'block',
-                'opacity': 0
-            }).animate({ 'opacity': 1 }, { 'duration': 700 });
-            $('.NB-feeds-header-river-long-reads-container').css({
-                'display': 'block',
-                'opacity': 0
-            }).animate({ 'opacity': 1 }, { 'duration': 700 });
-        } else {
-            $('.NB-feeds-header-river-well-read-container').css({
-                'display': 'none',
-                'opacity': 0
-            });
-            $('.NB-feeds-header-river-long-reads-container').css({
-                'display': 'none',
-                'opacity': 0
-            });
-        }
+        $('.NB-feeds-header-river-well-read-container').css({
+            'display': 'block',
+            'opacity': 0
+        }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        $('.NB-feeds-header-river-long-reads-container').css({
+            'display': 'block',
+            'opacity': 0
+        }).animate({ 'opacity': 1 }, { 'duration': 700 });
     },
 
     make_social_feeds: function () {
