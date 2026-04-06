@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-05T23:40:11-04:00</updated>
+  <updated>2026-04-05T23:41:10-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -125,7 +125,7 @@ A new sound of an old instrument.
 
 <p>Both feeds are available as dashboard river options. Open your dashboard settings, pick “Widely Read Stories” or “Long Reads” from the river dropdown, and the feed appears as a panel alongside your other dashboard rivers.</p>
 
-<p><img src="/assets/widely-read-dashboard.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+<p><img src="/assets/widely-read-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
 
 <h3 id="availability">Availability</h3>
 
