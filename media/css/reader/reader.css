@@ -14565,6 +14565,30 @@ h5.NB-classifier-section-header {
     background: #333;
 }
 
+.NB-dark .NB-account-usage-payments .NB-account-payment {
+    border-bottom-color: #444;
+}
+
+.NB-dark .NB-account-payment-line-item {
+    color: #aaa;
+}
+
+.NB-dark .NB-account-payment-line-item-qty {
+    color: #888;
+}
+
+.NB-dark .NB-account-usage-payments .NB-account-payment-invoice,
+.NB-dark .NB-account-payments .NB-account-payment-invoice {
+    background-color: #3a3a3a;
+    color: #ccc;
+}
+
+.NB-dark .NB-account-usage-payments .NB-account-payment-invoice:hover,
+.NB-dark .NB-account-payments .NB-account-payment-invoice:hover {
+    background-color: #FAD961;
+    color: #505050;
+}
+
 /* Limit reached banner in classifier dialog */
 .NB-ai-filter-limit-reached-banner-inner {
     background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);

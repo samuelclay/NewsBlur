@@ -1223,9 +1223,15 @@ def usage_billing_history(request):
             for line in inv.lines.data:
                 if line.price and line.price.id in usage_price_ids:
                     is_usage_invoice = True
+                    if line.price.id == settings.STRIPE_PRICE_TEXT_CLASSIFICATION:
+                        desc = "Natural language text classifier"
+                    elif line.price.id == settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
+                        desc = "Natural language image classifier"
+                    else:
+                        desc = line.description or line.price.nickname or "Natural language classifier usage"
                     line_items.append(
                         {
-                            "description": line.description or line.price.nickname or "AI classifier usage",
+                            "description": desc,
                             "quantity": line.quantity,
                             "amount": line.amount / 100.0,
                         }
@@ -1253,9 +1259,15 @@ def usage_billing_history(request):
         for line in upcoming.lines.data:
             if line.price and line.price.id in usage_price_ids:
                 is_usage = True
+                if line.price.id == settings.STRIPE_PRICE_TEXT_CLASSIFICATION:
+                    desc = "Natural language text classifier"
+                elif line.price.id == settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
+                    desc = "Natural language image classifier"
+                else:
+                    desc = line.description or line.price.nickname or "Natural language classifier usage"
                 upcoming_lines.append(
                     {
-                        "description": line.description or line.price.nickname or "AI classifier usage",
+                        "description": desc,
                         "quantity": line.quantity,
                         "amount": line.amount / 100.0,
                     }

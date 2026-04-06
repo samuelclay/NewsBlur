@@ -1718,7 +1718,7 @@ var classifier_prototype = {
             var $banner = $(this);
             $banner.html($.make('div', { className: 'NB-ai-filter-limit-reached-banner-inner' }, [
                 $.make('b', 'Monthly spending limit reached. '),
-                $.make('span', 'AI classifiers are paused until next billing cycle. '),
+                $.make('span', 'Natural language classifiers are paused until next billing cycle. '),
                 $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, 'Increase or remove your limit')
             ])).show();
         });
