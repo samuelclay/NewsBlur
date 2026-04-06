@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-04-05T23:40:11-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-04-05T23:41:10-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">Introducing Premium Pro: high-frequency fetching for instant notifications</title><link href="https://blog.newsblur.com/2026/04/06/premium-pro/" rel="alternate" type="text/html" title="Introducing Premium Pro: high-frequency fetching for instant notifications" /><published>2026-04-06T00:00:00-04:00</published><updated>2026-04-06T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/06/premium-pro</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/06/premium-pro/"><![CDATA[<p>Some of you don’t just read the news. You monitor it. You’re tracking competitors, watching for security disclosures, following regulatory changes, or covering a beat where being 30 minutes late means you missed the story. NewsBlur has always been a great reader, but for people who need it to be a monitoring tool, I wanted to build something that takes feed fetching and filtering seriously.</p>
 
@@ -75,7 +75,7 @@ A new sound of an old instrument.
 
 <p>Both feeds are available as dashboard river options. Open your dashboard settings, pick “Widely Read Stories” or “Long Reads” from the river dropdown, and the feed appears as a panel alongside your other dashboard rivers.</p>
 
-<p><img src="/assets/widely-read-dashboard.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+<p><img src="/assets/widely-read-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
 
 <h3 id="availability">Availability</h3>
 
