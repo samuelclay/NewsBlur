@@ -22,7 +22,14 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_selectingFolderLoadsRiverStories() {
-        launch(on: "reader-folder-culture")
+        launch(on: "reader")
+
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
+
+        let cultureFolder = folderButton(named: "Culture")
+        XCTAssertTrue(reveal(cultureFolder, in: feedsList))
+        tapElementCenter(cultureFolder)
 
         let storyList = app.tables["story-titles-list"]
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
@@ -52,7 +59,14 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_storyPagingMovesBetweenFixtureStories() {
-        launch(on: "reader-story-swift-1")
+        launch(on: "reader-feed-swift")
+
+        let storyList = app.tables["story-titles-list"]
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+
+        let firstStory = storyList.cells.element(boundBy: 0)
+        XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
+        firstStory.tap()
 
         let currentStory = currentStoryProbe()
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
@@ -126,6 +140,22 @@ final class ReaderUITests: XCTestCase {
         let predicate = NSPredicate(format: "label == %@", label)
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
         return XCTWaiter().wait(for: [expectation], timeout: 10) == .completed
+    }
+
+    private func tapElementCenter(_ element: XCUIElement) {
+        XCTAssertTrue(element.exists)
+
+        if element.isHittable {
+            element.tap()
+            return
+        }
+
+        let frame = element.frame
+        XCTAssertFalse(frame.isEmpty)
+
+        let coordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+            .withOffset(CGVector(dx: frame.midX, dy: frame.midY))
+        coordinate.tap()
     }
 
     private func launch(on screen: String) {
