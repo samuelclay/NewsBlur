@@ -36,7 +36,7 @@ final class ReaderUITests: XCTestCase {
         let firstStory = storyList.cells.element(boundBy: 0)
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
 
-        firstStory.tap()
+        tapElementCenter(firstStory)
 
         let currentStory = currentStoryProbe()
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
@@ -51,31 +51,21 @@ final class ReaderUITests: XCTestCase {
 
         let firstStory = storyList.cells.element(boundBy: 0)
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
-        firstStory.tap()
+        tapElementCenter(firstStory)
 
         let currentStory = currentStoryProbe()
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
     }
 
-    func test_storyPagingMovesBetweenFixtureStories() {
+    func test_selectingFeedShowsExpectedFixtureStoryRows() {
         launch(on: "reader-feed-swift")
 
         let storyList = app.tables["story-titles-list"]
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
-
-        let firstStory = storyList.cells.element(boundBy: 0)
-        XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
-        firstStory.tap()
-
-        let currentStory = currentStoryProbe()
-        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
-        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
-
-        let nextButton = app.buttons["story-traverse-next-button"]
-        XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
-        nextButton.tap()
-        XCTAssertTrue(waitForLabel("Swift Fixture Story Two", on: currentStory))
+        XCTAssertTrue(reveal(storyCell("ui-story-swift-1"), in: storyList))
+        XCTAssertTrue(reveal(storyCell("ui-story-swift-2"), in: storyList))
+        XCTAssertTrue(reveal(storyCell("ui-story-swift-3"), in: storyList))
     }
 
     func test_nextStoryFetchesAdditionalPageWhenMoreUnreadExist() {
@@ -87,13 +77,13 @@ final class ReaderUITests: XCTestCase {
         let nextButton = app.buttons["story-traverse-next-button"]
         XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
 
-        nextButton.tap()
+        tapElementCenter(nextButton)
         XCTAssertTrue(waitForLabel("Swift Fixture Story Two", on: currentStory))
 
-        nextButton.tap()
+        tapElementCenter(nextButton)
         XCTAssertTrue(waitForLabel("Swift Fixture Story Three", on: currentStory))
 
-        nextButton.tap()
+        tapElementCenter(nextButton)
         XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory))
     }
 
