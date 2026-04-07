@@ -163,7 +163,8 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
-                if feedDetailInteraction.isMarkReadOnScroll, let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
+                if feedDetailInteraction.isMarkReadOnScroll,
+                   StoryScrollReadDecision.shouldMarkRead(storyID: "\(story.id)", frames: $0) {
                     NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
 //                    withAnimation(Animation.spring().delay(2)) {
@@ -187,10 +188,11 @@ struct FeedDetailGridView: View {
                     $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
                 }
                 .onPreferenceChange(CardKey.self) {
-                    if cache.isMagazine, let value = $0.first {
-                        NSLog("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.frame.minY), maxY: \(value.frame.maxY), height: \(value.frame.size.height)")
+                    if cache.isMagazine,
+                       let value = StoryScrollReadDecision.frame(for: "\(story.id)", in: $0) {
+                        NSLog("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.minY), maxY: \(value.maxY), height: \(value.size.height)")
                         
-                        feedDetailInteraction.scrolled(story: story, offset: value.frame.maxY)
+                        feedDetailInteraction.scrolled(story: story, offset: value.maxY)
                     }
                 }
                 .onAppear {
@@ -206,14 +208,7 @@ struct FeedDetailGridView: View {
     }
 }
 
-struct CardFrame : Equatable {
-    let id : String
-    let frame : CGRect
-    
-    static func == (lhs: CardFrame, rhs: CardFrame) -> Bool {
-        lhs.id == rhs.id && lhs.frame == rhs.frame
-    }
-}
+typealias CardFrame = StoryCardFrame
 
 struct CardKey : @preconcurrency PreferenceKey {
     typealias Value = [CardFrame]

@@ -102,7 +102,6 @@ struct StoryPagesView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ storyPagesViewController: StoryPagesViewController, context: Context) {
-        NSLog("📍 StoryPagesView.updateUIViewController called, story=\(story.hash), currentPage=\(storyPagesViewController.currentPage.activeStoryId ?? "nil")")
         storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
 
         interaction.reading(story: story)
