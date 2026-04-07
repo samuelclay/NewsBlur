@@ -7,7 +7,5 @@
   vars_files:
     - ../env_vars/base.yml
     - roles/letsencrypt/defaults/main.yml
-  vars:
-    haproxy_host: hwww
   tasks:
     - include_tasks: deploy_mcp_group.yml

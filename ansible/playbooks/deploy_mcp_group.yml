@@ -1,17 +1,5 @@
 ---
 # Included task file for deploying MCP server
-- name: Disable MCP in HAProxy
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state maint" | socat stdio /var/run/haproxy.sock'
-  register: haproxy_mcp_disable
-  retries: 5
-  delay: 3
-  until: haproxy_mcp_disable is not failed
-
-- name: Wait for MCP connections to drain
-  pause:
-    seconds: 5
-
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
@@ -55,10 +43,3 @@
   until: mcp_result.status in [200, 404, 405]
   ignore_errors: yes
 
-- name: Re-enable MCP in HAProxy
-  delegate_to: "{{ haproxy_host }}"
-  shell: docker exec haproxy sh -c 'echo "set server app_mcp/{{ inventory_hostname }}-mcp state ready" | socat stdio /var/run/haproxy.sock'
-  register: haproxy_mcp_enable
-  retries: 5
-  delay: 3
-  until: haproxy_mcp_enable is not failed
