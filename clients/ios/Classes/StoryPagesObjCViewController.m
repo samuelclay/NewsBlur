@@ -161,6 +161,25 @@
     [appDelegate.detailViewController revealStoryTitlesFromLeadingEdgeGesture:gestureRecognizer];
 }
 
+- (void)ensureCurrentPageViewIsFrontmost {
+    if (!self.currentPage || !self.scrollView) {
+        return;
+    }
+
+    if (self.scrollView.subviews.lastObject != self.currentPage.view) {
+        [self.scrollView bringSubviewToFront:self.currentPage.view];
+    }
+}
+
+- (void)refreshCurrentPageChrome {
+    if (!self.currentPage) {
+        return;
+    }
+
+    [self ensureCurrentPageViewIsFrontmost];
+    [self.currentPage drawFeedGradient];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -595,9 +614,7 @@
         });
     }
     
-    if (self.scrollView.subviews.lastObject != self.currentPage.view) {
-        [self.scrollView bringSubviewToFront:self.currentPage.view];
-    }
+    [self ensureCurrentPageViewIsFrontmost];
 
     [self alignScrollViewToCurrentPageIfNeeded];
     
@@ -796,7 +813,7 @@
     }
 
     [self.appDelegate.detailViewController adjustForAutoscroll];
-    [self.currentPage drawFeedGradient];
+    [self refreshCurrentPageChrome];
     
     if (alsoTraverse) {
         [self.view layoutIfNeeded];
@@ -1953,6 +1970,7 @@
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
 	NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
                                                   pageAmount:pageAmount];
+    StoryDetailViewController *previousCurrentPage = currentPage;
     
     
     if (!force && currentPage.pageIndex >= 0 &&
@@ -1977,6 +1995,10 @@
 		nextPage = swapCurrentController;
         previousPage = swapNextController;
     }
+
+    if (previousCurrentPage != currentPage) {
+        [self refreshCurrentPageChrome];
+    }
     
     
     self.autoscrollActive = NO;
@@ -1991,10 +2013,8 @@
     }
     self.scrollView.scrollsToTop = NO;
     
-    NSLog(@"📍 setStoryFromScroll: force=%d isDragging=%d scrollingToPage=%ld currentPage=%ld nearestNumber=%ld", force, self.isDraggingScrollview, (long)self.scrollingToPage, (long)currentPage.pageIndex, (long)nearestNumber);
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
-        NSLog(@"📍 setStoryFromScroll: ENTERING update block (will call updatePageWithActiveStory:YES)");
         self.scrollingToPage = -1;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
         
@@ -2050,7 +2070,7 @@
             }
         }
 
-        [currentPage drawFeedGradient];
+        [self refreshCurrentPageChrome];
     }
     
     if (!appDelegate.storiesCollection.inSearch) {
