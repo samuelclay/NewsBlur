@@ -1147,6 +1147,52 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_first_page_refresh_still_syncs_the_current_story() {
+        XCTAssertTrue(
+            StoryRefreshPagingDecision.shouldSyncCurrentStoryAfterRefresh(feedPage: 1)
+        )
+    }
+
+    func test_paginated_refresh_keeps_the_visible_story_list_position() {
+        XCTAssertFalse(
+            StoryRefreshPagingDecision.shouldSyncCurrentStoryAfterRefresh(feedPage: 2)
+        )
+    }
+
+    func test_story_scroll_read_ignores_other_offscreen_cards() {
+        let frames = [
+            StoryCardFrame(id: "older", frame: CGRect(x: 0, y: -220, width: 320, height: 200)),
+            StoryCardFrame(id: "current", frame: CGRect(x: 0, y: 40, width: 320, height: 200)),
+        ]
+
+        XCTAssertFalse(
+            StoryScrollReadDecision.shouldMarkRead(storyID: "current", frames: frames)
+        )
+    }
+
+    func test_story_scroll_read_marks_the_matching_card_after_half_scroll() {
+        let frames = [
+            StoryCardFrame(id: "older", frame: CGRect(x: 0, y: 20, width: 320, height: 200)),
+            StoryCardFrame(id: "current", frame: CGRect(x: 0, y: -120, width: 320, height: 200)),
+        ]
+
+        XCTAssertTrue(
+            StoryScrollReadDecision.shouldMarkRead(storyID: "current", frames: frames)
+        )
+    }
+
+    func test_story_scroll_read_looks_up_the_matching_frame() {
+        let frames = [
+            StoryCardFrame(id: "other", frame: CGRect(x: 0, y: -50, width: 320, height: 100)),
+            StoryCardFrame(id: "current", frame: CGRect(x: 0, y: 80, width: 320, height: 180)),
+        ]
+
+        XCTAssertEqual(
+            StoryScrollReadDecision.frame(for: "current", in: frames),
+            CGRect(x: 0, y: 80, width: 320, height: 180)
+        )
+    }
+
     func test_auto_in_landscape_keeps_story_titles_visible() {
         XCTAssertFalse(
             StoryAutoCollapseDecision.shouldCollapse(

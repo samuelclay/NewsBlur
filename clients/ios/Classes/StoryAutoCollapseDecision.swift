@@ -627,6 +627,36 @@ public enum DailyBriefingSectionLayoutDecision {
     }
 }
 
+@objcMembers public final class StoryRefreshPagingDecision: NSObject {
+    public class func shouldSyncCurrentStoryAfterRefresh(feedPage: Int) -> Bool {
+        feedPage <= 1
+    }
+}
+
+public struct StoryCardFrame: Equatable {
+    public let id: String
+    public let frame: CGRect
+
+    public init(id: String, frame: CGRect) {
+        self.id = id
+        self.frame = frame
+    }
+}
+
+public enum StoryScrollReadDecision {
+    public static func frame(for storyID: String, in frames: [StoryCardFrame]) -> CGRect? {
+        frames.first { $0.id == storyID }?.frame
+    }
+
+    public static func shouldMarkRead(storyID: String, frames: [StoryCardFrame]) -> Bool {
+        guard let frame = frame(for: storyID, in: frames) else {
+            return false
+        }
+
+        return frame.minY < -(frame.height / 2)
+    }
+}
+
 @objcMembers public final class StoryClusterDisplayDecision: NSObject {
     @objc(isClusterMarkReadEnabledWithUserProfile:)
     public class func isClusterMarkReadEnabled(userProfile: NSDictionary?) -> Bool {
