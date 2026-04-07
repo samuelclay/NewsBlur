@@ -226,6 +226,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-showinfrequentsitestories-1' }, [
                                     'Show Infrequent Site Stories'
                                 ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showwidelyreadstories-1', type: 'checkbox', name: 'show_widely_read_stories', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showwidelyreadstories-1' }, [
+                                    'Show Widely Read Stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showlongreads-1', type: 'checkbox', name: 'show_long_reads', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showlongreads-1' }, [
+                                    'Show Long Reads'
+                                ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -1174,6 +1186,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_widely_read_stories]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_widely_read_stories) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=show_long_reads]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_long_reads) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
         $('input[name=youtube_captions]', $modal).each(function () {
             if (NEWSBLUR.Preferences.youtube_captions) {
                 $(this).prop('checked', true);
@@ -1656,6 +1680,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             }
             if (self.original_preferences['show_global_shared_stories'] != form['show_global_shared_stories'] ||
                 self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
+                self.original_preferences['show_widely_read_stories'] != form['show_widely_read_stories'] ||
+                self.original_preferences['show_long_reads'] != form['show_long_reads'] ||
                 self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
