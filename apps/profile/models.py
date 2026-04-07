@@ -1264,9 +1264,16 @@ class Profile(models.Model):
                         "ACTIVE",
                         "SUSPENDED",
                     ]:
-                        active_plan = paypal_subscription.get("plan_id", None)
-                        if not active_plan:
-                            active_plan = paypal_subscription["plan"]["name"]
+                        # Don't let a SUSPENDED subscription overwrite an ACTIVE one's plan.
+                        # When upgrading (e.g. Premium -> Archive), the old plan gets SUSPENDED
+                        # and the new plan is ACTIVE. Without this check, iteration order could
+                        # cause the SUSPENDED plan to overwrite active_plan, preventing the
+                        # upgrade tier (archive/pro) from being detected.
+                        is_active = paypal_subscription["status"] in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+                        if is_active or not active_plan:
+                            active_plan = paypal_subscription.get("plan_id", None)
+                            if not active_plan:
+                                active_plan = paypal_subscription["plan"]["name"]
                         active_provider = "paypal"
                         if paypal_subscription["status"] != "SUSPENDED":
                             premium_renewal = True
