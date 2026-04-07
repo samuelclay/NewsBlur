@@ -16,9 +16,9 @@ class ArchiveRequiredError(Exception):
 class NewsBlurClient:
     """Stateless async client that proxies requests to NewsBlur's REST API."""
 
-    def __init__(self, bearer_token: str, base_url: str | None = None):
+    def __init__(self, bearer_token: str, base_url: str | None = None, is_archive: bool | None = None):
         self.bearer_token = bearer_token
-        self._is_archive: bool | None = None
+        self._is_archive: bool | None = is_archive
         self._feeds_cache: dict | None = None
         url = base_url or NEWSBLUR_BASE_URL
         self._http = httpx.AsyncClient(

@@ -101,14 +101,21 @@ def get_client() -> NewsBlurClient:
     via NewsBlurTokenVerifier and stores the result as an AuthenticatedUser
     in request.scope["user"]. The AccessToken on that user object holds
     the upstream Django OAuth token in its .token attribute.
+
+    The token verifier already checks is_archive via /oauth/user/info/,
+    so we pass it directly to skip the redundant /profile/is_premium call
+    and avoid the shared disk cache (which is not per-user on the server).
     """
     request = get_http_request()
     token = None
+    is_archive = None
 
     # Primary: get the upstream Django token from the authenticated user
     user = request.scope.get("user")
     if user and hasattr(user, "access_token"):
         token = user.access_token.token
+        claims = user.access_token.claims or {}
+        is_archive = bool(claims.get("is_archive"))
 
     # Fallback: direct bearer token from Authorization header (e.g., for testing)
     if not token:
@@ -122,7 +129,7 @@ def get_client() -> NewsBlurClient:
             "Connect to NewsBlur via OAuth at https://newsblur.com/oauth/authorize"
         )
 
-    return NewsBlurClient(bearer_token=token)
+    return NewsBlurClient(bearer_token=token, is_archive=is_archive)
 
 
 # Import tools to register them with the mcp instance
