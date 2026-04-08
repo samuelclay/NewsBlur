@@ -107,6 +107,7 @@ frontend public
     use_backend app_refresh if is_dashboard
     use_backend app_refresh if is_original_text
     use_backend app_refresh if is_river is_automated_river
+    acl is_mcp path /mcp
     acl is_mcp path_beg /mcp/
     use_backend app_mcp if is_mcp
     use_backend app_django unless gunicorn_dead || nginx_dead
