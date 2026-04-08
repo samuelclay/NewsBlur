@@ -33,6 +33,10 @@ class TextImporter:
         self.story_url = story_url
         if self.story and not self.story_url:
             self.story_url = self.story.story_permalink
+        if self.story_url:
+            from apps.rss_feeds.models import Feed
+
+            self.story_url = Feed.resolve_google_redirect_url(self.story_url)
         self.feed = feed
         self.request = request
         self.debug = debug

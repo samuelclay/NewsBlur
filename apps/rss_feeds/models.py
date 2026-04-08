@@ -2757,7 +2757,30 @@ class Feed(models.Model):
                 link = links[0].get("href")
         if not link:
             link = entry.get("id")
+        if link:
+            link = cls.resolve_google_redirect_url(link)
         return link
+
+    @staticmethod
+    def resolve_google_redirect_url(url):
+        """Extract the actual URL from Google redirect URLs.
+
+        Google Alerts (and other Google services) wrap article links in redirect
+        URLs like: https://www.google.com/url?rct=j&sa=t&url=ACTUAL_URL&...
+        These return a JavaScript redirect page rather than an HTTP redirect,
+        so requests/Mercury parser can't follow them. Extract the real URL from
+        the 'url' query parameter instead.
+        """
+        try:
+            parsed = urllib.parse.urlparse(url)
+            if parsed.hostname in ("www.google.com", "google.com") and parsed.path == "/url":
+                qs = urllib.parse.parse_qs(parsed.query)
+                actual_url = qs.get("url", [None])[0]
+                if actual_url:
+                    return actual_url
+        except Exception:
+            pass
+        return url
 
     def _exists_story(self, story, story_content, existing_stories, new_story_hashes, lightweight=False):
         story_in_system = None
