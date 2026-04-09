@@ -74,6 +74,22 @@ public class APIResponse {
         } catch (IOException ioe) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url(), ioe);
             this.isError = true;
+        } catch (Exception e) {
+            // OkHttp's Kotlin code can surface a raw InterruptedException (or a runtime
+            // CancellationException) when the caller thread is torn down mid-request, which
+            // happens when the widget's RemoteViewsFactory is destroyed while fetching stories.
+            // Treat it as a soft error instead of letting it crash the widget binder thread.
+            // See Play crash id 402bcc2d9ef25f7b1879e8be72c02323.
+            if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
+                com.newsblur.util.Log.w(this.getClass().getName(), "API call interrupted for " + request.url());
+                Thread.currentThread().interrupt();
+                this.isError = true;
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                com.newsblur.util.Log.e(this.getClass().getName(), "Unexpected error (" + e.getMessage() + ") calling " + request.url(), e);
+                this.isError = true;
+            }
         }
     }
 
