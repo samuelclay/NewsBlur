@@ -1193,6 +1193,27 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_story_list_footer_row_scroll_read_advances_to_story_count() {
+        XCTAssertEqual(
+            FeedRowScrollReadDecision.targetStoryLocation(
+                rowStoryLocation: nil,
+                isDailyBriefing: false,
+                storyCount: 7
+            ),
+            NSNumber(value: 7)
+        )
+    }
+
+    func test_daily_briefing_missing_row_location_does_not_fake_footer_scroll_read() {
+        XCTAssertNil(
+            FeedRowScrollReadDecision.targetStoryLocation(
+                rowStoryLocation: nil,
+                isDailyBriefing: true,
+                storyCount: 7
+            )
+        )
+    }
+
     func test_auto_in_landscape_keeps_story_titles_visible() {
         XCTAssertFalse(
             StoryAutoCollapseDecision.shouldCollapse(

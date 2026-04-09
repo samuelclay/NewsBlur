@@ -489,6 +489,24 @@ public enum DailyBriefingSectionLayoutDecision {
     }
 }
 
+@objcMembers public final class FeedRowScrollReadDecision: NSObject {
+    public class func targetStoryLocation(
+        rowStoryLocation: NSNumber?,
+        isDailyBriefing: Bool,
+        storyCount: Int
+    ) -> NSNumber? {
+        if let rowStoryLocation {
+            return rowStoryLocation
+        }
+
+        guard !isDailyBriefing, storyCount >= 0 else {
+            return nil
+        }
+
+        return NSNumber(value: storyCount)
+    }
+}
+
 @objcMembers public final class FeedDetailReturnFrameDecision: NSObject {
     public class func correctedFrame(
         _ frame: CGRect,
