@@ -115,10 +115,32 @@ open class SyncService :
     private val orphanFeedIds = mutableSetOf<String>()
     private val disabledFeedIds = mutableSetOf<String>()
 
+    private var hiltInjected = false
+
+    override fun onCreate() {
+        try {
+            super.onCreate()
+            hiltInjected = true
+        } catch (e: IllegalStateException) {
+            // Hilt requires an @HiltAndroidApp Application instance to be attached before it
+            // can inject a Service. In rare process-restart paths the system can bring up this
+            // Service before NbApplication.onCreate() has run, leaving Hilt with a plain
+            // android.app.Application and crashing the process. Stop cleanly instead of
+            // crashing so the job can be retried later once the app is fully initialized.
+            // See Play crash id 902f1fa60abf6041d26a1a9c2f651385.
+            Log.e(this, "Hilt injection failed for SyncService, stopping", e)
+            stopSelf()
+        }
+    }
+
     /**
      * Kickoff hook for when we are started via a JobScheduler
      */
     override fun onStartJob(params: JobParameters?): Boolean {
+        if (!hiltInjected) {
+            Log.w(this, "onStartJob called before Hilt injection, skipping")
+            return false
+        }
         Log.d(this, "onStartJob")
         mainJob?.cancel()
         mainJob =
@@ -141,6 +163,11 @@ open class SyncService :
         startId: Int,
     ): Int {
         Log.d(this, "onStartCommand")
+        if (!hiltInjected) {
+            Log.w(this, "onStartCommand called before Hilt injection, skipping")
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
         mainJob?.cancel()
         mainJob = launch { sync() }
         return START_NOT_STICKY

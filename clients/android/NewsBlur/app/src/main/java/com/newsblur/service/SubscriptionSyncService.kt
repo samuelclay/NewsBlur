@@ -36,8 +36,30 @@ class SubscriptionSyncService : JobService() {
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    private var hiltInjected = false
+
+    override fun onCreate() {
+        try {
+            super.onCreate()
+            hiltInjected = true
+        } catch (e: IllegalStateException) {
+            // Hilt requires an @HiltAndroidApp Application instance to be attached before it
+            // can inject a Service. In rare process-restart paths the system can bring up this
+            // Service before NbApplication.onCreate() has run, leaving Hilt with a plain
+            // android.app.Application and crashing the process. Stop cleanly instead so the
+            // job can be retried once the app is fully initialized.
+            // See Play crash id c15ab6d7996c5245d3a8f44bf4621af9.
+            Log.e(this, "Hilt injection failed for SubscriptionSyncService, stopping", e)
+            stopSelf()
+        }
+    }
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
+        if (!hiltInjected) {
+            Log.w(this, "onStartJob called before Hilt injection, skipping")
+            return false
+        }
         if (!prefsRepo.hasCookie()) {
             // no user authenticated
             return false
