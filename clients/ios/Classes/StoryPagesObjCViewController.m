@@ -1459,7 +1459,7 @@
 
     NSString *previousStoryId = pageController.activeStoryId;
     BOOL hadRenderedStory = pageController.hasStory;
-	pageController.pageIndex = newIndex;
+    pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
@@ -1481,6 +1481,11 @@
         }
     } else if (!outOfBounds) {
         NSInteger location = [appDelegate.storiesCollection indexFromLocation:pageController.pageIndex];
+        // Look up the target story hash before setActiveStoryAtIndex changes activeStory
+        NSString *targetStoryHash = nil;
+        if (location >= 0 && location < (NSInteger)[appDelegate.storiesCollection.activeFeedStories count]) {
+            targetStoryHash = [appDelegate.storiesCollection.activeFeedStories[location] objectForKey:@"story_hash"];
+        }
         [pageController setActiveStoryAtIndex:location];
         UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
         if (navController.interactivePopGestureRecognizer) {
@@ -1488,8 +1493,10 @@
             [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
         }
         // Skip redraw if page already shows the target story (e.g. after pagination fetch)
-        if (hadRenderedStory && previousStoryId && [previousStoryId isEqualToString:pageController.activeStoryId]) {
+        if (hadRenderedStory && previousStoryId && targetStoryHash && [previousStoryId isEqualToString:targetStoryHash]) {
             [pageController drawFeedGradient];
+            [pageController refreshHeader];
+            [pageController refreshSideOptions];
         } else {
         [pageController clearStory];
         if (self.isDraggingScrollview ||
