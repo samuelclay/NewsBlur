@@ -1631,7 +1631,10 @@ class ReadingItemFragment :
             val readingFragment = ReadingItemFragment()
 
             val args = Bundle()
-            args.putSerializable("story", story)
+            // Store a lightweight copy of the Story so the activity's saved-state Bundle stays
+            // under the 1 MB Binder transaction limit when many reading fragments are alive.
+            // See Story.copyForBundle and Play crash 313659223e4fd44c9953ab2cd7b29706.
+            args.putSerializable("story", story?.copyForBundle())
             args.putString("feedTitle", feedTitle)
             args.putString("feedColor", feedFaviconColor)
             args.putString("feedFade", feedFaviconFade)
