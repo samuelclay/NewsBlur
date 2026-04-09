@@ -1050,8 +1050,8 @@ class StoryViewAdapter(
 
                         // For recycled views that already have a measured height, compute the
                         // target thumbnail height immediately so the view never appears as a
-                        // 1px sliver.  Fresh views use the minimum thumbnail height as a
-                        // reasonable default; the doOnLayout callback corrects it later.
+                        // 1px sliver.  Fresh views (height 0) still start at 1 so the
+                        // thumbnail does not influence the first row measurement.
                         val existingHeight = vh.itemView.height
                         val initialHeight = if (existingHeight > 0) {
                             val maxAllowed = (existingHeight - verticalInsetPx).coerceAtLeast(1)
@@ -1062,7 +1062,7 @@ class StoryViewAdapter(
                                 maxAllowed
                             }
                         } else {
-                            smallMinHeightPx
+                            layout.fixedHeightPx ?: 1
                         }
 
                         targetThumbView.setExpandedLayout(
@@ -1092,37 +1092,41 @@ class StoryViewAdapter(
                                 layout.rightMarginPx,
                                 layout.bottomMarginPx,
                             )
-                            // RecyclerView suppresses requestLayout() during its layout pass,
-                            // so setExpandedLayout's resize may be silently dropped for views
-                            // first entering the viewport.  Post a deferred requestLayout as
-                            // a fallback once the suppression window has closed.
-                            if (targetThumbView.height != targetHeight) {
-                                targetThumbView.post {
-                                    if (vh.story?.storyHash == boundStoryHash) {
-                                        targetThumbView.requestLayout()
-                                    }
-                                }
-                            }
                         }
                     }
                 }
                 StoryRowThumbnailVerticalMode.MATCH_ROW_HEIGHT -> {
                     params.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-                    // With both ALIGN_PARENT_TOP and ALIGN_PARENT_BOTTOM, the
-                    // RelativeLayout sizes the thumbnail to match the row height
-                    // automatically — no doOnLayout callback or explicit pixel
-                    // height needed.  This avoids the race where RecyclerView
-                    // suppresses requestLayout() during its layout pass, which
-                    // previously left fresh (non-recycled) views stuck at 1px.
-                    thumbView?.setExpandedLayout(
-                        layout.widthPx,
-                        0,
-                        layout.leftMarginPx,
-                        layout.topMarginPx,
-                        layout.rightMarginPx,
-                        layout.bottomMarginPx,
-                    )
+                    val targetThumbView = thumbView
+                    if (targetThumbView != null) {
+                        val boundStoryHash = story.storyHash
+                        val boundThumbnailStyle = thumbnailStyle
+
+                        // For recycled views, use the existing row height so the thumbnail
+                        // doesn't flash at 1px.  For fresh views, start at 1 so the text
+                        // content determines the initial row height.
+                        val initialHeight = vh.itemView.height.coerceAtLeast(1)
+                        targetThumbView.setExpandedLayout(
+                            layout.widthPx,
+                            initialHeight,
+                            layout.leftMarginPx,
+                            layout.topMarginPx,
+                            layout.rightMarginPx,
+                            layout.bottomMarginPx,
+                        )
+                        vh.itemView.doOnLayout { itemView ->
+                            if (vh.story?.storyHash != boundStoryHash) return@doOnLayout
+                            if (thumbnailStyle != boundThumbnailStyle) return@doOnLayout
+                            targetThumbView.setExpandedLayout(
+                                layout.widthPx,
+                                itemView.height.coerceAtLeast(1),
+                                layout.leftMarginPx,
+                                layout.topMarginPx,
+                                layout.rightMarginPx,
+                                layout.bottomMarginPx,
+                            )
+                        }
+                    }
                 }
             }
         }
