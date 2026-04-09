@@ -639,7 +639,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var self = this;
         var parent_read = this.model.get('read_status');
-        var mark_children_read = NEWSBLUR.assets.preference('cluster_mark_read');
+        var mark_children_read = NEWSBLUR.Globals.is_archive && NEWSBLUR.assets.preference('cluster_mark_read');
         var collection = NEWSBLUR.assets.stories;
 
         _.each(visible_stories, function (story_data) {
@@ -810,7 +810,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_read_status: function () {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
 
-        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+        if (this.model.get('read_status') && NEWSBLUR.Globals.is_archive && NEWSBLUR.assets.preference('cluster_mark_read')) {
             if (this._cluster_title_views) {
                 _.each(this._cluster_title_views, function (view) {
                     if (!view.model.get('read_status')) {

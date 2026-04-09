@@ -508,7 +508,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$st.toggleClass('read', !!this.model.get('read_status'));
 
         // Optimistically mark cluster source rows as read when parent is read
-        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+        if (this.model.get('read_status') && NEWSBLUR.Globals.is_archive && NEWSBLUR.assets.preference('cluster_mark_read')) {
             this.$('.NB-story-cluster-source').addClass('read');
             this.$('.NB-story-title-cluster').addClass('read');
             var cluster_stories = this.model.get('cluster_stories');

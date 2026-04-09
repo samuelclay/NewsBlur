@@ -959,7 +959,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         if (clustering_enabled === undefined || clustering_enabled === null) {
             clustering_enabled = true;
         }
-        if (cluster_mark_read === undefined || cluster_mark_read === null) {
+        if (cluster_mark_read === undefined || cluster_mark_read === null || !NEWSBLUR.Globals.is_archive) {
             cluster_mark_read = false;
         }
 
