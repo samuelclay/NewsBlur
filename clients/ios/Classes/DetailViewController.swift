@@ -470,9 +470,7 @@ class DetailViewController: BaseViewController {
         guard !isPhoneOrCompact, let storyPagesViewController else {
             return
         }
-        
-        NSLog("🎈 prepareStoriesForGridView: \(storyPagesViewController.currentPage.activeStory?["story_title"] ?? "none")")
-        
+
         remove(viewController: storyPagesViewController)
         
         storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
