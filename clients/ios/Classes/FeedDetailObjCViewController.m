@@ -690,11 +690,14 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
 
 - (NSInteger)storyLocationForScrollingAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
-    if (rowDescriptor[FeedDetailVisibleRowStoryLocationKey] == nil) {
+    NSNumber *targetLocation = [FeedRowScrollReadDecision targetStoryLocationWithRowStoryLocation:rowDescriptor[FeedDetailVisibleRowStoryLocationKey]
+                                                                                 isDailyBriefing:storiesCollection.isDailyBriefing
+                                                                                       storyCount:storiesCollection.storyLocationsCount];
+    if (targetLocation == nil) {
         return NSNotFound;
     }
 
-    return [rowDescriptor[FeedDetailVisibleRowStoryLocationKey] integerValue];
+    return [targetLocation integerValue];
 }
 
 - (void)openClusterStory:(NSDictionary *)clusterStory {
