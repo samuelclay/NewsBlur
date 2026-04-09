@@ -233,6 +233,39 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 4. Commit the fix
 5. **Always resolve the issue on Sentry** with `sentry-cli issues resolve -i <issue_id>` — do not skip this step
 
+## Android Crash Data (Google Play)
+- **API**: Google Play Developer Reporting API (`playdeveloperreporting.googleapis.com`, v1beta1)
+- **Service account**: `newsblur@appspot.gserviceaccount.com` — key at `/srv/secrets-newsblur/keys/google-play-service-account.json`
+- **Scope**: `https://www.googleapis.com/auth/playdeveloperreporting`
+- **Parent**: `apps/com.newsblur`
+- **Important**: do NOT use `settings.GOOGLE_PLAY_SERVICE_ACCOUNT_INFO` — that's the billing service account (`newsblur-play-billing@newsblur-premium`) and does not have Play Console reporting access
+
+### Query crash issues and reports
+Copy the key into the container and run a one-shot Python script (or a Django management command):
+```bash
+docker cp /srv/secrets-newsblur/keys/google-play-service-account.json newsblur_web:/tmp/gplay.json
+docker exec -t newsblur_web python -c "
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+creds = service_account.Credentials.from_service_account_file(
+    '/tmp/gplay.json',
+    scopes=['https://www.googleapis.com/auth/playdeveloperreporting'],
+)
+service = build('playdeveloperreporting', 'v1beta1', credentials=creds)
+# List top crash issues (sorted by errorReportCount desc by default)
+issues = service.vitals().errors().issues().search(parent='apps/com.newsblur', pageSize=20).execute()
+# Fetch a sample report (with full stack trace) for a specific issue
+reports = service.vitals().errors().reports().search(
+    parent='apps/com.newsblur',
+    filter='errorIssueId = \"<issue-id-hex>\"',
+    pageSize=1,
+).execute()
+"
+```
+Issue fields include `type` (CRASH / APPLICATION_NOT_RESPONDING), `cause`, `location`, `errorReportCount`, `distinctUsers`, `lastErrorReportTime`, `lastAppVersion.versionCode`. Report `reportText` contains the full stack trace.
+
+Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.counts`.
+
 ## Browser Testing
 - **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
 - Local dev: `https://localhost` for main repo. In a worktree, run `make worktree` first, then `./worktree-dev.sh` to get the assigned ports/URLs.
