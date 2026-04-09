@@ -315,6 +315,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		MenuInflater inflater = getActivity().getMenuInflater();
+		// A long-press on a TextView child (e.g. the folder title) also triggers the fragment's
+		// context menu callback, but with a non-ExpandableListContextMenuInfo payload. Bail out
+		// in that case so we don't crash with a ClassCastException.
+		// See Play crash id b9e6afb8b32b2944c364ce259b41b875.
+		if (!(menuInfo instanceof ExpandableListView.ExpandableListContextMenuInfo)) {
+			return;
+		}
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
