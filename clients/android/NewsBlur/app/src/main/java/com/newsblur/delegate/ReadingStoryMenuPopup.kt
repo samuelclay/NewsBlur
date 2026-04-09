@@ -469,9 +469,18 @@ class ReadingStoryMenuPopup(
         val popupHeight = min(binding.root.measuredHeight, availableHeight)
         val location = IntArray(2)
         anchor.getLocationInWindow(location)
+        // If the popup is wider than the display frame (e.g. on a narrow window after a text
+        // size bump), minX can exceed maxX and coerceIn would throw IllegalArgumentException.
+        // Pin to the left margin in that case. See Play crash 1f77d918a74e5dc4bcc3ea432fd2bffd.
+        val minX = displayFrame.left + margin
+        val maxX = displayFrame.right - popupWidth - margin
+        val preferredX = location[0] + anchor.width - popupWidth + UIUtils.dp2px(context, 4)
         val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(context, 4))
-                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
+            if (maxX < minX) {
+                minX
+            } else {
+                preferredX.coerceIn(minX, maxX)
+            }
         val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(context, 4)
         val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(context, 4)
         val y =
