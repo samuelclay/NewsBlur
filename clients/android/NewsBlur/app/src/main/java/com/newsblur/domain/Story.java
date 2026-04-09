@@ -217,6 +217,57 @@ public class Story implements Serializable {
 		return story;
 	}
 
+    /**
+     * Returns a shallow copy of this Story with the heaviest, non-essential fields cleared.
+     * Use when placing a Story into a Fragment argument Bundle to keep the activity's saved
+     * state small. Reading fragments (one per story in the Reading ViewPager) re-fetch their
+     * content through the ReadingItemViewModel, so these fields don't need to persist across
+     * activity-stop / process-death rehydration.
+     *
+     * Without this the fragment args for a large reading session can push the saved-state
+     * Bundle past the 1MB Binder transaction limit, triggering
+     * android.os.TransactionTooLargeException at activityStopped.
+     * See Play crash id 313659223e4fd44c9953ab2cd7b29706.
+     */
+    public Story copyForBundle() {
+        Story copy = new Story();
+        copy.id = id;
+        copy.permalink = permalink;
+        copy.sharedUserIds = sharedUserIds;
+        copy.friendUserIds = friendUserIds;
+        copy.read = read;
+        copy.starred = starred;
+        copy.starredTimestamp = starredTimestamp;
+        copy.tags = tags;
+        copy.userTags = userTags;
+        copy.highlights = highlights;
+        copy.socialUserId = socialUserId;
+        copy.sourceUserId = sourceUserId;
+        copy.title = title;
+        copy.timestamp = timestamp;
+        copy.authors = authors;
+        copy.feedId = feedId;
+        copy.intelligence = intelligence;
+        copy.storyHash = storyHash;
+        copy.hasModifications = hasModifications;
+        copy.lastReadTimestamp = lastReadTimestamp;
+        copy.searchHit = searchHit;
+        copy.thumbnailUrl = thumbnailUrl;
+        copy.sharedTimestamp = sharedTimestamp;
+        copy.infrequent = infrequent;
+        copy.isBriefingSummary = isBriefingSummary;
+        copy.extern_feedColor = extern_feedColor;
+        copy.extern_feedFade = extern_feedFade;
+        copy.extern_intelTotalScore = extern_intelTotalScore;
+        copy.extern_faviconUrl = extern_faviconUrl;
+        copy.extern_faviconTextColor = extern_faviconTextColor;
+        copy.extern_faviconBorderColor = extern_faviconBorderColor;
+        copy.extern_feedTitle = extern_feedTitle;
+        // deliberately skipped: content, shortContent, imageUrls, secureImageUrls,
+        // secureImageThumbnails, publicComments, friendsComments, friendsShares, clusterStories
+        return copy;
+    }
+
     public void bindExternValues(Cursor cursor) {
         extern_feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         extern_feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
