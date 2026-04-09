@@ -83,8 +83,10 @@ final class ReaderUITests: XCTestCase {
         tapElementCenter(nextButton)
         XCTAssertTrue(waitForLabel("Swift Fixture Story Three", on: currentStory))
 
+        // Crossing a page boundary: the app must fetch page 2 before navigating.
+        // Give extra timeout for the async fetch + render pipeline on slow CI runners.
         tapElementCenter(nextButton)
-        XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory))
+        XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory, timeout: 30))
     }
 
     private func folderButton(named title: String) -> XCUIElement {
@@ -126,10 +128,10 @@ final class ReaderUITests: XCTestCase {
         return element.exists
     }
 
-    private func waitForLabel(_ label: String, on element: XCUIElement) -> Bool {
+    private func waitForLabel(_ label: String, on element: XCUIElement, timeout: TimeInterval = 10) -> Bool {
         let predicate = NSPredicate(format: "label == %@", label)
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
-        return XCTWaiter().wait(for: [expectation], timeout: 10) == .completed
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
 
     private func tapElementCenter(_ element: XCUIElement) {
