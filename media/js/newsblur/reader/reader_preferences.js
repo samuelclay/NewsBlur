@@ -1412,7 +1412,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }
         $('input[name=story_clustering][value=' + !!clustering_enabled + ']', $modal).prop('checked', true);
 
-        var cluster_mark_read = NEWSBLUR.Preferences.cluster_mark_read;
+        var cluster_mark_read = NEWSBLUR.Globals.is_archive && NEWSBLUR.Preferences.cluster_mark_read;
         $('input[name=cluster_mark_read]', $modal).prop('checked', !!cluster_mark_read);
 
         var briefing_enabled = NEWSBLUR.Preferences.briefing_enabled;
@@ -1638,6 +1638,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[type=checkbox]', this.$modal).each(function () {
             preferences[$(this).attr('name')] = $(this).is(':checked');
         });
+        // reader_preferences.js: Enforce archive-only restriction on cluster_mark_read
+        if (!NEWSBLUR.Globals.is_archive) {
+            preferences['cluster_mark_read'] = false;
+        }
         $('input[type=hidden]', this.$modal).each(function () {
             preferences[$(this).attr('name')] = $(this).val();
         });
@@ -1713,6 +1717,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
+    flash_clustering_upgrade_notice: function () {
+        var $notice = $('.NB-clustering-mark-read-option .NB-premium-archive-upgrade-notice', this.$modal);
+        $notice.addClass('NB-flash');
+        setTimeout(function () {
+            $notice.removeClass('NB-flash');
+        }, 600);
+    },
+
     change_view_setting: function (view, setting) {
         if (view == 'order') {
             $('.NB-preference-view-setting-order-oldest').toggleClass('NB-active', setting == 'oldest');
@@ -1779,6 +1791,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
             self.close_and_load_premium();
+        });
+        $.targetIs(e, { tagSelector: '.NB-clustering-mark-read-option.NB-disabled' }, function ($t, $p) {
+            e.preventDefault();
+            self.flash_clustering_upgrade_notice();
         });
         $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function ($t, $p) {
             e.preventDefault();
