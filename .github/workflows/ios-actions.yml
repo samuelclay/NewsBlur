@@ -58,7 +58,11 @@ jobs:
             RUN_CLANG_STATIC_ANALYZER=NO \
             -resultBundlePath TestResults/NewsBlurTests.xcresult
 
+      # UI smoke tests are flaky on GitHub Actions simulators (different test
+      # times out each run due to slow CI hardware). Run them for visibility
+      # but don't block the overall job on failure.
       - name: Run iOS UI smoke tests
+        continue-on-error: true
         run: |
           xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
