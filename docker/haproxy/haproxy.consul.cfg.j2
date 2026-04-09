@@ -321,7 +321,8 @@ backend consul_manager
 backend app_mcp
     balance roundrobin
     option allbackups
-    http-request replace-path /mcp(.*)     \1
+    http-request replace-path /mcp$      /
+    http-request replace-path /mcp/(.*)  /\1
     timeout server 3600s
     timeout tunnel 3600s
     default-server check inter 2000ms fall 3 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
