@@ -1456,8 +1456,9 @@
 //    NSLog(@"---> Story page control orient page: %@ (%@-%@)", NSStringFromCGRect(self.scrollView.bounds), @(pageController.pageIndex), suppressRedraw ? @"supress" : @"redraw");
 
     if (suppressRedraw) return;
-    
-//    NSInteger wasIndex = pageController.pageIndex;
+
+    NSString *previousStoryId = pageController.activeStoryId;
+    BOOL hadRenderedStory = pageController.hasStory;
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
@@ -1486,6 +1487,10 @@
             [pageController.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
             [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
         }
+        // Skip redraw if page already shows the target story (e.g. after pagination fetch)
+        if (hadRenderedStory && previousStoryId && [previousStoryId isEqualToString:pageController.activeStoryId]) {
+            [pageController drawFeedGradient];
+        } else {
         [pageController clearStory];
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
@@ -1507,6 +1512,7 @@
         } else {
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
+        } // end else (needs redraw)
     } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
