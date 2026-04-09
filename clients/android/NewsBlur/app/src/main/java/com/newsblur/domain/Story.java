@@ -2,7 +2,7 @@ package com.newsblur.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,11 +94,15 @@ public class Story implements Serializable {
     @SerializedName("story_hash")
     public String storyHash;
 
+    // NOTE: declared as HashMap (not Map) so Gson creates a java.util.HashMap instead of
+    // its internal LinkedTreeMap. LinkedTreeMap is not Serializable, which caused a
+    // NotSerializableException when Android tried to save a Story into an activity's
+    // saved-instance-state Bundle. See Play crash 812322145eb6ef2abf80c9ad17b66368.
     @SerializedName("secure_image_urls")
-    public Map<String, String> secureImageUrls;
+    public HashMap<String, String> secureImageUrls;
 
     @SerializedName("secure_image_thumbnails")
-    public Map<String, String> secureImageThumbnails;
+    public HashMap<String, String> secureImageThumbnails;
 
     @SerializedName("has_modifications")
     public boolean hasModifications;
@@ -421,8 +425,9 @@ public class Story implements Serializable {
         @SerializedName("image_urls")
         public String[] imageUrls;
 
+        // See note on Story.secureImageUrls above - HashMap ensures Java Serialization works.
         @SerializedName("secure_image_thumbnails")
-        public Map<String, String> secureImageThumbnails;
+        public HashMap<String, String> secureImageThumbnails;
 
         public String getThumbnailUrl() {
             if (imageUrls == null || imageUrls.length == 0) return null;
