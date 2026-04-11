@@ -1,7 +1,7 @@
 """Intelligence classifier tools."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
+from newsblur_mcp.server import get_client, mcp
 
 
 async def _train_classifier(
@@ -27,29 +27,29 @@ async def _train_classifier(
     # (e.g. like_title=python&like_title=rust), so we build a list of tuples
     fields = [("feed_id", feed_id)]
 
-    for keyword in (like_title or []):
+    for keyword in like_title or []:
         fields.append(("like_title", keyword))
-    for keyword in (dislike_title or []):
+    for keyword in dislike_title or []:
         fields.append(("dislike_title", keyword))
-    for keyword in (super_dislike_title or []):
+    for keyword in super_dislike_title or []:
         fields.append(("super_dislike_title", keyword))
-    for author in (like_author or []):
+    for author in like_author or []:
         fields.append(("like_author", author))
-    for author in (dislike_author or []):
+    for author in dislike_author or []:
         fields.append(("dislike_author", author))
-    for author in (super_dislike_author or []):
+    for author in super_dislike_author or []:
         fields.append(("super_dislike_author", author))
-    for tag in (like_tag or []):
+    for tag in like_tag or []:
         fields.append(("like_tag", tag))
-    for tag in (dislike_tag or []):
+    for tag in dislike_tag or []:
         fields.append(("dislike_tag", tag))
-    for tag in (super_dislike_tag or []):
+    for tag in super_dislike_tag or []:
         fields.append(("super_dislike_tag", tag))
-    for keyword in (like_text or []):
+    for keyword in like_text or []:
         fields.append(("like_text", keyword))
-    for keyword in (dislike_text or []):
+    for keyword in dislike_text or []:
         fields.append(("dislike_text", keyword))
-    for keyword in (super_dislike_text or []):
+    for keyword in super_dislike_text or []:
         fields.append(("super_dislike_text", keyword))
     if like_feed:
         fields.append(("like_feed", feed_id))
@@ -105,12 +105,22 @@ async def newsblur_train_classifier(
     client = get_client()
     try:
         return await _train_classifier(
-            client, feed_id,
-            like_title, dislike_title, super_dislike_title,
-            like_author, dislike_author, super_dislike_author,
-            like_tag, dislike_tag, super_dislike_tag,
-            like_text, dislike_text, super_dislike_text,
-            like_feed, dislike_feed,
+            client,
+            feed_id,
+            like_title,
+            dislike_title,
+            super_dislike_title,
+            like_author,
+            dislike_author,
+            super_dislike_author,
+            like_tag,
+            dislike_tag,
+            super_dislike_tag,
+            like_text,
+            dislike_text,
+            super_dislike_text,
+            like_feed,
+            dislike_feed,
         )
     finally:
         await client.close()

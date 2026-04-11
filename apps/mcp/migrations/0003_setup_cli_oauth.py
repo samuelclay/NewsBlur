@@ -60,13 +60,26 @@ def setup_cli_oauth(apps, schema_editor):
         print(f"\n ---> Updated OAuth application: {client_id}")
     else:
         col_names = [
-            "client_id", "name", "client_type", "authorization_grant_type",
-            "client_secret", "redirect_uris", "skip_authorization",
-            "created", "updated", "algorithm", "post_logout_redirect_uris",
+            "client_id",
+            "name",
+            "client_type",
+            "authorization_grant_type",
+            "client_secret",
+            "redirect_uris",
+            "skip_authorization",
+            "created",
+            "updated",
+            "algorithm",
+            "post_logout_redirect_uris",
         ]
         params = [
-            client_id, "NewsBlur CLI", "public", "authorization-code",
-            "", "http://127.0.0.1/callback", True,
+            client_id,
+            "NewsBlur CLI",
+            "public",
+            "authorization-code",
+            "",
+            "http://127.0.0.1/callback",
+            True,
         ]
         placeholders = ["%s"] * len(params) + ["NOW()", "NOW()", "%s", "%s"]
         extra_params = ["", ""]  # algorithm, post_logout_redirect_uris

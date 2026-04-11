@@ -377,9 +377,7 @@ class Test_Reader(TransactionTestCase):
         self.assertEqual(json.decode(response.content)["code"], 1)
 
         # Classifier should now have the updated full path
-        classifier = MClassifierTag.objects.get(
-            user_id=user.pk, tag="short videos", scope="folder"
-        )
+        classifier = MClassifierTag.objects.get(user_id=user.pk, tag="short videos", scope="folder")
         self.assertEqual(classifier.folder_name, "YouTube - YouTube (no shorts)")
 
         # Clean up
@@ -400,12 +398,22 @@ class Test_Reader(TransactionTestCase):
         # Create classifiers on both "Videos" and "Videos - Shorts"
         MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
         MClassifierTag.objects.create(
-            user_id=user.pk, tag="tag1", feed_id=0, score=-1,
-            social_user_id=0, scope="folder", folder_name="Videos",
+            user_id=user.pk,
+            tag="tag1",
+            feed_id=0,
+            score=-1,
+            social_user_id=0,
+            scope="folder",
+            folder_name="Videos",
         )
         MClassifierTag.objects.create(
-            user_id=user.pk, tag="tag2", feed_id=0, score=-1,
-            social_user_id=0, scope="folder", folder_name="Videos - Shorts",
+            user_id=user.pk,
+            tag="tag2",
+            feed_id=0,
+            score=-1,
+            social_user_id=0,
+            scope="folder",
+            folder_name="Videos - Shorts",
         )
 
         # Move "Videos" into "Archive"
@@ -439,8 +447,13 @@ class Test_Reader(TransactionTestCase):
         # Create a folder-scoped classifier with the full nested path
         MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
         MClassifierTag.objects.create(
-            user_id=user.pk, tag="boring", feed_id=0, score=-1,
-            social_user_id=0, scope="folder", folder_name="Parent - Child",
+            user_id=user.pk,
+            tag="boring",
+            feed_id=0,
+            score=-1,
+            social_user_id=0,
+            scope="folder",
+            folder_name="Parent - Child",
         )
 
         # Rename "Child" to "NewChild" inside "Parent"
@@ -451,9 +464,7 @@ class Test_Reader(TransactionTestCase):
         self.assertEqual(json.decode(response.content)["code"], 1)
 
         # Classifier should have the updated path
-        classifier = MClassifierTag.objects.get(
-            user_id=user.pk, tag="boring", scope="folder"
-        )
+        classifier = MClassifierTag.objects.get(user_id=user.pk, tag="boring", scope="folder")
         self.assertEqual(classifier.folder_name, "Parent - NewChild")
 
         # Clean up

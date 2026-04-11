@@ -8,7 +8,11 @@ import typer
 from rich.console import Console
 
 from newsblur_mcp.cli.output import render, render_classifiers
-from newsblur_mcp.cli.runner import async_command, get_authenticated_client, require_writable
+from newsblur_mcp.cli.runner import (
+    async_command,
+    get_authenticated_client,
+    require_writable,
+)
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -43,15 +47,9 @@ async def train_like(
     author: Optional[list[str]] = typer.Option(
         None, "--author", "-a", help="Author names to like (repeatable)"
     ),
-    tag: Optional[list[str]] = typer.Option(
-        None, "--tag", "-t", help="Story tags to like (repeatable)"
-    ),
-    title: Optional[list[str]] = typer.Option(
-        None, "--title", help="Title keywords to like (repeatable)"
-    ),
-    feed_like: bool = typer.Option(
-        False, "--feed-like", help="Like the entire feed (boost all its stories)"
-    ),
+    tag: Optional[list[str]] = typer.Option(None, "--tag", "-t", help="Story tags to like (repeatable)"),
+    title: Optional[list[str]] = typer.Option(None, "--title", help="Title keywords to like (repeatable)"),
+    feed_like: bool = typer.Option(False, "--feed-like", help="Like the entire feed (boost all its stories)"),
 ):
     """Train the classifier to like (boost) stories matching criteria."""
     require_writable()
@@ -86,12 +84,8 @@ async def train_dislike(
     author: Optional[list[str]] = typer.Option(
         None, "--author", "-a", help="Author names to dislike (repeatable)"
     ),
-    tag: Optional[list[str]] = typer.Option(
-        None, "--tag", "-t", help="Story tags to dislike (repeatable)"
-    ),
-    title: Optional[list[str]] = typer.Option(
-        None, "--title", help="Title keywords to dislike (repeatable)"
-    ),
+    tag: Optional[list[str]] = typer.Option(None, "--tag", "-t", help="Story tags to dislike (repeatable)"),
+    title: Optional[list[str]] = typer.Option(None, "--title", help="Title keywords to dislike (repeatable)"),
     feed_dislike: bool = typer.Option(
         False, "--feed-dislike", help="Dislike the entire feed (suppress all its stories)"
     ),

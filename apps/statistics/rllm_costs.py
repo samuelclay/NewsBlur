@@ -47,7 +47,15 @@ class RLLMCosts:
 
     @classmethod
     def record(
-        cls, provider, model, feature, input_tokens, output_tokens, cost_usd, user_id=None, is_billing_user=False
+        cls,
+        provider,
+        model,
+        feature,
+        input_tokens,
+        output_tokens,
+        cost_usd,
+        user_id=None,
+        is_billing_user=False,
     ):
         """
         Record an LLM API call in Redis.

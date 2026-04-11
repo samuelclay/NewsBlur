@@ -1269,7 +1269,11 @@ class Profile(models.Model):
                         # and the new plan is ACTIVE. Without this check, iteration order could
                         # cause the SUSPENDED plan to overwrite active_plan, preventing the
                         # upgrade tier (archive/pro) from being detected.
-                        is_active = paypal_subscription["status"] in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+                        is_active = paypal_subscription["status"] in [
+                            "ACTIVE",
+                            "APPROVED",
+                            "APPROVAL_PENDING",
+                        ]
                         if is_active or not active_plan:
                             active_plan = paypal_subscription.get("plan_id", None)
                             if not active_plan:

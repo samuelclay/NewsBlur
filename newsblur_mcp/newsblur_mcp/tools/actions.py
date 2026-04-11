@@ -1,7 +1,7 @@
 """Story action tools - mark read, save, share."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
+from newsblur_mcp.server import get_client, mcp
 
 
 async def _mark_stories_read(

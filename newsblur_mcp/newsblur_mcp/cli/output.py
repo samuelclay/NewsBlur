@@ -87,12 +87,29 @@ def _intelligence_dot(score: int) -> str:
 
 def _intelligence_summary(intel: dict) -> str:
     """Build a compact intelligence indicator string showing all non-zero classifiers."""
-    keys = ("feed", "author", "tags", "title", "title_regex", "text", "text_regex",
-            "url", "url_regex", "prompt")
+    keys = (
+        "feed",
+        "author",
+        "tags",
+        "title",
+        "title_regex",
+        "text",
+        "text_regex",
+        "url",
+        "url_regex",
+        "prompt",
+    )
     labels = {
-        "feed": "feed", "author": "author", "tags": "tags", "title": "title",
-        "title_regex": "title-regex", "text": "text", "text_regex": "text-regex",
-        "url": "url", "url_regex": "url-regex", "prompt": "ai-prompt",
+        "feed": "feed",
+        "author": "author",
+        "tags": "tags",
+        "title": "title",
+        "title_regex": "title-regex",
+        "text": "text",
+        "text_regex": "text-regex",
+        "url": "url",
+        "url_regex": "url-regex",
+        "prompt": "ai-prompt",
     }
     parts = []
     for key in keys:
@@ -186,7 +203,9 @@ def render_stories(data: dict) -> None:
     has_more = data.get("has_more", False)
     count = data.get("count", len(stories))
     if has_more:
-        console.print(f"\n[dim]Page {page} ({count} stories) -- more available, use --page {page + 1} or --json for full output[/dim]")
+        console.print(
+            f"\n[dim]Page {page} ({count} stories) -- more available, use --page {page + 1} or --json for full output[/dim]"
+        )
     else:
         console.print(f"\n[dim]Page {page} ({count} stories) -- use --json for full output[/dim]")
 
@@ -216,8 +235,10 @@ def render_feeds_table(data: dict) -> None:
         table.add_row(feed_id, title, str(unread), str(focus), updated)
 
     console.print(table)
-    console.print(f"\n[dim]{data.get('feed_count', len(feeds))} feeds total, "
-                  f"{data.get('starred_count', 0)} saved stories -- use --json for full output[/dim]")
+    console.print(
+        f"\n[dim]{data.get('feed_count', len(feeds))} feeds total, "
+        f"{data.get('starred_count', 0)} saved stories -- use --json for full output[/dim]"
+    )
 
 
 def render_folders(data: dict) -> None:
@@ -257,7 +278,9 @@ def render_folders(data: dict) -> None:
                 branch.add(label)
         console.print(tree)
 
-    console.print(f"\n[dim]{data.get('folder_count', len(folders))} folders -- use --json for full output[/dim]")
+    console.print(
+        f"\n[dim]{data.get('folder_count', len(folders))} folders -- use --json for full output[/dim]"
+    )
 
 
 def render_account(data: dict) -> None:
@@ -352,7 +375,9 @@ def render_briefing(data: dict) -> None:
     page = data.get("page", 1)
     has_more = data.get("has_more", False)
     if has_more:
-        console.print(f"\n[dim]Page {page} — more available, use --page {page + 1} or --json for full output[/dim]")
+        console.print(
+            f"\n[dim]Page {page} — more available, use --page {page + 1} or --json for full output[/dim]"
+        )
 
 
 def render_classifiers(data: dict) -> None:

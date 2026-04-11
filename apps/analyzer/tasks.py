@@ -12,5 +12,3 @@ def EmailPopularityQuery(pk):
     logging.debug(" -> ~BB~FCRunning popularity query: ~SB%s" % query)
 
     query.send_email()
-
-
