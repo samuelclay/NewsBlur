@@ -231,7 +231,7 @@ class Test_Classifiers(TransactionTestCase):
             "story_feed_id": self.feed.pk,
             "story_title": "News",
             "story_content": (
-                '<em>Fragen, Kritik, Anregungen? Sie erreichen uns unter </em>'
+                "<em>Fragen, Kritik, Anregungen? Sie erreichen uns unter </em>"
                 '<a href="mailto:wasjetzt@zeit.de"><em>wasjetzt@zeit.de</em></a>.'
             ),
         }
@@ -1137,7 +1137,9 @@ class Test_SuperDownvote(TransactionTestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username="supertest", password="testpass", email="super@test.com")
+        self.user = User.objects.create_user(
+            username="supertest", password="testpass", email="super@test.com"
+        )
         self.feed = Feed.objects.get(pk=1)
         UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=False)
         self.story = {
@@ -1158,8 +1160,12 @@ class Test_SuperDownvote(TransactionTestCase):
     def test_apply_classifier_titles_super_downvote(self):
         """Super downvote title classifier returns -2."""
         classifier = MClassifierTitle.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            title="Breaking", score=-2, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="Breaking",
+            score=-2,
+            creation_date=datetime.datetime.now(),
         )
         result = apply_classifier_titles([classifier], self.story)
         self.assertEqual(result, -2)
@@ -1167,8 +1173,12 @@ class Test_SuperDownvote(TransactionTestCase):
     def test_apply_classifier_authors_super_downvote(self):
         """Super downvote author classifier returns -2."""
         classifier = MClassifierAuthor.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            author="John Doe", score=-2, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="John Doe",
+            score=-2,
+            creation_date=datetime.datetime.now(),
         )
         result = apply_classifier_authors([classifier], self.story)
         self.assertEqual(result, -2)
@@ -1176,8 +1186,12 @@ class Test_SuperDownvote(TransactionTestCase):
     def test_apply_classifier_tags_super_downvote(self):
         """Super downvote tag classifier returns -2."""
         classifier = MClassifierTag.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            tag="python", score=-2, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="python",
+            score=-2,
+            creation_date=datetime.datetime.now(),
         )
         result = apply_classifier_tags([classifier], self.story)
         self.assertEqual(result, -2)
@@ -1186,12 +1200,20 @@ class Test_SuperDownvote(TransactionTestCase):
         """Super downvote (-2) beats any positive classifier (+1)."""
         # Title is liked (+1), but author is super-downvoted (-2)
         title_like = MClassifierTitle.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            title="Breaking", score=1, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="Breaking",
+            score=1,
+            creation_date=datetime.datetime.now(),
         )
         author_super = MClassifierAuthor.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            author="John Doe", score=-2, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="John Doe",
+            score=-2,
+            creation_date=datetime.datetime.now(),
         )
         score = compute_story_score(
             self.story,
@@ -1205,12 +1227,20 @@ class Test_SuperDownvote(TransactionTestCase):
     def test_apply_classifier_tags_super_downvote_beats_positive_tag(self):
         """Super downvote tag (-2) wins even when another tag is positive (+1)."""
         tag_like = MClassifierTag.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            tag="tech", score=1, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="tech",
+            score=1,
+            creation_date=datetime.datetime.now(),
         )
         tag_super = MClassifierTag.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            tag="python", score=-2, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="python",
+            score=-2,
+            creation_date=datetime.datetime.now(),
         )
         result = apply_classifier_tags([tag_like, tag_super], self.story)
         self.assertEqual(result, -2)
@@ -1221,12 +1251,20 @@ class Test_SuperDownvote(TransactionTestCase):
     def test_compute_story_score_positive_beats_regular_negative(self):
         """Positive (+1) still beats regular negative (-1)."""
         title_like = MClassifierTitle.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            title="Breaking", score=1, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="Breaking",
+            score=1,
+            creation_date=datetime.datetime.now(),
         )
         tag_dislike = MClassifierTag.objects.create(
-            user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0,
-            tag="python", score=-1, creation_date=datetime.datetime.now(),
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="python",
+            score=-1,
+            creation_date=datetime.datetime.now(),
         )
         score = compute_story_score(
             self.story,

@@ -1,7 +1,7 @@
 """Feed discovery tools."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
+from newsblur_mcp.server import get_client, mcp
 from newsblur_mcp.transforms import transform_feed
 
 

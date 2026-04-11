@@ -5,7 +5,13 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 
-from newsblur_mcp.cli.auth import delete_token, get_auth_status, get_readonly, login_flow, set_readonly
+from newsblur_mcp.cli.auth import (
+    delete_token,
+    get_auth_status,
+    get_readonly,
+    login_flow,
+    set_readonly,
+)
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -16,7 +22,9 @@ app = typer.Typer(context_settings=CONTEXT_SETTINGS)
 @app.command("login")
 def login(
     server: str = typer.Option(
-        None, "--server", "-s",
+        None,
+        "--server",
+        "-s",
         help="NewsBlur server URL (e.g. https://newsblur.com or https://nb.example.com for self-hosted)",
     ),
 ):

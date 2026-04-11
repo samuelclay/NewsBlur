@@ -8,7 +8,11 @@ import typer
 from rich.console import Console
 
 from newsblur_mcp.cli.output import render, render_feeds_table, render_folders
-from newsblur_mcp.cli.runner import async_command, get_authenticated_client, require_writable
+from newsblur_mcp.cli.runner import (
+    async_command,
+    get_authenticated_client,
+    require_writable,
+)
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -112,16 +116,12 @@ async def folders_list(
 @async_command
 async def feeds_organize(
     ctx: typer.Context,
-    action: str = typer.Argument(
-        ..., help="Action: move_feed, rename_feed, or rename_folder"
-    ),
+    action: str = typer.Argument(..., help="Action: move_feed, rename_feed, or rename_folder"),
     feed_id: Optional[int] = typer.Option(None, "--feed-id", help="Feed ID (for move/rename feed)"),
     from_folder: Optional[str] = typer.Option(
         None, "--from", help="Current folder name (for move_feed or rename_folder)"
     ),
-    to_folder: Optional[str] = typer.Option(
-        None, "--to", help="Destination folder (for move_feed)"
-    ),
+    to_folder: Optional[str] = typer.Option(None, "--to", help="Destination folder (for move_feed)"),
     name: Optional[str] = typer.Option(
         None, "--name", "-n", help="New name (for rename_feed or rename_folder)"
     ),

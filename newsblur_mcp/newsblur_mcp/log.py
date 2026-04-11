@@ -124,12 +124,6 @@ def log_request(username: str, premium: str, seconds: float, tool_name: str):
     time_elapsed = "[%s%.4ss~SB] " % (color, seconds)
 
     if username:
-        info(
-            " ---> [~FB~SN%-6s~SB] %s[%s%s] ~FC%s"
-            % ("MCP", time_elapsed, username, premium, tool_name)
-        )
+        info(" ---> [~FB~SN%-6s~SB] %s[%s%s] ~FC%s" % ("MCP", time_elapsed, username, premium, tool_name))
     else:
-        info(
-            " ---> [~FB~SN%-6s~SB] %s[anonymous] ~FC%s"
-            % ("MCP", time_elapsed, tool_name)
-        )
+        info(" ---> [~FB~SN%-6s~SB] %s[anonymous] ~FC%s" % ("MCP", time_elapsed, tool_name))

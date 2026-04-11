@@ -51,7 +51,11 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 )
 
                 if response.status_code != 200:
-                    logger.warning("Django token verification failed: status=%d url=%s", response.status_code, self.upstream_base_url)
+                    logger.warning(
+                        "Django token verification failed: status=%d url=%s",
+                        response.status_code,
+                        self.upstream_base_url,
+                    )
                     return None
 
                 user_info = response.json()
@@ -59,7 +63,9 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 username = data.get("user_name") or data.get("name", "unknown")
                 is_premium = bool(data.get("is_premium"))
                 is_archive = bool(data.get("is_archive"))
-                logger.info("Token verified for user=%s premium=%s archive=%s", username, is_premium, is_archive)
+                logger.info(
+                    "Token verified for user=%s premium=%s archive=%s", username, is_premium, is_archive
+                )
 
                 return AccessToken(
                     token=token,

@@ -1,8 +1,8 @@
 """Daily briefing tools."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
-from newsblur_mcp.transforms import transform_briefing, paginate
+from newsblur_mcp.server import get_client, mcp
+from newsblur_mcp.transforms import paginate, transform_briefing
 
 
 async def _get_daily_briefing(
@@ -12,19 +12,19 @@ async def _get_daily_briefing(
 ) -> dict:
     """Get daily briefing with AI-curated story summaries and sections."""
     limit = min(limit, 50)
-    resp = await client.get("/briefing/stories", params={
-        "limit": limit,
-        "page": page,
-    })
+    resp = await client.get(
+        "/briefing/stories",
+        params={
+            "limit": limit,
+            "page": page,
+        },
+    )
 
     if resp.get("code") == -1:
         return {"error": resp.get("message", "Daily Briefing is not available.")}
 
     section_definitions = resp.get("section_definitions", {})
-    briefings = [
-        transform_briefing(b, section_definitions)
-        for b in resp.get("briefings", [])
-    ]
+    briefings = [transform_briefing(b, section_definitions) for b in resp.get("briefings", [])]
 
     result = paginate(briefings, page, has_more=resp.get("has_next_page", False))
     result["enabled"] = resp.get("enabled", False)

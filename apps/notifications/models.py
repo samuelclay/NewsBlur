@@ -670,15 +670,11 @@ class MUserClassifierNotification(mongo.Document):
         # Slower path: check if any user with folder/global scoped notifications
         # is subscribed to this feed. Since classifier notifications are Archive-only,
         # the count of scoped_user_ids is expected to be very small.
-        scoped_user_ids = list(
-            cls.objects.filter(scope__in=["folder", "global"]).distinct("user_id")
-        )
+        scoped_user_ids = list(cls.objects.filter(scope__in=["folder", "global"]).distinct("user_id"))
         if not scoped_user_ids:
             return False
 
-        return UserSubscription.objects.filter(
-            feed_id=feed_id, user_id__in=scoped_user_ids
-        ).exists()
+        return UserSubscription.objects.filter(feed_id=feed_id, user_id__in=scoped_user_ids).exists()
 
     @classmethod
     def for_user(cls, user_id):
@@ -710,8 +706,9 @@ class MUserClassifierNotification(mongo.Document):
     # ------------------------------------------------------------------
 
     @classmethod
-    def mark_story_sent(cls, user_id, story_hash, is_email=False, is_web=False,
-                        is_ios=False, is_android=False):
+    def mark_story_sent(
+        cls, user_id, story_hash, is_email=False, is_web=False, is_ios=False, is_android=False
+    ):
         """Mark channels as sent for a story so classifier notifications don't re-send."""
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         channels = []
@@ -775,7 +772,7 @@ class MUserClassifierNotification(mongo.Document):
         elif self.classifier_type == "text":
             story_content = story.get("story_content", "")
             original_text = story.get("original_text", "")
-            combined = (story_content + " " + original_text)
+            combined = story_content + " " + original_text
             if not combined.strip():
                 return False
             if self.is_regex:
@@ -807,9 +804,7 @@ class MUserClassifierNotification(mongo.Document):
 
         # Get new stories
         latest_story_hashes = r.zrange("zF:%s" % feed.pk, -1 * new_stories, -1)
-        mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by(
-            "-story_date"
-        )
+        mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by("-story_date")
         stories = Feed.format_stories(mstories)
         if not stories:
             return 0, 0
@@ -821,9 +816,7 @@ class MUserClassifierNotification(mongo.Document):
         # 2. Folder/global-scoped: find users subscribed to this feed who have
         #    folder or global classifier notifications
         subscriber_user_ids = list(
-            UserSubscription.objects.filter(feed_id=feed_id).values_list(
-                "user_id", flat=True
-            )
+            UserSubscription.objects.filter(feed_id=feed_id).values_list("user_id", flat=True)
         )
         scoped_notifs = []
         if subscriber_user_ids:
@@ -945,7 +938,8 @@ class MUserClassifierNotification(mongo.Document):
 
                 # Mark as sent for dedup
                 cls.mark_story_sent(
-                    user_id, story_hash,
+                    user_id,
+                    story_hash,
                     is_email=channels_to_send.get("email", False),
                     is_web=channels_to_send.get("web", False),
                     is_ios=channels_to_send.get("ios", False),

@@ -15,6 +15,7 @@ console = Console(stderr=True)
 
 class ReadonlyError(Exception):
     """Raised when a write operation is attempted in readonly mode."""
+
     pass
 
 
@@ -26,9 +27,7 @@ def require_writable() -> None:
     from newsblur_mcp.cli.auth import get_readonly
 
     if get_readonly():
-        raise ReadonlyError(
-            "Readonly mode is enabled. Disable it with: newsblur auth readonly --off"
-        )
+        raise ReadonlyError("Readonly mode is enabled. Disable it with: newsblur auth readonly --off")
 
 
 def async_command(f):
@@ -95,8 +94,6 @@ def get_authenticated_client() -> NewsBlurClient:
 
     token = load_token()
     if not token:
-        console.print(
-            "[red]Not logged in.[/red] Run [bold]newsblur auth login[/bold] to authenticate."
-        )
+        console.print("[red]Not logged in.[/red] Run [bold]newsblur auth login[/bold] to authenticate.")
         raise typer.Exit(1)
     return NewsBlurClient(bearer_token=token, base_url=get_server_url())

@@ -19,9 +19,7 @@ class Notifications(View):
 
         classifier_types = ["author", "tag", "title", "text", "url"]
         for ct in classifier_types:
-            data[f"classifier_{ct}"] = classifier_coll.count_documents(
-                {"classifier_type": ct}
-            )
+            data[f"classifier_{ct}"] = classifier_coll.count_documents({"classifier_type": ct})
 
         # -- Delivery method breakdown (feed notifications) --
         for channel in ["is_email", "is_web", "is_ios", "is_android"]:
@@ -29,9 +27,7 @@ class Notifications(View):
 
         # -- Delivery method breakdown (classifier notifications) --
         for channel in ["is_email", "is_web", "is_ios", "is_android"]:
-            data[f"classifier_{channel}"] = classifier_coll.count_documents(
-                {channel: True}
-            )
+            data[f"classifier_{channel}"] = classifier_coll.count_documents({channel: True})
 
         # -- Unique users: active (last seen within 90 days) vs stale --
         feed_user_ids = set(feed_coll.distinct("user_id"))
@@ -66,41 +62,37 @@ class Notifications(View):
         formatted_data = {}
 
         # Notification type counts
-        formatted_data["feed"] = (
-            f'{chart_name}{{type="feed"}} {data["feed"]}'
-        )
+        formatted_data["feed"] = f'{chart_name}{{type="feed"}} {data["feed"]}'
         for ct in classifier_types:
-            formatted_data[f"classifier_{ct}"] = (
-                f'{chart_name}{{type="classifier_{ct}"}} {data[f"classifier_{ct}"]}'
-            )
+            formatted_data[
+                f"classifier_{ct}"
+            ] = f'{chart_name}{{type="classifier_{ct}"}} {data[f"classifier_{ct}"]}'
 
         # Delivery method breakdown - feed
         for channel in ["email", "web", "ios", "android"]:
             key = f"feed_is_{channel}"
-            formatted_data[key] = (
-                f'{chart_name}{{metric="delivery",source="feed",channel="{channel}"}} {data[key]}'
-            )
+            formatted_data[
+                key
+            ] = f'{chart_name}{{metric="delivery",source="feed",channel="{channel}"}} {data[key]}'
 
         # Delivery method breakdown - classifier
         for channel in ["email", "web", "ios", "android"]:
             key = f"classifier_is_{channel}"
-            formatted_data[key] = (
-                f'{chart_name}{{metric="delivery",source="classifier",channel="{channel}"}} {data[key]}'
-            )
+            formatted_data[
+                key
+            ] = f'{chart_name}{{metric="delivery",source="classifier",channel="{channel}"}} {data[key]}'
 
         # Active vs stale notification users
         for status in ["active", "stale"]:
             for source in ["feed", "classifier", "total"]:
                 key = f"{status}_{source}"
-                formatted_data[key] = (
-                    f'{chart_name}{{metric="unique_users",status="{status}",source="{source}"}} {data[key]}'
-                )
+                formatted_data[
+                    key
+                ] = f'{chart_name}{{metric="unique_users",status="{status}",source="{source}"}} {data[key]}'
 
         context = {
             "data": formatted_data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(
-            request, "monitor/prometheus_data.html", context, content_type="text/plain"
-        )
+        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")

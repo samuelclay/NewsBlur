@@ -249,7 +249,9 @@ def api_user_info(request):
                 "is_archive": user.profile.is_archive,
                 "is_pro": user.profile.is_pro,
                 "feed_count": feed_count,
-                "premium_expire": int(user.profile.premium_expire.strftime("%s")) if user.profile.premium_expire else 0,
+                "premium_expire": int(user.profile.premium_expire.strftime("%s"))
+                if user.profile.premium_expire
+                else 0,
             }
         },
     )
