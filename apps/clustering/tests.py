@@ -1,11 +1,16 @@
 from django.test import TestCase
 
 from apps.clustering.models import (
+    CLUSTER_TIER_RELATED,
+    CLUSTER_TIER_TITLE,
+    SEMANTIC_MIN_OVERLAP_COEF,
     SEMANTIC_MIN_TITLE_INTERSECTION,
     _simple_stem,
+    cluster_mode_prefixes,
     find_title_clusters,
     merge_clusters,
     normalize_title,
+    tier_from_score,
     title_significant_words,
     title_words_excluding_feed,
 )
@@ -290,6 +295,124 @@ class Test_TitleWordsExcludingFeed(TestCase):
         )
         expected = title_significant_words("Trump Signs Executive Order on Artificial Intelligence")
         self.assertEqual(words, expected)
+
+
+class Test_SingleCellGreedyCluster(TestCase):
+    """Regression for the single-cell research cluster reported on the forum.
+
+    Six unrelated scientific papers were bound into one cluster because they
+    all shared a handful of domain words like "single", "cell", "rna",
+    "sequencing". Tier 1 (title) correctly rejects every pair (max overlap
+    coefficient 0.36), so the cluster came entirely from Tier 2 semantic
+    matches passing the old intersection>=3 rule. With the tightened
+    thresholds (intersection>=4 AND overlap>=0.45), merge_clusters should
+    reject the false-positive semantic union.
+    """
+
+    def _scientific_stories(self):
+        return [
+            {
+                "story_hash": "11:a",
+                "story_feed_id": 1,
+                "story_title": (
+                    "Single-cell RNA-seq reveals trans-sialidase-like superfamily gene"
+                    " expression heterogeneity in Trypanosoma cruzi populations"
+                ),
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "22:b",
+                "story_feed_id": 2,
+                "story_title": (
+                    "Locat: Joint enrichment and depletion testing identifies localized"
+                    " marker genes in single-cell transcriptomics"
+                ),
+                "story_date": 999,
+            },
+            {
+                "story_hash": "33:c",
+                "story_feed_id": 3,
+                "story_title": (
+                    "MitoChontrol: Adaptive mitochondrial filtering for robust single-cell"
+                    " RNA sequencing quality control"
+                ),
+                "story_date": 998,
+            },
+        ]
+
+    def test_tier1_finds_no_clusters(self):
+        """Tier 1 (title) must reject every pair — proves any cluster we see
+        in production came from Tier 2 semantic matching, not title fuzzy."""
+        clusters = find_title_clusters(self._scientific_stories())
+        self.assertEqual(clusters, {})
+
+    def test_tier2_merge_rejects_tightened_threshold(self):
+        """With the tightened intersection>=4 and overlap>=0.45 thresholds,
+        merge_clusters should NOT union these stories even if ES MLT hands
+        them over as a semantic cluster."""
+        stories = self._scientific_stories()
+        story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+        story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
+
+        # Simulate ES more_like_this returning all three as a semantic match
+        semantic_clusters = {"11:a": ["11:a", "22:b", "33:c"]}
+
+        merged = merge_clusters(
+            {},  # no Tier 1 clusters — Tier 1 already rejected them above
+            semantic_clusters,
+            story_feed_map=story_feed_map,
+            story_title_map=story_title_map,
+        )
+
+        # No cluster should survive validation with the tightened floors.
+        for members in merged.values():
+            clustered_together = [h for h in ("11:a", "22:b", "33:c") if h in members]
+            self.assertLess(
+                len(clustered_together),
+                2,
+                "Tightened Tier 2 validation should reject single-cell false positives",
+            )
+
+    def test_semantic_thresholds_reflect_real_world(self):
+        """Pairwise overlap coefficients for the reported cluster should all
+        fall below SEMANTIC_MIN_OVERLAP_COEF. This pins the constant to the
+        behavior we actually want."""
+        stories = self._scientific_stories()
+        worst_coef = 0.0
+        for i in range(len(stories)):
+            for j in range(i + 1, len(stories)):
+                wa = title_significant_words(stories[i]["story_title"])
+                wb = title_significant_words(stories[j]["story_title"])
+                smaller = min(len(wa), len(wb))
+                if smaller:
+                    worst_coef = max(worst_coef, len(wa & wb) / smaller)
+        self.assertLess(worst_coef, SEMANTIC_MIN_OVERLAP_COEF)
+
+
+class Test_ClusterModePrefixes(TestCase):
+    def test_title_mode_uses_title_namespace(self):
+        key_prefix, zkey_prefix = cluster_mode_prefixes(CLUSTER_TIER_TITLE)
+        self.assertEqual(key_prefix, "sCLt")
+        self.assertEqual(zkey_prefix, "zCLt")
+
+    def test_related_mode_uses_merged_namespace(self):
+        key_prefix, zkey_prefix = cluster_mode_prefixes(CLUSTER_TIER_RELATED)
+        self.assertEqual(key_prefix, "sCL")
+        self.assertEqual(zkey_prefix, "zCL")
+
+    def test_unknown_mode_falls_back_to_related(self):
+        """Unrecognized/missing modes should default to the merged namespace
+        so the feature degrades gracefully when the preference is absent."""
+        key_prefix, zkey_prefix = cluster_mode_prefixes(None)
+        self.assertEqual(key_prefix, "sCL")
+        self.assertEqual(zkey_prefix, "zCL")
+
+    def test_tier_from_score(self):
+        self.assertEqual(tier_from_score(1), CLUSTER_TIER_TITLE)
+        self.assertEqual(tier_from_score(2), CLUSTER_TIER_RELATED)
+        # Legacy entries written before tier scoring get score 0; they should
+        # read back as related (the safer default).
+        self.assertEqual(tier_from_score(0), CLUSTER_TIER_RELATED)
 
 
 class Test_FeedTitleStripping(TestCase):

@@ -60,7 +60,13 @@ def ComputeStoryClusters(feed_id):
 def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_primary):
     """Inner clustering logic, separated so SoftTimeLimitExceeded is caught cleanly."""
     from apps.clustering.models import (
+        CLUSTER_KEY_PREFIX_RELATED,
+        CLUSTER_KEY_PREFIX_TITLE,
         CLUSTER_LOOKBACK_HOURS,
+        CLUSTER_TIER_RELATED_SCORE,
+        CLUSTER_TIER_TITLE_SCORE,
+        CLUSTER_ZKEY_PREFIX_RELATED,
+        CLUSTER_ZKEY_PREFIX_TITLE,
         find_semantic_clusters,
         find_title_clusters,
         merge_clusters,
@@ -127,17 +133,34 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
     # Check which candidates are already clustered so we can:
     # 1. Skip them from the expensive clustering algorithms
     # 2. Merge new stories into their existing clusters when matched
-    candidate_cluster_map = {}
+    #
+    # Two cluster universes live in Redis now: sCL: (title+related merged,
+    # used by the default read path) and sCLt: (title-only, read when the
+    # user picks "Title only" cluster mode). Build candidate maps for both
+    # so each namespace can merge into its own existing clusters.
+    candidate_cluster_map_related = {}
+    candidate_cluster_map_title = {}
     candidate_list = list(candidate_hashes)
     for batch_start in range(0, len(candidate_list), 500):
         batch = candidate_list[batch_start : batch_start + 500]
         pipe = r_replica.pipeline()
         for h in batch:
-            pipe.get("sCL:%s" % h)
+            pipe.get("%s:%s" % (CLUSTER_KEY_PREFIX_RELATED, h))
+            pipe.get("%s:%s" % (CLUSTER_KEY_PREFIX_TITLE, h))
         results = pipe.execute()
-        for h, cid in zip(batch, results):
-            if cid:
-                candidate_cluster_map[h] = cid if isinstance(cid, str) else cid.decode()
+        for idx, h in enumerate(batch):
+            cid_r = results[2 * idx]
+            cid_t = results[2 * idx + 1]
+            if cid_r:
+                candidate_cluster_map_related[h] = cid_r if isinstance(cid_r, str) else cid_r.decode()
+            if cid_t:
+                candidate_cluster_map_title[h] = cid_t if isinstance(cid_t, str) else cid_t.decode()
+
+    # Any candidate already grouped in the merged namespace is considered
+    # "clustered" for the purposes of skipping expensive recomputation. The
+    # merged namespace is a superset of the title-only namespace by construction
+    # (merge_clusters always unions the title clusters), so this is sufficient.
+    candidate_cluster_map = candidate_cluster_map_related
 
     # Split candidates into unclustered (for full comparison) and
     # already-clustered (only used for joining new stories to existing clusters)
@@ -252,10 +275,43 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
             story_title_map=story_title_map,
             feed_title_map=feed_title_map,
         )
+
+        # Persist the title-only clusters to the sCLt:/zCLt: namespace so
+        # users on "Title only" mode see clean duplicate-only clusters.
+        # Every member here is a Tier 1 match by definition, so score them
+        # all as title.
+        if title_clusters:
+            title_member_tiers = {}
+            for members in title_clusters.values():
+                for h in members:
+                    title_member_tiers[h] = CLUSTER_TIER_TITLE_SCORE
+            store_clusters_to_redis(
+                title_clusters,
+                candidate_cluster_map=candidate_cluster_map_title,
+                story_title_map=story_title_map,
+                key_prefix=CLUSTER_KEY_PREFIX_TITLE,
+                zkey_prefix=CLUSTER_ZKEY_PREFIX_TITLE,
+                member_tiers=title_member_tiers,
+            )
+
+        # Persist the merged clusters to the sCL:/zCL: namespace (default).
+        # Tag each member with its tier provenance: any member that appeared
+        # in a title cluster gets tier 1, everything else is tier 2 (related).
+        title_member_hashes = set()
+        for members in title_clusters.values():
+            for h in members:
+                title_member_hashes.add(h)
+        merged_member_tiers = {}
+        for members in combined.values():
+            for h in members:
+                merged_member_tiers[h] = (
+                    CLUSTER_TIER_TITLE_SCORE if h in title_member_hashes else CLUSTER_TIER_RELATED_SCORE
+                )
         store_clusters_to_redis(
             combined,
-            candidate_cluster_map=candidate_cluster_map,
+            candidate_cluster_map=candidate_cluster_map_related,
             story_title_map=story_title_map,
+            member_tiers=merged_member_tiers,
         )
         logging.debug(
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
