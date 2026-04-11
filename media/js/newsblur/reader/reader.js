@@ -70,7 +70,13 @@
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
                 'sidebar_closed': this.options.hide_sidebar,
-                'splash_page_frontmost': true
+                'splash_page_frontmost': true,
+                // media/js/newsblur/reader/reader.js — classifier_filter powers
+                // the "browse stories with this classifier" banner. Shape:
+                //   { type, value, scope, folder_name, origin }
+                // Set via open_classifier_filter(); cleared by
+                // close_classifier_filter() and on navigation via reset_feed().
+                'classifier_filter': null
             };
             this.locks = {};
             this.counts = {
@@ -175,6 +181,37 @@
             this.load_delayed_stylesheets();
             this.load_theme();
             this.setup_read_time_tracker();
+            this.setup_classifier_filter_popstate();
+        },
+
+        // media/js/newsblur/reader/reader.js — listens for browser
+        // back/forward between filtered and unfiltered views of the same
+        // feed. Backbone's router only fires when the path changes, so
+        // toggling a query-string-only difference (classifier_type) would
+        // otherwise leave the UI out of sync with the URL.
+        setup_classifier_filter_popstate: function () {
+            var self = this;
+            window.addEventListener('popstate', function () {
+                var parsed = self.read_classifier_filter_from_url();
+                var current = self.flags['classifier_filter'];
+
+                if (parsed) {
+                    // Skip if we're already showing the same filter.
+                    if (current && current.type === parsed.type && current.value === parsed.value &&
+                        (current.scope || 'feed') === parsed.scope &&
+                        (current.folder_name || '') === parsed.folder_name) {
+                        return;
+                    }
+                    self.open_classifier_filter(parsed.type, parsed.value, {
+                        scope: parsed.scope,
+                        folder_name: parsed.folder_name || null,
+                        origin: 'url',
+                        from_router: true
+                    });
+                } else if (current) {
+                    self.close_classifier_filter({ from_router: true });
+                }
+            });
         },
 
         // ========
@@ -1477,6 +1514,19 @@
                 this.flags.search = "";
                 this.flags.searching = false;
             }
+            // Clear classifier filter on navigation unless the caller is
+            // re-entering the same filter view (open_classifier_filter sets
+            // options.classifier_filter so the flag survives reset_feed).
+            // Drop the banner view reference too — otherwise the next
+            // open_classifier_filter sees a stale view instance and calls
+            // update() on a $el that has already been removed from the DOM.
+            if (_.isUndefined(options.classifier_filter)) {
+                if (NEWSBLUR.app.classifier_filter_banner_view) {
+                    NEWSBLUR.app.classifier_filter_banner_view.hide_banner();
+                    NEWSBLUR.app.classifier_filter_banner_view = null;
+                }
+                this.flags['classifier_filter'] = null;
+            }
             if (_.isUndefined(options.date_filter_start) && _.isUndefined(options.date_filter_end)) {
                 this.flags.date_filter_start = null;
                 this.flags.date_filter_end = null;
@@ -1576,6 +1626,166 @@
             NEWSBLUR.app.original_tab_view.unload_feed_iframe();
             NEWSBLUR.app.story_tab_view.unload_story_iframe();
             NEWSBLUR.app.text_tab_view.unload();
+        },
+
+        // ==========================
+        // = Classifier Filter View =
+        // ==========================
+
+        // media/js/newsblur/reader/reader.js
+        // Enter classifier filter view for a single classifier value. The
+        // current feed/folder/river stays mounted; we simply flip the flag
+        // and reload_feed re-fetches through the classifier-aware backend
+        // branch in apps/reader/views.py. The banner view is rendered
+        // lazily and stuck above the story titles.
+        //
+        // type:    one of tag | author | title | url | text
+        // value:   the classifier's value (e.g. the tag name, author name, ...)
+        // opts:    { scope, folder_name, origin }
+        //   scope    - feed (default), folder, or global (archive only)
+        //   folder_name - only meaningful when scope='folder'
+        //   origin   - 'trainer' (from the trainer dialog) or 'pill' (from a
+        //              tag/author/url chip). Used to decide whether the
+        //              banner shows the "Back to trainer" return link.
+        open_classifier_filter: function (type, value, opts) {
+            opts = opts || {};
+            if (!type || !value) return;
+            if (!_.contains(['tag', 'author', 'title', 'url', 'text'], type)) return;
+
+            var scope = opts.scope || 'feed';
+            if (scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
+                scope = 'feed';
+            }
+
+            this.flags['classifier_filter'] = {
+                type: type,
+                value: value,
+                scope: scope,
+                folder_name: opts.folder_name || null,
+                origin: opts.origin || 'pill'
+            };
+
+            // Reflect the filter in the URL so back/forward and page reloads
+            // land the user right back in this filter view. We push a new
+            // history entry unless this is itself a router-driven open, in
+            // which case the URL is already correct.
+            if (!opts.from_router) {
+                this._push_classifier_filter_url();
+            }
+
+            // reload_feed respects the flag via assetmodel's fetch_river_stories
+            // / load_feed. Pass classifier_filter in options so reset_feed
+            // won't clear it mid-flight.
+            this.reload_feed({ classifier_filter: this.flags['classifier_filter'] });
+
+            // Show the banner after the story list starts loading. The banner
+            // is a singleton kept on NEWSBLUR.app so subsequent calls replace
+            // it in-place rather than stacking.
+            if (NEWSBLUR.Views.ClassifierFilterBannerView) {
+                if (NEWSBLUR.app.classifier_filter_banner_view) {
+                    NEWSBLUR.app.classifier_filter_banner_view.update(this.flags['classifier_filter']);
+                } else {
+                    NEWSBLUR.app.classifier_filter_banner_view = new NEWSBLUR.Views.ClassifierFilterBannerView({
+                        filter: this.flags['classifier_filter']
+                    });
+                    NEWSBLUR.app.classifier_filter_banner_view.show_banner();
+                }
+            }
+        },
+
+        // Exit classifier filter view, returning the story list to its
+        // natural state (feed/folder/river).
+        close_classifier_filter: function (opts) {
+            opts = opts || {};
+            this.flags['classifier_filter'] = null;
+            if (NEWSBLUR.app.classifier_filter_banner_view) {
+                NEWSBLUR.app.classifier_filter_banner_view.hide_banner();
+                NEWSBLUR.app.classifier_filter_banner_view = null;
+            }
+            if (!opts.from_router) {
+                this._clear_classifier_filter_url();
+            }
+            this.reload_feed();
+        },
+
+        // media/js/newsblur/reader/reader.js — writes the current
+        // classifier_filter flag into the URL query string so the view is
+        // bookmarkable and survives a reload. Uses pushState so the back
+        // button returns the user to the unfiltered feed. The router's
+        // site/folder/starred handlers inspect these params on load and
+        // auto-open the filter via open_classifier_filter({from_router: true}).
+        //
+        // URL shape: ?classifier_<type>=<value> — one key per classifier
+        // kind (classifier_tag, classifier_author, classifier_title,
+        // classifier_url, classifier_text). Scope and folder ride along
+        // as classifier_scope / classifier_folder when they aren't the
+        // default "feed" scope.
+        _push_classifier_filter_url: function () {
+            if (!window.history || !window.history.pushState) return;
+            var cf = this.flags['classifier_filter'];
+            if (!cf) return;
+            var url = window.location.pathname + window.location.search;
+            url = this._strip_classifier_filter_params(url);
+            url = $.updateQueryString('classifier_' + cf.type, encodeURIComponent(cf.value), url);
+            if (cf.scope && cf.scope !== 'feed') {
+                url = $.updateQueryString('classifier_scope', cf.scope, url);
+            }
+            if (cf.folder_name) {
+                url = $.updateQueryString('classifier_folder', encodeURIComponent(cf.folder_name), url);
+            }
+            window.history.pushState({}, "", url);
+        },
+
+        _clear_classifier_filter_url: function () {
+            if (!window.history || !window.history.replaceState) return;
+            var url = window.location.pathname + window.location.search;
+            url = this._strip_classifier_filter_params(url);
+            window.history.replaceState({}, "", url);
+        },
+
+        // Strip every classifier_* param from a URL. Shared by push/clear
+        // so we never leave a stale classifier_tag hanging around when the
+        // user switches to a classifier_author, or vice versa.
+        _strip_classifier_filter_params: function (url) {
+            var keys = ['classifier_tag', 'classifier_author', 'classifier_title',
+                        'classifier_url', 'classifier_text',
+                        'classifier_scope', 'classifier_folder'];
+            _.each(keys, function (k) {
+                url = $.updateQueryString(k, null, url);
+            });
+            return url;
+        },
+
+        // Read classifier_* params from the current query string and return
+        // the canonical filter object, or null if no filter is active. One
+        // key per classifier type: classifier_tag, classifier_author,
+        // classifier_title, classifier_url, classifier_text.
+        read_classifier_filter_from_url: function () {
+            var types = ['tag', 'author', 'title', 'url', 'text'];
+            var found_type = null;
+            var found_value = null;
+            for (var i = 0; i < types.length; i++) {
+                var raw = $.getQueryString('classifier_' + types[i]);
+                if (raw) {
+                    found_type = types[i];
+                    try { found_value = decodeURIComponent(raw); } catch (e) { found_value = raw; }
+                    break;
+                }
+            }
+            if (!found_type || !found_value) return null;
+
+            var scope = $.getQueryString('classifier_scope') || 'feed';
+            var raw_folder = $.getQueryString('classifier_folder') || '';
+            var folder_name = '';
+            if (raw_folder) {
+                try { folder_name = decodeURIComponent(raw_folder); } catch (e) { folder_name = raw_folder; }
+            }
+            return {
+                type: found_type,
+                value: found_value,
+                scope: scope,
+                folder_name: folder_name
+            };
         },
 
         reload_feed: function (options) {
@@ -6502,6 +6712,11 @@
         },
 
         get_unread_view_score: function (ignore_temp) {
+            // Classifier filter view always shows every matching story,
+            // including ones trained to dislike/super-dislike. The
+            // intelligence indicator still flips on each row so the user
+            // can tell what they trained, but the stories don't vanish.
+            if (this.flags['classifier_filter']) return -2;
             if (this.flags['feed_list_showing_starred']) return -1;
             if (this.flags['unread_threshold_temporarily'] && !ignore_temp) {
                 var score_name = this.flags['unread_threshold_temporarily'];

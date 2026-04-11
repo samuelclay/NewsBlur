@@ -267,6 +267,63 @@ def normalize_date_filters(date_filter_start, date_filter_end, user_timezone):
     return start_utc, end_utc_exclusive, end_utc_start_of_day
 
 
+# apps/reader/views.py — "dumb" post-query filter for the classifier filter
+# banner view. Accepts a list of already-loaded story dicts (from the normal
+# feed / river / folder loading path) and returns only the ones that match
+# the single requested classifier value. Mirrors the match semantics used
+# by apps/analyzer/models.py's apply_classifier_* helpers so the banner
+# finds the same stories a trained classifier would hit.
+#
+# The point of doing this post-query (instead of with a dedicated ES index
+# or Mongo query) is simplicity: most users don't have ES populated for
+# their feeds at all, and pagination through normal unread/all loads
+# already pulls reasonable batches. Users who scroll far enough into a
+# rare classifier value can keep paginating — we accept that some pages
+# may return fewer than `limit` stories.
+CLASSIFIER_FILTER_TYPES = ("tag", "author", "title", "url", "text")
+# How many stories to scan per page when a classifier filter is active.
+# The regular pagination fetches `limit` stories; this multiplier loads a
+# much larger batch so post-filtering has a good chance of finding every
+# matching story the unread counts say exists, without adding a dedicated
+# index. "It can be dumb" per the product brief.
+CLASSIFIER_FILTER_SCAN_MULTIPLIER = 20
+
+
+def normalize_classifier_filter_params(type_value, raw_value, scope_value):
+    classifier_type = (type_value or "").strip() or None
+    classifier_value = (raw_value or "").strip() or None
+    if classifier_type and classifier_type not in CLASSIFIER_FILTER_TYPES:
+        classifier_type = None
+        classifier_value = None
+    scope = (scope_value or "feed").strip() or "feed"
+    if scope not in ("feed", "folder", "global"):
+        scope = "feed"
+    return classifier_type, classifier_value, scope
+
+
+def filter_stories_by_classifier(stories, classifier_type, classifier_value):
+    if not stories or not classifier_type or not classifier_value:
+        return stories
+
+    needle_lower = classifier_value.lower()
+
+    def matches(story):
+        if classifier_type == "tag":
+            return classifier_value in (story.get("story_tags") or [])
+        if classifier_type == "author":
+            return story.get("story_authors") == classifier_value
+        if classifier_type == "title":
+            return needle_lower in (story.get("story_title") or "").lower()
+        if classifier_type == "url":
+            return needle_lower in (story.get("story_permalink") or "").lower()
+        if classifier_type == "text":
+            content = story.get("story_content") or ""
+            return needle_lower in strip_tags(content).lower()
+        return False
+
+    return [story for story in stories if matches(story)]
+
+
 @never_cache
 @render_to("reader/dashboard.xhtml")
 def index(request, **kwargs):
@@ -281,7 +338,9 @@ def index(request, **kwargs):
         if user:
             user = user[0]
         if not user:
-            return HttpResponseRedirect("https://%s%s" % (Site.objects.get_current().domain, reverse("index")))
+            return HttpResponseRedirect(
+                "https://%s%s" % (Site.objects.get_current().domain, reverse("index"))
+            )
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
     if request.user.is_anonymous:
         return welcome(request, **kwargs)
@@ -1076,7 +1135,17 @@ def load_single_feed(request, feed_id):
     limit = 6
     page = int(request.GET.get("page", 1))
     delay = int(request.GET.get("delay", 0))
-    offset = limit * (page - 1)
+    # When classifier_filter_* is set, inflate the page size so the
+    # post-query filter has a real shot at finding every match. We
+    # return whatever survives the filter (may be more or fewer than
+    # `limit`). Offset scales with the inflated page so successive
+    # pages don't re-scan the same stories.
+    classifier_filter_active = bool(
+        (request.GET.get("classifier_filter_type") or "").strip()
+        and (request.GET.get("classifier_filter_value") or "").strip()
+    )
+    effective_limit = limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER if classifier_filter_active else limit
+    offset = effective_limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
     date_filter_start = request.GET.get("date_filter_start")
@@ -1091,6 +1160,16 @@ def load_single_feed(request, feed_id):
         date_filter_start = None
         date_filter_end = None
     query = request.GET.get("query", "").strip()
+    # apps/reader/views.py — classifier filter view parameters on the single-feed
+    # endpoint. Stories are still loaded through the normal feed/usersub path;
+    # the filter is applied post-query in filter_stories_by_classifier below.
+    classifier_filter_type, classifier_filter_value, _classifier_filter_scope = (
+        normalize_classifier_filter_params(
+            request.GET.get("classifier_filter_type"),
+            request.GET.get("classifier_filter_value"),
+            request.GET.get("classifier_filter_scope"),
+        )
+    )
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
     include_feeds = is_true(request.GET.get("include_feeds", False))
@@ -1184,14 +1263,14 @@ def load_single_feed(request, feed_id):
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + limit]
+            )[offset : offset + effective_limit]
             stories = Feed.format_stories(mstories)
         elif usersub and read_filter == "unread":
             stories = usersub.get_stories(
                 order=order,
                 read_filter=read_filter,
                 offset=offset,
-                limit=limit,
+                limit=effective_limit,
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
@@ -1200,11 +1279,18 @@ def load_single_feed(request, feed_id):
         else:
             stories = feed.get_stories(
                 offset,
-                limit,
+                effective_limit,
                 order=order,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
+
+    # Classifier filter banner view: keep only stories that match the
+    # requested classifier. Deliberately post-query so we don't need a
+    # dedicated index — the trade-off is smaller pages, which is fine
+    # for a browsing surface.
+    if classifier_filter_type and classifier_filter_value:
+        stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
 
@@ -1391,7 +1477,9 @@ def load_single_feed(request, feed_id):
                     shared_stories[story["story_hash"]]["shared_date"], user.profile.timezone
                 )
                 story["shared_date"] = format_story_link_date__long(shared_date, now)
-                story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+                story["shared_comments"] = strip_tags_preserve_blockquote(
+                    shared_stories[story["story_hash"]]["comments"]
+                )
         else:
             story["read_status"] = 1
 
@@ -1830,7 +1918,9 @@ def load_starred_stories(request):
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading starred stories: ~SB%s stories %s" % (len(stories), search_log))
@@ -2233,9 +2323,7 @@ def load_read_stories(request):
             if not search_feed_ids:
                 usersubs = UserSubscription.objects.filter(user__pk=user.pk).only("feed")
                 search_feed_ids = [sub.feed_id for sub in usersubs]
-            search_stories = Feed.find_feed_stories(
-                search_feed_ids, query, order=order, offset=0, limit=200
-            )
+            search_stories = Feed.find_feed_stories(search_feed_ids, query, order=order, offset=0, limit=200)
             # Intersect search results with read story hashes
             read_story_hashes_set = set(
                 RUserStory.get_read_stories(user.pk, offset=0, limit=1000, order=order)
@@ -2318,7 +2406,9 @@ def load_read_stories(request):
             story["starred_timestamp"] = int(starred_date.timestamp())
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading read stories: ~SB%s stories %s" % (len(stories), search_log))
@@ -2435,6 +2525,22 @@ def load_river_stories__redis(request):
         date_filter_end = None
 
     query = get_post.get("query", "").strip()
+    # apps/reader/views.py — classifier filter view parameters. Stories are
+    # loaded through the normal river/folder path; filter_stories_by_classifier
+    # below narrows the result set to only stories matching the classifier.
+    # Powers the "browse stories with this classifier" banner in the web
+    # reader.
+    classifier_filter_type, classifier_filter_value, classifier_filter_scope = (
+        normalize_classifier_filter_params(
+            get_post.get("classifier_filter_type"),
+            get_post.get("classifier_filter_value"),
+            get_post.get("classifier_filter_scope"),
+        )
+    )
+    # Folder/global scopes are a Premium Archive feature (mirrors classifier
+    # scoping in apps/analyzer/models.py). Silently coerce anyone else.
+    if classifier_filter_scope != "feed" and not (user.is_authenticated and user.profile.is_archive):
+        classifier_filter_scope = "feed"
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
@@ -2505,7 +2611,16 @@ def load_river_stories__redis(request):
     usersubs = []
     code = 0 if is_free_river_user else 1
     user_search = None
-    offset = (page - 1) * limit
+    # Inflate the batch size when a classifier filter is active so the
+    # post-query filter has enough raw stories to actually find matches.
+    # Offset is in the same inflated units so successive pages don't
+    # re-scan the same window.
+    effective_limit = (
+        limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER
+        if (classifier_filter_type and classifier_filter_value)
+        else limit
+    )
+    offset = (page - 1) * effective_limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
 
     # Android app duplicate request deduplication - only kicks in when concurrent requests detected
@@ -2577,7 +2692,7 @@ def load_river_stories__redis(request):
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + limit]
+            )[offset : offset + effective_limit]
             stories = Feed.format_stories(mstories)
             unread_feed_story_hashes = None
         else:
@@ -2591,7 +2706,7 @@ def load_river_stories__redis(request):
                     "user_id": user.pk,
                     "feed_ids": feed_ids,
                     "offset": offset,
-                    "limit": limit,
+                    "limit": effective_limit,
                     "order": order,
                     "read_filter": read_filter,
                     "usersubs": usersubs,
@@ -2614,7 +2729,7 @@ def load_river_stories__redis(request):
                     story_hashes,
                     unread_feed_story_hashes,
                     story_date_order,
-                    limit,
+                    effective_limit,
                     fetch_more=fetch_more_story_hashes,
                 )
             else:
@@ -2623,6 +2738,13 @@ def load_river_stories__redis(request):
                 mstories = []
 
             stories = Feed.format_stories(mstories)
+
+    # Classifier filter banner view: trim the story list down to ones that
+    # match the requested classifier value. See filter_stories_by_classifier
+    # at the top of this module — the filter is intentionally post-query so
+    # no dedicated index is required.
+    if classifier_filter_type and classifier_filter_value:
+        stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
@@ -5526,7 +5648,9 @@ def load_trending_stories(request):
         results = pipe.execute()
         read_hashes = {s["story_hash"] for s, is_read in zip(stories, results) if is_read}
 
-    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk if user.is_authenticated else 0, check_all=True)
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(
+        stories, user.pk if user.is_authenticated else 0, check_all=True
+    )
 
     # Get feed metadata for stories
     story_feed_ids = list(set(s["story_feed_id"] for s in stories))
@@ -5613,17 +5737,15 @@ def load_trending_stories(request):
         starred_stories = dict(
             [
                 (story.story_hash, story)
-                for story in MStarredStory.objects(
-                    user_id=user.pk, story_hash__in=story_hash_list
-                ).hint([("user_id", 1), ("story_hash", 1)])
+                for story in MStarredStory.objects(user_id=user.pk, story_hash__in=story_hash_list).hint(
+                    [("user_id", 1), ("story_hash", 1)]
+                )
             ]
         )
         shared_stories = dict(
             [
                 (story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
-                for story in MSharedStory.objects(
-                    user_id=user.pk, story_hash__in=story_hash_list
-                )
+                for story in MSharedStory.objects(user_id=user.pk, story_hash__in=story_hash_list)
                 .hint([("story_hash", 1)])
                 .only("story_hash", "shared_date", "comments")
             ]
