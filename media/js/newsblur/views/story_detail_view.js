@@ -610,6 +610,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var $container = $('<div class="NB-story-cluster-detail"></div>');
         var is_archive = NEWSBLUR.Globals.is_archive;
+        // story_detail_view.js: Sort siblings newest-first so the detail
+        // cluster matches the order shown in the compact story-title cluster
+        // sources list (which also sorts by -story_timestamp).
+        stories = _.sortBy(stories, function (cs) {
+            return -parseInt(cs.story_timestamp, 10);
+        });
         var visible_stories = is_archive ? stories : stories.slice(0, 1);
         var hidden_count = stories.length - visible_stories.length;
 
