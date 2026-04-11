@@ -1,7 +1,7 @@
 """Notification management tools."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
+from newsblur_mcp.server import get_client, mcp
 
 
 async def _manage_notifications(

@@ -218,7 +218,14 @@ def load_briefing_stories(request):
         logging.user(
             request,
             "~FCLoading ~SB%s~SN briefing%s (~SB%s~SN, ~SB%s~SN stories, ~SB%s~SN model, page %s)"
-            % (len(briefing_list), "s" if len(briefing_list) != 1 else "", frequency, total_stories, model, page),
+            % (
+                len(briefing_list),
+                "s" if len(briefing_list) != 1 else "",
+                frequency,
+                total_stories,
+                model,
+                page,
+            ),
         )
 
     result = {

@@ -59,7 +59,12 @@ from utils import s3_utils
 from utils.feed_functions import chunks, relative_timesince
 from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
-from utils.story_functions import linkify, strip_tags, strip_tags_preserve_blockquote, truncate_chars
+from utils.story_functions import (
+    linkify,
+    strip_tags,
+    strip_tags_preserve_blockquote,
+    truncate_chars,
+)
 from vendor import facebook
 
 try:

@@ -1504,7 +1504,9 @@ class Test_Views(BriefingTestCase):
         mock_pipe.execute.return_value = [False]
 
         story = self.make_story(self.feed, "Briefing Summary", content="<div>Summary content</div>")
-        self.make_briefing(summary_story_hash=story.story_hash, curated_hashes=[story.story_hash], slot="evening")
+        self.make_briefing(
+            summary_story_hash=story.story_hash, curated_hashes=[story.story_hash], slot="evening"
+        )
 
         response = self.client.get(reverse("load-briefing-stories"))
         data = json.decode(response.content)

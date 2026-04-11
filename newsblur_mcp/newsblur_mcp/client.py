@@ -6,7 +6,11 @@ Checks premium status and gates access for free users.
 
 import httpx
 
-from newsblur_mcp.settings import NEWSBLUR_BASE_URL, NEWSBLUR_PUBLIC_URL, REQUEST_TIMEOUT
+from newsblur_mcp.settings import (
+    NEWSBLUR_BASE_URL,
+    NEWSBLUR_PUBLIC_URL,
+    REQUEST_TIMEOUT,
+)
 
 
 class ArchiveRequiredError(Exception):
@@ -31,6 +35,7 @@ class NewsBlurClient:
     @staticmethod
     def _is_local(url: str) -> bool:
         from urllib.parse import urlparse
+
         return urlparse(url).hostname in {"localhost", "127.0.0.1", "::1"}
 
     async def close(self):
@@ -69,10 +74,14 @@ class NewsBlurClient:
         # Cache to disk for 24 hours
         try:
             cache_path.parent.mkdir(parents=True, exist_ok=True)
-            cache_path.write_text(_json.dumps({
-                "is_premium_archive": self._is_archive,
-                "expires_at": time.time() + 86400,
-            }))
+            cache_path.write_text(
+                _json.dumps(
+                    {
+                        "is_premium_archive": self._is_archive,
+                        "expires_at": time.time() + 86400,
+                    }
+                )
+            )
         except OSError:
             pass
 
@@ -102,10 +111,14 @@ class NewsBlurClient:
 
         try:
             cache_path.parent.mkdir(parents=True, exist_ok=True)
-            cache_path.write_text(_json.dumps({
-                "data": self._feeds_cache,
-                "expires_at": time.time() + 3600,
-            }))
+            cache_path.write_text(
+                _json.dumps(
+                    {
+                        "data": self._feeds_cache,
+                        "expires_at": time.time() + 3600,
+                    }
+                )
+            )
         except OSError:
             pass
 

@@ -21,12 +21,8 @@ app = typer.Typer(context_settings=CONTEXT_SETTINGS)
 async def stories_list(
     ctx: typer.Context,
     folder: Optional[str] = typer.Option(None, "--folder", "-f", help="Load stories from this folder"),
-    feed: Optional[str] = typer.Option(
-        None, "--feed", help="Comma-separated feed IDs to load stories from"
-    ),
-    filter: str = typer.Option(
-        "unread", "--filter", help="Read filter: unread, all, focus, or starred"
-    ),
+    feed: Optional[str] = typer.Option(None, "--feed", help="Comma-separated feed IDs to load stories from"),
+    filter: str = typer.Option("unread", "--filter", help="Read filter: unread, all, focus, or starred"),
     order: str = typer.Option("newest", "--order", "-o", help="Sort order: newest or oldest"),
     page: int = typer.Option(1, "--page", "-p", help="Page number"),
     limit: int = typer.Option(12, "--limit", "-l", help="Stories per page (max 50)"),
@@ -87,9 +83,7 @@ async def stories_search(
     ctx: typer.Context,
     query: str = typer.Argument(..., help="Search query"),
     folder: Optional[str] = typer.Option(None, "--folder", "-f", help="Limit search to this folder"),
-    feed: Optional[str] = typer.Option(
-        None, "--feed", help="Comma-separated feed IDs to search within"
-    ),
+    feed: Optional[str] = typer.Option(None, "--feed", help="Comma-separated feed IDs to search within"),
     page: int = typer.Option(1, "--page", "-p", help="Page number"),
     limit: int = typer.Option(12, "--limit", "-l", help="Results per page (max 50)"),
 ):
@@ -116,9 +110,7 @@ async def stories_search(
 @async_command
 async def stories_infrequent(
     ctx: typer.Context,
-    threshold: int = typer.Option(
-        30, "--threshold", "-t", help="Max stories/month for a feed to qualify"
-    ),
+    threshold: int = typer.Option(30, "--threshold", "-t", help="Max stories/month for a feed to qualify"),
     order: str = typer.Option("newest", "--order", "-o", help="Sort order: newest or oldest"),
     page: int = typer.Option(1, "--page", "-p", help="Page number"),
     limit: int = typer.Option(12, "--limit", "-l", help="Stories per page (max 50)"),

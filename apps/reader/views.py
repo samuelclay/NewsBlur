@@ -281,7 +281,9 @@ def index(request, **kwargs):
         if user:
             user = user[0]
         if not user:
-            return HttpResponseRedirect("https://%s%s" % (Site.objects.get_current().domain, reverse("index")))
+            return HttpResponseRedirect(
+                "https://%s%s" % (Site.objects.get_current().domain, reverse("index"))
+            )
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
     if request.user.is_anonymous:
         return welcome(request, **kwargs)
@@ -1391,7 +1393,9 @@ def load_single_feed(request, feed_id):
                     shared_stories[story["story_hash"]]["shared_date"], user.profile.timezone
                 )
                 story["shared_date"] = format_story_link_date__long(shared_date, now)
-                story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+                story["shared_comments"] = strip_tags_preserve_blockquote(
+                    shared_stories[story["story_hash"]]["comments"]
+                )
         else:
             story["read_status"] = 1
 
@@ -1830,7 +1834,9 @@ def load_starred_stories(request):
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading starred stories: ~SB%s stories %s" % (len(stories), search_log))
@@ -2233,9 +2239,7 @@ def load_read_stories(request):
             if not search_feed_ids:
                 usersubs = UserSubscription.objects.filter(user__pk=user.pk).only("feed")
                 search_feed_ids = [sub.feed_id for sub in usersubs]
-            search_stories = Feed.find_feed_stories(
-                search_feed_ids, query, order=order, offset=0, limit=200
-            )
+            search_stories = Feed.find_feed_stories(search_feed_ids, query, order=order, offset=0, limit=200)
             # Intersect search results with read story hashes
             read_story_hashes_set = set(
                 RUserStory.get_read_stories(user.pk, offset=0, limit=1000, order=order)
@@ -2318,7 +2322,9 @@ def load_read_stories(request):
             story["starred_timestamp"] = int(starred_date.timestamp())
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(request, "~FCLoading read stories: ~SB%s stories %s" % (len(stories), search_log))
@@ -5526,7 +5532,9 @@ def load_trending_stories(request):
         results = pipe.execute()
         read_hashes = {s["story_hash"] for s, is_read in zip(stories, results) if is_read}
 
-    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk if user.is_authenticated else 0, check_all=True)
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(
+        stories, user.pk if user.is_authenticated else 0, check_all=True
+    )
 
     # Get feed metadata for stories
     story_feed_ids = list(set(s["story_feed_id"] for s in stories))
@@ -5613,17 +5621,15 @@ def load_trending_stories(request):
         starred_stories = dict(
             [
                 (story.story_hash, story)
-                for story in MStarredStory.objects(
-                    user_id=user.pk, story_hash__in=story_hash_list
-                ).hint([("user_id", 1), ("story_hash", 1)])
+                for story in MStarredStory.objects(user_id=user.pk, story_hash__in=story_hash_list).hint(
+                    [("user_id", 1), ("story_hash", 1)]
+                )
             ]
         )
         shared_stories = dict(
             [
                 (story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
-                for story in MSharedStory.objects(
-                    user_id=user.pk, story_hash__in=story_hash_list
-                )
+                for story in MSharedStory.objects(user_id=user.pk, story_hash__in=story_hash_list)
                 .hint([("story_hash", 1)])
                 .only("story_hash", "shared_date", "comments")
             ]

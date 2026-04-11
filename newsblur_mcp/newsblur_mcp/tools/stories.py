@@ -1,9 +1,9 @@
 """Story loading and search tools."""
 
 from newsblur_mcp.client import NewsBlurClient
-from newsblur_mcp.server import mcp, get_client
-from newsblur_mcp.transforms import transform_story, paginate, html_to_text
+from newsblur_mcp.server import get_client, mcp
 from newsblur_mcp.settings import DEFAULT_STORIES_PER_PAGE, MAX_STORIES_PER_PAGE
+from newsblur_mcp.transforms import html_to_text, paginate, transform_story
 
 
 async def _get_stories(
@@ -79,7 +79,9 @@ async def newsblur_get_stories(
     """
     client = get_client()
     try:
-        return await _get_stories(client, feed_ids, folder, read_filter, include_hidden, query, order, page, limit)
+        return await _get_stories(
+            client, feed_ids, folder, read_filter, include_hidden, query, order, page, limit
+        )
     finally:
         await client.close()
 
@@ -206,8 +208,15 @@ async def newsblur_get_read_stories(
     client = get_client()
     try:
         return await _get_read_stories(
-            client, feed_ids, folder, query, order, page, limit,
-            date_filter_start, date_filter_end,
+            client,
+            feed_ids,
+            folder,
+            query,
+            order,
+            page,
+            limit,
+            date_filter_start,
+            date_filter_end,
         )
     finally:
         await client.close()
@@ -327,7 +336,9 @@ async def newsblur_get_infrequent_stories(
     """
     client = get_client()
     try:
-        return await _get_infrequent_stories(client, stories_per_month, read_filter, include_hidden, order, page, limit)
+        return await _get_infrequent_stories(
+            client, stories_per_month, read_filter, include_hidden, order, page, limit
+        )
     finally:
         await client.close()
 

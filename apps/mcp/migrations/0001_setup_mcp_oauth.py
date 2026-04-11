@@ -91,13 +91,26 @@ def setup_mcp_oauth(apps, schema_editor):
         print(f"\n ---> Updated OAuth application: {client_id}")
     else:
         col_names = [
-            "client_id", "name", "client_type", "authorization_grant_type",
-            "client_secret", "redirect_uris", "skip_authorization",
-            "created", "updated", "algorithm", "post_logout_redirect_uris",
+            "client_id",
+            "name",
+            "client_type",
+            "authorization_grant_type",
+            "client_secret",
+            "redirect_uris",
+            "skip_authorization",
+            "created",
+            "updated",
+            "algorithm",
+            "post_logout_redirect_uris",
         ]
         params = [
-            client_id, "NewsBlur MCP Server", "confidential", "authorization-code",
-            hashed_secret, redirect_uris_str, True,
+            client_id,
+            "NewsBlur MCP Server",
+            "confidential",
+            "authorization-code",
+            hashed_secret,
+            redirect_uris_str,
+            True,
         ]
         placeholders = ["%s"] * len(params) + ["NOW()", "NOW()", "%s", "%s"]
         extra_params = ["", ""]  # algorithm, post_logout_redirect_uris

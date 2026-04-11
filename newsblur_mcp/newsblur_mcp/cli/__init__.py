@@ -21,7 +21,9 @@ def main(
     raw_output: bool = typer.Option(False, "--raw", help="Output unformatted text"),
     version: bool = typer.Option(False, "--version", "-v", help="Show version"),
     server: str = typer.Option(
-        None, "--server", "-s",
+        None,
+        "--server",
+        "-s",
         help="NewsBlur server URL (default: https://newsblur.com). Persisted to config.",
     ),
 ):
@@ -31,6 +33,7 @@ def main(
     ctx.obj["raw"] = raw_output
     if server:
         from newsblur_mcp.cli.auth import set_server_url
+
         set_server_url(server)
     if version:
         try:

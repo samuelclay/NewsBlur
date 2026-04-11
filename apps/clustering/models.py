@@ -1069,9 +1069,7 @@ def attach_cluster_data_to_stories(stories, user):
     user_subs = UserSubscription.objects.filter(user=user, active=True)
     user_feed_ids = set(user_subs.values_list("feed_id", flat=True))
     user_titles = dict(
-        user_subs.exclude(user_title__isnull=True)
-        .exclude(user_title="")
-        .values_list("feed_id", "user_title")
+        user_subs.exclude(user_title__isnull=True).exclude(user_title="").values_list("feed_id", "user_title")
     )
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

@@ -62,6 +62,7 @@ from sentry_sdk import capture_exception, flush
 
 from utils import json_functions as json
 from utils import log as logging
+from utils.bluesky_fetcher import enrich_bluesky_entries, is_bluesky_feed
 from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import (
     TimeoutError,
@@ -75,7 +76,6 @@ from utils.story_functions import (
     pre_process_story,
     strip_tags,
 )
-from utils.bluesky_fetcher import enrich_bluesky_entries, is_bluesky_feed
 from utils.twitter_fetcher import TwitterFetcher
 from utils.youtube_fetcher import YoutubeFetcher
 
@@ -1436,7 +1436,9 @@ class FeedFetcherWorker:
                                 % (feed.log_title[:30], time.time() - start_cleanup)
                             )
                         try:
-                            self.count_unreads_for_subscribers(feed, new_story_count=ret_entries.get("new", 0))
+                            self.count_unreads_for_subscribers(
+                                feed, new_story_count=ret_entries.get("new", 0)
+                            )
                         except TimeoutError:
                             logging.debug(
                                 "   ---> [%-30s] Unread count took too long..." % (feed.log_title[:30],)
