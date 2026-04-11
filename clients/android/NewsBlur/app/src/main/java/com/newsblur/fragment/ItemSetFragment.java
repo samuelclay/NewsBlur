@@ -573,16 +573,16 @@ public class ItemSetFragment extends NbFragment {
         }
 
         if (prefsRepo.isMarkReadOnFeedScroll()) {
-            int firstCompletelyVisible = layoutManager.findFirstCompletelyVisibleItemPosition();
-            int lastCompletelyVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+            // Mark a story as read either when it has fully scrolled off the top, or when
+            // it's the topmost partially-visible row and its vertical midpoint has crossed
+            // the bottom of the feed bar (the top edge of the RecyclerView). The halfway
+            // threshold lets users actually see the unread-to-read transition instead of
+            // missing it.
+            int firstVisible = layoutManager.findFirstVisibleItemPosition();
             int storyCount = adapter.getStoryCount();
             int lastAutoMarkPosition = getLastAutoMarkPosition();
-            int markEnd = AutoMarkReadRangeDecider.findMarkEnd(
-                    firstCompletelyVisible,
-                    lastCompletelyVisible,
-                    storyCount,
-                    lastAutoMarkPosition
-            );
+            boolean topRowHalfwayPastFold = isTopRowHalfwayPastFold(firstVisible, storyCount);
+            int markEnd = AutoMarkReadRangeDecider.findMarkEnd(firstVisible, topRowHalfwayPastFold, storyCount);
             if (markEnd > lastAutoMarkPosition) {
                 // mark all stories between the previous mark position and the new one
                 for (int i = lastAutoMarkPosition + 1; i <= markEnd; i++) {
@@ -599,6 +599,22 @@ public class ItemSetFragment extends NbFragment {
     private int getLastAutoMarkPosition() {
         if (lastAutoMarkStoryHash == null) return -1;
         return adapter.getDisplayPositionForStoryHash(lastAutoMarkStoryHash);
+    }
+
+    /**
+     * Returns true if the topmost partially-visible story row has its vertical midpoint
+     * at or above the top edge of the RecyclerView (the bottom of the feed bar). Used by
+     * mark-read-on-scroll so a story flips to read once half of it is obscured by the
+     * feed bar, while the other half is still visible for the user to see.
+     */
+    private boolean isTopRowHalfwayPastFold(int firstVisible, int storyCount) {
+        if (firstVisible < 0 || firstVisible >= storyCount) return false;
+        View row = layoutManager.findViewByPosition(firstVisible);
+        if (row == null) return false;
+        int rowHeight = row.getHeight();
+        if (rowHeight <= 0) return false;
+        int rowMidInList = row.getTop() + rowHeight / 2;
+        return rowMidInList <= 0;
     }
 
     private void ensureSufficientStories() {
