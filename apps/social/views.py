@@ -288,7 +288,9 @@ def load_social_stories(request, user_id, username=None):
             story["user_tags"] = starred_stories[story["story_hash"]]["user_tags"]
         if story["story_hash"] in shared_stories:
             story["shared"] = True
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
 
         story["intelligence"] = {
             "feed": apply_classifier_feeds(
@@ -537,7 +539,9 @@ def load_river_blurblog(request):
                 shared_stories[story["story_hash"]]["shared_date"], user.profile.timezone
             )
             story["shared_date"] = format_story_link_date__long(shared_date, now)
-            story["shared_comments"] = strip_tags_preserve_blockquote(shared_stories[story["story_hash"]]["comments"])
+            story["shared_comments"] = strip_tags_preserve_blockquote(
+                shared_stories[story["story_hash"]]["comments"]
+            )
             if (
                 shared_stories[story["story_hash"]]["shared_date"] < user.profile.unread_cutoff
                 or story["story_hash"] not in unread_feed_story_hashes

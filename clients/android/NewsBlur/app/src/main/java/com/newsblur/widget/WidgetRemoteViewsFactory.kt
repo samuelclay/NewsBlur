@@ -79,6 +79,14 @@ class WidgetRemoteViewsFactory(
     override fun getViewAt(position: Int): RemoteViews =
         storiesLock.withLock {
             Log.d(this.javaClass.name, "getViewAt $position")
+            // getCount() and getViewAt() are not updated atomically by the framework, so the
+            // system can request a position that is out of bounds after we've trimmed the list
+            // on a refresh. Return an empty row instead of crashing.
+            // See Play crash id d9bc39e25e58a1d32d28ec59815bd5e4.
+            if (position !in storyItems.indices) {
+                Log.w(this.javaClass.name, "getViewAt($position) out of bounds for ${storyItems.size} items")
+                return@withLock WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
+            }
             val story = storyItems[position]
             val rv = WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
             rv.setTextViewText(R.id.story_item_title, story.title)
@@ -128,7 +136,11 @@ class WidgetRemoteViewsFactory(
      */
     override fun getItemId(position: Int): Long =
         storiesLock.withLock {
-            storyItems[position].hashCode().toLong()
+            if (position !in storyItems.indices) {
+                position.toLong()
+            } else {
+                storyItems[position].hashCode().toLong()
+            }
         }
 
     /**

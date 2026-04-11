@@ -352,7 +352,9 @@ class RTrendingStory:
 
         # Well-Read Stories: all stories with 3+ readers from the last 7 days
         well_read_stories = cls.get_trending_stories_detailed(days=7, limit=200)
-        well_read_qualifying = [s for s in well_read_stories if s["reader_count"] >= cls.WELL_READ_MIN_READERS]
+        well_read_qualifying = [
+            s for s in well_read_stories if s["reader_count"] >= cls.WELL_READ_MIN_READERS
+        ]
 
         # Long Reads: top stories by avg read time with >=3 readers (mirrors Grafana)
         long_read_stories = cls.get_long_reads(days=7, limit=20, min_readers=3)
@@ -416,22 +418,19 @@ class RTrendingStory:
 
         if added_well_read or added_long_reads:
             logging.debug(
-                "Trending lists refreshed: +%s well-read, +%s long-reads" % (added_well_read, added_long_reads)
+                "Trending lists refreshed: +%s well-read, +%s long-reads"
+                % (added_well_read, added_long_reads)
             )
 
     @classmethod
     def get_well_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
         """Get paginated story hashes from the permanent well-read list."""
-        return cls._get_permanent_list_hashes(
-            cls.WELL_READ_KEY, offset, limit, order, read_filter, user_id
-        )
+        return cls._get_permanent_list_hashes(cls.WELL_READ_KEY, offset, limit, order, read_filter, user_id)
 
     @classmethod
     def get_long_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
         """Get paginated story hashes from the permanent long-reads list."""
-        return cls._get_permanent_list_hashes(
-            cls.LONG_READS_KEY, offset, limit, order, read_filter, user_id
-        )
+        return cls._get_permanent_list_hashes(cls.LONG_READS_KEY, offset, limit, order, read_filter, user_id)
 
     @classmethod
     def _get_permanent_list_hashes(cls, key, offset, limit, order, read_filter, user_id):

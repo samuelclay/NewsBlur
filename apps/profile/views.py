@@ -1936,9 +1936,13 @@ def gift_redeem(request, gift_tier, username, gift_code):
                 # Skip actual redemption, just show the banner
                 pass
             else:
-                return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
+                return render(
+                    request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."}
+                )
         else:
-            return render(request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."})
+            return render(
+                request, "profile/gift_redeem.html", {"error": "This gift has already been redeemed."}
+            )
     elif gift.expires_date and gift.expires_date < datetime.datetime.now():
         return render(request, "profile/gift_redeem.html", {"error": "This gift has expired."})
     elif request.user.is_authenticated:

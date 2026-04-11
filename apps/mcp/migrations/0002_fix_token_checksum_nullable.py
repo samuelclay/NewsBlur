@@ -11,15 +11,15 @@ def make_token_checksum_nullable(apps, schema_editor):
     cursor = schema_editor.connection.cursor()
 
     # Check if the column exists before altering
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT column_name FROM information_schema.columns
         WHERE table_name = 'oauth2_provider_accesstoken'
         AND column_name = 'token_checksum'
-    """)
+    """
+    )
     if cursor.fetchone():
-        cursor.execute(
-            "ALTER TABLE oauth2_provider_accesstoken ALTER COLUMN token_checksum DROP NOT NULL"
-        )
+        cursor.execute("ALTER TABLE oauth2_provider_accesstoken ALTER COLUMN token_checksum DROP NOT NULL")
         print("\n ---> Made oauth2_provider_accesstoken.token_checksum nullable")
 
 

@@ -17,6 +17,7 @@ from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 from newsblur_mcp.log import log_request
 from newsblur_mcp.settings import MCP_HOST, MCP_PORT, SENTRY_DSN
 
+
 def _before_send(event, hint):
     """Filter out noisy uvicorn warnings that aren't real errors."""
     message = (event.get("logentry") or {}).get("message", "")
@@ -132,19 +133,20 @@ def get_client() -> NewsBlurClient:
     return NewsBlurClient(bearer_token=token, is_archive=is_archive)
 
 
-# Import tools to register them with the mcp instance
-import newsblur_mcp.tools.stories  # noqa: F401, E402
-import newsblur_mcp.tools.feeds  # noqa: F401, E402
-import newsblur_mcp.tools.account  # noqa: F401, E402
-import newsblur_mcp.tools.actions  # noqa: F401, E402
-import newsblur_mcp.tools.classifiers  # noqa: F401, E402
-import newsblur_mcp.tools.discovery  # noqa: F401, E402
-import newsblur_mcp.tools.notifications  # noqa: F401, E402
-import newsblur_mcp.tools.briefing  # noqa: F401, E402
+import newsblur_mcp.prompts.prompts  # noqa: F401, E402
 
 # Import resources and prompts
 import newsblur_mcp.resources.resources  # noqa: F401, E402
-import newsblur_mcp.prompts.prompts  # noqa: F401, E402
+import newsblur_mcp.tools.account  # noqa: F401, E402
+import newsblur_mcp.tools.actions  # noqa: F401, E402
+import newsblur_mcp.tools.briefing  # noqa: F401, E402
+import newsblur_mcp.tools.classifiers  # noqa: F401, E402
+import newsblur_mcp.tools.discovery  # noqa: F401, E402
+import newsblur_mcp.tools.feeds  # noqa: F401, E402
+import newsblur_mcp.tools.notifications  # noqa: F401, E402
+
+# Import tools to register them with the mcp instance
+import newsblur_mcp.tools.stories  # noqa: F401, E402
 
 
 def main():

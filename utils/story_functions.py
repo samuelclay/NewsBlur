@@ -404,10 +404,8 @@ def restore_instagram_data_attributes(content):
         blockquote_end = content.find("</blockquote>", match.start())
         if blockquote_end == -1:
             return tag
-        block_content = content[match.start():blockquote_end]
-        href_match = re.search(
-            r'href="(https://www\.instagram\.com/(?:reel|p)/[^"]+)"', block_content
-        )
+        block_content = content[match.start() : blockquote_end]
+        href_match = re.search(r'href="(https://www\.instagram\.com/(?:reel|p)/[^"]+)"', block_content)
         if href_match:
             url = href_match.group(1)
             return tag.replace(

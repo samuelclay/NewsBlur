@@ -8,7 +8,11 @@ import typer
 from rich.console import Console
 
 from newsblur_mcp.cli.output import render
-from newsblur_mcp.cli.runner import async_command, get_authenticated_client, require_writable
+from newsblur_mcp.cli.runner import (
+    async_command,
+    get_authenticated_client,
+    require_writable,
+)
 
 console = Console(stderr=True)
 from newsblur_mcp.cli import CONTEXT_SETTINGS
@@ -20,12 +24,8 @@ app = typer.Typer(context_settings=CONTEXT_SETTINGS)
 @async_command
 async def mark_read(
     ctx: typer.Context,
-    story_hashes: Optional[list[str]] = typer.Argument(
-        None, help="Story hashes to mark as read"
-    ),
-    feed_id: Optional[int] = typer.Option(
-        None, "--feed", "-f", help="Mark all stories in this feed as read"
-    ),
+    story_hashes: Optional[list[str]] = typer.Argument(None, help="Story hashes to mark as read"),
+    feed_id: Optional[int] = typer.Option(None, "--feed", "-f", help="Mark all stories in this feed as read"),
     folder: Optional[str] = typer.Option(
         None, "--folder", help="Mark all stories in this folder as read (use 'all' for everything)"
     ),

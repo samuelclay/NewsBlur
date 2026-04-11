@@ -609,9 +609,7 @@ def youtube_search(request):
         if len(results) >= max_results:
             break
 
-    logging.user(
-        request, "~FBYouTube search for '%s': ~SB%s results" % (query, len(results))
-    )
+    logging.user(request, "~FBYouTube search for '%s': ~SB%s results" % (query, len(results)))
     return {"code": 1, "results": results}
 
 

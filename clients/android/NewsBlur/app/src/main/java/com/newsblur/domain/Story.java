@@ -2,7 +2,7 @@ package com.newsblur.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,11 +94,15 @@ public class Story implements Serializable {
     @SerializedName("story_hash")
     public String storyHash;
 
+    // NOTE: declared as HashMap (not Map) so Gson creates a java.util.HashMap instead of
+    // its internal LinkedTreeMap. LinkedTreeMap is not Serializable, which caused a
+    // NotSerializableException when Android tried to save a Story into an activity's
+    // saved-instance-state Bundle. See Play crash 812322145eb6ef2abf80c9ad17b66368.
     @SerializedName("secure_image_urls")
-    public Map<String, String> secureImageUrls;
+    public HashMap<String, String> secureImageUrls;
 
     @SerializedName("secure_image_thumbnails")
-    public Map<String, String> secureImageThumbnails;
+    public HashMap<String, String> secureImageThumbnails;
 
     @SerializedName("has_modifications")
     public boolean hasModifications;
@@ -212,6 +216,57 @@ public class Story implements Serializable {
         story.clusterStories = ClusterStory.fromJson(clusterStoriesJson);
 		return story;
 	}
+
+    /**
+     * Returns a shallow copy of this Story with the heaviest, non-essential fields cleared.
+     * Use when placing a Story into a Fragment argument Bundle to keep the activity's saved
+     * state small. Reading fragments (one per story in the Reading ViewPager) re-fetch their
+     * content through the ReadingItemViewModel, so these fields don't need to persist across
+     * activity-stop / process-death rehydration.
+     *
+     * Without this the fragment args for a large reading session can push the saved-state
+     * Bundle past the 1MB Binder transaction limit, triggering
+     * android.os.TransactionTooLargeException at activityStopped.
+     * See Play crash id 313659223e4fd44c9953ab2cd7b29706.
+     */
+    public Story copyForBundle() {
+        Story copy = new Story();
+        copy.id = id;
+        copy.permalink = permalink;
+        copy.sharedUserIds = sharedUserIds;
+        copy.friendUserIds = friendUserIds;
+        copy.read = read;
+        copy.starred = starred;
+        copy.starredTimestamp = starredTimestamp;
+        copy.tags = tags;
+        copy.userTags = userTags;
+        copy.highlights = highlights;
+        copy.socialUserId = socialUserId;
+        copy.sourceUserId = sourceUserId;
+        copy.title = title;
+        copy.timestamp = timestamp;
+        copy.authors = authors;
+        copy.feedId = feedId;
+        copy.intelligence = intelligence;
+        copy.storyHash = storyHash;
+        copy.hasModifications = hasModifications;
+        copy.lastReadTimestamp = lastReadTimestamp;
+        copy.searchHit = searchHit;
+        copy.thumbnailUrl = thumbnailUrl;
+        copy.sharedTimestamp = sharedTimestamp;
+        copy.infrequent = infrequent;
+        copy.isBriefingSummary = isBriefingSummary;
+        copy.extern_feedColor = extern_feedColor;
+        copy.extern_feedFade = extern_feedFade;
+        copy.extern_intelTotalScore = extern_intelTotalScore;
+        copy.extern_faviconUrl = extern_faviconUrl;
+        copy.extern_faviconTextColor = extern_faviconTextColor;
+        copy.extern_faviconBorderColor = extern_faviconBorderColor;
+        copy.extern_feedTitle = extern_feedTitle;
+        // deliberately skipped: content, shortContent, imageUrls, secureImageUrls,
+        // secureImageThumbnails, publicComments, friendsComments, friendsShares, clusterStories
+        return copy;
+    }
 
     public void bindExternValues(Cursor cursor) {
         extern_feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
@@ -421,8 +476,9 @@ public class Story implements Serializable {
         @SerializedName("image_urls")
         public String[] imageUrls;
 
+        // See note on Story.secureImageUrls above - HashMap ensures Java Serialization works.
         @SerializedName("secure_image_thumbnails")
-        public Map<String, String> secureImageThumbnails;
+        public HashMap<String, String> secureImageThumbnails;
 
         public String getThumbnailUrl() {
             if (imageUrls == null || imageUrls.length == 0) return null;

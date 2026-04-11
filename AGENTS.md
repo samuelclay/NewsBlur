@@ -46,6 +46,7 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
   - **Theme coverage is required for Android UI work**: any Android UI change must be checked against all supported NewsBlur themes, not just the current device theme.
   - Current required Android theme coverage: `light`, `dark`, and `black`.
   - Upcoming theme requirement: account for `Sapia` in any new Android UI work so theme-specific colors are centralized and easy to extend when that theme lands.
+  - **Tag every Android version bump commit**: whenever a commit changes `versionName` or `versionCode` in `clients/android/NewsBlur/app/build.gradle.kts`, tag that exact commit as `Android_<versionName>` (e.g. `Android_14.2.2`) and push the tag. This keeps the `Android_*` tag series consistent so each released build can be traced back to its source.
 
 ## Android Emulator Testing
 - Prefer reusing an already running emulator instead of booting a new one
