@@ -4981,7 +4981,17 @@ var classifier_prototype = {
                     (type !== 'feed' ? $type_label_el : null),
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (type === 'feed' && $.favicon_el(feed_id)),
-                    $.make('span', value)
+                    $.make('span', value),
+                    // media/js/newsblur/reader/reader_classifier.js — per-row
+                    // "view matching stories" icon. Hidden at low opacity by
+                    // default (see reader.css NB-classifier-filter-view-btn)
+                    // and clickable to close the trainer and enter the
+                    // classifier filter banner view.
+                    (_.contains(['tag', 'author', 'title', 'text', 'url'], type) &&
+                        $.make('span', {
+                            className: 'NB-classifier-filter-view-btn',
+                            'data-tooltip': 'View matching stories'
+                        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>'))
                 ])
             ])
         ]);
@@ -5033,6 +5043,44 @@ var classifier_prototype = {
                 if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
             });
         }
+
+        // media/js/newsblur/reader/reader_classifier.js — "view matching stories"
+        // click handler. Closes the trainer modal and pushes the user into the
+        // classifier filter banner view (reader.js:open_classifier_filter).
+        $('.NB-classifier-filter-view-btn', $item).on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var row_scope = $item.data('scope') || 'feed';
+            var row_folder = $item.data('folder-name') || '';
+            if ($.modal && $.modal.close) {
+                $.modal.close();
+            }
+            _.defer(function () {
+                NEWSBLUR.reader.open_classifier_filter(type, value, {
+                    scope: row_scope,
+                    folder_name: row_folder,
+                    origin: 'trainer'
+                });
+            });
+        });
+
+        // "View matching stories" tooltip — same style as scope toggle.
+        $('.NB-classifier-filter-view-btn', $item).on('mouseenter', function () {
+            var $this = $(this);
+            var text = $this.attr('data-tooltip');
+            if (!text) return;
+            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+            $('body').append($tip);
+            var rect = this.getBoundingClientRect();
+            $tip.css({
+                top: rect.top - $tip.outerHeight() - 6,
+                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+            });
+            $this.data('$tooltip', $tip);
+        }).on('mouseleave', function () {
+            var $tip = $(this).data('$tooltip');
+            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+        });
 
         return $item;
     },

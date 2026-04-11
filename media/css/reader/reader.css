@@ -5528,6 +5528,39 @@ body {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
+/* "View matching stories" tippy hover surface shown over tag/author/url
+   pills. See media/js/newsblur/views/story_detail_view.js:show_pill_filter_menu.
+   Tippy renders whatever HTML we pass in `title`, so we style the inner
+   .NB-pill-view-classifier element directly to control icon alignment,
+   padding, hover highlight, and cursor. */
+.NB-pill-view-classifier {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    line-height: 1;
+    white-space: nowrap;
+    color: #ffffff;
+    background: transparent;
+    transition: background 120ms ease, color 120ms ease;
+}
+.NB-pill-view-classifier svg {
+    display: block;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    /* The SVG ships with stroke="white" inline; flex + align-items: center
+       handles vertical alignment with the label. */
+}
+.NB-pill-view-classifier:hover {
+    /* Text-selection-style highlight — matches the visual language the user
+       sees when highlighting text in a story. */
+    background: rgba(120, 170, 240, 0.28);
+    color: #ffffff;
+}
+
 /* URL Match Display */
 .NB-feed-story .NB-feed-story-url-match {
     margin: 5px 0 6px;
@@ -8431,6 +8464,283 @@ body {
     background: #4A90D9;
     transition: width 0.4s ease;
     width: 0%;
+}
+
+/* =========================== */
+/* = Classifier Filter Banner = */
+/* =========================== */
+/* media/css/reader/reader.css — banner that appears above .NB-story-titles
+   when the user enters the classifier filter view (see
+   media/js/newsblur/views/classifier_filter_banner_view.js). Layout mirrors
+   the search indexing banner above so the two feel related. Per-type
+   background gradients give each classifier type its own visual key. */
+
+.NB-classifier-filter-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    /* Extra right padding reserves space for the absolutely-positioned
+       close button so the classifier pill never runs under it. */
+    padding: 12px 40px 12px 16px;
+    border-bottom: 1px solid rgba(120, 120, 120, 0.18);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #efe6f5 0%, #e3d5f0 100%);
+    cursor: default;
+    animation: NB-classifier-filter-banner-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes NB-classifier-filter-banner-in {
+    from { transform: translateY(-6px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Per-type gradients — each classifier family gets its own hue so the
+   user can tell at a glance what kind of filter is active. */
+.NB-classifier-filter-banner.NB-filter-tag {
+    background: linear-gradient(135deg, #e6f1ea 0%, #d0e6d7 100%);
+    border-bottom-color: rgba(74, 130, 90, 0.18);
+}
+.NB-classifier-filter-banner.NB-filter-author {
+    background: linear-gradient(135deg, #f1ead9 0%, #e4d7b2 100%);
+    border-bottom-color: rgba(158, 126, 60, 0.2);
+}
+.NB-classifier-filter-banner.NB-filter-title {
+    background: linear-gradient(135deg, #e6eef5 0%, #d5e3f0 100%);
+    border-bottom-color: rgba(74, 144, 217, 0.18);
+}
+.NB-classifier-filter-banner.NB-filter-url {
+    background: linear-gradient(135deg, #f0e5e9 0%, #e3ccd5 100%);
+    border-bottom-color: rgba(168, 82, 108, 0.2);
+}
+.NB-classifier-filter-banner.NB-filter-text {
+    background: linear-gradient(135deg, #ece6f5 0%, #dcd1ee 100%);
+    border-bottom-color: rgba(110, 82, 168, 0.22);
+}
+
+.NB-classifier-filter-banner-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    color: #3a3a3a;
+    opacity: 0.75;
+    /* Align with the first row of content (title line) so the icon doesn't
+       drift when the classifier pill wraps to multiple lines. */
+    margin-top: 1px;
+}
+.NB-classifier-filter-banner-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.NB-classifier-filter-banner-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-classifier-filter-banner-text {
+    display: flex;
+    /* Title stacks above the pill so long classifier values have the full
+       content width to wrap into. */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: #2a2a2a;
+    line-height: 1.25;
+    min-width: 0;
+}
+
+.NB-classifier-filter-banner-title {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.NB-classifier-filter-banner-subtext {
+    font-size: 11px;
+    color: rgba(42, 42, 42, 0.58);
+    line-height: 1.3;
+}
+
+/* Trainer-style classifier pill inside the filter banner.
+   The banner hosts a .NB-classifier inside a .NB-classifiers wrapper so
+   it inherits all of the trainer's styles (icon positioning, hover
+   colors, scope/type badges). A few overrides are needed here because
+   the trainer assumes floated pills in a multi-column layout, while the
+   banner is a single inline pill in a flex row. */
+.NB-classifier-filter-banner-classifier-host {
+    display: block;
+    max-width: 100%;
+    /* Override the .NB-classifiers layout bits that are not wanted here. */
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+/* Let long classifier values wrap onto multiple lines. The trainer's pill
+   uses white-space: nowrap because it lives in a multi-column float layout;
+   here the pill is a single inline element in a wrapping flex row, so we
+   flip to normal wrapping and let the label flex-wrap across lines. */
+.NB-classifier-filter-banner-classifier-host .NB-classifier {
+    float: none;
+    margin: 0;
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+}
+.NB-classifier-filter-banner-classifier-host .NB-classifier label {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 2px;
+    max-width: 100%;
+}
+.NB-classifier-filter-banner-classifier-host .NB-classifier label > span:last-child {
+    /* The value span — let it wrap and shrink inside the label. */
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+.NB-classifier-filter-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.NB-classifier-filter-banner-back-trainer {
+    font-size: 11px;
+    color: rgba(40, 40, 40, 0.72);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 120ms ease, color 120ms ease;
+}
+.NB-classifier-filter-banner-back-trainer:hover {
+    background: rgba(255, 255, 255, 0.7);
+    color: #1e1e1e;
+}
+
+.NB-classifier-filter-banner-close {
+    /* Pin to the banner's top-right so a long classifier value can wrap
+       without being clipped by the close button. */
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 13px;
+    color: rgba(40, 40, 40, 0.55);
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+    z-index: 1;
+}
+.NB-classifier-filter-banner-close:hover {
+    background: rgba(255, 255, 255, 0.8);
+    color: #1e1e1e;
+}
+
+/* Dark theme variants. The existing .NB-theme-dark / .NB-theme-black
+   selectors wrap the whole reader shell and flip palettes wholesale. */
+.NB-theme-dark .NB-classifier-filter-banner,
+.NB-theme-black .NB-classifier-filter-banner {
+    background: linear-gradient(135deg, #2a2032 0%, #1f1828 100%);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.NB-theme-dark .NB-classifier-filter-banner.NB-filter-tag,
+.NB-theme-black .NB-classifier-filter-banner.NB-filter-tag {
+    background: linear-gradient(135deg, #1f2c24 0%, #16231b 100%);
+}
+.NB-theme-dark .NB-classifier-filter-banner.NB-filter-author,
+.NB-theme-black .NB-classifier-filter-banner.NB-filter-author {
+    background: linear-gradient(135deg, #2c261a 0%, #201c12 100%);
+}
+.NB-theme-dark .NB-classifier-filter-banner.NB-filter-title,
+.NB-theme-black .NB-classifier-filter-banner.NB-filter-title {
+    background: linear-gradient(135deg, #1e2630 0%, #161d26 100%);
+}
+.NB-theme-dark .NB-classifier-filter-banner.NB-filter-url,
+.NB-theme-black .NB-classifier-filter-banner.NB-filter-url {
+    background: linear-gradient(135deg, #2b1e25 0%, #20161c 100%);
+}
+.NB-theme-dark .NB-classifier-filter-banner.NB-filter-text,
+.NB-theme-black .NB-classifier-filter-banner.NB-filter-text {
+    background: linear-gradient(135deg, #25202e 0%, #1c1824 100%);
+}
+.NB-theme-dark .NB-classifier-filter-banner-text,
+.NB-theme-black .NB-classifier-filter-banner-text,
+.NB-theme-dark .NB-classifier-filter-banner-icon,
+.NB-theme-black .NB-classifier-filter-banner-icon {
+    color: #e9e9ea;
+}
+.NB-theme-dark .NB-classifier-filter-banner-subtext,
+.NB-theme-black .NB-classifier-filter-banner-subtext {
+    color: rgba(233, 233, 234, 0.62);
+}
+.NB-theme-dark .NB-classifier-filter-banner-close,
+.NB-theme-black .NB-classifier-filter-banner-close,
+.NB-theme-dark .NB-classifier-filter-banner-back-trainer,
+.NB-theme-black .NB-classifier-filter-banner-back-trainer {
+    color: rgba(233, 233, 234, 0.55);
+}
+.NB-theme-dark .NB-classifier-filter-banner-close:hover,
+.NB-theme-black .NB-classifier-filter-banner-close:hover,
+.NB-theme-dark .NB-classifier-filter-banner-back-trainer:hover,
+.NB-theme-black .NB-classifier-filter-banner-back-trainer:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f4f4f5;
+}
+
+/* Trainer modal row "view matching stories" icon. Stays quiet until the
+   row is hovered so the trainer remains scannable. See
+   media/js/newsblur/reader/reader_classifier.js:make_manage_classifier_item */
+.NB-classifier-filter-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    margin-left: 8px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer !important;
+    opacity: 0.32;
+    color: inherit;
+    background: transparent;
+    transition: opacity 140ms ease, background 140ms ease, color 140ms ease;
+    vertical-align: middle;
+}
+.NB-classifier-filter-view-btn svg {
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+.NB-manage-classifier-item:hover .NB-classifier-filter-view-btn {
+    opacity: 0.82;
+}
+.NB-classifier-filter-view-btn:hover {
+    opacity: 1 !important;
+    /* Rectangular highlight that reads like a text-selection background —
+       matches the hover affordance used on the story-quote button. */
+    background: rgba(99, 148, 220, 0.28);
+    color: #1a1a1a;
+}
+.NB-theme-dark .NB-classifier-filter-view-btn:hover,
+.NB-theme-black .NB-classifier-filter-view-btn:hover {
+    background: rgba(120, 170, 240, 0.28);
+    color: #f4f4f5;
 }
 
 .NB-feedbar .NB-taskbar-nav {
