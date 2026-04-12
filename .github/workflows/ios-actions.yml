@@ -63,6 +63,7 @@ jobs:
       # but don't block the overall job on failure.
       - name: Run iOS UI smoke tests
         continue-on-error: true
+        timeout-minutes: 6
         run: |
           xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
