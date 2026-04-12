@@ -29,6 +29,7 @@ static UIFont *indicatorFont = nil;
 @synthesize storyDate;
 @synthesize storyContent;
 @synthesize storyHash;
+@synthesize clusterTier;
 @synthesize storyTimestamp;
 @synthesize storyScore;
 @synthesize storyImage;
@@ -89,9 +90,11 @@ static UIFont *indicatorFont = nil;
 
 - (NSString *)accessibilityLabel {
     if (self.isClusterStory) {
-        return [NSString stringWithFormat:@"%@, \"%@\", %@",
+        NSString *tierLabel = [StoryClusterDisplayDecision clusterTierLabelForValue:self.clusterTier];
+        return [NSString stringWithFormat:@"%@, \"%@\", %@, %@",
                 self.siteTitle ?: @"no site",
                 self.storyTitle ?: @"no story",
+                tierLabel ?: @"related",
                 self.storyDate ?: @"no date"];
     }
 
@@ -148,6 +151,15 @@ static UIFont *indicatorFont = nil;
 @synthesize cell;
 @synthesize storyImage;
 @synthesize appDelegate;
+
+- (UIColor *)clusterTierBadgeColorForTier:(NSString *)clusterTier {
+    NSString *normalizedTier = [StoryClusterDisplayDecision normalizedClusterTierValue:clusterTier];
+    if ([normalizedTier isEqualToString:@"title"]) {
+        return UIColorFromLightSepiaMediumDarkRGB(0x5A8C6A, 0x6E865F, 0x7DC99A, 0x7DC99A);
+    }
+
+    return UIColorFromLightSepiaMediumDarkRGB(0xA88246, 0x9B7540, 0xD2A76B, 0xD2A76B);
+}
 
 - (void)drawRect:(CGRect)r {
     if (!cell) {
@@ -246,10 +258,13 @@ static UIFont *indicatorFont = nil;
         CGFloat rightPadding = 12.0;
         CGFloat dateX = CGRectGetMaxX(clusterRect) - rightPadding - dateSize.width;
         CGFloat titleRightEdge = dateX - 8.0;
+        CGRect imageFrame = CGRectZero;
+        BOOL hasCachedImage = NO;
 
         id cachedImage = cell.storyHash.length ? appDelegate.cachedStoryImages[cell.storyHash] : nil;
         if (cachedImage && cachedImage != [NSNull null]) {
-            CGRect imageFrame = CGRectMake(dateX - 30.0, contentY + (contentHeight - 24.0) / 2.0, 24.0, 24.0);
+            imageFrame = CGRectMake(dateX - 30.0, contentY + (contentHeight - 24.0) / 2.0, 24.0, 24.0);
+            hasCachedImage = YES;
             titleRightEdge = CGRectGetMinX(imageFrame) - 8.0;
 
             CGContextSaveGState(context);
@@ -277,6 +292,32 @@ static UIFont *indicatorFont = nil;
         }
 
         CGFloat titleX = CGRectGetMinX(clusterRect) + 50.0;
+        CGRect badgeFrame = CGRectZero;
+        NSString *badgeText = [[StoryClusterDisplayDecision clusterTierLabelForValue:cell.clusterTier].uppercaseString
+            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (badgeText.length) {
+            UIFont *badgeFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:9];
+            if (!badgeFont) {
+                badgeFont = [UIFont systemFontOfSize:9 weight:UIFontWeightSemibold];
+            }
+            NSDictionary *badgeAttributes = @{
+                NSFontAttributeName: badgeFont,
+                NSKernAttributeName: @0.45
+            };
+            CGSize badgeTextSize = [badgeText sizeWithAttributes:badgeAttributes];
+            CGFloat badgeWidth = ceil(badgeTextSize.width) + 14.0;
+            CGFloat badgeHeight = 16.0;
+            CGFloat badgeMaxX = hasCachedImage ? CGRectGetMinX(imageFrame) - 6.0 : dateX - 8.0;
+            CGFloat minimumTitleWidth = 48.0;
+            if ((badgeMaxX - badgeWidth) - titleX >= minimumTitleWidth) {
+                badgeFrame = CGRectMake(badgeMaxX - badgeWidth,
+                                        contentY + (contentHeight - badgeHeight) / 2.0,
+                                        badgeWidth,
+                                        badgeHeight);
+                titleRightEdge = CGRectGetMinX(badgeFrame) - 8.0;
+            }
+        }
+
         CGRect titleFrame = CGRectMake(titleX,
                                        contentY + (contentHeight - titleFont.lineHeight) / 2.0 - 1.0,
                                        MAX(titleRightEdge - titleX, 40.0),
@@ -287,6 +328,34 @@ static UIFont *indicatorFont = nil;
                                         NSForegroundColorAttributeName: titleColor,
                                         NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil];
+
+        if (!CGRectIsEmpty(badgeFrame)) {
+            UIColor *badgeColor = [[self clusterTierBadgeColorForTier:cell.clusterTier]
+                                   colorWithAlphaComponent:(cell.isRead ? 0.45 : 1.0)];
+            UIBezierPath *badgePath = [UIBezierPath bezierPathWithRoundedRect:badgeFrame
+                                                                 cornerRadius:(CGRectGetHeight(badgeFrame) / 2.0)];
+            CGContextSaveGState(context);
+            CGContextSetStrokeColorWithColor(context, badgeColor.CGColor);
+            CGContextSetLineWidth(context, 1.0);
+            [badgePath stroke];
+
+            UIFont *badgeFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:9];
+            if (!badgeFont) {
+                badgeFont = [UIFont systemFontOfSize:9 weight:UIFontWeightSemibold];
+            }
+            NSDictionary *badgeAttributes = @{
+                NSFontAttributeName: badgeFont,
+                NSForegroundColorAttributeName: badgeColor,
+                NSKernAttributeName: @0.45
+            };
+            CGSize badgeTextSize = [badgeText sizeWithAttributes:badgeAttributes];
+            CGRect badgeTextFrame = CGRectMake(CGRectGetMidX(badgeFrame) - (badgeTextSize.width / 2.0),
+                                               CGRectGetMidY(badgeFrame) - (badgeFont.lineHeight / 2.0) - 0.5,
+                                               badgeTextSize.width,
+                                               ceil(badgeFont.lineHeight));
+            [badgeText drawInRect:badgeTextFrame withAttributes:badgeAttributes];
+            CGContextRestoreGState(context);
+        }
 
         CGRect dateFrame = CGRectMake(dateX,
                                       contentY + (contentHeight - dateFont.lineHeight) / 2.0,

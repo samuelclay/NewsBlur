@@ -1377,6 +1377,21 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         XCTAssertEqual(StoryClusterDisplayDecision.indicatorImageName(forScore: 0), "indicator-unread")
     }
 
+    func test_cluster_tier_defaults_to_related_when_missing() {
+        XCTAssertEqual(StoryClusterDisplayDecision.normalizedClusterTierValue(nil), "related")
+        XCTAssertEqual(StoryClusterDisplayDecision.clusterTierLabel(forValue: nil), "Related")
+    }
+
+    func test_cluster_tier_title_uses_match_label() {
+        XCTAssertEqual(StoryClusterDisplayDecision.normalizedClusterTierValue("title"), "title")
+        XCTAssertEqual(StoryClusterDisplayDecision.clusterTierLabel(forValue: "title"), "Match")
+    }
+
+    func test_cluster_tier_related_uses_related_label_for_unknown_values() {
+        XCTAssertEqual(StoryClusterDisplayDecision.normalizedClusterTierValue("semantic"), "related")
+        XCTAssertEqual(StoryClusterDisplayDecision.clusterTierLabel(forValue: "semantic"), "Related")
+    }
+
     func test_visible_cluster_stories_exclude_unsubscribed_feeds() {
         let clusterStories: NSArray = [
             [
