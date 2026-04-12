@@ -116,10 +116,15 @@ class UserApiImpl(
     override suspend fun setBooleanPreference(
         key: String,
         value: Boolean,
+    ): Boolean = setPreference(key, value.toString())
+
+    override suspend fun setPreference(
+        key: String,
+        value: String,
     ): Boolean {
         val values =
             ContentValues().apply {
-                put(key, value.toString())
+                put(key, value)
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_PREFERENCE)
         val response: APIResponse = networkClient.post(urlString, values)

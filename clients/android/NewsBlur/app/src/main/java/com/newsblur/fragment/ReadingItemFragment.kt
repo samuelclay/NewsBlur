@@ -69,6 +69,7 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadingTextSize
 import com.newsblur.util.StoryChangesState
+import com.newsblur.util.StoryClusterBadgeViewBinder
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryClusterNavigationDecision
 import com.newsblur.util.StoryClusterNavigationTarget
@@ -942,11 +943,13 @@ class ReadingItemFragment :
         }
 
         val subscribedFeedIds = dbHelper.getAllActiveFeeds()
+        val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
         val allClusterStories =
             StoryClusterDisplayDecision.visibleClusterStories(
                 clusterStories = currentStory.clusterStories,
                 subscribedFeedIds = subscribedFeedIds,
                 isPremiumArchive = true,
+                clusterMode = clusterMode,
             )
         if (allClusterStories.isEmpty()) {
             hideClusterStories()
@@ -958,6 +961,7 @@ class ReadingItemFragment :
                 clusterStories = currentStory.clusterStories,
                 subscribedFeedIds = subscribedFeedIds,
                 isPremiumArchive = isArchiveUser(),
+                clusterMode = clusterMode,
             )
         val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
 
@@ -1066,6 +1070,7 @@ class ReadingItemFragment :
         val feedIconView: ImageView = clusterView.findViewById(R.id.story_cluster_feed_icon)
         val previewView: StoryThumbnailView = clusterView.findViewById(R.id.story_cluster_preview)
         val dateView: TextView = clusterView.findViewById(R.id.story_cluster_date)
+        val badgeView: TextView = clusterView.findViewById(R.id.story_cluster_badge)
         val titleView: TextView = clusterView.findViewById(R.id.story_cluster_title)
 
         sentimentView.setImageResource(StoryClusterDisplayDecision.indicatorDrawableRes(clusterStory.score))
@@ -1090,10 +1095,18 @@ class ReadingItemFragment :
         titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")
         titleView.maxLines = maxTitleLines
         titleView.setTextColor(if (clusterStory.read) palette.readTitleColor else palette.titleColor)
+        StoryClusterBadgeViewBinder.bind(
+            badgeView,
+            requireContext(),
+            clusterStory.clusterTier,
+            palette,
+            clusterStory.read,
+        )
 
         bindClusterFeedIcon(feed, feedIconView)
         bindClusterPreview(
             previewView = previewView,
+            badgeView = badgeView,
             titleView = titleView,
             dateView = dateView,
             thumbnailUrl = clusterStory.thumbnailUrl ?: feedUtils.getStoryThumbnailUrl(clusterStory.storyHash),
@@ -1112,19 +1125,20 @@ class ReadingItemFragment :
 
     private fun bindClusterPreview(
         previewView: StoryThumbnailView,
+        badgeView: TextView,
         titleView: TextView,
         dateView: TextView,
         thumbnailUrl: String?,
         isRead: Boolean,
     ) {
         if (thumbnailUrl.isNullOrBlank()) {
-            updateClusterTitleEndAnchor(titleView, dateView.id)
+            updateClusterEndAnchors(titleView, badgeView, hasPreview = false, previewId = previewView.id, dateId = dateView.id)
             previewView.visibility = View.GONE
             previewView.setImageDrawable(null)
             return
         }
 
-        updateClusterTitleEndAnchor(titleView, previewView.id)
+        updateClusterEndAnchors(titleView, badgeView, hasPreview = true, previewId = previewView.id, dateId = dateView.id)
         previewView.visibility = View.VISIBLE
         previewView.imageAlpha = if (isRead) 115 else 255
         previewView.setImageDrawable(null)
@@ -1136,13 +1150,21 @@ class ReadingItemFragment :
         )
     }
 
-    private fun updateClusterTitleEndAnchor(
+    private fun updateClusterEndAnchors(
         titleView: TextView,
-        anchorId: Int,
+        badgeView: TextView,
+        hasPreview: Boolean,
+        previewId: Int,
+        dateId: Int,
     ) {
-        val params = titleView.layoutParams as RelativeLayout.LayoutParams
-        params.addRule(RelativeLayout.START_OF, anchorId)
-        titleView.layoutParams = params
+        val badgeAnchorId = StoryClusterBadgeViewBinder.endAnchorId(hasPreview, previewId, dateId)
+        val badgeParams = badgeView.layoutParams as RelativeLayout.LayoutParams
+        badgeParams.addRule(RelativeLayout.START_OF, badgeAnchorId)
+        badgeView.layoutParams = badgeParams
+
+        val titleParams = titleView.layoutParams as RelativeLayout.LayoutParams
+        titleParams.addRule(RelativeLayout.START_OF, badgeView.id)
+        titleView.layoutParams = titleParams
     }
 
     private fun bindClusterFeedIcon(

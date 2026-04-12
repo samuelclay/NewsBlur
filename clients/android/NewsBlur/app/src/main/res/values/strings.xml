@@ -571,8 +571,18 @@ people together to talk about the world.</string>
     <string name="settings_mark_read_on_feed_scroll">Mark story titles read on scroll</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
     <string name="settings_story_clustering">Cluster related stories</string>
-    <string name="settings_story_clustering_summary">Show grouped duplicates in story titles and the reading view</string>
+    <string name="settings_story_clustering_summary">Show duplicate stories from other feeds beneath a story title</string>
+    <string name="settings_cluster_matches">Cluster matches</string>
+    <string name="settings_cluster_matches_summary">Choose whether clusters show only duplicate titles or also related stories</string>
     <string name="settings_story_clustering_save_failed">Couldn\'t save story clustering preference</string>
+    <string name="settings_story_clustering_title_only">Title only</string>
+    <string name="settings_cluster_mode_title_match_only">Title match only</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Title match plus related</string>
+    <string name="settings_story_clustering_title">Title</string>
+    <string name="settings_story_clustering_only">only</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Match</string>
+    <string name="story_cluster_badge_related">Related</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
     <string name="settings_mark_story_read_title">Mark stories read</string>
