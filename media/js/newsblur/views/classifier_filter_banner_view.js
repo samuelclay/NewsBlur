@@ -425,10 +425,26 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         if (!new_scope || new_scope === this.filter.scope) return;
         if (new_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
             var $badge = this.$el.find('.NB-classifier-scope-badge');
+            var $toggle = this.$el.find('.NB-scope-toggle-' + new_scope);
             $badge.removeClass('NB-shake');
             if ($badge.length) $badge[0].offsetWidth;
             $badge.addClass('NB-shake');
             setTimeout(function () { $badge.removeClass('NB-shake'); }, 500);
+
+            $toggle.addClass('NB-scope-toggle-denied');
+            setTimeout(function () { $toggle.removeClass('NB-scope-toggle-denied'); }, 800);
+
+            $('.NB-scope-tooltip').remove();
+            var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
+            $('body').append($tip);
+            if ($toggle.length) {
+                var rect = $toggle[0].getBoundingClientRect();
+                $tip.css({
+                    top: rect.top - $tip.outerHeight() - 6,
+                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+                });
+            }
+            setTimeout(function () { $tip.fadeOut(300, function () { $tip.remove(); }); }, 1500);
             return;
         }
         NEWSBLUR.reader.open_classifier_filter(this.filter.type, this.filter.value, {
