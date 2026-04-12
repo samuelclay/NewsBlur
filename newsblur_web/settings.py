@@ -983,8 +983,8 @@ REDIS_PUBSUB_POOL = redis.ConnectionPool(
 
 # IP rate tracking configuration (see utils/ip_rate_tracker.py)
 # When enabled, requests exceeding the threshold will be blocked with 429
-IP_RATE_LIMITING_ENABLED = False  # Set True to enable blocking
-IP_RATE_LIMIT_THRESHOLD = 300  # Max requests per window before flagging as abuse
+IP_RATE_LIMITING_ENABLED = True
+IP_RATE_LIMIT_THRESHOLD = 500  # Max requests per 5-min window before blocking with 429
 IP_RATE_WINDOW_MINUTES = 5  # Time window for counting requests
 IP_RATE_TTL_SECONDS = 3600  # How long to keep rate data (1 hour)
 

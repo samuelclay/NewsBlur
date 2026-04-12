@@ -50,7 +50,7 @@ class IPRateTracker:
     WINDOW_MINUTES = 5
     TTL_SECONDS = 3600  # 1 hour
     META_TTL_SECONDS = 7200  # 2 hours
-    ABUSE_THRESHOLD = 300  # requests per 5-min window
+    ABUSE_THRESHOLD = 500  # requests per 5-min window
 
     # User agent classification patterns
     UA_PATTERNS = {
