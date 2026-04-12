@@ -744,6 +744,16 @@ public enum StoryScrollReadDecision {
         }
     }
 
+    @objc(normalizedClusterTierValue:)
+    public class func normalizedClusterTierValue(_ value: Any?) -> String {
+        normalizedClusterTier(from: value)
+    }
+
+    @objc(clusterTierLabelForValue:)
+    public class func clusterTierLabel(forValue value: Any?) -> String {
+        normalizedClusterTier(from: value) == "title" ? "Match" : "Related"
+    }
+
     @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)
     public class func visibleClusterStories(
         _ clusterStories: NSArray?,
@@ -832,6 +842,14 @@ public enum StoryScrollReadDecision {
         }
 
         return false
+    }
+
+    private class func normalizedClusterTier(from value: Any?) -> String {
+        guard let stringValue = stringValue(from: value) else {
+            return "related"
+        }
+
+        return stringValue == "title" ? "title" : "related"
     }
 
     private class func stringValue(from value: Any?) -> String? {

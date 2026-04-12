@@ -391,6 +391,26 @@
 			<string>story_clustering</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Cluster matches</string>
+			<key>Titles</key>
+			<array>
+				<string>Title match only</string>
+				<string>Title match plus related</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>related</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>related</string>
+			</array>
+			<key>Key</key>
+			<string>cluster_mode</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Feed list</string>
 			<key>Type</key>

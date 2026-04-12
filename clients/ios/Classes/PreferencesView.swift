@@ -39,6 +39,13 @@ private struct PreferencesColors {
     static var destructive: Color { Color(red: 0.9, green: 0.3, blue: 0.3) }
     static var newsblurGreen: Color { Color(red: 0.439, green: 0.620, blue: 0.365) }
     static var newsblurBlue: Color { Color(red: 0.33, green: 0.47, blue: 0.65) }
+    static var clusterMatch: Color {
+        themedColor(light: 0x5A8C6A, sepia: 0x6E865F, medium: 0x7DC99A, dark: 0x7DC99A)
+    }
+
+    static var clusterRelated: Color {
+        themedColor(light: 0xA88246, sepia: 0x9B7540, medium: 0xD2A76B, dark: 0xD2A76B)
+    }
 
     private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
         guard let themeManager = ThemeManager.shared else {
@@ -178,6 +185,10 @@ class PreferencesViewModel: ObservableObject {
             hidden.insert("infrequent_stories_per_month")
         }
 
+        if !defaults.bool(forKey: "story_clustering") {
+            hidden.insert("cluster_mode")
+        }
+
         hiddenKeys = hidden
     }
 
@@ -296,6 +307,18 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .indigo,
                         type: .toggle(key: "story_clustering", defaultValue: true),
                         subtitle: "Show duplicate stories from other feeds beneath a story title"
+                    ),
+                    PreferenceItem(
+                        title: "Cluster matches",
+                        icon: "tag",
+                        iconColor: .green,
+                        type: .multiValue(
+                            key: "cluster_mode",
+                            titles: ["Title match only", "Title match plus related"],
+                            values: ["title", "related"],
+                            defaultValue: "related"
+                        ),
+                        subtitle: "Choose whether clusters show only duplicate titles or also related stories"
                     )
                 ]
             ),
@@ -1005,6 +1028,85 @@ struct PreferenceIconView: View {
     }
 }
 
+// MARK: - Cluster Mode Preview
+
+@available(iOS 15.0, *)
+struct ClusterTierPillView: View {
+    let label: String
+    let tier: String
+    var compact: Bool = false
+
+    private var tierColor: Color {
+        tier == "title" ? PreferencesColors.clusterMatch : PreferencesColors.clusterRelated
+    }
+
+    private var horizontalPadding: CGFloat { compact ? 6 : 8 }
+    private var verticalPadding: CGFloat { compact ? 2 : 3 }
+    private var fontSize: CGFloat { compact ? 9 : 10 }
+
+    var body: some View {
+        Text(label.uppercased())
+            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+            .foregroundColor(tierColor)
+            .lineLimit(1)
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .overlay(
+                Capsule()
+                    .stroke(tierColor, lineWidth: 1)
+            )
+            .fixedSize(horizontal: true, vertical: true)
+    }
+}
+
+@available(iOS 15.0, *)
+struct ClusterModePreviewView: View {
+    let mode: String
+    var compact: Bool = false
+
+    var body: some View {
+        HStack(spacing: compact ? 4 : 6) {
+            ClusterTierPillView(label: "Match", tier: "title", compact: compact)
+
+            if mode != "title" {
+                Text("+")
+                    .font(.system(size: compact ? 10 : 11, weight: .semibold))
+                    .foregroundColor(PreferencesColors.textSecondary)
+                ClusterTierPillView(label: "Related", tier: "related", compact: compact)
+            }
+        }
+        .fixedSize(horizontal: true, vertical: true)
+    }
+}
+
+@available(iOS 15.0, *)
+struct ClusterSettingStateView: View {
+    let isEnabled: Bool
+    let mode: String
+
+    private var stateTitle: String {
+        if !isEnabled {
+            return "Title only"
+        }
+
+        return mode == "title" ? "Title match only" : "Title match plus related"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(stateTitle)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(PreferencesColors.textSecondary)
+
+            if isEnabled {
+                ClusterModePreviewView(mode: mode, compact: true)
+            }
+        }
+        .padding(.top, 2)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 // MARK: - Item View
 
 @available(iOS 15.0, *)
@@ -1062,6 +1164,7 @@ struct ToggleItemView: View {
     @ObservedObject var viewModel: PreferencesViewModel
 
     @AppStorage private var isOn: Bool
+    @AppStorage("cluster_mode") private var clusterMode = "related"
 
     init(item: PreferenceItem, key: String, defaultValue: Bool, viewModel: PreferencesViewModel) {
         self.item = item
@@ -1085,6 +1188,10 @@ struct ToggleItemView: View {
                         .font(.system(size: 12))
                         .foregroundColor(PreferencesColors.textSecondary)
                         .lineLimit(2)
+                }
+
+                if key == "story_clustering" {
+                    ClusterSettingStateView(isEnabled: isOn, mode: clusterMode)
                 }
             }
 
@@ -1113,40 +1220,16 @@ struct MultiValueItemView: View {
     let defaultValue: Any
     @ObservedObject var viewModel: PreferencesViewModel
 
-    @State private var selectedValue: String = ""
     @State private var selectedIndex: Int = 0
     @State private var showPicker = false
 
     var body: some View {
         Button(action: { showPicker = true }) {
-            HStack(spacing: 12) {
-                PreferenceIconView(icon: item.icon, color: item.iconColor)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(item.title)
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundColor(PreferencesColors.textPrimary)
-
-                    if let subtitle = item.subtitle {
-                        Text(subtitle)
-                            .font(.system(size: 12))
-                            .foregroundColor(PreferencesColors.textSecondary)
-                            .lineLimit(2)
-                    }
-                }
-
-                Spacer()
-
-                Text(currentTitle)
-                    .font(.system(size: 14))
-                    .foregroundColor(PreferencesColors.textSecondary)
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
+            if key == "cluster_mode" {
+                clusterModeRow
+            } else {
+                standardRow
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
         }
         .buttonStyle(PlainButtonStyle())
         .onAppear {
@@ -1154,6 +1237,7 @@ struct MultiValueItemView: View {
         }
         .sheet(isPresented: $showPicker) {
             PickerSheet(
+                key: key,
                 title: item.title,
                 titles: titles,
                 values: values,
@@ -1172,6 +1256,91 @@ struct MultiValueItemView: View {
             return titles[selectedIndex]
         }
         return titles.first ?? ""
+    }
+
+    private var currentValue: String {
+        if selectedIndex >= 0 && selectedIndex < values.count {
+            return "\(values[selectedIndex])"
+        }
+
+        return "\(defaultValue)"
+    }
+
+    private var standardRow: some View {
+        HStack(spacing: 12) {
+            PreferenceIconView(icon: item.icon, color: item.iconColor)
+
+            VStack(alignment: .leading, spacing: 2) {
+                titleText
+
+                if let subtitle = item.subtitle {
+                    subtitleText(subtitle)
+                }
+            }
+
+            Spacer()
+
+            Text(currentTitle)
+                .font(.system(size: 14))
+                .foregroundColor(PreferencesColors.textSecondary)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+
+    private var clusterModeRow: some View {
+        HStack(alignment: .top, spacing: 12) {
+            PreferenceIconView(icon: item.icon, color: item.iconColor)
+
+            VStack(alignment: .leading, spacing: 6) {
+                titleText
+                    .lineLimit(1)
+
+                if let subtitle = item.subtitle {
+                    subtitleText(subtitle)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack(alignment: .top, spacing: 0) {
+                    Spacer(minLength: 0)
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(currentTitle)
+                            .font(.system(size: 14))
+                            .foregroundColor(PreferencesColors.textSecondary)
+                            .multilineTextAlignment(.trailing)
+                            .fixedSize(horizontal: false, vertical: true)
+                        ClusterModePreviewView(mode: currentValue, compact: true)
+                    }
+                }
+                .padding(.top, 2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
+                .padding(.top, 6)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+
+    private var titleText: some View {
+        Text(item.title)
+            .font(.system(size: 15, weight: .regular))
+            .foregroundColor(PreferencesColors.textPrimary)
+    }
+
+    private func subtitleText(_ subtitle: String) -> some View {
+        Text(subtitle)
+            .font(.system(size: 12))
+            .foregroundColor(PreferencesColors.textSecondary)
+            .lineLimit(2)
     }
 
     private func loadCurrentValue() {
@@ -1218,6 +1387,7 @@ struct MultiValueItemView: View {
 
 @available(iOS 15.0, *)
 struct PickerSheet: View {
+    let key: String
     let title: String
     let titles: [String]
     let values: [Any]
@@ -1252,8 +1422,16 @@ struct PickerSheet: View {
                     ForEach(0..<titles.count, id: \.self) { index in
                         Button(action: { onSelect(index) }) {
                             HStack {
-                                Text(titles[index])
-                                    .foregroundColor(PreferencesColors.textPrimary)
+                                if key == "cluster_mode" {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(titles[index])
+                                            .foregroundColor(PreferencesColors.textPrimary)
+                                        ClusterModePreviewView(mode: "\(values[index])")
+                                    }
+                                } else {
+                                    Text(titles[index])
+                                        .foregroundColor(PreferencesColors.textPrimary)
+                                }
 
                                 Spacer()
 

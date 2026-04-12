@@ -43,6 +43,7 @@
 - (BOOL)isClusterMarkReadEnabled;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory;
 - (NSString *)clusterSentimentHTMLForScore:(NSInteger)score;
+- (NSString *)clusterTierBadgeHTMLForStory:(NSDictionary *)clusterStory;
 - (void)refreshClusterStories;
 
 @end
@@ -483,6 +484,16 @@
             indicatorDataURL];
 }
 
+- (NSString *)clusterTierBadgeHTMLForStory:(NSDictionary *)clusterStory {
+    NSString *tierLabel = [StoryClusterDisplayDecision clusterTierLabelForValue:clusterStory[@"cluster_tier"]];
+    if (!tierLabel.length) {
+        return @"";
+    }
+
+    return [NSString stringWithFormat:@"<span class=\"NB-cluster-tier-badge\">%@</span>",
+            [tierLabel stringByEncodingHTMLEntities]];
+}
+
 - (NSString *)clusterStoriesHTML {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"]) {
         return @"";
@@ -531,6 +542,9 @@
         NSInteger score = [clusterStory[@"score"] respondsToSelector:@selector(integerValue)] ? [clusterStory[@"score"] integerValue] : 0;
         NSString *scoreClass = score > 0 ? @"NB-story-positive" : (score < 0 ? @"NB-story-negative" : @"NB-story-neutral");
         NSString *readClass = [self isClusterStoryRead:clusterStory] ? @" read" : @"";
+        NSString *tierClass = [NSString stringWithFormat:@" NB-cluster-tier-%@",
+                               [StoryClusterDisplayDecision normalizedClusterTierValue:clusterStory[@"cluster_tier"]]];
+        NSString *tierBadgeHTML = [self clusterTierBadgeHTMLForStory:clusterStory];
         NSString *dateText = [Utilities formatClusterDateFromTimestamp:[clusterStory[@"story_timestamp"] integerValue]];
         NSString *sentimentHTML = [self clusterSentimentHTMLForScore:score];
 
@@ -561,12 +575,13 @@
             imageHTML = [NSString stringWithFormat:@"<span class=\"NB-cluster-detail-image\" style=\"background-image:url('%@');\"></span>", clusterImageURL];
         }
 
-        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/open-cluster-story?feed_id=%@&story_hash=%@&story_title=%@\" class=\"NB-story-cluster-detail-item %@%@\">"
+        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/open-cluster-story?feed_id=%@&story_hash=%@&story_title=%@\" class=\"NB-story-cluster-detail-item %@%@%@\">"
          "<span class=\"NB-cluster-feed-border-outer\" style=\"background-color:#%@;\"></span>"
          "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
          "%@"
          "%@"
          "<span class=\"NB-cluster-detail-title-text\">%@</span>"
+         "%@"
          "%@"
          "<span class=\"NB-cluster-detail-date\">%@</span>"
          "</a>",
@@ -575,11 +590,13 @@
          encodedTitle ?: @"",
          scoreClass,
          readClass,
+         tierClass,
          borderOuter,
          borderInner,
          sentimentHTML,
          faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
          storyTitle,
+         tierBadgeHTML,
          imageHTML,
          [dateText stringByEncodingHTMLEntities]];
     }
