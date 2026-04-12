@@ -1,21 +1,7 @@
-// media/js/newsblur/views/classifier_filter_banner_view.js
-//
 // Sticky banner that appears above .NB-story-titles when the user enters
-// "classifier filter view" (browsing every story matching a single
-// classifier value). Modeled after feed_search_view.js:212's indexing
-// banner and shown via NEWSBLUR.reader.open_classifier_filter() in
-// reader.js. Reads the live flag from NEWSBLUR.reader.flags.classifier_filter.
-//
-// Shape of the filter object:
-//   { type: 'tag'|'author'|'title'|'url'|'text',
-//     value: '...', scope: 'feed'|'folder'|'global',
-//     folder_name, origin: 'trainer'|'pill' }
-//
-// The inline classifier pill matches the trainer dialog's make_classifier
-// output exactly — scope toggles, notification bell, thumbs up/down/super
-// dislike icons — so training from the banner feels identical to training
-// from the trainer modal. Training writes through NEWSBLUR.assets.save_classifier,
-// the same endpoint the trainer uses.
+// the classifier filter view. The inline pill mirrors the trainer's
+// .NB-classifier DOM exactly so training from the banner feels identical
+// to training from the trainer modal.
 
 NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
@@ -34,7 +20,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         'text': 'text phrase'
     },
 
-    // SVGs live inline so the banner works without extra asset loading.
     type_icons: {
         'tag': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>',
         'author': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
@@ -43,19 +28,13 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         'text': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18H3"/></svg>'
     },
 
-    scope_icon_data: [
-        { key: 'feed',   title: 'This site only',      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-        { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-        { key: 'global', title: 'All sites',           svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
-    ],
-
     initialize: function (options) {
         options = options || {};
         this.filter = options.filter || NEWSBLUR.reader.flags['classifier_filter'];
         this._classifier_notifications = {};
 
-        // Load notifications once so the bell can render with current channels.
-        // Re-render if they arrive after the initial paint.
+        // Kick off a notifications load so the bell can render with current
+        // channels. Re-render if the response lands after the initial paint.
         var self = this;
         if (NEWSBLUR.assets && NEWSBLUR.assets.load_classifier_notifications) {
             NEWSBLUR.assets.load_classifier_notifications(function (data) {
@@ -67,9 +46,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         }
     },
 
-    // Build the banner content from the current filter. Re-run whenever the
-    // filter changes (scope flip, value change, inline training). Keeps
-    // everything declarative so we don't have to track DOM state per-pill.
     render: function () {
         if (!this.filter) return this;
 
@@ -79,8 +55,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var $icon = $.make('div', { className: 'NB-classifier-filter-banner-icon' });
         $icon.html(this.type_icons[type] || '');
 
-        // Classifier pill — uses the same DOM as the trainer dialog's
-        // make_classifier so it inherits all of the trainer's pill styles.
         var $pill_wrapper = this._make_trainer_style_pill();
 
         var $text = $.make('div', { className: 'NB-classifier-filter-banner-text' }, [
@@ -105,9 +79,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         }, '\u2715'));
 
         this.$el.empty().addClass('NB-filter-' + type);
-        // Strip previous per-type class on re-render.
         var self = this;
-        _.each(['tag', 'author', 'title', 'url', 'text'], function (t) {
+        _.each(NEWSBLUR.ClassifierConstants.FILTER_TYPES, function (t) {
             if (t !== type) self.$el.removeClass('NB-filter-' + t);
         });
         this.$el.append($icon);
@@ -117,11 +90,10 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         return this;
     },
 
-    // Build a pill that matches the trainer dialog's .NB-classifier output
-    // exactly. The `.NB-classifiers` wrapper is required for the trainer
-    // stylesheet rules to apply (padding, icon positioning, hover/active
-    // colors). See media/js/newsblur/reader/reader_classifier.js:make_classifier
-    // for the reference implementation.
+    // Build a pill that matches the trainer's .NB-classifier DOM so it
+    // inherits all the trainer stylesheet rules (padding, icon positioning,
+    // hover/active colors). The `.NB-classifiers` wrapper at the bottom is
+    // mandatory — those rules are all scoped under it.
     _make_trainer_style_pill: function () {
         var type = this.filter.type;
         var value = this.filter.value;
@@ -131,9 +103,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
         var display_type = type === 'url' ? 'URL' : Inflector.capitalize(type);
 
-        // Scope toggles — identical to make_classifier's three-icon pattern.
         var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
-        _.each(this.scope_icon_data, function (icon) {
+        _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
             var $toggle = $.make('span', {
                 className: 'NB-scope-toggle NB-scope-toggle-' + icon.key +
                     (icon.key === scope ? ' NB-active' : ''),
@@ -201,8 +172,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $('.NB-classifier-input-dislike', $classifier).prop('checked', true);
         }
 
-        // Hover state helpers — same behavior as the trainer pill so the
-        // like/dislike icons dim/brighten consistently.
         $classifier.on('mouseenter', function (e) {
             $(e.currentTarget).addClass('NB-classifier-hover-like');
         }).on('mouseleave', function (e) {
@@ -219,9 +188,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $classifier.removeClass('NB-classifier-hover-super-dislike');
         });
 
-        // Click handlers — match reader_classifier.js' delegated targetIs
-        // chain at line 3724. Super-dislike is checked first so clicks on
-        // its icon don't bubble up to the dislike or like handlers.
+        // Super-dislike is bound first so its click doesn't bubble up to
+        // the dislike or whole-pill handlers.
         var self = this;
         $('.NB-classifier-icon-super-dislike', $classifier).on('click', function (e) {
             e.preventDefault();
@@ -234,8 +202,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             self._apply_training('dislike');
         });
         $classifier.on('click', function (e) {
-            // Skip clicks on scope toggles, bell, or label children we don't
-            // want to treat as "like".
             if ($(e.target).closest('.NB-scope-toggle, .NB-classifier-notification-bell, .NB-classifier-notif-indicators').length) {
                 return;
             }
@@ -267,17 +233,15 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
         });
 
-        // The .NB-classifier CSS expects a .NB-classifiers ancestor for all
-        // its rules (float, padding, colors). We still need to neutralize
-        // the float so the pill sits inline inside the flex-row banner text.
+        // The .NB-classifier stylesheet rules are scoped under .NB-classifiers;
+        // the host wrapper here gets the trainer styles while the -host class
+        // in reader.css neutralizes the trainer's float so the pill sits
+        // inline inside the banner's flex row.
         return $.make('span', { className: 'NB-classifiers NB-classifier-filter-banner-classifier-host' }, [
             $classifier
         ]);
     },
 
-    // Build the notification bell. Reuses the ClassifierNotificationPopover
-    // view on click so the banner gets the same per-channel controls as the
-    // trainer. Active channels render as small indicators on the bell.
     _make_notification_bell: function (type, value, scope, folder_name, score) {
         var feed_id = NEWSBLUR.reader.active_feed;
         var is_regex = false;
@@ -330,9 +294,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         return $bell;
     },
 
-    // Open the shared ClassifierNotificationPopover near the bell. When the
-    // user makes a change, persist via save_classifier (matches how the
-    // trainer saves notification changes for scoped classifiers).
     _show_notification_popover: function ($bell) {
         this._close_notification_popover();
 
@@ -397,10 +358,9 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         }
     },
 
-    // Look up the current score for this classifier in the in-memory
-    // feed classifiers cache. Only checks feed-scoped classifiers on the
-    // active feed; folder/global scopes start as "not trained yet" in the
-    // pill and update to their trained state after the user clicks.
+    // Only checks feed-scoped classifiers on the active feed; folder/global
+    // scopes start at neutral in the pill and flip to their trained state
+    // after the user clicks.
     _lookup_current_score: function () {
         var feed_id = NEWSBLUR.reader.active_feed;
         if (!feed_id || !_.isFinite(feed_id)) return 0;
@@ -418,7 +378,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         this.render();
         var $titles = $('#story_titles').find('.NB-story-titles');
         if (!$titles.length) $titles = $('#story_titles');
-        // Drop any stale instance first so we never get two banners stacked.
+        // Drop any stale DOM element first so we never get two stacked.
         $('.NB-classifier-filter-banner').remove();
         this.$el.css({ 'opacity': 0 });
         $titles.before(this.$el);
@@ -437,11 +397,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     update: function (filter) {
         this.filter = filter;
         this.render();
-        // Re-attach to the DOM if reset_feed animated us out but the
-        // surrounding code kept the view instance around. Defensive — the
-        // reader now clears the banner_view reference on navigation, but
-        // keeping this check means a caller can still update() after a
-        // hide_banner without the banner silently going missing.
+        // Re-attach if a prior hide_banner animated the element out of the
+        // DOM but the caller is reusing the view instance.
         if (!this.$el.closest(document.documentElement).length) {
             this.show_banner();
         }
@@ -462,14 +419,11 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
     },
 
-    // Called from scope toggle click — re-issues the filter with the new
-    // scope. For non-archive users the toggle is still rendered so the
-    // trainer-style pill looks consistent, but clicks fall through to a
-    // no-op + denied animation.
+    // For non-archive users scope toggles are still rendered, but clicking
+    // a non-feed scope shakes the badge instead of actually switching.
     _change_scope: function (new_scope) {
         if (!new_scope || new_scope === this.filter.scope) return;
         if (new_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
-            // Shake the scope badge to match the trainer's "denied" feedback.
             var $badge = this.$el.find('.NB-classifier-scope-badge');
             $badge.removeClass('NB-shake');
             if ($badge.length) $badge[0].offsetWidth;
@@ -484,10 +438,9 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
     },
 
-    // Apply a training opinion (like/dislike/super_dislike), toggling off
-    // if the opinion is already active. Writes through the same
-    // save_classifier endpoint the trainer dialog uses. Keeps the banner
-    // visible after save and re-renders so the active state flips.
+    // Toggle the classifier opinion — clicking the already-active opinion
+    // untrains back to neutral. Writes through save_classifier and fires
+    // recalculate_story_scores so every visible row flips immediately.
     _apply_training: function (opinion) {
         var feed_id = NEWSBLUR.reader.active_feed;
         if (!feed_id || !_.isFinite(feed_id)) return;
@@ -508,7 +461,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
         var new_score;
         if (target_score === current_score) {
-            // Toggle off — untrain back to neutral.
             if (current_score > 0) {
                 save_data['remove_like_' + type] = value;
             } else {
@@ -527,38 +479,12 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             new_score = target_score;
         }
 
-        // Optimistically update the in-memory classifier cache so the
-        // subsequent recalculate_story_scores call picks up the new score
-        // without waiting for a full feed refetch.
-        var cache = NEWSBLUR.assets.classifiers[feed_id];
-        if (cache) {
-            var bucket_key = type + 's';
-            cache[bucket_key] = cache[bucket_key] || {};
-            if (new_score === 0) {
-                delete cache[bucket_key][value];
-            } else {
-                cache[bucket_key][value] = new_score;
-            }
-        }
-
-        // Immediately recompute visible story intelligence so every matching
-        // row flips to its new trained state without waiting on the server
-        // round-trip. This mirrors what the trainer modal does on save
-        // (reader_classifier.js: recalculate_story_scores + render:intelligence).
+        NEWSBLUR.assets.update_cached_classifier_score(feed_id, type, value, new_score);
         this._refresh_story_scores(feed_id);
-
-        // Re-render the banner first so the pill's active state flips
-        // immediately — the save happens in the background.
         this.render();
 
         NEWSBLUR.assets.save_classifier(save_data, function () {
-            // On server ack, refresh again in case the server applied
-            // anything different (scope promotion, etc.).
             NEWSBLUR.assets.stories.trigger('render:intelligence');
-            // Recompute the feed's unread counts — training a classifier
-            // changes how many stories land in positive/neutral/negative
-            // buckets. Matches what story_detail_view.js:save_classifier
-            // does after an inline tag/author train.
             if (NEWSBLUR.reader.feed_unread_count) {
                 NEWSBLUR.reader.feed_unread_count(feed_id);
             }

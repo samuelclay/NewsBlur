@@ -1,3 +1,22 @@
+// Shared classifier constants reused by reader_classifier.js,
+// classifier_filter_banner_view.js, and reader.js. Kept here because this
+// file loads first in the pipeline and already owns the trainer.
+NEWSBLUR.ClassifierConstants = {
+    // Types that can drive the classifier filter banner view. Feed and
+    // prompt classifiers intentionally aren't included — feed has no
+    // filter surface and prompt is AI-only.
+    FILTER_TYPES: ['tag', 'author', 'title', 'url', 'text'],
+
+    // Scope toggle icons rendered inside every classifier pill (trainer,
+    // manage tab, filter banner). One entry per scope with its tooltip
+    // label and inline SVG source.
+    SCOPE_ICON_DATA: [
+        { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+        { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+        { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+    ]
+};
+
 NEWSBLUR.ReaderClassifierTrainer = function (options) {
     var defaults = {
         'width': 920,
@@ -2557,20 +2576,13 @@ var classifier_prototype = {
             css_class += ' NB-classifier-regex';
         }
 
-        // Build scope badge, notification bell, and type label as three separate containers
         // For feed-type classifiers, no scope badge — favicon goes next to the title
         var $scope_badge;
         if (classifier_type === 'feed') {
             $scope_badge = null;
         } else {
-            // Three scope icons shown simultaneously — active one highlighted
-            var scope_icon_data = [
-                { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-                { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-                { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
-            ];
             var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
-            _.each(scope_icon_data, function (icon) {
+            _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
                 var $toggle = $.make('span', {
                     className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === scope ? ' NB-active' : ''),
                     'data-tooltip': icon.title
@@ -4926,19 +4938,13 @@ var classifier_prototype = {
 
         var effective_scope = scope || 'feed';
 
-        // Build scope badge with three toggleable icons (same as story tab)
         // For feed-type classifiers, no scope controls (publisher is always feed-scoped)
         var $scope_badge;
         if (type === 'feed') {
             $scope_badge = null;
         } else {
-            var scope_icon_data = [
-                { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-                { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-                { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
-            ];
             var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
-            _.each(scope_icon_data, function (icon) {
+            _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
                 var $toggle = $.make('span', {
                     className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === effective_scope ? ' NB-active' : ''),
                     'data-tooltip': icon.title
@@ -4982,12 +4988,7 @@ var classifier_prototype = {
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (type === 'feed' && $.favicon_el(feed_id)),
                     $.make('span', value),
-                    // media/js/newsblur/reader/reader_classifier.js — per-row
-                    // "view matching stories" icon. Hidden at low opacity by
-                    // default (see reader.css NB-classifier-filter-view-btn)
-                    // and clickable to close the trainer and enter the
-                    // classifier filter banner view.
-                    (_.contains(['tag', 'author', 'title', 'text', 'url'], type) &&
+                    (_.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type) &&
                         $.make('span', {
                             className: 'NB-classifier-filter-view-btn',
                             'data-tooltip': 'View matching stories'
@@ -5044,9 +5045,7 @@ var classifier_prototype = {
             });
         }
 
-        // media/js/newsblur/reader/reader_classifier.js — "view matching stories"
-        // click handler. Closes the trainer modal and pushes the user into the
-        // classifier filter banner view (reader.js:open_classifier_filter).
+        // Closes the trainer modal so the banner view can replace it.
         $('.NB-classifier-filter-view-btn', $item).on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -5064,7 +5063,6 @@ var classifier_prototype = {
             });
         });
 
-        // "View matching stories" tooltip — same style as scope toggle.
         $('.NB-classifier-filter-view-btn', $item).on('mouseenter', function () {
             var $this = $(this);
             var text = $this.attr('data-tooltip');

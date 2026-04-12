@@ -1533,6 +1533,23 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    // Optimistically update the per-feed classifier cache for a single
+    // value so recalculate_story_scores can see the change without a full
+    // refetch. score === 0 (or null/undefined) clears the value. Returns
+    // false when there's nothing cached for the feed.
+    update_cached_classifier_score: function (feed_id, classifier_type, value, score) {
+        var cache = this.classifiers[feed_id];
+        if (!cache) return false;
+        var bucket_key = classifier_type + 's';
+        cache[bucket_key] = cache[bucket_key] || {};
+        if (!score) {
+            delete cache[bucket_key][value];
+        } else {
+            cache[bucket_key][value] = score;
+        }
+        return true;
+    },
+
     get_ai_classifier_usage: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/ai_classifier_usage', data, callback);

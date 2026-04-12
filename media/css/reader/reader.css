@@ -8788,53 +8788,40 @@ body {
     color: #1e1e1e;
 }
 
-/* Dark theme variants. The existing .NB-theme-dark / .NB-theme-black
-   selectors wrap the whole reader shell and flip palettes wholesale. */
-.NB-theme-dark .NB-classifier-filter-banner,
-.NB-theme-black .NB-classifier-filter-banner {
+/* Dark theme variants. The body gets .NB-dark when dark mode is active;
+   darkmode.css handles the base classifier pill colors already. */
+.NB-dark .NB-classifier-filter-banner {
     background: linear-gradient(135deg, #2a2032 0%, #1f1828 100%);
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
-.NB-theme-dark .NB-classifier-filter-banner.NB-filter-tag,
-.NB-theme-black .NB-classifier-filter-banner.NB-filter-tag {
+.NB-dark .NB-classifier-filter-banner.NB-filter-tag {
     background: linear-gradient(135deg, #1f2c24 0%, #16231b 100%);
 }
-.NB-theme-dark .NB-classifier-filter-banner.NB-filter-author,
-.NB-theme-black .NB-classifier-filter-banner.NB-filter-author {
+.NB-dark .NB-classifier-filter-banner.NB-filter-author {
     background: linear-gradient(135deg, #2c261a 0%, #201c12 100%);
 }
-.NB-theme-dark .NB-classifier-filter-banner.NB-filter-title,
-.NB-theme-black .NB-classifier-filter-banner.NB-filter-title {
+.NB-dark .NB-classifier-filter-banner.NB-filter-title {
     background: linear-gradient(135deg, #1e2630 0%, #161d26 100%);
 }
-.NB-theme-dark .NB-classifier-filter-banner.NB-filter-url,
-.NB-theme-black .NB-classifier-filter-banner.NB-filter-url {
+.NB-dark .NB-classifier-filter-banner.NB-filter-url {
     background: linear-gradient(135deg, #2b1e25 0%, #20161c 100%);
 }
-.NB-theme-dark .NB-classifier-filter-banner.NB-filter-text,
-.NB-theme-black .NB-classifier-filter-banner.NB-filter-text {
+.NB-dark .NB-classifier-filter-banner.NB-filter-text {
     background: linear-gradient(135deg, #25202e 0%, #1c1824 100%);
 }
-.NB-theme-dark .NB-classifier-filter-banner-text,
-.NB-theme-black .NB-classifier-filter-banner-text,
-.NB-theme-dark .NB-classifier-filter-banner-icon,
-.NB-theme-black .NB-classifier-filter-banner-icon {
+.NB-dark .NB-classifier-filter-banner-text,
+.NB-dark .NB-classifier-filter-banner-icon {
     color: #e9e9ea;
 }
-.NB-theme-dark .NB-classifier-filter-banner-subtext,
-.NB-theme-black .NB-classifier-filter-banner-subtext {
+.NB-dark .NB-classifier-filter-banner-subtext {
     color: rgba(233, 233, 234, 0.62);
 }
-.NB-theme-dark .NB-classifier-filter-banner-close,
-.NB-theme-black .NB-classifier-filter-banner-close,
-.NB-theme-dark .NB-classifier-filter-banner-back-trainer,
-.NB-theme-black .NB-classifier-filter-banner-back-trainer {
+.NB-dark .NB-classifier-filter-banner-close,
+.NB-dark .NB-classifier-filter-banner-back-trainer {
     color: rgba(233, 233, 234, 0.55);
 }
-.NB-theme-dark .NB-classifier-filter-banner-close:hover,
-.NB-theme-black .NB-classifier-filter-banner-close:hover,
-.NB-theme-dark .NB-classifier-filter-banner-back-trainer:hover,
-.NB-theme-black .NB-classifier-filter-banner-back-trainer:hover {
+.NB-dark .NB-classifier-filter-banner-close:hover,
+.NB-dark .NB-classifier-filter-banner-back-trainer:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #f4f4f5;
 }
@@ -8873,8 +8860,7 @@ body {
     background: rgba(99, 148, 220, 0.28);
     color: #1a1a1a;
 }
-.NB-theme-dark .NB-classifier-filter-view-btn:hover,
-.NB-theme-black .NB-classifier-filter-view-btn:hover {
+.NB-dark .NB-classifier-filter-view-btn:hover {
     background: rgba(120, 170, 240, 0.28);
     color: #f4f4f5;
 }
