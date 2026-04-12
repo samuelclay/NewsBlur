@@ -91,6 +91,8 @@ final class AppDelegateHelperTests: XCTestCase {
         appDelegate.setCustomDomainForTesting("https://ui-test.newsblur.example")
 
         XCTAssertEqual(appDelegate.url, "https://ui-test.newsblur.example")
-        XCTAssertNil(defaults.object(forKey: "custom_domain"))
+        let bundleIdentifier = Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? ""
+        let persistedValue = defaults.persistentDomain(forName: bundleIdentifier)?["custom_domain"]
+        XCTAssertNil(persistedValue)
     }
 }
