@@ -64,13 +64,33 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/story_cluster_row_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="6dp"
+            android:layout_toStartOf="@id/story_cluster_row_preview"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="7dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="2dp"
+            android:textAllCaps="true"
+            android:textSize="9sp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/story_cluster_row_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@id/story_cluster_row_feed_icon"
-            android:layout_toStartOf="@id/story_cluster_row_preview"
+            android:layout_toStartOf="@id/story_cluster_row_badge"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"

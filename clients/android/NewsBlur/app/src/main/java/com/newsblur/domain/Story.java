@@ -470,6 +470,9 @@ public class Story implements Serializable {
         @SerializedName("score")
         public int score;
 
+        @SerializedName("cluster_tier")
+        public String clusterTier;
+
         @SerializedName("read_status")
         public boolean read;
 
@@ -515,12 +518,13 @@ public class Story implements Serializable {
                 Objects.equals(storyHash, clusterStory.storyHash) &&
                 Objects.equals(title, clusterStory.title) &&
                 Objects.equals(authors, clusterStory.authors) &&
+                Objects.equals(clusterTier, clusterStory.clusterTier) &&
                 Arrays.equals(imageUrls, clusterStory.imageUrls);
         }
 
         @Override
         public int hashCode() {
-            int result = Objects.hash(feedId, storyHash, title, timestamp, authors, score, read);
+            int result = Objects.hash(feedId, storyHash, title, timestamp, authors, score, clusterTier, read);
             result = 31 * result + Arrays.hashCode(imageUrls);
             return result;
         }

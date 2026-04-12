@@ -440,6 +440,9 @@ open class SyncService :
             feedResponse.storyClustering?.let {
                 prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, it)
             }
+            feedResponse.clusterMode?.let {
+                prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
+            }
 
             // note all feeds that belong to some folder so we can find orphans
             for (folder in feedResponse.folders) {

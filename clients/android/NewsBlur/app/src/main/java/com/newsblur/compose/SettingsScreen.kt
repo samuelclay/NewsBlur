@@ -115,7 +115,8 @@ data class SettingsUiState(
     val loadNextOnMarkRead: Boolean = false,
     val autoOpenFirstUnread: Boolean = false,
     val markReadOnScroll: Boolean = false,
-    val storyClustering: Boolean = true,
+    val storyClusteringEnabled: Boolean = true,
+    val clusterMode: String = StoryClusterDisplayDecision.CLUSTER_MODE_RELATED,
     val storyContentPreviewStyle: String = StoryContentPreviewStyle.MEDIUM.name,
     val thumbnailStyle: String = ThumbnailStyle.RIGHT_LARGE.name,
     val markStoryReadBehavior: String = MarkStoryReadBehavior.IMMEDIATELY.name,
@@ -163,7 +164,8 @@ fun buildSettingsUiState(
         loadNextOnMarkRead = prefsRepo.loadNextOnMarkRead(),
         autoOpenFirstUnread = prefsRepo.isAutoOpenFirstUnread(),
         markReadOnScroll = prefsRepo.isMarkReadOnFeedScroll(),
-        storyClustering = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
+        storyClusteringEnabled = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
+        clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo),
         storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle().name,
         thumbnailStyle = prefsRepo.getThumbnailStyle().name,
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior().name,
@@ -182,6 +184,8 @@ fun SettingsScreen(
     state: SettingsUiState,
     onBooleanChanged: (String, Boolean) -> Unit,
     onStringChanged: (String, String) -> Unit,
+    onStoryClusteringEnabledChanged: (Boolean) -> Unit,
+    onClusterModeChanged: (String) -> Unit,
     onDeleteOfflineStories: () -> Unit,
 ) {
     val palette = settingsPalette(state.theme)
@@ -376,6 +380,19 @@ fun SettingsScreen(
     val rtlGestureTitle = stringResource(R.string.settings_rtl_gesture_action).stripTrailingEllipsis()
     val networkTitle = stringResource(R.string.menu_network_select).stripTrailingEllipsis()
     val cacheAgeTitle = stringResource(R.string.menu_cache_age_select).stripTrailingEllipsis()
+    val clusterMatchesTitle = stringResource(R.string.settings_cluster_matches)
+    val clusterMatchesSummary = stringResource(R.string.settings_cluster_matches_summary)
+    val clusterModeOptions =
+        listOf(
+            ChoiceOption(
+                StoryClusterDisplayDecision.CLUSTER_MODE_TITLE,
+                stringResource(R.string.settings_cluster_mode_title_match_only),
+            ),
+            ChoiceOption(
+                StoryClusterDisplayDecision.CLUSTER_MODE_RELATED,
+                stringResource(R.string.settings_cluster_mode_title_match_plus_related),
+            ),
+        )
 
     Column(
         modifier =
@@ -483,11 +500,39 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_story_clustering),
                 icon = Icons.Rounded.Article,
                 iconColor = NewsblurIndigo,
-                checked = state.storyClustering,
+                checked = state.storyClusteringEnabled,
                 subtitle = stringResource(R.string.settings_story_clustering_summary),
                 palette = palette,
-                onCheckedChange = { onBooleanChanged(PrefConstants.STORY_CLUSTERING, it) },
+                supportingContent = {
+                    ClusterSettingStateSummary(
+                        isEnabled = state.storyClusteringEnabled,
+                        clusterMode = state.clusterMode,
+                        palette = palette,
+                    )
+                },
+                onCheckedChange = onStoryClusteringEnabledChanged,
             )
+            if (state.storyClusteringEnabled) {
+                RowDivider(palette)
+                ClusterModeSettingsRow(
+                    title = clusterMatchesTitle,
+                    icon = Icons.Rounded.FilterList,
+                    iconColor = NewsblurGreen,
+                    clusterMode = state.clusterMode,
+                    subtitle = clusterMatchesSummary,
+                    palette = palette,
+                    onClick = {
+                        dialogState =
+                            ChoiceDialogState(
+                                title = clusterMatchesTitle,
+                                selectedValue = state.clusterMode,
+                                options = clusterModeOptions,
+                                showClusterModePreview = true,
+                                onSelect = onClusterModeChanged,
+                            )
+                    },
+                )
+            }
         }
 
         SettingsSection(
@@ -917,6 +962,7 @@ private fun ToggleSettingsRow(
     checked: Boolean,
     palette: SettingsPalette,
     subtitle: String? = null,
+    supportingContent: (@Composable () -> Unit)? = null,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(
@@ -942,6 +988,10 @@ private fun ToggleSettingsRow(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
+            supportingContent?.let {
+                Spacer(Modifier.height(4.dp))
+                it()
+            }
         }
         Spacer(Modifier.width(12.dp))
         Switch(
@@ -959,6 +1009,167 @@ private fun ToggleSettingsRow(
         )
     }
 }
+
+@Composable
+private fun ClusterSettingStateSummary(
+    isEnabled: Boolean,
+    clusterMode: String,
+    palette: SettingsPalette,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text =
+                if (!isEnabled) {
+                    stringResource(R.string.settings_story_clustering_title_only)
+                } else {
+                    clusterModeLabel(clusterMode)
+                },
+            color = palette.textSecondary,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+        if (isEnabled) {
+            ClusterModePreview(mode = clusterMode, compact = true, palette = palette)
+        }
+    }
+}
+
+@Composable
+private fun ClusterModeSettingsRow(
+    title: String,
+    icon: ImageVector,
+    iconColor: Color,
+    clusterMode: String,
+    palette: SettingsPalette,
+    subtitle: String? = null,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                ).padding(horizontal = 14.dp, vertical = 12.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            PreferenceIcon(icon = icon, color = iconColor)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    color = palette.textPrimary,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                subtitle?.let {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = it,
+                        color = palette.textSecondary,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                Spacer(Modifier.height(6.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = clusterModeLabel(clusterMode),
+                        color = palette.textSecondary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.End,
+                    )
+                    ClusterModePreview(mode = clusterMode, compact = true, palette = palette)
+                }
+            }
+            Icon(
+                imageVector = Icons.Rounded.KeyboardArrowRight,
+                contentDescription = null,
+                tint = palette.textSecondary.copy(alpha = 0.55f),
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ClusterModePreview(
+    mode: String,
+    compact: Boolean,
+    palette: SettingsPalette,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ClusterTierPill(
+            text = stringResource(R.string.story_cluster_badge_match),
+            color = palette.clusterMatchColor,
+            compact = compact,
+        )
+        if (clusterModeShowsRelated(mode)) {
+            Text(
+                text = stringResource(R.string.settings_story_clustering_plus),
+                color = palette.textSecondary,
+                fontSize = if (compact) 10.sp else 11.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            ClusterTierPill(
+                text = stringResource(R.string.story_cluster_badge_related),
+                color = palette.clusterRelatedColor,
+                compact = compact,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ClusterTierPill(
+    text: String,
+    color: Color,
+    compact: Boolean,
+) {
+    Box(
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(999.dp))
+                .border(1.dp, color, RoundedCornerShape(999.dp))
+                .padding(
+                    horizontal = if (compact) 6.dp else 8.dp,
+                    vertical = if (compact) 2.dp else 3.dp,
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text.uppercase(),
+            color = color,
+            fontSize = if (compact) 9.sp else 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 10.sp,
+        )
+    }
+}
+
+@Composable
+private fun clusterModeLabel(mode: String): String =
+    if (mode == StoryClusterDisplayDecision.CLUSTER_MODE_TITLE) {
+        stringResource(R.string.settings_cluster_mode_title_match_only)
+    } else {
+        stringResource(R.string.settings_cluster_mode_title_match_plus_related)
+    }
+
+private fun clusterModeShowsRelated(mode: String): Boolean = mode != StoryClusterDisplayDecision.CLUSTER_MODE_TITLE
+
+private fun segmentTextColor(
+    selected: Boolean,
+    palette: SettingsPalette,
+): Color = if (selected) palette.segmentedSelectedText else palette.segmentedText
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -1166,11 +1377,22 @@ private fun ChoiceDialog(
                             },
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = option.label,
-                            color = palette.textPrimary,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                        if (state.showClusterModePreview) {
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = option.label,
+                                    color = palette.textPrimary,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                ClusterModePreview(mode = option.value, compact = true, palette = palette)
+                            }
+                        } else {
+                            Text(
+                                text = option.label,
+                                color = palette.textPrimary,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
                     }
                 }
             }
@@ -1187,6 +1409,7 @@ private data class ChoiceDialogState(
     val title: String,
     val selectedValue: String,
     val options: List<ChoiceOption>,
+    val showClusterModePreview: Boolean = false,
     val onSelect: (String) -> Unit,
 )
 
@@ -1213,6 +1436,8 @@ private data class SettingsPalette(
     val segmentedText: Color,
     val segmentedSelectedText: Color,
     val segmentedBorder: Color,
+    val clusterMatchColor: Color,
+    val clusterRelatedColor: Color,
     val newsblurGreen: Color,
     val destructive: Color,
     val showShadow: Boolean,
@@ -1240,6 +1465,8 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedText = Color(0xFF8B7B6B),
                 segmentedSelectedText = Color(0xFF3C3226),
                 segmentedBorder = Color(0xFFC8B8A8),
+                clusterMatchColor = Color(0xFF5A8C6A),
+                clusterRelatedColor = Color(0xFFA88246),
                 newsblurGreen = Color(0xFF709E5D),
                 destructive = Color(0xFFE35A4F),
                 showShadow = true,
@@ -1258,6 +1485,8 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedText = Color(0xFFCCCCCC),
                 segmentedSelectedText = Color(0xFFFFFFFF),
                 segmentedBorder = Color(0xFF555555),
+                clusterMatchColor = Color(0xFF7DC99A),
+                clusterRelatedColor = Color(0xFFD2A76B),
                 newsblurGreen = Color(0xFF709E5D),
                 destructive = Color(0xFFFF867C),
                 showShadow = false,
@@ -1276,6 +1505,8 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedText = Color(0xFFAAAAAA),
                 segmentedSelectedText = Color(0xFFFFFFFF),
                 segmentedBorder = Color(0xFF444444),
+                clusterMatchColor = Color(0xFF7DC99A),
+                clusterRelatedColor = Color(0xFFD2A76B),
                 newsblurGreen = Color(0xFF709E5D),
                 destructive = Color(0xFFFF867C),
                 showShadow = false,
@@ -1294,6 +1525,8 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedText = Color(0xFF909090),
                 segmentedSelectedText = Color(0xFF000000),
                 segmentedBorder = Color(0xFFC0C0C0),
+                clusterMatchColor = Color(0xFF5A8C6A),
+                clusterRelatedColor = Color(0xFFA88246),
                 newsblurGreen = Color(0xFF709E5D),
                 destructive = Color(0xFFE35A4F),
                 showShadow = true,
