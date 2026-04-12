@@ -77,6 +77,37 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     return NO;
 }
 
+static NSDictionary *NBUserProfilePreferencesDictionary(NSDictionary *userProfile) {
+    id preferencesValue = userProfile[@"preferences"];
+    if ([preferencesValue isKindOfClass:[NSDictionary class]]) {
+        return preferencesValue;
+    } else if ([preferencesValue isKindOfClass:[NSString class]]) {
+        NSData *preferencesData = [(NSString *)preferencesValue dataUsingEncoding:NSUTF8StringEncoding];
+        if (preferencesData) {
+            NSDictionary *preferences = [NSJSONSerialization JSONObjectWithData:preferencesData options:0 error:nil];
+            if ([preferences isKindOfClass:[NSDictionary class]]) {
+                return preferences;
+            }
+        }
+    }
+
+    return nil;
+}
+
+static BOOL NBBoolPreferenceValue(id value) {
+    if (!value || value == [NSNull null]) {
+        return NO;
+    }
+
+    if ([value isKindOfClass:[NSNumber class]]) {
+        return [value boolValue];
+    } else if ([value isKindOfClass:[NSString class]]) {
+        return [(NSString *)value boolValue];
+    }
+
+    return NO;
+}
+
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
@@ -93,6 +124,54 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
 @end
 
 @implementation FeedsObjCViewController
+
+- (void)syncStoryClusteringDefaultsFromUserProfile:(NSDictionary *)userProfile {
+    NSDictionary *preferences = NBUserProfilePreferencesDictionary(userProfile);
+    if (!preferences.count) {
+        return;
+    }
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    id clusteringValue = preferences[@"story_clustering"];
+    if (clusteringValue && clusteringValue != [NSNull null]) {
+        [defaults setBool:NBBoolPreferenceValue(clusteringValue) forKey:@"story_clustering"];
+    }
+
+    id clusterModeValue = preferences[@"cluster_mode"];
+    if (clusterModeValue && clusterModeValue != [NSNull null]) {
+        [defaults setObject:[StoryClusterDisplayDecision normalizedClusterTierValue:clusterModeValue]
+                     forKey:@"cluster_mode"];
+    }
+}
+
+- (void)updateCachedUserProfilePreferenceWithKey:(NSString *)key value:(id)value {
+    if (!self.appDelegate.dictUserProfile.count || !key.length) {
+        return;
+    }
+
+    NSMutableDictionary *userProfile = [self.appDelegate.dictUserProfile mutableCopy];
+    NSDictionary *existingPreferences = NBUserProfilePreferencesDictionary(userProfile);
+    NSMutableDictionary *preferences = existingPreferences ? [existingPreferences mutableCopy] : [NSMutableDictionary dictionary];
+    preferences[key] = value ?: @"";
+    userProfile[@"preferences"] = preferences;
+    self.appDelegate.dictUserProfile = userProfile;
+}
+
+- (void)saveProfilePreferenceWithKey:(NSString *)key value:(NSString *)value {
+    if (!key.length || !value.length) {
+        return;
+    }
+
+    [self updateCachedUserProfilePreferenceWithKey:key value:value];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
+    [self.appDelegate POST:urlString
+                parameters:@{key: value}
+                   success:nil
+                   failure:^(__unused NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Failed to save %@ preference: %@", key, error);
+    }];
+}
 
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
@@ -991,6 +1070,7 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     appDelegate.dictUnreadCounts = [NSMutableDictionary dictionary];
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
+    [self syncStoryClusteringDefaultsFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
@@ -1797,14 +1877,12 @@ static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     } else if ([identifier isEqual:@"story_titles_style"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_clustering"]) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/profile/set_preference", self.appDelegate.url];
         NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
-        [self.appDelegate POST:urlString
-                    parameters:@{@"story_clustering": value}
-                       success:nil
-                       failure:^(__unused NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            NSLog(@"Failed to save story_clustering preference: %@", error);
-        }];
+        [self saveProfilePreferenceWithKey:@"story_clustering" value:value];
+        [self.appDelegate.feedDetailViewController reload];
+    } else if ([identifier isEqual:@"cluster_mode"]) {
+        NSString *clusterMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"cluster_mode"] ?: @"related";
+        [self saveProfilePreferenceWithKey:@"cluster_mode" value:clusterMode];
         [self.appDelegate.feedDetailViewController reload];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];

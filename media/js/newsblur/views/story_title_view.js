@@ -67,6 +67,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }));
         this.$st = this.$(".NB-story-title");
         this.render_cluster_sources();
+        this.render_cluster_detail_badge();
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
@@ -770,6 +771,22 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         });
     },
 
+    // story_title_view.js: Build the metadata used to render a tier badge
+    // for a single cluster sibling. Centralized so both the compact source
+    // list and the detail-view badge path produce identical markup.
+    _cluster_tier_meta: function (raw_tier) {
+        var tier = raw_tier === 'title' ? 'title' : 'related';
+        var label = tier === 'title' ? 'Match' : 'Related';
+        var tooltip = tier === 'title' ? 'Matched via a duplicate title' : 'Matched via related topics';
+        return {
+            tier: tier,
+            label: label,
+            tooltip: tooltip,
+            row_class: ' NB-cluster-tier-' + tier,
+            badge_html: '<span class="NB-cluster-tier-badge" title="' + tooltip + '">' + label + '</span>'
+        };
+    },
+
     render_cluster_sources: function () {
         var cluster_stories = this.model.get('cluster_stories');
         if (!cluster_stories || !cluster_stories.length) return;
@@ -787,6 +804,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_archive) {
             cluster_stories = cluster_stories.slice(0, 1);
         }
+        var self = this;
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';
@@ -806,6 +824,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             var score = cs.score || 0;
             var score_class = score > 0 ? 'NB-story-positive' : (score < 0 ? 'NB-story-negative' : 'NB-story-neutral');
             var read_class = cs.read_status ? ' read' : '';
+
+            var tier_meta = self._cluster_tier_meta(cs.cluster_tier);
+            var tier_class = tier_meta.row_class;
+            var tier_badge_html = tier_meta.badge_html;
 
             if (is_expanded) {
                 // Expanded mode: reuse .NB-story-title structure with .NB-story-title-cluster modifier
@@ -839,7 +861,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
                 var authors = cs.story_authors || '';
                 var $source = $(
-                    '<div class="NB-story-title NB-story-title-cluster ' + score_class + read_class +
+                    '<div class="NB-story-title NB-story-title-cluster ' + score_class + read_class + tier_class +
                     (has_image ? ' NB-has-image' : '') + '" ' +
                     'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '" data-story-title="' + _.escape(title) + '">' +
                     '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
@@ -853,6 +875,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     '<div class="NB-story-title-split-bottom">' +
                     '<span class="story_date">' + date + '</span> ' +
                     (authors ? '<span class="NB-middot">&middot;</span> <span class="NB-storytitles-author">' + _.escape(authors) + '</span>' : '') +
+                    '<span class="NB-middot">&middot;</span> ' + tier_badge_html +
                     '</div>' +
                     '</a>' +
                     '</div>');
@@ -869,7 +892,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     }
                     cluster_image_html = '<div class="NB-cluster-story-image" style="background-image: url(\'' + _.escape(cluster_image_url) + '\');"></div>';
                 }
-                var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class +
+                var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class + tier_class +
                     (has_cluster_image ? ' NB-has-cluster-image' : '') + '" ' +
                     'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '" data-story-title="' + _.escape(title) + '">' +
                     '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
@@ -877,6 +900,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     '<div class="NB-cluster-sentiment"></div>' +
                     favicon +
                     '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
+                    // Tier badge sits right after the title so the reason the
+                    // story was clustered is adjacent to the title itself.
+                    // The image thumbnail is pushed to the right edge next to
+                    // the date so it reads as a row-level affordance.
+                    tier_badge_html +
                     cluster_image_html +
                     '<span class="NB-cluster-date">' + date + '</span>' +
                     '</div>');
@@ -884,6 +912,19 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }
         });
         this.$('.NB-story-title').after($container);
+    },
+
+    // render_cluster_sources() early-returns for cluster-detail views
+    // (they render full story rows, not the compact source list), so we
+    // attach the tier badge here instead.
+    render_cluster_detail_badge: function () {
+        if (!this.options.is_cluster_detail) return;
+        var tier_meta = this._cluster_tier_meta(this.model.get('cluster_tier'));
+        this.$el.addClass('NB-cluster-tier-' + tier_meta.tier);
+        // Prefer the split-bottom metadata row; fall back to the title row.
+        var $target = this.$('.NB-story-title-split-bottom').first();
+        if (!$target.length) $target = this.$st;
+        $target.append(tier_meta.badge_html);
     },
 
     select_cluster_story: function (e) {

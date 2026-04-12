@@ -1004,4 +1004,16 @@ class PrefsRepo(
     ) = prefs.edit {
         putBoolean(key, value)
     }
+
+    fun getString(
+        key: String,
+        default: String,
+    ): String = prefs.getString(key, default) ?: default
+
+    fun putString(
+        key: String,
+        value: String,
+    ) = prefs.edit {
+        putString(key, value)
+    }
 }

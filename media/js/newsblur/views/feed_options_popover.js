@@ -340,6 +340,26 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),
                         $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Keep stories separate')
                     ]),
+                    $.make('div', { className: 'NB-clustering-mode-section' }, [
+                        $.make('div', { className: 'NB-clustering-read-label' }, 'Group stories that share:'),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-mode' }, [
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-mode-title', 'data-setting': 'cluster_mode', 'data-value': 'title', role: 'button' }, [
+                                $.make('span', { className: 'NB-clustering-mode-label' }, 'Title only'),
+                                $.make('span', { className: 'NB-cluster-tier-title NB-clustering-mode-pill' }, [
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Match')
+                                ])
+                            ]),
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-mode-related', 'data-setting': 'cluster_mode', 'data-value': 'related', role: 'button' }, [
+                                $.make('span', { className: 'NB-cluster-tier-title NB-clustering-mode-pill' }, [
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Match')
+                                ]),
+                                $.make('span', { className: 'NB-clustering-mode-plus' }, '+'),
+                                $.make('span', { className: 'NB-cluster-tier-related NB-clustering-mode-pill' }, [
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Related')
+                                ])
+                            ])
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-clustering-preview-section' }, [
                         $.make('div', { className: 'NB-clustering-read-label' }, 'Cluster preview:'),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-preview' }, [
@@ -954,6 +974,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var clustering_enabled = NEWSBLUR.assets.preference('story_clustering');
         var cluster_mark_read = NEWSBLUR.assets.preference('cluster_mark_read');
         var cluster_preview_style = NEWSBLUR.assets.preference('cluster_preview_style') || 'single_line';
+        // feed_options_popover.js: Default to "related" (title + related) to
+        // preserve the behavior existing users saw before the toggle landed.
+        var cluster_mode = NEWSBLUR.assets.preference('cluster_mode') || 'related';
 
         // Default to true for all users
         if (clustering_enabled === undefined || clustering_enabled === null) {
@@ -965,12 +988,15 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$('.NB-clustering-enabled-on').toggleClass('NB-active', !!clustering_enabled);
         this.$('.NB-clustering-enabled-off').toggleClass('NB-active', !clustering_enabled);
+        this.$('.NB-clustering-mode-title').toggleClass('NB-active', cluster_mode === 'title');
+        this.$('.NB-clustering-mode-related').toggleClass('NB-active', cluster_mode !== 'title');
         this.$('.NB-clustering-preview-single').toggleClass('NB-active', cluster_preview_style === 'single_line');
         this.$('.NB-clustering-preview-expanded').toggleClass('NB-active', cluster_preview_style === 'expanded');
         this.$('.NB-clustering-read-on').toggleClass('NB-active', !!cluster_mark_read);
         this.$('.NB-clustering-read-off').toggleClass('NB-active', !cluster_mark_read);
 
-        // Fade the preview and mark-read sections when clustering is disabled
+        // Fade the mode, preview and mark-read sections when clustering is disabled
+        this.$('.NB-clustering-mode-section').toggleClass('NB-disabled', !clustering_enabled);
         this.$('.NB-clustering-preview-section').toggleClass('NB-disabled', !clustering_enabled);
         this.$('.NB-clustering-read-section').toggleClass('NB-disabled', !clustering_enabled);
     },
@@ -988,8 +1014,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             return;
         }
 
-        // cluster_preview_style uses string values, others use booleans
-        if (setting === 'cluster_preview_style') {
+        // cluster_preview_style and cluster_mode use string values, others use booleans
+        if (setting === 'cluster_preview_style' || setting === 'cluster_mode') {
             NEWSBLUR.assets.preference(setting, value);
         } else {
             var bool_value = value === 'true' || value === true;
@@ -999,8 +1025,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         // Update UI
         this.update_clustering_ui();
 
-        // Reload feed to apply clustering or preview style changes
-        if (setting === 'story_clustering' || setting === 'cluster_preview_style') {
+        // Reload feed to apply clustering, preview style, or mode changes
+        if (setting === 'story_clustering' || setting === 'cluster_preview_style' || setting === 'cluster_mode') {
             this.reload_feed();
         }
     },

@@ -819,13 +819,8 @@ class IPRateTrackingMiddleware:
     Records IP, user, user agent type, and endpoint for each request.
     Data is stored in Redis and exposed via Prometheus metrics for Grafana.
 
-    SOFT LAUNCH MODE (current):
-    - Tracks all requests and detects rate limit violations
-    - Logs what WOULD be denied but does NOT return 429
-    - Stores denial details in Redis for investigation
-    - Exposes metrics in Prometheus for Grafana dashboards
-
-    To enable actual blocking, set IP_RATE_LIMITING_ENABLED=True in settings.
+    IPs exceeding IP_RATE_LIMIT_THRESHOLD (default 500) requests per 5-min
+    window are blocked with 429. Controlled by IP_RATE_LIMITING_ENABLED in settings.
     See utils/ip_rate_tracker.py for implementation details.
     """
 

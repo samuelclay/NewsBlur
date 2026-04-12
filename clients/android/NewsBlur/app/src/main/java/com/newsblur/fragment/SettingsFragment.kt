@@ -35,6 +35,7 @@ import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
+import com.newsblur.util.StoryClusterDisplayDecision
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -106,6 +107,8 @@ class SettingsFragment : Fragment() {
                         state = uiState,
                         onBooleanChanged = ::updateBooleanPreference,
                         onStringChanged = ::updateStringPreference,
+                        onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
+                        onClusterModeChanged = ::updateClusterMode,
                         onDeleteOfflineStories = ::deleteOfflineStories,
                     )
                 }
@@ -124,10 +127,6 @@ class SettingsFragment : Fragment() {
             handleNotificationsPreferenceChange(value)
             return
         }
-        if (key == PrefConstants.STORY_CLUSTERING) {
-            saveStoryClusteringPreference(value)
-            return
-        }
         prefsRepo.putBoolean(key, value)
         refreshUiState()
     }
@@ -138,6 +137,58 @@ class SettingsFragment : Fragment() {
     ) {
         sharedPreferences.edit { putString(key, value) }
         refreshUiState()
+    }
+
+    private fun updateStoryClusteringEnabled(enabled: Boolean) {
+        val currentClusterMode = prefsRepo.getString(PrefConstants.CLUSTER_MODE, StoryClusterDisplayDecision.CLUSTER_MODE_RELATED)
+        updateStoryClusteringPreference(enabled, currentClusterMode)
+    }
+
+    private fun updateClusterMode(clusterMode: String) {
+        updateStoryClusteringPreference(true, clusterMode)
+    }
+
+    private fun updateStoryClusteringPreference(
+        desiredEnabled: Boolean,
+        desiredClusterMode: String,
+    ) {
+        val previousEnabled = prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true)
+        val previousClusterMode = prefsRepo.getString(PrefConstants.CLUSTER_MODE, StoryClusterDisplayDecision.CLUSTER_MODE_RELATED)
+
+        if (previousEnabled == desiredEnabled && previousClusterMode == desiredClusterMode) {
+            return
+        }
+
+        prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, desiredEnabled)
+        if (desiredEnabled) {
+            prefsRepo.putString(PrefConstants.CLUSTER_MODE, desiredClusterMode)
+        }
+        refreshUiState()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val saved =
+                withContext(Dispatchers.IO) {
+                    saveStoryClusteringPreference(
+                        previousEnabled = previousEnabled,
+                        desiredEnabled = desiredEnabled,
+                        previousClusterMode = previousClusterMode,
+                        desiredClusterMode = desiredClusterMode,
+                    )
+                }
+
+            if (saved) {
+                syncServiceState.resetFetchState(syncServiceState.lastFeedSet)
+                syncServiceState.forceFeedsFolders()
+                triggerSync(requireContext())
+            } else {
+                prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, previousEnabled)
+                prefsRepo.putString(PrefConstants.CLUSTER_MODE, previousClusterMode)
+                refreshUiState()
+                Toast
+                    .makeText(requireContext(), R.string.settings_story_clustering_save_failed, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
     private fun deleteOfflineStories() {
@@ -167,29 +218,38 @@ class SettingsFragment : Fragment() {
         refreshUiState()
     }
 
-    private fun saveStoryClusteringPreference(enabled: Boolean) {
-        val previousValue = prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true)
-        prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, enabled)
-        refreshUiState()
+    private suspend fun saveStoryClusteringPreference(
+        previousEnabled: Boolean,
+        desiredEnabled: Boolean,
+        previousClusterMode: String,
+        desiredClusterMode: String,
+    ): Boolean {
+        val appliedChanges = mutableListOf<Pair<String, String>>()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val saved =
-                withContext(Dispatchers.IO) {
-                    userApi.setBooleanPreference(PrefConstants.STORY_CLUSTERING, enabled)
-                }
-
-            if (saved) {
-                syncServiceState.resetFetchState(syncServiceState.lastFeedSet)
-                syncServiceState.forceFeedsFolders()
-                triggerSync(requireContext())
-            } else {
-                prefsRepo.putBoolean(PrefConstants.STORY_CLUSTERING, previousValue)
-                refreshUiState()
-                Toast
-                    .makeText(requireContext(), R.string.settings_story_clustering_save_failed, Toast.LENGTH_SHORT)
-                    .show()
-            }
+        if (previousEnabled != desiredEnabled) {
+            val saved = userApi.setPreference(PrefConstants.STORY_CLUSTERING, desiredEnabled.toString())
+            if (!saved) return false
+            appliedChanges += PrefConstants.STORY_CLUSTERING to previousEnabled.toString()
         }
+
+        if (desiredEnabled && previousClusterMode != desiredClusterMode) {
+            val saved = userApi.setPreference(PrefConstants.CLUSTER_MODE, desiredClusterMode)
+            if (!saved) {
+                rollbackStoryClusteringPreference(appliedChanges)
+                return false
+            }
+            appliedChanges += PrefConstants.CLUSTER_MODE to previousClusterMode
+        }
+
+        return true
+    }
+
+    private suspend fun rollbackStoryClusteringPreference(appliedChanges: List<Pair<String, String>>) {
+        appliedChanges
+            .asReversed()
+            .forEach { (key, value) ->
+                userApi.setPreference(key, value)
+            }
     }
 
     private fun showNotificationRationaleDialog() {

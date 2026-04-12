@@ -1605,11 +1605,13 @@ def load_single_feed(request, feed_id):
                     "read_filter": read_filter,
                 }
                 include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
+                cluster_mode = user_prefs.get("cluster_mode", "related")
                 stories = apply_clustering_to_stories(
                     stories,
                     user,
                     classifiers_context=classifiers_context,
                     include_expanded_data=include_expanded,
+                    cluster_mode=cluster_mode,
                 )
 
     data = dict(
@@ -2972,11 +2974,13 @@ def load_river_stories__redis(request):
                     "read_filter": read_filter,
                 }
                 include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
+                cluster_mode = user_preferences.get("cluster_mode", "related")
                 stories = apply_clustering_to_stories(
                     stories,
                     user,
                     classifiers_context=classifiers_context,
                     include_expanded_data=include_expanded,
+                    cluster_mode=cluster_mode,
                 )
 
     checkpoint4 = time.time()
@@ -3446,11 +3450,13 @@ def mark_story_hashes_as_read(request):
                     get_cluster_members,
                 )
 
+                # Use the same cluster universe the user reads in the river.
+                cluster_mode = user_prefs.get("cluster_mode", "related")
                 seen = set(story_hashes)
                 for story_hash in list(story_hashes):
-                    cluster_id = get_cluster_for_story(story_hash)
+                    cluster_id = get_cluster_for_story(story_hash, mode=cluster_mode)
                     if cluster_id:
-                        for member_hash in get_cluster_members(cluster_id):
+                        for member_hash in get_cluster_members(cluster_id, mode=cluster_mode):
                             if member_hash not in seen:
                                 cluster_hashes.append(member_hash)
                                 seen.add(member_hash)

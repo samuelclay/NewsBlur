@@ -15,6 +15,8 @@ object StoryClusterThemeStyle {
         val readTitleColor: Int,
         val metaColor: Int,
         val readMetaColor: Int,
+        val matchBadgeColor: Int,
+        val relatedBadgeColor: Int,
         val upgradePillColor: Int,
         val upgradeTextColor: Int,
     )
@@ -32,6 +34,8 @@ object StoryClusterThemeStyle {
                     readTitleColor = Color.parseColor("#585858"),
                     metaColor = Color.parseColor("#8B7B6B"),
                     readMetaColor = Color.parseColor("#8B7B6B"),
+                    matchBadgeColor = Color.parseColor("#5A8C6A"),
+                    relatedBadgeColor = Color.parseColor("#A88246"),
                     upgradePillColor = Color.parseColor("#E8D7C5"),
                     upgradeTextColor = Color.parseColor("#6A4B2C"),
                 )
@@ -46,6 +50,8 @@ object StoryClusterThemeStyle {
                     readTitleColor = Color.parseColor("#8C8C8C"),
                     metaColor = Color.parseColor("#8E8E8E"),
                     readMetaColor = Color.parseColor("#8E8E8E"),
+                    matchBadgeColor = Color.parseColor("#7DC99A"),
+                    relatedBadgeColor = Color.parseColor("#D2A76B"),
                     upgradePillColor = Color.parseColor("#2992CBE0"),
                     upgradeTextColor = Color.parseColor("#BEE8F5"),
                 )
@@ -60,6 +66,8 @@ object StoryClusterThemeStyle {
                     readTitleColor = Color.parseColor("#888888"),
                     metaColor = Color.parseColor("#808080"),
                     readMetaColor = Color.parseColor("#707070"),
+                    matchBadgeColor = Color.parseColor("#7DC99A"),
+                    relatedBadgeColor = Color.parseColor("#D2A76B"),
                     upgradePillColor = Color.parseColor("#223B5162"),
                     upgradeTextColor = Color.parseColor("#C5E8F7"),
                 )
@@ -74,10 +82,35 @@ object StoryClusterThemeStyle {
                     readTitleColor = Color.parseColor("#6E6E6E"),
                     metaColor = Color.parseColor("#7E7E7E"),
                     readMetaColor = Color.parseColor("#9A9A9A"),
+                    matchBadgeColor = Color.parseColor("#5A8C6A"),
+                    relatedBadgeColor = Color.parseColor("#A88246"),
                     upgradePillColor = Color.parseColor("#E9F3FF"),
                     upgradeTextColor = Color.parseColor("#1C5DAA"),
                 )
         }
+
+    fun badgeColor(
+        palette: Palette,
+        clusterTier: String?,
+        isRead: Boolean,
+    ): Int {
+        val baseColor =
+            if (StoryClusterDisplayDecision.normalizeClusterTier(clusterTier) == StoryClusterDisplayDecision.CLUSTER_TIER_TITLE) {
+                palette.matchBadgeColor
+            } else {
+                palette.relatedBadgeColor
+            }
+        return if (isRead) {
+            Color.argb(
+                (Color.alpha(baseColor) * 0.4f).toInt(),
+                Color.red(baseColor),
+                Color.green(baseColor),
+                Color.blue(baseColor),
+            )
+        } else {
+            baseColor
+        }
+    }
 
     fun roundedBackground(color: Int, radiusDp: Float): GradientDrawable =
         GradientDrawable().apply {
