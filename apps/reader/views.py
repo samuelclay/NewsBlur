@@ -267,25 +267,14 @@ def normalize_date_filters(date_filter_start, date_filter_end, user_timezone):
     return start_utc, end_utc_exclusive, end_utc_start_of_day
 
 
-# apps/reader/views.py — "dumb" post-query filter for the classifier filter
-# banner view. Accepts a list of already-loaded story dicts (from the normal
-# feed / river / folder loading path) and returns only the ones that match
-# the single requested classifier value. Mirrors the match semantics used
-# by apps/analyzer/models.py's apply_classifier_* helpers so the banner
-# finds the same stories a trained classifier would hit.
-#
-# The point of doing this post-query (instead of with a dedicated ES index
-# or Mongo query) is simplicity: most users don't have ES populated for
-# their feeds at all, and pagination through normal unread/all loads
-# already pulls reasonable batches. Users who scroll far enough into a
-# rare classifier value can keep paginating — we accept that some pages
-# may return fewer than `limit` stories.
+# Classifier filter banner view: stories are loaded via the normal
+# feed/river/folder path and then narrowed here. No dedicated index.
+# Match semantics mirror apps/analyzer/models.py:apply_classifier_* so
+# the banner hits the same stories a trained classifier would.
 CLASSIFIER_FILTER_TYPES = ("tag", "author", "title", "url", "text")
-# How many stories to scan per page when a classifier filter is active.
-# The regular pagination fetches `limit` stories; this multiplier loads a
-# much larger batch so post-filtering has a good chance of finding every
-# matching story the unread counts say exists, without adding a dedicated
-# index. "It can be dumb" per the product brief.
+# The multiplier inflates the fetch window so post-filtering has enough
+# raw stories to actually find every match. Some pages may still return
+# fewer than `limit` — deliberately dumb, pagination can keep going.
 CLASSIFIER_FILTER_SCAN_MULTIPLIER = 20
 
 
@@ -1135,16 +1124,21 @@ def load_single_feed(request, feed_id):
     limit = 6
     page = int(request.GET.get("page", 1))
     delay = int(request.GET.get("delay", 0))
-    # When classifier_filter_* is set, inflate the page size so the
-    # post-query filter has a real shot at finding every match. We
-    # return whatever survives the filter (may be more or fewer than
-    # `limit`). Offset scales with the inflated page so successive
-    # pages don't re-scan the same stories.
-    classifier_filter_active = bool(
-        (request.GET.get("classifier_filter_type") or "").strip()
-        and (request.GET.get("classifier_filter_value") or "").strip()
+    classifier_filter_type, classifier_filter_value, _classifier_filter_scope = (
+        normalize_classifier_filter_params(
+            request.GET.get("classifier_filter_type"),
+            request.GET.get("classifier_filter_value"),
+            request.GET.get("classifier_filter_scope"),
+        )
     )
-    effective_limit = limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER if classifier_filter_active else limit
+    # Inflate the fetch window so the post-query filter has enough raw
+    # stories to find matches. Offset scales with the inflated page so
+    # successive pages don't re-scan the same window.
+    effective_limit = (
+        limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER
+        if classifier_filter_type and classifier_filter_value
+        else limit
+    )
     offset = effective_limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
@@ -1160,16 +1154,6 @@ def load_single_feed(request, feed_id):
         date_filter_start = None
         date_filter_end = None
     query = request.GET.get("query", "").strip()
-    # apps/reader/views.py — classifier filter view parameters on the single-feed
-    # endpoint. Stories are still loaded through the normal feed/usersub path;
-    # the filter is applied post-query in filter_stories_by_classifier below.
-    classifier_filter_type, classifier_filter_value, _classifier_filter_scope = (
-        normalize_classifier_filter_params(
-            request.GET.get("classifier_filter_type"),
-            request.GET.get("classifier_filter_value"),
-            request.GET.get("classifier_filter_scope"),
-        )
-    )
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
     include_feeds = is_true(request.GET.get("include_feeds", False))
@@ -1285,10 +1269,6 @@ def load_single_feed(request, feed_id):
                 date_filter_end=date_filter_end_utc,
             )
 
-    # Classifier filter banner view: keep only stories that match the
-    # requested classifier. Deliberately post-query so we don't need a
-    # dedicated index — the trade-off is smaller pages, which is fine
-    # for a browsing surface.
     if classifier_filter_type and classifier_filter_value:
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
@@ -2527,11 +2507,6 @@ def load_river_stories__redis(request):
         date_filter_end = None
 
     query = get_post.get("query", "").strip()
-    # apps/reader/views.py — classifier filter view parameters. Stories are
-    # loaded through the normal river/folder path; filter_stories_by_classifier
-    # below narrows the result set to only stories matching the classifier.
-    # Powers the "browse stories with this classifier" banner in the web
-    # reader.
     classifier_filter_type, classifier_filter_value, classifier_filter_scope = (
         normalize_classifier_filter_params(
             get_post.get("classifier_filter_type"),
@@ -2613,10 +2588,6 @@ def load_river_stories__redis(request):
     usersubs = []
     code = 0 if is_free_river_user else 1
     user_search = None
-    # Inflate the batch size when a classifier filter is active so the
-    # post-query filter has enough raw stories to actually find matches.
-    # Offset is in the same inflated units so successive pages don't
-    # re-scan the same window.
     effective_limit = (
         limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER
         if (classifier_filter_type and classifier_filter_value)
@@ -2741,10 +2712,6 @@ def load_river_stories__redis(request):
 
             stories = Feed.format_stories(mstories)
 
-    # Classifier filter banner view: trim the story list down to ones that
-    # match the requested classifier value. See filter_stories_by_classifier
-    # at the top of this module — the filter is intentionally post-query so
-    # no dedicated index is required.
     if classifier_filter_type and classifier_filter_value:
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 

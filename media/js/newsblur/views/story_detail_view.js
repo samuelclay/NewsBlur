@@ -1930,15 +1930,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.open_story_trainer();
     },
 
-    // media/js/newsblur/views/story_detail_view.js
-    // Show a small hover popup over tag/author/url pills exposing a single
-    // "View matching stories" action. Click on the pill still trains inline
-    // via save_classifier above; this is an additional hover-only surface
-    // so the user doesn't have to detour through the trainer to browse.
-    //
-    // Uses the same tippy library as show_classifier_highlight_menu but
-    // with trigger: 'mouseenter focus' + a short delay so the tooltip
-    // doesn't flash on accidental hover.
     show_pill_filter_menu: function (e) {
         var $pill = $(e.currentTarget);
         if ($pill.data('NB-pill-tippy-initialized')) return;
@@ -1950,29 +1941,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         else if ($pill.hasClass('NB-feed-story-url')) type = 'url';
         if (!type) return;
 
-        // Read the raw value the same way save_classifier does for tag/author.
-        // For URL pills the visible text contains the matched segment with
-        // highlighting; fall back to the story permalink so the filter view
-        // matches on a real URL substring.
+        // URL pills display highlighted segments; fall back to the full
+        // permalink so the filter matches a real URL substring.
         var value;
         if (type === 'url') {
             value = this.model.get('story_permalink') || '';
         } else {
             var $clean = $pill.clone();
             $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
-            value = type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
+            value = _.string.trim($clean.text());
         }
         if (!value) return;
 
-        // Store the type+value on the pill so the click handler on the
-        // tippy-rendered .NB-pill-view-classifier element can read them
-        // without another traversal.
-        $pill.attr('data-classifier-type', type);
-        $pill.attr('data-classifier-value', value);
-
-        // Encode type+value on the tippy action so the click handler can
-        // recover them directly — avoids guessing which pill was hovered
-        // when a story has multiple tags or authors.
+        // Embed type+value as data attributes on the tippy content itself
+        // so the click handler can read them straight off e.currentTarget
+        // without tracing back to the originating pill.
         var escaped_value = $('<div/>').text(value).html().replace(/"/g, '&quot;');
         var title_html =
             '<span class="NB-pill-view-classifier" data-classifier-type="' + type +
@@ -1995,8 +1978,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             delay: [300, 100]
         });
 
-        // Tippy's native trigger picks up subsequent hovers. Nudge the first
-        // show so the popup appears on the initial hover too.
+        // Tippy normally waits for the next mouseenter after init; nudge
+        // the first show so the popup appears on the initial hover.
         _.defer(function () {
             if ($t && $t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
         });
