@@ -3078,6 +3078,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     cell.isSaved = !isClusterRow && [[story objectForKey:@"starred"] boolValue];
     cell.isShared = !isClusterRow && [[story objectForKey:@"shared"] boolValue];
     cell.storyHash = story[@"story_hash"];
+    cell.clusterTier = isClusterRow ? [StoryClusterDisplayDecision normalizedClusterTierValue:story[@"cluster_tier"]] : nil;
     NSString *storyIdentifier = [story[@"story_hash"] isKindOfClass:[NSString class]] ? story[@"story_hash"] : [NSString stringWithFormat:@"%@", @(location)];
     cell.accessibilityIdentifier = [NSString stringWithFormat:@"story-row-%@", storyIdentifier];
     

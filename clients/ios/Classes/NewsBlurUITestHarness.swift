@@ -23,6 +23,8 @@ final class NewsBlurUITestHarness {
         case cultureFolder
         case swiftFeed
         case swiftStoryOne
+        case swiftClusterFeed
+        case swiftClusterStoryOne
     }
 
     private static var didPrepareLaunchEnvironment = false
@@ -37,6 +39,10 @@ final class NewsBlurUITestHarness {
 
         switch requestedScreen {
         case "add-site":
+            installReaderFixtureNetwork(on: appDelegate)
+            ReaderUITestFixtures.prepareAppState(for: appDelegate)
+            appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
+        case "preferences":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -59,6 +65,9 @@ final class NewsBlurUITestHarness {
             didScheduleScenario = true
             AddSiteSheetViewController.viewModelFactory = { makeAddSiteViewModel() }
             configureAddSite(on: appDelegate, remainingRetries: 20)
+        case "preferences":
+            didScheduleScenario = true
+            configurePreferences(on: appDelegate, remainingRetries: 20)
         case let screen? where readerScenario(for: screen) != nil:
             didScheduleScenario = true
             configureReader(
@@ -142,6 +151,29 @@ final class NewsBlurUITestHarness {
     private static func retryPresentingAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             presentAddSite(on: appDelegate, remainingRetries: remainingRetries - 1)
+        }
+    }
+
+    private static func configurePreferences(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        guard remainingRetries > 0 else { return }
+        guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
+        guard feedsNavigationController.viewIfLoaded?.window != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configurePreferences(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+
+        if let presentedViewController = feedsNavigationController.presentedViewController {
+            presentedViewController.dismiss(animated: false) {
+                configurePreferences(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+
+        loadFixtureFeedList(on: appDelegate)
+        DispatchQueue.main.async {
+            appDelegate.showPreferences()
         }
     }
 
@@ -232,6 +264,14 @@ final class NewsBlurUITestHarness {
             appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: "Tech ▸ Swift")
         case .swiftStoryOne:
             appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: "ui-story-swift-1", animated: false)
+        case .swiftClusterFeed:
+            appDelegate.loadFeed(ReaderUITestFixtures.swiftClusterFeedId, withStory: nil, animated: false)
+        case .swiftClusterStoryOne:
+            appDelegate.loadFeed(
+                ReaderUITestFixtures.swiftClusterFeedId,
+                withStory: ReaderUITestFixtures.swiftClusterPrimaryStoryHash,
+                animated: false
+            )
         }
     }
 
@@ -247,6 +287,10 @@ final class NewsBlurUITestHarness {
             return .swiftFeed
         case "reader-story-swift-1":
             return .swiftStoryOne
+        case "reader-feed-swift-cluster":
+            return .swiftClusterFeed
+        case "reader-story-swift-cluster-1":
+            return .swiftClusterStoryOne
         default:
             return nil
         }
@@ -269,6 +313,10 @@ private enum ReaderUITestFixtures {
     static let techFeedId = "910001"
     static let swiftFeedId = "910002"
     static let cultureFeedId = "910003"
+    static let swiftClusterFeedId = "910004"
+    static let swiftClusterPrimaryStoryHash = "ui-story-swift-cluster-1"
+    static let swiftClusterMatchStoryHash = "ui-story-swift-cluster-match"
+    static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
 
     static func prepareAppState(for appDelegate: NewsBlurAppDelegate) {
         let defaults = UserDefaults.standard
@@ -284,6 +332,8 @@ private enum ReaderUITestFixtures {
         defaults.set("title", forKey: "feed_list_sort_order")
         defaults.set(false, forKey: "show_infrequent_site_stories")
         defaults.set(false, forKey: "show_global_shared_stories")
+        defaults.set(true, forKey: "story_clustering")
+        defaults.set("related", forKey: "cluster_mode")
 
         appDelegate.pendingFolder = nil
         appDelegate.pendingDailyBriefingStoryHash = nil
@@ -294,6 +344,8 @@ private enum ReaderUITestFixtures {
         appDelegate.activeStory = nil
         appDelegate.selectedIntelligence = 0
         appDelegate.storiesCollection.reset()
+
+        cacheFixtureImages(on: appDelegate)
     }
 
     static func unreadCountRows() -> [[String: Any]] {
@@ -301,6 +353,7 @@ private enum ReaderUITestFixtures {
             ["feed_id": techFeedId, "ps": 0, "nt": 2, "ng": 0],
             ["feed_id": swiftFeedId, "ps": 0, "nt": 4, "ng": 0],
             ["feed_id": cultureFeedId, "ps": 0, "nt": 1, "ng": 0],
+            ["feed_id": swiftClusterFeedId, "ps": 0, "nt": 3, "ng": 0],
         ]
     }
 
@@ -315,13 +368,17 @@ private enum ReaderUITestFixtures {
                 "is_archive": 1,
                 "is_pro": 0,
                 "premium_expire": NSNull(),
+                "preferences": [
+                    "story_clustering": true,
+                    "cluster_mode": "related",
+                ],
             ],
             "activities": [],
             "dashboard_rivers": [],
             "social_feeds": [],
             "flat_folders_with_inactive": [
                 "Tech": [Int(techFeedId)!],
-                "Tech ▸ Swift": [Int(swiftFeedId)!],
+                "Tech ▸ Swift": [Int(swiftFeedId)!, Int(swiftClusterFeedId)!],
                 "Culture": [Int(cultureFeedId)!],
             ],
             "inactive_feeds": [:],
@@ -343,6 +400,12 @@ private enum ReaderUITestFixtures {
                     title: "Design Notes",
                     unreadCount: 1,
                     address: "https://ui-test.newsblur.example/design.xml"
+                ),
+                swiftClusterFeedId: feed(
+                    id: swiftClusterFeedId,
+                    title: "Swift Weekly Clustered",
+                    unreadCount: 3,
+                    address: "https://ui-test.newsblur.example/swift-cluster.xml"
                 ),
             ],
             "folder_icons": [:],
@@ -372,6 +435,10 @@ private enum ReaderUITestFixtures {
             payload = feedListResponse()
         } else if url.path == "/reader/refresh_feeds" {
             payload = refreshFeedsResponse()
+        } else if url.path == "/reader/logout" {
+            payload = [
+                "code": 1,
+            ]
         } else if url.path == "/reader/favicons" {
             payload = faviconsResponse(for: url)
         } else if url.path.hasPrefix("/reader/river_stories") {
@@ -382,6 +449,8 @@ private enum ReaderUITestFixtures {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageOne)
             } else if pageNumber(from: url) == 2, requestedFeedID == swiftFeedId {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageTwo)
+            } else if pageNumber(from: url) == 1, requestedFeedID == swiftClusterFeedId {
+                payload = feedStoriesResponse(feedID: swiftClusterFeedId, stories: swiftClusterStoriesPageOne)
             } else if pageNumber(from: url) == 1, requestedFeedID == techFeedId {
                 payload = feedStoriesResponse(feedID: techFeedId, stories: techStoriesPageOne)
             } else if pageNumber(from: url) == 1, requestedFeedID == cultureFeedId {
@@ -402,6 +471,7 @@ private enum ReaderUITestFixtures {
                 techFeedId: unreadCount(ps: 0, nt: 2, ng: 0),
                 swiftFeedId: unreadCount(ps: 0, nt: 4, ng: 0),
                 cultureFeedId: unreadCount(ps: 0, nt: 1, ng: 0),
+                swiftClusterFeedId: unreadCount(ps: 0, nt: 3, ng: 0),
             ],
             "social_feeds": [:],
         ]
@@ -446,7 +516,7 @@ private enum ReaderUITestFixtures {
 
         let feedIds = requestedFeedIds?.isEmpty == false
             ? requestedFeedIds ?? []
-            : [techFeedId, swiftFeedId, cultureFeedId]
+            : [techFeedId, swiftFeedId, cultureFeedId, swiftClusterFeedId]
 
         return Dictionary(uniqueKeysWithValues: feedIds.map { ($0, NSNull()) })
     }
@@ -510,9 +580,12 @@ private enum ReaderUITestFixtures {
         content: String,
         date: String,
         timestamp: Int,
-        author: String
+        author: String,
+        clusterStories: [[String: Any]] = [],
+        clusterTier: String? = nil,
+        score: Int? = nil
     ) -> [String: Any] {
-        [
+        var story: [String: Any] = [
             "id": hash,
             "story_hash": hash,
             "story_feed_id": Int(feedID) ?? 0,
@@ -546,6 +619,18 @@ private enum ReaderUITestFixtures {
                 "feed": 0,
             ],
         ]
+
+        if !clusterStories.isEmpty {
+            story["cluster_stories"] = clusterStories
+        }
+        if let clusterTier {
+            story["cluster_tier"] = clusterTier
+        }
+        if let score {
+            story["score"] = score
+        }
+
+        return story
     }
 
     private static let techStoriesPageOne: [[String: Any]] = [
@@ -622,6 +707,85 @@ private enum ReaderUITestFixtures {
             author: "Design Notes"
         ),
     ]
+
+    private static let swiftClusterStoriesPageOne: [[String: Any]] = [
+        story(
+            hash: swiftClusterPrimaryStoryHash,
+            feedID: swiftClusterFeedId,
+            title: "Swift Cluster Fixture Headline",
+            content: "<p>This fixture keeps the article short so the bottom story clusters stay visible in a simulator screenshot.</p>",
+            date: "3m",
+            timestamp: 1_700_001_200,
+            author: "Swift Weekly",
+            clusterStories: [
+                story(
+                    hash: swiftClusterMatchStoryHash,
+                    feedID: techFeedId,
+                    title: "Swift Cluster Fixture Headline",
+                    content: "<p>A title match from another feed.</p>",
+                    date: "4m",
+                    timestamp: 1_700_001_180,
+                    author: "Arc News",
+                    clusterTier: "title",
+                    score: 1
+                ),
+                story(
+                    hash: swiftClusterRelatedStoryHash,
+                    feedID: cultureFeedId,
+                    title: "Swift Cluster Fixture Related Coverage",
+                    content: "<p>A related follow-up from a different feed.</p>",
+                    date: "6m",
+                    timestamp: 1_700_001_140,
+                    author: "Design Notes",
+                    clusterTier: "related",
+                    score: 0
+                ),
+            ]
+        ),
+        story(
+            hash: "ui-story-swift-cluster-2",
+            feedID: swiftClusterFeedId,
+            title: "Second Cluster Fixture Story",
+            content: "<p>A plain story to keep the feed layout realistic.</p>",
+            date: "9m",
+            timestamp: 1_700_001_100,
+            author: "Swift Weekly"
+        ),
+    ]
+
+    private static func cacheFixtureImages(on appDelegate: NewsBlurAppDelegate) {
+        let fixtureImages: [(String, UIColor, UIColor)] = [
+            (
+                swiftClusterMatchStoryHash,
+                UIColor(red: 0.42, green: 0.67, blue: 0.53, alpha: 1.0),
+                UIColor(red: 0.20, green: 0.30, blue: 0.24, alpha: 1.0)
+            ),
+            (
+                swiftClusterRelatedStoryHash,
+                UIColor(red: 0.87, green: 0.69, blue: 0.42, alpha: 1.0),
+                UIColor(red: 0.34, green: 0.23, blue: 0.13, alpha: 1.0)
+            ),
+        ]
+
+        for (hash, primary, secondary) in fixtureImages {
+            appDelegate.cacheStoryImage(fixtureImage(primary: primary, secondary: secondary), forStoryHash: hash)
+        }
+    }
+
+    private static func fixtureImage(primary: UIColor, secondary: UIColor) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 120, height: 120))
+        return renderer.image { context in
+            primary.setFill()
+            context.cgContext.fill(CGRect(x: 0, y: 0, width: 120, height: 120))
+
+            secondary.setFill()
+            context.cgContext.fill(CGRect(x: 0, y: 70, width: 120, height: 50))
+
+            UIColor(white: 1.0, alpha: 0.18).setFill()
+            context.cgContext.fillEllipse(in: CGRect(x: 16, y: 18, width: 56, height: 56))
+            context.cgContext.fill(CGRect(x: 16, y: 88, width: 88, height: 10))
+        }
+    }
 }
 
 private final class ReaderUITestURLProtocol: URLProtocol {

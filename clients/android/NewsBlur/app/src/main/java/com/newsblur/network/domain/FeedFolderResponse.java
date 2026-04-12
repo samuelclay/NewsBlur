@@ -46,6 +46,7 @@ public class FeedFolderResponse {
     public boolean isStaff;
 	public int starredCount;
     public Boolean storyClustering;
+    public String clusterMode;
 
     public String shareExtToken;
 	
@@ -77,6 +78,9 @@ public class FeedFolderResponse {
                 JsonObject preferences = parsePreferences(profile.get("preferences"));
                 if (preferences != null && preferences.has("story_clustering")) {
                     this.storyClustering = preferences.get("story_clustering").getAsBoolean();
+                }
+                if (preferences != null && preferences.has("cluster_mode")) {
+                    this.clusterMode = preferences.get("cluster_mode").getAsString();
                 }
             }
         }

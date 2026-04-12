@@ -46,6 +46,23 @@ class StoryClusterDisplayDecisionTest {
     }
 
     @Test
+    fun title_mode_filters_out_related_cluster_stories() {
+        val visible =
+            StoryClusterDisplayDecision.visibleClusterStories(
+                clusterStories =
+                    arrayOf(
+                        clusterStory(feedId = "1", timestamp = 1_000L, clusterTier = StoryClusterDisplayDecision.CLUSTER_TIER_RELATED),
+                        clusterStory(feedId = "2", timestamp = 2_000L, clusterTier = StoryClusterDisplayDecision.CLUSTER_TIER_TITLE),
+                    ),
+                subscribedFeedIds = setOf("1", "2"),
+                isPremiumArchive = true,
+                clusterMode = StoryClusterDisplayDecision.CLUSTER_MODE_TITLE,
+            )
+
+        assertEquals(listOf("2"), visible.map { it.feedId })
+    }
+
+    @Test
     fun story_clustering_preference_defaults_to_enabled() {
         val prefsRepo = mockk<PrefsRepo>()
         every { prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true) } returns true
@@ -61,12 +78,37 @@ class StoryClusterDisplayDecisionTest {
         assertFalse(StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo))
     }
 
+    @Test
+    fun display_mode_defaults_to_match_plus_related() {
+        val prefsRepo = mockk<PrefsRepo>()
+        every { prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true) } returns true
+        every { prefsRepo.getString(PrefConstants.CLUSTER_MODE, StoryClusterDisplayDecision.CLUSTER_MODE_RELATED) } returns StoryClusterDisplayDecision.CLUSTER_MODE_RELATED
+
+        assertEquals(
+            StoryClusterDisplayDecision.DISPLAY_MODE_TITLE_MATCH_PLUS_RELATED,
+            StoryClusterDisplayDecision.displayMode(prefsRepo),
+        )
+    }
+
+    @Test
+    fun display_mode_uses_title_only_when_clustering_is_disabled() {
+        val prefsRepo = mockk<PrefsRepo>()
+        every { prefsRepo.getBoolean(PrefConstants.STORY_CLUSTERING, true) } returns false
+
+        assertEquals(
+            StoryClusterDisplayDecision.DISPLAY_MODE_TITLE_ONLY,
+            StoryClusterDisplayDecision.displayMode(prefsRepo),
+        )
+    }
+
     private fun clusterStory(
         feedId: String,
         timestamp: Long,
+        clusterTier: String? = null,
     ): Story.ClusterStory =
         Story.ClusterStory().apply {
             this.feedId = feedId
             this.timestamp = timestamp
+            this.clusterTier = clusterTier
         }
 }

@@ -93,9 +93,37 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     }
 }
 
+static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
+    NSString *trimmedURLString = [rawURLString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (!trimmedURLString.length) {
+        return nil;
+    }
+
+    if ([trimmedURLString rangeOfString:@"://"].location == NSNotFound) {
+        trimmedURLString = [@"https://" stringByAppendingString:trimmedURLString];
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithString:trimmedURLString];
+    if (!components.scheme.length || !components.host.length) {
+        return nil;
+    }
+
+    components.path = @"";
+    components.query = nil;
+    components.fragment = nil;
+
+    NSString *normalizedURLString = components.URL.absoluteString;
+    while ([normalizedURLString hasSuffix:@"/"]) {
+        normalizedURLString = [normalizedURLString substringToIndex:normalizedURLString.length - 1];
+    }
+
+    return normalizedURLString.length ? normalizedURLString : nil;
+}
+
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSString *cachedURL;
+@property (nonatomic, strong) NSString *customDomainOverrideForTesting;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
@@ -805,16 +833,16 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (NSString *)url {
     if (!self.cachedURL) {
-        NSString *url = [[NSUserDefaults standardUserDefaults] objectForKey:@"custom_domain"];
-        
-        if (url.length) {
-            if ([url rangeOfString:@"://"].location == NSNotFound) {
-                url = [@"https://" stringByAppendingString:url];
-            }
-        } else {
+        NSString *customDomain = self.customDomainOverrideForTesting;
+        if (!customDomain.length) {
+            customDomain = [[NSUserDefaults standardUserDefaults] objectForKey:@"custom_domain"];
+        }
+
+        NSString *url = NBNormalizedServerURLString(customDomain);
+        if (!url.length) {
             url = DEFAULT_NEWSBLUR_URL;
         }
-        
+
         self.cachedURL = url;
     }
     
@@ -822,15 +850,18 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (NSString *)host {
-    NSString *url = self.url;
-    NSString *host = nil;
-    NSRange range = [url rangeOfString:@"://"];
-    
-    if (url.length && range.location != NSNotFound) {
-        host = [url substringFromIndex:range.location + range.length];
+    NSURL *url = [NSURL URLWithString:self.url];
+    if (url.host.length) {
+        return url.host;
     }
-    
-    return host;
+
+    NSString *urlString = self.url;
+    NSRange range = [urlString rangeOfString:@"://"];
+    if (urlString.length && range.location != NSNotFound) {
+        return [urlString substringFromIndex:range.location + range.length];
+    }
+
+    return nil;
 }
 
 #pragma mark -
@@ -1867,11 +1898,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (void)setCustomDomainForTesting:(NSString *)urlString {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (urlString.length) {
-        [defaults setObject:urlString forKey:@"custom_domain"];
+        self.customDomainOverrideForTesting = urlString;
     } else {
-        [defaults removeObjectForKey:@"custom_domain"];
+        self.customDomainOverrideForTesting = nil;
     }
     self.cachedURL = nil;
 }

@@ -16,7 +16,121 @@ TITLE_MIN_LENGTH = 10
 FUZZY_MIN_WORDS = 5
 FUZZY_SIMILARITY_THRESHOLD = 0.6
 FUZZY_MIN_INTERSECTION = 3
-SEMANTIC_MIN_TITLE_INTERSECTION = 3
+# clustering/models.py: Tier 2 (semantic) post-validation. Raised from 3 to 4
+# after finding that jargon-heavy feeds (scientific papers, academic blogs)
+# routinely share 3 domain words like "single", "cell", "rna" without being
+# true topical duplicates. Overlap-coefficient floor catches the same class
+# of false positives when titles are very different lengths.
+SEMANTIC_MIN_TITLE_INTERSECTION = 4
+SEMANTIC_MIN_OVERLAP_COEF = 0.45
+
+# clustering/models.py: Two cluster universes share Redis namespace.
+#   sCL:/zCL:  -> title + related merged clusters (existing keys, the default
+#                 read path for users on the "Title + related" cluster mode).
+#                 Member scores encode tier provenance: 1 = matched via Tier 1
+#                 title overlap, 2 = matched only via Tier 2 semantic similarity.
+#                 Legacy entries (before per-tier scoring) use score 0 and are
+#                 treated as "related" so they stay visible until they TTL out.
+#   sCLt:/zCLt: -> title-only clusters (Tier 1 output), read when a user
+#                 selects "Title only" cluster mode. Member scores are 1.
+CLUSTER_KEY_PREFIX_RELATED = "sCL"
+CLUSTER_ZKEY_PREFIX_RELATED = "zCL"
+CLUSTER_KEY_PREFIX_TITLE = "sCLt"
+CLUSTER_ZKEY_PREFIX_TITLE = "zCLt"
+
+# Tier scores written into the zCL:/zCLt: sorted sets.
+CLUSTER_TIER_TITLE_SCORE = 1
+CLUSTER_TIER_RELATED_SCORE = 2
+
+CLUSTER_TIER_TITLE = "title"
+CLUSTER_TIER_RELATED = "related"
+
+
+def cluster_mode_prefixes(mode):
+    """Return (sCL prefix, zCL prefix) for a user's cluster mode.
+
+    Falls back to the "related" (merged) namespace when the mode is unknown or
+    missing, so behavior matches the pre-toggle default.
+    """
+    if mode == CLUSTER_TIER_TITLE:
+        return CLUSTER_KEY_PREFIX_TITLE, CLUSTER_ZKEY_PREFIX_TITLE
+    return CLUSTER_KEY_PREFIX_RELATED, CLUSTER_ZKEY_PREFIX_RELATED
+
+
+def tier_from_score(score):
+    """Map a sorted-set score back to a tier label."""
+    # clustering/models.py: Score 1 = Tier 1 title match, everything else
+    # (including legacy score 0) is treated as Tier 2 related.
+    if score == CLUSTER_TIER_TITLE_SCORE:
+        return CLUSTER_TIER_TITLE
+    return CLUSTER_TIER_RELATED
+
+
+def representative_title_words(rep_title, rep_feed_id, feed_title_map=None):
+    """Pre-compute the significant-word set for a representative story title.
+
+    Exposed so callers iterating many siblings against the same representative
+    can compute once and reuse, rather than re-normalizing inside every
+    sibling_tier_vs_representative() call.
+    """
+    if not rep_title:
+        return frozenset()
+    rep_feed_title = feed_title_map.get(rep_feed_id, "") if feed_title_map else ""
+    return title_words_excluding_feed(rep_title, rep_feed_title)
+
+
+def sibling_tier_vs_representative(
+    rep_title,
+    rep_feed_id,
+    sibling_title,
+    sibling_feed_id,
+    feed_title_map=None,
+    rep_words=None,
+):
+    """Return the tier label for a sibling relative to a representative story.
+
+    The stored sorted-set score (written by the clustering task) records
+    whether a member participated in ANY Tier 1 title cluster during that
+    feed's clustering run. Once stories with unrelated titles chain together
+    via transitive merges, the stored score loses meaning relative to the
+    story a reader is actually looking at.
+
+    At read time, when we know the representative, we can recompute the
+    tier directly: a sibling is "title" if its title matches the
+    representative's title at Tier 1 strength — either an exact normalized
+    match, or fuzzy overlap with intersection >= FUZZY_MIN_INTERSECTION AND
+    coefficient >= FUZZY_SIMILARITY_THRESHOLD. Otherwise it's "related".
+
+    This also lets a duplicate-title sibling on the same feed show up as a
+    title match even though Tier 1 rejects same-feed pairs during the
+    clustering run — from the reader's perspective, two identical titles
+    are obviously the same story.
+
+    Pass pre-computed `rep_words` (from representative_title_words) when
+    comparing many siblings against the same representative to avoid
+    re-tokenizing the representative title on every call.
+    """
+    if not rep_title or not sibling_title:
+        return CLUSTER_TIER_RELATED
+
+    if normalize_title(rep_title) == normalize_title(sibling_title):
+        return CLUSTER_TIER_TITLE
+
+    if rep_words is None:
+        rep_words = representative_title_words(rep_title, rep_feed_id, feed_title_map)
+    sib_feed_title = feed_title_map.get(sibling_feed_id, "") if feed_title_map else ""
+    sib_words = title_words_excluding_feed(sibling_title, sib_feed_title)
+
+    intersection = len(rep_words & sib_words)
+    if intersection < FUZZY_MIN_INTERSECTION:
+        return CLUSTER_TIER_RELATED
+    smaller = min(len(rep_words), len(sib_words))
+    if not smaller:
+        return CLUSTER_TIER_RELATED
+    if (intersection / smaller) >= FUZZY_SIMILARITY_THRESHOLD:
+        return CLUSTER_TIER_TITLE
+    return CLUSTER_TIER_RELATED
+
 
 # clustering/models.py: Common English stopwords for fuzzy title matching
 STOPWORDS = frozenset(
@@ -443,6 +557,14 @@ def find_semantic_clusters(
             # even when the stories are about completely different topics.
             # When feed_title_map is provided, strip feed title words so
             # shared feed-name prefixes don't inflate the intersection count.
+            #
+            # Two guardrails must pass:
+            #   1. Absolute intersection >= SEMANTIC_MIN_TITLE_INTERSECTION
+            #      (catches shallow matches on a handful of domain words)
+            #   2. Overlap coefficient >= SEMANTIC_MIN_OVERLAP_COEF
+            #      (catches cases where a short title shares a few words with
+            #      a much longer one — e.g. Bruno's single-cell cluster where
+            #      unrelated scientific papers all contained "single cell rna")
             if story_title_map:
                 if feed_title_map:
                     query_feed_title = feed_title_map.get(story["story_feed_id"], "")
@@ -458,7 +580,11 @@ def find_semantic_clusters(
                         sim_title_words = title_words_excluding_feed(sim_title, sim_feed_title)
                     else:
                         sim_title_words = title_significant_words(sim_title)
-                    if len(query_title_words & sim_title_words) < SEMANTIC_MIN_TITLE_INTERSECTION:
+                    inter_count = len(query_title_words & sim_title_words)
+                    if inter_count < SEMANTIC_MIN_TITLE_INTERSECTION:
+                        continue
+                    smaller = min(len(query_title_words), len(sim_title_words))
+                    if not smaller or (inter_count / smaller) < SEMANTIC_MIN_OVERLAP_COEF:
                         continue
                 else:
                     continue
@@ -549,7 +675,9 @@ def merge_clusters(
 
     # Union within semantic clusters (with title-word validation when available).
     # When feed_title_map is provided, strip feed title words so shared
-    # feed-name prefixes don't inflate the intersection count.
+    # feed-name prefixes don't inflate the intersection count. The same two
+    # guardrails from find_semantic_clusters apply here for any remaining
+    # unions during the merge step.
     for members in semantic_clusters.values():
         for i in range(1, len(members)):
             if story_title_map:
@@ -564,7 +692,11 @@ def merge_clusters(
                     else:
                         words_a = title_significant_words(title_a)
                         words_b = title_significant_words(title_b)
-                    if len(words_a & words_b) < SEMANTIC_MIN_TITLE_INTERSECTION:
+                    inter_count = len(words_a & words_b)
+                    if inter_count < SEMANTIC_MIN_TITLE_INTERSECTION:
+                        continue
+                    smaller = min(len(words_a), len(words_b))
+                    if not smaller or (inter_count / smaller) < SEMANTIC_MIN_OVERLAP_COEF:
                         continue
             union(members[0], members[i])
 
@@ -606,7 +738,13 @@ def merge_clusters(
 
 
 def store_clusters_to_redis(
-    clusters, ttl=CLUSTER_TTL_SECONDS, candidate_cluster_map=None, story_title_map=None
+    clusters,
+    ttl=CLUSTER_TTL_SECONDS,
+    candidate_cluster_map=None,
+    story_title_map=None,
+    key_prefix=CLUSTER_KEY_PREFIX_RELATED,
+    zkey_prefix=CLUSTER_ZKEY_PREFIX_RELATED,
+    member_tiers=None,
 ):
     """Write cluster memberships to Redis.
 
@@ -619,18 +757,35 @@ def store_clusters_to_redis(
     title words with at least one existing cluster member. This prevents unrelated
     stories from accumulating in a cluster through transitive chains across runs.
 
-    Keys:
-        sCL:{story_hash} -> cluster_id (STRING with TTL)
-        zCL:{cluster_id} -> sorted set of story_hashes scored by story_date
+    Keys (parameterised so title-only and title+related namespaces share code):
+        {key_prefix}:{story_hash}  -> cluster_id (STRING with TTL)
+        {zkey_prefix}:{cluster_id} -> sorted set of story_hashes. The score
+                                      encodes the tier provenance: 1 for Tier 1
+                                      title matches, 2 for Tier 2 related.
+                                      Legacy entries use 0 and read back as
+                                      "related" on the merged namespace.
+
+    Args:
+        member_tiers: optional dict {story_hash: score} used when writing to
+            the merged namespace so that each sibling carries a tier tag.
+            When None, all members are written with score 0 (legacy behavior).
     """
     if not clusters:
         return
+
+    def tier_score(story_hash):
+        if member_tiers is None:
+            return 0
+        return member_tiers.get(story_hash, CLUSTER_TIER_RELATED_SCORE)
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     pipe = r.pipeline()
     merged_count = 0
     new_count = 0
     skipped_validation = 0
+
+    skey = lambda h: "%s:%s" % (key_prefix, h)
+    zkey = lambda cid: "%s:%s" % (zkey_prefix, cid)
 
     for cluster_id, members in clusters.items():
         # Check if any member already belongs to an existing cluster
@@ -648,7 +803,7 @@ def store_clusters_to_redis(
 
             # Enforce CLUSTER_MAX_SIZE: check how many members the existing
             # cluster already has before adding more.
-            existing_members = r.zrange("zCL:%s" % target_cluster_id, 0, -1)
+            existing_members = r.zrange(zkey(target_cluster_id), 0, -1)
             existing_size = len(existing_members) if existing_members else 0
 
             # Build title-word sets for existing cluster members (for merge validation)
@@ -684,22 +839,22 @@ def store_clusters_to_redis(
                                 continue
 
                     # New story joining existing cluster
-                    pipe.set("sCL:%s" % story_hash, target_cluster_id, ex=ttl)
-                    pipe.zadd("zCL:%s" % target_cluster_id, {story_hash: 0})
+                    pipe.set(skey(story_hash), target_cluster_id, ex=ttl)
+                    pipe.zadd(zkey(target_cluster_id), {story_hash: tier_score(story_hash)})
                     added_count += 1
                 else:
                     # Already in a cluster — refresh TTL on its sCL: key
-                    pipe.expire("sCL:%s" % story_hash, ttl)
-            pipe.expire("zCL:%s" % target_cluster_id, ttl)
+                    pipe.expire(skey(story_hash), ttl)
+            pipe.expire(zkey(target_cluster_id), ttl)
         else:
             # Brand new cluster — replace any stale data
             new_count += 1
             for story_hash in members:
-                pipe.set("sCL:%s" % story_hash, cluster_id, ex=ttl)
-            pipe.delete("zCL:%s" % cluster_id)
+                pipe.set(skey(story_hash), cluster_id, ex=ttl)
+            pipe.delete(zkey(cluster_id))
             for story_hash in members:
-                pipe.zadd("zCL:%s" % cluster_id, {story_hash: 0})
-            pipe.expire("zCL:%s" % cluster_id, ttl)
+                pipe.zadd(zkey(cluster_id), {story_hash: tier_score(story_hash)})
+            pipe.expire(zkey(cluster_id), ttl)
 
     pipe.execute()
 
@@ -711,36 +866,54 @@ def store_clusters_to_redis(
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
-        " ---> ~FBClustering: stored %s clusters (%s new, %s merged) with %s total stories"
-        % (len(clusters), new_count, merged_count, total_stories)
+        " ---> ~FBClustering: stored %s %s clusters (%s new, %s merged) with %s total stories"
+        % (len(clusters), key_prefix, new_count, merged_count, total_stories)
     )
 
-    # clustering/models.py: Record unique cluster IDs and story hashes for Grafana
-    from apps.statistics.rclustering_usage import RClusteringUsage
+    # clustering/models.py: Record unique cluster IDs and story hashes for
+    # Grafana. Only record for the merged namespace so we don't double-count
+    # title-only clusters (the merged cluster is the authoritative aggregate).
+    if key_prefix == CLUSTER_KEY_PREFIX_RELATED:
+        from apps.statistics.rclustering_usage import RClusteringUsage
 
-    all_story_hashes = [h for members in clusters.values() for h in members]
-    RClusteringUsage.record_cluster_ids(list(clusters.keys()), all_story_hashes)
+        all_story_hashes = [h for members in clusters.values() for h in members]
+        RClusteringUsage.record_cluster_ids(list(clusters.keys()), all_story_hashes)
 
 
-def get_cluster_for_story(story_hash):
-    """Look up the cluster_id for a story_hash from Redis."""
+def get_cluster_for_story(story_hash, mode=CLUSTER_TIER_RELATED):
+    """Look up the cluster_id for a story_hash from Redis.
+
+    `mode` picks the namespace: "title" reads from sCLt:, anything else
+    (including None/"related") reads the merged sCL: namespace.
+    """
+    key_prefix, _ = cluster_mode_prefixes(mode)
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    cid = r.get("sCL:%s" % story_hash)
+    cid = r.get("%s:%s" % (key_prefix, story_hash))
     if cid and isinstance(cid, bytes):
         cid = cid.decode()
     return cid
 
 
-def get_cluster_members(cluster_id):
-    """Get all story_hashes in a cluster from Redis."""
+def get_cluster_members(cluster_id, mode=CLUSTER_TIER_RELATED):
+    """Get all story_hashes in a cluster from Redis.
+
+    `mode` picks the namespace, matching get_cluster_for_story.
+    """
+    _, zkey_prefix = cluster_mode_prefixes(mode)
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     if isinstance(cluster_id, bytes):
         cluster_id = cluster_id.decode()
-    members = r.zrange("zCL:%s" % cluster_id, 0, -1)
+    members = r.zrange("%s:%s" % (zkey_prefix, cluster_id), 0, -1)
     return [m.decode() if isinstance(m, bytes) else m for m in members]
 
 
-def apply_clustering_to_stories(stories, user, classifiers_context=None, include_expanded_data=False):
+def apply_clustering_to_stories(
+    stories,
+    user,
+    classifiers_context=None,
+    include_expanded_data=False,
+    cluster_mode=CLUSTER_TIER_RELATED,
+):
     """Apply clustering to a list of story dicts from the river view.
 
     For each story on the current page that belongs to a cluster, fetches
@@ -756,12 +929,18 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
             folder_feed_ids, user_is_pro, unread_feed_story_hashes, read_filter
         include_expanded_data: if True, include image_urls, story_content,
             secure_image_thumbnails for expanded cluster preview
+        cluster_mode: "title" to read only Tier 1 title-match clusters, or
+            "related" (default) to read the merged title+related namespace.
 
     Returns:
         Modified stories list with cluster_stories attached to representatives.
+        Each sibling dict carries a `cluster_tier` field (`title` or `related`)
+        so the frontend can badge it.
     """
     if not stories:
         return stories
+
+    key_prefix, zkey_prefix = cluster_mode_prefixes(cluster_mode)
 
     # Get the user's subscribed feed IDs so we only show cluster members
     # from feeds the user actually subscribes to.
@@ -777,7 +956,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
     story_hashes = [s["story_hash"] for s in stories]
     pipe = r.pipeline()
     for h in story_hashes:
-        pipe.get("sCL:%s" % h)
+        pipe.get("%s:%s" % (key_prefix, h))
     cluster_ids = pipe.execute()
 
     # Map story_hash -> cluster_id for stories on this page
@@ -793,11 +972,13 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
     if not hash_to_cluster:
         return stories
 
-    # Fetch ALL members for each cluster (including those not on this page)
+    # Fetch ALL members for each cluster (including those not on this page).
+    # The sorted-set score isn't read here because sibling tier is recomputed
+    # at render time against the chosen representative (see the loop below).
     cluster_all_members = {}
     pipe = r.pipeline()
     for cid in unique_cluster_ids:
-        pipe.zrange("zCL:%s" % cid, 0, -1)
+        pipe.zrange("%s:%s" % (zkey_prefix, cid), 0, -1)
     member_results = pipe.execute()
     for cid, members in zip(unique_cluster_ids, member_results):
         cluster_all_members[cid] = [m.decode() if isinstance(m, bytes) else m for m in members]
@@ -872,6 +1053,11 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
             .exclude(user_title="")
             .values_list("feed_id", "user_title")
         )
+
+    # clustering/models.py: Build a feed-title map so the per-sibling tier
+    # computation can strip shared feed-name words before comparing title
+    # overlap (matches what Tier 1 clustering does during the task run).
+    feed_title_map = {fid: (feed.feed_title or "") for fid, feed in feeds_by_id.items()}
 
     off_page_metadata = {}
     if off_page_hashes:
@@ -987,12 +1173,37 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         for s in page_group[1:]:
             clustered_hashes.add(s["story_hash"])
 
+        rep_title = representative.get("story_title", "") or ""
+        rep_feed_id = representative.get("story_feed_id")
+        rep_words = representative_title_words(rep_title, rep_feed_id, feed_title_map)
+
         # Build cluster_stories from ALL other members (on-page and off-page),
         # skipping only the representative itself.
         cluster_stories = []
         for member_hash in all_members:
             if member_hash == representative["story_hash"]:
                 continue
+
+            if member_hash in page_stories_by_hash:
+                sib_on_page = page_stories_by_hash[member_hash]
+                sib_title = sib_on_page.get("story_title", "") or ""
+                sib_feed_id = sib_on_page.get("story_feed_id")
+            elif member_hash in off_page_metadata:
+                sib_off_page = off_page_metadata[member_hash]
+                sib_title = sib_off_page.get("story_title", "") or ""
+                sib_feed_id = sib_off_page.get("story_feed_id")
+            else:
+                sib_title = ""
+                sib_feed_id = None
+
+            member_tier = sibling_tier_vs_representative(
+                rep_title,
+                rep_feed_id,
+                sib_title,
+                sib_feed_id,
+                feed_title_map=feed_title_map,
+                rep_words=rep_words,
+            )
 
             if member_hash in page_stories_by_hash:
                 # On-page member — already has intelligence, score, read_status
@@ -1009,6 +1220,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     "intelligence": s.get("intelligence", {"feed": 0, "author": 0, "tags": 0, "title": 0}),
                     "score": s.get("score", 0),
                     "read_status": s.get("read_status", 0),
+                    "cluster_tier": member_tier,
                 }
                 entry["image_urls"] = s.get("image_urls", [])
                 entry["secure_image_thumbnails"] = s.get("secure_image_thumbnails", {})
@@ -1019,8 +1231,10 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     entry["story_content"] = content
                 cluster_stories.append(entry)
             elif member_hash in off_page_metadata:
-                # Off-page member fetched from MongoDB
-                cluster_stories.append(off_page_metadata[member_hash])
+                # Off-page member fetched from MongoDB — tag with tier before emitting
+                entry = dict(off_page_metadata[member_hash])
+                entry["cluster_tier"] = member_tier
+                cluster_stories.append(entry)
 
         if cluster_stories:
             cluster_data[representative["story_hash"]] = cluster_stories
@@ -1046,7 +1260,7 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
     return result
 
 
-def attach_cluster_data_to_stories(stories, user):
+def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELATED):
     """Attach cluster member data to stories without deduplication.
 
     Unlike apply_clustering_to_stories() which removes duplicate cluster
@@ -1057,12 +1271,16 @@ def attach_cluster_data_to_stories(stories, user):
     Args:
         stories: list of story dicts (must have 'story_hash' and 'story_feed_id')
         user: User object
+        cluster_mode: "title" or "related" (default), matching the caller's
+            user preference. Selects which Redis namespace to read.
 
     Returns:
         None (modifies stories in place by setting 'cluster_stories' key)
     """
     if not stories:
         return
+
+    key_prefix, zkey_prefix = cluster_mode_prefixes(cluster_mode)
 
     from apps.reader.models import UserSubscription
 
@@ -1078,7 +1296,7 @@ def attach_cluster_data_to_stories(stories, user):
     story_hashes = [s["story_hash"] for s in stories]
     pipe = r.pipeline()
     for h in story_hashes:
-        pipe.get("sCL:%s" % h)
+        pipe.get("%s:%s" % (key_prefix, h))
     cluster_ids = pipe.execute()
 
     hash_to_cluster = {}
@@ -1092,11 +1310,12 @@ def attach_cluster_data_to_stories(stories, user):
     if not hash_to_cluster:
         return
 
-    # Fetch all members for each cluster
+    # Fetch all members for each cluster. Tier is recomputed per story below
+    # against each story's own representative, so scores aren't needed here.
     cluster_all_members = {}
     pipe = r.pipeline()
     for cid in unique_cluster_ids:
-        pipe.zrange("zCL:%s" % cid, 0, -1)
+        pipe.zrange("%s:%s" % (zkey_prefix, cid), 0, -1)
     member_results = pipe.execute()
     for cid, members in zip(unique_cluster_ids, member_results):
         cluster_all_members[cid] = [m.decode() if isinstance(m, bytes) else m for m in members]
@@ -1116,6 +1335,7 @@ def attach_cluster_data_to_stories(stories, user):
     from apps.rss_feeds.models import Feed, MStory
 
     external_metadata = {}
+    feeds_by_id = {}
     if external_hashes:
         only_fields = [
             "story_hash",
@@ -1127,10 +1347,21 @@ def attach_cluster_data_to_stories(stories, user):
             "image_urls",
         ]
         ext_list = list(external_hashes)
+        # Batch-fetch all feeds once so we can build a feed_title_map for
+        # representative-relative tier computation below.
+        ext_feed_ids = set()
+        for h in ext_list:
+            fid = int(h.split(":", 1)[0]) if ":" in h else None
+            if fid:
+                ext_feed_ids.add(fid)
+        for s in stories:
+            ext_feed_ids.add(s.get("story_feed_id"))
+        if ext_feed_ids:
+            feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=ext_feed_ids)}
         for batch_start in range(0, len(ext_list), 100):
             batch = ext_list[batch_start : batch_start + 100]
             for story in MStory.objects(story_hash__in=batch).only(*only_fields).order_by():
-                feed = Feed.get_by_id(story.story_feed_id)
+                feed = feeds_by_id.get(story.story_feed_id)
                 image_urls = story.image_urls or []
                 external_metadata[story.story_hash] = {
                     "story_hash": story.story_hash,
@@ -1149,6 +1380,9 @@ def attach_cluster_data_to_stories(stories, user):
                     ),
                 }
 
+    # clustering/models.py: feed-title map for read-time tier recomputation.
+    feed_title_map = {fid: (feed.feed_title or "") for fid, feed in feeds_by_id.items()}
+
     # Attach cluster_stories to each input story that has a cluster
     for story in stories:
         cid = hash_to_cluster.get(story["story_hash"])
@@ -1160,6 +1394,10 @@ def attach_cluster_data_to_stories(stories, user):
         if len(unique_guids) < 2:
             continue
 
+        rep_title = story.get("story_title", "") or ""
+        rep_feed_id = story.get("story_feed_id")
+        rep_words = representative_title_words(rep_title, rep_feed_id, feed_title_map)
+
         cluster_stories = []
         for member_hash in all_members:
             if member_hash == story["story_hash"]:
@@ -1168,7 +1406,17 @@ def attach_cluster_data_to_stories(stories, user):
                 # Skip other curated stories — they appear independently in the briefing
                 continue
             if member_hash in external_metadata:
-                cluster_stories.append(external_metadata[member_hash])
+                meta = external_metadata[member_hash]
+                entry = dict(meta)
+                entry["cluster_tier"] = sibling_tier_vs_representative(
+                    rep_title,
+                    rep_feed_id,
+                    meta.get("story_title", ""),
+                    meta.get("story_feed_id"),
+                    feed_title_map=feed_title_map,
+                    rep_words=rep_words,
+                )
+                cluster_stories.append(entry)
 
         if cluster_stories:
             story["cluster_stories"] = cluster_stories

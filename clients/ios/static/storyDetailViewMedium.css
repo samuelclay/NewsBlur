@@ -327,6 +327,18 @@ del {
     color: #C6C6C6;
 }
 
+.NB-cluster-tier-badge {
+    color: #D0D0D0;
+}
+
+.NB-cluster-tier-title .NB-cluster-tier-badge {
+    color: #7DC99A;
+}
+
+.NB-cluster-tier-related .NB-cluster-tier-badge {
+    color: #D2A76B;
+}
+
 .NB-cluster-detail-favicon,
 .NB-cluster-detail-image {
     background-color: rgba(255, 255, 255, .08);

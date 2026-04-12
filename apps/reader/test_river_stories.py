@@ -66,9 +66,6 @@ class Test_RiverStories(TransactionTestCase):
         self.client = Client()
         self.user = User.objects.get(username="conesus")
 
-        # Create test stories dynamically (10+ stories across 5+ feeds)
-        import time
-
         from django.utils import timezone as django_tz
 
         self.test_feeds = [1, 2, 3, 4, 5]
@@ -91,24 +88,31 @@ class Test_RiverStories(TransactionTestCase):
         # Create 3 stories per feed (15 total)
         for feed_id in self.test_feeds:
             for i in range(3):
-                unique_id = f"{int(time.time() * 1000000)}{feed_id}{i}"
-                story_hash = f"{feed_id}:test{unique_id}"
+                story_guid_base = f"river-test-{feed_id}-{i}"
+                story_guid = story_guid_base
+                suffix = 0
+
+                while MStory.objects(
+                    story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
+                ).only("story_hash").first():
+                    suffix += 1
+                    story_guid = f"{story_guid_base}-{suffix}"
+
                 story = MStory(
-                    story_hash=story_hash,
                     story_feed_id=feed_id,
                     story_date=django_tz.now(),
                     story_title=f"Test Story {feed_id}-{i}",
                     story_content=f"Content {i}",
-                    story_guid=f"guid-{unique_id}",
-                    story_permalink=f"http://example.com/{unique_id}",
+                    story_guid=story_guid,
+                    story_permalink=f"http://example.com/{story_guid}",
                     story_author_name=f"Author {i}",
                 )
                 story.save()
-                self.test_story_hashes.append(story_hash)
+                self.test_story_hashes.append(story.story_hash)
 
                 # Add to Redis zF: set to simulate fresh feed data
                 timestamp = int(django_tz.now().timestamp())
-                self.r.zadd(f"zF:{feed_id}", {story_hash: timestamp})
+                self.r.zadd(f"zF:{feed_id}", {story.story_hash: timestamp})
 
         print(f"\n>>> Created {len(self.test_story_hashes)} test stories across {len(self.test_feeds)} feeds")
 

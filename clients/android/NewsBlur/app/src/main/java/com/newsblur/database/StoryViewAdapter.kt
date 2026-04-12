@@ -50,6 +50,7 @@ import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
+import com.newsblur.util.StoryClusterBadgeViewBinder
 import com.newsblur.util.StoryRowThumbnailVerticalMode
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryClusterDisplayDecision
@@ -325,6 +326,7 @@ class StoryViewAdapter(
         val showClusterRows = listStyle == StoryListStyle.LIST && StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)
         val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
         val isArchiveUser = isArchiveUser()
+        val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
 
         return buildList {
             stories.forEachIndexed { storyIndex, story ->
@@ -336,6 +338,7 @@ class StoryViewAdapter(
                     clusterStories = story.clusterStories,
                     subscribedFeedIds = subscribedFeedIds,
                     isPremiumArchive = isArchiveUser,
+                    clusterMode = clusterMode,
                 ).forEach { clusterStory ->
                     add(DisplayItem.ClusterRow(clusterStory, storyIndex, story.storyHash))
                 }
@@ -696,6 +699,7 @@ class StoryViewAdapter(
         val sentiment: ImageView = view.findViewById(R.id.story_cluster_row_sentiment)
         val feedIcon: ImageView = view.findViewById(R.id.story_cluster_row_feed_icon)
         val preview: StoryThumbnailView = view.findViewById(R.id.story_cluster_row_preview)
+        val badge: TextView = view.findViewById(R.id.story_cluster_row_badge)
         val title: TextView = view.findViewById(R.id.story_cluster_row_title)
         val date: TextView = view.findViewById(R.id.story_cluster_row_date)
 
@@ -1201,6 +1205,7 @@ class StoryViewAdapter(
         vh.date.textSize = textSize * 10f
         vh.title.setTextColor(if (isRead) palette.readTitleColor else palette.titleColor)
         vh.date.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
+        StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, isRead)
 
         bindFeedIcon(feed, vh.feedIcon, 16)
         bindClusterPreview(vh, clusterStory.thumbnailUrl ?: clusterThumbnailUrl(clusterStory.storyHash), isRead)
@@ -1220,14 +1225,14 @@ class StoryViewAdapter(
     ) {
         vh.previewLoader?.cancel = true
         if (thumbnailUrl.isNullOrBlank()) {
-            updateClusterTitleEndAnchor(vh.title, vh.date.id)
+            updateClusterEndAnchors(vh.title, vh.badge, hasPreview = false, previewId = vh.preview.id, dateId = vh.date.id)
             vh.preview.visibility = View.GONE
             vh.preview.setImageDrawable(null)
             vh.previewLoader = null
             return
         }
 
-        updateClusterTitleEndAnchor(vh.title, vh.preview.id)
+        updateClusterEndAnchors(vh.title, vh.badge, hasPreview = true, previewId = vh.preview.id, dateId = vh.date.id)
         vh.preview.visibility = View.VISIBLE
         vh.preview.imageAlpha = if (isRead) CLUSTER_READ_PREVIEW_ALPHA_B255 else 255
         vh.preview.setImageDrawable(null)
@@ -1240,13 +1245,21 @@ class StoryViewAdapter(
             )
     }
 
-    private fun updateClusterTitleEndAnchor(
+    private fun updateClusterEndAnchors(
         titleView: TextView,
-        anchorId: Int,
+        badgeView: TextView,
+        hasPreview: Boolean,
+        previewId: Int,
+        dateId: Int,
     ) {
-        val params = titleView.layoutParams as RelativeLayout.LayoutParams
-        params.addRule(RelativeLayout.START_OF, anchorId)
-        titleView.layoutParams = params
+        val badgeAnchorId = StoryClusterBadgeViewBinder.endAnchorId(hasPreview, previewId, dateId)
+        val badgeParams = badgeView.layoutParams as RelativeLayout.LayoutParams
+        badgeParams.addRule(RelativeLayout.START_OF, badgeAnchorId)
+        badgeView.layoutParams = badgeParams
+
+        val titleParams = titleView.layoutParams as RelativeLayout.LayoutParams
+        titleParams.addRule(RelativeLayout.START_OF, badgeView.id)
+        titleView.layoutParams = titleParams
     }
 
     private fun clusterThumbnailUrl(storyHash: String?): String? {

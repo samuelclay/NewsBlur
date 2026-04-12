@@ -1759,6 +1759,32 @@ a.NB-show-profile {
     color: inherit;
 }
 
+.NB-cluster-tier-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: #9A9A9A;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    line-height: 1.2;
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+.NB-cluster-tier-title .NB-cluster-tier-badge {
+    color: #5A8C6A;
+}
+
+.NB-cluster-tier-related .NB-cluster-tier-badge {
+    color: #A88246;
+}
+
 .NB-cluster-detail-image {
     width: 24px;
     height: 24px;
@@ -1784,7 +1810,8 @@ a.NB-show-profile {
 
 .NB-story-cluster-detail-item.read .NB-cluster-detail-favicon,
 .NB-story-cluster-detail-item.read .NB-cluster-detail-image,
-.NB-story-cluster-detail-item.read .NB-cluster-sentiment {
+.NB-story-cluster-detail-item.read .NB-cluster-sentiment,
+.NB-story-cluster-detail-item.read .NB-cluster-tier-badge {
     opacity: .45;
 }
 

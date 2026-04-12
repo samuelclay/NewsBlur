@@ -3228,6 +3228,46 @@ img.feed_favicon {
     flex-shrink: 0;
 }
 
+/* reader.css: Per-sibling cluster tier badge.
+   Small, quiet outlined pill that tells the reader whether a sibling landed
+   in the cluster via a duplicate title match or a looser topical signal.
+   Kept muted with a transparent background + thin border so it reads as
+   metadata rather than a call-to-action. Tone scales with match strength:
+   cleaner green for title matches, warmer olive for related topics. */
+.NB-cluster-tier-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    background: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.3;
+    vertical-align: middle;
+    margin: 0 4px;
+    /* Baseline color — overridden by tier-specific rules below */
+    color: #9a9a9a;
+}
+
+.NB-cluster-tier-title .NB-cluster-tier-badge {
+    /* Title / duplicate matches — muted sage green, high-confidence signal. */
+    color: #5a8c6a;
+}
+
+.NB-cluster-tier-related .NB-cluster-tier-badge {
+    /* Related / topical matches — warmer olive, looser-confidence signal. */
+    color: #a88246;
+}
+
+/* Fade the tier badge on read siblings to match the rest of the row. */
+.NB-story-cluster-source.read .NB-cluster-tier-badge {
+    opacity: 0.4;
+}
+
 /* Dark theme */
 .NB-dark .NB-story-cluster-sources {
     background: rgba(255, 255, 255, 0.03);
@@ -3249,6 +3289,25 @@ img.feed_favicon {
 
 .NB-dark .NB-story-cluster-source .NB-cluster-feed-title {
     color: #d0d0d0;
+}
+
+/* Dark theme — per-sibling tier badge. Colors are slightly brighter so they
+   read clearly against the darker surface without glowing. Still transparent
+   background, still outlined in currentColor via the base rule. */
+.NB-dark .NB-cluster-tier-badge {
+    color: #8a8a8a;
+}
+
+.NB-dark .NB-cluster-tier-title .NB-cluster-tier-badge {
+    color: #7dc99a;
+}
+
+.NB-dark .NB-cluster-tier-related .NB-cluster-tier-badge {
+    color: #d2a76b;
+}
+
+.NB-dark .NB-story-cluster-source.read .NB-cluster-tier-badge {
+    opacity: 0.4;
 }
 
 /* Cluster source score indicators (single-line mode) */
@@ -3341,6 +3400,15 @@ img.feed_favicon {
 .NB-image-preview-small-left .NB-story-cluster-source .NB-cluster-date,
 .NB-image-preview-large-left .NB-story-cluster-source .NB-cluster-date {
     order: 3;
+}
+
+/* reader.css: When image preview is left-aligned, keep the tier badge next
+   to the title — otherwise the unset order would put the badge before the
+   image (unset = 0) and break the flow. Title badge follows title, image
+   and date come after. */
+.NB-image-preview-small-left .NB-story-cluster-source .NB-cluster-tier-badge,
+.NB-image-preview-large-left .NB-story-cluster-source .NB-cluster-tier-badge {
+    order: 2;
 }
 
 /* ======== Cluster story title - expanded mode ======== */
@@ -3618,6 +3686,74 @@ img.feed_favicon {
 .NB-story-cluster-detail-item .NB-story-title-list.NB-story-title .story_date {
     position: static;
     width: auto;
+}
+
+/* reader.css: Cluster detail row polish.
+   1. Title and date should stack flush-left under the favicon gutter, with
+      no stray indent on the metadata row.
+   2. Reserve right-side space so the tier badge doesn't collide with long
+      titles, even on narrow story panes.
+   3. The tier badge lives as a child of .NB-story-title (appended by
+      render_cluster_detail_badge) and is pinned top-right, vertically
+      centered to the title line. */
+.NB-story-cluster-detail-item {
+    position: relative;
+}
+
+.NB-story-cluster-detail-item .NB-story-title-list.NB-story-title {
+    /* Reserve right-side space for the tier badge (story image sits
+       further right, beyond this padding, via its own negative right). */
+    padding-right: 110px;
+    /* Establish a positioning context so the absolutely positioned tier
+       badge below anchors to the title row, not an ancestor further up. */
+    position: relative;
+}
+
+.NB-story-cluster-detail-item .NB-story-title-list-bottom {
+    /* Mirror the 4px left padding on a.story_title so the date is flush
+       under the title text instead of sitting 4px to the left of it. */
+    padding-left: 4px;
+    margin-left: 0;
+    margin-top: 2px;
+}
+
+.NB-story-cluster-detail-item .NB-story-title-list-bottom .story_date {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #8a8a8a;
+}
+
+.NB-story-cluster-detail-item .NB-story-title-list.NB-story-title .NB-cluster-tier-badge {
+    position: absolute;
+    /* Default: pin the badge top-right, vertically aligned with the first
+       title line (favicon center is at 22px; a 13px top aligns the badge's
+       midpoint with it). */
+    top: 13px;
+    right: 14px;
+    margin: 0;
+    font-size: 9px;
+    padding: 3px 8px;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    /* Sit above any incidental siblings so the outline pill reads cleanly. */
+    z-index: 2;
+}
+
+/* reader.css: When the cluster-detail row has a story image, the image
+   occupies the top-right slot the badge would otherwise sit in. Keep the
+   image at its full default height (better-looking than a squished crop)
+   and drop the badge to the bottom-right, below the image. */
+.NB-story-cluster-detail-item .NB-story-title-list.NB-story-title.NB-has-image .NB-cluster-tier-badge {
+    top: auto;
+    bottom: 10px;
+    right: 14px;
+}
+
+.NB-dark .NB-story-cluster-detail-item .NB-story-title-list-bottom .story_date {
+    color: #8a8a8a;
 }
 
 /* Clustering upgrade pill in header (shown when only 1 cluster site) */
@@ -29317,6 +29453,57 @@ h5.NB-classifier-section-header {
 
 .NB-filter-popover .segmented-control.NB-menu-manage-clustering-enabled {
     margin-left: 0;
+}
+
+.NB-filter-popover .NB-clustering-mode-section {
+    margin-top: 8px;
+}
+
+.NB-filter-popover .NB-clustering-mode-section.NB-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-clustering-mode {
+    margin-left: 0;
+}
+
+/* reader.css: Inline pills inside the cluster-mode segmented control.
+   Each option mixes readable text with the same Match/Related badges
+   the reader sees on clustered story rows, so the choice visually
+   previews what the tag will look like. */
+.NB-menu-manage-clustering-mode .NB-clustering-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.NB-menu-manage-clustering-mode .NB-clustering-mode-label {
+    font-weight: inherit;
+}
+
+.NB-menu-manage-clustering-mode .NB-clustering-mode-pill {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.NB-menu-manage-clustering-mode .NB-clustering-mode-pill .NB-cluster-tier-badge {
+    margin: 0;
+    font-size: 9px;
+    padding: 2px 6px;
+    letter-spacing: 0.06em;
+}
+
+.NB-menu-manage-clustering-mode .NB-clustering-mode-plus {
+    color: #808080;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 1;
+}
+
+.NB-dark .NB-menu-manage-clustering-mode .NB-clustering-mode-plus {
+    color: #909090;
 }
 
 .NB-filter-popover .NB-clustering-preview-section {

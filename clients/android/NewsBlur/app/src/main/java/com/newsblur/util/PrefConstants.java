@@ -71,6 +71,7 @@ public class PrefConstants {
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
+    public static final String CLUSTER_MODE = "cluster_mode";
     public static final String SPACING_STYLE = "pref_spacing_style";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
