@@ -284,10 +284,27 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         $bell.data('score', score);
         $bell.data('notification-types', active_types.slice());
 
+        // Hover-to-open with timers, mirroring the trainer bell. Click also
+        // opens immediately. The 200ms hover delay avoids accidental opens
+        // when the user is just sweeping the cursor across the pill.
         var self = this;
-        $bell.on('click', function (e) {
+        $bell.on('mouseenter', function () {
+            var $this = $(this);
+            clearTimeout(self._bell_close_timer);
+            self._bell_hover_timer = setTimeout(function () {
+                self._show_notification_popover($this);
+            }, 200);
+        }).on('mouseleave', function () {
+            clearTimeout(self._bell_hover_timer);
+            self._bell_close_timer = setTimeout(function () {
+                if (!self._popover_hovered) {
+                    self._close_notification_popover();
+                }
+            }, 150);
+        }).on('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
+            clearTimeout(self._bell_hover_timer);
             self._show_notification_popover($(this));
         });
 
@@ -295,6 +312,13 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     },
 
     _show_notification_popover: function ($bell) {
+        // Re-opening the same popover during hover-in/out is a no-op so we
+        // don't tear down a popover the user is actively interacting with.
+        if (this._active_popover && this._active_popover_bell &&
+            this._active_popover_bell[0] === $bell[0]) {
+            clearTimeout(this._bell_close_timer);
+            return;
+        }
         this._close_notification_popover();
 
         var classifier_type = $bell.data('classifier-type');
@@ -319,7 +343,27 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             is_ios: _.contains(active_types, 'ios'),
             is_android: _.contains(active_types, 'android'),
             $bell: $bell,
-            trainer: null
+            trainer: null,
+            // Banner has no save button, so persist immediately whenever a
+            // channel toggle flips. The popover already updated the bell's
+            // visual indicators in place, so we just need to sync the server
+            // and refresh the local cache so future renders match.
+            on_change: function (notification_types) {
+                var payload = {
+                    classifier_type: classifier_type,
+                    classifier_value: classifier_value,
+                    is_regex: false,
+                    scope: scope,
+                    feed_id: scope === 'feed' ? feed_id : 0,
+                    folder_name: folder_name,
+                    notification_types: notification_types
+                };
+                NEWSBLUR.assets.set_classifier_notification(payload, function (resp) {
+                    if (resp && resp.classifier_notifications) {
+                        self._classifier_notifications = resp.classifier_notifications;
+                    }
+                });
+            }
         });
 
         var $popover = popover.render().$el;
@@ -333,19 +377,16 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
 
         this._active_popover = $popover;
+        this._active_popover_bell = $bell;
 
-        $popover.on('mouseleave', function () {
-            setTimeout(function () {
-                // Refresh the bell from assets cache after the popover closes
-                // so channel indicators reflect any saved changes. The popover
-                // writes via save_classifier directly, so we re-load the
-                // notifications from the server on close.
-                if (NEWSBLUR.assets && NEWSBLUR.assets.load_classifier_notifications) {
-                    NEWSBLUR.assets.load_classifier_notifications(function (data) {
-                        self._classifier_notifications = (data && data.classifier_notifications) || {};
-                        self.render();
-                    });
-                }
+        // Sticky hover: while the cursor is over the popover, cancel the
+        // bell's pending close so the user can interact with the toggles.
+        $popover.on('mouseenter', function () {
+            self._popover_hovered = true;
+            clearTimeout(self._bell_close_timer);
+        }).on('mouseleave', function () {
+            self._popover_hovered = false;
+            self._bell_close_timer = setTimeout(function () {
                 self._close_notification_popover();
             }, 150);
         });
@@ -355,7 +396,9 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         if (this._active_popover) {
             this._active_popover.remove();
             this._active_popover = null;
+            this._active_popover_bell = null;
         }
+        this._popover_hovered = false;
     },
 
     // Only checks feed-scoped classifiers on the active feed; folder/global
