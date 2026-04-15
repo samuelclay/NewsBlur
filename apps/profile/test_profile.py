@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.profile.models import PaymentHistory, Profile
+from apps.profile.models import PaymentHistory, Profile, StripeIds
 from utils import json_functions as json
 
 
@@ -239,6 +239,37 @@ class Test_SetupPremiumHistoryStripe(TestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.active_provider, "stripe")
         self.assertTrue(self.profile.premium_renewal)
+
+
+class Test_StripeIdSync(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="stripeidsync",
+            password="password",
+            email="stripeidsync@test.com",
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = "cus_test123"
+        self.profile.save()
+
+    @patch("stripe.Customer.list")
+    @patch("stripe.Customer.retrieve")
+    def test_retrieve_stripe_ids_ignores_deleted_user(self, mock_customer_retrieve, mock_customer_list):
+        mock_customer_retrieve.return_value = MagicMock(email="stripeidsync@test.com")
+        mock_customer_list.side_effect = [
+            [MagicMock(stripe_id="cus_test123")],
+            [MagicMock(stripe_id="cus_test456")],
+        ]
+
+        # Keep the related user cached on the Profile instance so the stale-object
+        # race matches the webhook path in apps/profile/models.py.
+        self.assertEqual(self.profile.user.pk, self.user.pk)
+        deleted_user_id = self.user.pk
+        User.objects.filter(pk=deleted_user_id).delete()
+
+        self.profile.retrieve_stripe_ids()
+
+        self.assertFalse(StripeIds.objects.filter(user_id=deleted_user_id).exists())
 
 
 class Test_AndroidSubscriptionActivation(TestCase):
