@@ -1135,6 +1135,33 @@ def setup_usage_billing(request):
         logging.user(request, "~BR~FRStripe usage billing prices not configured")
         return HttpResponseRedirect(reverse("index"))
 
+    # Guard against duplicate subscriptions. Meter events are customer-scoped,
+    # so any extra active sub on the same classifier prices silently double-bills
+    # the user every cycle. Bail out to the billing portal instead of creating
+    # a second subscription.
+    if request.user.profile.stripe_id:
+        classifier_price_ids = {
+            settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
+            settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
+        }
+        try:
+            existing = stripe.Subscription.list(
+                customer=request.user.profile.stripe_id, status="active", limit=20
+            )
+            for sub in existing.data:
+                for item in sub["items"].data:
+                    if item.price and item.price.id in classifier_price_ids:
+                        logging.user(
+                            request,
+                            "~BR~FRUsage billing already active; redirecting to portal",
+                        )
+                        return HttpResponseRedirect(
+                            "https://%s%s?next=payments&usage_billing=already_active"
+                            % (domain, reverse("index"))
+                        )
+        except stripe.error.StripeError as e:
+            logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
+
     session_dict = {
         "line_items": [
             {
