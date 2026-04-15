@@ -2151,7 +2151,15 @@ class Profile(models.Model):
             return None
 
     def retrieve_stripe_ids(self):
-        if not self.stripe_id:
+        if not self.stripe_id or not self.user_id:
+            return
+
+        user_email = User.objects.filter(pk=self.user_id).values_list("email", flat=True).first()
+        if not user_email:
+            logging.debug(
+                " ---> Couldn't sync Stripe IDs for deleted user_id=%s stripe_id=%s"
+                % (self.user_id, self.stripe_id)
+            )
             return
 
         stripe.api_key = settings.STRIPE_SECRET
@@ -2159,14 +2167,22 @@ class Profile(models.Model):
         stripe_email = stripe_customer.email
 
         stripe_ids = set()
-        for email in set([stripe_email, self.user.email]):
+        for email in {stripe_email, user_email}:
+            if not email:
+                continue
             customers = stripe.Customer.list(email=email)
             for customer in customers:
                 stripe_ids.add(customer.stripe_id)
 
-        self.user.stripe_ids.all().delete()
-        for stripe_id in stripe_ids:
-            self.user.stripe_ids.create(stripe_id=stripe_id)
+        try:
+            StripeIds.objects.filter(user_id=self.user_id).delete()
+            for stripe_id in stripe_ids:
+                StripeIds.objects.create(user_id=self.user_id, stripe_id=stripe_id)
+        except IntegrityError:
+            logging.debug(
+                " ---> User disappeared while syncing Stripe IDs for user_id=%s stripe_id=%s"
+                % (self.user_id, self.stripe_id)
+            )
 
     def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
