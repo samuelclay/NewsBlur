@@ -6,6 +6,7 @@ Additional MongoDB models track read stories (RUserStory) and starred stories.
 """
 
 import datetime
+import hashlib
 import heapq
 import re
 import time
@@ -529,9 +530,11 @@ class UserSubscription(models.Model):
         Returns:
             Tuple of (ranked_stories_key, unread_ranked_stories_key)
         """
-        feeds_string = ",".join(str(f) for f in sorted(feed_ids))[:30]
-        ranked_stories_key = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
-        unread_ranked_stories_key = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
+        feeds_string = ",".join(str(f) for f in sorted(feed_ids))
+        feeds_digest = hashlib.sha1(feeds_string.encode("utf-8")).hexdigest()
+        feeds_key = f"{len(feed_ids)}:{feeds_digest}"
+        ranked_stories_key = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_key)
+        unread_ranked_stories_key = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_key)
         return ranked_stories_key, unread_ranked_stories_key
 
     @classmethod

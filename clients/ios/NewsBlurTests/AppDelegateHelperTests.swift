@@ -95,4 +95,96 @@ final class AppDelegateHelperTests: XCTestCase {
         let persistedValue = defaults.persistentDomain(forName: bundleIdentifier)?["custom_domain"]
         XCTAssertNil(persistedValue)
     }
+
+    func test_feedIdsForTopLevelRiverWithReadFilter_unread_usesModelUnreadCountsInsteadOfSidebarVisibility() {
+        let appDelegate = NewsBlurAppDelegate()
+        let feedsViewController = FeedsViewController()
+
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.selectedIntelligence = 0
+        appDelegate.dictFoldersArray = [
+            "dashboard",
+            "everything",
+            "infrequent",
+            "Tech",
+            "News",
+            "saved_stories",
+            "read_stories",
+        ]
+        appDelegate.dictFolders = [
+            "dashboard": ["dashboard"],
+            "everything": ["everything"],
+            "infrequent": ["infrequent"],
+            "Tech": [1, 2, 4, 99],
+            "News": [2, 3, "saved:query"],
+            "saved_stories": ["saved:1"],
+            "read_stories": ["read_stories"],
+        ]
+        appDelegate.dictFeeds = [
+            "1": ["id": 1],
+            "2": ["id": 2],
+            "3": ["id": 3],
+            "4": ["id": 4],
+            "99": ["id": 99, "temp": true],
+        ]
+        appDelegate.dictUnreadCounts = [
+            "1": ["ps": 0, "nt": 1, "ng": 0],
+            "2": ["ps": 1, "nt": 0, "ng": 0],
+            "3": ["ps": 0, "nt": 0, "ng": 0],
+            "4": ["ps": 0, "nt": 1, "ng": 0],
+        ]
+        appDelegate.dictInactiveFeeds = [
+            "4": ["id": 4],
+        ]
+
+        feedsViewController.activeFeedLocations = [
+            "Tech": [0],
+            "News": [0],
+        ]
+        feedsViewController.viewShowingAllFeeds = false
+
+        let feedIds = ((appDelegate.feedIdsForTopLevelRiver(withReadFilter: "unread") as? [Any]) ?? []).map {
+            String(describing: $0)
+        }
+
+        XCTAssertEqual(feedIds, ["1", "2"])
+    }
+
+    func test_feedIdsForTopLevelRiverWithReadFilter_all_returnsFullSubscribedFeedIds() {
+        let appDelegate = NewsBlurAppDelegate()
+        let feedsViewController = FeedsViewController()
+
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.dictFoldersArray = [
+            "dashboard",
+            "everything",
+            "infrequent",
+            "Tech",
+            "News",
+        ]
+        appDelegate.dictFolders = [
+            "dashboard": ["dashboard"],
+            "everything": ["everything"],
+            "infrequent": ["infrequent"],
+            "Tech": [1, 2, 99],
+            "News": [2, 3, 4],
+        ]
+        appDelegate.dictFeeds = [
+            "1": ["id": 1],
+            "2": ["id": 2],
+            "3": ["id": 3],
+            "4": ["id": 4],
+            "99": ["id": 99, "temp": true],
+        ]
+
+        feedsViewController.activeFeedLocations = [
+            "Tech": [0],
+        ]
+
+        let feedIds = ((appDelegate.feedIdsForTopLevelRiver(withReadFilter: "all") as? [Any]) ?? []).map {
+            String(describing: $0)
+        }
+
+        XCTAssertEqual(feedIds, ["1", "2", "3", "4"])
+    }
 }
