@@ -47,10 +47,8 @@ class Classifier : Serializable {
     @JvmField
     var feedId: String? = null
 
-    fun hasHighlights(): Boolean =
-        authors.isNotEmpty() || tags.isNotEmpty() || title.isNotEmpty() ||
-            texts.isNotEmpty() || textRegex.isNotEmpty() || urls.isNotEmpty() ||
-            urlRegex.isNotEmpty() || titleRegex.isNotEmpty()
+    fun hasStoryTextHighlights(): Boolean =
+        texts.isNotEmpty() || textRegex.isNotEmpty()
 
     fun getAPITuples(): ValueMultimap {
         val values = ValueMultimap()
