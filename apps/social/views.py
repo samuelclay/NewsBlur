@@ -91,7 +91,7 @@ def sanitize_for_xml(text):
     and characters >= 0x20 (except 0x7F-0x9F range).
     """
     if not text:
-        return text
+        return ""
     return INVALID_XML_CHARS.sub("", text)
 
 
