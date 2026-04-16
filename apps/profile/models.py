@@ -1181,7 +1181,9 @@ class Profile(models.Model):
         logging.user(self.user, f"~FBGoogle Play purchase token ~SBadded~SN: product={product_id}")
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
-        # Deduplicate payments: keep only one per provider per identifier, then per day
+        # Deduplicate payments: keep only one per provider per identifier, then per day.
+        # Refund rows are never deduped — a charge and its same-day refund are distinct
+        # events and the refund must remain visible in the user's history.
         for provider in [
             "paypal",
             "stripe",
@@ -1197,6 +1199,7 @@ class Profile(models.Model):
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
                 .exclude(payment_identifier__in=["missing", "in-progress"])
+                .exclude(refunded=True)
                 .order_by("payment_date")
             ):
                 if payment.payment_identifier in seen_identifiers:
@@ -1207,9 +1210,9 @@ class Profile(models.Model):
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
             for payment in list(
-                PaymentHistory.objects.filter(user=self.user, payment_provider=provider).order_by(
-                    "payment_date"
-                )
+                PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
+                .exclude(refunded=True)
+                .order_by("payment_date")
             ):
                 payment_day = payment.payment_date.date()
                 if payment_day in seen_dates:
@@ -1234,7 +1237,9 @@ class Profile(models.Model):
         self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
-            seen_payment_history = PaymentHistory.objects.filter(user=self.user, payment_provider="paypal")
+            seen_payment_history = PaymentHistory.objects.filter(
+                user=self.user, payment_provider="paypal"
+            ).exclude(refunded=True)
             deleted_paypal_payments = 0
             for payment in list(seen_payment_history):
                 if payment.payment_date.date() in seen_payments:
@@ -1345,7 +1350,9 @@ class Profile(models.Model):
             self.retrieve_stripe_ids()
 
             seen_payments = set()
-            existing_stripe_history = PaymentHistory.objects.filter(user=self.user, payment_provider="stripe")
+            existing_stripe_history = PaymentHistory.objects.filter(
+                user=self.user, payment_provider="stripe"
+            ).exclude(refunded=True)
             deleted_stripe_payments = 0
             for payment in list(existing_stripe_history):
                 if payment.payment_date.date() in seen_payments:
@@ -1855,6 +1862,7 @@ class Profile(models.Model):
                 payment_date=datetime.datetime.now(),
                 payment_amount=-int(round(refund_amount)),
                 payment_provider="paypal",
+                payment_identifier=response.get("id"),
                 refunded=True,
             )
             logging.user(self.user, "~FRRefunding paypal payment: $%s/%s" % (refund_amount, refunded))

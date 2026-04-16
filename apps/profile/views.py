@@ -501,7 +501,14 @@ def paypal_webhooks(request):
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
         user = find_paypal_user(data, custom_field="custom_id")
         if user:
-            user.profile.store_paypal_sub_id(data["resource"]["id"])
+            # Don't promote a SUSPENDED/CANCELLED sub to primary. When upgrading
+            # (e.g. premium -> archive), suspending the old sub fires UPDATED for it,
+            # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
+            resource_status = data["resource"].get("status")
+            is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+            user.profile.store_paypal_sub_id(
+                data["resource"]["id"], skip_save_primary=not is_active_status
+            )
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
             #     user.profile.activate_premium()
