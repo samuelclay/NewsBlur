@@ -59,7 +59,13 @@ class Test_RiverStories(TransactionTestCase):
             self.r.delete(f"zU:3:{feed_id}")
             self.r.delete(f"uU:3:{feed_id}")
 
-        # Clear dashboard caches
+        # Clear dashboard caches for both current and legacy key formats.
+        dashboard_feeds = list(range(1, 11))
+        dashboard_key, dashboard_unread_key = UserSubscription.get_river_cache_keys(
+            3, dashboard_feeds, "dashboard:"
+        )
+        self.r.delete(dashboard_key)
+        self.r.delete(dashboard_unread_key)
         self.r.delete("dashboard:zU:3:feeds:1,2,3,4,5,6,7,8,9,10")
         self.r.delete("dashboard:zhU:3:feeds:1,2,3,4,5,6,7,8,9,10")
 
@@ -709,6 +715,41 @@ class Test_RiverStories(TransactionTestCase):
         self.assertNotEqual(key1, dash_key1, "Keys with different prefixes should differ")
 
         print(f">>> ✓ Cache key generation is consistent")
+
+    def test_cache_key_consistency__large_feed_lists_do_not_collide(self):
+        """
+        Large river feed lists that only differ after the first few ids must not
+        share the same cache key.
+        """
+        from apps.reader.models import UserSubscription
+
+        print(f"\n>>> Testing cache key helper method for large feed list collisions")
+
+        shared_prefix_feeds = list(range(1, 17))
+        feeds1 = shared_prefix_feeds + [1001]
+        feeds2 = shared_prefix_feeds + [2002]
+
+        old_prefix1 = ",".join(str(f) for f in sorted(feeds1))[:30]
+        old_prefix2 = ",".join(str(f) for f in sorted(feeds2))[:30]
+        self.assertEqual(
+            old_prefix1,
+            old_prefix2,
+            "Sanity check failed: these feed lists should collide with the old 30-char prefix",
+        )
+
+        key1, unread_key1 = UserSubscription.get_river_cache_keys(3, feeds1, "")
+        key2, unread_key2 = UserSubscription.get_river_cache_keys(3, feeds2, "")
+
+        print(f">>> Colliding old prefix: {old_prefix1}")
+        print(f">>> New key from {feeds1[-1]}: {key1}")
+        print(f">>> New key from {feeds2[-1]}: {key2}")
+
+        self.assertNotEqual(key1, key2, "Distinct large feed lists should not share a cache key")
+        self.assertNotEqual(
+            unread_key1, unread_key2, "Distinct large feed lists should not share unread cache keys"
+        )
+
+        print(f">>> ✓ Large river feed lists now generate distinct cache keys")
 
     def test_cache_key_consistency__feed_validation(self):
         """

@@ -433,6 +433,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedStoriesIntelligenceMode;
 - (NSArray *)allFeedIds;
+- (NSArray *)feedIdsForTopLevelRiverWithReadFilter:(NSString *)readFilter;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
