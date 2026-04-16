@@ -191,6 +191,7 @@
 
         <activity
             android:name=".activity.SocialFeedReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <service
