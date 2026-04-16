@@ -3903,6 +3903,17 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_wallabag: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://app.wallabag.it/bookmarklet?url=';
+            var wallabag_url = [
+                url,
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(wallabag_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_email: function (story) {
             // If story is a story_id (string), get the story object
             if (_.isString(story)) {
