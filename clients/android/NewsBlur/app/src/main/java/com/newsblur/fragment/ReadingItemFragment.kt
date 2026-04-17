@@ -80,6 +80,7 @@ import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.StoryThumbnailView
 import com.newsblur.viewModel.ReadingItemViewModel
+import com.newsblur.web.NewsblurWebview
 import com.newsblur.web.WebviewActionType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -164,6 +165,12 @@ class ReadingItemFragment :
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
+    private var isWebViewReleasedForBackground = false
+    private var isRestoringReleasedWebView = false
+    private var readingWebview: NewsblurWebview? = null
+    private var readingWebviewParent: ViewGroup? = null
+    private var readingWebviewLayoutParams: ViewGroup.LayoutParams? = null
+    private var readingWebviewIndex = -1
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
@@ -235,6 +242,7 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        destroyReadingWebviewForBackground()
         sampledQueue?.close()
         super.onDestroyView()
     }
@@ -245,18 +253,20 @@ class ReadingItemFragment :
         if (::binding.isInitialized) {
             enableProgress(false)
         }
-        binding.readingWebview.onPause()
+        readingWebview?.onPause()
         contentHash = 0
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
+        isRestoringReleasedWebView = isWebViewReleasedForBackground
         resetStoryRenderState()
         syncStoryLoadingUi()
         reloadStoryContent()
         updateAskAiButton()
-        binding.readingWebview.onResume()
+        ensureReadingWebview().resumeTimers()
+        ensureReadingWebview().onResume()
     }
 
     override fun onCreateView(
@@ -269,20 +279,14 @@ class ReadingItemFragment :
 
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
+        readingWebview = binding.readingWebview
+        readingWebviewParent = binding.readingWebview.parent as? ViewGroup
+        readingWebviewLayoutParams = binding.readingWebview.layoutParams
+        readingWebviewIndex = readingWebviewParent?.indexOfChild(binding.readingWebview) ?: -1
 
         selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
 
-        registerForContextMenu(binding.readingWebview)
-        binding.readingWebview.setAssetLoader(assetLoader)
-        binding.readingWebview.setPrefsRepo(prefsRepo)
-        binding.readingWebview.setCustomViewLayout(binding.customViewContainer)
-        binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer)
-        binding.readingWebview.setBackgroundColor(Color.TRANSPARENT)
-        binding.readingWebview.fragment = this
-        binding.readingWebview.activity = readingActivity
-        binding.readingWebview.setWebviewActionDelegate { action, selectedText ->
-            handleWebviewAction(action, selectedText)
-        }
+        configureReadingWebview(binding.readingWebview, readingActivity)
 
         setupItemMetadata()
         updateTrainButton()
@@ -332,7 +336,7 @@ class ReadingItemFragment :
         v: View,
         menuInfo: ContextMenuInfo?,
     ) {
-        val result = binding.readingWebview.hitTestResult
+        val result = ensureReadingWebview().hitTestResult
         if (result.type == HitTestResult.IMAGE_TYPE ||
             result.type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE
         ) {
@@ -1242,6 +1246,8 @@ class ReadingItemFragment :
     }
 
     private fun reloadStoryContent() {
+        if (isWebViewReleasedForBackground && !isRestoringReleasedWebView) return
+
         // reset indicators
         binding.readingTextloading.visibility = View.GONE
         binding.readingTextmodefailed.visibility = View.GONE
@@ -1425,21 +1431,25 @@ class ReadingItemFragment :
                 )
             val newHash = (html to highlights).hashCode()
             synchronized(webViewContentMutex) {
+                if (isWebViewReleasedForBackground && !isRestoringReleasedWebView) return@synchronized
+
                 // this method might get called repeatedly despite no content change, which is expensive
                 if (this@ReadingItemFragment.contentHash == newHash) return@synchronized
                 this@ReadingItemFragment.contentHash = newHash
+                isWebViewReleasedForBackground = false
+                isRestoringReleasedWebView = false
 
                 isWebLoadFinished.set(false)
-                binding.readingWebview.loadDataWithBaseURL(READING_BASE_URL, html, "text/html", "UTF-8", null)
+                ensureReadingWebview().loadDataWithBaseURL(READING_BASE_URL, html, "text/html", "UTF-8", null)
                 onContentLoadFinished()
             }
         }
     }
 
     private fun applyStoryHighlights() {
-        if (!enableHighlights) return
+        if (!enableHighlights || isWebViewReleasedForBackground) return
         val json = JSONArray(storyHighlights).toString()
-        binding.readingWebview.evaluateJavascript("NB_applyHighlights($json);", null)
+        ensureReadingWebview().evaluateJavascript("NB_applyHighlights($json);", null)
     }
 
     private suspend fun sniffAltTexts(html: String) =
@@ -1495,16 +1505,28 @@ class ReadingItemFragment :
 
     /** The webview has finished loading our desired content.  */
     fun onWebLoadFinished() {
+        if (isWebViewReleasedForBackground) return
         if (!isWebLoadFinished.getAndSet(true)) {
-            binding.readingWebview.evaluateJavascript("loadImages();", null)
+            ensureReadingWebview().evaluateJavascript("loadImages();", null)
         }
         maybeFinishInitialStoryRender()
         checkLoadStatus()
     }
 
     fun onWebVisualStateReady() {
+        if (isWebViewReleasedForBackground) return
         isWebVisualStateReady = true
         maybeFinishInitialStoryRender()
+    }
+
+    fun releaseWebViewForBackground() {
+        if (!::binding.isInitialized || isWebViewReleasedForBackground || readingWebview == null) return
+
+        isWebViewReleasedForBackground = true
+        isRestoringReleasedWebView = false
+        savedScrollPosRel = currentScrollPosRel() ?: savedScrollPosRel
+        contentHash = 0
+        destroyReadingWebviewForBackground()
     }
 
     /** The social UI has finished loading from the DB.  */
@@ -1571,7 +1593,7 @@ class ReadingItemFragment :
     private fun setTextSizeStyle(readingTextSize: ReadingTextSize) {
         val textSize = readingTextSize.size
         prefsRepo.setReadingTextSize(textSize)
-        binding.readingWebview.setTextSize(textSize)
+        ensureReadingWebview().setTextSize(textSize)
     }
 
     private fun setReadingFont(font: String) {
@@ -1631,7 +1653,73 @@ class ReadingItemFragment :
         }
     }
 
+    private fun configureReadingWebview(
+        webview: NewsblurWebview,
+        readingActivity: Reading,
+    ) {
+        registerForContextMenu(webview)
+        webview.setAssetLoader(assetLoader)
+        webview.setPrefsRepo(prefsRepo)
+        webview.setCustomViewLayout(binding.customViewContainer)
+        webview.setWebviewWrapperLayout(binding.readingContainer)
+        webview.setBackgroundColor(Color.TRANSPARENT)
+        webview.fragment = this
+        webview.activity = readingActivity
+        webview.setWebviewActionDelegate { action, selectedText ->
+            handleWebviewAction(action, selectedText)
+        }
+    }
+
+    private fun ensureReadingWebview(): NewsblurWebview {
+        readingWebview?.let { return it }
+
+        val parent = readingWebviewParent ?: error("readingWebviewParent missing")
+        val readingActivity = requireActivity() as Reading
+        val layoutParams =
+            readingWebviewLayoutParams ?: ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            )
+        val recreatedWebview =
+            NewsblurWebview(requireContext(), null).apply {
+                id = R.id.reading_webview
+                this.layoutParams = layoutParams
+            }
+        val insertIndex = readingWebviewIndex.coerceIn(0, parent.childCount)
+        parent.addView(recreatedWebview, insertIndex, layoutParams)
+        configureReadingWebview(recreatedWebview, readingActivity)
+        readingWebview = recreatedWebview
+        return recreatedWebview
+    }
+
+    private fun destroyReadingWebviewForBackground() {
+        val webview = readingWebview ?: return
+        webview.stopLoading()
+        webview.pauseTimers()
+        webview.clearHistory()
+        unregisterForContextMenu(webview)
+
+        val parent = readingWebviewParent ?: (webview.parent as? ViewGroup)
+        if (parent != null) {
+            readingWebviewParent = parent
+            if (readingWebviewIndex < 0) {
+                readingWebviewIndex = parent.indexOfChild(webview)
+            }
+            if (webview.parent === parent) {
+                parent.removeView(webview)
+            }
+        }
+
+        if (readingWebviewLayoutParams == null) {
+            readingWebviewLayoutParams = webview.layoutParams
+        }
+        webview.removeAllViews()
+        webview.destroy()
+        readingWebview = null
+    }
+
     companion object {
+
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
         private const val ARG_INITIAL_SCROLL_POS_REL = "initialScrollPosRel"
         const val VERTICAL_SCROLL_DISTANCE_DP = 240

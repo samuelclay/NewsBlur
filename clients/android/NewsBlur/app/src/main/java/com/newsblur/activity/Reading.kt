@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.ComponentCallbacks2
 import android.graphics.Rect
 import android.content.Intent
 import android.content.res.Configuration
@@ -49,6 +50,7 @@ import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StoryOrder
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
@@ -91,6 +93,11 @@ internal data class ReadingConfigChangeRestore(
     val scrollPosRel: Float,
 )
 
+internal fun shouldReleaseReaderWebViewsOnTrim(
+    level: Int,
+    isChangingConfigurations: Boolean,
+): Boolean = level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && !isChangingConfigurations
+
 internal fun createReadingConfigChangeRestore(
     storyHash: String?,
     scrollPosRel: Float?,
@@ -101,6 +108,42 @@ internal fun createReadingConfigChangeRestore(
             scrollPosRel = scrollPosRel ?: 0f,
         )
     }
+
+internal fun mergeRestoredStoryIntoStories(
+    stories: List<Story>,
+    targetStoryHash: String?,
+    restoredStory: Story?,
+    storyOrder: StoryOrder,
+): List<Story> {
+    if (targetStoryHash.isNullOrBlank()) return stories
+    val restoreStory = restoredStory?.takeIf { it.storyHash == targetStoryHash } ?: return stories
+    if (stories.any { it.storyHash == targetStoryHash }) return stories
+
+    val mergedStories = stories.toMutableList()
+    val insertIndex =
+        mergedStories.indexOfFirst { existingStory ->
+            shouldInsertRestoredStoryBefore(restoreStory, existingStory, storyOrder)
+        }.let { if (it >= 0) it else mergedStories.size }
+    mergedStories.add(insertIndex, restoreStory)
+    return mergedStories
+}
+
+private fun shouldInsertRestoredStoryBefore(
+    restoredStory: Story,
+    existingStory: Story,
+    storyOrder: StoryOrder,
+): Boolean {
+    val restoredHash = restoredStory.storyHash.orEmpty()
+    val existingHash = existingStory.storyHash.orEmpty()
+
+    return if (storyOrder == StoryOrder.NEWEST) {
+        restoredStory.timestamp > existingStory.timestamp ||
+            (restoredStory.timestamp == existingStory.timestamp && restoredHash > existingHash)
+    } else {
+        restoredStory.timestamp < existingStory.timestamp ||
+            (restoredStory.timestamp == existingStory.timestamp && restoredHash < existingHash)
+    }
+}
 
 @AndroidEntryPoint
 abstract class Reading :
@@ -128,6 +171,7 @@ abstract class Reading :
     private var unreadSearchActive = false
     private var restoredStoryScrollPosRel = 0f
     private var pendingConfigChangeRestore: ReadingConfigChangeRestore? = null
+    private var restoredCurrentStory: Story? = null
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
@@ -208,6 +252,9 @@ abstract class Reading :
         if (savedInstanceBundle != null && savedInstanceBundle.containsKey(BUNDLE_CURRENT_SCROLL_POS_REL)) {
             restoredStoryScrollPosRel = savedInstanceBundle.getFloat(BUNDLE_CURRENT_SCROLL_POS_REL)
         }
+        if (savedInstanceBundle != null) {
+            restoredCurrentStory = savedInstanceBundle.getSerializable(BUNDLE_CURRENT_STORY) as? Story
+        }
 
         // Only use the storyHash the first time the activity is loaded. Ignore when
         // recreated due to rotation etc.
@@ -249,6 +296,9 @@ abstract class Reading :
             ?.currentScrollPosRel()
             ?.takeIf { it > 0f }
             ?.let { savedInstanceState.putFloat(BUNDLE_CURRENT_SCROLL_POS_REL, it) }
+        (readingFragment?.story ?: pager?.let { readingAdapter?.getStory(it.currentItem) })
+            ?.copyForBundle()
+            ?.let { savedInstanceState.putSerializable(BUNDLE_CURRENT_STORY, it) }
     }
 
     override fun onResume() {
@@ -276,6 +326,20 @@ abstract class Reading :
             isMultiWindowModeHack = false
         } else {
             stopLoading = true
+        }
+    }
+
+    override fun onStop() {
+        if (!isChangingConfigurations) {
+            readingAdapter?.releaseBackgroundWebViews()
+        }
+        super.onStop()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (shouldReleaseReaderWebViewsOnTrim(level, isChangingConfigurations)) {
+            readingAdapter?.releaseBackgroundWebViews()
         }
     }
 
@@ -442,14 +506,36 @@ abstract class Reading :
             return
         }
 
-        readingAdapter?.submitBatch(batch.stories, batch.classifiers)
+        // Process death can restore us to a story that no longer matches the current read filter
+        // after it was auto-marked read. Keep just that one story recoverable without inflating
+        // every fragment argument back to full size.
+        val stories =
+            mergeRestoredStoryIntoStories(
+                stories = batch.stories,
+                targetStoryHash = storyHash,
+                restoredStory = restoredCurrentStory,
+                storyOrder = prefsRepo.getStoryOrder(fs!!),
+            )
+        val classifiers =
+            if (stories === batch.stories || restoredCurrentStory == null) {
+                batch.classifiers
+            } else {
+                batch.classifiers.toMutableMap().apply {
+                    val restoreStory = restoredCurrentStory!!
+                    if (!containsKey(restoreStory.feedId)) {
+                        put(restoreStory.feedId, dbHelper.getClassifierForFeed(restoreStory.feedId))
+                    }
+                }
+            }
 
-        lastBatchFirstUnreadIndex = batch.indexOfLastUnread
-        storyCounts = batch.stories.size
+        readingAdapter?.submitBatch(stories, classifiers)
+
+        lastBatchFirstUnreadIndex = stories.indexOfFirst { !it.read }
+        storyCounts = stories.size
 
         com.newsblur.util.Log
-            .d(this.javaClass.name, "loaded stories count: ${batch.stories.size}")
-        if (batch.stories.isEmpty()) {
+            .d(this.javaClass.name, "loaded stories count: ${stories.size}")
+        if (stories.isEmpty()) {
             triggerRefresh(AppConstants.READING_STORY_PRELOAD)
         }
     }
@@ -496,6 +582,7 @@ abstract class Reading :
             pager!!.setCurrentItem(position, false)
             onPageSelected(position)
             isRestoringState = false
+            restoredCurrentStory = null
             // now that the pager is getting the right story, make it visible
             pager!!.visibility = View.VISIBLE
             binding.readingEmptyViewText.visibility = View.INVISIBLE
@@ -1446,6 +1533,7 @@ abstract class Reading :
         const val EXTRA_STORY = "story"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
         private const val BUNDLE_CURRENT_SCROLL_POS_REL = "current_scroll_pos_rel"
+        private const val BUNDLE_CURRENT_STORY = "current_story"
 
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"
