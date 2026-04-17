@@ -181,6 +181,10 @@ class ReadingAdapter(
 
     fun getExistingItem(pos: Int): ReadingItemFragment? = getStory(pos)?.let { fragments[it.storyHash] }
 
+    fun releaseBackgroundWebViews() {
+        fragments.values.toList().forEach { it.releaseWebViewForBackground() }
+    }
+
     override fun notifyDataSetChanged() {
         super.notifyDataSetChanged()
 
