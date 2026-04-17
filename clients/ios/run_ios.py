@@ -32,6 +32,7 @@ Environment:
 import os
 import re
 import shlex
+import site
 import subprocess
 import sys
 import time
@@ -44,8 +45,25 @@ APP_PATH = os.environ.get(
     "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
 )
 
-# Add idb to PATH
-os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.expanduser("~/Library/Python/3.13/bin")
+def prepend_to_path(path):
+    """Prepend a directory to PATH if it exists and is not already present."""
+    if not path or not os.path.isdir(path):
+        return
+
+    path_entries = os.environ.get("PATH", "").split(":")
+    if path in path_entries:
+        return
+
+    os.environ["PATH"] = path + ":" + os.environ.get("PATH", "")
+
+
+# Make sure the idb client and idb_companion are discoverable regardless of
+# the Python minor version that installed them. Prefer ~/bin last so a local
+# wrapper can override broken version-specific entrypoints created by pip.
+prepend_to_path("/usr/local/bin")
+prepend_to_path("/opt/homebrew/bin")
+prepend_to_path(os.path.join(site.getuserbase(), "bin"))
+prepend_to_path(os.path.expanduser("~/bin"))
 
 
 def run_cmd(cmd, description=None):
