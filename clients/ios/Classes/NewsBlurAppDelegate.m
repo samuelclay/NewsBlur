@@ -2555,9 +2555,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSMutableSet<NSString *> *seenFeedIds = [NSMutableSet set];
     NSSet<NSString *> *subscribedFeedIds = [self subscribedFeedIdsForStoryClusters];
     BOOL unreadOnly = [readFilter isEqualToString:@"unread"];
+    // Note: "everything" is the renamed key for top-level unfoldered feeds (flat_folders_with_inactive's " " bucket),
+    // so it must NOT be excluded — otherwise the All Site Stories river silently drops every unfoldered feed.
     NSSet<NSString *> *excludedFolders = [NSSet setWithObjects:
                                           @"dashboard",
-                                          @"everything",
                                           @"infrequent",
                                           @"daily_briefing",
                                           @"read_stories",

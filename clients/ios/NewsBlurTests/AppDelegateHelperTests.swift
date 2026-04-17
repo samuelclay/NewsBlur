@@ -111,11 +111,13 @@ final class AppDelegateHelperTests: XCTestCase {
             "saved_stories",
             "read_stories",
         ]
+        // dictFolders["everything"] is the iOS-renamed bucket for top-level unfoldered feeds
+        // (server's flat_folders_with_inactive[" "]). The river must include them.
         appDelegate.dictFolders = [
             "dashboard": ["dashboard"],
-            "everything": ["everything"],
+            "everything": [10, 11, 99],
             "infrequent": ["infrequent"],
-            "Tech": [1, 2, 4, 99],
+            "Tech": [1, 2, 4],
             "News": [2, 3, "saved:query"],
             "saved_stories": ["saved:1"],
             "read_stories": ["read_stories"],
@@ -125,6 +127,8 @@ final class AppDelegateHelperTests: XCTestCase {
             "2": ["id": 2],
             "3": ["id": 3],
             "4": ["id": 4],
+            "10": ["id": 10],
+            "11": ["id": 11],
             "99": ["id": 99, "temp": true],
         ]
         appDelegate.dictUnreadCounts = [
@@ -132,6 +136,8 @@ final class AppDelegateHelperTests: XCTestCase {
             "2": ["ps": 1, "nt": 0, "ng": 0],
             "3": ["ps": 0, "nt": 0, "ng": 0],
             "4": ["ps": 0, "nt": 1, "ng": 0],
+            "10": ["ps": 1, "nt": 0, "ng": 0],
+            "11": ["ps": 0, "nt": 0, "ng": 0],
         ]
         appDelegate.dictInactiveFeeds = [
             "4": ["id": 4],
@@ -147,7 +153,7 @@ final class AppDelegateHelperTests: XCTestCase {
             String(describing: $0)
         }
 
-        XCTAssertEqual(feedIds, ["1", "2"])
+        XCTAssertEqual(feedIds, ["10", "1", "2"])
     }
 
     func test_feedIdsForTopLevelRiverWithReadFilter_all_returnsFullSubscribedFeedIds() {
@@ -164,7 +170,7 @@ final class AppDelegateHelperTests: XCTestCase {
         ]
         appDelegate.dictFolders = [
             "dashboard": ["dashboard"],
-            "everything": ["everything"],
+            "everything": [10, 11],
             "infrequent": ["infrequent"],
             "Tech": [1, 2, 99],
             "News": [2, 3, 4],
@@ -174,6 +180,8 @@ final class AppDelegateHelperTests: XCTestCase {
             "2": ["id": 2],
             "3": ["id": 3],
             "4": ["id": 4],
+            "10": ["id": 10],
+            "11": ["id": 11],
             "99": ["id": 99, "temp": true],
         ]
 
@@ -185,6 +193,6 @@ final class AppDelegateHelperTests: XCTestCase {
             String(describing: $0)
         }
 
-        XCTAssertEqual(feedIds, ["1", "2", "3", "4"])
+        XCTAssertEqual(feedIds, ["10", "11", "1", "2", "3", "4"])
     }
 }
