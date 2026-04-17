@@ -147,6 +147,9 @@
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
+            NEWSBLUR.app.new_stories_indicator = new NEWSBLUR.Views.NewStoriesIndicatorView({
+                $container: this.$s.$story_titles
+            }).render();
 
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
@@ -1412,6 +1415,14 @@
 
             // Dismiss any pending mark-read confirmation
             this.dismiss_mark_read_confirm();
+
+            // reader.js: Drop any pending new-stories indicator state when
+            // the user switches views. Stale pills from a different feed
+            // would be confusing.
+            this.new_story_hashes = [];
+            if (NEWSBLUR.app.new_stories_indicator) {
+                NEWSBLUR.app.new_stories_indicator.hide();
+            }
 
             // Flush read time for the current story before resetting
             if (NEWSBLUR.ReadTimeTracker && this.active_story) {
@@ -7397,10 +7408,152 @@
 
             NEWSBLUR.app.sidebar_header.update_interactions_count(data.interactions_count);
 
+            if (data && _.isArray(data.new_story_hashes)) {
+                this.handle_new_story_hashes(data.new_story_hashes);
+            }
+
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
             this.toggle_focus_in_slider();
+        },
+
+        // reader.js: Build the payload that tells refresh_feeds what scope to
+        // peek at for new-arrival story hashes. Returns null when the user
+        // isn't in a supported view (e.g. starred, briefing, splash,
+        // oldest-first, or a search). Called from assetmodel.refresh_feeds.
+        build_new_stories_check_params: function () {
+            if (!this.active_feed) return null;
+            if (this.flags['splash_page_frontmost']) return null;
+            if (this.flags['starred_view']) return null;
+            if (this.flags['briefing_view']) return null;
+            if (this.flags['trending_view']) return null;
+            if (this.flags['social_view']) return null;
+            if (this.flags['search']) return null;
+            if (this.model.view_setting(this.active_feed, 'order') !== 'newest') return null;
+
+            var known_hashes = this.model.stories.pluck('story_hash');
+            var read_filter = this.model.view_setting(this.active_feed, 'read_filter') || 'all';
+
+            if (this.flags['river_view']) {
+                if (!this.active_folder || typeof this.active_folder.feed_ids_in_folder !== 'function') {
+                    return null;
+                }
+                var feed_ids = this.active_folder.feed_ids_in_folder();
+                if (!feed_ids || !feed_ids.length) return null;
+                return {
+                    'check_new_stories': 'river',
+                    'check_new_stories_feed_ids': feed_ids,
+                    'check_new_stories_order': 'newest',
+                    'check_new_stories_read_filter': read_filter,
+                    'known_story_hashes': known_hashes
+                };
+            }
+
+            // Single feed. `active_feed` is numeric for regular feeds; bail
+            // out for any string-prefixed pseudo-feed (starred:, social:, etc).
+            if (!_.isNumber(this.active_feed) && isNaN(parseInt(this.active_feed, 10))) return null;
+            return {
+                'check_new_stories': 'feed',
+                'check_new_stories_feed_id': parseInt(this.active_feed, 10),
+                'check_new_stories_order': 'newest',
+                'check_new_stories_read_filter': read_filter,
+                'known_story_hashes': known_hashes
+            };
+        },
+
+        // reader.js: Stash new-arrival hashes reported by the poll, surface
+        // the "N new stories" pill. Extra guard against race conditions:
+        // filter out hashes already present in the collection.
+        handle_new_story_hashes: function (hashes) {
+            if (!NEWSBLUR.app.new_stories_indicator) return;
+            if (!hashes || !hashes.length) {
+                this.new_story_hashes = [];
+                NEWSBLUR.app.new_stories_indicator.hide();
+                return;
+            }
+            var stories = this.model.stories;
+            var fresh = _.filter(hashes, function (hash) {
+                return !stories.get_by_story_hash(hash);
+            });
+            this.new_story_hashes = fresh;
+            if (!fresh.length) {
+                NEWSBLUR.app.new_stories_indicator.hide();
+                return;
+            }
+            NEWSBLUR.app.new_stories_indicator.show(fresh.length);
+        },
+
+        // reader.js: Click handler on the pill. Scroll the story list to
+        // the top, fetch full story bodies for the new hashes, prepend them
+        // via NEWSBLUR.Collections.Stories.prepend_new_stories so pagination
+        // is undisturbed, then hide the pill. Uses a direct request rather
+        // than load_feed/fetch_river_stories because those APPEND via
+        // load_feed_precallback — we need to prepend.
+        load_new_stories_from_indicator: function () {
+            var indicator = NEWSBLUR.app.new_stories_indicator;
+            if (!indicator) return;
+            var hashes = this.new_story_hashes;
+            if (!hashes || !hashes.length) {
+                indicator.hide();
+                return;
+            }
+            indicator.set_loading(true);
+
+            var self = this;
+            var feed_id_at_request = this.active_feed;
+            var finish = function () {
+                self.new_story_hashes = [];
+                indicator.hide();
+            };
+
+            var $scroll = this.$s.$story_titles;
+            if ($scroll && $scroll.length && $.isFunction($scroll.scrollTo)) {
+                $scroll.scrollTo(0, { duration: 250, easing: 'easeOutQuart' });
+            } else if ($scroll && $scroll.length) {
+                $scroll.scrollTop(0);
+            }
+
+            var handle_success = function (data) {
+                // reader.js: If the user switched feeds mid-request, discard.
+                if (self.active_feed !== feed_id_at_request) {
+                    finish();
+                    return;
+                }
+                if (data && data.stories && data.stories.length) {
+                    self.model.stories.prepend_new_stories(data.stories);
+                }
+                finish();
+            };
+
+            // reader.js: Always use /reader/river_stories for h[] fetches —
+            // it natively supports rehydrating specific hashes (load_river_stories__redis
+            // has a story_hashes short-circuit). Single feeds just send a
+            // one-element feeds list. Paging / premium limits don't apply
+            // because the server returns MStory.objects(story_hash__in=...)
+            // unsliced when h[] is present.
+            var feeds;
+            if (this.flags['river_view']) {
+                if (!this.active_folder || typeof this.active_folder.feed_ids_in_folder !== 'function') {
+                    finish();
+                    return;
+                }
+                feeds = this.active_folder.feed_ids_in_folder();
+            } else {
+                feeds = [parseInt(this.active_feed, 10)];
+            }
+            var params = {
+                feeds: feeds,
+                page: 1,
+                order: this.model.view_setting(this.active_feed, 'order'),
+                read_filter: 'all',
+                include_hidden: true,
+                h: hashes
+            };
+            this.model.make_request('/reader/river_stories', params, handle_success, finish, {
+                'ajax_group': 'feed_page',
+                'request_type': 'GET'
+            });
         },
 
         feed_unread_count: function (feed_id, options) {

@@ -439,6 +439,25 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
     },
 
+    // stories.js: Insert fresh stories at the top of the collection without
+    // bumping page_fill_outs or no_more_stories. Paired with the
+    // new-stories indicator (views/new_stories_indicator_view.js): the
+    // indicator peeks at the server for hashes the user doesn't have yet,
+    // then hands them here when the user clicks "N new stories". Matches the
+    // assetmodel.js load_feed_precallback pattern of silent-add + manual
+    // trigger so story_titles_view.js can read options.added / options.prepend.
+    prepend_new_stories: function (stories) {
+        if (!stories || !stories.length) return [];
+        var fresh = _.filter(stories, _.bind(function (story) {
+            var hash = story && (story.story_hash || (story.get && story.get('story_hash')));
+            return hash && !this.get_by_story_hash(hash);
+        }, this));
+        if (!fresh.length) return [];
+        this.add(fresh, { at: 0, silent: true });
+        this.trigger('add', { added: fresh.length, prepend: true });
+        return fresh;
+    },
+
     mark_read_pubsub: function (story_hash) {
         var story = this.get_by_story_hash(story_hash);
         if (!story) return;
