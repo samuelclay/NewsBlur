@@ -96,12 +96,19 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) NSInteger dailyBriefingReloadStoryCount;
 @property (nonatomic) BOOL dailyBriefingDidLogInitialRender;
 @property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
+@property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
+@property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
+@property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 
 - (BOOL)isClusterMarkReadEnabled;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
 - (NSArray<NSIndexPath *> *)indexPathsForStoryLocationIncludingClusterRows:(NSInteger)location;
 - (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)clearTryFeedSearchState;
+- (void)clearStoryRenderCaches;
+- (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story;
+- (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location;
+- (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
 
 @end
 
@@ -148,6 +155,10 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     
     self.dashboardIndex = -1;
     self.dashboardSingleMode = NO;
+    self.storyPreviewTextCache = [[NSCache alloc] init];
+    self.storyPreviewTextCache.countLimit = 512;
+    self.storyHeightCache = [[NSCache alloc] init];
+    self.storyHeightCache.countLimit = 1024;
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
@@ -483,6 +494,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
     appDelegate.fontDescriptorTitleSize = nil;
+    [self clearStoryRenderCaches];
 
     [self reload];
 }
@@ -541,6 +553,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     appDelegate.fontDescriptorTitleSize = nil;
+    [self clearStoryRenderCaches];
     self.scrollingMarkReadRow = NSNotFound;
     self.visibleStoryRows = [self buildVisibleStoryRows];
     BOOL shouldLogDailyBriefingRender = storiesCollection.isDailyBriefing;
@@ -568,6 +581,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
               self.dailyBriefingReloadDataMs,
               (long)self.textSize);
     }
+    [self warmStoryPreviewCacheAroundLocation:storiesCollection.locationOfActiveStory];
     
     NSInteger location = storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
@@ -584,6 +598,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     appDelegate.fontDescriptorTitleSize = nil;
+    [self clearStoryRenderCaches];
     self.scrollingMarkReadRow = NSNotFound;
     self.visibleStoryRows = [self buildVisibleStoryRows];
     
@@ -1413,6 +1428,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.fetchRequestId++;
     appDelegate.activeStory = nil;
     self.visibleStoryRows = nil;
+    [self clearStoryRenderCaches];
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
@@ -1454,6 +1470,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.currentFetchTask = nil;
     self.fetchRequestId++;
     self.visibleStoryRows = nil;
+    [self clearStoryRenderCaches];
 
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -1466,6 +1483,111 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     if (self.isLegacyTable) {
         [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame), 1, 1) animated:YES];
     }
+}
+
+- (void)clearStoryRenderCaches {
+    self.storyRenderCacheGeneration += 1;
+    [self.storyPreviewTextCache removeAllObjects];
+    [self.storyHeightCache removeAllObjects];
+}
+
+- (NSString *)storyRenderCacheKeyForStory:(NSDictionary *)story location:(NSInteger)location {
+    id storyHash = story[@"story_hash"];
+    if ([storyHash isKindOfClass:[NSString class]] && [storyHash length]) {
+        return storyHash;
+    }
+
+    return [NSString stringWithFormat:@"story-location-%ld", (long)location];
+}
+
+- (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location {
+    NSString *cacheKey = [self storyRenderCacheKeyForStory:story location:location];
+    NSString *cachedPreviewText = [self.storyPreviewTextCache objectForKey:cacheKey];
+    if (cachedPreviewText) {
+        return cachedPreviewText;
+    }
+
+    NSString *content = [self normalizedPreviewTextForStory:story];
+    [self.storyPreviewTextCache setObject:content forKey:cacheKey];
+
+    return content;
+}
+
+- (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story {
+    NSString *content = nil;
+    if (storiesCollection.isDailyBriefing &&
+        [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
+        content = story[@"daily_briefing_preview_text"];
+    } else {
+        content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
+    }
+
+    if (![content isKindOfClass:[NSString class]]) {
+        content = @"";
+    }
+    if ([content length] > 500) {
+        content = [content substringToIndex:500];
+    }
+
+    return [content stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+}
+
+- (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location {
+    if (self.textSize == FeedDetailTextSizeTitleOnly || !storiesCollection.storyLocationsCount) {
+        return;
+    }
+
+    NSInteger storyCount = storiesCollection.storyLocationsCount;
+    NSInteger centerLocation = location;
+    if (centerLocation == NSNotFound || centerLocation < 0 || centerLocation >= storyCount) {
+        centerLocation = 0;
+    }
+
+    NSInteger startLocation = MAX(0, centerLocation - 40);
+    NSInteger endLocation = MIN(storyCount - 1, centerLocation + 160);
+    NSMutableArray<NSDictionary *> *storiesToWarm = [NSMutableArray array];
+    NSMutableArray<NSString *> *cacheKeys = [NSMutableArray array];
+
+    for (NSInteger storyLocation = startLocation; storyLocation <= endLocation; storyLocation++) {
+        NSDictionary *story = [self getStoryAtLocation:storyLocation];
+        if (!story) {
+            continue;
+        }
+
+        NSString *cacheKey = [self storyRenderCacheKeyForStory:story location:storyLocation];
+        if ([self.storyPreviewTextCache objectForKey:cacheKey]) {
+            continue;
+        }
+
+        [storiesToWarm addObject:story];
+        [cacheKeys addObject:cacheKey];
+    }
+
+    if (!storiesToWarm.count) {
+        return;
+    }
+
+    NSUInteger generation = self.storyRenderCacheGeneration;
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        NSMutableArray<NSArray<NSString *> *> *previewEntries = [NSMutableArray arrayWithCapacity:storiesToWarm.count];
+
+        for (NSUInteger index = 0; index < storiesToWarm.count; index++) {
+            NSDictionary *story = storiesToWarm[index];
+            NSString *content = [weakSelf normalizedPreviewTextForStory:story];
+            [previewEntries addObject:@[cacheKeys[index], content ?: @""]];
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!weakSelf || weakSelf.storyRenderCacheGeneration != generation) {
+                return;
+            }
+
+            for (NSArray<NSString *> *entry in previewEntries) {
+                [weakSelf.storyPreviewTextCache setObject:entry[1] forKey:entry[0]];
+            }
+        });
+    });
 }
 
 - (void)beginOfflineTimer {
@@ -3090,17 +3212,8 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     
     cell.storyContent = nil;
     if (!isClusterRow && self.textSize != FeedDetailTextSizeTitleOnly) {
-        NSString *content = nil;
-        if (storiesCollection.isDailyBriefing &&
-            [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
-            content = story[@"daily_briefing_preview_text"];
-        } else {
-            content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
-        }
-        if ([content length] > 500) {
-            content = [content substringToIndex:500];
-        }
-        cell.storyContent = [content stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+        NSString *content = [self cachedPreviewTextForStory:story location:location];
+        cell.storyContent = [content length] ? content : nil;
     }
     
     // feed color bar border
@@ -3620,7 +3733,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
         BOOL isComfortable = ![spacing isEqualToString:@"compact"];
         rowHeight = isComfortable ? 42.0f : 36.0f;
-    } else if (storyCount && [self storyLocationForIndexPath:indexPath] == storyCount) {
+    } else if (storyCount && location == storyCount) {
         if (!self.pageFinished) {
             rowHeight = 40;
         } else {
@@ -3652,12 +3765,33 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+        NSDictionary *story = location < storyCount ? [self getStoryAtLocation:location] : nil;
+        NSString *heightCacheKey = nil;
+        if (story) {
+            NSString *layoutMode = (storiesCollection.isRiverView ||
+                                    storiesCollection.isSavedView ||
+                                    storiesCollection.isReadView ||
+                                    storiesCollection.isWidgetView ||
+                                    storiesCollection.isSocialView ||
+                                    storiesCollection.isSocialRiverView) ? @"river" : @"feed";
+            heightCacheKey = [NSString stringWithFormat:@"%@|%@|%ld|%@|%.1f|%d",
+                              [self storyRenderCacheKeyForStory:story location:location],
+                              layoutMode,
+                              (long)self.textSize,
+                              spacing ?: @"default",
+                              fontDescriptor.pointSize,
+                              [self isShortTitles]];
+            NSNumber *cachedHeight = [self.storyHeightCache objectForKey:heightCacheKey];
+            if (cachedHeight) {
+                rowHeight = [cachedHeight doubleValue];
+                goto finish_height_measurement;
+            }
+        }
         UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize + 1];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             rowHeight = height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
-                NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
                 NSUInteger contentLength = 0;
                 if (storiesCollection.isDailyBriefing) {
                     if ([story[@"daily_briefing_preview_length"] respondsToSelector:@selector(unsignedIntegerValue)]) {
@@ -3666,9 +3800,11 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
                     if (!contentLength && [story[@"daily_briefing_preview_text"] isKindOfClass:[NSString class]]) {
                         contentLength = [story[@"daily_briefing_preview_text"] length];
                     }
-                } else {
-                    NSString *content = [story[@"story_content"] convertHTML];
-                    contentLength = content.length;
+                    if (!contentLength) {
+                        contentLength = [[self cachedPreviewTextForStory:story location:location] length];
+                    }
+                } else if (story) {
+                    contentLength = [[self cachedPreviewTextForStory:story location:location] length];
                 }
                 
                 if (contentLength < 10 && [story[@"story_title"] length] < 30) {
@@ -3699,7 +3835,6 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
         } else {
             // Title only - reduce height since no content preview is shown
-            NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
             NSString *title = story[@"story_title"];
             NSInteger titleLen = title.length;
             CGFloat titleOnlyHeight;
@@ -3715,8 +3850,13 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             CGFloat minHeight = font.pointSize * 3;
             rowHeight = MAX(titleOnlyHeight, minHeight);
         }
+
+        if (heightCacheKey) {
+            [self.storyHeightCache setObject:@(rowHeight) forKey:heightCacheKey];
+        }
     }
 
+finish_height_measurement:
     if (shouldMeasureRender) {
         double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
         self.dailyBriefingHeightCallCount += 1;
@@ -3754,6 +3894,8 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:18.0f];
         }
     }
+
+    appDelegate.fontDescriptorTitleSize = fontDescriptor;
     return fontDescriptor;
 }
 
