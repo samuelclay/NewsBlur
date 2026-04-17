@@ -45,6 +45,11 @@ import SwiftUI
     var isDashboard: Bool {
         return appDelegate.detailViewController.storyTitlesInDashboard
     }
+
+    /// Using the experimental replacement for the classic story titles pane.
+    var isNonGridStoryTitlesLayout: Bool {
+        return !isGridView && !isDashboard
+    }
     
     var isPhone: Bool {
         return appDelegate.detailViewController.isPhone
@@ -65,6 +70,7 @@ import SwiftUI
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
+    @Published var openSwipeStoryID: String?
     
     static private(set) var cachedDashboard = [DashList]()
     
@@ -97,6 +103,8 @@ import SwiftUI
         guard let storiesCollection = appDelegate.storiesCollection else {
             return
         }
+
+        openSwipeStoryID = nil
         
         let debug = Date()
         let storyCount = Int(storiesCollection.storyLocationsCount)
@@ -134,9 +142,19 @@ import SwiftUI
             currentFeed = nil
         }
         
-        before = beforeSelection.map { Story(index: $0) }
-        selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
-        after = afterSelection.map { Story(index: $0) }
+        if isNonGridStoryTitlesLayout {
+            before = beforeSelection.flatMap { visibleRows(for: $0, selectedIndex: selectedIndex) }
+            selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
+            after = afterSelection.flatMap { visibleRows(for: $0, selectedIndex: selectedIndex) }
+
+            if let selected {
+                after = visibleClusterRows(for: selected.index) + after
+            }
+        } else {
+            before = beforeSelection.map { Story(index: $0) }
+            selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
+            after = afterSelection.map { Story(index: $0) }
+        }
         
         // NSLog("🪿🎛️ ...reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
         
@@ -154,6 +172,11 @@ import SwiftUI
     }
     
     func reload(story: Story) {
+        guard !story.isClusterStory else {
+            reload()
+            return
+        }
+
         if story == selected {
             selected = Story(index: story.index)
         } else if let index = before.firstIndex(of: story) {
@@ -231,6 +254,69 @@ import SwiftUI
         }
         
         return dashes
+    }
+
+    private func visibleRows(for location: Int, selectedIndex: Int) -> [Story] {
+        guard let storyDictionary = storyDictionary(at: location) else {
+            return []
+        }
+
+        var rows = [Story(index: location, dictionary: storyDictionary)]
+
+        if selectedIndex < 0 || location != selectedIndex {
+            rows.append(contentsOf: visibleClusterRows(for: location, parentStory: storyDictionary))
+        }
+
+        return rows
+    }
+
+    private func visibleClusterRows(for location: Int) -> [Story] {
+        guard let storyDictionary = storyDictionary(at: location) else {
+            return []
+        }
+
+        return visibleClusterRows(for: location, parentStory: storyDictionary)
+    }
+
+    private func visibleClusterRows(for location: Int, parentStory: AnyDictionary) -> [Story] {
+        guard isNonGridStoryTitlesLayout else {
+            return []
+        }
+
+        guard UserDefaults.standard.bool(forKey: "story_clustering") else {
+            return []
+        }
+
+        guard let clusterStories = parentStory["cluster_stories"] as? [NSDictionary], !clusterStories.isEmpty else {
+            return []
+        }
+
+        let visibleClusterStories = StoryClusterDisplayDecision.visibleClusterStories(
+            clusterStories as NSArray,
+            subscribedFeedIds: appDelegate.subscribedFeedIdsForStoryClusters() as NSSet,
+            isPremiumArchive: appDelegate.isPremiumArchive
+        ) as? [NSDictionary] ?? []
+
+        return visibleClusterStories.compactMap { clusterStory in
+            guard let clusterDictionary = clusterStory as? AnyDictionary else {
+                return nil
+            }
+
+            return Story(parentIndex: location, clusterDictionary: clusterDictionary, parentStory: parentStory)
+        }
+    }
+
+    private func storyDictionary(at location: Int) -> AnyDictionary? {
+        guard let storiesCollection = appDelegate.storiesCollection,
+              location >= 0,
+              location < storiesCollection.activeFeedStoryLocations.count,
+              let row = storiesCollection.activeFeedStoryLocations[location] as? Int,
+              row >= 0,
+              row < storiesCollection.activeFeedStories.count else {
+            return nil
+        }
+
+        return storiesCollection.activeFeedStories[row] as? AnyDictionary
     }
     
     func change(dash: DashList, to riverId: String) {
