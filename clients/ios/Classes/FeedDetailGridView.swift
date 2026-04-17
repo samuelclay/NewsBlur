@@ -56,44 +56,7 @@ struct FeedDetailGridView: View {
         GeometryReader { reader in
             ScrollView {
                 ScrollViewReader { scroller in
-                    LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
-                        if cache.isPhoneOrCompact {
-                            Section(footer: makeLoadingView()) {
-                                ForEach(cache.before, id: \.id) { story in
-                                    makeCardView(for: story, reader: reader)
-                                }
-                                
-                                if let story = cache.selected {
-                                    makeCardView(for: story, reader: reader)
-                                        .id(story.id)
-                                }
-                                
-                                ForEach(cache.after, id: \.id) { story in
-                                    makeCardView(for: story, reader: reader)
-                                }
-                            }
-                        } else {
-                            Section {
-                                ForEach(cache.before, id: \.id) { story in
-                                    makeCardView(for: story, reader: reader)
-                                }
-                            }
-                            
-                            if cache.isGridView && !cache.isPhoneOrCompact {
-                                EmptyView()
-                                    .id(storyViewID)
-                            } else if let story = cache.selected {
-                                makeCardView(for: story, reader: reader)
-                                    .id(story.id)
-                            }
-                            
-                            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
-                                ForEach(cache.after, id: \.id) { story in
-                                    makeCardView(for: story, reader: reader)
-                                }
-                            }
-                        }
-                    }
+                    makeCardLayout(reader: reader)
                     .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
                         guard oldSelected?.hash != newSelected?.hash else {
                             return
@@ -138,6 +101,8 @@ struct FeedDetailGridView: View {
                     }
                 }
             }
+            .accessibilityIdentifier("story-titles-scroll")
+            .accessibilityElement(children: .contain)
             .modify({ view in
 #if !targetEnvironment(macCatalyst)
                 if #available(iOS 15.0, *) {
@@ -155,6 +120,59 @@ struct FeedDetailGridView: View {
             view.lazyPop()
         }
     }
+
+    @ViewBuilder
+    func makeCardLayout(reader: GeometryProxy) -> some View {
+        if cache.isGrid {
+            LazyVGrid(columns: columns, spacing: 20) {
+                makeCardSections(reader: reader)
+            }
+        } else {
+            LazyVStack(spacing: 0) {
+                makeCardSections(reader: reader)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func makeCardSections(reader: GeometryProxy) -> some View {
+        if cache.isPhoneOrCompact {
+            Section(footer: makeLoadingView()) {
+                ForEach(cache.before, id: \.id) { story in
+                    makeCardView(for: story, reader: reader)
+                }
+
+                if let story = cache.selected {
+                    makeCardView(for: story, reader: reader)
+                        .id(story.id)
+                }
+
+                ForEach(cache.after, id: \.id) { story in
+                    makeCardView(for: story, reader: reader)
+                }
+            }
+        } else {
+            Section {
+                ForEach(cache.before, id: \.id) { story in
+                    makeCardView(for: story, reader: reader)
+                }
+            }
+
+            if cache.isGridView && !cache.isPhoneOrCompact {
+                EmptyView()
+                    .id(storyViewID)
+            } else if let story = cache.selected {
+                makeCardView(for: story, reader: reader)
+                    .id(story.id)
+            }
+
+            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
+                ForEach(cache.after, id: \.id) { story in
+                    makeCardView(for: story, reader: reader)
+                }
+            }
+        }
+    }
     
     @ViewBuilder
     func makeCardView(for story: Story, reader: GeometryProxy) -> some View {
@@ -163,7 +181,8 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
-                if feedDetailInteraction.isMarkReadOnScroll,
+                if !story.isClusterStory,
+                   feedDetailInteraction.isMarkReadOnScroll,
                    StoryScrollReadDecision.shouldMarkRead(storyID: "\(story.id)", frames: $0) {
                     NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
@@ -173,7 +192,9 @@ struct FeedDetailGridView: View {
                 }
             }
             .onAppear {
-                feedDetailInteraction.visible(story: story)
+                if !story.isClusterStory {
+                    feedDetailInteraction.visible(story: story)
+                }
             }
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)

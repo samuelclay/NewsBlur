@@ -31,6 +31,9 @@ import Foundation
     var score = 0
     var hash = ""
     var author = ""
+    var isClusterStory = false
+    var clusterTier = ""
+    var parentStoryIndex: Int?
     
     var dateAndAuthor: String {
         return author.isEmpty ? dateString : "\(dateString) · \(author)"
@@ -147,6 +150,10 @@ import Foundation
     }
     
     var isSelected: Bool {
+        guard !isClusterStory else {
+            return false
+        }
+
         return index == NewsBlurAppDelegate.shared!.storiesCollection.locationOfActiveStory()
     }
     
@@ -186,6 +193,43 @@ import Foundation
         }
 
         loadFromDictionary()
+    }
+
+    init(parentIndex: Int, clusterDictionary: AnyDictionary, parentStory: AnyDictionary) {
+        self.index = parentIndex
+        self.dictionary = clusterDictionary
+
+        if let storyHash = clusterDictionary["story_hash"] as? String, !storyHash.isEmpty {
+            self.id = storyHash
+        } else {
+            self.id = "cluster-\(parentIndex)"
+        }
+
+        loadFromDictionary()
+
+        isClusterStory = true
+        parentStoryIndex = parentIndex
+        clusterTier = StoryClusterDisplayDecision.normalizedClusterTierValue(clusterDictionary["cluster_tier"])
+        shortContent = ""
+        longContent = ""
+        author = ""
+        dateString = Utilities.formatClusterDate(fromTimestamp: timestamp) ?? dateString
+        isSaved = false
+        isShared = false
+        isReadAvailable = false
+        score = (clusterDictionary["score"] as? NSNumber)?.intValue ?? score
+
+        let appDelegate = NewsBlurAppDelegate.shared!
+        let parentIsRead = !appDelegate.storiesCollection.isStoryUnread(parentStory)
+        let clusterRead = (clusterDictionary["read_status"] as? NSNumber)?.boolValue ?? false
+        let clusterMarkReadEnabled = appDelegate.isPremiumArchive &&
+            StoryClusterDisplayDecision.isClusterMarkReadEnabled(userProfile: appDelegate.dictUserProfile as NSDictionary?)
+        isRead = StoryClusterDisplayDecision.effectiveClusterReadStatus(
+            isClusterRead: clusterRead,
+            parentRead: parentIsRead,
+            clusterMarkReadEnabled: clusterMarkReadEnabled,
+            isPremiumArchive: appDelegate.isPremiumArchive
+        )
     }
     
     private func string(for key: String) -> String {
