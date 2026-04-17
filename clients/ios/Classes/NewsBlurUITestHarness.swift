@@ -15,6 +15,7 @@ final class NewsBlurUITestHarness {
     private enum LaunchArgument {
         static let enabled = "-newsblur-ui-testing"
         static let screen = "-newsblur-ui-test-screen"
+        static let storyTitlesStyle = "-newsblur-ui-test-story-titles-style"
     }
 
     private enum ReaderScenario {
@@ -36,6 +37,12 @@ final class NewsBlurUITestHarness {
 
         didPrepareLaunchEnvironment = true
         UIView.setAnimationsEnabled(false)
+
+        if let requestedStoryTitlesStyle {
+            UserDefaults.standard.set(requestedStoryTitlesStyle, forKey: DetailViewController.Key.style)
+        } else {
+            UserDefaults.standard.removeObject(forKey: DetailViewController.Key.style)
+        }
 
         switch requestedScreen {
         case "add-site":
@@ -87,6 +94,16 @@ final class NewsBlurUITestHarness {
     private static var requestedScreen: String? {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: LaunchArgument.screen) else { return nil }
+
+        let valueIndex = arguments.index(after: index)
+        guard valueIndex < arguments.endIndex else { return nil }
+
+        return arguments[valueIndex]
+    }
+
+    private static var requestedStoryTitlesStyle: String? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: LaunchArgument.storyTitlesStyle) else { return nil }
 
         let valueIndex = arguments.index(after: index)
         guard valueIndex < arguments.endIndex else { return nil }
