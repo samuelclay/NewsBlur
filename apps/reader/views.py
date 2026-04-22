@@ -4597,6 +4597,7 @@ def all_classifiers(request):
         entry = {
             "author": c.author,
             "score": c.score,
+            "is_regex": getattr(c, "is_regex", False),
             "scope": getattr(c, "scope", "feed"),
             "folder_name": getattr(c, "folder_name", ""),
         }
