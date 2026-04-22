@@ -71,7 +71,7 @@ class OPMLExporter(Importer):
         folders = self.get_folders()
         body = SubElement(root, "body")
         self.process_outline(body, folders, verbose=verbose)
-        return tostring(root, encoding="utf8", method="xml")
+        return tostring(root, encoding="utf-8", method="xml")
 
     def process_outline(self, body, folders, verbose=False):
         for obj in folders:
