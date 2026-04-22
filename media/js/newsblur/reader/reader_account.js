@@ -141,6 +141,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                     { key: 'title', label: 'Title' },
                                     { key: 'title_regex', label: 'Title Regex' },
                                     { key: 'author', label: 'Author' },
+                                    { key: 'author_regex', label: 'Author Regex' },
                                     { key: 'tag', label: 'Tag' },
                                     { key: 'text', label: 'Text' },
                                     { key: 'text_regex', label: 'Text Regex' },

@@ -102,8 +102,8 @@ def set_classifier_notification(request):
     if classifier_type not in ("title", "author", "tag", "text", "url"):
         return {"code": -1, "message": "Invalid classifier_type"}
 
-    # is_regex only applies to title, text, url classifiers
-    if is_regex and classifier_type not in ("title", "text", "url"):
+    # is_regex only applies to title, text, url, author classifiers
+    if is_regex and classifier_type not in ("title", "text", "url", "author"):
         is_regex = False
 
     try:
