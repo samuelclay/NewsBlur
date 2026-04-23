@@ -570,9 +570,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     NSInteger release = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
     [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
-    [[NSUserDefaults standardUserDefaults] setInteger:release forKey:@"release"];
-    
-    [self.helper upgradeSettingsFrom:release];
+
+    // Reads the previously stored release, runs any pending migrations, then
+    // stores the current release. See AppDelegateHelper.applyReleaseUpgrade.
+    [self.helper applyReleaseUpgradeWithCurrentRelease:release];
 }
 
 - (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {

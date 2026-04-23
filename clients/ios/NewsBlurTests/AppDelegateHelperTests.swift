@@ -6,16 +6,20 @@ final class AppDelegateHelperTests: XCTestCase {
     private let defaults = UserDefaults.standard
     private let keys = [
         "default_scroll_read_filter",
-        "override_scroll_read_filter",
         "default_mark_read_filter",
-        "override_mark_read_filter",
-        "feed:1:scroll_read_filter",
-        "feed:1:mark_read_filter",
-        "feed:2:scroll_read_filter",
-        "feed:2:mark_read_filter",
+        "release",
         "custom_domain",
     ]
     private var savedValues: [String: Any] = [:]
+    private var bundleID: String { Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? "" }
+
+    /// Read a user-set value from the persistent domain, excluding registered
+    /// defaults that Settings.bundle adds at launch. Tests that assert "the
+    /// migration did not write" must use this; `defaults.object(forKey:)` also
+    /// returns the registered `scroll` default.
+    private func userValue(_ key: String) -> Any? {
+        return defaults.persistentDomain(forName: bundleID)?[key]
+    }
 
     override func setUp() {
         super.setUp()
@@ -40,29 +44,67 @@ final class AppDelegateHelperTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_upgradeSettings_migratesGlobalAndPerFeedScrollPreferences() {
-        defaults.set(true, forKey: "default_scroll_read_filter")
-        defaults.set(true, forKey: "override_scroll_read_filter")
-        defaults.set(false, forKey: "feed:1:scroll_read_filter")
-        defaults.set(true, forKey: "feed:2:scroll_read_filter")
+    func test_upgradeSettings_migratesLegacyScrollFalseToSelection() {
+        defaults.set(false, forKey: "default_scroll_read_filter")
 
         AppDelegateHelper.shared.upgradeSettings(from: 153)
 
-        XCTAssertEqual(defaults.string(forKey: "default_mark_read_filter"), "scroll")
-        XCTAssertTrue(defaults.bool(forKey: "override_mark_read_filter"))
-        XCTAssertEqual(defaults.string(forKey: "feed:1:mark_read_filter"), "selection")
-        XCTAssertEqual(defaults.string(forKey: "feed:2:mark_read_filter"), "scroll")
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
     }
 
-    func test_upgradeSettings_doesNotOverwriteCurrentReleases() {
+    func test_upgradeSettings_migratesLegacyScrollTrueToScroll() {
+        defaults.set(true, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.upgradeSettings(from: 153)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "scroll")
+    }
+
+    func test_upgradeSettings_doesNotWriteMarkReadWhenLegacyKeyAbsent() {
+        // Fresh install: no old boolean key. Migration must NOT force "selection",
+        // which would override the Settings.bundle default of "scroll".
+        AppDelegateHelper.shared.upgradeSettings(from: 0)
+
+        XCTAssertNil(userValue("default_mark_read_filter"))
+    }
+
+    func test_upgradeSettings_doesNotOverwriteExistingMarkReadValue() {
         defaults.set(true, forKey: "default_scroll_read_filter")
         defaults.set("selection", forKey: "default_mark_read_filter")
-        defaults.set(false, forKey: "override_mark_read_filter")
+
+        AppDelegateHelper.shared.upgradeSettings(from: 153)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
+    }
+
+    func test_upgradeSettings_doesNotMigrateWhenAlreadyPastMigrationRelease() {
+        defaults.set(false, forKey: "default_scroll_read_filter")
 
         AppDelegateHelper.shared.upgradeSettings(from: 154)
 
-        XCTAssertEqual(defaults.string(forKey: "default_mark_read_filter"), "selection")
-        XCTAssertFalse(defaults.bool(forKey: "override_mark_read_filter"))
+        XCTAssertNil(userValue("default_mark_read_filter"))
+    }
+
+    func test_applyReleaseUpgrade_readsPreviousReleaseBeforeOverwriting() {
+        // Simulate a device that last ran an old build (release 120) and is
+        // now launching build 328. The migration must see 120 and run.
+        defaults.set(120, forKey: "release")
+        defaults.set(false, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.applyReleaseUpgrade(currentRelease: 328, defaults: defaults)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
+        XCTAssertEqual(defaults.integer(forKey: "release"), 328)
+    }
+
+    func test_applyReleaseUpgrade_skipsMigrationWhenStoredReleaseAlreadyPastThreshold() {
+        defaults.set(200, forKey: "release")
+        defaults.set(false, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.applyReleaseUpgrade(currentRelease: 328, defaults: defaults)
+
+        XCTAssertNil(userValue("default_mark_read_filter"))
+        XCTAssertEqual(defaults.integer(forKey: "release"), 328)
     }
 
     func test_appDelegateURL_normalizesCustomDomainToOrigin() {
