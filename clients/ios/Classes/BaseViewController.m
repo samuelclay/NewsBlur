@@ -442,14 +442,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
             command.title = @"Mark as Read";
         }
     } else if (command.action == @selector(chooseMarkRead:)) {
-        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
-        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
-        
-        if (value == nil) {
-            preferenceKey = @"default_mark_read_filter";
-            value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
-        }
-        
+        NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
         command.state = [command.propertyList isEqualToString:value];
     }
 }
@@ -722,9 +715,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (IBAction)chooseMarkRead:(id)sender {
     UICommand *command = sender;
     NSString *string = command.propertyList;
-    NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
-    
-    [[NSUserDefaults standardUserDefaults] setObject:string forKey:preferenceKey];
+
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"default_mark_read_filter"];
 }
 
 - (IBAction)openTrainSite:(id)sender {

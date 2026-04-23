@@ -283,13 +283,6 @@ class PreferencesViewModel: ObservableObject {
                         )
                     ),
                     PreferenceItem(
-                        title: "Site-specific mark read",
-                        icon: "hand.raised",
-                        iconColor: .yellow,
-                        type: .toggle(key: "override_mark_read_filter", defaultValue: true),
-                        subtitle: "Allow per-site/folder mark read settings"
-                    ),
-                    PreferenceItem(
                         title: "Discover sites",
                         icon: "sparkle.magnifyingglass",
                         iconColor: .orange,
