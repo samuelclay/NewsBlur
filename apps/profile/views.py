@@ -1733,7 +1733,8 @@ def count_classifiers(request):
     counts = {
         "title": MClassifierTitle.objects.filter(user_id=user_id, is_regex__ne=True).count(),
         "title_regex": MClassifierTitle.objects.filter(user_id=user_id, is_regex=True).count(),
-        "author": MClassifierAuthor.objects.filter(user_id=user_id).count(),
+        "author": MClassifierAuthor.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "author_regex": MClassifierAuthor.objects.filter(user_id=user_id, is_regex=True).count(),
         "tag": MClassifierTag.objects.filter(user_id=user_id).count(),
         "text": MClassifierText.objects.filter(user_id=user_id, is_regex__ne=True).count(),
         "text_regex": MClassifierText.objects.filter(user_id=user_id, is_regex=True).count(),
@@ -1754,7 +1755,8 @@ def delete_classifiers(request):
     classifier_map = {
         "title": (MClassifierTitle, {"is_regex__ne": True}),
         "title_regex": (MClassifierTitle, {"is_regex": True}),
-        "author": (MClassifierAuthor, {}),
+        "author": (MClassifierAuthor, {"is_regex__ne": True}),
+        "author_regex": (MClassifierAuthor, {"is_regex": True}),
         "tag": (MClassifierTag, {}),
         "text": (MClassifierText, {"is_regex__ne": True}),
         "text_regex": (MClassifierText, {"is_regex": True}),

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TrainerRegexInput: View {
     enum SectionType {
-        case title, text, url
+        case title, text, url, author
     }
 
     let sectionType: SectionType
@@ -115,6 +115,9 @@ struct TrainerRegexInput: View {
         case .url:
             isRegex = cache.urlIsRegex
             pattern = cache.urlPattern
+        case .author:
+            isRegex = cache.authorIsRegex
+            pattern = cache.authorPattern
         }
     }
 
@@ -129,6 +132,9 @@ struct TrainerRegexInput: View {
         case .url:
             cache.urlIsRegex = isRegex
             cache.urlPattern = pattern
+        case .author:
+            cache.authorIsRegex = isRegex
+            cache.authorPattern = pattern
         }
     }
 
@@ -225,6 +231,8 @@ struct TrainerRegexInput: View {
             textToMatch = story.contentHTML
         case .url:
             textToMatch = story.permalink
+        case .author:
+            textToMatch = story.author
         }
 
         let range = NSRange(textToMatch.startIndex..<textToMatch.endIndex, in: textToMatch)
@@ -282,12 +290,14 @@ struct TrainerRegexInput: View {
             case .title: return "e.g. \\bbreaking\\b"
             case .text: return "e.g. sponsored|advertisement"
             case .url: return "e.g. /blog/\\d{4}/"
+            case .author: return "e.g. ^Sam|smith"
             }
         } else {
             switch sectionType {
             case .title: return "Enter title phrase..."
             case .text: return "Enter text phrase..."
             case .url: return "Enter URL phrase..."
+            case .author: return "Enter author phrase..."
             }
         }
     }
@@ -297,6 +307,7 @@ struct TrainerRegexInput: View {
         case .title: return isRegex ? "Title Regex" : "Title"
         case .text: return isRegex ? "Text Regex" : "Text"
         case .url: return isRegex ? "URL Regex" : "URL"
+        case .author: return isRegex ? "Author Regex" : "Author"
         }
     }
 
@@ -415,6 +426,12 @@ struct TrainerRegexInput: View {
                 appDelegate.toggleUrlRegexClassifier(trimmed, feedId: feedId)
             } else {
                 appDelegate.toggleUrlClassifier(trimmed, feedId: feedId)
+            }
+        case .author:
+            if isRegex {
+                appDelegate.toggleAuthorRegexClassifier(trimmed, feedId: feedId)
+            } else {
+                appDelegate.toggleAuthorClassifier(trimmed, feedId: feedId)
             }
         }
 

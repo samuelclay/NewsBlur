@@ -473,4 +473,6 @@ import SwiftUI
     var textPattern = ""
     var urlIsRegex = false
     var urlPattern = ""
+    var authorIsRegex = false
+    var authorPattern = ""
 }

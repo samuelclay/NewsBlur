@@ -20,7 +20,6 @@ class Classifiers(View):
 
         # Classifiers without is_regex
         scope_only_classifiers = [
-            ("authors", MClassifierAuthor),
             ("tags", MClassifierTag),
         ]
 
@@ -33,6 +32,7 @@ class Classifiers(View):
 
         # Classifiers with is_regex
         regex_classifiers = [
+            ("authors", MClassifierAuthor),
             ("texts", MClassifierText),
             ("titles", MClassifierTitle),
             ("urls", MClassifierUrl),

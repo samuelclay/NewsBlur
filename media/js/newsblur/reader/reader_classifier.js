@@ -985,21 +985,35 @@ var classifier_prototype = {
         // Build combined authors list
         var has_story_author = story_author && story_author.length > 0;
         var has_other_authors = other_authors.length > 0;
+        var has_author_regex = !_.isEmpty(this.user_classifiers.author_regex);
 
-        if (!has_story_author && !has_other_authors) {
+        if (!has_story_author && !has_other_authors && !has_author_regex) {
             return '';  // No authors to show
         }
 
-        var $story_authors = has_story_author ?
-            $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
+        // Separate author regex classifiers into matching and non-matching
+        var matching_author_regex = this.make_user_author_regex_matching(story_author);
+        var non_matching_author_regex = this.make_user_author_regex_non_matching(story_author);
         var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
-        var $scoped_groups = has_other_authors ?
-            this.make_scoped_groups(this.make_authors(other_authors), current_folder_names) : [];
 
-        return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+        var $story_authors = (has_story_author || matching_author_regex.length) ?
+            $.make('div', { className: 'NB-classifier-this-story' }, [
+                (has_story_author ? this.make_authors([story_author]) : null),
+                this.make_classifier('<span class="NB-classifier-author-placeholder">Enter author pattern above</span>', '', 'author'),
+                $.make('span', matching_author_regex)
+            ]) : '';
+
+        var $scoped_groups = (has_other_authors || non_matching_author_regex.length) ?
+            this.make_scoped_groups(this.make_authors(other_authors).concat(non_matching_author_regex), current_folder_names) : [];
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-author-section', 'data-section': 'author' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', 'Story Authors'),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
+                        'Regex requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
                         'Classifier scope requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
@@ -1010,9 +1024,23 @@ var classifier_prototype = {
                     ]))
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                [$story_authors].concat($scoped_groups)
-            )
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', { type: 'text', value: story_author || '', className: 'NB-classifier-author-input', placeholder: 'Enter author pattern...' }),
+                    $.make('div', { className: 'NB-classifier-match-type-control' }, [
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
+                            'Regex',
+                            $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-author-validation' }),
+                this.make_regex_popover(),
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$story_authors].concat($scoped_groups)
+                )
+            ])
         ]);
     },
 
@@ -2223,6 +2251,58 @@ var classifier_prototype = {
         return this.make_authors(authors);
     },
 
+    make_user_author_regex: function () {
+        var $regexes = [];
+        var regex_classifiers = this.user_classifiers.author_regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            var $regex = this.make_classifier(pattern, pattern, 'author', null, null, true);
+            $regexes.push($regex);
+        }, this));
+
+        return $regexes;
+    },
+
+    make_user_author_regex_matching: function (story_author) {
+        var $regexes = [];
+        var regex_classifiers = this.user_classifiers.author_regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            try {
+                var regex = new RegExp(pattern, 'i');
+                if (!story_author || regex.test(story_author)) {
+                    var $regex = this.make_classifier(pattern, pattern, 'author', null, null, true);
+                    $regexes.push($regex);
+                }
+            } catch (e) {
+                // Invalid regex - include so user can see/edit it
+                var $regex = this.make_classifier(pattern, pattern, 'author', null, null, true);
+                $regexes.push($regex);
+            }
+        }, this));
+
+        return $regexes;
+    },
+
+    make_user_author_regex_non_matching: function (story_author) {
+        var $regexes = [];
+        var regex_classifiers = this.user_classifiers.author_regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            try {
+                var regex = new RegExp(pattern, 'i');
+                if (story_author && !regex.test(story_author)) {
+                    var $regex = this.make_classifier(pattern, pattern, 'author', null, null, true);
+                    $regexes.push($regex);
+                }
+            } catch (e) {
+                // Invalid regex - skip (already shown in matching)
+            }
+        }, this));
+
+        return $regexes;
+    },
+
     make_tags: function (tags) {
         var $tags = [];
 
@@ -3220,6 +3300,74 @@ var classifier_prototype = {
                 }
             });
         }
+
+        // Handle author input
+        var $author_section = $('.NB-classifier-author-section', this.$modal);
+        if ($author_section.length) {
+            var $author_input = $('.NB-classifier-author-input', this.$modal);
+            var $author_placeholder = $('.NB-classifier-author-placeholder', this.$modal);
+            var $author_classifier = $author_placeholder.parents('.NB-classifier').eq(0);
+            var $author_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike, .NB-classifier-input-super-dislike', $author_classifier);
+            var $author_validation = $('.NB-classifier-author-validation', this.$modal);
+
+            var last_author_selection = '';
+            var update_author = function (e) {
+                var is_regex_mode = $author_section.hasClass('NB-classifier-section-regex-active');
+                var text;
+
+                if (is_regex_mode) {
+                    text = $.trim($author_input.val());
+                    last_author_selection = '';
+                } else {
+                    text = $.trim($author_input.getSelection().text);
+                }
+
+                if (text.length && (is_regex_mode || (text != last_author_selection && $author_placeholder.text() != text))) {
+                    if (!is_regex_mode) {
+                        last_author_selection = text;
+                    }
+                    $author_placeholder.text(text);
+                    $author_placeholder.css('font-style', 'normal');
+                    $author_checkboxes.val(text);
+                    if (!$author_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($author_classifier, 'like');
+                    }
+
+                    $author_validation.empty();
+                    var story_author = self.story ? (self.story.get('story_authors') || '') : '';
+
+                    if (is_regex_mode) {
+                        var validation_result = self.validate_regex(text);
+                        if (validation_result.valid) {
+                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            if (validation_result.regex.test(story_author)) {
+                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches author'));
+                            } else {
+                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in author'));
+                            }
+                        } else {
+                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
+                        }
+                    } else {
+                        if (story_author.toLowerCase().indexOf(text.toLowerCase()) === -1) {
+                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in author'));
+                        }
+                    }
+                }
+            };
+
+            $author_input.on('select keyup mouseup input', update_author);
+
+            // Store update function for mode switching
+            this.update_author_classifier = update_author;
+
+            $author_placeholder.parents('.NB-classifier').bind('click', function (e) {
+                if ($author_placeholder.text() === 'Enter author pattern above') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
     },
 
     // ================================
@@ -3259,6 +3407,8 @@ var classifier_prototype = {
                     $input.attr('placeholder', 'e.g., \\bbreaking\\b or urgent|alert');
                 } else if (section_type === 'url') {
                     $input.attr('placeholder', 'e.g., /news/\\d+ or /category/');
+                } else if (section_type === 'author') {
+                    $input.attr('placeholder', 'e.g., ^Sam or smith|jones');
                 }
 
                 // Change classifier to regex type for saving
@@ -3284,6 +3434,8 @@ var classifier_prototype = {
                     $input.attr('placeholder', 'Enter text to match...');
                 } else if (section_type === 'url') {
                     $input.attr('placeholder', 'Enter URL pattern to match...');
+                } else if (section_type === 'author') {
+                    $input.attr('placeholder', 'Enter author pattern...');
                 } else {
                     $input.attr('placeholder', '');
                 }
@@ -3306,6 +3458,8 @@ var classifier_prototype = {
                 self.update_title_classifier();
             } else if (section_type === 'url' && self.update_url_classifier) {
                 self.update_url_classifier();
+            } else if (section_type === 'author' && self.update_author_classifier) {
+                self.update_author_classifier();
             }
         });
     },
@@ -3969,6 +4123,11 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].url_regex[value] = score;
                 } else if (name == 'author') {
                     self.model.classifiers[feed_id].authors[value] = score;
+                } else if (name == 'author_regex') {
+                    if (!self.model.classifiers[feed_id].author_regex) {
+                        self.model.classifiers[feed_id].author_regex = {};
+                    }
+                    self.model.classifiers[feed_id].author_regex[value] = score;
                 } else if (name == 'feed') {
                     self.model.classifiers[feed_id].feeds[feed_id] = score;
                 } else if (name == 'prompt') {
@@ -3999,6 +4158,8 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].url_regex[value];
                 } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
                     delete self.model.classifiers[feed_id].authors[value];
+                } else if (name == 'author_regex' && self.model.classifiers[feed_id].author_regex && self.model.classifiers[feed_id].author_regex[value] == score) {
+                    delete self.model.classifiers[feed_id].author_regex[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
                     delete self.model.classifiers[feed_id].feeds[feed_id];
                 } else if (name == 'prompt' && self.model.classifiers[feed_id].prompts && self.model.classifiers[feed_id].prompts[value] == score) {
@@ -4027,7 +4188,7 @@ var classifier_prototype = {
                 'tag': 'tags_scope', 'title': 'titles_scope', 'text': 'texts_scope',
                 'url': 'urls_scope', 'author': 'authors_scope',
                 'title_regex': 'title_regex_scope', 'text_regex': 'text_regex_scope',
-                'url_regex': 'url_regex_scope'
+                'url_regex': 'url_regex_scope', 'author_regex': 'author_regex_scope'
             };
             var scope_key = scope_key_map[type_name];
             if (!scope_key) return;
@@ -4866,9 +5027,9 @@ var classifier_prototype = {
             $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'title', c.title, c.score, c.scope, c.folder_name, c.is_regex));
         });
 
-        // Authors
+        // Authors (includes both regular authors and author regex, distinguished by is_regex flag)
         _.each(classifiers.authors, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'author', c.author, c.score, c.scope, c.folder_name));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'author', c.author, c.score, c.scope, c.folder_name, c.is_regex));
         });
 
         // Tags
