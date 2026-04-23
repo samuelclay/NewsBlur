@@ -1273,14 +1273,25 @@
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
 
-            // Handle test parameters for opening dialogs - skip normal dialog logic if test param present
+            // Handle test/next parameters for opening dialogs - skip normal dialog logic if present.
+            // `next` is what the dev-autologin redirect uses; `test` is the hand-typed knob.
+            // Both accept the same dialog keywords.
             var test_param = $.getQueryString('test');
-            if (test_param == 'feedchooser') {
+            var next_param = $.getQueryString('next');
+            var dialog_keywords = ['feedchooser', 'premium', 'faq'];
+            var dialog_param = _.contains(dialog_keywords, test_param) ? test_param
+                             : _.contains(dialog_keywords, next_param) ? next_param
+                             : null;
+            if (dialog_param == 'feedchooser') {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
                 return;
             }
-            if (test_param == 'premium') {
+            if (dialog_param == 'premium') {
                 _.defer(_.bind(this.open_premium_upgrade_modal, this), 100);
+                return;
+            }
+            if (dialog_param == 'faq') {
+                _.defer(_.bind(this.open_faq_modal, this), 100);
                 return;
             }
             // Skip normal dialog logic for other test params (growth1, growth2, etc.)
@@ -4471,6 +4482,10 @@
             NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
         },
 
+        open_faq_modal: function (options) {
+            NEWSBLUR.faq = new NEWSBLUR.ReaderFaq(options);
+        },
+
         open_referrals_modal: function (options) {
             NEWSBLUR.referrals = new NEWSBLUR.ReaderReferrals(options);
         },
@@ -4839,6 +4854,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Import or upload sites')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-faq', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'FAQ')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account', role: "button" }, [
@@ -8695,6 +8714,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
                         self.open_goodies_modal();
+                    });
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-faq' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function () {
+                        self.open_faq_modal();
                     });
                 }
             });

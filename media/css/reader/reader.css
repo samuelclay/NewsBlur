@@ -16972,6 +16972,12 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(186deg) saturate(18);
 }
 
+.NB-menu-manage .NB-menu-manage-faq .NB-menu-manage-image {
+    background: transparent url("/media/embed/icons/nouns/dialog-faq.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(228deg) saturate(12);
+}
+
 .NB-menu-manage .NB-menu-manage-statistics .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/dialog-statistics.svg") no-repeat center center;
     background-size: 18px;

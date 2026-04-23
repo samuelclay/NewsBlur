@@ -110,6 +110,7 @@ urlpatterns = [
     ),
     url(r"^about/?", static_views.about, name="about"),
     url(r"^faq/?", static_views.faq, name="faq"),
+    url(r"^api/faq/?$", static_views.faq_data, name="faq-data"),
     url(r"^api/?$", static_views.api, name="api"),
     url(r"^press/?", static_views.press, name="press"),
     url(r"^feedback/?", static_views.feedback, name="feedback"),

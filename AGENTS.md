@@ -282,6 +282,9 @@ Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.cou
 - `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
 - `?test=growth1` - Test feed_added growth prompt
 - `?test=growth2` - Test stories_read growth prompt
+- `?test=faq` - Open the FAQ dialog on load (also works as `?next=faq`)
+- `?test=feedchooser` - Open the feed chooser modal on load (also works as `?next=feedchooser`)
+- `?test=premium` - Open the premium upgrade modal on load (also works as `?next=premium`)
 
 ### Theme Switching
 - `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode

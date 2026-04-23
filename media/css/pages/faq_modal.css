@@ -1,0 +1,897 @@
+/* =============== */
+/* = FAQ Modal    = */
+/* =============== */
+/* Companion to templates/static/faq.xhtml and media/js/newsblur/reader/reader_faq.js */
+
+#simplemodal-container.NB-full-container.NB-faq-modal-container {
+    padding: 0;
+    max-height: none;
+}
+
+#simplemodal-container.NB-full-container.NB-faq-modal-container .simplemodal-wrap {
+    overflow: hidden !important;
+}
+
+.NB-modal.NB-modal-faq {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+    box-sizing: border-box;
+    background: #fbf9f4;
+    color: rgba(45, 38, 26, 0.9);
+    overflow: hidden;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', 'Helvetica Neue', sans-serif;
+}
+
+.NB-modal.NB-modal-faq .NB-modal-titlebar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 24px 16px;
+    border-bottom: 1px solid rgba(45, 38, 26, 0.08);
+    background: linear-gradient(180deg, rgba(255, 253, 247, 0.8) 0%, rgba(251, 249, 244, 1) 100%);
+}
+
+.NB-modal.NB-modal-faq .NB-modal-title {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(45, 38, 26, 0.88);
+    letter-spacing: -0.2px;
+}
+
+.NB-modal.NB-modal-faq .NB-modal-title .NB-icon {
+    display: inline-block;
+    float: none;
+    margin: 0;
+    width: 22px;
+    height: 22px;
+    background: transparent url("/media/embed/icons/nouns/dialog-faq.svg") no-repeat center center;
+    background-size: 22px;
+    filter: hue-rotate(228deg) saturate(12);
+    opacity: 0.85;
+}
+
+/* ---- Titlebar controls (search + expand/collapse toggle) ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-expand-toggle {
+    list-style: none;
+    display: inline-flex;
+    margin: 0;
+    padding: 2px;
+    border-radius: 8px;
+    background: rgba(45, 38, 26, 0.06);
+    border: 1px solid rgba(45, 38, 26, 0.1);
+    box-shadow: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.55);
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option:hover {
+    color: rgba(45, 38, 26, 0.85);
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option.NB-active {
+    color: rgba(45, 38, 26, 0.95);
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(45, 38, 26, 0.08), 0 0 0 1px rgba(45, 38, 26, 0.05);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option .NB-task-title {
+    display: inline-block;
+    line-height: 1;
+}
+
+/* ---- Search ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-search {
+    position: relative;
+    flex: 0 0 auto;
+    width: 260px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 32px 9px 34px;
+    border: 1px solid rgba(45, 38, 26, 0.15);
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    color: rgba(45, 38, 26, 0.85);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-input::placeholder {
+    color: rgba(45, 38, 26, 0.35);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-input:focus {
+    border-color: rgba(138, 109, 27, 0.55);
+    box-shadow: 0 0 0 3px rgba(138, 109, 27, 0.15);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238a7b55' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m14 14-3.5-3.5'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+    background: rgba(45, 38, 26, 0.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23443a28' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M2 2l6 6M8 2l-6 6'/%3E%3C/svg%3E") no-repeat center;
+    background-size: 8px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-active .NB-faq-search-clear {
+    opacity: 1;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-search-clear:hover {
+    background-color: rgba(45, 38, 26, 0.25);
+}
+
+/* ---- Body ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 20px 28px 28px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(45, 38, 26, 0.4);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-error {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(160, 50, 50, 0.75);
+    font-size: 14px;
+}
+
+/* ---- Tier grid inline inside a Q&A answer ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-tiers-block {
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tiers-label {
+    display: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier {
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.18s ease, transform 0.15s ease;
+    display: block;
+    background: rgba(75, 85, 99, 0.07);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier:hover {
+    transform: translateY(-1px);
+}
+
+/* Tier-specific tints (light mode) */
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free {
+    background: rgba(75, 85, 99, 0.07);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free:hover {
+    background: rgba(75, 85, 99, 0.13);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium {
+    background: rgba(22, 163, 74, 0.08);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium:hover {
+    background: rgba(22, 163, 74, 0.15);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive {
+    background: rgba(13, 148, 136, 0.09);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive:hover {
+    background: rgba(13, 148, 136, 0.16);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro {
+    background: rgba(234, 88, 12, 0.08);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro:hover {
+    background: rgba(234, 88, 12, 0.16);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-name {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.1px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-desc {
+    font-size: 12px;
+    color: rgba(45, 38, 26, 0.65);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-inline {
+    margin-top: 14px;
+}
+
+/* ---- Sections ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-section {
+    margin: 0 0 22px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-section-hidden {
+    display: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-section-title {
+    margin: 0 0 8px;
+    padding: 0 6px;
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-size: 17px;
+    font-weight: 500;
+    font-style: italic;
+    color: rgba(45, 38, 26, 0.65);
+    letter-spacing: -0.1px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ---- Accordion item ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-item {
+    background: #fff;
+    border: 1px solid rgba(45, 38, 26, 0.07);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.2s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-item:hover {
+    border-color: rgba(45, 38, 26, 0.14);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-item-open {
+    border-color: rgba(138, 109, 27, 0.25);
+    box-shadow: 0 1px 0 rgba(45, 38, 26, 0.02), 0 6px 14px -10px rgba(45, 38, 26, 0.25);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-searching .NB-faq-item:not(.NB-faq-item-match) {
+    display: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(45, 38, 26, 0.88);
+    text-align: left;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question:hover {
+    color: rgba(45, 38, 26, 1);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question:focus {
+    outline: none;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question:focus-visible {
+    outline: 2px solid rgba(138, 109, 27, 0.55);
+    outline-offset: -2px;
+    border-radius: 10px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question-text {
+    flex: 1 1 auto;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-question-chevron {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-right: 1.6px solid rgba(45, 38, 26, 0.45);
+    border-bottom: 1.6px solid rgba(45, 38, 26, 0.45);
+    transform: rotate(45deg);
+    margin: -4px 6px 0 0;
+    transition: transform 0.2s ease, border-color 0.15s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-item-open .NB-faq-question-chevron {
+    transform: rotate(-135deg);
+    margin-top: 2px;
+    border-color: rgba(138, 109, 27, 0.8);
+}
+
+/* Collapse via grid rows — transitions smoothly without measuring heights. */
+.NB-modal.NB-modal-faq .NB-faq-answer-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.22s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-item-open .NB-faq-answer-wrapper {
+    grid-template-rows: 1fr;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 20px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: rgba(45, 38, 26, 0.72);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-item-open .NB-faq-answer {
+    padding: 2px 20px 18px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer p {
+    margin: 0 0 10px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a {
+    color: #8a6d1b;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(138, 109, 27, 0.3);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a:hover {
+    color: #5a4710;
+    border-bottom-color: rgba(90, 71, 16, 0.6);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    color: rgba(45, 38, 26, 0.85);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer ul.NB-faq-bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer ul.NB-faq-bullet-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer ul.NB-faq-bullet-list li img {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* ---- Inline feature screenshot (e.g. River of News, Layouts) ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image {
+    margin: 14px 0 4px;
+    padding: 0;
+    text-align: center;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image img {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(45, 38, 26, 0.1);
+    box-shadow: 0 4px 12px -6px rgba(45, 38, 26, 0.2);
+}
+
+/* ---- Buttons: primary (See X) + secondary (Read more) ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-item-links {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button:active {
+    transform: translateY(1px);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-primary {
+    background: #f5e8c2;
+    border-color: rgba(138, 109, 27, 0.25);
+    color: #6b5110;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-primary:hover {
+    background: #ecd896;
+    border-color: rgba(138, 109, 27, 0.5);
+    color: #4a3a0a;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-secondary {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(45, 38, 26, 0.12);
+    color: rgba(45, 38, 26, 0.7);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-secondary:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(45, 38, 26, 0.2);
+    color: rgba(45, 38, 26, 0.95);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-blog-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: url("/media/img/favicon.png") no-repeat center center;
+    background-size: contain;
+    flex-shrink: 0;
+}
+
+/* ---- Search highlight ---- */
+
+.NB-modal.NB-modal-faq mark.NB-faq-highlight {
+    background: rgba(255, 224, 130, 0.7);
+    color: rgba(45, 38, 26, 1);
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+/* ---- Empty search result ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-empty-state {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(45, 38, 26, 0.55);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-empty-state-visible {
+    display: block;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-empty-state-title {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    margin: 0 0 6px;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-empty-state-subtitle {
+    font-size: 13px;
+    color: rgba(45, 38, 26, 0.45);
+}
+
+/* When actively searching, hide the tier block (noise) and section headers with no matches. */
+.NB-modal.NB-modal-faq .NB-faq-searching .NB-faq-tiers-block {
+    display: none;
+}
+
+/* ---- Footer ---- */
+
+.NB-modal.NB-modal-faq .NB-faq-modal-footer {
+    flex: 0 0 auto;
+    padding: 12px 24px;
+    border-top: 1px solid rgba(45, 38, 26, 0.08);
+    background: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    color: rgba(45, 38, 26, 0.55);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-footer-text {
+    text-align: center;
+}
+
+.NB-modal.NB-modal-faq .NB-faq-footer-text a {
+    color: rgba(45, 38, 26, 0.75);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(45, 38, 26, 0.3);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-footer-text a:hover {
+    color: rgba(45, 38, 26, 1);
+    border-bottom-color: rgba(45, 38, 26, 0.6);
+}
+
+/* ======================= */
+/* = Dark mode overrides = */
+/* ======================= */
+
+body.NB-dark .NB-modal.NB-modal-faq,
+body.NB-dark .NB-modal.NB-modal-faq {
+    background: #1e1f22;
+    color: rgba(240, 236, 226, 0.88);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-titlebar,
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-titlebar {
+    background: linear-gradient(180deg, #26272b 0%, #1e1f22 100%);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-title,
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-title {
+    color: rgba(240, 236, 226, 0.92);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-title .NB-icon,
+body.NB-dark .NB-modal.NB-modal-faq .NB-modal-title .NB-icon {
+    filter: hue-rotate(228deg) saturate(6) brightness(1.3);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-expand-toggle {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option {
+    color: rgba(240, 236, 226, 0.55);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option:hover {
+    color: rgba(240, 236, 226, 0.9);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option.NB-active {
+    color: rgba(240, 236, 226, 1);
+    background: #35363b;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input {
+    background: #2a2b2f;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(240, 236, 226, 0.9);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input::placeholder,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input::placeholder {
+    color: rgba(240, 236, 226, 0.35);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input:focus,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-input:focus {
+    border-color: rgba(214, 180, 90, 0.7);
+    box-shadow: 0 0 0 3px rgba(214, 180, 90, 0.15);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-section-title,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-section-title {
+    color: rgba(240, 236, 226, 0.55);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tiers-block {
+    background: transparent;
+    border-color: transparent;
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free {
+    background: rgba(200, 210, 220, 0.07);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free:hover {
+    background: rgba(200, 210, 220, 0.14);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium {
+    background: rgba(86, 211, 127, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium:hover {
+    background: rgba(86, 211, 127, 0.18);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive {
+    background: rgba(64, 210, 195, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive:hover {
+    background: rgba(64, 210, 195, 0.18);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro {
+    background: rgba(255, 145, 75, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro:hover {
+    background: rgba(255, 145, 75, 0.18);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-desc {
+    color: rgba(240, 236, 226, 0.65);
+}
+
+/* Tier name colors in dark mode - brighter variants */
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-free .NB-faq-tier-name,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-free .NB-faq-tier-name {
+    color: rgba(180, 190, 200, 0.95);
+}
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-premium .NB-faq-tier-name,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-premium .NB-faq-tier-name {
+    color: rgba(86, 211, 127, 1);
+}
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-archive .NB-faq-tier-name,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-archive .NB-faq-tier-name {
+    color: rgba(64, 210, 195, 1);
+}
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-pro .NB-faq-tier-name,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-pro .NB-faq-tier-name {
+    color: rgba(255, 145, 75, 1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item {
+    background: #26272b;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item:hover,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item-open,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item-open {
+    border-color: rgba(214, 180, 90, 0.4);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 6px 14px -10px rgba(0, 0, 0, 0.6);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question {
+    color: rgba(240, 236, 226, 0.9);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question:hover,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question:hover {
+    color: rgba(240, 236, 226, 1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question-chevron,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-question-chevron {
+    border-color: rgba(240, 236, 226, 0.45);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item-open .NB-faq-question-chevron,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-item-open .NB-faq-question-chevron {
+    border-color: rgba(214, 180, 90, 0.95);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer {
+    color: rgba(240, 236, 226, 0.7);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a {
+    color: #d6b45a;
+    border-bottom-color: rgba(214, 180, 90, 0.35);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a:hover,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a:hover {
+    color: #f1cd74;
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-primary {
+    background: rgba(214, 180, 90, 0.18);
+    border-color: rgba(214, 180, 90, 0.4);
+    color: #f0d88a;
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-primary:hover {
+    background: rgba(214, 180, 90, 0.3);
+    border-color: rgba(214, 180, 90, 0.65);
+    color: #fce9a6;
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(240, 236, 226, 0.75);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: rgba(240, 236, 226, 1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image img {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.5);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer code,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-answer code {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(240, 236, 226, 0.9);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq mark.NB-faq-highlight,
+body.NB-dark .NB-modal.NB-modal-faq mark.NB-faq-highlight {
+    background: rgba(214, 180, 90, 0.45);
+    color: rgba(255, 245, 220, 1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer {
+    background: rgba(255, 255, 255, 0.03);
+    border-top-color: rgba(255, 255, 255, 0.08);
+    color: rgba(240, 236, 226, 0.55);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer a,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer a {
+    color: rgba(240, 236, 226, 0.8);
+    border-bottom-color: rgba(240, 236, 226, 0.3);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer a:hover,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-modal-footer a:hover {
+    color: rgba(240, 236, 226, 1);
+    border-bottom-color: rgba(240, 236, 226, 0.6);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-clear,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-clear {
+    background-color: rgba(255, 255, 255, 0.14);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23f0ecea' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M2 2l6 6M8 2l-6 6'/%3E%3C/svg%3E");
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-clear:hover,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-search-clear:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-empty-state-title,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-empty-state-title {
+    color: rgba(240, 236, 226, 0.7);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-empty-state-subtitle,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-empty-state-subtitle {
+    color: rgba(240, 236, 226, 0.4);
+}
+
+/* Narrow viewports: stack title + controls, single-column tier grid */
+@media (max-width: 820px) {
+    .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal {
+        grid-template-columns: 1fr;
+    }
+
+    .NB-modal.NB-modal-faq .NB-modal-titlebar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .NB-modal.NB-modal-faq .NB-faq-controls {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .NB-modal.NB-modal-faq .NB-faq-search {
+        flex: 1 1 200px;
+        width: auto;
+    }
+}
