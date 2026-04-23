@@ -11,13 +11,15 @@ import SwiftUI
 /// Card view within the feed detail view, representing a story row in list layout or a story card in grid layout.
 struct CardView: View {
     let feedDetailInteraction: FeedDetailInteraction
-    
+
     let cache: StoryCache
-    
+
     let dash: DashList?
-    
-    let story: Story
-    
+
+    // @ObservedObject so grid/list cards re-dim when `story.isRead` flips
+    // without needing a full StoryCache rebuild. See Story.swift.
+    @ObservedObject var story: Story
+
     @State private var swipeDragOffset: CGFloat = 0
     @State private var settledSwipeOffset: CGFloat = 0
     
@@ -614,9 +616,10 @@ struct CardView: View {
 
 struct CardContentView: View {
     let cache: StoryCache
-    
-    let story: Story
-    
+
+    @ObservedObject var story: Story
+
+
     var body: some View {
         VStack(alignment: .leading) {
             if let feed = story.feed, feed.isRiverOrSocial, let feedImage = feed.image {
@@ -789,9 +792,10 @@ struct CardContentView: View {
 
 struct CardFeedBarView: View {
     let cache: StoryCache
-    
-    let story: Story
-    
+
+    @ObservedObject var story: Story
+
+
     var body: some View {
         GeometryReader { geometry in
             if let colorBar {

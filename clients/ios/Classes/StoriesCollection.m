@@ -346,19 +346,6 @@
     }
 }
 
-- (NSString *)markReadFilterKey {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL shouldOverride = [userPreferences boolForKey:@"override_mark_read_filter"];
-    
-    if (!shouldOverride) {
-        return @"default_mark_read_filter";
-    } else if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:mark_read_filter", self.activeFolder];
-    } else {
-        return [NSString stringWithFormat:@"%@:mark_read_filter", [self.activeFeed objectForKey:@"id"]];
-    }
-}
-
 - (NSString *)storyTitlesPositionKey {
     if (self.isDashboard) {
         return [NSString stringWithFormat:@"dashboard:story_titles_position"];
