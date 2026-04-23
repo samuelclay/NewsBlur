@@ -1,10 +1,10 @@
 ---
-description: Commit, push, and create or update a pull request
+description: Commit, push, create or update a pull request, and watch CI until green
 ---
 
 ## Your task
 
-Commit all staged/unstaged changes, push to remote, and either update an existing PR or create a new one.
+Commit all staged/unstaged changes, push to remote, create or update the PR, then watch CI until it finishes and fix any failures.
 
 **Arguments provided:** {{ arguments }}
 
@@ -21,7 +21,7 @@ Commit all staged/unstaged changes, push to remote, and either update an existin
    ```bash
    gh pr view --json number,title,url,state 2>/dev/null
    ```
-   - If a PR exists and is OPEN, note its URL - we'll update it
+   - If a PR exists and is OPEN, note its URL and number - we'll update it
    - If no PR exists or it's closed/merged, we'll create a new one
 
 3. **Stage all changes** (if there are unstaged changes):
@@ -52,7 +52,7 @@ Commit all staged/unstaged changes, push to remote, and either update an existin
 
    **If a PR already exists:**
    - The push already updated the PR
-   - Report: "Updated existing PR: <url>"
+   - Note: "Updated existing PR: <url>"
 
    **If no PR exists:**
    - Create a new PR:
@@ -70,7 +70,32 @@ Commit all staged/unstaged changes, push to remote, and either update an existin
      )"
      ```
 
-7. **Report the result**:
-   - Show the PR URL
-   - Indicate whether it was created or updated
-   - Show the commit hash and message
+7. **Watch CI and auto-fix failures** — do NOT stop after pushing. Monitor the PR's checks until every check has a terminal status (pass, fail, skipped, cancelled), and fix any failures before handing back to the user.
+
+   **a. Poll for status.** After pushing, wait ~30s for CI to register, then:
+   ```bash
+   gh pr checks <PR_NUMBER>
+   ```
+   The first column is the check name, the second is status (`pending`, `pass`, `fail`, `skipping`, `cancelled`). Re-run this periodically. Do not chain `sleep` commands to wait — prefer `run_in_background` so you don't block, and poll by calling `gh pr checks` again on a reasonable cadence (30–60s). Keep going until no check shows `pending`.
+
+   **b. If everything passes:** report success with the PR URL and stop.
+
+   **c. If any check fails:**
+   - Identify the failed job URL from the `gh pr checks` output (third column).
+   - Grab the failure logs with:
+     ```bash
+     gh run view <RUN_ID> --log-failed 2>&1 | tail -200
+     ```
+     Extract the `<RUN_ID>` from the job URL (it's the numeric segment after `/runs/`).
+   - Diagnose the root cause from the log. Distinguish between:
+     - A real regression introduced by this PR → fix it.
+     - A pre-existing failure on `main` unrelated to this PR → fix it if the scope is small and self-contained (like flaky test stabilization, SDK symbol guards, or missing imports). Confirm it's pre-existing by running `git log main -- <failing-file>` and checking whether the failing code was introduced before this branch.
+     - A flaky/transient failure (network, timeout, resource availability) → retry by re-running the check with `gh run rerun <RUN_ID> --failed`, then resume polling.
+   - Make the fix, then repeat from step 3 (stage → commit → push → watch). Keep the cycle running until CI is green. Use focused commit messages for each fix ("Fix <specific thing>") rather than amending.
+
+   **d. If a failure is outside your ability to fix** (credentials, infra, permissions), report the failure clearly with a link and ask the user how to proceed rather than spinning indefinitely.
+
+8. **Report the final result**:
+   - Show the PR URL and whether it was created or updated
+   - Show every commit hash + message pushed during this session (the original plus any CI fix commits)
+   - Confirm CI is green, or explain exactly which checks failed and why if you had to stop early

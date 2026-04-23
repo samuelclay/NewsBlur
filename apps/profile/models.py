@@ -1232,6 +1232,9 @@ class Profile(models.Model):
         active_plan = None
         premium_renewal = False
         active_provider = None
+        # Track whether PayPal has a non-suspended primary so the Stripe loop
+        # below doesn't silently override it when both providers have rows.
+        paypal_has_active_primary = False
 
         # Find modern Paypal payments
         self.retrieve_paypal_ids()
@@ -1279,6 +1282,8 @@ class Profile(models.Model):
                             "APPROVED",
                             "APPROVAL_PENDING",
                         ]
+                        if is_active:
+                            paypal_has_active_primary = True
                         if is_active or not active_plan:
                             active_plan = paypal_subscription.get("plan_id", None)
                             if not active_plan:
@@ -1383,6 +1388,12 @@ class Profile(models.Model):
                         if items and items.data:
                             plan = items.data[0].plan
                     if plan and plan.active:
+                        # An active PayPal primary wins — don't let a stale Stripe
+                        # sub (e.g. one that failed to cancel during a switch to
+                        # PayPal) override active_plan/active_provider and mask
+                        # the real tier.
+                        if paypal_has_active_primary:
+                            break
                         active_plan = plan.id
                         active_provider = "stripe"
                         if not subscription.cancel_at:
@@ -1425,8 +1436,10 @@ class Profile(models.Model):
                 logging.user(self.user, "~BY~SN~FWFree lifetime premium")
                 free_lifetime_premium = True
                 continue
-            # Skip refund records (negative amounts)
-            if payment.payment_amount < 0:
+            # Skip refund records (negative amounts) and refunded payments so
+            # a charge that was later refunded doesn't continue to extend the
+            # user's premium expiration.
+            if payment.payment_amount < 0 or payment.refunded:
                 continue
 
             # Only update exiration if payment in the last year
@@ -3541,8 +3554,10 @@ def paypal_signup(sender, **kwargs):
     if paypal_sub_id:
         user.profile.store_paypal_sub_id(paypal_sub_id)
     user.profile.setup_premium_history()
-    if user.profile.active_provider != "stripe":
-        user.profile.cancel_premium_stripe()
+    # Always cancel any existing Stripe sub when a new PayPal sub starts — the
+    # previous guard `active_provider != "stripe"` incorrectly preserved old
+    # Stripe subs for long-term Stripe customers switching to PayPal.
+    user.profile.cancel_premium_stripe()
 
 
 valid_ipn_received.connect(paypal_signup)
@@ -3816,9 +3831,21 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
         if active:
-            # Prorate refund on old PayPal subscription before activating new tier
-            if profile.paypal_sub_id and profile.active_provider == "paypal":
-                profile.refund_prorated_paypal_for_provider_switch()
+            # If the user's current primary is PayPal, this UPDATED event is
+            # likely a stale auto-renewal of an old Stripe sub (the one that
+            # should have been cancelled when they switched to PayPal). Don't
+            # nuke their PayPal sub or flip tiers on a mere renewal — just
+            # sync history and bail. Real provider switches go through
+            # stripe_signup (customer.subscription.created), which correctly
+            # handles the switch.
+            if profile.active_provider == "paypal" and profile.paypal_sub_id:
+                logging.user(
+                    profile.user,
+                    "~FYStripe update ignored — user is on PayPal (%s); syncing history only"
+                    % profile.paypal_sub_id,
+                )
+                profile.setup_premium_history()
+                return
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price("archive"):

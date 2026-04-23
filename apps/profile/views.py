@@ -516,8 +516,16 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
-            # Only cancel Stripe if user hasn't already switched back to Stripe
-            if user.profile.active_provider != "stripe":
+            # Only cancel Stripe when a new PayPal sub is freshly activated. UPDATED
+            # events also fire for SUSPENDED/CANCELLED subs and for the old sub when
+            # swapping plans; those must not nuke a fresh Stripe sub. The previous
+            # guard (active_provider != "stripe") backfired for long-term Stripe
+            # users switching to PayPal — their active_provider was already "stripe",
+            # so the cancel was skipped and the old Stripe sub kept auto-renewing.
+            is_fresh_activation = (
+                data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
+            )
+            if is_fresh_activation:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()
                 user.profile.cancel_premium_stripe()
