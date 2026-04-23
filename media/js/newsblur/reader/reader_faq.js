@@ -9,7 +9,7 @@ NEWSBLUR.ReaderFaq = function (options) {
     this.model = NEWSBLUR.assets;
     this.data = null;
     this.search_query = '';
-    this.expanded_mode = true; // default shown: every Q&A expanded
+    this.expanded_mode = false; // default shown: every Q&A collapsed
     this.runner();
 };
 
@@ -41,11 +41,11 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
                 $.make('div', { className: 'NB-faq-controls' }, [
                     $.make('ul', { className: 'segmented-control NB-faq-expand-toggle' }, [
                         $.make('li', {
-                            className: 'NB-taskbar-button NB-faq-expand-option NB-faq-expand-all NB-active',
+                            className: 'NB-taskbar-button NB-faq-expand-option NB-faq-expand-all',
                             'data-mode': 'expanded'
                         }, [$.make('span', { className: 'NB-task-title' }, 'Expanded')]),
                         $.make('li', {
-                            className: 'NB-taskbar-button NB-faq-expand-option NB-faq-collapse-all',
+                            className: 'NB-taskbar-button NB-faq-expand-option NB-faq-collapse-all NB-active',
                             'data-mode': 'collapsed'
                         }, [$.make('span', { className: 'NB-task-title' }, 'Collapsed')])
                     ]),
@@ -174,7 +174,8 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
                 $.make('figure', { className: 'NB-faq-feature-image' }, [
                     $.make('img', {
                         src: item.feature_image,
-                        alt: item.feature_image_alt || item.feature_label || ''
+                        alt: item.feature_image_alt || item.feature_label || '',
+                        loading: 'lazy'
                     })
                 ])
             );

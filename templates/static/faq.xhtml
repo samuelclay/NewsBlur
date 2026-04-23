@@ -88,7 +88,7 @@
     function feature_image(item) {
         if (!item.feature_image) return '';
         var alt = escape_html(item.feature_image_alt || item.feature_label || '');
-        return '<figure class="NB-faq-feature-image"><img src="' + escape_html(item.feature_image) + '" alt="' + alt + '"></figure>';
+        return '<figure class="NB-faq-feature-image"><img src="' + escape_html(item.feature_image) + '" alt="' + alt + '" loading="lazy"></figure>';
     }
 
     function render_item(item) {

@@ -2671,15 +2671,48 @@ h3.NB-faq-question {
 a.NB-faq-tier {
     display: block;
     padding: 14px 18px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: 10px;
+    border: 0;
     text-decoration: none;
     color: inherit;
-    transition: background 0.2s;
+    transition: background 0.2s ease, transform 0.15s ease;
+    background: rgba(75, 85, 99, 0.07);
 }
 
 a.NB-faq-tier:hover {
-    background: rgba(255, 255, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+a.NB-faq-tier-free {
+    background: rgba(75, 85, 99, 0.07);
+}
+
+a.NB-faq-tier-free:hover {
+    background: rgba(75, 85, 99, 0.13);
+}
+
+a.NB-faq-tier-premium {
+    background: rgba(22, 163, 74, 0.08);
+}
+
+a.NB-faq-tier-premium:hover {
+    background: rgba(22, 163, 74, 0.15);
+}
+
+a.NB-faq-tier-archive {
+    background: rgba(13, 148, 136, 0.09);
+}
+
+a.NB-faq-tier-archive:hover {
+    background: rgba(13, 148, 136, 0.16);
+}
+
+a.NB-faq-tier-pro {
+    background: rgba(234, 88, 12, 0.08);
+}
+
+a.NB-faq-tier-pro:hover {
+    background: rgba(234, 88, 12, 0.16);
 }
 
 .NB-faq-tier-name {
@@ -2728,11 +2761,12 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
 .NB-faq-feature-image {
     margin: 16px 0 0;
     padding: 0;
+    text-align: center;
 }
 
 .NB-faq-feature-image img {
-    display: block;
-    width: 100%;
+    display: inline-block;
+    max-width: 100%;
     height: auto;
     border-radius: 10px;
     border: 1px solid rgba(45, 38, 26, 0.1);
