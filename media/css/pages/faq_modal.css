@@ -206,63 +206,91 @@
     font-size: 14px;
 }
 
-/* ---- Tier block inside dialog ---- */
+/* ---- Tier grid inline inside a Q&A answer ---- */
 
 .NB-modal.NB-modal-faq .NB-faq-tiers-block {
-    margin: 0 0 28px;
-    padding: 14px 16px 16px;
-    border: 1px solid rgba(45, 38, 26, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.55);
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tiers-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(45, 38, 26, 0.45);
-    margin: 0 0 10px;
+    display: none;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
     margin: 0;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier {
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 8px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 0;
     text-decoration: none;
     color: inherit;
-    transition: background 0.15s ease, transform 0.15s ease;
+    transition: background 0.18s ease, transform 0.15s ease;
     display: block;
+    background: rgba(75, 85, 99, 0.07);
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier:hover {
-    background: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
+}
+
+/* Tier-specific tints (light mode) */
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free {
+    background: rgba(75, 85, 99, 0.07);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free:hover {
+    background: rgba(75, 85, 99, 0.13);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium {
+    background: rgba(22, 163, 74, 0.08);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium:hover {
+    background: rgba(22, 163, 74, 0.15);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive {
+    background: rgba(13, 148, 136, 0.09);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive:hover {
+    background: rgba(13, 148, 136, 0.16);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro {
+    background: rgba(234, 88, 12, 0.08);
+}
+
+.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro:hover {
+    background: rgba(234, 88, 12, 0.16);
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-name {
     font-family: inherit;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    margin: 0 0 2px;
+    margin: 0 0 4px;
+    letter-spacing: -0.1px;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-desc {
     font-size: 12px;
-    color: rgba(45, 38, 26, 0.55);
-    line-height: 1.45;
+    color: rgba(45, 38, 26, 0.65);
+    line-height: 1.5;
     margin: 0;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-tier-summary-inline {
-    margin-top: 12px;
+    margin-top: 14px;
 }
 
 /* ---- Sections ---- */
@@ -446,11 +474,12 @@
 .NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image {
     margin: 14px 0 4px;
     padding: 0;
+    text-align: center;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image img {
-    display: block;
-    width: 100%;
+    display: inline-block;
+    max-width: 100%;
     height: auto;
     border-radius: 8px;
     border: 1px solid rgba(45, 38, 26, 0.1);
@@ -651,30 +680,45 @@ body.NB-dark .NB-modal.NB-modal-faq .NB-faq-section-title {
     color: rgba(240, 236, 226, 0.55);
 }
 
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tiers-block,
 body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tiers-block {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border-color: transparent;
 }
 
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier,
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier {
-    background: rgba(255, 255, 255, 0.04);
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free {
+    background: rgba(200, 210, 220, 0.07);
 }
 
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier:hover,
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier:hover {
-    background: rgba(255, 255, 255, 0.08);
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-free:hover {
+    background: rgba(200, 210, 220, 0.14);
 }
 
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-desc,
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium {
+    background: rgba(86, 211, 127, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-premium:hover {
+    background: rgba(86, 211, 127, 0.18);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive {
+    background: rgba(64, 210, 195, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-archive:hover {
+    background: rgba(64, 210, 195, 0.18);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro {
+    background: rgba(255, 145, 75, 0.1);
+}
+
+body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier-pro:hover {
+    background: rgba(255, 145, 75, 0.18);
+}
+
 body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tier-summary-modal .NB-faq-tier-desc {
-    color: rgba(240, 236, 226, 0.55);
-}
-
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tiers-label,
-body.NB-dark .NB-modal.NB-modal-faq .NB-faq-tiers-label {
-    color: rgba(240, 236, 226, 0.4);
+    color: rgba(240, 236, 226, 0.65);
 }
 
 /* Tier name colors in dark mode - brighter variants */
