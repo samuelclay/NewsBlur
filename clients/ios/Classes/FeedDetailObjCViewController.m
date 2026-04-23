@@ -3912,19 +3912,7 @@ finish_height_measurement:
 }
 
 - (NSString *)markReadValue {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if ([userPreferences boolForKey:@"override_mark_read_filter"]) {
-        NSString *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.markReadFilterKey];
-        
-        if (markRead != nil) {
-            return markRead;
-        }
-    }
-    
-    NSString *markRead = [userPreferences stringForKey:@"default_mark_read_filter"];
-    
-    return markRead;
+    return [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
 }
 
 - (void)cancelMarkStoryReadTimer {
@@ -4489,13 +4477,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
 
-    // Mark story read timing preference
+    // Mark story read timing preference (global; no per-site override)
     if (!dashboard) {
-        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
         NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 5 seconds", @"After 10 seconds", @"After 30 seconds", @"After 60 seconds", @"Manually"];
         NSArray *values = @[@"scroll", @"selection", @"after1", @"after2", @"after3", @"after5", @"after10", @"after30", @"after60", @"manually"];
 
-        [viewController addTitle:@"Mark story read\u2026" iconName:@"menu_icn_markread.png" iconColor:UIColorFromRGB(0x95968F) submenuTitles:titles values:values overrideSelectedValue:nil defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(id selectedValue) {
+        [viewController addTitle:@"Mark story read\u2026" iconName:@"menu_icn_markread.png" iconColor:UIColorFromRGB(0x95968F) submenuTitles:titles values:values overrideSelectedValue:nil defaultValue:@"scroll" preferenceKey:@"default_mark_read_filter" selectionShouldDismiss:NO handler:^(id selectedValue) {
         }];
     }
 
