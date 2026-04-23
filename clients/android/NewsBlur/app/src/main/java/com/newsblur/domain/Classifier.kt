@@ -12,6 +12,10 @@ class Classifier : Serializable {
     val authors: MutableMap<String, Int> = mutableMapOf()
 
     @JvmField
+    @SerializedName("author_regex")
+    val authorRegex: MutableMap<String, Int> = mutableMapOf()
+
+    @JvmField
     @SerializedName("titles")
     val title: MutableMap<String, Int> = mutableMapOf()
 
@@ -55,6 +59,9 @@ class Classifier : Serializable {
 
         authors.forEach { (key, value) ->
             buildAPITupleKey(value, AUTHOR_POSTFIX)?.let { values.put(it, key) }
+        }
+        authorRegex.forEach { (key, value) ->
+            buildAPITupleKey(value, AUTHOR_REGEX_POSTFIX)?.let { values.put(it, key) }
         }
         title.forEach { (key, value) ->
             buildAPITupleKey(value, TITLE_POSTFIX)?.let { values.put(it, key) }
@@ -101,6 +108,17 @@ class Classifier : Serializable {
                     put(DatabaseConstants.CLASSIFIER_VALUE, value)
                 }
             valuesList.add(authorValues)
+        }
+
+        authorRegex.forEach { (key, value) ->
+            val regexValues =
+                ContentValues().apply {
+                    put(DatabaseConstants.CLASSIFIER_ID, feedId)
+                    put(DatabaseConstants.CLASSIFIER_KEY, key)
+                    put(DatabaseConstants.CLASSIFIER_TYPE, AUTHOR_REGEX)
+                    put(DatabaseConstants.CLASSIFIER_VALUE, value)
+                }
+            valuesList.add(regexValues)
         }
 
         title.forEach { (key, value) ->
@@ -204,6 +222,7 @@ class Classifier : Serializable {
         const val URL: Int = 6
         const val URL_REGEX: Int = 7
         const val TITLE_REGEX: Int = 8
+        const val AUTHOR_REGEX: Int = 9
 
         const val LIKE: Int = 1
         const val DISLIKE: Int = -1
@@ -214,6 +233,7 @@ class Classifier : Serializable {
 
         // API key postfix/prefix constants
         private const val AUTHOR_POSTFIX = "author"
+        private const val AUTHOR_REGEX_POSTFIX = "author_regex"
         private const val FEED_POSTFIX = "feed"
         private const val TITLE_POSTFIX = "title"
         private const val TAG_POSTFIX = "tag"
@@ -240,6 +260,7 @@ class Classifier : Serializable {
 
                 when (cursor.getInt(typeIndex)) {
                     AUTHOR -> classifier.authors[key] = value
+                    AUTHOR_REGEX -> classifier.authorRegex[key] = value
                     TITLE -> classifier.title[key] = value
                     FEED -> classifier.feeds[key] = value
                     TAG -> classifier.tags[key] = value

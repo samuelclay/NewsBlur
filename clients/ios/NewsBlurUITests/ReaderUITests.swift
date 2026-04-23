@@ -166,6 +166,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_profileCurrentStoryTitlesScroll() throws {
+#if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
         }
@@ -182,6 +183,9 @@ final class ReaderUITests: XCTestCase {
             storyList.swipeUp()
             storyList.swipeDown()
         }
+#else
+        throw XCTSkip("XCTHitchMetric requires Xcode 26 or newer to compile")
+#endif
     }
 
     func test_openLiveAllSiteStories() {
@@ -206,6 +210,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_profileLiveCurrentExperimentalScroll() throws {
+#if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
         }
@@ -223,6 +228,9 @@ final class ReaderUITests: XCTestCase {
             storySurface.swipeUp()
             storySurface.swipeDown()
         }
+#else
+        throw XCTSkip("XCTHitchMetric requires Xcode 26 or newer to compile")
+#endif
     }
 
     private func folderButton(named title: String) -> XCUIElement {

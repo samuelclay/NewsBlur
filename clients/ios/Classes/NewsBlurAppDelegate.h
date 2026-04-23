@@ -527,6 +527,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;

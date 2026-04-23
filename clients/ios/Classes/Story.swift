@@ -68,8 +68,20 @@ import Foundation
         guard let classifiers = feed?.classifiers(for: "authors") else {
             return []
         }
-        
+
         return [training(name: author, classifierKey: "authors", score: classifiers[author] as? Int ?? 0)]
+    }
+
+    var authorRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "author_regex") else {
+            return []
+        }
+
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: author) }
+        let sorted = matches.sorted()
+
+        return sorted.map { training(name: $0, classifierKey: "author_regex", score: classifiers[$0] as? Int ?? 0) }
     }
     
     var tags: [Feed.Training] {

@@ -595,7 +595,7 @@ class MUserClassifierNotification(mongo.Document):
     scope = mongo.StringField(default="feed")  # feed, folder, global
     feed_id = mongo.IntField(default=0)  # non-zero for feed-scoped classifiers
     folder_name = mongo.StringField(default="")  # non-empty for folder-scoped
-    is_regex = mongo.BooleanField(default=False)  # title, text, url only (Pro feature)
+    is_regex = mongo.BooleanField(default=False)  # title, text, url, author only (Pro feature)
     is_email = mongo.BooleanField(default=False)
     is_web = mongo.BooleanField(default=False)
     is_ios = mongo.BooleanField(default=False)
@@ -766,7 +766,12 @@ class MUserClassifierNotification(mongo.Document):
                 return safe_regex_match(self.classifier_value, story_title)
             return self.classifier_value.lower() in story_title.lower()
         elif self.classifier_type == "author":
-            return story.get("story_authors", "") == self.classifier_value
+            story_authors = story.get("story_authors", "") or ""
+            if self.is_regex:
+                if not story_authors:
+                    return False
+                return safe_regex_match(self.classifier_value, story_authors)
+            return story_authors == self.classifier_value
         elif self.classifier_type == "tag":
             return self.classifier_value in (story.get("story_tags") or [])
         elif self.classifier_type == "text":

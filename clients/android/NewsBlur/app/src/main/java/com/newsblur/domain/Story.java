@@ -287,6 +287,9 @@ public class Story implements Serializable {
 		@SerializedName("author")
 		public int intelligenceAuthors = 0;
 
+		@SerializedName("author_regex")
+		public int intelligenceAuthorRegex = 0;
+
 		@SerializedName("tags")
 		public int intelligenceTags = 0;
 
@@ -317,6 +320,7 @@ public class Story implements Serializable {
 
             int max = 0;
             max = Math.max(max, intelligenceAuthors);
+            max = Math.max(max, intelligenceAuthorRegex);
             max = Math.max(max, intelligenceTags);
             max = Math.max(max, intelligenceTitle);
             max = Math.max(max, intelligenceTitleRegex);
@@ -327,6 +331,7 @@ public class Story implements Serializable {
 
             int min = 0;
             min = Math.min(min, intelligenceAuthors);
+            min = Math.min(min, intelligenceAuthorRegex);
             min = Math.min(min, intelligenceTags);
             min = Math.min(min, intelligenceTitle);
             min = Math.min(min, intelligenceTitleRegex);
