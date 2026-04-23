@@ -4471,6 +4471,10 @@
             NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
         },
 
+        open_faq_modal: function (options) {
+            NEWSBLUR.faq = new NEWSBLUR.ReaderFaq(options);
+        },
+
         open_referrals_modal: function (options) {
             NEWSBLUR.referrals = new NEWSBLUR.ReaderReferrals(options);
         },
@@ -4839,6 +4843,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Import or upload sites')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-faq', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'FAQ')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account', role: "button" }, [
@@ -8695,6 +8703,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
                         self.open_goodies_modal();
+                    });
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-faq' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function () {
+                        self.open_faq_modal();
                     });
                 }
             });

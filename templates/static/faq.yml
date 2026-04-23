@@ -1,0 +1,373 @@
+# NewsBlur FAQ data source.
+# Consumed by apps/static/views.py::faq_data via /api/faq/, which returns JSON.
+# Both templates/static/faq.xhtml and media/js/newsblur/reader/reader_faq.js render from this.
+
+hero:
+  title: "Everything you need to know about NewsBlur"
+  subtitle: "Find answers to common questions about features, pricing, training, AI, and more."
+
+tiers:
+  - id: free
+    name: "Free"
+    price: ""
+    href: "/pricing"
+    description: "Up to 64 sites, real-time RSS, intelligence training by author/tag/title, blurblog sharing, and native apps."
+  - id: premium
+    name: "Premium"
+    price: "$36/year"
+    href: "/pricing/premium"
+    description: "Up to 1,024 sites, River of News, full-text search, saved story tags, Text view, notifications, and private blurblog."
+  - id: archive
+    name: "Premium Archive"
+    price: "$99/year"
+    href: "/pricing/archive"
+    description: "Up to 4,096 sites, forever story archive with back-fill, full-text training, Ask AI, Daily Briefing, and story clustering."
+  - id: pro
+    name: "Premium Pro"
+    price: "$29/month"
+    href: "/pricing/pro"
+    description: "Up to 10,000 sites, every feed fetched every 5-15 minutes, regex classifiers, and priority support."
+
+sections:
+  - id: getting-started
+    title: "Getting Started"
+    items:
+      - id: what-is-newsblur
+        question: "What is NewsBlur?"
+        answer: |
+          <p>NewsBlur is a personal news reader that lets you subscribe to websites, blogs, and RSS feeds and read them all in one place. It's been independently built and operated since 2009 by Samuel Clay and is fully open source. NewsBlur is available on the web, iOS, and Android, and it syncs with dozens of third-party reading apps.</p>
+          <p>What makes NewsBlur different is its <a href="/features#training">intelligence training</a>: you teach it what you like and don't like, and it highlights the stories that matter to you while fades away the rest. No algorithm decides for you.</p>
+
+      - id: subscribe
+        question: "How do I subscribe to a site?"
+        answer: |
+          <p>Click the <code>+</code> button at the bottom of the feed list and paste in a URL. NewsBlur will automatically find the RSS feed for any website. You can paste a blog URL, a direct RSS/Atom feed URL, or even a page without any feed at all &mdash; NewsBlur can generate a <a href="/features#web-feeds">Web Feed</a> for any website by monitoring it for changes.</p>
+
+      - id: import
+        question: "How do I import feeds from another reader?"
+        answer: |
+          <p>Go to Account &gt; Import/Export and upload your OPML file. NewsBlur will import all your subscriptions and folder structure in seconds. You can export an OPML file from Google Reader, Feedly, Inoreader, or virtually any other RSS reader. You can also export your NewsBlur subscriptions as OPML at any time &mdash; no lock-in, ever.</p>
+
+      - id: trial
+        question: "Is there a free trial?"
+        answer: |
+          <p>Yes. Every new account gets a free 30-day trial of NewsBlur Premium. No credit card required. When the trial ends, your account automatically downgrades to the free tier. You keep all your feeds (up to the 64-site free limit), your training, and your saved stories.</p>
+
+      - id: tier-differences
+        question: "What are the differences between Free, Premium, Archive, and Pro?"
+        answer: |
+          <p>NewsBlur has four subscription tiers, each building on the previous one. See the <a href="/pricing">pricing page</a> for full details.</p>
+        show_tier_grid: true
+
+  - id: reading-and-views
+    title: "Reading & Views"
+    items:
+      - id: view-differences
+        question: "What is the difference between Feed, Original, Story, and Text views?"
+        answer: |
+          <p>NewsBlur offers four ways to read every story:</p>
+          <p><strong>Feed view</strong> shows the plain RSS feed content, similar to what you'd see in Google Reader. <strong>Original view</strong> renders the full original website inline within NewsBlur, so you see the actual design, ads, and layout. <strong>Story view</strong> shows each individual blog post from the original site, one story at a time. <strong>Text view</strong> extracts just the article text from the original page with clean formatting &mdash; perfect when RSS feeds only include a summary.</p>
+        blog_url: "https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/"
+
+      - id: layouts
+        question: "What are the different layouts?"
+        answer: |
+          <p>NewsBlur offers four layout modes: <strong>Split</strong> (story list on top, content below), <strong>List</strong> (compact list of headlines), <strong>Grid</strong> (card grid with thumbnails, great for image-heavy feeds), and <strong>Magazine</strong> (a wider card layout with story previews). You can set a different layout per-feed, so each site looks exactly the way you want it.</p>
+        feature_image: "/media/img/features/layouts.png"
+        feature_image_alt: "Magazine view layout showing story cards with thumbnails"
+        blog_url: "https://blog.newsblur.com/2022/03/10/magazine-view/"
+
+      - id: river
+        question: "What is River of News?"
+        answer: |
+          <p>River of News lets you read all feeds in a folder as one scrollable stream, sorted chronologically. Instead of clicking into individual feeds, you open a folder and read everything at once. Combined with intelligence training, your River of News surfaces the best stories from across all your subscriptions while fading away the noise. This is a Premium feature.</p>
+        feature_image: "/media/img/features/river.png"
+        feature_image_alt: "River of News showing stories from multiple feeds in one stream"
+
+      - id: switch-views
+        question: "How do I switch views or layouts per-feed?"
+        answer: |
+          <p>Right-click on any feed or click the feed options menu (the gear icon in the feed title bar) to change the view (Feed/Original/Story/Text) and layout (Split/List/Grid/Magazine) for that specific feed. Your per-feed settings are remembered and synced across all your devices.</p>
+
+      - id: original-view
+        question: "Can I read stories on the original website without leaving NewsBlur?"
+        answer: |
+          <p>Yes. Original Site view renders the full original website inline within NewsBlur, so you see the full design, layout, and interactive elements of the original page without opening a new tab. You can switch between Feed view, Text view, and Original view on a per-feed basis.</p>
+
+      - id: infrequent
+        question: "What is Infrequent Site Stories?"
+        answer: |
+          <p>Infrequent Site Stories is a special view that collects stories from feeds that only publish once a week or less. It makes sure those gems don't get buried under high-volume feeds. Think of it as a curated digest of your quietest subscriptions.</p>
+        blog_url: "https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/"
+
+      - id: real-time
+        question: "How quickly does NewsBlur check feeds for new stories?"
+        answer: |
+          <p>Free users get real-time updates via PubSubHubbub for supported feeds. Premium users get feeds checked up to 5x more often. Premium Pro users get every single feed in their account fetched every 5-15 minutes, making NewsBlur a monitoring-grade tool for professionals who need to be first to know. NewsBlur also prioritizes popular and frequently updated feeds, so widely subscribed sites refresh more often than obscure ones.</p>
+
+  - id: intelligence
+    title: "Intelligence Training"
+    items:
+      - id: training-works
+        question: "How does intelligence training work?"
+        answer: |
+          <p>When you read a story, click "Train this story" to see all the characteristics of the story: author, tags, title keywords, and the feed itself. Give a thumbs up to things you want to see more of, and a thumbs down to things you want to see less of. Stories matching your thumbs-up training are highlighted in green (focus). Stories matching thumbs-down are faded in red (hidden). Everything else stays neutral in yellow.</p>
+          <p>The more you train, the smarter your feeds become. You can train on as many attributes as you want, and you can always retrain later.</p>
+        feature_url: "/features/intelligence-training"
+        feature_label: "Intelligence Training"
+        blog_url: "https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"
+
+      - id: bullet-colors
+        question: "What do the bullet colors next to stories mean?"
+        answer: |
+          <ul class="NB-faq-bullet-list">
+            <li><img src="/media/img/icons/nouns/indicator-hidden.svg" alt="red"> <strong>Red</strong> stories match something you've trained as hidden.</li>
+            <li><img src="/media/img/icons/nouns/indicator-unread.svg" alt="yellow"> <strong>Yellow</strong> stories are unrated &mdash; you haven't trained on them yet.</li>
+            <li><img src="/media/img/icons/nouns/indicator-focus.svg" alt="green"> <strong>Green</strong> stories match something you've trained as focus.</li>
+          </ul>
+          <p>You can filter your view to show only focus (green) stories, all unread stories, or everything including hidden stories. This lets you zero in on just what matters when you're short on time, or browse everything when you have more.</p>
+
+      - id: full-text-training
+        question: "What is full-text training?"
+        answer: |
+          <p>Full-text training lets you train on the actual content of stories, not just metadata like author and tags. This is perfect for catching topics that span multiple authors and feeds. For example, you could train on the keyword "machine learning" to highlight any story mentioning it, regardless of which feed or author it comes from. This is a Premium Archive feature.</p>
+        blog_url: "https://blog.newsblur.com/2025/11/03/text-based-intelligence-classifiers/"
+
+      - id: regex
+        question: "What are regex classifiers?"
+        answer: |
+          <p>Regex classifiers are a Premium Pro feature for power users who need precision filtering. You can write regular expressions that match against story titles, body text, and URLs. Build complex filters that catch exactly what you're looking for &mdash; from CVE numbers to stock ticker patterns to specific phrase combinations.</p>
+        blog_url: "https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/"
+
+      - id: personal-training
+        question: "Why doesn't NewsBlur use other users' training on my stories?"
+        answer: |
+          <p>Training is completely personal. If NewsBlur used crowd-sourced training, you'd get trapped in a popularity bubble &mdash; seeing only what's popular rather than what's relevant to you. NewsBlur is built for readers who want full control. Since you know exactly why each story is shown or hidden, you can refine your training with confidence.</p>
+
+  - id: ai
+    title: "AI Features"
+    items:
+      - id: ask-ai
+        question: "What is Ask AI?"
+        answer: |
+          <p>Ask AI lets you ask questions about any story and get answers powered by your choice of AI model: Claude, GPT, Gemini, or Grok. You can get summaries, extract key points, translate content, or ask follow-up questions in a conversation. Ask AI can even transcribe audio and video content and answer questions about it. This is a Premium Archive feature.</p>
+        feature_url: "/features/ask-ai"
+        feature_label: "Ask AI"
+        blog_url: "https://blog.newsblur.com/2026/01/16/ask-ai/"
+
+      - id: briefing
+        question: "What is the Daily Briefing?"
+        answer: |
+          <p>The Daily Briefing is an AI-generated summary of your top stories, customized to your interests and delivered right inside NewsBlur. It includes curated sections like top stories, long reads, stories from infrequent sites, and widely covered topics. You can add custom AI-powered sections you define yourself, choose your delivery schedule, and pick your preferred summary style. This is a Premium Archive feature.</p>
+
+      - id: clustering
+        question: "What is Story Clustering?"
+        answer: |
+          <p>When multiple feeds cover the same story, NewsBlur groups them together so you only see it once. Story clustering uses fuzzy title matching to detect stories that are similar but not identical across your subscriptions. You can read the version you prefer and skip the duplicates. This is a Premium Archive feature.</p>
+        feature_url: "/features/story-clustering"
+        feature_label: "Story Clustering"
+        blog_url: "https://blog.newsblur.com/2026/03/18/story-clustering/"
+
+      - id: mcp
+        question: "Can I connect AI agents like Claude Code to my NewsBlur account?"
+        answer: |
+          <p>Yes. The NewsBlur MCP Server implements the Model Context Protocol, so you can read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. There are 22 tools available with pre-built prompt templates for common workflows like daily briefings and inbox triage. This is a Premium Archive feature.</p>
+        feature_url: "/features/mcp"
+        feature_label: "MCP Server"
+
+      - id: ai-cost
+        question: "Do AI features cost extra?"
+        answer: |
+          <p>No. Ask AI, the Daily Briefing, and Story Clustering are all included with the Premium Archive subscription ($99/year) at no additional per-query charge. You can use any of the supported AI models (Claude, GPT, Gemini, Grok) as much as you want.</p>
+
+  - id: search-archive
+    title: "Search & Archive"
+    items:
+      - id: search
+        question: "How does search work?"
+        answer: |
+          <p>NewsBlur provides Elasticsearch-powered full-text search across all your subscriptions. Search by keyword, phrase, or combination within a single feed, a folder, or across everything. Search results are fast, relevant, and include story previews. This is a Premium feature.</p>
+        feature_url: "/features/search"
+        feature_label: "Full-Text Search"
+        blog_url: "https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/"
+
+      - id: archive
+        question: "What is Story Archive?"
+        answer: |
+          <p>With Premium Archive, every story is archived and searchable forever. When you subscribe to a new feed, NewsBlur back-fills its entire history so you have the complete archive from day one. Stories never expire. Your reading history becomes a searchable personal knowledge base that grows with you.</p>
+        feature_url: "/features/archive"
+        feature_label: "Story Archive"
+        blog_url: "https://blog.newsblur.com/2022/07/01/premium-archive-subscription/"
+
+      - id: saved-searches
+        question: "Can I save searches as feeds?"
+        answer: |
+          <p>Yes. After performing a search, you can save it as a feed that automatically updates with new matching stories. Saved search feeds are great for ongoing monitoring of specific topics across all your subscriptions.</p>
+
+      - id: downgrade-archive
+        question: "What happens to my stories if I downgrade from Archive?"
+        answer: |
+          <p>Your stories are preserved. If you downgrade, the archived stories are still stored but no longer searchable or visible in your feed. If you re-upgrade to Archive later, everything is restored immediately. NewsBlur never deletes your data.</p>
+
+  - id: saving
+    title: "Saving & Organizing"
+    items:
+      - id: save-stories
+        question: "How do I save stories for later?"
+        answer: |
+          <p>Click the star/save button on any story, or press <code>s</code> on the keyboard. Saved stories are collected in a dedicated section in your feed list and are searchable. You can save stories on any tier, and add tags to organize them on Premium and above.</p>
+        feature_url: "/features/saved-stories"
+        feature_label: "Saved Stories & Tags"
+
+      - id: tags
+        question: "How do saved story tags work?"
+        answer: |
+          <p>When you save a story, you can add one or more custom tags to organize it. Tags are searchable and appear in your feed list so you can quickly find saved stories by topic. Each tag automatically gets its own RSS feed, so you can pipe your curated collections into other tools, share them, or use them in automations.</p>
+        feature_url: "/features/saved-stories"
+        feature_label: "Saved Stories & Tags"
+        blog_url: "https://blog.newsblur.com/2014/01/14/saved-story-tagging/"
+
+      - id: newsletters
+        question: "Can I read email newsletters in NewsBlur?"
+        answer: |
+          <p>Yes. Every NewsBlur account comes with a unique email address. Forward any newsletter to that address and it appears as a feed in NewsBlur. You can then train, tag, search, and organize newsletters just like any other feed. No more cluttered inbox.</p>
+        feature_url: "/features/newsletters"
+        feature_label: "Email Newsletters"
+        blog_url: "https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/"
+
+      - id: folders
+        question: "How do I organize my feeds into folders?"
+        answer: |
+          <p>Drag and drop feeds in the feed list to reorder them or move them between folders. Right-click a folder to rename it, add a new subfolder, or create a new top-level folder. You can nest folders as deep as you want. Folders also power the River of News &mdash; click on any folder to read all its feeds as one stream.</p>
+
+      - id: export
+        question: "Can I export my feeds?"
+        answer: |
+          <p>Yes. Go to Account &gt; Import/Export and click "Export OPML" to download your complete feed list with folder structure. You can import this file into any other RSS reader. NewsBlur believes in no lock-in &mdash; your data is always yours to take with you.</p>
+
+  - id: sharing
+    title: "Sharing & Social"
+    items:
+      - id: blurblog
+        question: "What is a Blurblog?"
+        answer: |
+          <p>Every NewsBlur user gets their own Blurblog &mdash; a public page of stories you've shared, with your own comments and commentary. Anyone can follow your Blurblog via RSS or on the web. It's like a curated micro-blog powered by the stories you read.</p>
+        blog_url: "https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/"
+
+      - id: share
+        question: "How do I share a story?"
+        answer: |
+          <p>Click the share button on any story (or press <code>shift+s</code>) to share it to your Blurblog. You can add your own comments before sharing. Shared stories appear in the Blurblog section of your friends' NewsBlur, and on your public Blurblog page.</p>
+
+      - id: follow-friends
+        question: "Can I follow friends on NewsBlur?"
+        answer: |
+          <p>Yes. Go to Manage &gt; Friends to find people you know on NewsBlur. When you follow someone, their shared stories appear in a dedicated "Blurblogs" section in your feed list. You can also comment on friends' shared stories to start conversations.</p>
+
+      - id: private-blurblog
+        question: "Can I make my Blurblog private?"
+        answer: |
+          <p>Yes. Premium users can make their Blurblog private, so only people you approve can see your shared stories. This is great if you want to share within a small group without making everything public.</p>
+
+  - id: notifications-integrations
+    title: "Notifications & Integrations"
+    items:
+      - id: notifications
+        question: "How do notifications work?"
+        answer: |
+          <p>You can set per-feed notifications on web (browser push), email, iOS, or Android. Apply your training filters so you only get notified about stories that match your focus training &mdash; no spam, just the stories you care about. This is a Premium feature.</p>
+        blog_url: "https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/"
+
+      - id: ifttt
+        question: "Does NewsBlur work with IFTTT and Zapier?"
+        answer: |
+          <p>Yes. NewsBlur integrates with both IFTTT and Zapier, letting you connect to hundreds of other services. Automatically save stories to Pocket, Instapaper, Evernote, or Notion. Post shared stories to Slack or email. Trigger custom workflows when new stories appear or match your training filters.</p>
+        blog_url: "https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/"
+
+      - id: third-party-apps
+        question: "Can I use third-party reading apps with NewsBlur?"
+        answer: |
+          <p>Yes. NewsBlur syncs with dozens of popular reading apps including Reeder, ReadKit, Unread, lire, Fiery Feeds, NetNewsWire, and many more. Your read state, saved stories, and training all sync across every app. NewsBlur's open API powers all of these integrations.</p>
+
+      - id: cli
+        question: "Can I manage NewsBlur from the terminal?"
+        answer: |
+          <p>Yes. The NewsBlur CLI lets you read feeds, search stories, manage subscriptions, and train classifiers from your terminal. Pipe to jq, script your workflows, and automate with <code>--json</code> output. Works with self-hosted instances too. This is a Premium Archive feature.</p>
+        feature_url: "/features/cli"
+        feature_label: "CLI Tool"
+
+      - id: api
+        question: "Does NewsBlur have an API?"
+        answer: |
+          <p>Yes. NewsBlur has a full REST API that's free to use. You can build your own integrations, apps, or automations. The API documentation is available at <a href="/api">/api</a>. The API powers the official iOS and Android apps as well as all third-party clients.</p>
+
+  - id: apps-customization
+    title: "Apps & Customization"
+    items:
+      - id: native-apps
+        question: "Are there native mobile apps?"
+        answer: |
+          <p>Yes. NewsBlur has first-class native apps for both iOS and Android, built specifically for each platform (not web wrappers). The iOS app supports offline reading, background refresh, widgets, and all the same training, search, and sharing features as the web. The Android app matches feature-for-feature. Both apps are open source.</p>
+        feature_url: "/features/native-apps"
+        feature_label: "Native iOS & Android Apps"
+        blog_url: "https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/"
+
+      - id: customize
+        question: "How do I customize my reading experience?"
+        answer: |
+          <p>NewsBlur offers extensive customization. Choose from light, dark, and auto themes across all platforms. Customize your reading with multiple font choices, five text sizes, adjustable line spacing, and compact or comfortable density. Every setting can be different per-feed, so image-heavy blogs can use Grid view in dark mode while news sites use Split view in light mode.</p>
+        blog_url: "https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/"
+
+      - id: shortcuts
+        question: "What keyboard shortcuts are available?"
+        answer: |
+          <p>NewsBlur has comprehensive keyboard shortcuts for navigating everything without touching the mouse. Press <code>?</code> to see the full list. Key shortcuts include <code>j</code>/<code>k</code> to move between stories, <code>n</code>/<code>p</code> for next/previous unread, <code>s</code> to save, <code>shift+s</code> to share, <code>t</code> to train, and <code>enter</code> to open in Story view. Power readers fly through hundreds of stories in minutes.</p>
+        blog_url: "https://blog.newsblur.com/2013/05/23/keyboard-shortcuts-manager/"
+
+      - id: web-feeds
+        question: "What are Web Feeds?"
+        answer: |
+          <p>Web Feeds let you follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, job boards &mdash; if it's on the web, you can follow it in NewsBlur. Just paste any URL into the "Add Site" dialog.</p>
+        feature_url: "/features/web-feeds"
+        feature_label: "Web Feeds"
+        blog_url: "https://blog.newsblur.com/2026/03/13/web-feeds/"
+
+      - id: track-changes
+        question: "What is Track Changes?"
+        answer: |
+          <p>Track Changes shows you how a story evolves after it's first published. NewsBlur monitors revisions and shows you a diff of what changed, highlighted in green (additions) and red (deletions). This is useful for following developing news stories, corrected articles, or evolving product announcements.</p>
+        blog_url: "https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/"
+
+      - id: statistics
+        question: "Can I see statistics for a feed?"
+        answer: |
+          <p>Yes. Right-click any feed and choose Statistics to see detailed analytics: publish frequency, average stories per month, subscriber count, last fetch time, and historical charts. Know exactly how active a feed is and when it last published. Useful for deciding which feeds to keep and which to prune.</p>
+        blog_url: "https://blog.newsblur.com/2016/01/15/improved-statistics/"
+
+  - id: troubleshooting
+    title: "Troubleshooting & Account"
+    items:
+      - id: old-stories
+        question: "Why are my stories several days old and new stories aren't showing up?"
+        answer: |
+          <p>NewsBlur prioritizes popular and frequently updated feeds for more frequent fetching. Sites with only one subscriber get updated less often than those with many subscribers. The same goes for sites that update a few times a month versus several times a day. Premium users get feeds checked up to 5x more often, and Premium Pro users get every feed fetched every 5-15 minutes.</p>
+
+      - id: feed-errors
+        question: "Why are some of my feeds misbehaving?"
+        answer: |
+          <p>About half of feed errors are on the publisher's side (404 Not Found, broken feeds, anti-bot protections). The other half are edge cases and parser issues that NewsBlur works to fix regularly. If a feed is showing an error, try clicking the feed and checking the feed exception dialog for details. Many errors resolve themselves when the publisher fixes their site.</p>
+
+      - id: report-problem
+        question: "How do I report a problem?"
+        answer: |
+          <p>Post your issue on the <a href="https://forum.newsblur.com">NewsBlur support forum</a>. If you have an issue, it's possible other people do too, and the more we know about something that's gone wrong, the more able and likely we are to fix it. You can also email <a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a> directly.</p>
+
+      - id: self-host
+        question: "Can I self-host NewsBlur?"
+        answer: |
+          <p>Yes. NewsBlur is fully open source under the MIT license. You can run your own instance with a single Docker command. The entire codebase is on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>. Self-hosting gives you complete data ownership and the ability to customize everything.</p>
+
+      - id: change-subscription
+        question: "How do I change or cancel my subscription?"
+        answer: |
+          <p>Go to Manage &gt; Account to view your current subscription and make changes. You can upgrade, downgrade, or cancel at any time. If you cancel, your account reverts to the free tier but you keep all your feeds (up to the 64-site limit), training, and saved stories. No data is ever deleted.</p>
