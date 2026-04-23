@@ -5,7 +5,7 @@ import os
 import redis
 import yaml
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from apps.rss_feeds.models import Feed, MStory
@@ -129,6 +129,26 @@ def pricing_pro(request):
 
 def faq(request):
     return render(request, "static/faq.xhtml")
+
+
+_faq_data_cache = None
+
+
+def _load_faq_data():
+    # Cache the parsed YAML in process memory. When DEBUG is True we always
+    # reload so local edits to faq.yml show up on refresh.
+    global _faq_data_cache
+    if _faq_data_cache is not None and not settings.DEBUG:
+        return _faq_data_cache
+    filename = os.path.join(settings.TEMPLATES[0]["DIRS"][0], "static", "faq.yml")
+    with open(filename) as fh:
+        data = yaml.safe_load(fh)
+    _faq_data_cache = data
+    return data
+
+
+def faq_data(request):
+    return JsonResponse(_load_faq_data())
 
 
 def api(request):
