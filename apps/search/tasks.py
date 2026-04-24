@@ -27,8 +27,15 @@ def IndexSubscriptionsChunkForSearch(feed_ids, user_id):
     logging.debug(" ---> Indexing: %s for %s" % (feed_ids, user_id))
     from apps.search.models import MUserSearch
 
-    user_search = MUserSearch.get_user(user_id)
-    user_search.index_subscriptions_chunk_for_search(feed_ids)
+    try:
+        user_search = MUserSearch.get_user(user_id)
+        user_search.index_subscriptions_chunk_for_search(feed_ids)
+    except (Exception, SoftTimeLimitExceeded) as e:
+        # Catch all exceptions so the chord callback always fires. Without this,
+        # a single chunk failure silently breaks the chord, leaving
+        # subscriptions_indexing=True forever and users stuck on "Indexing your
+        # feeds for search" indefinitely. Mirrors the discover fix in f94100f93.
+        logging.debug(" ---> ~FR~SBSearch chunk failed for user %s, feeds %s: %s" % (user_id, feed_ids, e))
 
 
 @app.task()
