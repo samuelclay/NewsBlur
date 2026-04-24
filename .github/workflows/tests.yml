@@ -94,7 +94,17 @@ jobs:
           # Use --keepdb to skip CREATE/DROP DATABASE. This avoids the teardown error where
           # Django fails to DROP the test DB because lingering connections (from Sentry SDK
           # name resolution failures) keep it open. The CI container is ephemeral anyway.
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast --keepdb
+          #
+          # -v 2 prints each test name as it starts, and PYTHONUNBUFFERED=1 flushes each line
+          # immediately so a hang tells us exactly which test is stuck.
+          #
+          # `timeout --signal=ABRT 420` sends SIGABRT at 7 min (before the 8-min step deadline);
+          # -X faulthandler catches it and dumps a Python traceback of every thread before exit,
+          # pinpointing the hang line. Without this the step just gets killed with no info.
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T \
+            -e PYTHONUNBUFFERED=1 \
+            newsblur_web \
+            timeout --signal=ABRT 420 python3 -X faulthandler manage.py test apps --noinput -v 2 --failfast --keepdb
         timeout-minutes: 8
 
       - name: Show logs on failure
