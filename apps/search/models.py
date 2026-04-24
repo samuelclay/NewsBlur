@@ -46,6 +46,7 @@ class MUserSearch(mongo.Document):
     last_discover_date = mongo.DateTimeField(null=True, blank=True)
     subscriptions_indexed = mongo.BooleanField(default=False)
     subscriptions_indexing = mongo.BooleanField(default=False)
+    subscriptions_indexing_date = mongo.DateTimeField(null=True, blank=True)
     discover_indexed = mongo.BooleanField(default=False)
     discover_indexing = mongo.BooleanField(default=False)
     discover_indexing_date = mongo.DateTimeField(null=True, blank=True)
@@ -75,7 +76,30 @@ class MUserSearch(mongo.Document):
     def touch_search_date(self):
         if not self.subscriptions_indexed and not self.subscriptions_indexing:
             self.schedule_index_subscriptions_for_search()
+            self.subscriptions_indexing_date = datetime.datetime.now()
             self.subscriptions_indexing = True
+        one_day = 60 * 60 * 24
+        indexing_expired = (
+            self.subscriptions_indexing_date is None
+            or (datetime.datetime.now() - self.subscriptions_indexing_date).total_seconds() > one_day
+        )
+        if not self.subscriptions_indexed and self.subscriptions_indexing and indexing_expired:
+            user = User.objects.get(pk=self.user_id)
+            if self.subscriptions_indexing_date:
+                logging.user(
+                    user,
+                    f"~FCScheduling indexing ~SBsearch~SN for ~SB%s~SN because it's been more than one day ({(datetime.datetime.now() - self.subscriptions_indexing_date).total_seconds()})..."
+                    % self.user_id,
+                )
+            else:
+                logging.user(
+                    user,
+                    f"~FCScheduling indexing ~SBsearch~SN for ~SB%s~SN, because it's never been indexed..."
+                    % self.user_id,
+                )
+            self.schedule_index_subscriptions_for_search()
+            self.subscriptions_indexing = True
+            self.subscriptions_indexing_date = datetime.datetime.now()
 
         self.last_search_date = datetime.datetime.now()
         self.save()
@@ -166,7 +190,9 @@ class MUserSearch(mongo.Document):
             # Create search indexing tasks
             search_chunks = [
                 IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
-                    queue="search_indexer"
+                    queue="search_indexer",
+                    soft_time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH - 60,
+                    time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
                 )
                 for feed_id_chunk in feed_id_chunks
             ]
