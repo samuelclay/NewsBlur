@@ -88,7 +88,11 @@
     function feature_image(item) {
         if (!item.feature_image) return '';
         var alt = escape_html(item.feature_image_alt || item.feature_label || '');
-        return '<figure class="NB-faq-feature-image"><img src="' + escape_html(item.feature_image) + '" alt="' + alt + '" loading="lazy"></figure>';
+        var src = escape_html(item.feature_image);
+        // feature_image_2x: true tells the browser the file is a 2x retina
+        // asset, so its intrinsic CSS size is half its pixel size.
+        var srcset = item.feature_image_2x ? ' srcset="' + src + ' 2x"' : '';
+        return '<figure class="NB-faq-feature-image"><img src="' + src + '"' + srcset + ' alt="' + alt + '" loading="lazy"></figure>';
     }
 
     function render_item(item) {

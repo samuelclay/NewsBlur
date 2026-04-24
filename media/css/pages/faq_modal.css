@@ -479,6 +479,9 @@
 
 .NB-modal.NB-modal-faq .NB-faq-answer .NB-faq-feature-image img {
     display: inline-block;
+    /* Retina (2x) screenshots are marked with srcset="... 2x" so the browser
+       computes their intrinsic size as natural / 2. 1x images render at their
+       natural size. max-width caps at the container so nothing overflows. */
     max-width: 100%;
     height: auto;
     border-radius: 8px;

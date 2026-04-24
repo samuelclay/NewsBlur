@@ -170,13 +170,21 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
         }
 
         if (item.feature_image) {
+            var img_attrs = {
+                src: item.feature_image,
+                alt: item.feature_image_alt || item.feature_label || '',
+                loading: 'lazy'
+            };
+            // Flagging a screenshot as 2x in YAML tells the browser to treat
+            // the file as a retina source, so its intrinsic CSS size is half
+            // the pixel size. That fixes the "blown-up retina screenshot"
+            // look without capping 1x screenshots.
+            if (item.feature_image_2x) {
+                img_attrs.srcset = item.feature_image + ' 2x';
+            }
             $answer_inner.append(
                 $.make('figure', { className: 'NB-faq-feature-image' }, [
-                    $.make('img', {
-                        src: item.feature_image,
-                        alt: item.feature_image_alt || item.feature_label || '',
-                        loading: 'lazy'
-                    })
+                    $.make('img', img_attrs)
                 ])
             );
         }

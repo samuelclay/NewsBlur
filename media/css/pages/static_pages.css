@@ -2766,6 +2766,8 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
 
 .NB-faq-feature-image img {
     display: inline-block;
+    /* 2x retina screenshots are marked with srcset="... 2x" so the browser
+       renders them at their intrinsic half size. 1x images render natively. */
     max-width: 100%;
     height: auto;
     border-radius: 10px;
