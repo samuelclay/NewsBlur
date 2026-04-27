@@ -138,6 +138,12 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertNil(persistedValue)
     }
 
+    func test_extractFolderName_treatsMissingActiveFolderAsTopLevel() {
+        let appDelegate = NewsBlurAppDelegate()
+
+        XCTAssertEqual(appDelegate.extractFolderName(nil), "")
+    }
+
     func test_feedIdsForTopLevelRiverWithReadFilter_unread_usesModelUnreadCountsInsteadOfSidebarVisibility() {
         let appDelegate = NewsBlurAppDelegate()
         let feedsViewController = FeedsViewController()
