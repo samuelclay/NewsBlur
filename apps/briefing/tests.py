@@ -13,6 +13,7 @@ from apps.analyzer.models import (
     MClassifierFeed,
     MClassifierTag,
     MClassifierTitle,
+    ScopedClassifiers,
 )
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
@@ -862,7 +863,14 @@ class Test_Scoring(BriefingTestCase):
         cf = MClassifierFeed(user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0, score=1)
         cf.save()
         feed_title_map = {self.feed.pk: "Test Feed 1"}
-        matches = _get_classifier_matches(self.stories[0], [cf], [], [], [], feed_title_map)
+        matches = _get_classifier_matches(
+            self.stories[0],
+            [cf],
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            feed_title_map,
+        )
         self.assertIn("feed:Test Feed 1", matches)
 
     def test_classifier_matches_multiple(self):
@@ -873,7 +881,14 @@ class Test_Scoring(BriefingTestCase):
         )
         ca.save()
         feed_title_map = {self.feed.pk: "Test Feed 1"}
-        matches = _get_classifier_matches(self.stories[0], [cf], [ca], [], [], feed_title_map)
+        matches = _get_classifier_matches(
+            self.stories[0],
+            [cf],
+            ScopedClassifiers([ca]),
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            feed_title_map,
+        )
         self.assertIn("feed:Test Feed 1", matches)
         self.assertIn("author:Alice", matches)
 
