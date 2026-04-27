@@ -91,6 +91,7 @@ internal fun resolveOverlayRightAction(
 internal data class ReadingConfigChangeRestore(
     val storyHash: String,
     val scrollPosRel: Float,
+    val story: Story? = null,
 )
 
 internal fun shouldReleaseReaderWebViewsOnTrim(
@@ -101,11 +102,13 @@ internal fun shouldReleaseReaderWebViewsOnTrim(
 internal fun createReadingConfigChangeRestore(
     storyHash: String?,
     scrollPosRel: Float?,
+    story: Story? = null,
 ): ReadingConfigChangeRestore? =
-    storyHash?.let {
+    storyHash?.let { hash ->
         ReadingConfigChangeRestore(
-            storyHash = it,
+            storyHash = hash,
             scrollPosRel = scrollPosRel ?: 0f,
+            story = story?.takeIf { currentStory -> currentStory.storyHash == hash }?.copyForBundle(),
         )
     }
 
@@ -356,6 +359,7 @@ abstract class Reading :
         pendingConfigChangeRestore?.let { restore ->
             storyHash = restore.storyHash
             restoredStoryScrollPosRel = restore.scrollPosRel
+            restoredCurrentStory = restore.story
             isRestoringState = true
         }
 
@@ -392,16 +396,19 @@ abstract class Reading :
     }
 
     private fun captureReadingConfigChangeRestore(): ReadingConfigChangeRestore? =
-        createReadingConfigChangeRestore(
-            storyHash = currentReadingStoryHash(),
-            scrollPosRel = readingFragment?.prepareForConfigurationChange(),
-        )
+        currentReadingStory().let { currentStory ->
+            createReadingConfigChangeRestore(
+                storyHash = currentStory?.storyHash ?: storyHash,
+                scrollPosRel = readingFragment?.prepareForConfigurationChange(),
+                story = currentStory,
+            )
+        }
 
-    private fun currentReadingStoryHash(): String? =
+    private fun currentReadingStory(): Story? =
         if (pager == null || readingAdapter == null) {
-            storyHash
+            null
         } else {
-            readingAdapter!!.getStory(pager!!.currentItem)?.storyHash ?: storyHash
+            readingAdapter!!.getStory(pager!!.currentItem)
         }
 
     private fun restoreReadingAfterConfigurationChange() {
@@ -419,11 +426,16 @@ abstract class Reading :
             if (restorePosition >= 0) {
                 pager.setCurrentItem(restorePosition, false)
                 onPageSelected(restorePosition)
+                loadActiveStories()
+            } else if (restore.story != null) {
+                loadActiveStories()
+            } else {
+                storyHash = null
+                restoredCurrentStory = null
+                isRestoringState = false
             }
 
-            storyHash = null
             pendingConfigChangeRestore = null
-            isRestoringState = false
         }
     }
 
@@ -703,6 +715,7 @@ abstract class Reading :
     }
 
     override fun onPageSelected(position: Int) {
+        val isRestoringSelection = isRestoringState
         lifecycleScope.executeAsyncTask(
             doInBackground = {
                 readingAdapter?.let { readingAdapter ->
@@ -718,7 +731,7 @@ abstract class Reading :
 
                         // Don't mark stories read during activity recreation (e.g., rotation).
                         // The user is still on the same story, not navigating to a new one.
-                        if (!isRestoringState) {
+                        if (!isRestoringSelection) {
                             triggerMarkStoryReadBehavior(story)
                         }
                     }
