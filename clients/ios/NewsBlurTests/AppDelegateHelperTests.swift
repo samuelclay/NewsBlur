@@ -243,4 +243,91 @@ final class AppDelegateHelperTests: XCTestCase {
 
         XCTAssertEqual(feedIds, ["10", "11", "1", "2", "3", "4"])
     }
+
+    func test_toggleAuthorClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
+        let appDelegate = ClassifierToggleAppDelegate()
+        appDelegate.storiesCollection = StoriesCollection()
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "authors": [
+                    "Jane": 1,
+                ],
+            ],
+        ]
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), -1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["dislike_author"] as? String, "Jane")
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_author"] as? String, "Jane")
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["like_author"] as? String, "Jane")
+
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "authors": [
+                    "Jane": -2,
+                ],
+            ],
+        ]
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_author"] as? String, "Jane")
+    }
+
+    func test_toggleTagClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
+        let appDelegate = ClassifierToggleAppDelegate()
+        appDelegate.storiesCollection = StoriesCollection()
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "tags": [
+                    "swift": 1,
+                ],
+            ],
+        ]
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), -1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["dislike_tag"] as? String, "swift")
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_tag"] as? String, "swift")
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["like_tag"] as? String, "swift")
+
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "tags": [
+                    "swift": -2,
+                ],
+            ],
+        ]
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_tag"] as? String, "swift")
+    }
+
+    private func classifierScore(_ appDelegate: NewsBlurAppDelegate, feedId: String, key: String, value: String) -> Int? {
+        let feedClassifiers = appDelegate.storiesCollection.activeClassifiers[feedId] as? [String: Any]
+        let classifiers = feedClassifiers?[key] as? [String: Any]
+        return classifiers?[value] as? Int
+    }
+}
+
+private final class ClassifierToggleAppDelegate: NewsBlurAppDelegate {
+    var savedClassifierParameters: [String: Any]?
+
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error) -> Void)!) {
+        savedClassifierParameters = parameters as? [String: Any]
+    }
+
+    override func recalculateIntelligenceScores(_ feedId: Any!) {
+    }
 }

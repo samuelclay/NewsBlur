@@ -4786,7 +4786,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
-    authorScore = (authorScore > 0) ? 0 : 1;
+    authorScore = (authorScore > 0) ? -1 : (authorScore < 0) ? 0 : 1;
     [self _applyAuthorClassifier:author feedId:feedId score:authorScore scope:scope folderName:folderName];
 }
 
@@ -4932,7 +4932,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int tagScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
-    tagScore = (tagScore > 0) ? 0 : 1;
+    tagScore = (tagScore > 0) ? -1 : (tagScore < 0) ? 0 : 1;
     [self _applyTagClassifier:tag feedId:feedId score:tagScore scope:scope folderName:folderName];
 }
 
