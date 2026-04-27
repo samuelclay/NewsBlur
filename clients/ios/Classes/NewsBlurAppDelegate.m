@@ -4252,6 +4252,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (NSString *)extractFolderName:(NSString *)folderName {
+    if (folderName == nil) {
+        return @"";
+    }
+
     if ([folderName containsString:@"Top Level"] ||
         [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
