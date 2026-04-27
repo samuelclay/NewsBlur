@@ -12,6 +12,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    ScopedClassifiers,
     apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
@@ -1548,3 +1549,173 @@ class Test_SuperDownvote(TransactionTestCase):
             user_id=self.user.pk, feed_id=self.feed.pk, title="Breaking"
         )
         self.assertEqual(classifier.score, -2)
+
+
+class Test_ScopedClassifiersParity(TransactionTestCase):
+    """ScopedClassifiers is the fast path for per-story scoring — pre-buckets
+    classifiers by (scope, feed_id) once so the inner loop only walks classifiers
+    that apply to the current story's feed. These tests pin that the indexed
+    path scores identically to the flat-list path across all three scopes
+    (feed, folder, global). Motivated by Sentry TASK-317 (caspian, 200k+
+    classifiers blowing the briefing soft_time_limit).
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="scopedtest", password="testpass", email="scoped@test.com"
+        )
+        self.feed = Feed.objects.get(pk=1)
+        self.other_feed = Feed.objects.create(
+            feed_address="http://scoped.example.com/feed",
+            feed_link="http://scoped.example.com",
+            feed_title="Scoped Other",
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=False)
+        UserSubscription.objects.create(user=self.user, feed=self.other_feed, is_trained=False)
+        self.story_self = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Breaking news about Python",
+            "story_content": "<p>Python is great</p>",
+            "story_authors": "Alice",
+            "story_tags": ["python", "tech"],
+            "story_permalink": "https://example.com/story",
+        }
+        self.story_other = dict(self.story_self, story_feed_id=self.other_feed.pk)
+
+    def tearDown(self):
+        MClassifierTitle.objects(user_id=self.user.pk).delete()
+        MClassifierText.objects(user_id=self.user.pk).delete()
+        MClassifierAuthor.objects(user_id=self.user.pk).delete()
+        MClassifierTag.objects(user_id=self.user.pk).delete()
+        MClassifierUrl.objects(user_id=self.user.pk).delete()
+        MClassifierFeed.objects(user_id=self.user.pk).delete()
+
+    def _make_title(self, title, score, feed_id=None, scope="feed", folder_name=""):
+        return MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id if feed_id is not None else self.feed.pk,
+            social_user_id=0,
+            title=title,
+            score=score,
+            scope=scope,
+            folder_name=folder_name,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def _make_tag(self, tag, score, feed_id=None, scope="feed", folder_name=""):
+        return MClassifierTag.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id if feed_id is not None else self.feed.pk,
+            social_user_id=0,
+            tag=tag,
+            score=score,
+            scope=scope,
+            folder_name=folder_name,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def test_feed_scoped_classifier_indexed_only_for_its_feed(self):
+        """Feed-scoped classifiers only apply to stories from their own feed."""
+        on_self = self._make_title("Breaking", score=1, feed_id=self.feed.pk)
+        on_other = self._make_title("Breaking", score=-1, feed_id=self.other_feed.pk)
+
+        flat = [on_self, on_other]
+        indexed = ScopedClassifiers(flat)
+
+        self.assertEqual(
+            apply_classifier_titles(flat, self.story_self),
+            apply_classifier_titles(indexed, self.story_self),
+        )
+        self.assertEqual(
+            apply_classifier_titles(flat, self.story_other),
+            apply_classifier_titles(indexed, self.story_other),
+        )
+        self.assertEqual(apply_classifier_titles(indexed, self.story_self), 1)
+        self.assertEqual(apply_classifier_titles(indexed, self.story_other), -1)
+
+    def test_global_classifier_applies_to_all_feeds(self):
+        """Globally scoped classifiers match regardless of feed."""
+        glb = self._make_tag("python", score=1, feed_id=0, scope="global")
+
+        flat = [glb]
+        indexed = ScopedClassifiers(flat)
+
+        self.assertEqual(apply_classifier_tags(flat, self.story_self), 1)
+        self.assertEqual(apply_classifier_tags(indexed, self.story_self), 1)
+        self.assertEqual(apply_classifier_tags(flat, self.story_other), 1)
+        self.assertEqual(apply_classifier_tags(indexed, self.story_other), 1)
+
+    def test_folder_classifier_requires_folder_feed_ids(self):
+        """Folder-scoped classifiers are dropped when folder_feed_ids is not provided
+        (matches existing classifier_matches_story_feed behavior) and resolved when it is."""
+        fc = self._make_title("Breaking", score=1, feed_id=0, scope="folder", folder_name="Tech")
+
+        # No folder_feed_ids — dropped both ways.
+        self.assertEqual(apply_classifier_titles([fc], self.story_self), 0)
+        self.assertEqual(apply_classifier_titles(ScopedClassifiers([fc]), self.story_self), 0)
+
+        folder_feed_ids = {"Tech": {self.feed.pk}}
+        self.assertEqual(
+            apply_classifier_titles([fc], self.story_self, folder_feed_ids=folder_feed_ids),
+            apply_classifier_titles(
+                ScopedClassifiers([fc], folder_feed_ids), self.story_self
+            ),
+        )
+        # Folder does not contain other_feed — no match there.
+        self.assertEqual(
+            apply_classifier_titles(ScopedClassifiers([fc], folder_feed_ids), self.story_other),
+            0,
+        )
+
+    def test_compute_story_score_parity_across_scopes(self):
+        """compute_story_score returns identical results whether the caller
+        passes flat classifier lists or ScopedClassifiers indexes."""
+        # Three scopes, three types, two feeds — covers the bucket/global/folder branches.
+        t_feed = self._make_title("Breaking", score=1, feed_id=self.feed.pk)
+        t_global = self._make_title("Python", score=1, feed_id=0, scope="global")
+        t_folder = self._make_title("news", score=-1, feed_id=0, scope="folder", folder_name="Tech")
+        tag_feed = self._make_tag("python", score=1, feed_id=self.feed.pk)
+        tag_other_feed = self._make_tag("tech", score=-1, feed_id=self.other_feed.pk)
+        author_global = MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            author="Alice",
+            score=1,
+            scope="global",
+            creation_date=datetime.datetime.now(),
+        )
+
+        titles_flat = [t_feed, t_global, t_folder]
+        tags_flat = [tag_feed, tag_other_feed]
+        authors_flat = [author_global]
+        folder_feed_ids = {"Tech": {self.feed.pk}}
+
+        titles_indexed = ScopedClassifiers(titles_flat, folder_feed_ids)
+        tags_indexed = ScopedClassifiers(tags_flat, folder_feed_ids)
+        authors_indexed = ScopedClassifiers(authors_flat, folder_feed_ids)
+
+        for story in (self.story_self, self.story_other):
+            flat_score = compute_story_score(
+                story,
+                classifier_titles=titles_flat,
+                classifier_authors=authors_flat,
+                classifier_tags=tags_flat,
+                classifier_feeds=[],
+                folder_feed_ids=folder_feed_ids,
+            )
+            indexed_score = compute_story_score(
+                story,
+                classifier_titles=titles_indexed,
+                classifier_authors=authors_indexed,
+                classifier_tags=tags_indexed,
+                classifier_feeds=[],
+                folder_feed_ids=folder_feed_ids,
+            )
+            self.assertEqual(flat_score, indexed_score, msg=f"mismatch for feed={story['story_feed_id']}")

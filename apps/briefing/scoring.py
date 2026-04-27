@@ -13,6 +13,7 @@ from apps.analyzer.models import (
     MClassifierFeed,
     MClassifierTag,
     MClassifierTitle,
+    ScopedClassifiers,
     compute_story_score,
 )
 from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
@@ -176,10 +177,16 @@ def select_briefing_stories(
     max_trending_count = max(trending_count_map.values()) if trending_count_map else 1
     max_feed_opens = max(feed_opens_map.values()) if feed_opens_map else 1
 
+    # scoring.py: Bucket classifiers by (scope, feed_id) once so the per-story
+    # scoring loop only walks classifiers that apply to that story's feed.
+    # Heavy users can have 100k+ classifiers and the naive per-story loop was
+    # eating the entire 110s soft_time_limit (Sentry TASK-317).
+    # classifier_feeds is matched by feed_id directly in apply_classifier_feeds,
+    # so it doesn't go through the ScopedClassifiers path.
     classifier_feeds = list(MClassifierFeed.objects(user_id=user_id))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user_id))
-    classifier_tags = list(MClassifierTag.objects(user_id=user_id))
-    classifier_titles = list(MClassifierTitle.objects(user_id=user_id))
+    classifier_authors = ScopedClassifiers(list(MClassifierAuthor.objects(user_id=user_id)))
+    classifier_tags = ScopedClassifiers(list(MClassifierTag.objects(user_id=user_id)))
+    classifier_titles = ScopedClassifiers(list(MClassifierTitle.objects(user_id=user_id)))
 
     feed_title_map = {}
     for sub in user_subs:
@@ -531,13 +538,16 @@ def _get_classifier_matches(
             feed_title = feed_title_map.get(cf.feed_id, "")
             if feed_title:
                 matches.append("feed:%s" % feed_title)
-    for ca in classifier_authors:
+    # scoring.py: Use the per-feed bucket so this loop matches the O(k) shape
+    # of the score computation above. Classifier lists are ScopedClassifiers
+    # constructed in select_briefing_stories.
+    for ca in classifier_authors.for_feed(story.story_feed_id):
         if ca.author and ca.score > 0 and story.story_author_name and ca.author in story.story_author_name:
             matches.append("author:%s" % ca.author)
-    for ct in classifier_tags:
+    for ct in classifier_tags.for_feed(story.story_feed_id):
         if ct.tag and ct.score > 0 and ct.tag in (story.story_tags or []):
             matches.append("tag:%s" % ct.tag)
-    for cti in classifier_titles:
+    for cti in classifier_titles.for_feed(story.story_feed_id):
         if cti.title and cti.score > 0 and cti.title.lower() in (story.story_title or "").lower():
             matches.append("title:%s" % cti.title)
     return matches

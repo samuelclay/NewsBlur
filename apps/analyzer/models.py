@@ -380,6 +380,81 @@ def classifier_matches_story_feed(classifier, story_feed_id, folder_feed_ids=Non
     return classifier.feed_id == story_feed_id
 
 
+class ScopedClassifiers:
+    """Pre-bucketed classifier collection for fast per-story scoring.
+
+    models.py: Per-story scoring calls classifier_matches_story_feed once per
+    (story, classifier) pair. For users with tens of thousands of classifiers
+    (trained over years) this becomes the dominant cost — mongoengine field
+    access via __get__ on `scope` and `feed_id` multiplies into hundreds of
+    millions of dereferences and breaches the briefing soft_time_limit. See
+    Sentry TASK-317.
+
+    Bucketing classifiers by (scope, feed_id) once turns per-story scoring
+    into O(k) where k is the number of classifiers that apply to that story's
+    feed, instead of O(N_total).
+
+    Folder-scoped classifiers require folder_feed_ids; passing None drops them,
+    matching classifier_matches_story_feed's contract.
+    """
+
+    def __init__(self, classifiers, folder_feed_ids=None):
+        self._globals = []
+        self._by_feed = {}
+        for c in classifiers:
+            scope = getattr(c, "scope", "feed")
+            if scope == "global":
+                self._globals.append(c)
+            elif scope == "folder":
+                if folder_feed_ids is None:
+                    continue
+                folder = getattr(c, "folder_name", "")
+                for fid in folder_feed_ids.get(folder, ()):
+                    self._by_feed.setdefault(fid, []).append(c)
+            else:
+                self._by_feed.setdefault(c.feed_id, []).append(c)
+
+    def for_feed(self, story_feed_id):
+        per_feed = self._by_feed.get(story_feed_id)
+        if not per_feed:
+            return self._globals
+        if not self._globals:
+            return per_feed
+        return per_feed + self._globals
+
+    def __iter__(self):
+        # Backwards compat for callers that iterate without a feed context.
+        # Tracks id() so a classifier referenced under multiple feed buckets
+        # (folder scope) is yielded once.
+        yielded = set()
+        for c in self._globals:
+            yielded.add(id(c))
+            yield c
+        for bucket in self._by_feed.values():
+            for c in bucket:
+                key = id(c)
+                if key not in yielded:
+                    yielded.add(key)
+                    yield c
+
+    def __len__(self):
+        return sum(1 for _ in self)
+
+    def __bool__(self):
+        return bool(self._globals) or bool(self._by_feed)
+
+
+def _applicable_classifiers(classifiers, story_feed_id, folder_feed_ids):
+    """Return classifiers applicable to this story's feed.
+
+    models.py: Fast path when caller passed a ScopedClassifiers index. Falls
+    back to the flat-list scope check so existing callers keep working.
+    """
+    if isinstance(classifiers, ScopedClassifiers):
+        return classifiers.for_feed(story_feed_id)
+    return [c for c in classifiers if classifier_matches_story_feed(c, story_feed_id, folder_feed_ids)]
+
+
 def compute_story_score(
     story,
     classifier_titles,
@@ -494,10 +569,7 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
 
     story_title_lower = story_title.lower()
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         # Skip regex classifiers - they're handled by apply_classifier_regex
         if getattr(classifier, "is_regex", False):
             continue
@@ -536,10 +608,7 @@ def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
     # must not break substring matching.
     story_content_lower = strip_tags(story_content).lower()
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         # Skip regex classifiers - they're handled by apply_classifier_regex
         if getattr(classifier, "is_regex", False):
             continue
@@ -573,10 +642,7 @@ def apply_classifier_title_regex(classifiers, story, folder_feed_ids=None):
     if not story_title:
         return score
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         if not getattr(classifier, "is_regex", False):
             continue
 
@@ -611,10 +677,7 @@ def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
     # Strip HTML tags so regex matches visible text, not raw HTML
     story_content = strip_tags(story_content)
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         if not getattr(classifier, "is_regex", False):
             continue
 
@@ -652,10 +715,7 @@ def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed
 
     story_url_lower = story_url.lower()
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         # Skip regex classifiers - they're handled by apply_classifier_url_regex
         if getattr(classifier, "is_regex", False):
             continue
@@ -689,10 +749,7 @@ def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
     if not story_url:
         return score
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         if not getattr(classifier, "is_regex", False):
             continue
 
@@ -709,9 +766,7 @@ def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
 
 def apply_classifier_authors(classifiers, story, folder_feed_ids=None):
     score = 0
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         # Skip regex classifiers - they're handled by apply_classifier_author_regex
         if getattr(classifier, "is_regex", False):
             continue
@@ -743,10 +798,7 @@ def apply_classifier_author_regex(classifiers, story, folder_feed_ids=None):
     if not story_authors:
         return score
 
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
-
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         if not getattr(classifier, "is_regex", False):
             continue
 
@@ -763,9 +815,7 @@ def apply_classifier_author_regex(classifiers, story, folder_feed_ids=None):
 
 def apply_classifier_tags(classifiers, story, folder_feed_ids=None):
     score = 0
-    for classifier in classifiers:
-        if not classifier_matches_story_feed(classifier, story["story_feed_id"], folder_feed_ids):
-            continue
+    for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         if story["story_tags"] and classifier.tag in story["story_tags"]:
             # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
             if classifier.score <= -2:
