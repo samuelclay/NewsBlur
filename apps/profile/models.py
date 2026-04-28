@@ -3226,12 +3226,18 @@ class Profile(models.Model):
         )
 
     def grace_period_email_sent(self, force=False):
+        # Suppress duplicate grace emails for the *current* expiration cycle only.
+        # Window is anchored to premium_expire (or now if missing) minus 180 days,
+        # so a grace email sent for a previous year's expiration won't block the
+        # email for this year's expiration, while still leaving plenty of margin
+        # against same-cycle duplicates. apps/profile/models.py
         emails_sent = MSentEmail.objects.filter(
             receiver_user_id=self.user.pk, email_type="premium_expire_grace"
         )
-        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        anchor = self.premium_expire or datetime.datetime.now()
+        cycle_start = anchor - datetime.timedelta(days=180)
         for email in emails_sent:
-            if email.date_sent > day_ago and not force:
+            if email.date_sent > cycle_start and not force:
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return True
 
