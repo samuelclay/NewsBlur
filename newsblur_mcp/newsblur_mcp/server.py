@@ -8,6 +8,7 @@ import functools
 import logging
 import time
 
+import httpx
 import sentry_sdk
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
@@ -76,6 +77,17 @@ _original_tool = mcp.tool
 def _logged_tool(*args, **kwargs):
     original_decorator = _original_tool(*args, **kwargs)
 
+    def http_status_error_payload(error: httpx.HTTPStatusError) -> dict:
+        response = error.response
+        status_code = response.status_code
+        reason = response.reason_phrase
+        path = error.request.url.path
+        return {
+            "code": "newsblur_api_error",
+            "error": f"NewsBlur API returned {status_code} {reason} for {path}",
+            "status_code": status_code,
+        }
+
     def wrapper(func):
         @functools.wraps(func)
         async def logged(*fargs, **fkwargs):
@@ -85,6 +97,8 @@ def _logged_tool(*args, **kwargs):
                 return await func(*fargs, **fkwargs)
             except ArchiveRequiredError as e:
                 return {"code": "archive_required", "error": str(e)}
+            except httpx.HTTPStatusError as e:
+                return http_status_error_payload(e)
             finally:
                 elapsed = time.time() - start
                 log_request(username, premium, elapsed, func.__name__)
