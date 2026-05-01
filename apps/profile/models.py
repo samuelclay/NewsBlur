@@ -627,17 +627,23 @@ class Profile(models.Model):
 
         logging.user(
             self.user,
-            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s)"
-            % (self.is_premium, self.is_archive, self.is_pro),
+            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s, trial=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
 
-        # Atomically check premium to prevent duplicate processing from concurrent webhooks
+        # Capture trial status before the atomic update clears it
+        was_trial = self.is_premium_trial is True
+
+        # Atomically convert to paid premium and dedupe concurrent webhooks. Skip
+        # only when the user is *already paid premium* (is_premium and not on
+        # trial) — trial users have is_premium=True too, so the dedupe must look
+        # at the trial flag or trial→paid upgrades silently no-op.
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().get(pk=self.pk)
-            if fresh.is_premium:
-                logging.user(self.user, "~FMactivate_premium: already premium, skipping")
+            if fresh.is_premium and not fresh.is_premium_trial:
+                logging.user(self.user, "~FMactivate_premium: already paid premium, skipping")
                 return True
-            Profile.objects.filter(pk=self.pk).update(is_premium=True)
+            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_premium_trial=False)
 
         if self.is_archive or self.is_pro:
             logging.user(
@@ -647,11 +653,8 @@ class Profile(models.Model):
             )
             return True
 
-        # Capture trial status before clearing it
-        was_trial = self.is_premium_trial
-
-        # Clear trial status when converting to paid premium
-        if self.is_premium_trial:
+        # Mirror the atomic update onto the in-memory instance
+        if was_trial:
             self.is_premium_trial = False
             logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
@@ -701,7 +704,13 @@ class Profile(models.Model):
 
         UserSubscription.queue_new_feeds(self.user)
 
-        # self.setup_premium_history() # Let's not call this unnecessarily
+        # Trial conversions need an immediate history sync so premium_expire flips
+        # off the trial date and premium_renewal goes True. The downstream
+        # charge.succeeded webhook will sync free→premium signups for us, but for
+        # trial→paid we can't wait — the user paid expecting their account to
+        # reflect the new period right away.
+        if was_trial:
+            self.setup_premium_history()
 
         if never_expire:
             self.premium_expire = None
