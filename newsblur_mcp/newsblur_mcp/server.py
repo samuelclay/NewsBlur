@@ -83,6 +83,8 @@ def _logged_tool(*args, **kwargs):
             username, premium = _get_user_info()
             try:
                 return await func(*fargs, **fkwargs)
+            except ArchiveRequiredError as e:
+                return {"code": "archive_required", "error": str(e)}
             finally:
                 elapsed = time.time() - start
                 log_request(username, premium, elapsed, func.__name__)
