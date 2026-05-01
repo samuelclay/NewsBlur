@@ -1,15 +1,15 @@
 package com.newsblur.activity
 
 import android.content.ComponentCallbacks2
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ReadingMemoryTrimTest {
     @Test
-    fun releasesReaderWebViewsWhenUiIsHidden() {
-        assertTrue(
-            shouldReleaseReaderWebViewsOnTrim(
+    fun releasesOnlyBackgroundReaderWebViewsWhenUiIsHidden() {
+        assertEquals(
+            ReaderWebViewReleaseScope.BACKGROUND_ONLY,
+            readerWebViewReleaseScopeForTrim(
                 level = ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN,
                 isChangingConfigurations = false,
             ),
@@ -17,9 +17,21 @@ class ReadingMemoryTrimTest {
     }
 
     @Test
+    fun releasesAllReaderWebViewsUnderBackgroundMemoryPressure() {
+        assertEquals(
+            ReaderWebViewReleaseScope.ALL,
+            readerWebViewReleaseScopeForTrim(
+                level = ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
+                isChangingConfigurations = false,
+            ),
+        )
+    }
+
+    @Test
     fun ignoresForegroundTrimSignals() {
-        assertFalse(
-            shouldReleaseReaderWebViewsOnTrim(
+        assertEquals(
+            ReaderWebViewReleaseScope.NONE,
+            readerWebViewReleaseScopeForTrim(
                 level = ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
                 isChangingConfigurations = false,
             ),
@@ -28,8 +40,9 @@ class ReadingMemoryTrimTest {
 
     @Test
     fun ignoresConfigurationChanges() {
-        assertFalse(
-            shouldReleaseReaderWebViewsOnTrim(
+        assertEquals(
+            ReaderWebViewReleaseScope.NONE,
+            readerWebViewReleaseScopeForTrim(
                 level = ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN,
                 isChangingConfigurations = true,
             ),
