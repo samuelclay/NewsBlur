@@ -94,10 +94,22 @@ internal data class ReadingConfigChangeRestore(
     val story: Story? = null,
 )
 
-internal fun shouldReleaseReaderWebViewsOnTrim(
+internal enum class ReaderWebViewReleaseScope {
+    NONE,
+    BACKGROUND_ONLY,
+    ALL,
+}
+
+internal fun readerWebViewReleaseScopeForTrim(
     level: Int,
     isChangingConfigurations: Boolean,
-): Boolean = level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && !isChangingConfigurations
+): ReaderWebViewReleaseScope =
+    when {
+        isChangingConfigurations -> ReaderWebViewReleaseScope.NONE
+        level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> ReaderWebViewReleaseScope.ALL
+        level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> ReaderWebViewReleaseScope.BACKGROUND_ONLY
+        else -> ReaderWebViewReleaseScope.NONE
+    }
 
 internal fun createReadingConfigChangeRestore(
     storyHash: String?,
@@ -334,15 +346,21 @@ abstract class Reading :
 
     override fun onStop() {
         if (!isChangingConfigurations) {
-            readingAdapter?.releaseBackgroundWebViews()
+            readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
         }
         super.onStop()
     }
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        if (shouldReleaseReaderWebViewsOnTrim(level, isChangingConfigurations)) {
-            readingAdapter?.releaseBackgroundWebViews()
+        when (readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)) {
+            ReaderWebViewReleaseScope.BACKGROUND_ONLY ->
+                readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
+
+            ReaderWebViewReleaseScope.ALL ->
+                readingAdapter?.releaseBackgroundWebViews()
+
+            ReaderWebViewReleaseScope.NONE -> Unit
         }
     }
 
