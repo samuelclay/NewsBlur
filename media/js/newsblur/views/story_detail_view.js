@@ -106,6 +106,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model: this.model,
             el: this.el
         });
+        this.sideoptions_view.story_view = this;
         this.save_view = this.sideoptions_view.save_view;
         this.share_view = this.sideoptions_view.share_view;
 
@@ -160,6 +161,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     attach_handlers: function () {
         this.watch_images_for_story_height();
+        this.update_sideoptions_sticky_state();
         this.attach_syntax_highlighter_handler();
         this.attach_fitvid_handler();
         this.render_starred_tags();
@@ -453,56 +455,58 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
-                <% if (show_sideoption_email) { %>\
-                    <div class="NB-sideoption NB-feed-story-email" role="button">\
-                        <div class="NB-sideoption-title">Email</div>\
-                        <div class="NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                    </div>\
-                <% } %>\
-                <% _.each(sharing_services, function(label, key) { %>\
-                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                        <div class="NB-sideoption NB-sideoption-sharing NB-sideoption-sharing-<%= key %>" data-service-name="<%= key %>" role="button">\
-                            <div class="NB-sideoption-title"><%= label %></div>\
-                            <div class="NB-sideoption-icon NB-sideoption-icon-<%= key %>">&nbsp;</div>\
+                <div class="NB-feed-story-sideoptions">\
+                    <% if (show_sideoption_email) { %>\
+                        <div class="NB-sideoption NB-feed-story-email" role="button">\
+                            <div class="NB-sideoption-title">Email</div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
                         </div>\
                     <% } %>\
-                <% }) %>\
-                <% if (show_sideoption_train) { %>\
-                    <div class="NB-sideoption NB-feed-story-train" role="button">\
-                        <div class="NB-sideoption-title">Train</div>\
-                        <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
-                        <div class="NB-sideoption-writerules">\
-                            <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
+                    <% _.each(sharing_services, function(label, key) { %>\
+                        <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                            <div class="NB-sideoption NB-sideoption-sharing NB-sideoption-sharing-<%= key %>" data-service-name="<%= key %>" role="button">\
+                                <div class="NB-sideoption-title"><%= label %></div>\
+                                <div class="NB-sideoption-icon NB-sideoption-icon-<%= key %>">&nbsp;</div>\
+                            </div>\
+                        <% } %>\
+                    <% }) %>\
+                    <% if (show_sideoption_train) { %>\
+                        <div class="NB-sideoption NB-feed-story-train" role="button">\
+                            <div class="NB-sideoption-title">Train</div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
+                            <div class="NB-sideoption-writerules">\
+                                <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
+                                </div>\
                             </div>\
                         </div>\
-                    </div>\
-                <% } %>\
-                <% if (show_sideoption_save) { %>\
-                    <div class="NB-sideoption NB-feed-story-save" role="button">\
-                        <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
-                    </div>\
-                    <%= story_save_view %>\
                     <% } %>\
-                <% if (show_sideoption_share) { %>\
-                    <div class="NB-sideoption NB-feed-story-share" role="button">\
-                        <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
-                    </div>\
-                    <%= story_share_view %>\
-                <% } %>\
-                <% if (show_sideoption_related) { %>\
-                    <div class="NB-sideoption NB-feed-story-discover" role="button">\
-                        <div class="NB-sideoption-title">Related</div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
-                    </div>\
-                <% } %>\
-                <% if (show_sideoption_ask_ai) { %>\
-                    <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
-                        <div class="NB-sideoption-title">Ask AI</div>\
-                        <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
-                    </div>\
-                <% } %>\
+                    <% if (show_sideoption_save) { %>\
+                        <div class="NB-sideoption NB-feed-story-save" role="button">\
+                            <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
+                            <div class="NB-sideoption-icon">&nbsp;</div>\
+                        </div>\
+                        <%= story_save_view %>\
+                        <% } %>\
+                    <% if (show_sideoption_share) { %>\
+                        <div class="NB-sideoption NB-feed-story-share" role="button">\
+                            <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
+                            <div class="NB-sideoption-icon">&nbsp;</div>\
+                        </div>\
+                        <%= story_share_view %>\
+                    <% } %>\
+                    <% if (show_sideoption_related) { %>\
+                        <div class="NB-sideoption NB-feed-story-discover" role="button">\
+                            <div class="NB-sideoption-title">Related</div>\
+                            <div class="NB-sideoption-icon">&nbsp;</div>\
+                        </div>\
+                    <% } %>\
+                    <% if (show_sideoption_ask_ai) { %>\
+                        <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
+                            <div class="NB-sideoption-title">Ask AI</div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
+                        </div>\
+                    <% } %>\
+                </div>\
             </div>\
         </div>\
         <% if (inline_story_title) { %>\
@@ -836,6 +840,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_selected: function (model, selected, options) {
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        _.defer(_.bind(this.update_sideoptions_sticky_state, this));
         NEWSBLUR.app.taskbar_info.hide_stories_error();
 
         if (selected && options.scroll_to_comments) {
@@ -909,6 +914,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     watch_images_for_story_height: function () {
         this.model.on('change:images_loaded', _.bind(function () {
             this.resize_starred_tags();
+            this.update_sideoptions_sticky_state();
         }, this));
         var is_truncatable = this.is_truncatable();
 
@@ -926,7 +932,41 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             } else {
                 this.model.set('images_loaded', false);
             }
+            this.update_sideoptions_sticky_state();
         }, this));
+    },
+
+    update_sideoptions_sticky_state: function () {
+        var $sideoptions_container = this.$(".NB-feed-story-sideoptions-container");
+        if (!$sideoptions_container.length) return;
+
+        var $content_container = this.$(".NB-story-content-container");
+        this.$el.removeClass('NB-story-sideoptions-sticky');
+        $content_container.css('min-height', '');
+
+        var sticky_story_sideoptions = NEWSBLUR.assets.preference('sticky_story_sideoptions');
+        if (!NEWSBLUR.reader ||
+            !NEWSBLUR.reader.$s ||
+            NEWSBLUR.reader.flags.narrow_content ||
+            NEWSBLUR.assets.preference('story_button_placement') != 'right' ||
+            sticky_story_sideoptions === false ||
+            sticky_story_sideoptions === 'false') {
+            return;
+        }
+
+        var $sideoptions = this.$(".NB-feed-story-sideoptions");
+        if (!$content_container.length || !$sideoptions.length) return;
+
+        var top_margin = 24;
+        var bottom_margin = 42;
+        var sideoptions_height = $sideoptions.outerHeight(true);
+        var required_min_height = sideoptions_height + top_margin + bottom_margin;
+        var base_min_height = parseInt($content_container.css('min-height'), 10) || 0;
+        if (required_min_height > base_min_height) {
+            $content_container.css('min-height', Math.ceil(required_min_height) + 'px');
+        }
+
+        this.$el.addClass('NB-story-sideoptions-sticky');
     },
 
     expand_story: function (options) {
@@ -955,6 +995,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 clearInterval(this._fetch_interval);
                 NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 $wrapper.removeClass('NB-story-content-wrapper-height-truncated');
+                this.update_sideoptions_sticky_state();
             }, this)
         });
 
