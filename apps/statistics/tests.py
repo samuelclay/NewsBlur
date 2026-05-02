@@ -10,6 +10,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from apps.statistics.models import MStatistics
+from apps.statistics.rmcp_usage import RMCPUsage
 from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
@@ -247,3 +248,49 @@ class Test_RTrendingSubscription(TestCase):
 
         self.assertEqual(len(totals), 1)
         self.assertEqual(totals[0][1], 2)  # 2 subscriptions today
+
+
+class Test_RMCPUsage(TestCase):
+    """Tests for Redis-backed MCP usage metrics."""
+
+    def setUp(self):
+        self.r = RMCPUsage._get_redis()
+        self._delete_mcp_usage_keys()
+
+    def tearDown(self):
+        self._delete_mcp_usage_keys()
+
+    def _delete_mcp_usage_keys(self):
+        for key in self.r.scan_iter(match="mcp_usage:*"):
+            self.r.delete(key)
+
+    def test_record_counts_requests_and_unique_users(self):
+        RMCPUsage.record("1")
+        RMCPUsage.record("1")
+        RMCPUsage.record("2")
+        RMCPUsage.record()
+
+        daily = RMCPUsage.get_period_stats(days=1)
+        weekly = RMCPUsage.get_period_stats(days=7)
+        alltime = RMCPUsage.get_alltime_stats()
+
+        self.assertEqual(daily["requests"], 4)
+        self.assertEqual(daily["unique_users"], 2)
+        self.assertEqual(weekly["requests"], 4)
+        self.assertEqual(weekly["unique_users"], 2)
+        self.assertEqual(alltime["requests"], 4)
+        self.assertEqual(alltime["unique_users"], 2)
+
+    def test_weekly_unique_users_deduplicates_across_days(self):
+        RMCPUsage.record("1")
+        RMCPUsage.record("2")
+
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        yesterday_key = RMCPUsage._date_key(yesterday)
+        self.r.incrby(f"mcp_usage:{yesterday_key}:requests", 3)
+        self.r.sadd(f"mcp_usage:{yesterday_key}:users", "2", "3")
+
+        weekly = RMCPUsage.get_period_stats(days=7)
+
+        self.assertEqual(weekly["requests"], 5)
+        self.assertEqual(weekly["unique_users"], 3)

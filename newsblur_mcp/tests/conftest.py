@@ -3,6 +3,14 @@
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def disable_server_usage_metrics(monkeypatch):
+    """Keep MCP wrapper tests from writing usage counters to developer Redis."""
+    from newsblur_mcp import server
+
+    monkeypatch.setattr(server, "_record_usage", lambda user_id: None)
+
+
 @pytest.fixture
 def sample_story():
     return {
