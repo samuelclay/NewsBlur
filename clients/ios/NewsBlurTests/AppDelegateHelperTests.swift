@@ -321,6 +321,37 @@ final class AppDelegateHelperTests: XCTestCase {
     }
 }
 
+final class ActivityModulesLayoutTests: XCTestCase {
+    func test_interactionsModuleReusesTableAcrossLayoutPasses() {
+        let module = makeModule(named: "InteractionsModule")
+
+        module.layoutSubviews()
+        module.layoutSubviews()
+
+        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
+    }
+
+    func test_activityModuleReusesTableAcrossLayoutPasses() {
+        let module = makeModule(named: "ActivityModule")
+
+        module.layoutSubviews()
+        module.layoutSubviews()
+
+        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
+    }
+
+    private func makeModule(named className: String) -> UIView {
+        let type = NSClassFromString(className) as? UIView.Type
+            ?? NSClassFromString("NewsBlur.\(className)") as? UIView.Type
+        guard let type else {
+            XCTFail("Missing \(className)")
+            return UIView(frame: .zero)
+        }
+
+        return type.init(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+    }
+}
+
 private final class ClassifierToggleAppDelegate: NewsBlurAppDelegate {
     var savedClassifierParameters: [String: Any]?
 
