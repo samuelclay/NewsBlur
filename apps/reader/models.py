@@ -736,10 +736,14 @@ class UserSubscription(models.Model):
             pipe.expire(unread_ranked_stories_keys, 60 * 60)
             pipe.execute()
         else:
+            # For all-story river pages, read status is decided by checking whether
+            # each returned story hash is present in this unread companion list.
+            # The page offset belongs to the all-story stream, not the unread
+            # stream, so collect all unread hashes up to this page boundary.
             unread_feed_story_hashes = lazy_merge_story_hashes(
                 "unread",
-                offset,
-                limit,
+                0,
+                offset + limit,
                 cache_key=unread_ranked_stories_keys,
             )
 

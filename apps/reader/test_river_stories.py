@@ -261,6 +261,89 @@ class Test_RiverStories(TransactionTestCase):
                 f"Newest/{read_filter} should not return stale Redis hashes",
             )
 
+    def test_river_stories__all_filter_marks_older_unread_on_later_page(self):
+        """All-story river pages should mark returned stories unread using the all-story page."""
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self.client.login(username="conesus", password="test")
+
+        from django.utils import timezone as django_tz
+        import redis
+
+        feed_id = self.test_feeds[0]
+        feed = Feed.objects.get(pk=feed_id)
+        base_date = django_tz.now()
+        story_hashes = []
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.delete(f"F:{feed_id}")
+        r.delete(f"zF:{feed_id}")
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+        r.delete(f"RS:{self.user.pk}:{feed_id}")
+        r.delete(f"RS:{self.user.pk}")
+        ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, [feed_id], "")
+        r.delete(ranked_key)
+        r.delete(unread_key)
+
+        UserSubscription.objects.filter(user=self.user, feed=feed).update(
+            unread_count_neutral=1,
+            unread_count_positive=0,
+            unread_count_negative=0,
+            needs_unread_recalc=True,
+            mark_read_date=base_date - datetime.timedelta(days=10),
+        )
+
+        for i in range(4):
+            story_guid_base = f"river-all-read-status-{feed_id}-{i}"
+            story_guid = story_guid_base
+            suffix = 0
+            while MStory.objects(
+                story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
+            ).only("story_hash").first():
+                suffix += 1
+                story_guid = f"{story_guid_base}-{suffix}"
+
+            story_date = base_date - datetime.timedelta(minutes=i)
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=story_date,
+                story_title=f"All filter read status {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            story_hashes.append(story.story_hash)
+
+            timestamp = int(story_date.timestamp())
+            r.sadd(f"F:{feed_id}", story.story_hash)
+            r.zadd(f"zF:{feed_id}", {story.story_hash: timestamp})
+
+        for read_hash in story_hashes[:3]:
+            r.sadd(f"RS:{self.user.pk}", read_hash)
+            r.sadd(f"RS:{self.user.pk}:{feed_id}", read_hash)
+
+        usersub = UserSubscription.objects.get(user=self.user, feed=feed)
+        page_hashes, unread_hashes = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=[feed_id],
+            offset=3,
+            limit=3,
+            order="newest",
+            read_filter="all",
+            usersubs=[usersub],
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        page_hashes = [h.decode() if isinstance(h, bytes) else h for h in page_hashes]
+        unread_hashes = [h.decode() if isinstance(h, bytes) else h for h in unread_hashes]
+
+        self.assertIn(story_hashes[3], page_hashes)
+        self.assertNotIn(story_hashes[0], unread_hashes)
+        self.assertNotIn(story_hashes[1], unread_hashes)
+        self.assertNotIn(story_hashes[2], unread_hashes)
+        self.assertIn(story_hashes[3], unread_hashes)
+
     def test_river_stories__free_user_first_page_is_capped_at_three_stories(self):
         """Free users should only receive the first three river stories on page one."""
         self.client.login(username="conesus", password="test")
