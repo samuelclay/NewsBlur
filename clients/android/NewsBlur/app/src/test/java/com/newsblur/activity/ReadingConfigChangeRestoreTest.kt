@@ -57,4 +57,32 @@ class ReadingConfigChangeRestoreTest {
 
         assertNull(restore?.story)
     }
+
+    @Test
+    fun restoreStatePrefersVisibleStoryWhenPagerDataShiftedAfterMarkRead() {
+        val visibleStory =
+            Story().apply {
+                storyHash = "visible-read-story"
+                title = "Story still on screen"
+                read = true
+            }
+        val pagerStory =
+            Story().apply {
+                storyHash = "next-unread-story"
+                title = "Next story in shifted adapter"
+                read = false
+            }
+
+        val restore =
+            createReadingConfigChangeRestore(
+                visibleStory = visibleStory,
+                pagerStory = pagerStory,
+                fallbackStoryHash = null,
+                scrollPosRel = 0.42f,
+            )
+
+        assertEquals("visible-read-story", restore?.storyHash)
+        assertEquals("visible-read-story", restore?.story?.storyHash)
+        assertEquals(true, restore?.story?.read)
+    }
 }
