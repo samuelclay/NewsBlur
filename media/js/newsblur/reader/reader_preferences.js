@@ -923,6 +923,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Story side options placement'
                         ]),
+                        $.make('div', { className: 'NB-preference-options NB-preference-story-sideoption-sticky' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-sideoption-sticky', type: 'checkbox', name: 'sticky_story_sideoptions' }),
+                                $.make('label', { 'for': 'NB-preference-story-sideoption-sticky' }, 'Keep right-side buttons visible while reading')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label NB-preference-story-sideoption-sticky' }, [
+                            'Story side options'
+                        ]),
                         $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
                             var label_title = label.charAt(0).toUpperCase() + label.slice(1);
                             if (label === "ask_ai") {
@@ -1328,6 +1337,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=sticky_story_sideoptions]', $modal).prop('checked', !!NEWSBLUR.Preferences.sticky_story_sideoptions);
+        this.update_story_sideoption_sticky_preference();
         _.each(["email", "save", "train", "share", "related", "ask_ai"], function (sideoption) {
             var sideoption_name = "show_sideoption_" + sideoption;
             $('input#NB-preference-story-sideoption-' + sideoption, $modal).prop('checked', NEWSBLUR.Preferences[sideoption_name]);
@@ -1737,6 +1748,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.enable_save();
     },
 
+    update_story_sideoption_sticky_preference: function () {
+        var placement = $('input[name=story_button_placement]:checked', this.$modal).val();
+        $('.NB-preference-story-sideoption-sticky', this.$modal).toggle(placement == 'right');
+    },
+
     clear_overrides: function (type) {
         var $sublabel = $('.NB-clear-overrides-' + type, this.$modal);
         $sublabel.text('Resetting...').removeClass('NB-splash-link');
@@ -1828,6 +1844,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var self = this;
 
         $('input[type=radio],input[type=checkbox],select', this.$modal).bind('change', _.bind(this.enable_save, this));
+        $('input[name=story_button_placement]', this.$modal).bind('change', function () {
+            self.update_story_sideoption_sticky_preference();
+            self.resize_modal();
+        });
 
         // Days of unread slider change handler
         $('.NB-daysofunread-slider', this.$modal).bind('change', function () {

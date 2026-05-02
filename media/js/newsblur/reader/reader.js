@@ -580,6 +580,11 @@
                 .removeClass('NB-dashboard-columns-triple')
                 .toggleClass('NB-dashboard-columns-' + columns);
             this.$s.$body.toggleClass('NB-disable-social', this.model.preference('disable_social') === true || this.model.preference('disable_social') === 'true');
+            var sticky_story_sideoptions = this.model.preference('sticky_story_sideoptions');
+            this.$s.$body.toggleClass('NB-pref-sticky-story-sideoptions',
+                sticky_story_sideoptions !== false &&
+                sticky_story_sideoptions !== 'false' &&
+                this.model.preference('story_button_placement') == 'right');
 
             // Show Archive folder for staff users only
             if (NEWSBLUR.Globals.is_staff) {
