@@ -450,13 +450,17 @@ abstract class Reading :
         updateBackSwipeGestureExclusion()
     }
 
-    private fun captureReadingConfigChangeRestore(): ReadingConfigChangeRestore? =
-        createReadingConfigChangeRestore(
-            visibleStory = activeReadingStory(),
-            pagerStory = pagerReadingStory(),
+    private fun captureReadingConfigChangeRestore(): ReadingConfigChangeRestore? {
+        val activeStory = activeReadingStory()
+        val pagerStory = pagerReadingStory()
+        logReaderRestoreMismatch("capture", activeStory, pagerStory)
+        return createReadingConfigChangeRestore(
+            visibleStory = activeStory,
+            pagerStory = pagerStory,
             fallbackStoryHash = storyHash,
             scrollPosRel = readingFragment?.prepareForConfigurationChange(),
         )
+    }
 
     private fun currentReadingStory(): Story? = activeReadingStory() ?: pagerReadingStory()
 
@@ -608,11 +612,14 @@ abstract class Reading :
         lastBatchFirstUnreadIndex = stories.indexOfFirst { !it.read }
         storyCounts = stories.size
 
+        val activeStory = activeReadingStory()
+        val pagerStory = pagerReadingStory()
+        logReaderRestoreMismatch("setStoryData", activeStory, pagerStory)
         logReaderRestore(
             "setStoryData load=${batch.loadId} raw=${batch.stories.size} merged=${stories.size} " +
                 "target=$storyHash targetInRaw=${storyHash?.let { target -> batch.stories.any { it.storyHash == target } }} " +
-                "restored=${storyDebug(restoredCurrentStory)} active=${storyDebug(activeReadingStory())} " +
-                "pager=${storyDebug(pagerReadingStory())} pagerIndex=${pager?.currentItem ?: -1} " +
+                "restored=${storyDebug(restoredCurrentStory)} active=${storyDebug(activeStory)} " +
+                "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentItem ?: -1} " +
                 "first=[${storiesDebug(stories)}]",
         )
         com.newsblur.util.Log
@@ -1534,6 +1541,23 @@ abstract class Reading :
     private fun logReaderRestore(message: String) {
         com.newsblur.util.Log
             .d(this.javaClass.name, "reader_restore $message")
+    }
+
+    private fun logReaderRestoreMismatch(
+        phase: String,
+        activeStory: Story?,
+        pagerStory: Story?,
+    ) {
+        val activeHash = activeStory?.storyHash
+        val pagerHash = pagerStory?.storyHash
+        if (activeHash.isNullOrBlank() || pagerHash.isNullOrBlank() || activeHash == pagerHash) return
+
+        logReaderRestore(
+            "mismatch phase=$phase active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
+                "storyHash=$storyHash restored=${storyDebug(restoredCurrentStory)} " +
+                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1} " +
+                "mark=$markStoryReadBehavior loadNext=${prefsRepo.loadNextOnMarkRead()} fs=${feedSetDebug()}",
+        )
     }
 
     private fun restoreDebug(restore: ReadingConfigChangeRestore?): String =
