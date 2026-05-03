@@ -237,6 +237,7 @@ def select_briefing_stories(
         # Intelligence score (10%): user's trained classifiers, weighted by match type
         intelligence_score = 0.0
         classifier_matches = []
+        raw_score = 0
         if story:
             story_dict = {
                 "story_feed_id": story.story_feed_id,
@@ -290,14 +291,18 @@ def select_briefing_stories(
                 "trending_norm": trending_norm,
                 "infrequent_boost": infrequent_boost,
                 "classifier_matches": classifier_matches,
+                "raw_classifier_score": raw_score,
                 "feed_id": feed_id,
             }
         )
 
     scored.sort(key=lambda x: x["score"], reverse=True)
 
-    # Filter out stories with negative intelligence scores (user hid them)
-    scored = [s for s in scored if s["score"] >= 0]
+    # scoring.py: Hard-exclude super-disliked stories (raw classifier score <= -2)
+    # regardless of trending or affinity signals — matches river/feed behavior where
+    # a super-downvote hides the story. Regular dislikes (-1) only soft-penalize via
+    # intelligence_score so a strongly-trending story can still surface.
+    scored = [s for s in scored if s["raw_classifier_score"] > -2 and s["score"] >= 0]
 
     unread_scored = [s for s in scored if not s["is_read"]]
     if not include_read and len(unread_scored) >= 3:
