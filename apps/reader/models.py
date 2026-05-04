@@ -538,6 +538,88 @@ class UserSubscription(models.Model):
         return ranked_stories_key, unread_ranked_stories_key
 
     @classmethod
+    def unread_story_hashes_for_story_hashes(cls, user_id, story_hashes, usersubs=None, cutoff_date=None):
+        """
+        Return the subset of provided story hashes that are currently unread.
+
+        This is used by all-story river pages, where read status is needed only
+        for the returned page. Avoid building a full unread companion river.
+        """
+        if not story_hashes:
+            return []
+
+        story_hash_feed_ids = []
+        feed_ids = set()
+        for story_hash in story_hashes:
+            if isinstance(story_hash, bytes):
+                story_hash = story_hash.decode()
+            if not story_hash:
+                continue
+            feed_id, _ = MStory.split_story_hash(story_hash)
+            if feed_id is None:
+                continue
+            feed_id = int(feed_id)
+            story_hash_feed_ids.append((story_hash, feed_id))
+            feed_ids.add(feed_id)
+
+        if not story_hash_feed_ids:
+            return []
+
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        user = User.objects.get(pk=user_id)
+        if not cutoff_date:
+            cutoff_date = user.profile.unread_cutoff
+        if not usersubs:
+            usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter="all")
+
+        usersubs_by_feed = {sub.feed_id: sub for sub in usersubs if sub.feed_id in feed_ids}
+        folder_settings = None
+        feed_folder_mapping = None
+        if user.profile.is_archive and usersubs_by_feed:
+            folder_settings = {}
+            for setting in MFolderAutoMarkRead.get_folder_settings_for_user(user_id):
+                folder_settings[setting.folder_title] = setting.auto_mark_read_days
+            feed_folder_mapping = UserSubscriptionFolders.get_feed_folder_mapping(user)
+
+        read_dates = {}
+        for feed_id, us in usersubs_by_feed.items():
+            effective_cutoff = cutoff_date
+            if user.profile.is_archive:
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(
+                    folder_settings, feed_folder_mapping, user_profile=user.profile
+                )
+                if auto_mark_read_cutoff:
+                    effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
+            read_dates[feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
+
+        pipeline = r.pipeline()
+        for story_hash, feed_id in story_hash_feed_ids:
+            pipeline.sismember(f"RS:{user_id}", story_hash)
+            pipeline.sismember(f"RS:{user_id}:{feed_id}", story_hash)
+            pipeline.zscore(f"uU:{user_id}:{feed_id}", story_hash)
+            pipeline.zscore(f"zF:{feed_id}", story_hash)
+        results = pipeline.execute()
+
+        unread_story_hashes = []
+        for i, (story_hash, feed_id) in enumerate(story_hash_feed_ids):
+            read_in_global = results[i * 4]
+            read_in_feed = results[i * 4 + 1]
+            manual_unread_score = results[i * 4 + 2]
+            story_score = results[i * 4 + 3]
+
+            if manual_unread_score is not None:
+                unread_story_hashes.append(story_hash)
+                continue
+            if read_in_global or read_in_feed:
+                continue
+            if story_score is None or feed_id not in read_dates:
+                continue
+            if story_score >= read_dates[feed_id]:
+                unread_story_hashes.append(story_hash)
+
+        return unread_story_hashes
+
+    @classmethod
     def feed_stories(
         cls,
         user_id,
@@ -576,16 +658,18 @@ class UserSubscription(models.Model):
             user_id, feed_ids, cache_prefix
         )
         stories_cached = rt.exists(ranked_stories_keys)
-        unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached:
             story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
             if story_hashes:
                 if read_filter == "unread":
                     unread_story_hashes = story_hashes
-                elif unreads_cached:
-                    unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset + limit)
                 else:
-                    unread_story_hashes = []
+                    unread_story_hashes = cls.unread_story_hashes_for_story_hashes(
+                        user_id,
+                        story_hashes,
+                        usersubs=usersubs,
+                        cutoff_date=cutoff_date,
+                    )
                 return story_hashes, unread_story_hashes
             # Cache exists but doesn't cover this offset — fall through to
             # extend via lazy merge (don't delete, it has valid earlier pages)
@@ -736,15 +820,11 @@ class UserSubscription(models.Model):
             pipe.expire(unread_ranked_stories_keys, 60 * 60)
             pipe.execute()
         else:
-            # For all-story river pages, read status is decided by checking whether
-            # each returned story hash is present in this unread companion list.
-            # The page offset belongs to the all-story stream, not the unread
-            # stream, so collect all unread hashes up to this page boundary.
-            unread_feed_story_hashes = lazy_merge_story_hashes(
-                "unread",
-                0,
-                offset + limit,
-                cache_key=unread_ranked_stories_keys,
+            unread_feed_story_hashes = cls.unread_story_hashes_for_story_hashes(
+                user_id,
+                story_hashes,
+                usersubs=usersubs,
+                cutoff_date=cutoff_date,
             )
 
         rt.expire(ranked_stories_keys, 60 * 60)
