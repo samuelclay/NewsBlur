@@ -344,6 +344,63 @@ class Test_RiverStories(TransactionTestCase):
         self.assertNotIn(story_hashes[2], unread_hashes)
         self.assertIn(story_hashes[3], unread_hashes)
 
+        cached_page_hashes, cached_unread_hashes = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=[feed_id],
+            offset=3,
+            limit=3,
+            order="newest",
+            read_filter="all",
+            usersubs=[usersub],
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        cached_page_hashes = [h.decode() if isinstance(h, bytes) else h for h in cached_page_hashes]
+        cached_unread_hashes = [h.decode() if isinstance(h, bytes) else h for h in cached_unread_hashes]
+
+        self.assertIn(story_hashes[3], cached_page_hashes)
+        self.assertIn(story_hashes[3], cached_unread_hashes)
+
+    def test_feed_stories__all_filter_does_not_build_unread_river_cache(self):
+        """
+        All-story river pages only need read status for returned stories.
+
+        Building a full unread companion river on every all-story page causes
+        large accounts to repeatedly rebuild per-feed unread caches.
+        """
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+
+        usersubs = list(
+            UserSubscription.subs_for_feeds(self.user.pk, feed_ids=self.test_feeds, read_filter="all")
+        )
+        feed_ids = [sub.feed_id for sub in usersubs]
+
+        with patch(
+            "apps.reader.models.UserSubscription.story_hashes",
+            wraps=UserSubscription.story_hashes,
+        ) as story_hashes:
+            page_hashes, unread_hashes = UserSubscription.feed_stories(
+                user_id=self.user.pk,
+                feed_ids=feed_ids,
+                offset=3,
+                limit=3,
+                order="newest",
+                read_filter="all",
+                usersubs=usersubs,
+                cutoff_date=self.user.profile.unread_cutoff,
+            )
+
+        unread_calls = [
+            call for call in story_hashes.call_args_list if call.kwargs.get("read_filter") == "unread"
+        ]
+
+        self.assertTrue(page_hashes)
+        self.assertIsNotNone(unread_hashes)
+        self.assertFalse(
+            unread_calls,
+            f"All-story read-status checks should not build unread river caches: {unread_calls}",
+        )
+
     def test_river_stories__free_user_first_page_is_capped_at_three_stories(self):
         """Free users should only receive the first three river stories on page one."""
         self.client.login(username="conesus", password="test")
