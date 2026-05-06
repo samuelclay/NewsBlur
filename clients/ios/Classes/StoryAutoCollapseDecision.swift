@@ -30,6 +30,11 @@ public enum StoryAutoCollapseBehavior: String {
     case twoDisplaceSecondary
 }
 
+@objc public enum SplitCollapseTopColumn: Int {
+    case primary
+    case secondary
+}
+
 @objc public enum FullscreenSidebarPresentation: Int {
     case fullscreen
     case storyTitles
@@ -127,6 +132,28 @@ public enum StoryAutoCollapseBehavior: String {
         } else {
             return .displace
         }
+    }
+}
+
+@objcMembers public final class SplitCollapseColumnDecision: NSObject {
+    public class func topColumn(
+        hasFeed: Bool,
+        hasStory: Bool,
+        proposedTopColumn _: SplitCollapseTopColumn
+    ) -> SplitCollapseTopColumn {
+        if hasFeed || hasStory {
+            return .secondary
+        }
+
+        return .primary
+    }
+
+    public class func shouldResetControllers(
+        compactStateChanged: Bool,
+        hasFeed: Bool,
+        hasStory: Bool
+    ) -> Bool {
+        compactStateChanged && !hasFeed && !hasStory
     }
 }
 
