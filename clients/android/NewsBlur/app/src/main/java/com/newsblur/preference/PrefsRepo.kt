@@ -115,9 +115,6 @@ class PrefsRepo(
     }
 
     fun sendLogEmail(context: Context) {
-        val f =
-            com.newsblur.util.Log
-                .getLogfile() ?: return
         val debugInfo =
             """
             Tell us a bit about your problem:
@@ -126,6 +123,14 @@ class PrefsRepo(
             
             ${getDebugInfo(context)}
             """.trimIndent()
+        com.newsblur.util.Log
+            .i(
+                PrefsRepo::class.java.name,
+                "creating Android log email for ${NbApplication.getVersion(context)} (${BuildConfig.VERSION_CODE})",
+            )
+        val f =
+            com.newsblur.util.Log
+                .getLogfile() ?: return
         val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "*/*"
