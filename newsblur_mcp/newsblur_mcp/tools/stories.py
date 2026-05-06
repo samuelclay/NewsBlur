@@ -9,6 +9,7 @@ from newsblur_mcp.transforms import html_to_text, paginate, transform_story
 async def _get_stories(
     client: NewsBlurClient,
     feed_ids: list[int] | None = None,
+    feed_id: int | None = None,
     folder: str | None = None,
     read_filter: str = "unread",
     include_hidden: bool = False,
@@ -20,8 +21,13 @@ async def _get_stories(
     """Load stories from feeds, folders, or all subscriptions."""
     limit = min(limit, MAX_STORIES_PER_PAGE)
 
-    resolved_feed_ids = feed_ids
-    if folder and not feed_ids:
+    resolved_feed_ids = list(feed_ids or [])
+    if feed_id and feed_id not in resolved_feed_ids:
+        resolved_feed_ids.append(feed_id)
+    if not resolved_feed_ids:
+        resolved_feed_ids = None
+
+    if folder and not resolved_feed_ids:
         feeds_resp = await client.get_feeds()
         flat_folders = feeds_resp.get("flat_folders", {})
         resolved_feed_ids = flat_folders.get(folder, [])
@@ -50,6 +56,7 @@ async def _get_stories(
 @mcp.tool()
 async def newsblur_get_stories(
     feed_ids: list[int] | None = None,
+    feed_id: int | None = None,
     folder: str | None = None,
     read_filter: str = "unread",
     include_hidden: bool = False,
@@ -65,6 +72,7 @@ async def newsblur_get_stories(
 
     Args:
         feed_ids: Specific feed IDs to load stories from. Omit for all feeds.
+        feed_id: Single feed ID to load stories from. Alias for feed_ids.
         folder: Folder name to load all stories from (e.g. "Tech").
         read_filter: Filter stories by read/intelligence state. Options:
             "unread" (default) - only unread stories,
@@ -80,7 +88,7 @@ async def newsblur_get_stories(
     client = get_client()
     try:
         return await _get_stories(
-            client, feed_ids, folder, read_filter, include_hidden, query, order, page, limit
+            client, feed_ids, feed_id, folder, read_filter, include_hidden, query, order, page, limit
         )
     finally:
         await client.close()

@@ -260,6 +260,20 @@ function applyClassifierHighlights(classifiers) {
         var container = document.getElementById('NB-story');
         if (!container) return;
 
+        // Strip any score icons left over from a previous run. Mark.js's unmark() only
+        // unwraps the <mark> element — icons that were inserted inside it become
+        // orphaned siblings in the text flow, and the next mark() would append a
+        // fresh icon on top of them, stacking multiple thumbs for the same match.
+        if (container.querySelectorAll) {
+            var staleIcons = container.querySelectorAll('.NB-score-icon, .NB-score-icon-double');
+            for (var i = 0; i < staleIcons.length; i++) {
+                var icon = staleIcons[i];
+                if (icon && icon.parentNode) {
+                    icon.parentNode.removeChild(icon);
+                }
+            }
+        }
+
         var instance = new Mark(container);
         instance.unmark({
             done: function () {

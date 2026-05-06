@@ -501,7 +501,14 @@ def paypal_webhooks(request):
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
         user = find_paypal_user(data, custom_field="custom_id")
         if user:
-            user.profile.store_paypal_sub_id(data["resource"]["id"])
+            # Don't promote a SUSPENDED/CANCELLED sub to primary. When upgrading
+            # (e.g. premium -> archive), suspending the old sub fires UPDATED for it,
+            # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
+            resource_status = data["resource"].get("status")
+            is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+            user.profile.store_paypal_sub_id(
+                data["resource"]["id"], skip_save_primary=not is_active_status
+            )
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
             #     user.profile.activate_premium()
@@ -509,8 +516,16 @@ def paypal_webhooks(request):
             #     user.profile.activate_archive()
             # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             #     user.profile.activate_pro()
-            # Only cancel Stripe if user hasn't already switched back to Stripe
-            if user.profile.active_provider != "stripe":
+            # Only cancel Stripe when a new PayPal sub is freshly activated. UPDATED
+            # events also fire for SUSPENDED/CANCELLED subs and for the old sub when
+            # swapping plans; those must not nuke a fresh Stripe sub. The previous
+            # guard (active_provider != "stripe") backfired for long-term Stripe
+            # users switching to PayPal — their active_provider was already "stripe",
+            # so the cancel was skipped and the old Stripe sub kept auto-renewing.
+            is_fresh_activation = (
+                data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
+            )
+            if is_fresh_activation:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()
                 user.profile.cancel_premium_stripe()
@@ -1135,6 +1150,33 @@ def setup_usage_billing(request):
         logging.user(request, "~BR~FRStripe usage billing prices not configured")
         return HttpResponseRedirect(reverse("index"))
 
+    # Guard against duplicate subscriptions. Meter events are customer-scoped,
+    # so any extra active sub on the same classifier prices silently double-bills
+    # the user every cycle. Bail out to the billing portal instead of creating
+    # a second subscription.
+    if request.user.profile.stripe_id:
+        classifier_price_ids = {
+            settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
+            settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
+        }
+        try:
+            existing = stripe.Subscription.list(
+                customer=request.user.profile.stripe_id, status="active", limit=20
+            )
+            for sub in existing.data:
+                for item in sub["items"].data:
+                    if item.price and item.price.id in classifier_price_ids:
+                        logging.user(
+                            request,
+                            "~BR~FRUsage billing already active; redirecting to portal",
+                        )
+                        return HttpResponseRedirect(
+                            "https://%s%s?next=payments&usage_billing=already_active"
+                            % (domain, reverse("index"))
+                        )
+        except stripe.error.StripeError as e:
+            logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
+
     session_dict = {
         "line_items": [
             {
@@ -1691,7 +1733,8 @@ def count_classifiers(request):
     counts = {
         "title": MClassifierTitle.objects.filter(user_id=user_id, is_regex__ne=True).count(),
         "title_regex": MClassifierTitle.objects.filter(user_id=user_id, is_regex=True).count(),
-        "author": MClassifierAuthor.objects.filter(user_id=user_id).count(),
+        "author": MClassifierAuthor.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "author_regex": MClassifierAuthor.objects.filter(user_id=user_id, is_regex=True).count(),
         "tag": MClassifierTag.objects.filter(user_id=user_id).count(),
         "text": MClassifierText.objects.filter(user_id=user_id, is_regex__ne=True).count(),
         "text_regex": MClassifierText.objects.filter(user_id=user_id, is_regex=True).count(),
@@ -1712,7 +1755,8 @@ def delete_classifiers(request):
     classifier_map = {
         "title": (MClassifierTitle, {"is_regex__ne": True}),
         "title_regex": (MClassifierTitle, {"is_regex": True}),
-        "author": (MClassifierAuthor, {}),
+        "author": (MClassifierAuthor, {"is_regex__ne": True}),
+        "author_regex": (MClassifierAuthor, {"is_regex": True}),
         "tag": (MClassifierTag, {}),
         "text": (MClassifierText, {"is_regex__ne": True}),
         "text_regex": (MClassifierText, {"is_regex": True}),

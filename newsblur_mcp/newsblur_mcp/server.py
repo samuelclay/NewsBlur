@@ -8,6 +8,7 @@ import functools
 import logging
 import time
 
+import httpx
 import sentry_sdk
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
@@ -15,7 +16,10 @@ from fastmcp.server.dependencies import get_http_request
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
 from newsblur_mcp.log import log_request
+from newsblur_mcp.metrics import record_mcp_usage
 from newsblur_mcp.settings import MCP_HOST, MCP_PORT, SENTRY_DSN
+
+logger = logging.getLogger(__name__)
 
 
 def _before_send(event, hint):
@@ -50,12 +54,13 @@ mcp = FastMCP(
 
 
 def _get_user_info():
-    """Extract username and premium indicator from the authenticated request."""
+    """Extract user ID, username, and premium indicator from the authenticated request."""
     try:
         request = get_http_request()
         user = request.scope.get("user")
         if user and hasattr(user, "access_token"):
             claims = user.access_token.claims or {}
+            user_id = claims.get("sub", "")
             username = claims.get("username", "")
             if claims.get("is_archive"):
                 premium = "^"
@@ -63,10 +68,17 @@ def _get_user_info():
                 premium = "*"
             else:
                 premium = ""
-            return username, premium
+            return user_id, username, premium
     except Exception:
         pass
-    return "", ""
+    return "", "", ""
+
+
+def _record_usage(user_id):
+    try:
+        record_mcp_usage(user_id)
+    except Exception:
+        logger.warning("Unable to record MCP usage metric", exc_info=True)
 
 
 # Patch mcp.tool to wrap every tool function with request logging
@@ -76,16 +88,32 @@ _original_tool = mcp.tool
 def _logged_tool(*args, **kwargs):
     original_decorator = _original_tool(*args, **kwargs)
 
+    def http_status_error_payload(error: httpx.HTTPStatusError) -> dict:
+        response = error.response
+        status_code = response.status_code
+        reason = response.reason_phrase
+        path = error.request.url.path
+        return {
+            "code": "newsblur_api_error",
+            "error": f"NewsBlur API returned {status_code} {reason} for {path}",
+            "status_code": status_code,
+        }
+
     def wrapper(func):
         @functools.wraps(func)
         async def logged(*fargs, **fkwargs):
             start = time.time()
-            username, premium = _get_user_info()
+            user_id, username, premium = _get_user_info()
             try:
                 return await func(*fargs, **fkwargs)
+            except ArchiveRequiredError as e:
+                return {"code": "archive_required", "error": str(e)}
+            except httpx.HTTPStatusError as e:
+                return http_status_error_payload(e)
             finally:
                 elapsed = time.time() - start
                 log_request(username, premium, elapsed, func.__name__)
+                _record_usage(user_id or username)
 
         return original_decorator(logged)
 
@@ -93,6 +121,30 @@ def _logged_tool(*args, **kwargs):
 
 
 mcp.tool = _logged_tool
+
+
+# Patch mcp.resource to count read-only resource usage as MCP usage too.
+_original_resource = mcp.resource
+
+
+def _logged_resource(*args, **kwargs):
+    original_decorator = _original_resource(*args, **kwargs)
+
+    def wrapper(func):
+        @functools.wraps(func)
+        async def logged(*fargs, **fkwargs):
+            user_id, username, _ = _get_user_info()
+            try:
+                return await func(*fargs, **fkwargs)
+            finally:
+                _record_usage(user_id or username)
+
+        return original_decorator(logged)
+
+    return wrapper
+
+
+mcp.resource = _logged_resource
 
 
 def get_client() -> NewsBlurClient:

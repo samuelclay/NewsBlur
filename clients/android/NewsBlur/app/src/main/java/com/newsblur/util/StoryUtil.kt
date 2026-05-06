@@ -2,11 +2,11 @@ package com.newsblur.util
 
 import android.content.res.Configuration
 import android.text.TextUtils
+import com.google.gson.Gson
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
@@ -80,7 +80,7 @@ object StoryUtil {
                 sb.append("<script src=\"storyHighlights.js\"></script>")
             }
             sb.append("<script src=\"classifierHighlights.js\"></script>")
-            if (classifier != null && classifier.hasHighlights()) {
+            if (classifier != null && classifier.hasStoryTextHighlights()) {
                 sb.append("<script>document.addEventListener('DOMContentLoaded',function(){NB_applyClassifiers(")
                 sb.append(classifierToJson(classifier))
                 sb.append(");});</script>")
@@ -91,21 +91,18 @@ object StoryUtil {
         }
 
     fun classifierToJson(classifier: Classifier): String {
-        val json = JSONObject()
+        val payload = linkedMapOf<String, Map<String, Int>>()
+
         fun putMap(name: String, map: Map<String, Int>) {
             if (map.isEmpty()) return
-            val obj = JSONObject()
-            for ((key, value) in map) obj.put(key, value)
-            json.put(name, obj)
+            payload[name] = LinkedHashMap(map)
         }
-        putMap("authors", classifier.authors)
-        putMap("tags", classifier.tags)
-        putMap("titles", classifier.title)
-        putMap("title_regex", classifier.titleRegex)
+
         putMap("texts", classifier.texts)
         putMap("text_regex", classifier.textRegex)
-        putMap("urls", classifier.urls)
-        putMap("url_regex", classifier.urlRegex)
-        return json.toString()
+
+        // Android story body highlighting should match the web reader: only text classifiers apply
+        // inside story content. Title, author, URL, and tag classifiers are shown elsewhere.
+        return Gson().toJson(payload)
     }
 }

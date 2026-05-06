@@ -119,8 +119,8 @@ def save_classifier(request):
             "remove_dislike_" + content_type: (0, False),
             "remove_super_dislike_" + content_type: (0, False),
         }
-        # Add regex classifier for title, text, and url types
-        if content_type in ("title", "text", "url"):
+        # Add regex classifier for title, text, url, and author types
+        if content_type in ("title", "text", "url", "author"):
             classifiers.update(
                 {
                     "like_" + content_type + "_regex": (1, True),
@@ -162,8 +162,8 @@ def save_classifier(request):
                     if content_type in ("author", "tag", "title", "text", "url"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
-                        # Add is_regex for title, text, and url classifiers
-                        if content_type in ("title", "text", "url"):
+                        # Add is_regex for title, text, url, and author classifiers
+                        if content_type in ("title", "text", "url", "author"):
                             classifier_dict["is_regex"] = is_regex
                     elif content_type == "feed":
                         if not post_content.startswith("social:"):
@@ -600,7 +600,7 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
     }
 
     # Types that support regex matching
-    regex_types = ("title", "text", "url")
+    regex_types = ("title", "text", "url", "author")
 
     classifiers_config = {
         "like_": 1,

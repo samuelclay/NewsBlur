@@ -6313,6 +6313,10 @@ body {
     background-color: white;
 }
 
+.NB-feed-story.NB-story-sideoptions-sticky .NB-story-content-container {
+    overflow: visible;
+}
+
 .NB-narrow-content .NB-story-content-container {
     min-height: 108px;
 }
@@ -6965,15 +6969,36 @@ body {
 .NB-feed-story-sideoptions-container {
     position: absolute;
     right: 12px;
-    bottom: 0;
-    margin-bottom: 32px;
-    text-align: center;
+    bottom: 42px;
+    margin: 0;
     width: 142px;
     line-height: 12px;
+    z-index: 1;
+}
+
+.NB-feed-story-sideoptions {
+    text-align: center;
+    width: 142px;
     transition: width 0.36s ease-out;
 }
 
-.NB-story-starred .NB-feed-story-sideoptions-container {
+.NB-pref-sticky-story-sideoptions:not(.NB-narrow-content) .NB-feed-story.NB-story-sideoptions-sticky .NB-feed-story-sideoptions-container {
+    top: 0;
+    bottom: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.NB-pref-sticky-story-sideoptions:not(.NB-narrow-content) .NB-feed-story.NB-story-sideoptions-sticky .NB-feed-story-sideoptions {
+    position: sticky;
+    bottom: 42px;
+    margin: 24px 0 42px;
+}
+
+.NB-story-starred .NB-feed-story-sideoptions-container,
+.NB-story-starred .NB-feed-story-sideoptions {
     width: 164px;
 }
 
@@ -6990,7 +7015,11 @@ body {
     max-width: 700px;
 }
 
-.NB-pref-story-position-center .NB-feed-story-sideoptions-container {
+.NB-narrow-content .NB-feed-story-sideoptions {
+    width: auto;
+}
+
+.NB-narrow-content.NB-pref-story-position-center .NB-feed-story-sideoptions-container {
     margin-left: auto;
     margin-right: auto;
     max-width: 700px;
@@ -7004,7 +7033,7 @@ body {
     max-width: 700px;
 }
 
-.NB-pref-story-position-right .NB-feed-story-sideoptions-container {
+.NB-narrow-content.NB-pref-story-position-right .NB-feed-story-sideoptions-container {
     margin-left: auto;
     max-width: 700px;
     padding: 0 0 0 28px;
@@ -7321,6 +7350,11 @@ body {
     background: transparent url('/media/embed/reader/readwise.png') no-repeat center center;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-wallabag {
+    background: transparent url('/media/embed/reader/wallabag.svg') no-repeat center center;
+    background-size: 16px;
+}
+
 /* ================================ */
 /* = Sideoption - Sharing Icons   = */
 /* ================================ */
@@ -7435,6 +7469,10 @@ body {
 
 .NB-sideoption-sharing-readwise .NB-sideoption-icon {
     background-image: url('/media/embed/reader/readwise.png');
+}
+
+.NB-sideoption-sharing-wallabag .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/wallabag.svg');
 }
 
 /* ===================== */
@@ -17259,6 +17297,12 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(186deg) saturate(18);
 }
 
+.NB-menu-manage .NB-menu-manage-faq .NB-menu-manage-image {
+    background: transparent url("/media/embed/icons/nouns/dialog-faq.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(228deg) saturate(12);
+}
+
 .NB-menu-manage .NB-menu-manage-statistics .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/dialog-statistics.svg") no-repeat center center;
     background-size: 18px;
@@ -17552,6 +17596,10 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/reader/readwise.png');
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-wallabag {
+    background-image: url('/media/embed/reader/wallabag.svg');
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
     opacity: .2;
 }
@@ -17588,7 +17636,8 @@ h5.NB-classifier-section-header {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readwise .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readwise .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-wallabag .NB-menu-manage-thirdparty-email {
     opacity: .2;
 }
 
@@ -17705,6 +17754,10 @@ h5.NB-classifier-section-header {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readwise .NB-menu-manage-thirdparty-readwise {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-wallabag .NB-menu-manage-thirdparty-wallabag {
     opacity: 1;
 }
 
@@ -25009,6 +25062,11 @@ h5.NB-classifier-section-header {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readwise] {
     background: transparent url('/media/embed/reader/readwise.png') no-repeat 0 0;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-wallabag] {
+    background: transparent url('/media/embed/reader/wallabag.svg') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal-preferences .NB-preference .NB-preference-story-sideoption label {

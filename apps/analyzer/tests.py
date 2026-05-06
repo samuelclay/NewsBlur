@@ -12,6 +12,8 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    ScopedClassifiers,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -888,6 +890,257 @@ class Test_Classifiers(TransactionTestCase):
         self.assertEqual(classifiers["urls"]["/technology/"], 1)
         self.assertEqual(classifiers["url_regex"][r"/article-\d+"], -1)
 
+    # ================================
+    # = Author Regex Classifier Tests =
+    # ================================
+
+    def test_create_classifier_author_exact(self):
+        """Test creating an exact author classifier (is_regex=False)"""
+        classifier = MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="John Gruber",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+        self.assertEqual(classifier.author, "John Gruber")
+        self.assertEqual(classifier.score, 1)
+        self.assertEqual(classifier.is_regex, False)
+
+    def test_create_classifier_author_regex(self):
+        """Test creating a regex author classifier (is_regex=True)"""
+        classifier = MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"^John\s",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+        self.assertEqual(classifier.author, r"^John\s")
+        self.assertEqual(classifier.is_regex, True)
+
+    def test_apply_classifier_author_regex_match(self):
+        """Test that regex author classifier matches patterns"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"gruber|siracusa",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_authors": "John Gruber",
+        }
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_author_regex(classifiers, story)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_author_regex_no_match(self):
+        """Test that regex author classifier returns 0 when pattern doesn't match"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"^Bob\b",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_authors": "John Gruber",
+        }
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_author_regex(classifiers, story)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_author_regex_dislike(self):
+        """Test that regex author classifier with super-dislike score wins"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"sponsored|ad by",
+            score=-2,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_authors": "Sponsored Partner",
+        }
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_author_regex(classifiers, story)
+
+        self.assertEqual(score, -2)
+
+    def test_apply_classifier_authors_skips_regex(self):
+        """apply_classifier_authors should ignore regex classifiers (they're scored separately)"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r".*Gruber.*",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_authors": "John Gruber",
+        }
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        # Non-regex scoring path should not match a regex-only classifier
+        score = apply_classifier_authors(classifiers, story)
+        self.assertEqual(score, 0)
+
+    def test_save_classifier_author_regex_endpoint(self):
+        """Test saving a regex author classifier via the API endpoint"""
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": self.feed.pk, "like_author_regex": [r"gruber|siracusa"]},
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 1)
+        self.assertEqual(classifiers[0].author, r"gruber|siracusa")
+        self.assertEqual(classifiers[0].score, 1)
+        self.assertEqual(classifiers[0].is_regex, True)
+
+    def test_save_classifier_author_regex_invalid_pattern_rejected(self):
+        """Invalid regex patterns should not be saved."""
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": self.feed.pk, "like_author_regex": ["[invalid(regex"]},
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 0)
+
+    def test_remove_classifier_author_regex_endpoint(self):
+        """Test removing an author regex classifier via the API endpoint"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"gruber",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": self.feed.pk, "remove_like_author_regex": [r"gruber"]},
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 0)
+
+    def test_get_classifiers_includes_author_regex(self):
+        """Test that get_classifiers_for_user splits authors and author_regex"""
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="John Gruber",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"sponsored",
+            score=-2,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
+
+        self.assertIn("authors", classifiers)
+        self.assertIn("author_regex", classifiers)
+        self.assertEqual(classifiers["authors"]["John Gruber"], 1)
+        self.assertEqual(classifiers["author_regex"][r"sponsored"], -2)
+        # The non-regex dict should not contain the regex entry
+        self.assertNotIn("sponsored", classifiers["authors"])
+
+    def test_compute_story_score_uses_author_regex_for_pro(self):
+        """compute_story_score should include author_regex score for Pro users"""
+        classifier = MClassifierAuthor(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author=r"sponsored",
+            score=-2,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_authors": "Sponsored Partner",
+            "story_title": "",
+            "story_content": "",
+            "story_tags": [],
+        }
+
+        # Pro user: regex applies
+        pro_score = compute_story_score(
+            story,
+            classifier_titles=[],
+            classifier_authors=[classifier],
+            classifier_tags=[],
+            classifier_feeds=[],
+            user_is_pro=True,
+        )
+        self.assertEqual(pro_score, -2)
+
+        # Non-Pro user: regex is skipped
+        free_score = compute_story_score(
+            story,
+            classifier_titles=[],
+            classifier_authors=[classifier],
+            classifier_tags=[],
+            classifier_feeds=[],
+            user_is_pro=False,
+        )
+        self.assertEqual(free_score, 0)
+
     # ================================================
     # = Global/Folder Scope Isolation Tests           =
     # ================================================
@@ -1296,3 +1549,173 @@ class Test_SuperDownvote(TransactionTestCase):
             user_id=self.user.pk, feed_id=self.feed.pk, title="Breaking"
         )
         self.assertEqual(classifier.score, -2)
+
+
+class Test_ScopedClassifiersParity(TransactionTestCase):
+    """ScopedClassifiers is the fast path for per-story scoring — pre-buckets
+    classifiers by (scope, feed_id) once so the inner loop only walks classifiers
+    that apply to the current story's feed. These tests pin that the indexed
+    path scores identically to the flat-list path across all three scopes
+    (feed, folder, global). Motivated by Sentry TASK-317 (caspian, 200k+
+    classifiers blowing the briefing soft_time_limit).
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="scopedtest", password="testpass", email="scoped@test.com"
+        )
+        self.feed = Feed.objects.get(pk=1)
+        self.other_feed = Feed.objects.create(
+            feed_address="http://scoped.example.com/feed",
+            feed_link="http://scoped.example.com",
+            feed_title="Scoped Other",
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=False)
+        UserSubscription.objects.create(user=self.user, feed=self.other_feed, is_trained=False)
+        self.story_self = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Breaking news about Python",
+            "story_content": "<p>Python is great</p>",
+            "story_authors": "Alice",
+            "story_tags": ["python", "tech"],
+            "story_permalink": "https://example.com/story",
+        }
+        self.story_other = dict(self.story_self, story_feed_id=self.other_feed.pk)
+
+    def tearDown(self):
+        MClassifierTitle.objects(user_id=self.user.pk).delete()
+        MClassifierText.objects(user_id=self.user.pk).delete()
+        MClassifierAuthor.objects(user_id=self.user.pk).delete()
+        MClassifierTag.objects(user_id=self.user.pk).delete()
+        MClassifierUrl.objects(user_id=self.user.pk).delete()
+        MClassifierFeed.objects(user_id=self.user.pk).delete()
+
+    def _make_title(self, title, score, feed_id=None, scope="feed", folder_name=""):
+        return MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id if feed_id is not None else self.feed.pk,
+            social_user_id=0,
+            title=title,
+            score=score,
+            scope=scope,
+            folder_name=folder_name,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def _make_tag(self, tag, score, feed_id=None, scope="feed", folder_name=""):
+        return MClassifierTag.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id if feed_id is not None else self.feed.pk,
+            social_user_id=0,
+            tag=tag,
+            score=score,
+            scope=scope,
+            folder_name=folder_name,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def test_feed_scoped_classifier_indexed_only_for_its_feed(self):
+        """Feed-scoped classifiers only apply to stories from their own feed."""
+        on_self = self._make_title("Breaking", score=1, feed_id=self.feed.pk)
+        on_other = self._make_title("Breaking", score=-1, feed_id=self.other_feed.pk)
+
+        flat = [on_self, on_other]
+        indexed = ScopedClassifiers(flat)
+
+        self.assertEqual(
+            apply_classifier_titles(flat, self.story_self),
+            apply_classifier_titles(indexed, self.story_self),
+        )
+        self.assertEqual(
+            apply_classifier_titles(flat, self.story_other),
+            apply_classifier_titles(indexed, self.story_other),
+        )
+        self.assertEqual(apply_classifier_titles(indexed, self.story_self), 1)
+        self.assertEqual(apply_classifier_titles(indexed, self.story_other), -1)
+
+    def test_global_classifier_applies_to_all_feeds(self):
+        """Globally scoped classifiers match regardless of feed."""
+        glb = self._make_tag("python", score=1, feed_id=0, scope="global")
+
+        flat = [glb]
+        indexed = ScopedClassifiers(flat)
+
+        self.assertEqual(apply_classifier_tags(flat, self.story_self), 1)
+        self.assertEqual(apply_classifier_tags(indexed, self.story_self), 1)
+        self.assertEqual(apply_classifier_tags(flat, self.story_other), 1)
+        self.assertEqual(apply_classifier_tags(indexed, self.story_other), 1)
+
+    def test_folder_classifier_requires_folder_feed_ids(self):
+        """Folder-scoped classifiers are dropped when folder_feed_ids is not provided
+        (matches existing classifier_matches_story_feed behavior) and resolved when it is."""
+        fc = self._make_title("Breaking", score=1, feed_id=0, scope="folder", folder_name="Tech")
+
+        # No folder_feed_ids — dropped both ways.
+        self.assertEqual(apply_classifier_titles([fc], self.story_self), 0)
+        self.assertEqual(apply_classifier_titles(ScopedClassifiers([fc]), self.story_self), 0)
+
+        folder_feed_ids = {"Tech": {self.feed.pk}}
+        self.assertEqual(
+            apply_classifier_titles([fc], self.story_self, folder_feed_ids=folder_feed_ids),
+            apply_classifier_titles(
+                ScopedClassifiers([fc], folder_feed_ids), self.story_self
+            ),
+        )
+        # Folder does not contain other_feed — no match there.
+        self.assertEqual(
+            apply_classifier_titles(ScopedClassifiers([fc], folder_feed_ids), self.story_other),
+            0,
+        )
+
+    def test_compute_story_score_parity_across_scopes(self):
+        """compute_story_score returns identical results whether the caller
+        passes flat classifier lists or ScopedClassifiers indexes."""
+        # Three scopes, three types, two feeds — covers the bucket/global/folder branches.
+        t_feed = self._make_title("Breaking", score=1, feed_id=self.feed.pk)
+        t_global = self._make_title("Python", score=1, feed_id=0, scope="global")
+        t_folder = self._make_title("news", score=-1, feed_id=0, scope="folder", folder_name="Tech")
+        tag_feed = self._make_tag("python", score=1, feed_id=self.feed.pk)
+        tag_other_feed = self._make_tag("tech", score=-1, feed_id=self.other_feed.pk)
+        author_global = MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            author="Alice",
+            score=1,
+            scope="global",
+            creation_date=datetime.datetime.now(),
+        )
+
+        titles_flat = [t_feed, t_global, t_folder]
+        tags_flat = [tag_feed, tag_other_feed]
+        authors_flat = [author_global]
+        folder_feed_ids = {"Tech": {self.feed.pk}}
+
+        titles_indexed = ScopedClassifiers(titles_flat, folder_feed_ids)
+        tags_indexed = ScopedClassifiers(tags_flat, folder_feed_ids)
+        authors_indexed = ScopedClassifiers(authors_flat, folder_feed_ids)
+
+        for story in (self.story_self, self.story_other):
+            flat_score = compute_story_score(
+                story,
+                classifier_titles=titles_flat,
+                classifier_authors=authors_flat,
+                classifier_tags=tags_flat,
+                classifier_feeds=[],
+                folder_feed_ids=folder_feed_ids,
+            )
+            indexed_score = compute_story_score(
+                story,
+                classifier_titles=titles_indexed,
+                classifier_authors=authors_indexed,
+                classifier_tags=tags_indexed,
+                classifier_feeds=[],
+                folder_feed_ids=folder_feed_ids,
+            )
+            self.assertEqual(flat_score, indexed_score, msg=f"mismatch for feed={story['story_feed_id']}")

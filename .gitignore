@@ -18,6 +18,7 @@ certbot.conf
 **/*.perspectivev*
 .vscode/*
 .env
+.claude/scheduled_tasks.lock
 task_env.py
 app_env.py
 data/

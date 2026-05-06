@@ -13,6 +13,7 @@ from apps.analyzer.models import (
     MClassifierFeed,
     MClassifierTag,
     MClassifierTitle,
+    ScopedClassifiers,
     compute_story_score,
 )
 from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
@@ -176,10 +177,16 @@ def select_briefing_stories(
     max_trending_count = max(trending_count_map.values()) if trending_count_map else 1
     max_feed_opens = max(feed_opens_map.values()) if feed_opens_map else 1
 
+    # scoring.py: Bucket classifiers by (scope, feed_id) once so the per-story
+    # scoring loop only walks classifiers that apply to that story's feed.
+    # Heavy users can have 100k+ classifiers and the naive per-story loop was
+    # eating the entire 110s soft_time_limit (Sentry TASK-317).
+    # classifier_feeds is matched by feed_id directly in apply_classifier_feeds,
+    # so it doesn't go through the ScopedClassifiers path.
     classifier_feeds = list(MClassifierFeed.objects(user_id=user_id))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user_id))
-    classifier_tags = list(MClassifierTag.objects(user_id=user_id))
-    classifier_titles = list(MClassifierTitle.objects(user_id=user_id))
+    classifier_authors = ScopedClassifiers(list(MClassifierAuthor.objects(user_id=user_id)))
+    classifier_tags = ScopedClassifiers(list(MClassifierTag.objects(user_id=user_id)))
+    classifier_titles = ScopedClassifiers(list(MClassifierTitle.objects(user_id=user_id)))
 
     feed_title_map = {}
     for sub in user_subs:
@@ -230,6 +237,7 @@ def select_briefing_stories(
         # Intelligence score (10%): user's trained classifiers, weighted by match type
         intelligence_score = 0.0
         classifier_matches = []
+        raw_score = 0
         if story:
             story_dict = {
                 "story_feed_id": story.story_feed_id,
@@ -283,14 +291,18 @@ def select_briefing_stories(
                 "trending_norm": trending_norm,
                 "infrequent_boost": infrequent_boost,
                 "classifier_matches": classifier_matches,
+                "raw_classifier_score": raw_score,
                 "feed_id": feed_id,
             }
         )
 
     scored.sort(key=lambda x: x["score"], reverse=True)
 
-    # Filter out stories with negative intelligence scores (user hid them)
-    scored = [s for s in scored if s["score"] >= 0]
+    # scoring.py: Hard-exclude super-disliked stories (raw classifier score <= -2)
+    # regardless of trending or affinity signals — matches river/feed behavior where
+    # a super-downvote hides the story. Regular dislikes (-1) only soft-penalize via
+    # intelligence_score so a strongly-trending story can still surface.
+    scored = [s for s in scored if s["raw_classifier_score"] > -2 and s["score"] >= 0]
 
     unread_scored = [s for s in scored if not s["is_read"]]
     if not include_read and len(unread_scored) >= 3:
@@ -531,13 +543,16 @@ def _get_classifier_matches(
             feed_title = feed_title_map.get(cf.feed_id, "")
             if feed_title:
                 matches.append("feed:%s" % feed_title)
-    for ca in classifier_authors:
+    # scoring.py: Use the per-feed bucket so this loop matches the O(k) shape
+    # of the score computation above. Classifier lists are ScopedClassifiers
+    # constructed in select_briefing_stories.
+    for ca in classifier_authors.for_feed(story.story_feed_id):
         if ca.author and ca.score > 0 and story.story_author_name and ca.author in story.story_author_name:
             matches.append("author:%s" % ca.author)
-    for ct in classifier_tags:
+    for ct in classifier_tags.for_feed(story.story_feed_id):
         if ct.tag and ct.score > 0 and ct.tag in (story.story_tags or []):
             matches.append("tag:%s" % ct.tag)
-    for cti in classifier_titles:
+    for cti in classifier_titles.for_feed(story.story_feed_id):
         if cti.title and cti.score > 0 and cti.title.lower() in (story.story_title or "").lower():
             matches.append("title:%s" % cti.title)
     return matches

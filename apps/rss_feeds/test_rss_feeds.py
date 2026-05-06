@@ -883,3 +883,51 @@ class Test_StoryImageInjection(TestCase):
 
         self.assertNotIn("hero.jpg", rendered["story_content"])
         self.assertIn("<p>No inline image.</p>", rendered["story_content"])
+
+
+class Test_PreProcessStoryContentSelection(TestCase):
+    """Verify pre_process_story picks the real article body when feedparser
+    returns multiple entry.content items (e.g. media:description + content:encoded)."""
+
+    def _parse_first_entry(self, xml):
+        import feedparser
+
+        fp = feedparser.parse(xml)
+        return fp, fp.entries[0]
+
+    def test_picks_html_content_over_plain_media_description(self):
+        # Mirrors the 404media / Ghost feed pattern: media:content carries a
+        # plain-text media:description, and the real body is in content:encoded.
+        # Without the fix, content[0] (the short plain title) loses to <description>
+        # and the long article body is dropped.
+        from utils.story_functions import pre_process_story
+
+        long_body = "<p>" + ("Real article body. " * 200) + "</p>"
+        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
+  <channel>
+    <title>Test Feed</title>
+    <link>https://example.com/</link>
+    <description>Test</description>
+    <item>
+      <title>A Mysterious Golden Orb</title>
+      <description><![CDATA[The discovery of a bizarre golden object two miles under Alaskan waters flummoxed scientists.]]></description>
+      <link>https://example.com/orb/</link>
+      <guid isPermaLink="false">orb-1</guid>
+      <pubDate>Sat, 25 Apr 2026 13:00:48 GMT</pubDate>
+      <media:content url="https://example.com/img.jpg" medium="image">
+        <media:description type="plain">A Mysterious Golden Orb</media:description>
+      </media:content>
+      <content:encoded><![CDATA[{long_body}]]></content:encoded>
+    </item>
+  </channel>
+</rss>
+"""
+        fp, entry = self._parse_first_entry(xml)
+        # Sanity check: feedparser should expose both content items.
+        self.assertEqual(len(entry.get("content") or []), 2)
+
+        out = pre_process_story(entry, fp.encoding)
+        self.assertIn("Real article body.", out["story_content"])
+        self.assertGreater(len(out["story_content"]), 1000)

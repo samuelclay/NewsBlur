@@ -257,7 +257,17 @@ def pre_process_story(entry, encoding):
     if not summary and "summary_detail" in entry:
         summary = entry["summary_detail"].get("value", "")
     if entry.get("content"):
-        content = entry["content"][0].get("value", "")
+        # Some feeds (e.g. Ghost-published 404media) emit a media:description
+        # alongside content:encoded, which feedparser merges into entry.content.
+        # Prefer text/html so we don't drop the real article body for a short
+        # plain-text caption; fall back to the longest value if no html exists.
+        html_items = [c for c in entry["content"] if c.get("type") == "text/html"]
+        chosen = (
+            max(html_items, key=lambda c: len(c.get("value", "") or ""))
+            if html_items
+            else max(entry["content"], key=lambda c: len(c.get("value", "") or ""))
+        )
+        content = chosen.get("value", "") or ""
     if len(content) > len(summary):
         entry["story_content"] = content.strip()
     else:

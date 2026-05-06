@@ -96,18 +96,22 @@ typealias AnyDictionary = [AnyHashable : Any]
               let activeAuthors = appDelegate.storiesCollection.activePopularAuthors as? [[AnyHashable]] else {
             return []
         }
-        
+
         var userAuthors = [Training]()
-        
+
         for (someName, someScore) in classifierAuthors {
             if let name = someName as? String, let score = someScore as? Int, !activeAuthors.contains(where: { $0[0] == someName }) {
                 userAuthors.append(Training(name: name, count: 0, score: Score(rawValue: score) ?? .none))
             }
         }
-        
+
         let otherAuthors: [Training] = activeAuthors.map { Training(name: $0[0] as! String, count: $0[1] as! Int, score: Score(rawValue: classifierAuthors[$0[0] as! String] as? Int ?? 0) ?? .none) }
-        
+
         return userAuthors.sorted() + otherAuthors
+    }()
+
+    lazy var authorRegex: [Training] = {
+        return trainings(for: "author_regex")
     }()
     
     lazy var tags: [Training] = {

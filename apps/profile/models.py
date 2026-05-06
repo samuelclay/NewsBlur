@@ -627,17 +627,23 @@ class Profile(models.Model):
 
         logging.user(
             self.user,
-            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s)"
-            % (self.is_premium, self.is_archive, self.is_pro),
+            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s, trial=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
 
-        # Atomically check premium to prevent duplicate processing from concurrent webhooks
+        # Capture trial status before the atomic update clears it
+        was_trial = self.is_premium_trial is True
+
+        # Atomically convert to paid premium and dedupe concurrent webhooks. Skip
+        # only when the user is *already paid premium* (is_premium and not on
+        # trial) — trial users have is_premium=True too, so the dedupe must look
+        # at the trial flag or trial→paid upgrades silently no-op.
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().get(pk=self.pk)
-            if fresh.is_premium:
-                logging.user(self.user, "~FMactivate_premium: already premium, skipping")
+            if fresh.is_premium and not fresh.is_premium_trial:
+                logging.user(self.user, "~FMactivate_premium: already paid premium, skipping")
                 return True
-            Profile.objects.filter(pk=self.pk).update(is_premium=True)
+            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_premium_trial=False)
 
         if self.is_archive or self.is_pro:
             logging.user(
@@ -647,11 +653,8 @@ class Profile(models.Model):
             )
             return True
 
-        # Capture trial status before clearing it
-        was_trial = self.is_premium_trial
-
-        # Clear trial status when converting to paid premium
-        if self.is_premium_trial:
+        # Mirror the atomic update onto the in-memory instance
+        if was_trial:
             self.is_premium_trial = False
             logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
@@ -701,7 +704,13 @@ class Profile(models.Model):
 
         UserSubscription.queue_new_feeds(self.user)
 
-        # self.setup_premium_history() # Let's not call this unnecessarily
+        # Trial conversions need an immediate history sync so premium_expire flips
+        # off the trial date and premium_renewal goes True. The downstream
+        # charge.succeeded webhook will sync free→premium signups for us, but for
+        # trial→paid we can't wait — the user paid expecting their account to
+        # reflect the new period right away.
+        if was_trial:
+            self.setup_premium_history()
 
         if never_expire:
             self.premium_expire = None
@@ -1181,7 +1190,9 @@ class Profile(models.Model):
         logging.user(self.user, f"~FBGoogle Play purchase token ~SBadded~SN: product={product_id}")
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
-        # Deduplicate payments: keep only one per provider per identifier, then per day
+        # Deduplicate payments: keep only one per provider per identifier, then per day.
+        # Refund rows are never deduped — a charge and its same-day refund are distinct
+        # events and the refund must remain visible in the user's history.
         for provider in [
             "paypal",
             "stripe",
@@ -1197,6 +1208,7 @@ class Profile(models.Model):
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
                 .exclude(payment_identifier__in=["missing", "in-progress"])
+                .exclude(refunded=True)
                 .order_by("payment_date")
             ):
                 if payment.payment_identifier in seen_identifiers:
@@ -1207,9 +1219,9 @@ class Profile(models.Model):
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
             for payment in list(
-                PaymentHistory.objects.filter(user=self.user, payment_provider=provider).order_by(
-                    "payment_date"
-                )
+                PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
+                .exclude(refunded=True)
+                .order_by("payment_date")
             ):
                 payment_day = payment.payment_date.date()
                 if payment_day in seen_dates:
@@ -1229,12 +1241,17 @@ class Profile(models.Model):
         active_plan = None
         premium_renewal = False
         active_provider = None
+        # Track whether PayPal has a non-suspended primary so the Stripe loop
+        # below doesn't silently override it when both providers have rows.
+        paypal_has_active_primary = False
 
         # Find modern Paypal payments
         self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
-            seen_payment_history = PaymentHistory.objects.filter(user=self.user, payment_provider="paypal")
+            seen_payment_history = PaymentHistory.objects.filter(
+                user=self.user, payment_provider="paypal"
+            ).exclude(refunded=True)
             deleted_paypal_payments = 0
             for payment in list(seen_payment_history):
                 if payment.payment_date.date() in seen_payments:
@@ -1274,6 +1291,8 @@ class Profile(models.Model):
                             "APPROVED",
                             "APPROVAL_PENDING",
                         ]
+                        if is_active:
+                            paypal_has_active_primary = True
                         if is_active or not active_plan:
                             active_plan = paypal_subscription.get("plan_id", None)
                             if not active_plan:
@@ -1345,7 +1364,9 @@ class Profile(models.Model):
             self.retrieve_stripe_ids()
 
             seen_payments = set()
-            existing_stripe_history = PaymentHistory.objects.filter(user=self.user, payment_provider="stripe")
+            existing_stripe_history = PaymentHistory.objects.filter(
+                user=self.user, payment_provider="stripe"
+            ).exclude(refunded=True)
             deleted_stripe_payments = 0
             for payment in list(existing_stripe_history):
                 if payment.payment_date.date() in seen_payments:
@@ -1376,6 +1397,12 @@ class Profile(models.Model):
                         if items and items.data:
                             plan = items.data[0].plan
                     if plan and plan.active:
+                        # An active PayPal primary wins — don't let a stale Stripe
+                        # sub (e.g. one that failed to cancel during a switch to
+                        # PayPal) override active_plan/active_provider and mask
+                        # the real tier.
+                        if paypal_has_active_primary:
+                            break
                         active_plan = plan.id
                         active_provider = "stripe"
                         if not subscription.cancel_at:
@@ -1418,8 +1445,10 @@ class Profile(models.Model):
                 logging.user(self.user, "~BY~SN~FWFree lifetime premium")
                 free_lifetime_premium = True
                 continue
-            # Skip refund records (negative amounts)
-            if payment.payment_amount < 0:
+            # Skip refund records (negative amounts) and refunded payments so
+            # a charge that was later refunded doesn't continue to extend the
+            # user's premium expiration.
+            if payment.payment_amount < 0 or payment.refunded:
                 continue
 
             # Only update exiration if payment in the last year
@@ -1855,6 +1884,7 @@ class Profile(models.Model):
                 payment_date=datetime.datetime.now(),
                 payment_amount=-int(round(refund_amount)),
                 payment_provider="paypal",
+                payment_identifier=response.get("id"),
                 refunded=True,
             )
             logging.user(self.user, "~FRRefunding paypal payment: $%s/%s" % (refund_amount, refunded))
@@ -2151,7 +2181,15 @@ class Profile(models.Model):
             return None
 
     def retrieve_stripe_ids(self):
-        if not self.stripe_id:
+        if not self.stripe_id or not self.user_id:
+            return
+
+        user_email = User.objects.filter(pk=self.user_id).values_list("email", flat=True).first()
+        if not user_email:
+            logging.debug(
+                " ---> Couldn't sync Stripe IDs for deleted user_id=%s stripe_id=%s"
+                % (self.user_id, self.stripe_id)
+            )
             return
 
         stripe.api_key = settings.STRIPE_SECRET
@@ -2159,14 +2197,22 @@ class Profile(models.Model):
         stripe_email = stripe_customer.email
 
         stripe_ids = set()
-        for email in set([stripe_email, self.user.email]):
+        for email in {stripe_email, user_email}:
+            if not email:
+                continue
             customers = stripe.Customer.list(email=email)
             for customer in customers:
                 stripe_ids.add(customer.stripe_id)
 
-        self.user.stripe_ids.all().delete()
-        for stripe_id in stripe_ids:
-            self.user.stripe_ids.create(stripe_id=stripe_id)
+        try:
+            StripeIds.objects.filter(user_id=self.user_id).delete()
+            for stripe_id in stripe_ids:
+                StripeIds.objects.create(user_id=self.user_id, stripe_id=stripe_id)
+        except IntegrityError:
+            logging.debug(
+                " ---> User disappeared while syncing Stripe IDs for user_id=%s stripe_id=%s"
+                % (self.user_id, self.stripe_id)
+            )
 
     def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
@@ -3189,12 +3235,18 @@ class Profile(models.Model):
         )
 
     def grace_period_email_sent(self, force=False):
+        # Suppress duplicate grace emails for the *current* expiration cycle only.
+        # Window is anchored to premium_expire (or now if missing) minus 180 days,
+        # so a grace email sent for a previous year's expiration won't block the
+        # email for this year's expiration, while still leaving plenty of margin
+        # against same-cycle duplicates. apps/profile/models.py
         emails_sent = MSentEmail.objects.filter(
             receiver_user_id=self.user.pk, email_type="premium_expire_grace"
         )
-        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        anchor = self.premium_expire or datetime.datetime.now()
+        cycle_start = anchor - datetime.timedelta(days=180)
         for email in emails_sent:
-            if email.date_sent > day_ago and not force:
+            if email.date_sent > cycle_start and not force:
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return True
 
@@ -3517,8 +3569,10 @@ def paypal_signup(sender, **kwargs):
     if paypal_sub_id:
         user.profile.store_paypal_sub_id(paypal_sub_id)
     user.profile.setup_premium_history()
-    if user.profile.active_provider != "stripe":
-        user.profile.cancel_premium_stripe()
+    # Always cancel any existing Stripe sub when a new PayPal sub starts — the
+    # previous guard `active_provider != "stripe"` incorrectly preserved old
+    # Stripe subs for long-term Stripe customers switching to PayPal.
+    user.profile.cancel_premium_stripe()
 
 
 valid_ipn_received.connect(paypal_signup)
@@ -3792,9 +3846,21 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
         if active:
-            # Prorate refund on old PayPal subscription before activating new tier
-            if profile.paypal_sub_id and profile.active_provider == "paypal":
-                profile.refund_prorated_paypal_for_provider_switch()
+            # If the user's current primary is PayPal, this UPDATED event is
+            # likely a stale auto-renewal of an old Stripe sub (the one that
+            # should have been cancelled when they switched to PayPal). Don't
+            # nuke their PayPal sub or flip tiers on a mere renewal — just
+            # sync history and bail. Real provider switches go through
+            # stripe_signup (customer.subscription.created), which correctly
+            # handles the switch.
+            if profile.active_provider == "paypal" and profile.paypal_sub_id:
+                logging.user(
+                    profile.user,
+                    "~FYStripe update ignored — user is on PayPal (%s); syncing history only"
+                    % profile.paypal_sub_id,
+                )
+                profile.setup_premium_history()
+                return
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price("archive"):

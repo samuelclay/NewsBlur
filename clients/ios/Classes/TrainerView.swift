@@ -116,16 +116,36 @@ struct TrainerView: View {
                 })
 
                 Section(content: {
-                    WrappingHStack(models: authors) { author in
-                        classifierRow(
-                            capsule: TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
-                                handleScopeChange(classifierType: "author", name: author.name, score: author.score, defaultScope: author.scope, defaultFolderName: author.folderName, newScope: newScope)
-                            }),
-                            score: author.score,
-                            onTap: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
-                            onDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .dislike ? 0 : -1, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
-                            onSuperDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .superDislike ? 0 : -2, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) }
-                        )
+                    VStack(alignment: .leading) {
+                        WrappingHStack(models: authors) { author in
+                            classifierRow(
+                                capsule: TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count, showsScope: true, scope: scopeBinding(for: "author", name: author.name, default: author.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                    handleScopeChange(classifierType: "author", name: author.name, score: author.score, defaultScope: author.scope, defaultFolderName: author.folderName, newScope: newScope)
+                                }),
+                                score: author.score,
+                                onTap: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
+                                onDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .dislike ? 0 : -1, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) },
+                                onSuperDislike: { cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id, score: author.score == .superDislike ? 0 : -2, scope: currentScope(for: "author", name: author.name, default: author.scope).rawValue, folderName: currentFolderName(for: "author", name: author.name, default: author.scope, defaultFolderName: author.folderName)) }
+                            )
+                        }
+
+                        if !authorRegexes.isEmpty {
+                            WrappingHStack(models: authorRegexes) { item in
+                                classifierRow(
+                                    capsule: TrainerCapsule(score: item.score, header: "Author", value: item.name, count: item.count, isRegex: true, showsScope: true, scope: scopeBinding(for: "author_regex", name: item.name, default: item.scope), isPremiumArchive: isArchive, onScopeChanged: { newScope in
+                                        handleScopeChange(classifierType: "author_regex", name: item.name, score: item.score, defaultScope: item.scope, defaultFolderName: item.folderName, newScope: newScope)
+                                    }),
+                                    score: item.score,
+                                    onTap: { cache.appDelegate.toggleAuthorRegexClassifier(item.name, feedId: feed?.id, scope: currentScope(for: "author_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "author_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onDislike: { cache.appDelegate.toggleAuthorRegexClassifier(item.name, feedId: feed?.id, score: item.score == .dislike ? 0 : -1, scope: currentScope(for: "author_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "author_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) },
+                                    onSuperDislike: { cache.appDelegate.toggleAuthorRegexClassifier(item.name, feedId: feed?.id, score: item.score == .superDislike ? 0 : -2, scope: currentScope(for: "author_regex", name: item.name, default: item.scope).rawValue, folderName: currentFolderName(for: "author_regex", name: item.name, default: item.scope, defaultFolderName: item.folderName)) }
+                                )
+                            }
+                        }
+
+                        TrainerRegexInput(sectionType: .author, story: cache.selected, feedId: feed?.id, appDelegate: cache.appDelegate, fontBuilder: font, cache: cache)
+
+                        Spacer().frame(height: 8)
                     }
                     .listRowBackground(rowBackground)
                 }, header: {
@@ -587,6 +607,14 @@ struct TrainerView: View {
             return cache.selected?.authors ?? []
         } else {
             return feed?.authors ?? []
+        }
+    }
+
+    var authorRegexes: [Feed.Training] {
+        if interaction.isStoryTrainer {
+            return cache.selected?.authorRegexes ?? []
+        } else {
+            return feed?.authorRegex ?? []
         }
     }
 

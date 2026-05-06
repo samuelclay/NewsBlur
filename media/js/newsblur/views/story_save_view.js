@@ -185,6 +185,9 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                     $sideoption.removeClass('NB-active');
                     $save_wrapper.removeClass('NB-active');
                 }
+                if (this.sideoptions_view && this.sideoptions_view.story_view) {
+                    this.sideoptions_view.story_view.update_sideoptions_sticky_state();
+                }
             }, this)
         });
 

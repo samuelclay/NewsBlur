@@ -13,6 +13,7 @@ from apps.analyzer.models import (
     MClassifierFeed,
     MClassifierTag,
     MClassifierTitle,
+    ScopedClassifiers,
 )
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
@@ -862,7 +863,14 @@ class Test_Scoring(BriefingTestCase):
         cf = MClassifierFeed(user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0, score=1)
         cf.save()
         feed_title_map = {self.feed.pk: "Test Feed 1"}
-        matches = _get_classifier_matches(self.stories[0], [cf], [], [], [], feed_title_map)
+        matches = _get_classifier_matches(
+            self.stories[0],
+            [cf],
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            feed_title_map,
+        )
         self.assertIn("feed:Test Feed 1", matches)
 
     def test_classifier_matches_multiple(self):
@@ -873,7 +881,14 @@ class Test_Scoring(BriefingTestCase):
         )
         ca.save()
         feed_title_map = {self.feed.pk: "Test Feed 1"}
-        matches = _get_classifier_matches(self.stories[0], [cf], [ca], [], [], feed_title_map)
+        matches = _get_classifier_matches(
+            self.stories[0],
+            [cf],
+            ScopedClassifiers([ca]),
+            ScopedClassifiers([]),
+            ScopedClassifiers([]),
+            feed_title_map,
+        )
         self.assertIn("feed:Test Feed 1", matches)
         self.assertIn("author:Alice", matches)
 
@@ -1118,6 +1133,97 @@ class Test_Scoring(BriefingTestCase):
         for s in result:
             story = MStory.objects.get(story_hash=s["story_hash"])
             self.assertEqual(story.story_feed_id, self.feed.pk)
+
+    @patch("apps.briefing.scoring._get_feed_trending_times")
+    @patch("apps.briefing.scoring._get_trending_scores")
+    @patch("apps.briefing.scoring.redis.Redis")
+    def test_select_excludes_super_disliked_title(
+        self, mock_redis_cls, mock_trending, mock_feed_trending
+    ):
+        """Stories matching a super-disliked title classifier (score <= -2) must be
+        excluded from the briefing even when their trending signals are high."""
+        from apps.briefing.scoring import select_briefing_stories
+
+        # tests.py: stories[0] and stories[3] both contain "Tech" in their titles.
+        # Use a global-scope classifier so the super-dislike applies across feeds.
+        super_disliked = MClassifierTitle(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="Tech",
+            score=-2,
+            scope="global",
+        )
+        super_disliked.save()
+
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+
+        all_hashes = [s.story_hash.encode() for s in self.stories]
+        mock_pipe.execute.side_effect = [
+            [all_hashes[:3], all_hashes[3:]],
+            [False] * 6,
+        ]
+        # tests.py: stories[0] (super-disliked) has the strongest trending signal,
+        # which the buggy code would let through.
+        mock_trending.return_value = {
+            self.stories[0].story_hash: 10000,
+            self.stories[1].story_hash: 50,
+            self.stories[2].story_hash: 50,
+            self.stories[3].story_hash: 10000,
+            self.stories[4].story_hash: 50,
+            self.stories[5].story_hash: 50,
+        }
+        mock_feed_trending.return_value = {}
+
+        result = select_briefing_stories(self.user.pk, self.period_start, self.now, max_stories=10)
+
+        result_hashes = {s["story_hash"] for s in result}
+        # tests.py: Both "Breaking News About Tech" stories (feed1 + feed2) must be excluded
+        self.assertNotIn(self.stories[0].story_hash, result_hashes)
+        self.assertNotIn(self.stories[3].story_hash, result_hashes)
+        # tests.py: Other stories should still be present
+        self.assertGreater(len(result), 0)
+
+    @patch("apps.briefing.scoring._get_feed_trending_times")
+    @patch("apps.briefing.scoring._get_trending_scores")
+    @patch("apps.briefing.scoring.redis.Redis")
+    def test_select_keeps_dislike_with_strong_signals(
+        self, mock_redis_cls, mock_trending, mock_feed_trending
+    ):
+        """Regular dislikes (score == -1) penalize but should not hard-exclude when
+        other signals are very strong — only super-dislikes hard-exclude."""
+        from apps.briefing.scoring import select_briefing_stories
+
+        # tests.py: Regular dislike (-1), not super-dislike
+        disliked = MClassifierTitle(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="Tech",
+            score=-1,
+        )
+        disliked.save()
+
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+
+        all_hashes = [s.story_hash.encode() for s in self.stories[:1]]
+        mock_pipe.execute.side_effect = [
+            [all_hashes, []],
+            [False],
+        ]
+        # tests.py: Strong trending signal so total score stays positive despite -0.1 penalty
+        mock_trending.return_value = {self.stories[0].story_hash: 10000}
+        mock_feed_trending.return_value = {}
+
+        result = select_briefing_stories(self.user.pk, self.period_start, self.now, max_stories=5)
+        result_hashes = {s["story_hash"] for s in result}
+        self.assertIn(self.stories[0].story_hash, result_hashes)
 
     @patch("apps.briefing.scoring.redis.Redis")
     @patch("apps.briefing.scoring._get_trending_scores")

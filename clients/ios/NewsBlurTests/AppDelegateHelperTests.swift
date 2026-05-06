@@ -6,16 +6,20 @@ final class AppDelegateHelperTests: XCTestCase {
     private let defaults = UserDefaults.standard
     private let keys = [
         "default_scroll_read_filter",
-        "override_scroll_read_filter",
         "default_mark_read_filter",
-        "override_mark_read_filter",
-        "feed:1:scroll_read_filter",
-        "feed:1:mark_read_filter",
-        "feed:2:scroll_read_filter",
-        "feed:2:mark_read_filter",
+        "release",
         "custom_domain",
     ]
     private var savedValues: [String: Any] = [:]
+    private var bundleID: String { Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? "" }
+
+    /// Read a user-set value from the persistent domain, excluding registered
+    /// defaults that Settings.bundle adds at launch. Tests that assert "the
+    /// migration did not write" must use this; `defaults.object(forKey:)` also
+    /// returns the registered `scroll` default.
+    private func userValue(_ key: String) -> Any? {
+        return defaults.persistentDomain(forName: bundleID)?[key]
+    }
 
     override func setUp() {
         super.setUp()
@@ -40,29 +44,67 @@ final class AppDelegateHelperTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_upgradeSettings_migratesGlobalAndPerFeedScrollPreferences() {
-        defaults.set(true, forKey: "default_scroll_read_filter")
-        defaults.set(true, forKey: "override_scroll_read_filter")
-        defaults.set(false, forKey: "feed:1:scroll_read_filter")
-        defaults.set(true, forKey: "feed:2:scroll_read_filter")
+    func test_upgradeSettings_migratesLegacyScrollFalseToSelection() {
+        defaults.set(false, forKey: "default_scroll_read_filter")
 
         AppDelegateHelper.shared.upgradeSettings(from: 153)
 
-        XCTAssertEqual(defaults.string(forKey: "default_mark_read_filter"), "scroll")
-        XCTAssertTrue(defaults.bool(forKey: "override_mark_read_filter"))
-        XCTAssertEqual(defaults.string(forKey: "feed:1:mark_read_filter"), "selection")
-        XCTAssertEqual(defaults.string(forKey: "feed:2:mark_read_filter"), "scroll")
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
     }
 
-    func test_upgradeSettings_doesNotOverwriteCurrentReleases() {
+    func test_upgradeSettings_migratesLegacyScrollTrueToScroll() {
+        defaults.set(true, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.upgradeSettings(from: 153)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "scroll")
+    }
+
+    func test_upgradeSettings_doesNotWriteMarkReadWhenLegacyKeyAbsent() {
+        // Fresh install: no old boolean key. Migration must NOT force "selection",
+        // which would override the Settings.bundle default of "scroll".
+        AppDelegateHelper.shared.upgradeSettings(from: 0)
+
+        XCTAssertNil(userValue("default_mark_read_filter"))
+    }
+
+    func test_upgradeSettings_doesNotOverwriteExistingMarkReadValue() {
         defaults.set(true, forKey: "default_scroll_read_filter")
         defaults.set("selection", forKey: "default_mark_read_filter")
-        defaults.set(false, forKey: "override_mark_read_filter")
+
+        AppDelegateHelper.shared.upgradeSettings(from: 153)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
+    }
+
+    func test_upgradeSettings_doesNotMigrateWhenAlreadyPastMigrationRelease() {
+        defaults.set(false, forKey: "default_scroll_read_filter")
 
         AppDelegateHelper.shared.upgradeSettings(from: 154)
 
-        XCTAssertEqual(defaults.string(forKey: "default_mark_read_filter"), "selection")
-        XCTAssertFalse(defaults.bool(forKey: "override_mark_read_filter"))
+        XCTAssertNil(userValue("default_mark_read_filter"))
+    }
+
+    func test_applyReleaseUpgrade_readsPreviousReleaseBeforeOverwriting() {
+        // Simulate a device that last ran an old build (release 120) and is
+        // now launching build 328. The migration must see 120 and run.
+        defaults.set(120, forKey: "release")
+        defaults.set(false, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.applyReleaseUpgrade(currentRelease: 328, defaults: defaults)
+
+        XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
+        XCTAssertEqual(defaults.integer(forKey: "release"), 328)
+    }
+
+    func test_applyReleaseUpgrade_skipsMigrationWhenStoredReleaseAlreadyPastThreshold() {
+        defaults.set(200, forKey: "release")
+        defaults.set(false, forKey: "default_scroll_read_filter")
+
+        AppDelegateHelper.shared.applyReleaseUpgrade(currentRelease: 328, defaults: defaults)
+
+        XCTAssertNil(userValue("default_mark_read_filter"))
+        XCTAssertEqual(defaults.integer(forKey: "release"), 328)
     }
 
     func test_appDelegateURL_normalizesCustomDomainToOrigin() {
@@ -94,5 +136,229 @@ final class AppDelegateHelperTests: XCTestCase {
         let bundleIdentifier = Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? ""
         let persistedValue = defaults.persistentDomain(forName: bundleIdentifier)?["custom_domain"]
         XCTAssertNil(persistedValue)
+    }
+
+    func test_extractFolderName_treatsMissingActiveFolderAsTopLevel() {
+        let appDelegate = NewsBlurAppDelegate()
+
+        XCTAssertEqual(appDelegate.extractFolderName(nil), "")
+    }
+
+    func test_feedIdsForTopLevelRiverWithReadFilter_unread_usesModelUnreadCountsInsteadOfSidebarVisibility() {
+        let appDelegate = NewsBlurAppDelegate()
+        let feedsViewController = FeedsViewController()
+
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.selectedIntelligence = 0
+        appDelegate.dictFoldersArray = [
+            "dashboard",
+            "everything",
+            "infrequent",
+            "Tech",
+            "News",
+            "saved_stories",
+            "read_stories",
+        ]
+        // dictFolders["everything"] is the iOS-renamed bucket for top-level unfoldered feeds
+        // (server's flat_folders_with_inactive[" "]). The river must include them.
+        appDelegate.dictFolders = [
+            "dashboard": ["dashboard"],
+            "everything": [10, 11, 99],
+            "infrequent": ["infrequent"],
+            "Tech": [1, 2, 4],
+            "News": [2, 3, "saved:query"],
+            "saved_stories": ["saved:1"],
+            "read_stories": ["read_stories"],
+        ]
+        appDelegate.dictFeeds = [
+            "1": ["id": 1],
+            "2": ["id": 2],
+            "3": ["id": 3],
+            "4": ["id": 4],
+            "10": ["id": 10],
+            "11": ["id": 11],
+            "99": ["id": 99, "temp": true],
+        ]
+        appDelegate.dictUnreadCounts = [
+            "1": ["ps": 0, "nt": 1, "ng": 0],
+            "2": ["ps": 1, "nt": 0, "ng": 0],
+            "3": ["ps": 0, "nt": 0, "ng": 0],
+            "4": ["ps": 0, "nt": 1, "ng": 0],
+            "10": ["ps": 1, "nt": 0, "ng": 0],
+            "11": ["ps": 0, "nt": 0, "ng": 0],
+        ]
+        appDelegate.dictInactiveFeeds = [
+            "4": ["id": 4],
+        ]
+
+        feedsViewController.activeFeedLocations = [
+            "Tech": [0],
+            "News": [0],
+        ]
+        feedsViewController.viewShowingAllFeeds = false
+
+        let feedIds = ((appDelegate.feedIdsForTopLevelRiver(withReadFilter: "unread") as? [Any]) ?? []).map {
+            String(describing: $0)
+        }
+
+        XCTAssertEqual(feedIds, ["10", "1", "2"])
+    }
+
+    func test_feedIdsForTopLevelRiverWithReadFilter_all_returnsFullSubscribedFeedIds() {
+        let appDelegate = NewsBlurAppDelegate()
+        let feedsViewController = FeedsViewController()
+
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.dictFoldersArray = [
+            "dashboard",
+            "everything",
+            "infrequent",
+            "Tech",
+            "News",
+        ]
+        appDelegate.dictFolders = [
+            "dashboard": ["dashboard"],
+            "everything": [10, 11],
+            "infrequent": ["infrequent"],
+            "Tech": [1, 2, 99],
+            "News": [2, 3, 4],
+        ]
+        appDelegate.dictFeeds = [
+            "1": ["id": 1],
+            "2": ["id": 2],
+            "3": ["id": 3],
+            "4": ["id": 4],
+            "10": ["id": 10],
+            "11": ["id": 11],
+            "99": ["id": 99, "temp": true],
+        ]
+
+        feedsViewController.activeFeedLocations = [
+            "Tech": [0],
+        ]
+
+        let feedIds = ((appDelegate.feedIdsForTopLevelRiver(withReadFilter: "all") as? [Any]) ?? []).map {
+            String(describing: $0)
+        }
+
+        XCTAssertEqual(feedIds, ["10", "11", "1", "2", "3", "4"])
+    }
+
+    func test_toggleAuthorClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
+        let appDelegate = ClassifierToggleAppDelegate()
+        appDelegate.storiesCollection = StoriesCollection()
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "authors": [
+                    "Jane": 1,
+                ],
+            ],
+        ]
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), -1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["dislike_author"] as? String, "Jane")
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_author"] as? String, "Jane")
+
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["like_author"] as? String, "Jane")
+
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "authors": [
+                    "Jane": -2,
+                ],
+            ],
+        ]
+        appDelegate.toggleAuthorClassifier("Jane", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "authors", value: "Jane"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_author"] as? String, "Jane")
+    }
+
+    func test_toggleTagClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
+        let appDelegate = ClassifierToggleAppDelegate()
+        appDelegate.storiesCollection = StoriesCollection()
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "tags": [
+                    "swift": 1,
+                ],
+            ],
+        ]
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), -1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["dislike_tag"] as? String, "swift")
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_tag"] as? String, "swift")
+
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 1)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["like_tag"] as? String, "swift")
+
+        appDelegate.storiesCollection.activeClassifiers = [
+            "1": [
+                "tags": [
+                    "swift": -2,
+                ],
+            ],
+        ]
+        appDelegate.toggleTagClassifier("swift", feedId: "1")
+        XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "tags", value: "swift"), 0)
+        XCTAssertEqual(appDelegate.savedClassifierParameters?["remove_like_tag"] as? String, "swift")
+    }
+
+    private func classifierScore(_ appDelegate: NewsBlurAppDelegate, feedId: String, key: String, value: String) -> Int? {
+        let feedClassifiers = appDelegate.storiesCollection.activeClassifiers[feedId] as? [String: Any]
+        let classifiers = feedClassifiers?[key] as? [String: Any]
+        return classifiers?[value] as? Int
+    }
+}
+
+final class ActivityModulesLayoutTests: XCTestCase {
+    func test_interactionsModuleReusesTableAcrossLayoutPasses() {
+        let module = makeModule(named: "InteractionsModule")
+
+        module.layoutSubviews()
+        module.layoutSubviews()
+
+        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
+    }
+
+    func test_activityModuleReusesTableAcrossLayoutPasses() {
+        let module = makeModule(named: "ActivityModule")
+
+        module.layoutSubviews()
+        module.layoutSubviews()
+
+        XCTAssertEqual(module.subviews.compactMap { $0 as? UITableView }.count, 1)
+    }
+
+    private func makeModule(named className: String) -> UIView {
+        let type = NSClassFromString(className) as? UIView.Type
+            ?? NSClassFromString("NewsBlur.\(className)") as? UIView.Type
+        guard let type else {
+            XCTFail("Missing \(className)")
+            return UIView(frame: .zero)
+        }
+
+        return type.init(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+    }
+}
+
+private final class ClassifierToggleAppDelegate: NewsBlurAppDelegate {
+    var savedClassifierParameters: [String: Any]?
+
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error) -> Void)!) {
+        savedClassifierParameters = parameters as? [String: Any]
+    }
+
+    override func recalculateIntelligenceScores(_ feedId: Any!) {
     }
 }
