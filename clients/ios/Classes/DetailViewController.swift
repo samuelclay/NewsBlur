@@ -1465,12 +1465,18 @@ private extension DetailViewController {
     }
     
     func resetControllersIfCompactStateChanged() {
-        if isCompact != wasCompact {
-            feedDetailViewController = nil
-            
-            listStoryPagesViewController = StoryPagesViewController()
-            gridStoryPagesViewController = StoryPagesViewController()
+        guard SplitCollapseColumnDecision.shouldResetControllers(
+            compactStateChanged: isCompact != wasCompact,
+            hasFeed: isFeedShown || feedDetailViewController?.isFeedShown == true,
+            hasStory: hasVisibleStoryForSidebarLayout || isStoryShown
+        ) else {
+            return
         }
+
+        feedDetailViewController = nil
+
+        listStoryPagesViewController = StoryPagesViewController()
+        gridStoryPagesViewController = StoryPagesViewController()
     }
     
     /// The status bar portion of the navigation controller isn't the right color, due to a white subview bleeding through the visual effect view. This somewhat hacky function will correct that.

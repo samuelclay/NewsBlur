@@ -16,10 +16,16 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
               let detailController = detailNavController.viewControllers[0] as? DetailViewController else {
             return .primary
         }
+
+        let topColumn = SplitCollapseColumnDecision.topColumn(
+            hasFeed: detailController.isFeedShown,
+            hasStory: detailController.hasVisibleStoryForSidebarLayout || detailController.isStoryShown,
+            proposedTopColumn: splitCollapseTopColumn(for: proposedTopColumn)
+        )
         
         detailController.collapseToSingleColumn()
         
-        return .primary
+        return uiSplitViewColumn(for: topColumn)
     }
     
     func splitViewController(_ svc: UISplitViewController, displayModeForExpandingToProposedDisplayMode proposedDisplayMode: UISplitViewController.DisplayMode) -> UISplitViewController.DisplayMode {
@@ -64,5 +70,23 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
         NewsBlurAppDelegate.shared?.detailViewController.syncFullscreenSidebarPresentation(for: displayMode)
         NewsBlurAppDelegate.shared?.feedsViewController.updateSidebarButton(for: displayMode)
         NewsBlurAppDelegate.shared?.feedDetailViewController.updateSidebarButton(for: displayMode)
+    }
+
+    private func splitCollapseTopColumn(for column: UISplitViewController.Column) -> SplitCollapseTopColumn {
+        switch column {
+        case .secondary:
+            return .secondary
+        default:
+            return .primary
+        }
+    }
+
+    private func uiSplitViewColumn(for column: SplitCollapseTopColumn) -> UISplitViewController.Column {
+        switch column {
+        case .secondary:
+            return .secondary
+        case .primary:
+            return .primary
+        }
     }
 }

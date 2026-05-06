@@ -579,6 +579,69 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
+    func test_split_collapse_keeps_story_column_on_top() {
+        XCTAssertEqual(
+            SplitCollapseColumnDecision.topColumn(
+                hasFeed: true,
+                hasStory: true,
+                proposedTopColumn: .primary
+            ),
+            .secondary
+        )
+    }
+
+    func test_split_collapse_keeps_feed_detail_column_on_top() {
+        XCTAssertEqual(
+            SplitCollapseColumnDecision.topColumn(
+                hasFeed: true,
+                hasStory: false,
+                proposedTopColumn: .primary
+            ),
+            .secondary
+        )
+    }
+
+    func test_split_collapse_uses_primary_without_feed_or_story() {
+        XCTAssertEqual(
+            SplitCollapseColumnDecision.topColumn(
+                hasFeed: false,
+                hasStory: false,
+                proposedTopColumn: .secondary
+            ),
+            .primary
+        )
+    }
+
+    func test_compact_transition_preserves_controllers_for_story_context() {
+        XCTAssertFalse(
+            SplitCollapseColumnDecision.shouldResetControllers(
+                compactStateChanged: true,
+                hasFeed: true,
+                hasStory: true
+            )
+        )
+    }
+
+    func test_compact_transition_preserves_controllers_for_feed_context() {
+        XCTAssertFalse(
+            SplitCollapseColumnDecision.shouldResetControllers(
+                compactStateChanged: true,
+                hasFeed: true,
+                hasStory: false
+            )
+        )
+    }
+
+    func test_compact_transition_resets_controllers_without_navigation_context() {
+        XCTAssertTrue(
+            SplitCollapseColumnDecision.shouldResetControllers(
+                compactStateChanged: true,
+                hasFeed: false,
+                hasStory: false
+            )
+        )
+    }
+
     func test_native_display_mode_for_feeds_is_two_over_secondary() {
         XCTAssertEqual(
             FullscreenSidebarPresentationDecision.nativeDisplayMode(for: .feeds),
