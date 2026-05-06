@@ -133,8 +133,9 @@ internal fun createReadingConfigChangeRestore(
     pagerStory: Story?,
     fallbackStoryHash: String?,
     scrollPosRel: Float?,
+    recentlyMarkedReadStory: Story? = null,
 ): ReadingConfigChangeRestore? {
-    val story = visibleStory ?: pagerStory
+    val story = recentlyMarkedReadStory ?: visibleStory ?: pagerStory
     return createReadingConfigChangeRestore(
         storyHash = story?.storyHash ?: fallbackStoryHash,
         scrollPosRel = scrollPosRel,
@@ -208,6 +209,7 @@ abstract class Reading :
     private var restoredStoryScrollPosRel = 0f
     private var pendingConfigChangeRestore: ReadingConfigChangeRestore? = null
     private var restoredCurrentStory: Story? = null
+    private var recentlyMarkedReadStory: Story? = null
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
@@ -326,14 +328,11 @@ abstract class Reading :
             "onSave storyHash=$storyHash active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
                 "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
         )
+        val currentStoryForSave = currentReadingStory()
         if (storyHash != null) {
             savedInstanceState.putString(EXTRA_STORY_HASH, storyHash)
-        } else if (pager != null) {
-            val currentItem = pager!!.currentItem
-            val story = readingAdapter!!.getStory(currentItem)
-            if (story != null) {
-                savedInstanceState.putString(EXTRA_STORY_HASH, story.storyHash)
-            }
+        } else if (currentStoryForSave != null) {
+            savedInstanceState.putString(EXTRA_STORY_HASH, currentStoryForSave.storyHash)
         }
 
         if (startingUnreadCount != 0) {
@@ -343,7 +342,7 @@ abstract class Reading :
             ?.currentScrollPosRel()
             ?.takeIf { it > 0f }
             ?.let { savedInstanceState.putFloat(BUNDLE_CURRENT_SCROLL_POS_REL, it) }
-        (readingFragment?.story ?: pager?.let { readingAdapter?.getStory(it.currentItem) })
+        currentStoryForSave
             ?.copyForBundle()
             ?.let { savedInstanceState.putSerializable(BUNDLE_CURRENT_STORY, it) }
     }
@@ -459,10 +458,12 @@ abstract class Reading :
             pagerStory = pagerStory,
             fallbackStoryHash = storyHash,
             scrollPosRel = readingFragment?.prepareForConfigurationChange(),
+            recentlyMarkedReadStory = recentlyMarkedReadStory,
         )
     }
 
-    private fun currentReadingStory(): Story? = activeReadingStory() ?: pagerReadingStory()
+    private fun currentReadingStory(): Story? =
+        recentlyMarkedReadStory ?: activeReadingStory() ?: pagerReadingStory()
 
     private fun activeReadingStory(): Story? = readingAdapter?.getActiveStory()
 
@@ -585,22 +586,23 @@ abstract class Reading :
             return
         }
 
-        // Process death can restore us to a story that no longer matches the current read filter
-        // after it was auto-marked read. Keep just that one story recoverable without inflating
-        // every fragment argument back to full size.
+        // Reading.kt can see the current story fall outside the active unread batch after mark-read.
+        // Keep that one story recoverable without inflating every fragment.
+        val storyToMerge = restoredCurrentStory ?: recentlyMarkedReadStory
+        val targetStoryHash = storyHash ?: storyToMerge?.storyHash
         val stories =
             mergeRestoredStoryIntoStories(
                 stories = batch.stories,
-                targetStoryHash = storyHash,
-                restoredStory = restoredCurrentStory,
+                targetStoryHash = targetStoryHash,
+                restoredStory = storyToMerge,
                 storyOrder = prefsRepo.getStoryOrder(fs!!),
             )
         val classifiers =
-            if (stories === batch.stories || restoredCurrentStory == null) {
+            if (stories === batch.stories || storyToMerge == null) {
                 batch.classifiers
             } else {
                 batch.classifiers.toMutableMap().apply {
-                    val restoreStory = restoredCurrentStory!!
+                    val restoreStory = storyToMerge
                     if (!containsKey(restoreStory.feedId)) {
                         put(restoreStory.feedId, dbHelper.getClassifierForFeed(restoreStory.feedId))
                     }
@@ -618,7 +620,8 @@ abstract class Reading :
         logReaderRestore(
             "setStoryData load=${batch.loadId} raw=${batch.stories.size} merged=${stories.size} " +
                 "target=$storyHash targetInRaw=${storyHash?.let { target -> batch.stories.any { it.storyHash == target } }} " +
-                "restored=${storyDebug(restoredCurrentStory)} active=${storyDebug(activeStory)} " +
+                "restored=${storyDebug(restoredCurrentStory)} recent=${storyDebug(recentlyMarkedReadStory)} " +
+                "active=${storyDebug(activeStory)} " +
                 "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentItem ?: -1} " +
                 "first=[${storiesDebug(stories)}]",
         )
@@ -786,7 +789,11 @@ abstract class Reading :
     }
 
     // interface OnPageChangeListener
-    override fun onPageScrollStateChanged(arg0: Int) {}
+    override fun onPageScrollStateChanged(arg0: Int) {
+        if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
+            clearRecentlyMarkedReadStory()
+        }
+    }
 
     override fun onPageScrolled(
         arg0: Int,
@@ -1029,6 +1036,7 @@ abstract class Reading :
      * Search our set of stories for the next unread one.
      */
     private fun nextUnread() {
+        clearRecentlyMarkedReadStory()
         unreadSearchActive = true
 
         // if we somehow got tapped before construction or are running during destruction, stop and
@@ -1100,6 +1108,7 @@ abstract class Reading :
     private fun overlayLeftClick() {
         val targetPosition = getLastReadPosition(true)
         if (targetPosition != -1) {
+            clearRecentlyMarkedReadStory()
             pager!!.setCurrentItem(targetPosition, true)
         } else {
             Log.e(this.javaClass.name, "reading history contained item not found in cursor.")
@@ -1266,6 +1275,7 @@ abstract class Reading :
 
     private fun nextStory() {
         if (pager == null) return
+        clearRecentlyMarkedReadStory()
         val nextPosition = pager!!.currentItem + 1
         if (nextPosition < readingAdapter!!.count) {
             try {
@@ -1278,6 +1288,7 @@ abstract class Reading :
 
     private fun previousStory() {
         if (pager == null) return
+        clearRecentlyMarkedReadStory()
         val nextPosition = pager!!.currentItem - 1
         if (nextPosition >= 0) {
             try {
@@ -1335,8 +1346,16 @@ abstract class Reading :
 
     fun markStoryAsRead(story: Story) {
         logReaderRestore("markStoryAsRead story=${storyDebug(story)} loadNext=${prefsRepo.loadNextOnMarkRead()}")
+        recentlyMarkedReadStory =
+            story.copyForBundle().apply {
+                read = true
+            }
         val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
         feedUtils.syncStoryAsRead(story, this, readTimesJson)
+    }
+
+    private fun clearRecentlyMarkedReadStory() {
+        recentlyMarkedReadStory = null
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
