@@ -1025,11 +1025,10 @@ PIPELINE = {
     "PIPELINE_COLLECTOR_ENABLED": not DEBUG_ASSETS,
     "SHOW_ERRORS_INLINE": DEBUG_ASSETS,
     "CSS_COMPRESSOR": "utils.pipeline_utils.LightningCSSCompressor",
-    "JS_COMPRESSOR": "pipeline.compressors.closure.ClosureCompressor",
+    "JS_COMPRESSOR": "pipeline.compressors.terser.TerserCompressor",
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    "CLOSURE_BINARY": "/usr/bin/java -jar /usr/local/bin/compiler.jar",
-    "CLOSURE_ARGUMENTS": "--language_in ECMASCRIPT_2016 --language_out ECMASCRIPT_2016 --warning_level DEFAULT",
+    "TERSER_ARGUMENTS": "--compress --mangle",
     "JAVASCRIPT": {
         "common": {
             "source_filenames": assets["javascripts"]["common"],

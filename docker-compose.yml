@@ -126,7 +126,7 @@ services:
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
-    mem_limit: 1200m
+    mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
     environment:

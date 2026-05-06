@@ -2671,15 +2671,48 @@ h3.NB-faq-question {
 a.NB-faq-tier {
     display: block;
     padding: 14px 18px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: 10px;
+    border: 0;
     text-decoration: none;
     color: inherit;
-    transition: background 0.2s;
+    transition: background 0.2s ease, transform 0.15s ease;
+    background: rgba(75, 85, 99, 0.07);
 }
 
 a.NB-faq-tier:hover {
-    background: rgba(255, 255, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+a.NB-faq-tier-free {
+    background: rgba(75, 85, 99, 0.07);
+}
+
+a.NB-faq-tier-free:hover {
+    background: rgba(75, 85, 99, 0.13);
+}
+
+a.NB-faq-tier-premium {
+    background: rgba(22, 163, 74, 0.08);
+}
+
+a.NB-faq-tier-premium:hover {
+    background: rgba(22, 163, 74, 0.15);
+}
+
+a.NB-faq-tier-archive {
+    background: rgba(13, 148, 136, 0.09);
+}
+
+a.NB-faq-tier-archive:hover {
+    background: rgba(13, 148, 136, 0.16);
+}
+
+a.NB-faq-tier-pro {
+    background: rgba(234, 88, 12, 0.08);
+}
+
+a.NB-faq-tier-pro:hover {
+    background: rgba(234, 88, 12, 0.16);
 }
 
 .NB-faq-tier-name {
@@ -2723,6 +2756,116 @@ a.NB-faq-tier-pro:hover .NB-faq-tier-name {
     color: rgba(45, 38, 26, 0.5);
     line-height: 1.5;
     margin: 0;
+}
+
+.NB-faq-feature-image {
+    margin: 16px 0 0;
+    padding: 0;
+    text-align: center;
+}
+
+.NB-faq-feature-image img {
+    display: inline-block;
+    /* 2x retina screenshots are marked with srcset="... 2x" so the browser
+       renders them at their intrinsic half size. 1x images render natively. */
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(45, 38, 26, 0.1);
+    box-shadow: 0 4px 12px -6px rgba(45, 38, 26, 0.2);
+}
+
+.NB-faq-item-links {
+    margin: 16px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+}
+
+a.NB-faq-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+a.NB-faq-button:active {
+    transform: translateY(1px);
+}
+
+a.NB-faq-button-primary {
+    background: #f5e8c2;
+    border-color: rgba(138, 109, 27, 0.25);
+    color: #6b5110;
+}
+
+a.NB-faq-button-primary:hover {
+    background: #ecd896;
+    border-color: rgba(138, 109, 27, 0.5);
+    color: #4a3a0a;
+}
+
+a.NB-faq-button-secondary {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(45, 38, 26, 0.12);
+    color: rgba(45, 38, 26, 0.7);
+}
+
+a.NB-faq-button-secondary:hover {
+    background: #fff;
+    border-color: rgba(45, 38, 26, 0.2);
+    color: rgba(45, 38, 26, 0.95);
+}
+
+.NB-faq-blog-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url("/media/img/favicon.png") no-repeat center center;
+    background-size: contain;
+    flex-shrink: 0;
+}
+
+.NB-faq-bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+}
+
+.NB-faq-bullet-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+    color: rgba(45, 38, 26, 0.6);
+}
+
+.NB-faq-bullet-list li img {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-faq-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(45, 38, 26, 0.4);
+    font-size: 15px;
+}
+
+.NB-faq-error {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(160, 50, 50, 0.7);
+    font-size: 15px;
 }
 
 .NB-faq-bottom-cta {

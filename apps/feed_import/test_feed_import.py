@@ -1,5 +1,6 @@
 import json
 import os
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -7,6 +8,7 @@ from django.test import TestCase, TransactionTestCase
 from django.test.client import Client
 from django.urls import reverse
 
+from apps.feed_import.models import OPMLImporter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import DuplicateFeed, Feed, merge_feeds
 from utils import json_functions as json_functions
@@ -115,6 +117,56 @@ class Test_Import(TransactionTestCase):
         subs = UserSubscription.objects.filter(user=user)
 
         self.assertEquals(subs.count(), 0)
+
+    def test_opml_import_supports_xmlurl_attribute(self):
+        opml_xml = """
+            <opml version="1.0">
+                <body>
+                    <outline text="bsky">
+                        <outline title="Bsky Feed" type="rss" version="RSS"
+                                 xmlURL="https://bsky.app/profile/108.bsky.social/rss" />
+                    </outline>
+                </body>
+            </opml>
+        """
+
+        folders = OPMLImporter(opml_xml, self.user).process()
+
+        feed = Feed.objects.get()
+        self.assertEqual(feed.feed_address, "https://bsky.app/profile/108.bsky.social/rss")
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=feed).count(), 1)
+        self.assertEqual(folders, [{"bsky": [feed.pk]}])
+
+    def test_opml_import_skips_single_feed_failure(self):
+        opml_xml = """
+            <opml version="1.0">
+                <body>
+                    <outline text="bsky">
+                        <outline title="Login Required" type="rss" version="RSS"
+                                 xmlUrl="https://bsky.app/profile/login-required.bsky.social/rss" />
+                        <outline title="Public Feed" type="rss" version="RSS"
+                                 xmlUrl="https://bsky.app/profile/public.bsky.social/rss" />
+                    </outline>
+                </body>
+            </opml>
+        """
+        original_find_or_create = Feed.find_or_create
+
+        def raise_for_login_required(feed_address, feed_link, defaults=None, **kwargs):
+            if "login-required" in feed_address:
+                raise RuntimeError("403 Forbidden")
+            return original_find_or_create(
+                feed_address=feed_address, feed_link=feed_link, defaults=defaults, **kwargs
+            )
+
+        with patch.object(Feed, "find_or_create", side_effect=raise_for_login_required):
+            folders = OPMLImporter(opml_xml, self.user).process()
+
+        feeds = Feed.objects.order_by("feed_address")
+        self.assertEqual(feeds.count(), 1)
+        self.assertEqual(feeds[0].feed_address, "https://bsky.app/profile/public.bsky.social/rss")
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=feeds[0]).count(), 1)
+        self.assertEqual(folders, [{"bsky": [feeds[0].pk]}])
 
 
 class Test_Duplicate_Feeds(TransactionTestCase):

@@ -570,9 +570,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     NSInteger release = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
     [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
-    [[NSUserDefaults standardUserDefaults] setInteger:release forKey:@"release"];
-    
-    [self.helper upgradeSettingsFrom:release];
+
+    // Reads the previously stored release, runs any pending migrations, then
+    // stores the current release. See AppDelegateHelper.applyReleaseUpgrade.
+    [self.helper applyReleaseUpgradeWithCurrentRelease:release];
 }
 
 - (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {
@@ -2524,6 +2525,72 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return mutableFeedIds;
 }
 
+- (BOOL)shouldIncludeFeedIdInUnreadTopLevelRiver:(NSString *)feedId {
+    NSDictionary *feed = self.dictFeeds[feedId];
+    if (![feed isKindOfClass:[NSDictionary class]] || [feed[@"temp"] boolValue]) {
+        return NO;
+    }
+
+    if (self.dictInactiveFeeds[feedId] != nil) {
+        return NO;
+    }
+
+    NSDictionary *unreadCounts = self.dictUnreadCounts[feedId];
+    NSInteger positiveCount = [unreadCounts[@"ps"] integerValue];
+    NSInteger neutralCount = [unreadCounts[@"nt"] integerValue];
+    NSInteger negativeCount = [unreadCounts[@"ng"] integerValue];
+
+    if (self.feedsViewController.viewShowingAllFeeds) {
+        return positiveCount > 0 || neutralCount > 0 || negativeCount > 0;
+    }
+
+    if (self.selectedIntelligence >= 1) {
+        return positiveCount > 0;
+    }
+
+    return positiveCount > 0 || neutralCount > 0;
+}
+
+- (NSArray *)feedIdsForTopLevelRiverWithReadFilter:(NSString *)readFilter {
+    NSMutableArray *mutableFeedIds = [NSMutableArray array];
+    NSMutableSet<NSString *> *seenFeedIds = [NSMutableSet set];
+    NSSet<NSString *> *subscribedFeedIds = [self subscribedFeedIdsForStoryClusters];
+    BOOL unreadOnly = [readFilter isEqualToString:@"unread"];
+    // Note: "everything" is the renamed key for top-level unfoldered feeds (flat_folders_with_inactive's " " bucket),
+    // so it must NOT be excluded — otherwise the All Site Stories river silently drops every unfoldered feed.
+    NSSet<NSString *> *excludedFolders = [NSSet setWithObjects:
+                                          @"dashboard",
+                                          @"infrequent",
+                                          @"daily_briefing",
+                                          @"read_stories",
+                                          @"saved_searches",
+                                          @"saved_stories",
+                                          @"river_global",
+                                          @"river_blurblogs",
+                                          @"widget_stories",
+                                          nil];
+
+    for (NSString *folderName in self.dictFoldersArray) {
+        if ([excludedFolders containsObject:folderName]) continue;
+
+        NSArray *folderFeedIds = self.dictFolders[folderName];
+        if (![folderFeedIds isKindOfClass:[NSArray class]]) continue;
+
+        for (id feedId in folderFeedIds) {
+            NSString *normalizedFeedId = [NSString stringWithFormat:@"%@", feedId ?: @""];
+            if (!normalizedFeedId.length) continue;
+            if (![subscribedFeedIds containsObject:normalizedFeedId]) continue;
+            if ([seenFeedIds containsObject:normalizedFeedId]) continue;
+            if (unreadOnly && ![self shouldIncludeFeedIdInUnreadTopLevelRiver:normalizedFeedId]) continue;
+
+            [seenFeedIds addObject:normalizedFeedId];
+            [mutableFeedIds addObject:feedId];
+        }
+    }
+
+    return mutableFeedIds;
+}
+
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
     if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
@@ -2662,23 +2729,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"]) {
         feedDetailView.storiesCollection.isRiverView = YES;
-        // add all the feeds from every NON blurblog folder
         [feedDetailView.storiesCollection setActiveFolder:folder];
-        for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
-            if ([folderName isEqualToString:@"river_blurblogs"]) continue;
-            if ([folderName isEqualToString:@"read_stories"]) continue;
-            if ([folderName isEqualToString:@"saved_searches"]) continue;
-            if ([folderName isEqualToString:@"saved_stories"]) continue;
-            NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-            NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-            for (int l=0; l < [folderFeeds count]; l++) {
-                id feed = [originalFolder safeObjectAtIndex:[[folderFeeds objectAtIndex:l] intValue]];
-                
-                if (feed != nil) {
-                    [feeds addObject:feed];
-                }
-            }
-        }
+        // Snapshot top-level rivers from model unread counts, not sidebar visibility state.
+        [feeds addObjectsFromArray:[self feedIdsForTopLevelRiverWithReadFilter:feedDetailView.storiesCollection.activeReadFilter]];
         [self.folderCountCache removeAllObjects];
     } else {
         feedDetailView.storiesCollection.isRiverView = YES;
@@ -4149,6 +4202,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int title = [[intelligence objectForKey:@"title"] intValue];
     int titleRegex = [[intelligence objectForKey:@"title_regex"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
+    int authorRegex = [[intelligence objectForKey:@"author_regex"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
     int text = [[intelligence objectForKey:@"text"] intValue];
     int textRegex = [[intelligence objectForKey:@"text_regex"] intValue];
@@ -4159,8 +4213,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // AI prompt classifier takes absolute priority
     if (prompt != 0) return prompt;
 
-    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex)))))));
-    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex)))))));
+    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex))))))));
+    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex))))))));
 
     if (score_min <= -2) score = score_min;
     else if (score_max > 0)      score = score_max;
@@ -4198,6 +4252,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (NSString *)extractFolderName:(NSString *)folderName {
+    if (folderName == nil) {
+        return @"";
+    }
+
     if ([folderName containsString:@"Top Level"] ||
         [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
@@ -4728,7 +4786,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
-    authorScore = (authorScore > 0) ? 0 : 1;
+    authorScore = (authorScore > 0) ? -1 : (authorScore < 0) ? 0 : 1;
     [self _applyAuthorClassifier:author feedId:feedId score:authorScore scope:scope folderName:folderName];
 }
 
@@ -4779,6 +4837,93 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.feedDetailViewController reload];
 }
 
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId {
+    [self toggleAuthorRegexClassifier:pattern feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"author_regex"]
+                  objectForKey:pattern] intValue];
+    score = (score > 0) ? 0 : 1;
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"author_regex"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:pattern];
+    [feedClassifiers setObject:items forKey:@"author_regex"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:pattern
+               forKey:score >= 1 ? @"like_author_regex" :
+     score <= -2 ? @"super_dislike_author_regex" :
+     score <= -1 ? @"dislike_author_regex" :
+     @"remove_like_author_regex"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)explicitScore scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = (int)explicitScore;
+    if (score == 0) {
+        [self toggleAuthorRegexClassifier:pattern feedId:feedId scope:scope folderName:folderName];
+        return;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"author_regex"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:pattern];
+    [feedClassifiers setObject:items forKey:@"author_regex"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:pattern
+               forKey:score >= 1 ? @"like_author_regex" :
+     score <= -2 ? @"super_dislike_author_regex" :
+     score <= -1 ? @"dislike_author_regex" :
+     @"remove_like_author_regex"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
     [self toggleTagClassifier:tag feedId:feedId scope:@"feed" folderName:@""];
 }
@@ -4787,7 +4932,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int tagScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
-    tagScore = (tagScore > 0) ? 0 : 1;
+    tagScore = (tagScore > 0) ? -1 : (tagScore < 0) ? 0 : 1;
     [self _applyTagClassifier:tag feedId:feedId score:tagScore scope:scope folderName:folderName];
 }
 

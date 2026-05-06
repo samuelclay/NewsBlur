@@ -27,7 +27,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "hackernews": "Hacker News",
         "telegram": "Telegram",
         "linkedin": "LinkedIn",
-        "readwise": "Readwise"
+        "readwise": "Readwise",
+        "wallabag": "Wallabag"
     },
 
     initialize: function () {
@@ -39,6 +40,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 text_regex: {},
                 tags: {},
                 authors: {},
+                author_regex: {},
                 feeds: {},
                 urls: {},
                 url_regex: {},
@@ -2618,6 +2620,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (story.get('story_feed_id') != feed_id) return;
             var intelligence = {
                 author: 0,
+                author_regex: 0,
                 feed: 0,
                 tags: 0,
                 title: 0,
@@ -2721,6 +2724,23 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                             var permalink = story.get('story_permalink') || '';
                             if (regex.test(permalink)) {
                                 intelligence.url_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // Author regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].author_regex) {
+                _.each(this.classifiers[feed_id].author_regex, function (classifier_score, pattern) {
+                    if (classifier_score <= -2 || (intelligence.author_regex > -2 && intelligence.author_regex <= 0)) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            var authors = story.get('story_authors') || '';
+                            if (regex.test(authors)) {
+                                intelligence.author_regex = classifier_score;
                             }
                         } catch (e) {
                             // Invalid regex, skip

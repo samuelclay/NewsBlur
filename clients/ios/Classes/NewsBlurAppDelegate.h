@@ -433,6 +433,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedStoriesIntelligenceMode;
 - (NSArray *)allFeedIds;
+- (NSArray *)feedIdsForTopLevelRiverWithReadFilter:(NSString *)readFilter;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
@@ -526,6 +527,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
+- (void)toggleAuthorRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;

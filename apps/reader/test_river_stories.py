@@ -59,7 +59,13 @@ class Test_RiverStories(TransactionTestCase):
             self.r.delete(f"zU:3:{feed_id}")
             self.r.delete(f"uU:3:{feed_id}")
 
-        # Clear dashboard caches
+        # Clear dashboard caches for both current and legacy key formats.
+        dashboard_feeds = list(range(1, 11))
+        dashboard_key, dashboard_unread_key = UserSubscription.get_river_cache_keys(
+            3, dashboard_feeds, "dashboard:"
+        )
+        self.r.delete(dashboard_key)
+        self.r.delete(dashboard_unread_key)
         self.r.delete("dashboard:zU:3:feeds:1,2,3,4,5,6,7,8,9,10")
         self.r.delete("dashboard:zhU:3:feeds:1,2,3,4,5,6,7,8,9,10")
 
@@ -254,6 +260,146 @@ class Test_RiverStories(TransactionTestCase):
                 set(returned_hashes) & set(stale_story_hashes),
                 f"Newest/{read_filter} should not return stale Redis hashes",
             )
+
+    def test_river_stories__all_filter_marks_older_unread_on_later_page(self):
+        """All-story river pages should mark returned stories unread using the all-story page."""
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self.client.login(username="conesus", password="test")
+
+        from django.utils import timezone as django_tz
+        import redis
+
+        feed_id = self.test_feeds[0]
+        feed = Feed.objects.get(pk=feed_id)
+        base_date = django_tz.now()
+        story_hashes = []
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.delete(f"F:{feed_id}")
+        r.delete(f"zF:{feed_id}")
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+        r.delete(f"RS:{self.user.pk}:{feed_id}")
+        r.delete(f"RS:{self.user.pk}")
+        ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, [feed_id], "")
+        r.delete(ranked_key)
+        r.delete(unread_key)
+
+        UserSubscription.objects.filter(user=self.user, feed=feed).update(
+            unread_count_neutral=1,
+            unread_count_positive=0,
+            unread_count_negative=0,
+            needs_unread_recalc=True,
+            mark_read_date=base_date - datetime.timedelta(days=10),
+        )
+
+        for i in range(4):
+            story_guid_base = f"river-all-read-status-{feed_id}-{i}"
+            story_guid = story_guid_base
+            suffix = 0
+            while MStory.objects(
+                story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
+            ).only("story_hash").first():
+                suffix += 1
+                story_guid = f"{story_guid_base}-{suffix}"
+
+            story_date = base_date - datetime.timedelta(minutes=i)
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=story_date,
+                story_title=f"All filter read status {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            story_hashes.append(story.story_hash)
+
+            timestamp = int(story_date.timestamp())
+            r.sadd(f"F:{feed_id}", story.story_hash)
+            r.zadd(f"zF:{feed_id}", {story.story_hash: timestamp})
+
+        for read_hash in story_hashes[:3]:
+            r.sadd(f"RS:{self.user.pk}", read_hash)
+            r.sadd(f"RS:{self.user.pk}:{feed_id}", read_hash)
+
+        usersub = UserSubscription.objects.get(user=self.user, feed=feed)
+        page_hashes, unread_hashes = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=[feed_id],
+            offset=3,
+            limit=3,
+            order="newest",
+            read_filter="all",
+            usersubs=[usersub],
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        page_hashes = [h.decode() if isinstance(h, bytes) else h for h in page_hashes]
+        unread_hashes = [h.decode() if isinstance(h, bytes) else h for h in unread_hashes]
+
+        self.assertIn(story_hashes[3], page_hashes)
+        self.assertNotIn(story_hashes[0], unread_hashes)
+        self.assertNotIn(story_hashes[1], unread_hashes)
+        self.assertNotIn(story_hashes[2], unread_hashes)
+        self.assertIn(story_hashes[3], unread_hashes)
+
+        cached_page_hashes, cached_unread_hashes = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=[feed_id],
+            offset=3,
+            limit=3,
+            order="newest",
+            read_filter="all",
+            usersubs=[usersub],
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        cached_page_hashes = [h.decode() if isinstance(h, bytes) else h for h in cached_page_hashes]
+        cached_unread_hashes = [h.decode() if isinstance(h, bytes) else h for h in cached_unread_hashes]
+
+        self.assertIn(story_hashes[3], cached_page_hashes)
+        self.assertIn(story_hashes[3], cached_unread_hashes)
+
+    def test_feed_stories__all_filter_does_not_build_unread_river_cache(self):
+        """
+        All-story river pages only need read status for returned stories.
+
+        Building a full unread companion river on every all-story page causes
+        large accounts to repeatedly rebuild per-feed unread caches.
+        """
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+
+        usersubs = list(
+            UserSubscription.subs_for_feeds(self.user.pk, feed_ids=self.test_feeds, read_filter="all")
+        )
+        feed_ids = [sub.feed_id for sub in usersubs]
+
+        with patch(
+            "apps.reader.models.UserSubscription.story_hashes",
+            wraps=UserSubscription.story_hashes,
+        ) as story_hashes:
+            page_hashes, unread_hashes = UserSubscription.feed_stories(
+                user_id=self.user.pk,
+                feed_ids=feed_ids,
+                offset=3,
+                limit=3,
+                order="newest",
+                read_filter="all",
+                usersubs=usersubs,
+                cutoff_date=self.user.profile.unread_cutoff,
+            )
+
+        unread_calls = [
+            call for call in story_hashes.call_args_list if call.kwargs.get("read_filter") == "unread"
+        ]
+
+        self.assertTrue(page_hashes)
+        self.assertIsNotNone(unread_hashes)
+        self.assertFalse(
+            unread_calls,
+            f"All-story read-status checks should not build unread river caches: {unread_calls}",
+        )
 
     def test_river_stories__free_user_first_page_is_capped_at_three_stories(self):
         """Free users should only receive the first three river stories on page one."""
@@ -709,6 +855,41 @@ class Test_RiverStories(TransactionTestCase):
         self.assertNotEqual(key1, dash_key1, "Keys with different prefixes should differ")
 
         print(f">>> ✓ Cache key generation is consistent")
+
+    def test_cache_key_consistency__large_feed_lists_do_not_collide(self):
+        """
+        Large river feed lists that only differ after the first few ids must not
+        share the same cache key.
+        """
+        from apps.reader.models import UserSubscription
+
+        print(f"\n>>> Testing cache key helper method for large feed list collisions")
+
+        shared_prefix_feeds = list(range(1, 17))
+        feeds1 = shared_prefix_feeds + [1001]
+        feeds2 = shared_prefix_feeds + [2002]
+
+        old_prefix1 = ",".join(str(f) for f in sorted(feeds1))[:30]
+        old_prefix2 = ",".join(str(f) for f in sorted(feeds2))[:30]
+        self.assertEqual(
+            old_prefix1,
+            old_prefix2,
+            "Sanity check failed: these feed lists should collide with the old 30-char prefix",
+        )
+
+        key1, unread_key1 = UserSubscription.get_river_cache_keys(3, feeds1, "")
+        key2, unread_key2 = UserSubscription.get_river_cache_keys(3, feeds2, "")
+
+        print(f">>> Colliding old prefix: {old_prefix1}")
+        print(f">>> New key from {feeds1[-1]}: {key1}")
+        print(f">>> New key from {feeds2[-1]}: {key2}")
+
+        self.assertNotEqual(key1, key2, "Distinct large feed lists should not share a cache key")
+        self.assertNotEqual(
+            unread_key1, unread_key2, "Distinct large feed lists should not share unread cache keys"
+        )
+
+        print(f">>> ✓ Large river feed lists now generate distinct cache keys")
 
     def test_cache_key_consistency__feed_validation(self):
         """
