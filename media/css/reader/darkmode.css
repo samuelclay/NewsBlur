@@ -5744,6 +5744,14 @@ a.mention, a.mention-group {
     border-bottom-color: #7B9FD4;
 }
 
+.NB-dark .NB-briefing-direct-link-icon {
+    filter: brightness(1.25);
+}
+
+.NB-dark .NB-briefing-direct-link:hover .NB-briefing-direct-link-icon {
+    filter: brightness(1.55);
+}
+
 /* darkmode.css: Story items */
 .NB-dark .NB-briefing-story-item {
     border-bottom-color: #303030;
