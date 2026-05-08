@@ -1,0 +1,3 @@
+- Fixed reader rotation bugs that could jump to the next story after a story was marked read.
+- Fixed story scroll position being lost after leaving NewsBlur and returning.
+- Fixed bug report emails so the attached log file now contains the latest app logs.
