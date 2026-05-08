@@ -117,6 +117,7 @@ def _normalize_improvmx_to_mailgun(improvmx_data):
     params["body-html"] = improvmx_data.get("html", "")
     params["body-plain"] = improvmx_data.get("text", "")
     params["timestamp"] = str(improvmx_data.get("timestamp", ""))
+    params["headers"] = headers
 
     # Use message-id as signature (unique identifier)
     params["signature"] = improvmx_data.get("message-id", "")

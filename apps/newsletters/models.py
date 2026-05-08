@@ -2,6 +2,7 @@
 
 import datetime
 import html as html_module
+import json
 import re
 
 import redis
@@ -24,6 +25,33 @@ from utils.story_functions import linkify
 
 
 class EmailNewsletter:
+    HEADER_NAMES_TO_SAVE = {
+        "content-type",
+        "date",
+        "delivered-to",
+        "from",
+        "list-archive",
+        "list-help",
+        "list-id",
+        "list-owner",
+        "list-post",
+        "list-subscribe",
+        "list-unsubscribe",
+        "message-id",
+        "mime-version",
+        "reply-to",
+        "return-path",
+        "sender",
+        "subject",
+        "to",
+        "x-forwarded-for",
+        "x-forwarded-to",
+        "x-original-from",
+        "x-original-to",
+        "x-simplelogin-envelope-from",
+        "x-simplelogin-original-from",
+    }
+
     def receive_newsletter(self, params):
         logging.debug(f" ---> receive_newsletter called with recipient: {params.get('recipient')}")
         user = self._user_from_email(params["recipient"])
@@ -33,7 +61,13 @@ class EmailNewsletter:
 
         logging.debug(f" ---> receive_newsletter: Processing for user {user.username}")
         sender_name, sender_username, sender_domain = self._split_sender(params["from"])
-        feed_address = self._feed_address(user, "%s@%s" % (sender_username, sender_domain))
+        sender_email = "%s@%s" % (sender_username, sender_domain)
+        newsletter_headers = self._extract_headers(params)
+        newsletter_identity, newsletter_identity_source = self._newsletter_identity(
+            sender_name, sender_email, newsletter_headers
+        )
+        feed_address = self._feed_address(user, newsletter_identity)
+        feed_link = self._feed_link(newsletter_identity, sender_domain)
 
         try:
             usf = UserSubscriptionFolders.objects.get(user=user)
@@ -42,31 +76,15 @@ class EmailNewsletter:
             return
         usf.add_folder("", "Newsletters")
 
-        # First look for the email address
-        try:
-            feed = Feed.objects.get(feed_address=feed_address)
-        except Feed.MultipleObjectsReturned:
-            feeds = Feed.objects.filter(feed_address=feed_address)[:1]
-            if feeds.count():
-                feed = feeds[0]
-        except Feed.DoesNotExist:
-            feed = None
+        feed = self._find_feed(user, feed_address, sender_name, sender_email)
+        if feed and feed.feed_address != feed_address:
+            feed = self._update_feed_address(feed, feed_address)
 
-        # If not found, check among titles user has subscribed to
-        if not feed:
-            newsletter_subs = UserSubscription.objects.filter(
-                user=user, feed__feed_address__contains="newsletter:"
-            ).only("feed")
-            newsletter_feed_ids = [us.feed.pk for us in newsletter_subs]
-            feeds = Feed.objects.filter(feed_title__iexact=sender_name, pk__in=newsletter_feed_ids)
-            if feeds.count():
-                feed = feeds[0]
-
-        # Create a new feed if it doesn't exist by sender name or email
+        # Create a new feed if it doesn't exist by stable newsletter identity.
         if not feed:
             feed = Feed.objects.create(
                 feed_address=feed_address,
-                feed_link="http://" + sender_domain,
+                feed_link=feed_link,
                 feed_title=sender_name,
                 fetched_once=True,
                 known_good=True,
@@ -117,6 +135,9 @@ class EmailNewsletter:
                 reverse("newsletter-story", kwargs={"story_hash": story_hash}),
             ),
             "story_guid": params["signature"],
+            "newsletter_headers": newsletter_headers,
+            "newsletter_identity": newsletter_identity,
+            "newsletter_identity_source": newsletter_identity_source,
         }
 
         try:
@@ -124,6 +145,17 @@ class EmailNewsletter:
         except MStory.DoesNotExist:
             story = MStory(**story_params)
             story.save()
+        else:
+            updated = False
+            if newsletter_headers and not story.newsletter_headers:
+                story.newsletter_headers = newsletter_headers
+                updated = True
+            if newsletter_identity and not story.newsletter_identity:
+                story.newsletter_identity = newsletter_identity
+                story.newsletter_identity_source = newsletter_identity_source
+                updated = True
+            if updated:
+                story.save()
 
         usersub.needs_unread_recalc = True
         usersub.save()
@@ -196,6 +228,14 @@ class EmailNewsletter:
     def _feed_address(self, user, sender_email):
         return "newsletter:%s:%s" % (user.pk, sender_email)
 
+    def _feed_link(self, newsletter_identity, sender_domain):
+        source = newsletter_identity.split(":", 1)[-1]
+        if "@" in source:
+            source = source.rsplit("@", 1)[1]
+        if "." not in source:
+            source = sender_domain
+        return "http://" + source
+
     def _split_sender(self, sender):
         tokens = re.search("(.*?) <(.*?)@(.*?)>", sender)
 
@@ -207,6 +247,201 @@ class EmailNewsletter:
         sender_name = sender_name.replace('"', "")
 
         return sender_name, sender_username, sender_domain
+
+    def _find_feed(self, user, feed_address, sender_name, sender_email):
+        candidate_addresses = [feed_address]
+        legacy_feed_address = self._feed_address(user, sender_email)
+        if legacy_feed_address not in candidate_addresses:
+            candidate_addresses.append(legacy_feed_address)
+
+        for candidate_address in candidate_addresses:
+            try:
+                return Feed.objects.get(feed_address=candidate_address)
+            except Feed.MultipleObjectsReturned:
+                feeds = Feed.objects.filter(feed_address=candidate_address)[:1]
+                if feeds.count():
+                    return feeds[0]
+            except Feed.DoesNotExist:
+                pass
+
+        newsletter_subs = UserSubscription.objects.filter(
+            user=user, feed__feed_address__contains="newsletter:"
+        ).only("feed")
+        newsletter_feed_ids = [us.feed.pk for us in newsletter_subs]
+        feeds = Feed.objects.filter(feed_title__iexact=sender_name, pk__in=newsletter_feed_ids)
+        if feeds.count():
+            return feeds[0]
+
+        return None
+
+    def _update_feed_address(self, feed, feed_address):
+        existing_feed = Feed.objects.filter(feed_address=feed_address).exclude(pk=feed.pk).first()
+        if existing_feed:
+            return existing_feed
+
+        old_feed_address = feed.feed_address
+        feed.feed_address = feed_address
+        feed.save()
+        logging.info(
+            " ---> Updating newsletter feed address: %s -> %s (%s)"
+            % (old_feed_address, feed_address, feed.pk)
+        )
+        return feed
+
+    def _newsletter_identity(self, sender_name, sender_email, newsletter_headers):
+        list_id = self._header_value(newsletter_headers, "List-ID")
+        normalized_list_id = self._normalize_list_id(list_id)
+        if normalized_list_id:
+            return "list-id:%s" % normalized_list_id, "list-id"
+
+        original_sender_email = self._original_sender_email(sender_name, sender_email, newsletter_headers)
+        return self._normalize_sender_email(original_sender_email), "sender"
+
+    def _extract_headers(self, params):
+        headers = {}
+
+        message_headers = params.get("message-headers")
+        if message_headers:
+            self._add_message_headers(headers, message_headers)
+
+        raw_headers = params.get("headers")
+        if raw_headers:
+            self._add_message_headers(headers, raw_headers)
+
+        for name, value in params.items():
+            normalized_name = str(name).lower()
+            if normalized_name in self.HEADER_NAMES_TO_SAVE or normalized_name.startswith("x-"):
+                self._add_header(headers, name, value)
+
+        if params.get("from"):
+            self._add_header(headers, "From", params["from"])
+        if params.get("recipient"):
+            self._add_header(headers, "Delivered-To", params["recipient"])
+
+        return headers
+
+    def _add_message_headers(self, headers, message_headers):
+        if isinstance(message_headers, str):
+            try:
+                message_headers = json.loads(message_headers)
+            except (TypeError, ValueError):
+                return
+
+        if isinstance(message_headers, dict):
+            for name, value in message_headers.items():
+                self._add_header(headers, name, value)
+        elif isinstance(message_headers, list):
+            for header in message_headers:
+                if isinstance(header, (list, tuple)) and len(header) >= 2:
+                    self._add_header(headers, header[0], header[1])
+
+    def _add_header(self, headers, name, value):
+        if value is None:
+            return
+
+        name = self._normalize_header_name(name)
+        value = self._normalize_header_value(value)
+        if not name or not value:
+            return
+
+        if name not in headers:
+            headers[name] = []
+        if value not in headers[name]:
+            headers[name].append(value)
+
+    def _normalize_header_name(self, name):
+        name = str(name).strip()
+        if not name:
+            return ""
+        return "-".join(part[:1].upper() + part[1:].lower() for part in name.split("-"))
+
+    def _normalize_header_value(self, value):
+        if isinstance(value, dict):
+            return json.dumps(value, sort_keys=True)
+        if isinstance(value, (list, tuple)):
+            return json.dumps(list(value))
+        return str(value).strip()
+
+    def _header_value(self, headers, name):
+        normalized_name = self._normalize_header_name(name).lower()
+        for header_name, values in headers.items():
+            if header_name.lower() == normalized_name and values:
+                return values[0]
+        return None
+
+    def _normalize_list_id(self, list_id):
+        if not list_id:
+            return None
+
+        list_id = str(list_id).strip()
+        tokens = re.search(r"<([^>]+)>", list_id)
+        if tokens:
+            list_id = tokens.group(1)
+        else:
+            list_id = list_id.split(";", 1)[0]
+
+        list_id = list_id.strip().strip("<>").strip('"').strip("'").lower()
+        list_id = re.sub(r"\s+", "", list_id)
+        list_id = list_id.strip(".")
+        if not list_id:
+            return None
+        return list_id[:500]
+
+    def _original_sender_email(self, sender_name, sender_email, newsletter_headers):
+        for header_name in [
+            "X-Original-From",
+            "X-SimpleLogin-Original-From",
+            "X-SimpleLogin-Envelope-From",
+        ]:
+            value = self._header_value(newsletter_headers, header_name)
+            email = self._email_from_text(value)
+            if email:
+                return email
+
+        sender_from_name = self._email_from_text(sender_name)
+        if sender_from_name:
+            return sender_from_name
+
+        for header_name in [
+            "Reply-To",
+            "From",
+        ]:
+            value = self._header_value(newsletter_headers, header_name)
+            email = self._email_from_text(value)
+            if email:
+                return email
+
+        return sender_email
+
+    def _email_from_text(self, text):
+        if not text:
+            return None
+
+        emails = re.findall(r"([A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,})", text, re.IGNORECASE)
+        if emails:
+            return emails[-1]
+
+        at_emails = re.findall(
+            r"([A-Z0-9._%+\-]+)\s+at\s+([A-Z0-9.\-]+\.[A-Z]{2,})",
+            text,
+            re.IGNORECASE,
+        )
+        if at_emails:
+            local, domain = at_emails[-1]
+            return "%s@%s" % (local, domain)
+
+        return None
+
+    def _normalize_sender_email(self, sender_email):
+        sender_email = (sender_email or "").strip().lower()
+        if sender_email.startswith("mailto:"):
+            sender_email = sender_email[len("mailto:") :]
+        if "@" not in sender_email:
+            return sender_email
+
+        local, domain = sender_email.rsplit("@", 1)
+        local = local.split("+", 1)[0]
+        return "%s@%s" % (local, domain)
 
     def _clean_story_date(self, timestamp):
         """
