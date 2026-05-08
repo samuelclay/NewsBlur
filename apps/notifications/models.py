@@ -517,7 +517,10 @@ class MUserFeedNotification(mongo.Document):
         to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
         text = render_to_string("mail/email_story_notification.txt", params)
         html = render_to_string("mail/email_story_notification.xhtml", params)
-        subject = "%s: %s" % (usersub.user_title or usersub.feed.feed_title, story["story_title"])
+        if feed.is_daily_briefing:
+            subject = story["story_title"]
+        else:
+            subject = "%s: %s" % (usersub.user_title or feed.feed_title, story["story_title"])
         subject = subject.replace("\n", " ")
         msg = EmailMultiAlternatives(
             subject, text, from_email="NewsBlur <%s>" % from_address, to=[to_address]
