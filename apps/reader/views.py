@@ -5619,6 +5619,7 @@ def load_trending_stories(request):
     )
 
     user_is_pro = user.profile.is_pro
+    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=story_feed_ids)
 
     # Look up starred stories
     story_hash_list = [s["story_hash"] for s in stories]
@@ -5689,7 +5690,9 @@ def load_trending_stories(request):
                 if user_is_pro
                 else 0
             ),
+            "prompt": prompt_data["scores"].get(story["story_hash"], 0),
         }
+        story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
     type_label = "long reads" if trending_type == "long_reads" else "widely-read"

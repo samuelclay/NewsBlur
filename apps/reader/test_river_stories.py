@@ -9,6 +9,7 @@ ZUNIONSTORE operations across all feeds.
 import datetime
 from unittest.mock import patch
 
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import connection
@@ -16,8 +17,10 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
+from apps.analyzer.models import MClassifierPrompt, MClassifierTitle
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
+from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 
 
@@ -36,8 +39,6 @@ class Test_RiverStories(TransactionTestCase):
 
     def setUp(self):
         from datetime import datetime, timezone
-
-        import redis
 
         # Clear Redis keys for test feeds (using db=10 for tests)
         redis_story_port = (
@@ -212,6 +213,89 @@ class Test_RiverStories(TransactionTestCase):
             f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)"
         )
 
+    def test_trending_stories__training_applies_to_well_read_and_long_reads(self):
+        """Widely Read and Long Reads should include story classifier scores."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_usage_billing = True
+        self.user.profile.save()
+
+        feed_id = self.test_feeds[0]
+        story_hash = self.test_story_hashes[0]
+        story_date = int(
+            MStory.objects.get(story_hash=story_hash).story_date.timestamp()
+        )
+        MClassifierTitle.objects(user_id=self.user.pk, feed_id=feed_id, title="Test Story").delete()
+        MClassifierPrompt.objects(
+            user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
+        ).delete()
+        self.addCleanup(
+            lambda: MClassifierTitle.objects(
+                user_id=self.user.pk, feed_id=feed_id, title="Test Story"
+            ).delete()
+        )
+        self.addCleanup(
+            lambda: MClassifierPrompt.objects(
+                user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
+            ).delete()
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(
+            is_trained=True
+        )
+
+        r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r_stats.delete(RTrendingStory.WELL_READ_KEY)
+        r_stats.delete(RTrendingStory.LONG_READS_KEY)
+        self.addCleanup(
+            lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY)
+        )
+        r_stats.zadd(RTrendingStory.WELL_READ_KEY, {story_hash: story_date})
+        r_stats.zadd(RTrendingStory.LONG_READS_KEY, {story_hash: story_date})
+
+        MClassifierTitle(
+            user_id=self.user.pk,
+            feed_id=feed_id,
+            title="Test Story",
+            score=1,
+        ).save()
+        prompt = MClassifierPrompt(
+            user_id=self.user.pk,
+            feed_id=feed_id,
+            prompt="stories about test content",
+            classifier_type="focus",
+        ).save()
+        self.addCleanup(MClassifierPrompt.invalidate_cache, self.user.pk, str(prompt.id))
+        MClassifierPrompt.set_cached_scores(
+            self.user.pk,
+            str(prompt.id),
+            feed_id,
+            {story_hash: 1},
+        )
+
+        for trending_type in ["well_read", "long_reads"]:
+            response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "read_filter": "all"},
+            )
+            content = json.decode(response.content)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(content["stories"]), 1)
+            story = content["stories"][0]
+            self.assertEqual(story["story_hash"], story_hash)
+            self.assertEqual(story["intelligence"]["title"], 1)
+            self.assertEqual(story["intelligence"]["prompt"], 1)
+            self.assertEqual(
+                story["prompt_classifiers"],
+                [
+                    {
+                        "prompt": "stories about test content",
+                        "score": 1,
+                        "include_images": False,
+                    }
+                ],
+            )
+
     def test_river_stories__newest_backfills_past_stale_redis_hashes(self):
         """Newest river loads should skip stale Redis hashes that no longer exist in Mongo."""
         self.client.login(username="conesus", password="test")
@@ -268,7 +352,6 @@ class Test_RiverStories(TransactionTestCase):
         self.client.login(username="conesus", password="test")
 
         from django.utils import timezone as django_tz
-        import redis
 
         feed_id = self.test_feeds[0]
         feed = Feed.objects.get(pk=feed_id)
@@ -946,7 +1029,6 @@ class Test_RiverStories(TransactionTestCase):
         # The fix: both now use settings.REDIS_STORY_HASH_POOL
         # Before: feed_stories used POOL, truncate_river used TEMP_POOL (different DBs!)
 
-        import redis
         from django.conf import settings
 
         pool_story = settings.REDIS_STORY_HASH_POOL
@@ -1143,7 +1225,6 @@ class Test_RiverStories(TransactionTestCase):
         (single-pass fetch of all stories). The bug causes page 2 to skip
         stories because the offset is applied to a shifted unread list.
         """
-        import redis
         from django.conf import settings
 
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
