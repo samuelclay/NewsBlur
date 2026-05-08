@@ -3,9 +3,27 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from apps.notifications.models import MUserFeedNotification
+from apps.notifications.models import MUserClassifierNotification, MUserFeedNotification
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
+
+
+class FakeNotificationRedis:
+    def __init__(self):
+        self.store = {}
+
+    def setex(self, key, ttl, value):
+        self.store[key] = value
+        return True
+
+    def set(self, key, value, ex=None, nx=False):
+        if nx and key in self.store:
+            return False
+        self.store[key] = value
+        return True
+
+    def exists(self, key):
+        return key in self.store
 
 
 class Test_EmailNotifications(TestCase):
@@ -59,3 +77,25 @@ class Test_EmailNotifications(TestCase):
         subject = self.send_email_subject(feed, "Morning Daily Briefing - May 8, 2026")
 
         self.assertEqual(subject, "Morning Daily Briefing - May 8, 2026")
+
+    def test_feed_notification_does_not_send_email_after_classifier_email(self):
+        feed = self.make_feed("https://example.com/dedupe.xml", "Dedupe Feed")
+        usersub = UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+        notification = MUserFeedNotification(user_id=self.user.pk, feed_id=feed.pk, is_email=True)
+        story = {
+            "story_title": "Duplicate Alert",
+            "story_hash": "dedupe:%s:1" % feed.pk,
+            "story_feed_id": feed.pk,
+            "story_content": "<p>Summary</p>",
+            "story_tags": [],
+        }
+        fake_redis = FakeNotificationRedis()
+
+        with patch("apps.notifications.models.redis.Redis", return_value=fake_redis):
+            MUserClassifierNotification.mark_story_sent(self.user.pk, story["story_hash"], is_email=True)
+
+            with patch.object(MUserFeedNotification, "send_email") as mock_send_email:
+                sent = notification.push_story_notification(story, {}, usersub)
+
+        self.assertFalse(sent)
+        mock_send_email.assert_not_called()

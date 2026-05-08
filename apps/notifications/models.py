@@ -261,7 +261,9 @@ class MUserFeedNotification(mongo.Document):
 
                 story["story_content"] = html.unescape(story["story_content"])
 
-                sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
+                sent = user_feed_notification.push_story_notification(
+                    story, classifiers, usersub, force=force
+                )
                 if sent:
                     sent_count += 1
                     total_sent_count += 1
@@ -327,7 +329,7 @@ class MUserFeedNotification(mongo.Document):
 
         return title, subtitle, body
 
-    def push_story_notification(self, story, classifiers, usersub):
+    def push_story_notification(self, story, classifiers, usersub, force=False):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
             if settings.DEBUG:
@@ -339,26 +341,46 @@ class MUserFeedNotification(mongo.Document):
             return False
 
         user = User.objects.get(pk=self.user_id)
-        logging.user(
-            user,
-            "~FCSending push notification: %s/%s (score: %s)"
-            % (story["story_title"][:40], story["story_hash"], story_score),
-        )
-
-        self.send_web(story, user)
-        self.send_ios(story, user, usersub)
-        self.send_android(story)
-        self.send_email(story, usersub)
-
-        # Mark channels as sent so classifier notifications don't re-send this story
-        MUserClassifierNotification.mark_story_sent(
+        channels_to_send = MUserClassifierNotification.claim_story_channels(
             self.user_id,
             story["story_hash"],
             is_email=self.is_email,
             is_web=self.is_web,
             is_ios=self.is_ios,
             is_android=self.is_android,
+            force=force,
         )
+        if not any(channels_to_send.values()):
+            return False
+
+        logging.user(
+            user,
+            "~FCSending push notification: %s/%s (score: %s)"
+            % (story["story_title"][:40], story["story_hash"], story_score),
+        )
+
+        original_channels = (self.is_email, self.is_web, self.is_ios, self.is_android)
+        try:
+            self.is_email = channels_to_send.get("email", False)
+            self.is_web = channels_to_send.get("web", False)
+            self.is_ios = channels_to_send.get("ios", False)
+            self.is_android = channels_to_send.get("android", False)
+
+            self.send_web(story, user)
+            self.send_ios(story, user, usersub)
+            self.send_android(story)
+            self.send_email(story, usersub)
+
+            MUserClassifierNotification.mark_story_sent(
+                self.user_id,
+                story["story_hash"],
+                is_email=channels_to_send.get("email", False),
+                is_web=channels_to_send.get("web", False),
+                is_ios=channels_to_send.get("ios", False),
+                is_android=channels_to_send.get("android", False),
+            )
+        finally:
+            self.is_email, self.is_web, self.is_ios, self.is_android = original_channels
 
         return True
 
@@ -712,8 +734,13 @@ class MUserClassifierNotification(mongo.Document):
     def mark_story_sent(
         cls, user_id, story_hash, is_email=False, is_web=False, is_ios=False, is_android=False
     ):
-        """Mark channels as sent for a story so classifier notifications don't re-send."""
+        """Mark channels as sent for a story so notification triggers don't re-send."""
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        for channel in cls.active_channels(is_email, is_web, is_ios, is_android):
+            r.setex(cls.story_sent_key(user_id, story_hash, channel), cls.story_sent_ttl(), 1)
+
+    @classmethod
+    def active_channels(cls, is_email=False, is_web=False, is_ios=False, is_android=False):
         channels = []
         if is_email:
             channels.append("email")
@@ -723,15 +750,46 @@ class MUserClassifierNotification(mongo.Document):
             channels.append("ios")
         if is_android:
             channels.append("android")
-        for channel in channels:
-            key = "story_notified:%s:%s:%s" % (user_id, story_hash, channel)
-            r.setex(key, 60 * 60 * 24, 1)
+        return channels
+
+    @classmethod
+    def story_sent_key(cls, user_id, story_hash, channel):
+        return "story_notified:%s:%s:%s" % (user_id, story_hash, channel)
+
+    @classmethod
+    def story_sent_ttl(cls):
+        return 60 * 60 * 24
+
+    @classmethod
+    def story_claim_ttl(cls):
+        return 60 * 15
+
+    @classmethod
+    def claim_story_channels(
+        cls, user_id, story_hash, is_email=False, is_web=False, is_ios=False, is_android=False, force=False
+    ):
+        """Atomically claim story+channel notifications before sending."""
+        channels_to_send = {}
+        for channel in cls.active_channels(is_email, is_web, is_ios, is_android):
+            channels_to_send[channel] = False
+
+        if force:
+            for channel in channels_to_send:
+                channels_to_send[channel] = True
+            return channels_to_send
+
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        for channel in channels_to_send:
+            key = cls.story_sent_key(user_id, story_hash, channel)
+            channels_to_send[channel] = bool(r.set(key, "sending", nx=True, ex=cls.story_claim_ttl()))
+
+        return channels_to_send
 
     @classmethod
     def check_story_sent(cls, user_id, story_hash, channel):
         """Check if a notification was already sent for this story+channel."""
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        key = "story_notified:%s:%s:%s" % (user_id, story_hash, channel)
+        key = cls.story_sent_key(user_id, story_hash, channel)
         return r.exists(key)
 
     # ------------------------------------------------------------------
@@ -907,12 +965,18 @@ class MUserClassifierNotification(mongo.Document):
                     "android": any(n.is_android for n in matched),
                 }
 
-                # Dedup: skip channels already sent by feed notifications
+                # models.py: Claim channels before sending so feed and classifier
+                # notifications cannot race each other into duplicate emails.
                 story_hash = story["story_hash"]
-                channels_to_send = {}
-                for channel, active in channels.items():
-                    if active and not cls.check_story_sent(user_id, story_hash, channel):
-                        channels_to_send[channel] = True
+                channels_to_send = cls.claim_story_channels(
+                    user_id,
+                    story_hash,
+                    is_email=channels["email"],
+                    is_web=channels["web"],
+                    is_ios=channels["ios"],
+                    is_android=channels["android"],
+                    force=force,
+                )
 
                 if not any(channels_to_send.values()):
                     continue
@@ -944,7 +1008,6 @@ class MUserClassifierNotification(mongo.Document):
                 sender.send_android(story)
                 sender.send_email(story, usersub, classifier_match_desc=match_desc)
 
-                # Mark as sent for dedup
                 cls.mark_story_sent(
                     user_id,
                     story_hash,
