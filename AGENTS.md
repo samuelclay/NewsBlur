@@ -51,6 +51,7 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 ## Android Emulator Testing
 - Prefer reusing an already running emulator instead of booting a new one
 - Check attached devices with `adb devices -l`
+- If no emulator is attached, start one from the repo root with `make android-emulator`
 - The current app package is `com.newsblur`
 - The launcher activity resolves to `com.newsblur/.activity.InitActivity`
 - Do not rely on `emulator -list-avds` being available on `PATH`; in this repo it was not
