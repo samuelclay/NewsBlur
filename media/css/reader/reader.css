@@ -39952,6 +39952,40 @@ button.NB-merge-group-apply.NB-button:hover {
     border-bottom-color: #405BA8;
 }
 
+.NB-briefing-direct-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    vertical-align: -3px;
+    border-bottom: none;
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NB-briefing-direct-link:hover {
+    border-bottom: none;
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.NB-briefing-direct-link:active {
+    transform: scale(0.96);
+}
+
+.NB-briefing-direct-link-icon,
+img.NB-briefing-direct-link-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    max-width: 14px;
+    max-height: 14px;
+    margin: 0;
+    border: 0;
+}
+
 /* reader.css: Favicons inline within briefing story links */
 .NB-briefing-inline-favicon {
     display: inline-block;

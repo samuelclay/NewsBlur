@@ -711,12 +711,14 @@ class Test_Summary(TestCase):
             "long_read": (
                 '<div class="NB-briefing-summary">'
                 '<img src="x" class="NB-briefing-inline-favicon" style="width:16px"> '
-                '<a data-story-hash="h1">S1</a></div>'
+                '<a data-story-hash="h1">S1</a>'
+                '<a href="http://example.com" class="NB-briefing-direct-link">Direct</a></div>'
             ),
         }
         result = enforce_exclusive_sections(section_summaries)
         self.assertNotIn('data-story-hash="h1"', result["long_read"])
         self.assertNotIn("NB-briefing-inline-favicon", result["long_read"])
+        self.assertNotIn("NB-briefing-direct-link", result["long_read"])
 
     # --- rebuild_summary_from_sections ---
 
@@ -745,6 +747,30 @@ class Test_Summary(TestCase):
     def test_prompt_includes_exclusive_instruction(self):
         prompt = _build_system_prompt()
         self.assertIn("exactly ONE section", prompt)
+
+
+class Test_BriefingIcons(BriefingTestCase):
+    """Tests for briefing summary link/icon post-processing."""
+
+    def test_embed_briefing_icons_adds_newsblur_and_original_links(self):
+        from django.conf import settings
+
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[0]
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<ul><li><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></li></ul>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        self.assertIn('href="%s/briefing?story=%s"' % (settings.NEWSBLUR_URL, story.story_hash), result)
+        self.assertIn('href="%s"' % story.story_permalink, result)
+        self.assertIn('class="NB-briefing-direct-link"', result)
+        self.assertIn("NB-briefing-direct-link-icon", result)
 
 
 # ---------------------------------------------------------------------------

@@ -547,6 +547,11 @@ def embed_briefing_icons(summary_html, scored_stories):
         title = feeds_by_id.get(story.story_feed_id)
         if title:
             feed_title_map[story_hash] = title
+    story_permalink_map = {
+        story_hash: story.story_permalink
+        for story_hash, story in stories_by_hash.items()
+        if story.story_permalink
+    }
 
     # --- Phase 2: Style wrapper div ---
 
@@ -619,6 +624,48 @@ def embed_briefing_icons(summary_html, scored_stories):
         r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>',
         _replace_story_link,
         summary_html,
+    )
+
+    # --- Phase 5a: Add a compact direct link to the original publisher article ---
+
+    direct_link_icon_url = _get_icon_data_uri("external-link.svg") or (
+        "%s/media/img/icons/nouns/external-link.svg" % settings.NEWSBLUR_URL
+    )
+    direct_link_style = (
+        "display:inline-block;width:18px;height:18px;margin:0 0 0 4px;"
+        "vertical-align:-3px;text-decoration:none;border:0;"
+    )
+    direct_link_icon_style = (
+        "display:block;width:14px;height:14px;margin:2px;border:0;vertical-align:top;"
+        "max-width:14px;max-height:14px;"
+    )
+
+    def _append_direct_story_link(match):
+        story_hash = match.group("hash")
+        permalink = story_permalink_map.get(story_hash)
+        if not permalink:
+            return match.group("link")
+        return (
+            '%s<a href="%s" class="NB-briefing-direct-link" '
+            'title="Open original article" aria-label="Open original article" '
+            'target="_blank" rel="noopener noreferrer" style="%s">'
+            '<img src="%s" class="NB-briefing-direct-link-icon" alt="" style="%s"></a>'
+        ) % (
+            match.group("link"),
+            html_mod.escape(permalink, quote=True),
+            direct_link_style,
+            direct_link_icon_url,
+            direct_link_icon_style,
+        )
+
+    summary_html = re.sub(
+        (
+            r'(?P<link><a\s(?=[^>]*\bdata-story-hash="(?P<hash>[^"]+)")'
+            r'(?=[^>]*\bclass="[^"]*\bNB-briefing-story-link\b[^"]*")[^>]*>.*?</a>)'
+        ),
+        _append_direct_story_link,
+        summary_html,
+        flags=re.DOTALL,
     )
 
     # --- Phase 5b: Wrap favicon + text in table layout for email alignment ---
@@ -872,6 +919,7 @@ def _strip_duplicate_story_links(html, hashes_to_strip):
     pattern = (
         r"(?:<img\s[^>]*NB-briefing-inline-favicon[^>]*>\s*)?"
         r'<a\s[^>]*data-story-hash="(?P<hash>[^"]+)"[^>]*>(?P<title>.*?)</a>'
+        r'(?:\s*<a\s(?=[^>]*\bclass="[^"]*\bNB-briefing-direct-link\b[^"]*")[^>]*>.*?</a>)?'
     )
     return re.sub(pattern, _replace, html, flags=re.DOTALL)
 
