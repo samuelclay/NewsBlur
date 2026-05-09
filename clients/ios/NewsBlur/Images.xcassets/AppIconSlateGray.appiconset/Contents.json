@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "filename": "iphone_logo_1024.png",
+      "filename": "AppIconSlateGrayLight.png",
       "idiom": "universal",
       "platform": "ios",
       "size": "1024x1024"
@@ -13,7 +13,7 @@
           "value": "dark"
         }
       ],
-      "filename": "AppIconSunriseGoldDark.png",
+      "filename": "AppIconSlateGrayDark.png",
       "idiom": "universal",
       "platform": "ios",
       "size": "1024x1024"

@@ -122,6 +122,7 @@ class SyncNotifierView: UIView {
     private let horizontalPadding: CGFloat = 10
     private let iconSize: CGFloat = 16
     private let animationDuration: TimeInterval = 0.3
+    private let screenEdgePadding: CGFloat = 12
     
     // MARK: - Initialization
     
@@ -272,18 +273,43 @@ class SyncNotifierView: UIView {
         let totalWidth = horizontalPadding + labelWidth + 6 + iconSize + horizontalPadding
         return CGSize(width: totalWidth, height: pillHeight)
     }
-    
+
+    private func visibleContentFrame(in superview: UIView) -> CGRect {
+        let safeBounds = superview.bounds.inset(by: superview.safeAreaInsets)
+
+        guard let window = window else {
+            return safeBounds.insetBy(dx: screenEdgePadding, dy: 0)
+        }
+
+        let windowSafeBounds = window.bounds
+            .inset(by: window.safeAreaInsets)
+            .insetBy(dx: screenEdgePadding, dy: 0)
+        let windowSafeBoundsInSuperview = superview.convert(windowSafeBounds, from: window)
+        let visibleFrame = safeBounds.intersection(windowSafeBoundsInSuperview)
+
+        if visibleFrame.isNull || visibleFrame.width <= 0 {
+            return windowSafeBoundsInSuperview
+        }
+
+        return visibleFrame
+    }
+
+    private func frameInSuperview(for size: CGSize) -> CGRect? {
+        guard let superview = superview else { return nil }
+
+        let visibleFrame = visibleContentFrame(in: superview)
+        let safeBounds = superview.bounds.inset(by: superview.safeAreaInsets)
+        let width = min(size.width, visibleFrame.width)
+        let x = max(visibleFrame.minX, visibleFrame.maxX - width)
+        let y = safeBounds.minY + (safeBounds.height - size.height) / 2
+
+        return CGRect(x: x, y: y, width: width, height: size.height)
+    }
+
     private func setFrameInSuperview(for size: CGSize) {
-        guard let superview = superview else { return }
-        
-        let safe = superview.safeAreaInsets
-        let usableWidth = superview.bounds.width - safe.left - safe.right
-        let usableHeight = superview.bounds.height - safe.top - safe.bottom
-        
-        let x = safe.left + (usableWidth - size.width)
-        let y = safe.top + (usableHeight - size.height) / 2
-        
-        frame = CGRect(x: x, y: y, width: size.width, height: size.height)
+        guard let newFrame = frameInSuperview(for: size) else { return }
+
+        frame = newFrame
     }
     
     private func updateFrameInSuperview(animated: Bool, duration: TimeInterval, targetSize: CGSize) {
@@ -310,13 +336,7 @@ class SyncNotifierView: UIView {
         guard let superview = superview else { return }
         
         let newSize = intrinsicContentSize
-        let safe = superview.safeAreaInsets
-        let usableWidth = superview.bounds.width - safe.left - safe.right
-        let usableHeight = superview.bounds.height - safe.top - safe.bottom
-        
-        let x = safe.left + (usableWidth - newSize.width)
-        let y = safe.top + (usableHeight - newSize.height) / 2
-        let newFrame = CGRect(x: x, y: y, width: newSize.width, height: newSize.height)
+        guard let newFrame = frameInSuperview(for: newSize) else { return }
         
         if animated {
             UIView.animate(withDuration: duration) {

@@ -1931,6 +1931,10 @@ static BOOL NBBoolPreferenceValue(id value) {
                                    self.appDelegate.url];
             [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
         }];
+    } else if ([key isEqualToString:@"app_icon"]) {
+        [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
+            [self.appDelegate showPremiumDialog];
+        }];
     }
 }
 
