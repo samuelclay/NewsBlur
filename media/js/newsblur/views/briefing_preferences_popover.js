@@ -115,7 +115,26 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 this.folders = data.folders || [];
                 this.render();
                 this.highlight_active_options();
+                this.maybe_scroll_to_section();
             }, this)
+        });
+    },
+
+    // briefing_preferences_popover.js: Honor scroll_to option from email deep links (e.g. ?next=briefing-notifications)
+    maybe_scroll_to_section: function () {
+        var scroll_to = this.options.scroll_to;
+        if (!scroll_to) return;
+
+        var section_class = 'NB-popover-section-' + scroll_to;
+        var $section = this.$el.find('.' + section_class);
+        if (!$section.length) return;
+
+        _.defer(function () {
+            $section[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $section.addClass('NB-popover-section-pulse');
+            _.delay(function () {
+                $section.removeClass('NB-popover-section-pulse');
+            }, 2200);
         });
     },
 
@@ -841,7 +860,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             }, items)
         ];
 
-        return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        var $section = this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        // briefing_preferences_popover.js: Marker class so scroll_to: 'notifications' can find this section
+        $section.addClass('NB-popover-section-notifications');
+        return $section;
     },
 
     toggle_notification_type: function (e) {
