@@ -447,14 +447,26 @@ def find_paypal_user(data, custom_field="custom_id"):
         except (User.DoesNotExist, ValueError):
             pass
 
-    # Fallback 1: Look up by subscription ID in PaypalIds
+    # Fallback 1: Look up by subscription ID in PaypalIds.
+    # Use filter() rather than get() because duplicate PaypalIds rows can share
+    # a paypal_sub_id (e.g. retried webhooks). If duplicates all belong to the
+    # same user we can safely return that user; if they span multiple users the
+    # match is ambiguous and we fall through rather than risk applying a webhook
+    # to the wrong account.
     sub_id = resource.get("id") or resource.get("billing_agreement_id")
     if sub_id:
-        try:
-            paypal_id = PaypalIds.objects.get(paypal_sub_id=sub_id)
-            return paypal_id.user
-        except PaypalIds.DoesNotExist:
-            pass
+        paypal_ids = list(PaypalIds.objects.filter(paypal_sub_id=sub_id).select_related("user"))
+        distinct_user_ids = {p.user_id for p in paypal_ids if p.user_id}
+        if len(distinct_user_ids) > 1:
+            logging.user(
+                None,
+                f" ~FR~SBPayPal webhook: multiple users share paypal_sub_id={sub_id} "
+                f"users={sorted(distinct_user_ids)} - skipping PaypalIds lookup",
+            )
+        elif paypal_ids:
+            paypal_id = max(paypal_ids, key=lambda p: p.id)
+            if paypal_id.user:
+                return paypal_id.user
 
     # Fallback 2: Look up by subscriber email
     subscriber = resource.get("subscriber", {})
