@@ -30599,6 +30599,7 @@ h5.NB-classifier-section-header {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 0;
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -30652,14 +30653,13 @@ h5.NB-classifier-section-header {
 .NB-add-site-tab-with-search {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
 }
 
 .NB-add-site-tab-results {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 16px 48px 0;
+    flex: 0 0 auto;
+    overflow: visible;
+    padding: 0;
 }
 
 /* Global Search */
@@ -31156,14 +31156,16 @@ h5.NB-classifier-section-header {
     position: relative;
     width: 100%;
     max-width: 100%;
+    min-height: 0;
     box-sizing: border-box;
 }
 
 .NB-add-site-tab-pane {
     display: none;
     height: 100%;
-    overflow: hidden;
-    padding: 20px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 16px 48px 0;
     box-sizing: border-box;
 }
 
@@ -32433,7 +32435,7 @@ h5.NB-classifier-section-header {
 .NB-add-site-webfeed-content {
     padding: 0 4px;
     flex: 1;
-    overflow-y: auto;
+    overflow: visible;
 }
 
 .NB-add-site-webfeed-empty {

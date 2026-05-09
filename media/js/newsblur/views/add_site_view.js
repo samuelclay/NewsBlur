@@ -672,13 +672,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     bind_scroll_handler: function () {
         var self = this;
-        // Bind to all tab results containers for infinite scroll
-        var $results = this.$('.NB-add-site-tab-results');
-        if ($results.length) {
-            $results.off('scroll.infinite').on('scroll.infinite', function (e) {
+        var $scrollable = this.get_active_tab_scrollable();
+
+        this.$('.NB-add-site-tab-pane').off('scroll.infinite');
+        if ($scrollable.length) {
+            $scrollable.on('scroll.infinite', function (e) {
                 self.handle_tab_scroll(e);
             });
         }
+    },
+
+    get_active_tab_scrollable: function () {
+        return this.$('.NB-add-site-tab-pane.NB-active');
     },
 
     render_tab_search_bar: function (config) {
@@ -3212,7 +3217,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         // Scroll subscribe section into view
         setTimeout(_.bind(function () {
-            var $scrollable = this.$('.NB-add-site-webfeed-content');
+            var $scrollable = this.get_active_tab_scrollable();
             if ($scrollable.length && $subscribe.length) {
                 $scrollable.animate({ scrollTop: $scrollable[0].scrollHeight }, 2000, 'swing');
             }
@@ -3769,7 +3774,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     _scroll_popular_to_top: function () {
-        var $scrollable = this.$('.NB-add-site-tab-results');
+        var $scrollable = this.get_active_tab_scrollable();
         if ($scrollable.length) {
             $scrollable.scrollTop(0);
         }
