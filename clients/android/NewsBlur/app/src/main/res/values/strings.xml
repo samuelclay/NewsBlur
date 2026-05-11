@@ -481,6 +481,14 @@ people together to talk about the world.</string>
 
     <string name="settings_cat_story_list">Story List</string>
     <string name="settings_cat_story_layout">Story Layout</string>
+    <string name="settings_app_icon">App Icon</string>
+    <string name="settings_app_icon_choose">Choose Icon</string>
+    <string name="settings_app_icon_summary">12 color flavors with light and dark variants.</string>
+    <string name="settings_app_icon_footer">Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">Light</string>
+    <string name="settings_app_icon_dark">Dark</string>
+    <string name="settings_app_icon_save_failed">Couldn\'t change the app icon</string>
 
     <string name="oldest">Oldest</string>
     <string name="newest">Newest</string>
