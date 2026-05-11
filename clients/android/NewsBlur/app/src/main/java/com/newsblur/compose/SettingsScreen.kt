@@ -1,6 +1,8 @@
 package com.newsblur.compose
 
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Article
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -38,6 +41,7 @@ import androidx.compose.material.icons.rounded.Gesture
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.ListAlt
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
@@ -72,16 +76,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newsblur.R
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.AppIconFlavor
+import com.newsblur.util.AppIconManager
+import com.newsblur.util.AppIconOption
 import com.newsblur.util.DefaultBrowser
 import com.newsblur.util.FeedListOrder
 import com.newsblur.util.GestureAction
@@ -90,8 +101,8 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadFilter
-import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryClusterDisplayDecision
+import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.VolumeKeyNavigation
@@ -128,9 +139,12 @@ data class SettingsUiState(
     val rtlGestureAction: String = GestureAction.GEST_ACTION_TOGGLE_READ.name,
     val enableNotifications: Boolean = false,
     val showAskAi: Boolean = true,
+    val hasSubscription: Boolean = false,
+    val appIconFlavorId: String = AppIconManager.defaultFlavor.id,
 )
 
 fun buildSettingsUiState(
+    context: Context,
     prefsRepo: PrefsRepo,
     sharedPreferences: SharedPreferences,
 ): SettingsUiState =
@@ -177,6 +191,8 @@ fun buildSettingsUiState(
         rtlGestureAction = prefsRepo.getRightToLeftGestureAction().name,
         enableNotifications = prefsRepo.isEnableNotifications(),
         showAskAi = prefsRepo.isShowAskAi(),
+        hasSubscription = prefsRepo.hasSubscription(),
+        appIconFlavorId = AppIconManager.currentFlavor(context).id,
     )
 
 @Composable
@@ -186,10 +202,20 @@ fun SettingsScreen(
     onStringChanged: (String, String) -> Unit,
     onStoryClusteringEnabledChanged: (Boolean) -> Unit,
     onClusterModeChanged: (String) -> Unit,
+    onAppIconSelected: (AppIconFlavor) -> Unit,
+    onAppIconUpgrade: () -> Unit,
     onDeleteOfflineStories: () -> Unit,
 ) {
     val palette = settingsPalette(state.theme)
     var dialogState by remember { mutableStateOf<ChoiceDialogState?>(null) }
+    var showAppIconChooser by remember { mutableStateOf(false) }
+    val selectedAppIconFlavor = AppIconManager.flavorById(state.appIconFlavorId)
+    val appIconUsesDarkMode =
+        when (state.theme) {
+            ThemeValue.AUTO -> isSystemInDarkTheme()
+            ThemeValue.DARK, ThemeValue.BLACK -> true
+            else -> false
+        }
 
     val networkOptions =
         listOf(
@@ -563,6 +589,27 @@ fun SettingsScreen(
         }
 
         SettingsSection(
+            title = stringResource(R.string.settings_app_icon),
+            icon = Icons.Rounded.Apps,
+            iconColor = NewsblurGreen,
+            palette = palette,
+        ) {
+            AppIconSettingsRow(
+                selectedFlavor = selectedAppIconFlavor,
+                isDarkMode = appIconUsesDarkMode,
+                hasSubscription = state.hasSubscription,
+                palette = palette,
+                onClick = {
+                    if (state.hasSubscription) {
+                        showAppIconChooser = true
+                    } else {
+                        onAppIconUpgrade()
+                    }
+                },
+            )
+        }
+
+        SettingsSection(
             title = stringResource(R.string.settings_cat_feed_list),
             icon = Icons.Rounded.SortByAlpha,
             iconColor = NewsblurOrange,
@@ -826,6 +873,18 @@ fun SettingsScreen(
         }
     }
 
+    if (showAppIconChooser) {
+        AppIconChooserDialog(
+            selectedFlavor = selectedAppIconFlavor,
+            palette = palette,
+            onSelect = { flavor ->
+                onAppIconSelected(flavor)
+                showAppIconChooser = false
+            },
+            onDismiss = { showAppIconChooser = false },
+        )
+    }
+
     dialogState?.let { dialog ->
         ChoiceDialog(
             state = dialog,
@@ -952,6 +1011,272 @@ private fun ValueSettingsRow(
             )
         }
     }
+}
+
+@Composable
+private fun AppIconSettingsRow(
+    selectedFlavor: AppIconFlavor,
+    isDarkMode: Boolean,
+    hasSubscription: Boolean,
+    palette: SettingsPalette,
+    onClick: () -> Unit,
+) {
+    val previewOption = AppIconManager.displayOption(selectedFlavor, isDarkMode)
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                ).padding(horizontal = 14.dp, vertical = 10.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AppIconPreviewImage(option = previewOption, size = 42.dp, cornerRadius = 10.dp)
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.settings_app_icon_choose),
+                    color = palette.textPrimary,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.settings_app_icon_summary),
+                    color = palette.textSecondary,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            if (!hasSubscription) {
+                Icon(
+                    imageVector = Icons.Rounded.Lock,
+                    contentDescription = null,
+                    tint = palette.textSecondary.copy(alpha = 0.75f),
+                    modifier = Modifier.size(15.dp),
+                )
+                Spacer(Modifier.width(5.dp))
+            }
+            Text(
+                text =
+                    if (hasSubscription) {
+                        selectedFlavor.title
+                    } else {
+                        stringResource(R.string.settings_app_icon_premium)
+                    },
+                color = palette.textSecondary,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(0.55f, fill = false),
+            )
+            Icon(
+                imageVector = Icons.Rounded.KeyboardArrowRight,
+                contentDescription = null,
+                tint = palette.textSecondary.copy(alpha = 0.55f),
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.settings_app_icon_footer),
+            color = palette.textSecondary,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 54.dp, end = 6.dp),
+        )
+    }
+}
+
+@Composable
+private fun AppIconChooserDialog(
+    selectedFlavor: AppIconFlavor,
+    palette: SettingsPalette,
+    onSelect: (AppIconFlavor) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var pendingFlavor by remember(selectedFlavor.id) { mutableStateOf(selectedFlavor) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = palette.cardBackground,
+        titleContentColor = palette.textPrimary,
+        textContentColor = palette.textPrimary,
+        title = {
+            Text(
+                text = stringResource(R.string.settings_app_icon),
+                color = palette.textPrimary,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        text = {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 520.dp)
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                AppIconManager.flavors.forEach { flavor ->
+                    AppIconFlavorSection(
+                        flavor = flavor,
+                        selected = flavor.id == pendingFlavor.id,
+                        palette = palette,
+                        onSelect = { pendingFlavor = flavor },
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSelect(pendingFlavor) }) {
+                Text(stringResource(R.string.alert_dialog_done), color = palette.newsblurGreen)
+            }
+        },
+    )
+}
+
+@Composable
+private fun AppIconFlavorSection(
+    flavor: AppIconFlavor,
+    selected: Boolean,
+    palette: SettingsPalette,
+    onSelect: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(18.dp))
+                .background(if (selected) palette.newsblurGreen.copy(alpha = 0.08f) else Color.Transparent)
+                .border(
+                    width = if (selected) 2.dp else 1.dp,
+                    color = if (selected) palette.newsblurGreen else palette.border.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(18.dp),
+                ).padding(8.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+        ) {
+            Text(
+                text = flavor.title.uppercase(),
+                color = if (selected) palette.newsblurGreen else palette.textSecondary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.8.sp,
+            )
+            Spacer(Modifier.width(8.dp))
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Rounded.CheckCircle,
+                    contentDescription = null,
+                    tint = palette.newsblurGreen,
+                    modifier = Modifier.size(15.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            flavor.options.forEach { option ->
+                AppIconOptionCard(
+                    option = option,
+                    palette = palette,
+                    onSelect = onSelect,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppIconOptionCard(
+    option: AppIconOption,
+    palette: SettingsPalette,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onSelect,
+                ),
+        shape = RoundedCornerShape(12.dp),
+        color = palette.cardBackground,
+        border = BorderStroke(1.dp, palette.border.copy(alpha = 0.45f)),
+        shadowElevation = if (palette.showShadow) 2.dp else 0.dp,
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            AppIconPreviewImage(option = option, size = 68.dp, cornerRadius = 16.dp)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = option.title,
+                color = palette.textPrimary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 15.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.heightIn(min = 32.dp),
+            )
+            Spacer(Modifier.height(5.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color(option.tintColor).copy(alpha = 0.14f))
+                        .padding(horizontal = 7.dp, vertical = 3.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = option.appearance.uppercase(),
+                    color = Color(option.tintColor),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 10.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppIconPreviewImage(
+    option: AppIconOption,
+    size: Dp,
+    cornerRadius: Dp,
+) {
+    val shape = RoundedCornerShape(cornerRadius)
+    androidx.compose.foundation.Image(
+        painter = painterResource(option.previewRes),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier =
+            Modifier
+                .size(size)
+                .shadow(4.dp, shape, clip = false)
+                .clip(shape)
+                .border(1.dp, Color.Black.copy(alpha = 0.08f), shape),
+    )
 }
 
 @Composable

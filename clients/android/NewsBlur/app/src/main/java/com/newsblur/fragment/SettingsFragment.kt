@@ -32,14 +32,17 @@ import com.newsblur.design.toVariant
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
+import com.newsblur.util.AppIconFlavor
+import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.StoryClusterDisplayDecision
+import com.newsblur.util.UIUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -109,6 +112,8 @@ class SettingsFragment : Fragment() {
                         onStringChanged = ::updateStringPreference,
                         onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
                         onClusterModeChanged = ::updateClusterMode,
+                        onAppIconSelected = ::updateAppIcon,
+                        onAppIconUpgrade = ::showSubscription,
                         onDeleteOfflineStories = ::deleteOfflineStories,
                     )
                 }
@@ -116,7 +121,8 @@ class SettingsFragment : Fragment() {
         }
 
     private fun refreshUiState() {
-        uiState = buildSettingsUiState(prefsRepo, sharedPreferences)
+        val context = context ?: return
+        uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences)
     }
 
     private fun updateBooleanPreference(
@@ -146,6 +152,21 @@ class SettingsFragment : Fragment() {
 
     private fun updateClusterMode(clusterMode: String) {
         updateStoryClusteringPreference(true, clusterMode)
+    }
+
+    private fun updateAppIcon(flavor: AppIconFlavor) {
+        try {
+            AppIconManager.setCurrentFlavor(requireContext(), flavor)
+            refreshUiState()
+        } catch (_: RuntimeException) {
+            Toast
+                .makeText(requireContext(), R.string.settings_app_icon_save_failed, Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun showSubscription() {
+        UIUtils.startSubscriptionActivity(requireContext())
     }
 
     private fun updateStoryClusteringPreference(
