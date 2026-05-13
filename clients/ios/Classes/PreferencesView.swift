@@ -215,6 +215,14 @@ private enum NewsBlurAppIconLibrary {
         NewsBlurAppDelegate.shared?.isPremium == true
     }
 
+    static var supportsIconSelection: Bool {
+        #if targetEnvironment(macCatalyst)
+        return true
+        #else
+        return UIApplication.shared.supportsAlternateIcons
+        #endif
+    }
+
     static var currentGroup: NewsBlurAppIconFlavorGroup {
         if let currentName = UIApplication.shared.alternateIconName,
            let group = groups.first(where: { $0.alternateIconName == currentName }) {
@@ -237,6 +245,10 @@ private enum NewsBlurAppIconLibrary {
         #else
         return false
         #endif
+    }
+
+    static func apply(group: NewsBlurAppIconFlavorGroup, completion: @escaping (Error?) -> Void) {
+        UIApplication.shared.setAlternateIconName(group.alternateIconName, completionHandler: completion)
     }
 
     private static func group(
@@ -1903,7 +1915,7 @@ struct AppIconPreferenceItemView: View {
     }
 
     private var rowValue: String {
-        if !UIApplication.shared.supportsAlternateIcons {
+        if !NewsBlurAppIconLibrary.supportsIconSelection {
             return "Unavailable"
         }
 
@@ -1965,7 +1977,7 @@ struct AppIconPreferenceItemView: View {
     }
 
     private func openChooser() {
-        guard UIApplication.shared.supportsAlternateIcons else { return }
+        guard NewsBlurAppIconLibrary.supportsIconSelection else { return }
 
         if isPremium {
             currentGroup = NewsBlurAppIconLibrary.currentGroup
@@ -2077,7 +2089,7 @@ private struct AppIconChooserView: View {
         errorMessage = nil
         isChangingIcon = true
 
-        UIApplication.shared.setAlternateIconName(pendingGroup.alternateIconName) { error in
+        NewsBlurAppIconLibrary.apply(group: pendingGroup) { error in
             DispatchQueue.main.async {
                 isChangingIcon = false
 
