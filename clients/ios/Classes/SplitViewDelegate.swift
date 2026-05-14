@@ -17,13 +17,26 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
             return .primary
         }
 
+        let hasFeed = detailController.isFeedShown
+        let hasStory = detailController.hasVisibleStoryForSidebarLayout || detailController.isStoryShown
         let topColumn = SplitCollapseColumnDecision.topColumn(
-            hasFeed: detailController.isFeedShown,
-            hasStory: detailController.hasVisibleStoryForSidebarLayout || detailController.isStoryShown,
+            hasFeed: hasFeed,
+            hasStory: hasStory,
             proposedTopColumn: splitCollapseTopColumn(for: proposedTopColumn)
         )
         
         detailController.collapseToSingleColumn()
+
+        let restoreCompactNavigation = {
+            detailController.restoreCompactNavigationAfterSplitCollapse(showFeed: hasFeed, showStory: hasStory)
+        }
+        if let transitionCoordinator = svc.transitionCoordinator {
+            transitionCoordinator.animate(alongsideTransition: nil) { _ in
+                restoreCompactNavigation()
+            }
+        } else {
+            DispatchQueue.main.async(execute: restoreCompactNavigation)
+        }
         
         return uiSplitViewColumn(for: topColumn)
     }

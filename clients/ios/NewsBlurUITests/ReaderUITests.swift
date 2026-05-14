@@ -58,6 +58,34 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
     }
 
+    func test_rotatingFromStoryDetailKeepsStoryVisibleWhenReturningToPortrait() {
+        launch(on: "reader-feed-swift")
+
+        let storyList = fixtureStorySurface()
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+
+        let firstStory = storyCells(in: storyList).element(boundBy: 0)
+        XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
+        tapElementCenter(firstStory)
+
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should be visible before rotation: \(debugVisibility(currentStory))")
+        attachScreenshot(named: "portrait-story")
+
+        XCUIDevice.shared.orientation = .landscapeLeft
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        attachScreenshot(named: "landscape-story")
+
+        XCUIDevice.shared.orientation = .portrait
+
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should stay visible after returning to portrait: \(debugVisibility(currentStory))")
+        attachScreenshot(named: "portrait-after-rotate")
+    }
+
     func test_selectingFeedShowsExpectedFixtureStoryRows() {
         launch(on: "reader-feed-swift")
 
@@ -267,6 +295,18 @@ final class ReaderUITests: XCTestCase {
         app.staticTexts["story-current-story"].firstMatch
     }
 
+    private func isVisibleOnScreen(_ element: XCUIElement) -> Bool {
+        guard element.exists, !element.frame.isEmpty else {
+            return false
+        }
+
+        return app.frame.intersects(element.frame)
+    }
+
+    private func debugVisibility(_ element: XCUIElement) -> String {
+        "exists=\(element.exists) frame=\(element.frame) appFrame=\(app.frame)"
+    }
+
     private func liveFeedCell(named title: String) -> XCUIElement {
         let predicate = NSPredicate(format: "label BEGINSWITH %@", "\(title) feed")
         return app.tables["feeds-list"].cells.matching(predicate).firstMatch
@@ -443,6 +483,13 @@ final class ReaderUITests: XCTestCase {
         let coordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
             .withOffset(CGVector(dx: frame.midX, dy: frame.midY))
         coordinate.tap()
+    }
+
+    private func attachScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     private func swipeElementLeft(_ element: XCUIElement, distance: CGFloat = 180) {

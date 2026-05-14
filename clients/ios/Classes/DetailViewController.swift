@@ -409,12 +409,74 @@ class DetailViewController: BaseViewController {
     @objc var hasVisibleStoryForSidebarLayout: Bool {
         appDelegate.activeStory != nil || currentStoryController?.activeStory != nil
     }
+
+    private var shouldShowStoryInCompactNavigation: Bool {
+        hasVisibleStoryForSidebarLayout || isStoryShown
+    }
     
     /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
     func collapseToSingleColumn() {
         isCompact = true
         
         checkViewControllers()
+    }
+
+    func restoreCompactNavigationAfterSplitCollapse(showFeed: Bool, showStory: Bool) {
+        guard isCompact, showFeed || showStory else {
+            return
+        }
+
+        guard let nav = appDelegate.feedsNavigationController,
+              let feedsViewController = appDelegate.feedsViewController else {
+            return
+        }
+
+        var controllers: [UIViewController] = [feedsViewController]
+
+        if (showFeed || showStory), let feedDetailViewController {
+            controllers.append(feedDetailViewController)
+        }
+
+        if showStory, let storyPagesViewController {
+            controllers.append(storyPagesViewController)
+        }
+
+        let currentControllers = nav.viewControllers.map { ObjectIdentifier($0) }
+        let desiredControllers = controllers.map { ObjectIdentifier($0) }
+        if currentControllers != desiredControllers {
+            nav.setViewControllers(controllers, animated: false)
+        }
+
+        if showStory, let storyPagesViewController {
+            refreshRestoredStoryPageWhenLaidOut(storyPagesViewController)
+        }
+    }
+
+    private func refreshRestoredStoryPageWhenLaidOut(_ storyPagesViewController: StoryPagesViewController, attempt: Int = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak storyPagesViewController] in
+            guard let self, self.isCompact, let storyPagesViewController else {
+                return
+            }
+
+            self.appDelegate.feedsNavigationController.view.setNeedsLayout()
+            self.appDelegate.feedsNavigationController.view.layoutIfNeeded()
+            storyPagesViewController.view.setNeedsLayout()
+            storyPagesViewController.view.layoutIfNeeded()
+
+            let hasUsableBounds = storyPagesViewController.view.bounds.width > 0 && storyPagesViewController.view.bounds.height > 0
+            if !hasUsableBounds && attempt < 20 {
+                self.refreshRestoredStoryPageWhenLaidOut(storyPagesViewController, attempt: attempt + 1)
+                return
+            }
+
+            storyPagesViewController.updatePage(
+                withActiveStory: self.appDelegate.storiesCollection.locationOfActiveStory(),
+                updateFeedDetail: false
+            )
+            storyPagesViewController.refreshPages()
+            storyPagesViewController.reorientPages()
+            storyPagesViewController.currentPage.view.isHidden = false
+        }
     }
     
     /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
@@ -490,7 +552,7 @@ class DetailViewController: BaseViewController {
         let appropriateContainerView = isTop ? bottomContainerView : topContainerView
         
         if isCompact || storyPagesViewController.view.superview != appropriateContainerView {
-            add(viewController: storyPagesViewController, to: appropriateContainerView, compactPush: isStoryShown)
+            add(viewController: storyPagesViewController, to: appropriateContainerView, compactPush: shouldShowStoryInCompactNavigation)
             
             adjustForAutoscroll()
             
@@ -513,7 +575,7 @@ class DetailViewController: BaseViewController {
                     appDelegate.feedsNavigationController.pushViewController(feedDetailViewController, animated: animated)
                 }
                 
-                if isStoryShown, let storyPagesViewController, appDelegate.feedsNavigationController.viewControllers.count < 3 {
+                if shouldShowStoryInCompactNavigation, let storyPagesViewController, appDelegate.feedsNavigationController.viewControllers.count < 3 {
                     appDelegate.feedsNavigationController.pushViewController(storyPagesViewController, animated: animated)
                 }
             }
@@ -1300,7 +1362,7 @@ private extension DetailViewController {
 #endif
         
         if isCompact, let feedDetailViewController {
-            if !isStoryShown {
+            if !shouldShowStoryInCompactNavigation {
                 remove(viewController: storyPagesViewController)
             }
             
@@ -1384,7 +1446,7 @@ private extension DetailViewController {
             wasGridView = false
         }
         
-        if !storyTitlesInGridView, isCompact, isStoryShown {
+        if !storyTitlesInGridView, isCompact, shouldShowStoryInCompactNavigation {
             moveStoriesToDetailContainer()
         }
         
@@ -1478,7 +1540,7 @@ private extension DetailViewController {
         listStoryPagesViewController = StoryPagesViewController()
         gridStoryPagesViewController = StoryPagesViewController()
     }
-    
+
     /// The status bar portion of the navigation controller isn't the right color, due to a white subview bleeding through the visual effect view. This somewhat hacky function will correct that.
     func tidyNavigationController() {
         guard let visualEffectSubviews = navigationController?.navigationBar.subviews.first?.subviews.first?.subviews, visualEffectSubviews.count == 3, visualEffectSubviews[1].alpha == 1 else {
