@@ -957,6 +957,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $sideoptions = this.$(".NB-feed-story-sideoptions");
         if (!$content_container.length || !$sideoptions.length) return;
 
+        // Clear any explicit height left over from the non-sticky share/save
+        // resize path; otherwise an old inline height keeps the story area tall
+        // after switching to sticky mode.
+        var $story_content = this.$(".NB-feed-story-content,.NB-story-content");
+        if ($story_content.data('original_height')) {
+            $story_content.css({ 'height': '', 'min-height': '' });
+            $story_content.removeData('original_height');
+        }
+
         var top_margin = 24;
         var bottom_margin = 42;
         var sideoptions_height = $sideoptions.outerHeight(true);
