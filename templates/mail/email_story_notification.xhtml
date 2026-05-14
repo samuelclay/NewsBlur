@@ -21,11 +21,13 @@
     }
 </style>
 
+    {% if not feed.is_daily_briefing %}
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
         <img src="{{ favicon_url }}" style="width: 16px;height: 16px;vertical-align: middle; "> <a href="{{ feed.feed_link }}" style="color: #303050;text-decoration: none;">{{ feed_title }}</a>
     </h2>
-    
+
     <hr>
+    {% endif %}
 
     <h2><a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
 
