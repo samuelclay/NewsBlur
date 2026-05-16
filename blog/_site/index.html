@@ -80,6 +80,31 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">May 15, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/05/15/custom-app-icons/">
+              Custom app icons for iOS, Mac, and Android
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Someone on the forum posted <a href="https://forum.newsblur.com/t/a-long-ish-list-of-ideas-and-bugs/13674/11">a long-ish list of ideas</a>, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.</p>
+
+<p>There are 12 color flavors: Sunrise Gold, Ember Orange, Coral Rose, Ruby Red, Plum Berry, Lavender Iris, Atlantic Blue, Arctic Cyan, Teal Mint, Meadow Sage, Slate Gray, and Sepia Cocoa. Every flavor comes in a light and a dark variant, so there are 24 icons to pick from. Match a bright home screen, match a dark one, or just pick the color you like best.</p>
+
+<p><img src="/assets/app-icons-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>To change yours, open Preferences and find the App Icon section, then tap Choose Icon. The chooser shows a live preview of every flavor, and the new icon takes effect right away.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/app-icons-ios.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/app-icons-android.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<p>Custom app icons are available now on the latest iOS, Mac, and Android apps for any premium subscriber. If you have an idea for a flavor that’s missing, or anything else, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Apr 6, 2026</span>
           <h3>
             <a class="post-link" href="/2026/04/06/premium-pro/">
@@ -801,71 +826,6 @@ newsblur auth login
 <p>All users can open the Daily Briefing to see a preview with a handful of top stories. To unlock full briefings with all sections, custom keywords, and scheduled delivery, upgrade to Premium Archive.</p>
 
 <p>If you have feedback or ideas for how to make the Daily Briefing better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 18, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/03/18/story-clustering/">
-              Story clustering: automatically group duplicate stories across your feeds
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
-
-<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
-
-<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
-<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
-
-<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
-<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="two-layers-of-detection">Two layers of detection</h3>
-
-<p>Clustering uses two complementary approaches to catch duplicates:</p>
-
-<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
-
-<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
-
-<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
-
-<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
-
-<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
-
-<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
-<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are two controls:</p>
-
-<ul>
-  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
-  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
-</ul>
-
-<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
-
-<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
-<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.</p>
-
-<p><strong>Premium Archive subscribers</strong> get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.</p>
-
-<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

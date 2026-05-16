@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-06T00:02:26-04:00</updated>
+  <updated>2026-05-15T21:57:02-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,47 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Read Stories feed and a rewritten networking stack on v4.3.0 of the NewsBlur Android App</title>
+    <link href="https://blog.newsblur.com/2015/06/23/read-stories-feed-and-a-rewritten-networking-stack/" rel="alternate" type="text/html" title="Read Stories feed and a rewritten networking stack on v4.3.0 of the NewsBlur Android App" />
+    <published>2015-06-23T06:00:29-04:00</published>
+    <updated>2015-06-23T06:00:29-04:00</updated>
+    <id>https://blog.newsblur.com/2015/06/23/read-stories-feed-and-a-rewritten-networking-stack</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/06/23/read-stories-feed-and-a-rewritten-networking-stack/">
+      <![CDATA[<p>Today I’d like to announce the release of version 4.3.0 of the official NewsBlur Android app. Lots of goodies, bug fixes, speed ups, and more.</p>
+
+<p>The best new feature on the app is the new Read Stories feed. Take a look.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20read%20stories.png" alt="" /></p>
+
+<p>Here’s what’s new in version 4.3.0:</p>
+
+<ul>
+  <li>New Read Stories feed</li>
+  <li>New comment-less shares</li>
+  <li>Memory use reduction</li>
+  <li>Modern http library for improved connection handling and reduced timeouts</li>
+  <li>Many bugfixes around sharing, commenting, and replying to stories</li>
+  <li>Fixed unread search order</li>
+</ul>
+
+<p>The Android app just keeps getting better! Not bad for a minor point release.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Today I’d like to announce the release of version 4.3.0 of the official NewsBlur Android app. Lots of goodies, bug fixes, speed ups, and more.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Reply to shared stories that have no comment</title>
@@ -1022,47 +1063,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[The single biggest criticism I’ve heard of the Android app is that it can be slow when loading feeds and then loading stories. That changes today with the release of version 3.5 of the NewsBlur Android app.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Background updates and dynamic font sizing on the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/" rel="alternate" type="text/html" title="Background updates and dynamic font sizing on the NewsBlur iOS app" />
-    <published>2013-12-19T10:38:00-05:00</published>
-    <updated>2013-12-19T10:38:00-05:00</updated>
-    <id>https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2013/12/19/background-updates-and-dynamic-font-sizing-on-the/">
-      <![CDATA[<p>This week brings us a minor, but major, update for <a href="http://www.newsblur.com/ios">the NewsBlur iOS app</a>. Several new features, some due to new APIs in iOS 7, have made it into the app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios3.6.png" alt="" /></p>
-
-<p>Here’s what’s new:</p>
-
-<ul>
-  <li>Background updates so NewsBlur can download stories while you sleep</li>
-  <li>Custom text sizes for feeds and stories</li>
-  <li>Dynamic text sizes based on your system preferences</li>
-  <li>The story title is now linked to the original story</li>
-  <li>New preference to use either the in-app browser, Safari, or Chrome</li>
-  <li>Major iPad fixes include better transitions, bugs squashed, and improved performance</li>
-</ul>
-
-<p>Coming up I have a big ticket feature that is just about ready to launch. Stay tuned for saved story tagging, which will also make its way into the Android and iOS app soon.</p>
-
-<p>Download the latest and free <a href="http://www.newsblur.com/ios">NewsBlur iOS app</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[This week brings us a minor, but major, update for the NewsBlur iOS app. Several new features, some due to new APIs in iOS 7, have made it into the app.
 ]]>
     </summary>
     
