@@ -267,6 +267,108 @@
         recurse: yes
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-analytics']
 
+# hdb-mongo-secondary-1 hosts a second mongo container alongside the
+# replica-set mongo to stand in for the offline hdb-mongo-analytics-* boxes.
+# It listens on host port 27018 (mapped to container 27017), uses its own
+# data/log dirs, and is reached via the db-mongo-analytics consul service.
+- name: Start mongo analytics on hdb-mongo-secondary-1
+  block:
+    - name: Create mongo analytics data directory on secondary-1
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/mongo_analytics"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Create mongo analytics backup directory on secondary-1
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/mongo_analytics/backup"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Create mongo analytics log directory on secondary-1
+      become: yes
+      file:
+        path: /var/log/mongodb_analytics
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Create mongo analytics log file on secondary-1
+      become: yes
+      file:
+        path: /var/log/mongodb_analytics/mongod.log
+        state: touch
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0600
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Start db-mongo-analytics docker container on secondary-1
+      become: yes
+      docker_container:
+        name: mongo_analytics
+        image: mongo:4.0
+        state: started
+        container_default_behavior: no_defaults
+        hostname: "{{ inventory_hostname }}-analytics"
+        restart_policy: unless-stopped
+        networks_cli_compatible: yes
+        network_mode: default
+        networks:
+          - name: newsblurnet
+            aliases:
+              - mongo_analytics
+        ports:
+          - "27018:27017"
+        command: --config /etc/mongod.conf
+        user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
+        volumes:
+          - /srv/newsblur/docker/volumes/mongo_analytics:/data/db
+          - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+          - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+          - /var/log/mongodb_analytics/:/var/log/mongodb/
+          - /srv/newsblur/docker/volumes/mongo_analytics/backup/:/backup/
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  tags:
+    - mongo_analytics
+
+# Bootstrap the admin user on the analytics container. Tagged `never` so
+# it only runs when explicitly invoked (-t mongoauth) — and only works on
+# a fresh data dir before authorization locks the localhost exception.
+- name: Create mongo analytics database user on secondary-1
+  shell:
+    cmd: >-
+      sleep 2; docker exec mongo_analytics mongo admin
+      --eval '
+      db.createUser(
+        {
+          user: "{{ mongodb_username }}",
+          pwd: "{{ mongodb_password }}",
+          roles: [
+            { role: "root", db: "admin" },
+          ]
+        }
+      )'
+  register: analytics_auth_result
+  changed_when:
+    - analytics_auth_result.rc == 0
+  failed_when:
+    - "'Successfully added user' not in analytics_auth_result.stdout"
+    - "'already exists' not in analytics_auth_result.stdout"
+    - "'there are no users authenticated' not in analytics_auth_result.stdout"
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  tags:
+    - mongoauth
+    - never
+
 - name: Create mongo database user (bootstrap without auth for fresh DB, localhost exception)
   shell:
     cmd: >-
@@ -314,6 +416,21 @@
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
+  notify:
+    - reload consul
+
+# hdb-mongo-secondary-1 hosts a second mongo container on port 27018
+# that serves as the db-mongo-analytics service while the dedicated
+# hdb-mongo-analytics-* boxes are offline. The standard mongo replica-set
+# container keeps port 27017, so this registers the analytics service
+# alongside the existing db-mongo service on the same host.
+- name: Register mongo-analytics on secondary-1 in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.analytics_secondary_1.json
+    dest: /etc/consul.d/mongo_analytics.json
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
   notify:
     - reload consul
 
