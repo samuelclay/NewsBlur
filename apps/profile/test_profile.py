@@ -222,8 +222,8 @@ class Test_UpgradePaths(TestCase):
         self.assertFalse(self.profile.is_archive)
         self.assertFalse(self.profile.is_pro)
         m["email_premium"].assert_called_once_with(user_id=self.user.pk)
-        m["email_staff"].assert_called_once()
-        self.assertEqual(m["email_staff"].call_args.kwargs["previous_tier"], "free")
+        # Staff only get archive/pro upgrade emails, not plain premium.
+        m["email_staff"].assert_not_called()
         # Free→premium relies on the downstream charge.succeeded webhook to
         # sync history. Calling setup_premium_history here would double the
         # Stripe API calls per signup.
@@ -276,8 +276,8 @@ class Test_UpgradePaths(TestCase):
         self.assertTrue(self.profile.is_premium)
         self.assertFalse(self.profile.is_premium_trial, "trial flag must clear on paid upgrade")
         m["email_premium"].assert_called_once_with(user_id=self.user.pk)
-        m["email_staff"].assert_called_once()
-        self.assertEqual(m["email_staff"].call_args.kwargs["previous_tier"], "trial")
+        # Staff only get archive/pro upgrade emails, not plain premium.
+        m["email_staff"].assert_not_called()
         m["setup_history"].assert_called_once()
 
     def test_trial_to_archive_clears_trial_flag(self):
@@ -422,7 +422,7 @@ class Test_UpgradePaths(TestCase):
         second_profile.activate_premium()
 
         self.assertEqual(m["email_premium"].call_count, 1, "new-premium email must send exactly once")
-        self.assertEqual(m["email_staff"].call_count, 1, "staff email must send exactly once")
+        m["email_staff"].assert_not_called()
 
 
 class Test_SetupPremiumHistoryStripe(TestCase):
