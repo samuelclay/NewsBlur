@@ -2005,6 +2005,113 @@ class Profile(models.Model):
             )
         return refunded
 
+    def refund_prorated_store_payment_for_provider_switch(self):
+        """Refund the unused portion of an App Store / Google Play subscription
+        when a user upgrades or switches to a Stripe subscription.
+
+        Apple and Google App Store charges can't be refunded through the Stripe
+        API, and the stores won't refund them on our behalf. So when a store
+        subscriber starts a Stripe subscription (e.g. upgrading Premium ->
+        Archive on the website), we credit the unused days of their store
+        payment back as a partial refund against the new Stripe charge. This
+        mirrors refund_prorated_paypal_for_provider_switch, which does the same
+        for a PayPal -> Stripe switch.
+
+        Returns the refunded dollar amount, or None if no refund was possible.
+        """
+        # All paid App Store / Google Play subscription providers (apps/profile/models.py)
+        store_providers = [
+            "android-subscription",
+            "android-archive",
+            "android-pro",
+            "ios-subscription",
+            "ios-archive-subscription",
+            "ios-pro-subscription",
+        ]
+        last_store_payment = (
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider__in=store_providers,
+                payment_amount__gt=0,
+            )
+            .exclude(refunded=True)
+            .order_by("-payment_date")
+            .first()
+        )
+        if not last_store_payment:
+            logging.user(self.user, "~FBNo App Store payment to prorate for provider switch")
+            return None
+
+        payment_date = last_store_payment.payment_date
+        if payment_date.tzinfo:
+            payment_date = payment_date.replace(tzinfo=None)
+        days_since = (datetime.datetime.now() - payment_date).days
+        if days_since >= 365:
+            logging.user(
+                self.user,
+                "~FRApp Store payment too old to prorate: ~SB%s days ago" % days_since,
+            )
+            return None
+        days_left = 365 - days_since
+
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            logging.user(self.user, "~FRNo Stripe customer to refund prorated App Store payment against")
+            return None
+        try:
+            stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+        except stripe.error.InvalidRequestError as e:
+            logging.user(
+                self.user, "~FRFailed to retrieve Stripe charges for prorated App Store refund: ~SB%s" % e
+            )
+            return None
+        if not stripe_payments:
+            logging.user(self.user, "~FRNo Stripe charge to refund prorated App Store payment against")
+            return None
+
+        latest_charge = stripe_payments[0]
+        # If anything was already refunded on this charge (a retried webhook or
+        # a manual refund), don't refund again.
+        if latest_charge.amount_refunded:
+            logging.user(self.user, "~FRLatest Stripe charge already partially refunded, skipping proration")
+            return None
+
+        # Prorated unused value of the store payment, capped at the new Stripe
+        # charge so we never refund more than the user just paid.
+        store_amount_cents = int(last_store_payment.payment_amount) * 100
+        refund_amount_cents = int(round((days_left / 365) * store_amount_cents))
+        refund_amount_cents = min(refund_amount_cents, latest_charge.amount)
+        if refund_amount_cents <= 0:
+            logging.user(self.user, "~FRProrated App Store refund amount is zero or negative")
+            return None
+
+        try:
+            refund = stripe.Refund.create(charge=latest_charge.id, amount=refund_amount_cents)
+        except stripe.error.InvalidRequestError as e:
+            logging.user(self.user, "~FRFailed to issue prorated App Store refund: ~SB%s" % e)
+            return None
+
+        refund_dollars = refund_amount_cents / 100.0
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=-int(round(refund_dollars)),
+            payment_provider="stripe",
+            payment_identifier=refund.id,
+            refunded=True,
+        )
+        logging.user(
+            self.user,
+            "~FRProrated App Store refund for provider switch: $%.2f (of $%s %s, %s days left)"
+            % (
+                refund_dollars,
+                last_store_payment.payment_amount,
+                last_store_payment.payment_provider,
+                days_left,
+            ),
+        )
+        return refund_dollars
+
     def cancel_premium(self, force=False):
         paypal_cancel = self.cancel_premium_paypal(force=force)
         stripe_cancel = self.cancel_premium_stripe(force=force)
@@ -3807,9 +3914,15 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
-        # Prorate refund on old PayPal subscription before activating new tier
+        # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
+        else:
+            # An App Store / Google Play subscriber upgrading or switching to
+            # Stripe can't have their store charge refunded through Stripe, so
+            # credit the unused days back against this new Stripe charge. No-ops
+            # when there's no recent store payment (e.g. a plain free signup).
+            profile.refund_prorated_store_payment_for_provider_switch()
         if plan_id == Profile.plan_to_stripe_price("premium"):
             profile.activate_premium()
             MReferral.award_credit(profile.user.pk, 36, "premium")
