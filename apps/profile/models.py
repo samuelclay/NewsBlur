@@ -623,7 +623,7 @@ class Profile(models.Model):
         return True
 
     def activate_premium(self, never_expire=False):
-        from apps.profile.tasks import EmailNewPremium, EmailStaffPremiumUpgrade
+        from apps.profile.tasks import EmailNewPremium
 
         logging.user(
             self.user,
@@ -659,10 +659,8 @@ class Profile(models.Model):
             logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
         EmailNewPremium.delay(user_id=self.user.pk)
-        staff_previous_tier = "trial" if was_trial else ("premium" if self.is_premium else "free")
-        EmailStaffPremiumUpgrade.delay(
-            user_id=self.user.pk, tier="premium", previous_tier=staff_previous_tier
-        )
+        # No staff upgrade email for plain Premium — staff only watch Premium
+        # Archive and Premium Pro upgrades (see activate_archive/activate_pro).
 
         subs = UserSubscription.objects.filter(user=self.user)
 
