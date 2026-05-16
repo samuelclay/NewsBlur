@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-06T00:02:26-04:00</updated>
+  <updated>2026-05-15T21:57:02-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,43 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Custom app icons for iOS, Mac, and Android</title>
+    <link href="https://blog.newsblur.com/2026/05/15/custom-app-icons/" rel="alternate" type="text/html" title="Custom app icons for iOS, Mac, and Android" />
+    <published>2026-05-15T00:00:00-04:00</published>
+    <updated>2026-05-15T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/05/15/custom-app-icons</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/05/15/custom-app-icons/">
+      <![CDATA[<p>Someone on the forum posted <a href="https://forum.newsblur.com/t/a-long-ish-list-of-ideas-and-bugs/13674/11">a long-ish list of ideas</a>, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.</p>
+
+<p>There are 12 color flavors: Sunrise Gold, Ember Orange, Coral Rose, Ruby Red, Plum Berry, Lavender Iris, Atlantic Blue, Arctic Cyan, Teal Mint, Meadow Sage, Slate Gray, and Sepia Cocoa. Every flavor comes in a light and a dark variant, so there are 24 icons to pick from. Match a bright home screen, match a dark one, or just pick the color you like best.</p>
+
+<p><img src="/assets/app-icons-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>To change yours, open Preferences and find the App Icon section, then tap Choose Icon. The chooser shows a live preview of every flavor, and the new icon takes effect right away.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/app-icons-ios.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
+<img src="/assets/app-icons-android.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
+</div>
+
+<p>Custom app icons are available now on the latest iOS, Mac, and Android apps for any premium subscriber. If you have an idea for a flavor that’s missing, or anything else, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Someone on the forum posted a long-ish list of ideas, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Introducing Premium Pro: high-frequency fetching for instant notifications</title>
@@ -1931,48 +1968,6 @@ newsblur auth login
     <summary type="html">
       <![CDATA[A few days ago was my five year wedding anniversary. I wanted to see the news from exactly five years ago, which I had clearly missed because I was not checking my phone that day. That’s where the new date filter feature comes in handy.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Discover related stories and sites</title>
-    <link href="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/" rel="alternate" type="text/html" title="Discover related stories and sites" />
-    <published>2025-02-02T00:00:00-05:00</published>
-    <updated>2025-02-02T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/">
-      <![CDATA[<p>I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.</p>
-
-<p>Second I’m introducing Discover Sites, which is available at the top of every feed and folder to everybody, both free and premium users. Having tried all of the competing discover sites features, I built the popover dialog that has all the features I wanted. It’s an infinite scroll of related sites, showing the most recent five stories, formatted exactly as your story titles are personally styled. You can read stories from unsubscribed feeds and easily subscribe to them while scrolling through the discover stories dialog.</p>
-
-<p><img src="/assets/discover-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Here’s a set of features I’ve been wanting to build since the very first days of NewsBlur in 2009. I built prototypes of this feature using a few of the modern text tools at the time: nltk (the natural language toolkit), support vector machines, and LDA (Latent Dirichlet Allocation) to group stories by topic. It didn’t work, or it was too slow, and even then not accurate enough. I read the tea leaves and could tell a better tool would come out eventually that was basically a drop-in classifier and topic grouper. Out came word embeddings (word2vec initially, then <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence transformers</a>). And now those transformers are available basically for free.</p>
-
-<p><img src="/assets/discover-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.</p>
-
-<p>And it’s important to note that none of the data presented in the Discover Stories or Discover Sites dialog is trained on your personal data, like feeds that other people subscribe to in relation to any particular site. All of the data is extracted and grouped by the content of the RSS feed’s title, description, and the titles of the first few stories.</p>
-
-<p><img src="/assets/discover-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.</p>
-
-<p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
-
-<p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar...]]>
     </summary>
     
   </entry>

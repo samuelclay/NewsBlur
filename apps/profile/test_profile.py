@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
@@ -593,3 +594,112 @@ class Test_AndroidSubscriptionActivation(TestCase):
 
         self.assertEqual(response.status_code, 200)
         mock_activate.assert_called_once_with("GPA.1000-0000-0000-00003", product_id="nb.premium.pro.299")
+
+
+class Test_ProratedProviderSwitchRefund(TestCase):
+    """When an App Store / Google Play subscriber upgrades or switches to a
+    Stripe subscription, the unused days of their store payment should be
+    refunded against the new Stripe charge.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="storeswitchtest",
+            password="password",
+            email="storeswitch@test.com",
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = "cus_storeswitch"
+        self.profile.save()
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_refunds_unused_store_days_against_new_stripe_charge(
+        self, mock_customer, mock_charges, mock_refund
+    ):
+        # Paid $36 for Android Premium 27 days ago, then upgraded to $99 Archive via Stripe
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=27),
+            payment_amount=36,
+            payment_provider="android-subscription",
+            payment_identifier="GPA.0000-0000-0000-00001",
+        )
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=0)]
+        )
+        mock_refund.return_value = MagicMock(id="re_storeswitch")
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        # 338 of 365 unused days of $36 = $33.34
+        mock_refund.assert_called_once_with(charge="ch_archive", amount=3334)
+        self.assertAlmostEqual(refunded, 33.34, places=2)
+        self.assertTrue(
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider="stripe",
+                payment_amount=-33,
+                payment_identifier="re_storeswitch",
+                refunded=True,
+            ).exists()
+        )
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_no_refund_without_store_payment(self, mock_customer, mock_charges, mock_refund):
+        # A plain free-to-Stripe signup has no store payment to prorate
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=0)]
+        )
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        self.assertIsNone(refunded)
+        mock_refund.assert_not_called()
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_no_double_refund_when_charge_already_refunded(self, mock_customer, mock_charges, mock_refund):
+        # A retried webhook (or a manual refund) must not refund twice
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=27),
+            payment_amount=36,
+            payment_provider="android-subscription",
+        )
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=3334)]
+        )
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        self.assertIsNone(refunded)
+        mock_refund.assert_not_called()
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_no_refund_when_store_payment_too_old(self, mock_customer, mock_charges, mock_refund):
+        # A store payment older than a year has no unused days left to refund
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=400),
+            payment_amount=36,
+            payment_provider="ios-subscription",
+        )
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=0)]
+        )
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        self.assertIsNone(refunded)
+        mock_refund.assert_not_called()
