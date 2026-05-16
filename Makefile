@@ -7,6 +7,14 @@ ANDROID_EMULATOR := $(ANDROID_SDK_ROOT)/emulator/emulator
 ANDROID_AVD ?= NewsBlur_API_36
 ANDROID_APP_PACKAGE ?= com.newsblur
 
+# iOS simulator build/install/launch (see ios-simulator target)
+IOS_PROJECT ?= clients/ios/NewsBlur.xcodeproj
+IOS_SCHEME ?= NewsBlur
+IOS_CONFIGURATION ?= Debug
+IOS_SIMULATOR_DEVICE ?= iPhone 17
+IOS_BUNDLE_ID ?= com.newsblur.NewsBlur
+IOS_DERIVED_DATA ?= clients/ios/build/DerivedData
+
 # Color function matching NewsBlur's logging system (utils/log.py)
 # Usage: @$(call log, "~FBBlue text ~FRRed text~ST")
 define log
@@ -36,7 +44,7 @@ define log
 		-e "s/~ST/$${ESC}[0m/g"
 endef
 
-.PHONY: node api android-emulator
+.PHONY: node api android-emulator ios-simulator
 
 # Default target - smart setup that checks if first-time install or update
 .DEFAULT_GOAL := default
@@ -122,6 +130,44 @@ android-emulator:
 	adb -s "$$SERIAL" shell am force-stop "$(ANDROID_APP_PACKAGE)"; \
 	adb -s "$$SERIAL" shell monkey -p "$(ANDROID_APP_PACKAGE)" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; \
 	echo "Launched $(ANDROID_APP_PACKAGE) on $$SERIAL."
+
+# Build, install, and launch the iOS app on an iPhone 17 simulator.
+# Override the device with: make ios-simulator IOS_SIMULATOR_DEVICE="iPhone 17 Pro"
+ios-simulator:
+	@if ! command -v xcodebuild >/dev/null 2>&1; then \
+		echo "xcodebuild not found. Install Xcode, then run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'."; \
+		exit 1; \
+	fi; \
+	DEVICE="$(IOS_SIMULATOR_DEVICE)"; \
+	UDID=$$(xcrun simctl list devices available | grep -E "^ *$$DEVICE \(" | head -n 1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}'); \
+	if [ -z "$$UDID" ]; then \
+		echo "No available simulator named '$$DEVICE'. Run 'xcrun simctl list devices available' to see options."; \
+		exit 1; \
+	fi; \
+	echo "Using simulator $$DEVICE ($$UDID)"; \
+	echo "Booting simulator (if not already booted)..."; \
+	xcrun simctl bootstatus "$$UDID" -b; \
+	open -a Simulator --args -CurrentDeviceUDID "$$UDID"; \
+	echo "Building $(IOS_SCHEME) ($(IOS_CONFIGURATION)) for $$DEVICE..."; \
+	xcodebuild \
+		-project "$(IOS_PROJECT)" \
+		-scheme "$(IOS_SCHEME)" \
+		-configuration "$(IOS_CONFIGURATION)" \
+		-sdk iphonesimulator \
+		-destination "platform=iOS Simulator,id=$$UDID" \
+		-derivedDataPath "$(IOS_DERIVED_DATA)" \
+		build || exit 1; \
+	APP="$(IOS_DERIVED_DATA)/Build/Products/$(IOS_CONFIGURATION)-iphonesimulator/$(IOS_SCHEME).app"; \
+	if [ ! -d "$$APP" ]; then \
+		echo "Built app not found at $$APP"; \
+		exit 1; \
+	fi; \
+	echo "Installing $$APP on $$UDID..."; \
+	xcrun simctl install "$$UDID" "$$APP" || exit 1; \
+	echo "Restarting $(IOS_BUNDLE_ID) on $$UDID..."; \
+	xcrun simctl terminate "$$UDID" "$(IOS_BUNDLE_ID)" >/dev/null 2>&1 || true; \
+	xcrun simctl launch "$$UDID" "$(IOS_BUNDLE_ID)" || exit 1; \
+	echo "Launched $(IOS_BUNDLE_ID) on $$DEVICE."
 
 rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic

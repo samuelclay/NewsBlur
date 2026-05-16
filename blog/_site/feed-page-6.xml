@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-04-06T00:02:26-04:00</updated>
+  <updated>2026-05-15T21:57:02-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,45 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">SSL &amp; Stripe.js</title>
+    <link href="https://blog.newsblur.com/2012/02/29/ssl-stripejs/" rel="alternate" type="text/html" title="SSL &amp; Stripe.js" />
+    <published>2012-02-29T15:45:00-05:00</published>
+    <updated>2012-02-29T15:45:00-05:00</updated>
+    <id>https://blog.newsblur.com/2012/02/29/ssl-stripejs</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2012/02/29/ssl-stripejs/">
+      <![CDATA[<p>Two big announcements today:</p>
+
+<ol>
+  <li>SSL is now available. You can use <a href="https://www.newsblur.com"><strong>https</strong> ://www.newsblur.com</a> if that’s your thing.</li>
+  <li>Stripe.js integration means you can use a credit card to pay for a premium account.</li>
+</ol>
+
+<p>In order to integrate <a href="http://www.stripe.com">Stripe.js</a> into NewsBlur, I had to add SSL support, which was not the easiest task. Generating signing requests, signing certifications, and providing additional security is no basic task.</p>
+
+<p>Since you’re reading this, it would be a safe assumption that you have already gone premium. To which, firstly, I thank you. And secondly, if you’re invested in the success of a product, you want to watch it grow. But that means you also will not have a chance to see the new payment form, so here’s the new premium upsell:</p>
+
+<p><img src="http://f.cl.ly/items/39232n0X213R0v241e3q/Premium%20Upsell.png" alt="" /></p>
+
+<p>And the new payment form:</p>
+
+<p><img src="http://f.cl.ly/items/0Y1v1X060i453A1z2o2Q/Stripe%20Payment%20Form.png" alt="" /></p>
+
+<p>I’m extraordinarily pleased with how much easier this was relative to setting up PayPal about a year ago for recurring payments. Thanks to Stripe.js for being such a hassle-free payment provider.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[Two big announcements today:
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">2011: Year in Review</title>

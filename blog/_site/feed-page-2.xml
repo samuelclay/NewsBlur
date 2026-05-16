@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-04-06T00:02:26-04:00</updated>
+  <updated>2026-05-15T21:57:02-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,48 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Discover related stories and sites</title>
+    <link href="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/" rel="alternate" type="text/html" title="Discover related stories and sites" />
+    <published>2025-02-02T00:00:00-05:00</published>
+    <updated>2025-02-02T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/">
+      <![CDATA[<p>I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.</p>
+
+<p>Second I’m introducing Discover Sites, which is available at the top of every feed and folder to everybody, both free and premium users. Having tried all of the competing discover sites features, I built the popover dialog that has all the features I wanted. It’s an infinite scroll of related sites, showing the most recent five stories, formatted exactly as your story titles are personally styled. You can read stories from unsubscribed feeds and easily subscribe to them while scrolling through the discover stories dialog.</p>
+
+<p><img src="/assets/discover-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>Here’s a set of features I’ve been wanting to build since the very first days of NewsBlur in 2009. I built prototypes of this feature using a few of the modern text tools at the time: nltk (the natural language toolkit), support vector machines, and LDA (Latent Dirichlet Allocation) to group stories by topic. It didn’t work, or it was too slow, and even then not accurate enough. I read the tea leaves and could tell a better tool would come out eventually that was basically a drop-in classifier and topic grouper. Out came word embeddings (word2vec initially, then <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence transformers</a>). And now those transformers are available basically for free.</p>
+
+<p><img src="/assets/discover-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.</p>
+
+<p>And it’s important to note that none of the data presented in the Discover Stories or Discover Sites dialog is trained on your personal data, like feeds that other people subscribe to in relation to any particular site. All of the data is extracted and grouped by the content of the RSS feed’s title, description, and the titles of the first few stories.</p>
+
+<p><img src="/assets/discover-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.</p>
+
+<p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
+
+<p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur&apos;s native macOS App offers news notifications directly on your desktop</title>
@@ -1267,100 +1309,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     <summary type="html">
       <![CDATA[The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Launching real-time filterable push notifications for iOS, Android, web, and email</title>
-    <link href="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/" rel="alternate" type="text/html" title="Launching real-time filterable push notifications for iOS, Android, web, and email" />
-    <published>2017-06-14T05:00:17-04:00</published>
-    <updated>2017-06-14T05:00:17-04:00</updated>
-    <id>https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/">
-      <![CDATA[<p>For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.</p>
-
-<p><img src="http://www.newsblur.com/media/blog/notifications-announcement.png" alt="" /></p>
-
-<p>Today I’m proud to launch push notifications simultaneously across all three native platforms on NewsBlur (that’s web, iOS, and Android). That means that you can setup notifications for all Unread stories or only Focus stories that you’ve trained to be pushed to you over email, iOS, Android, or through browser notifications on the web.</p>
-
-<p>You can setup all four types of notifications on both web and mobile. And you can employ your intelligence training to only surface the stories that have use certain tags, have specific keywords in the titles, or are written by specific authors. Additionally, it’s easy to hide stories using that same training so that you don’t receive notifications that you want to ignore.</p>
-
-<h2 id="push-notifications-on-ios">Push notifications on iOS</h2>
-
-<p>To start with notifications on iOS, you can use the new swipe-to-the right gesture on the feed list (replacing the trainer on the swipe gesture). It’s very easy to turn notifications on and off or to even step up the filtering on a site so that you only get Focus stories instead.</p>
-
-<p>This way you can overprovision notifications for yourself and easily dial them back to where you get just the right number of notifications.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-ios.png" alt="" /></p>
-
-<p>Today version 7.0 of the NewsBlur iOS app is being released and here’s a list of what’s new and fixed on iOS:</p>
-
-<ul>
-  <li>Push notifications: real-time push notifications on a per-feed basis.</li>
-  <li>Swipe-to-the-right on a feed to change its notifications.</li>
-  <li>A new optional app badge for unread counts. Enable under Preferences.</li>
-  <li>Stories now automatically are marked as read on scroll. Disable under Preferences.</li>
-  <li>Better image support on iPad and fixes for drag-and-dropping the story titles bar (at bottom of the story detail).</li>
-  <li>A note on that: you can move story titles to the bottom on iPad. Just drag the bottom bar up.</li>
-  <li>Fixed issue with sharing stories not working or disappearing on iPad.</li>
-  <li>Fixed theme issues in the activity share sheet.</li>
-  <li>Fixed a crash from opening stories with no permalink.</li>
-  <li>Fixed size of intelligence control on bottom of feed list on iPhone SE.</li>
-  <li>Fixed issues when story titles are set to the bottom layout on iPad.</li>
-  <li>Fixed issues with the interactions dialog.</li>
-</ul>
-
-<h1 id="notifications-on-android">Notifications on Android</h1>
-
-<p>Android also gets a new version today. Version 6.0 gets notifications and new custom reading fonts as well as the mark read on scroll behavior that iOS and web have enjoyed.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-android.png" alt="" /></p>
-
-<p>Here’s a list of what’s new and fixed on Android:</p>
-
-<ul>
-  <li>Mark as read on scroll is a new preference to automatically mark stories as read as you scroll past them.</li>
-  <li>New fonts for reading: Whitney, Chronicle, Gotham Narrow make their way to Android from the web.</li>
-  <li>Also supporting native Android fonts Noto Sans, Noto Serif, Open Sans Condensed, and Anonymous Pro.</li>
-  <li>Switching between Text and Story view is now sticky per-feed (similar to iOS and web).</li>
-  <li>Fixed issues where feed list would not update.</li>
-</ul>
-
-<h1 id="notifications-on-web">Notifications on Web</h1>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-options.png" alt="" /></p>
-
-<p>Browser notifications are handy for those sites that you only want to read on your desktop. For example, you could setup web notifications for an RSS feed for a status feed, letting you know when migrations and downtime will have some effect on you.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-sites.png" alt="" /></p>
-
-<p>Setting up and tuning notifications is also just as easy to do on the web. You’ll find it under Manage &gt; Notifications as well as in the Read Filter Popover (top right of the app) when reading an individual feed.</p>
-
-<h1 id="notifications-over-email">Notifications over Email</h1>
-
-<p>Finally, for those use cases not covered under web or mobile, you can now have websites automatically email you when they publish new stories.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-email.png" alt="" /></p>
-
-<p>This is for those stories that you don’t want to miss and want to ensure that you read. For instance, I use email notifications for <a href="http://www.newsblur.com/site/5586842/quotes-worrydream.com">worrydream’s quote blog that serves me a single paragraph of insight once a week</a> because I loved having quotes emailed to me.</p>
-
-<p>There you have it, four new ways to consume the news. If you love using NewsBlur and want to see it continue to launch new features like these, please tell friends and followers about your news reader. People often ask for ways to stay on top of the game and NewsBlur is the most powerful way to do it.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="android" />
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the...]]>
     </summary>
     
   </entry>
