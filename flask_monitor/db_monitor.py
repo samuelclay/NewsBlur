@@ -8,6 +8,7 @@ import redis
 import sentry_sdk
 from flask import Flask, Response, abort, request
 from sentry_sdk.integrations.flask import FlaskIntegration
+from werkzeug.exceptions import HTTPException
 
 from newsblur_web import settings
 
@@ -140,8 +141,11 @@ def db_check_mongo_analytics():
 
     client = None
     try:
+        # Connect via MONGO_ANALYTICS_DB['host'], which carries the analytics-specific
+        # host:port (27018). The analytics mongo runs alongside the replica-set mongo
+        # (27017) on hdb-mongo-secondary-1, so the port matters — see flask_monitor/db_monitor.py.
         client = pymongo.MongoClient(
-            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}.node.consul/?authSource=admin"
+            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin"
         )
         db = client.nbanalytics
 
@@ -157,6 +161,10 @@ def db_check_mongo_analytics():
         if "Authentication failed" in str(e):
             abort(Response("Auth failed", 505))
         abort(Response("Operation failure", 506))
+    except HTTPException:
+        # abort() above (e.g. the 510) raises HTTPException — re-raise it so the
+        # generic `except Exception` below doesn't mask it as a confusing 507.
+        raise
     except Exception as e:
         abort(Response(f"Error checking analytics: {str(e)}", 507))
     finally:
