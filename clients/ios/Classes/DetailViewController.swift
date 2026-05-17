@@ -571,6 +571,10 @@ class DetailViewController: BaseViewController {
             if column == .primary {
                 appDelegate.feedsNavigationController.popToRootViewController(animated: animated)
             } else {
+                if !shouldShowStoryInCompactNavigation {
+                    removeFromFeedsNavigation(viewController: storyPagesViewController)
+                }
+
                 if isFeedShown, let feedDetailViewController, appDelegate.feedsNavigationController.viewControllers.count < 2 {
                     appDelegate.feedsNavigationController.pushViewController(feedDetailViewController, animated: animated)
                 }

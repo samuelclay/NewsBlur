@@ -64,6 +64,8 @@
 @property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
+- (BOOL)canPullToNextUnreadList;
+
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL dashboardAwaitingFinish;

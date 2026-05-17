@@ -9,6 +9,8 @@ final class AppDelegateHelperTests: XCTestCase {
         "default_mark_read_filter",
         "release",
         "custom_domain",
+        "default_feed_read_filter",
+        "story_titles_style",
     ]
     private var savedValues: [String: Any] = [:]
     private var bundleID: String { Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? "" }
@@ -244,6 +246,133 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(feedIds, ["10", "11", "1", "2", "3", "4"])
     }
 
+    func test_nextUnreadNavigationTitleForFeedUsesUnreadMode() {
+        let feedsViewController = makeFeedsViewControllerForNextUnreadNavigation()
+        feedsViewController.setValue(NSIndexPath(row: 0, section: 3), forKey: "lastRowAtIndexPath")
+        feedsViewController.setValue(-1, forKey: "lastSection")
+
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationKind(), "site")
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationTitle(), "Neutral Site")
+    }
+
+    func test_nextUnreadNavigationTitleForFeedIncludesNegativeInAllMode() {
+        let feedsViewController = makeFeedsViewControllerForNextUnreadNavigation()
+        feedsViewController.viewShowingAllFeeds = true
+        feedsViewController.setValue(NSIndexPath(row: 0, section: 3), forKey: "lastRowAtIndexPath")
+        feedsViewController.setValue(-1, forKey: "lastSection")
+
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationTitle(), "Negative Site")
+    }
+
+    func test_nextUnreadNavigationTitleForFeedUsesFocusMode() {
+        let feedsViewController = makeFeedsViewControllerForNextUnreadNavigation(selectedIntelligence: 1)
+        feedsViewController.setValue(NSIndexPath(row: 0, section: 3), forKey: "lastRowAtIndexPath")
+        feedsViewController.setValue(-1, forKey: "lastSection")
+
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationTitle(), "Focus Site")
+    }
+
+    func test_nextUnreadNavigationTitleForFolderUsesAdjacentUnreadFolder() {
+        let feedsViewController = makeFeedsViewControllerForNextUnreadNavigation()
+        feedsViewController.setValue(nil, forKey: "lastRowAtIndexPath")
+        feedsViewController.setValue(3, forKey: "lastSection")
+
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationKind(), "folder")
+        XCTAssertEqual(feedsViewController.nextUnreadNavigationTitle(), "News")
+    }
+
+    func test_returningFromFeedDetailRecalculatesFeedListAfterReadingAcrossFeeds() {
+        let feedsViewController = FeedListReturnTrackingViewController()
+        _ = makeFeedsViewControllerForNextUnreadNavigation(feedViewController: feedsViewController)
+        feedsViewController.calculateFeedLocations()
+        feedsViewController.calculateFeedLocationsCount = 0
+        feedsViewController.reloadFeedTitlesTableCount = 0
+        feedsViewController.appDelegate.inFeedDetail = true
+        feedsViewController.currentRowAtIndexPath = IndexPath(row: 0, section: 3)
+
+        feedsViewController.viewWillAppear(false)
+
+        XCTAssertEqual(feedsViewController.calculateFeedLocationsCount, 1)
+        XCTAssertEqual(feedsViewController.reloadFeedTitlesTableCount, 1)
+    }
+
+    func test_canPullToNextUnreadListWaitsUntilPageFinishedEvenWhenKnownUnreadStoriesAreLoaded() {
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: false,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0]
+        )
+
+        XCTAssertFalse(feedDetailViewController.canPullToNextUnreadList())
+    }
+
+    func test_canPullToNextUnreadListAfterPageFinished() {
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0]
+        )
+
+        XCTAssertTrue(feedDetailViewController.canPullToNextUnreadList())
+    }
+
+    func test_checkScrollContinuesFetchingUntilPageFinishedEvenWhenKnownUnreadStoriesAreLoaded() {
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: false,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedDetailViewController: BottomNextFeedPagingViewController()
+        ) as! BottomNextFeedPagingViewController
+        setBottomScrollPosition(feedDetailViewController)
+
+        feedDetailViewController.checkScroll()
+
+        XCTAssertEqual(feedDetailViewController.fetchedFeedPages, [2])
+        XCTAssertTrue(feedDetailViewController.pageFetching)
+    }
+
+    func test_checkScrollStillFetchesWhenKnownUnreadStoriesAreNotLoaded() {
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: false,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 2, "ng": 0],
+            feedDetailViewController: BottomNextFeedPagingViewController()
+        ) as! BottomNextFeedPagingViewController
+        setBottomScrollPosition(feedDetailViewController)
+
+        feedDetailViewController.checkScroll()
+
+        XCTAssertEqual(feedDetailViewController.fetchedFeedPages, [2])
+        XCTAssertTrue(feedDetailViewController.pageFetching)
+    }
+
+    func test_bottomNextFeedStartsWhenEndRowCrossesScrollReadProbe() throws {
+        defaults.set("scroll", forKey: "default_mark_read_filter")
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0]
+        )
+        feedDetailViewController.loadViewIfNeeded()
+        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
+        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
+        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.reloadData()
+        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 79)
+
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+
+        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
+        XCTAssertFalse(control.isHidden)
+        XCTAssertLessThan(control.frame.minY - feedDetailViewController.storyTitlesTable.contentOffset.y,
+                          feedDetailViewController.storyTitlesTable.bounds.height)
+    }
+
     func test_toggleAuthorClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
         let appDelegate = ClassifierToggleAppDelegate()
         appDelegate.storiesCollection = StoriesCollection()
@@ -319,6 +448,116 @@ final class AppDelegateHelperTests: XCTestCase {
         let classifiers = feedClassifiers?[key] as? [String: Any]
         return classifiers?[value] as? Int
     }
+
+    private func makeFeedsViewControllerForNextUnreadNavigation(
+        selectedIntelligence: Int = 0,
+        feedViewController: FeedsViewController = FeedsViewController()
+    ) -> FeedsViewController {
+        let appDelegate = NewsBlurAppDelegate()
+        let feedsViewController = feedViewController
+        let tableView = UITableView(frame: .zero, style: .plain)
+
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.selectedIntelligence = selectedIntelligence
+        appDelegate.dictFoldersArray = [
+            "dashboard",
+            "daily_briefing",
+            "infrequent",
+            "Tech",
+            "News",
+        ]
+        appDelegate.dictFolders = [
+            "dashboard": [],
+            "daily_briefing": [],
+            "infrequent": [],
+            "Tech": [1, 2, 3, 4],
+            "News": [5],
+        ]
+        appDelegate.dictFeeds = [
+            "1": ["id": 1, "feed_title": "Current Site", "active": 1],
+            "2": ["id": 2, "feed_title": "Negative Site", "active": 1],
+            "3": ["id": 3, "feed_title": "Neutral Site", "active": 1],
+            "4": ["id": 4, "feed_title": "Focus Site", "active": 1],
+            "5": ["id": 5, "feed_title": "News Site", "active": 1],
+        ]
+        appDelegate.dictUnreadCounts = [
+            "1": ["ps": 0, "nt": 1, "ng": 0],
+            "2": ["ps": 0, "nt": 0, "ng": 1],
+            "3": ["ps": 0, "nt": 1, "ng": 0],
+            "4": ["ps": 1, "nt": 0, "ng": 0],
+            "5": ["ps": 0, "nt": 1, "ng": 0],
+        ]
+        appDelegate.dictInactiveFeeds = [:]
+        appDelegate.collapsedFolders = [:]
+        appDelegate.folderCountCache = nil
+
+        feedsViewController.appDelegate = appDelegate
+        feedsViewController.feedTitlesTable = tableView
+        feedsViewController.visibleFolders = NSMutableDictionary(dictionary: [
+            "Tech": true,
+            "News": true,
+        ])
+        feedsViewController.viewShowingAllFeeds = false
+        tableView.dataSource = feedsViewController
+        tableView.delegate = feedsViewController
+        tableView.reloadData()
+
+        return feedsViewController
+    }
+
+    private func makeFeedDetailViewControllerForBottomNextFeed(
+        pageFinished: Bool,
+        activeStoriesCount: Int,
+        unreadCounts: [String: Int],
+        feedDetailViewController: FeedDetailViewController = FeedDetailViewController()
+    ) -> FeedDetailViewController {
+        defaults.set("unread", forKey: "default_feed_read_filter")
+        defaults.set("standard", forKey: DetailViewController.Key.style)
+
+        let appDelegate = NewsBlurAppDelegate()
+        let detailViewController = DetailViewController()
+        let feedsViewController = FeedsViewController()
+        let storiesCollection = StoriesCollection()
+
+        appDelegate.detailViewController = detailViewController
+        appDelegate.feedsViewController = feedsViewController
+        appDelegate.storiesCollection = storiesCollection
+        appDelegate.dictFeeds = ["1": ["id": 1, "active": 1, "feed_title": "Low Count Site"]]
+        appDelegate.dictUnreadCounts = ["1": unreadCounts]
+        appDelegate.selectedIntelligence = 0
+
+        detailViewController.appDelegate = appDelegate
+        feedsViewController.appDelegate = appDelegate
+        feedsViewController.viewShowingAllFeeds = false
+
+        storiesCollection.appDelegate = appDelegate
+        storiesCollection.activeFeed = ["id": 1, "active": 1, "feed_title": "Low Count Site"]
+        storiesCollection.activeFolder = "Tech"
+        storiesCollection.feedPage = 1
+        storiesCollection.setStories((0..<activeStoriesCount).map { index in
+            [
+                "story_hash": "story-\(index)",
+                "story_feed_id": 1,
+                "read_status": 0,
+            ]
+        })
+
+        feedDetailViewController.appDelegate = appDelegate
+        feedDetailViewController.storiesCollection = storiesCollection
+        feedDetailViewController.storyTitlesTable = UITableView(frame: .zero, style: .plain)
+        feedDetailViewController.messageView = UIView()
+        feedDetailViewController.messageView.isHidden = true
+        feedDetailViewController.pageFetching = false
+        feedDetailViewController.pageFinished = pageFinished
+
+        return feedDetailViewController
+    }
+
+    private func setBottomScrollPosition(_ feedDetailViewController: FeedDetailViewController) {
+        feedDetailViewController.storyTitlesTable.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
+        feedDetailViewController.storyTitlesTable.contentSize = CGSize(width: 320, height: 900)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: 260)
+    }
 }
 
 final class ActivityModulesLayoutTests: XCTestCase {
@@ -360,5 +599,30 @@ private final class ClassifierToggleAppDelegate: NewsBlurAppDelegate {
     }
 
     override func recalculateIntelligenceScores(_ feedId: Any!) {
+    }
+}
+
+private final class BottomNextFeedPagingViewController: FeedDetailViewController {
+    var fetchedFeedPages: [Int32] = []
+
+    override func fetchFeedDetail(_ page: Int32, withCallback callback: (() -> Void)!) {
+        fetchedFeedPages.append(page)
+        pageFetching = true
+        callback?()
+    }
+}
+
+private final class FeedListReturnTrackingViewController: FeedsViewController {
+    var calculateFeedLocationsCount = 0
+    var reloadFeedTitlesTableCount = 0
+
+    override func calculateFeedLocations() {
+        calculateFeedLocationsCount += 1
+        super.calculateFeedLocations()
+    }
+
+    override func reloadFeedTitlesTable() {
+        reloadFeedTitlesTableCount += 1
+        super.reloadFeedTitlesTable()
     }
 }

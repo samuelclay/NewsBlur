@@ -10,6 +10,172 @@ import UIKit
 import SwiftUI
 import QuartzCore
 
+@objcMembers final class BottomNextFeedControl: UIView {
+    private let capsuleView = UIView()
+    private let arrowContainer = UIView()
+    private let arrowImageView = UIImageView()
+    private let targetIconView = UIImageView()
+    private let titleLabel = UILabel()
+    private var isReady = false
+    private var didConfigureReadyState = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        isUserInteractionEnabled = false
+        isAccessibilityElement = true
+        alpha = 0
+
+        capsuleView.translatesAutoresizingMaskIntoConstraints = false
+        capsuleView.layer.cornerRadius = 12
+        capsuleView.layer.cornerCurve = .continuous
+        capsuleView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        capsuleView.layer.shadowRadius = 14
+        capsuleView.layer.shadowOpacity = 0.14
+        addSubview(capsuleView)
+
+        arrowContainer.translatesAutoresizingMaskIntoConstraints = false
+        arrowContainer.layer.cornerRadius = 13
+        arrowContainer.layer.cornerCurve = .continuous
+        capsuleView.addSubview(arrowContainer)
+
+        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
+        arrowImageView.contentMode = .scaleAspectFit
+        arrowImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
+        arrowImageView.image = UIImage(systemName: "arrow.up")
+        arrowContainer.addSubview(arrowImageView)
+
+        targetIconView.translatesAutoresizingMaskIntoConstraints = false
+        targetIconView.contentMode = .scaleAspectFit
+        targetIconView.layer.cornerRadius = 4
+        targetIconView.layer.cornerCurve = .continuous
+        targetIconView.clipsToBounds = true
+        capsuleView.addSubview(targetIconView)
+
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont(name: "WhitneySSm-Medium", size: 16.5) ?? .systemFont(ofSize: 16.5, weight: .semibold)
+        titleLabel.numberOfLines = 1
+        titleLabel.lineBreakMode = .byTruncatingTail
+        capsuleView.addSubview(titleLabel)
+
+        NSLayoutConstraint.activate([
+            capsuleView.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            capsuleView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            capsuleView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            capsuleView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+
+            arrowContainer.leadingAnchor.constraint(equalTo: capsuleView.leadingAnchor, constant: 12),
+            arrowContainer.centerYAnchor.constraint(equalTo: capsuleView.centerYAnchor),
+            arrowContainer.widthAnchor.constraint(equalToConstant: 26),
+            arrowContainer.heightAnchor.constraint(equalToConstant: 26),
+
+            arrowImageView.centerXAnchor.constraint(equalTo: arrowContainer.centerXAnchor),
+            arrowImageView.centerYAnchor.constraint(equalTo: arrowContainer.centerYAnchor),
+            arrowImageView.widthAnchor.constraint(equalToConstant: 17),
+            arrowImageView.heightAnchor.constraint(equalToConstant: 17),
+
+            targetIconView.leadingAnchor.constraint(equalTo: arrowContainer.trailingAnchor, constant: 10),
+            targetIconView.centerYAnchor.constraint(equalTo: capsuleView.centerYAnchor),
+            targetIconView.widthAnchor.constraint(equalToConstant: 22),
+            targetIconView.heightAnchor.constraint(equalToConstant: 22),
+
+            titleLabel.leadingAnchor.constraint(equalTo: targetIconView.trailingAnchor, constant: 9),
+            titleLabel.trailingAnchor.constraint(equalTo: capsuleView.trailingAnchor, constant: -14),
+            titleLabel.centerYAnchor.constraint(equalTo: capsuleView.centerYAnchor),
+            titleLabel.heightAnchor.constraint(equalToConstant: 22)
+        ])
+
+        updateTheme()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(kind: String, title: String?, icon: UIImage?, progress: CGFloat, ready: Bool) {
+        let clampedProgress = max(0, min(progress, 1))
+        let hasTarget = title?.isEmpty == false
+        let destination = kind == "folder" ? "folder" : "site"
+
+        titleLabel.text = hasTarget ? title : "Feed list"
+        accessibilityLabel = hasTarget ? "Next unread \(destination), \(title ?? "")" : "Feed list"
+
+        if let icon {
+            targetIconView.image = icon.withRenderingMode(.alwaysOriginal)
+        } else {
+            let fallbackName = kind == "folder" ? "folder.fill" : "globe"
+            targetIconView.image = UIImage(systemName: fallbackName)?.withRenderingMode(.alwaysTemplate)
+        }
+
+        let alphaProgress = clampedProgress <= 0 ? 0 : 0.36 + (clampedProgress * 0.64)
+        alpha = alphaProgress
+
+        let scale = 0.94 + clampedProgress * 0.06
+        transform = CGAffineTransform(translationX: 0, y: 12 * (1 - clampedProgress)).scaledBy(x: scale, y: scale)
+        arrowContainer.transform = CGAffineTransform(scaleX: ready ? 1.06 : 0.92 + clampedProgress * 0.08,
+                                                     y: ready ? 1.06 : 0.92 + clampedProgress * 0.08)
+
+        setReady(ready)
+    }
+
+    func updateTheme() {
+        capsuleView.backgroundColor = ThemeManager.color(fromRGB: [0xFFFFFF, 0xFAF5ED, 0x3A3A3C, 0x252527]).withAlphaComponent(0.96)
+        capsuleView.layer.shadowColor = ThemeManager.shared.isDarkTheme
+            ? UIColor.black.cgColor
+            : ThemeManager.color(fromRGB: [0x737A84]).cgColor
+        capsuleView.layer.borderWidth = 1
+        capsuleView.layer.borderColor = ThemeManager.color(fromRGB: [0xE0E4EA, 0xD7CBBB, 0x515153, 0x3A3A3C]).cgColor
+        applyReadyState(isReady, animated: false)
+    }
+
+    private func setReady(_ ready: Bool) {
+        let shouldAnimate = didConfigureReadyState && ready != isReady
+        isReady = ready
+        didConfigureReadyState = true
+        applyReadyState(ready, animated: shouldAnimate)
+    }
+
+    private func applyReadyState(_ ready: Bool, animated: Bool) {
+        let changes = {
+            self.arrowContainer.backgroundColor = ready ? self.activeArrowBackgroundColor : self.inactiveArrowBackgroundColor
+            self.arrowImageView.tintColor = ready ? .white : self.inactiveArrowColor
+            self.arrowImageView.transform = ready ? CGAffineTransform(rotationAngle: .pi) : .identity
+            self.titleLabel.textColor = ready ? self.activeTitleColor : self.inactiveTitleColor
+            self.targetIconView.alpha = ready ? 1 : 0.74
+            self.targetIconView.tintColor = ready ? self.activeTitleColor : self.inactiveTitleColor
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.22,
+                           delay: 0,
+                           options: [.beginFromCurrentState, .allowUserInteraction, .curveEaseInOut],
+                           animations: changes)
+        } else {
+            changes()
+        }
+    }
+
+    private var activeArrowBackgroundColor: UIColor {
+        ThemeManager.color(fromRGB: [0x477DBF, 0x8A6A33, 0x5A8FD3, 0x5A8FD3])
+    }
+
+    private var inactiveArrowBackgroundColor: UIColor {
+        ThemeManager.color(fromRGB: [0xDCE2EA, 0xE5D9C8, 0x555557, 0x444446])
+    }
+
+    private var activeTitleColor: UIColor {
+        ThemeManager.color(fromRGB: [0x2D6EAE, 0x7A5B24, 0x8CBFFF, 0x9DCAFF])
+    }
+
+    private var inactiveTitleColor: UIColor {
+        ThemeManager.color(fromRGB: [0x2A2D32, 0x3C3226, 0xF2F2F7, 0xF2F2F7])
+    }
+
+    private var inactiveArrowColor: UIColor {
+        ThemeManager.color(fromRGB: [0x59606A, 0x75685A, 0xD8D8D8, 0xD8D8D8])
+    }
+}
+
 @objcMembers final class DailyBriefingSectionInfo: NSObject {
     let title: String
     let dateText: String
@@ -335,6 +501,12 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     @objc override func reloadImmediately() {
         configureDataSource()
+    }
+
+    @objc func resetPendingReloadsForFeedChange() {
+        reloadWorkItem?.cancel()
+        reloadWorkItem = nil
+        pendingStories.removeAll()
     }
     
     @objc override func reload() {
