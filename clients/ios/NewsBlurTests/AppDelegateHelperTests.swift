@@ -360,17 +360,107 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
         feedDetailViewController.storyTitlesTable.reloadData()
         feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 79)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 59)
 
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
 
         let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
         XCTAssertFalse(control.isHidden)
-        XCTAssertLessThan(control.frame.minY - feedDetailViewController.storyTitlesTable.contentOffset.y,
-                          feedDetailViewController.storyTitlesTable.bounds.height)
+        XCTAssertTrue(feedDetailViewController.view.bounds.intersects(control.frame))
+    }
+
+    func test_bottomNextFeedOpensWhenReleasedWhileActivelyReady() {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        feedDetailViewController.loadViewIfNeeded()
+        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
+        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
+        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.reloadData()
+        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
+    }
+
+    func test_bottomNextFeedDoesNotOpenWhenMomentumCrossesThreshold() {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        feedDetailViewController.loadViewIfNeeded()
+        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
+        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
+        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.reloadData()
+        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = false
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: true)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDecelerating(feedDetailViewController.storyTitlesTable)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+    }
+
+    func test_bottomNextFeedCanBeDisarmedBeforeRelease() {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        feedDetailViewController.loadViewIfNeeded()
+        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
+        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
+        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.reloadData()
+        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
     func test_toggleAuthorClassifierFromStoryDetail_cyclesPositiveNegativeNeutral() {
@@ -509,6 +599,7 @@ final class AppDelegateHelperTests: XCTestCase {
         pageFinished: Bool,
         activeStoriesCount: Int,
         unreadCounts: [String: Int],
+        feedsViewController: FeedsViewController = FeedsViewController(),
         feedDetailViewController: FeedDetailViewController = FeedDetailViewController()
     ) -> FeedDetailViewController {
         defaults.set("unread", forKey: "default_feed_read_filter")
@@ -516,7 +607,6 @@ final class AppDelegateHelperTests: XCTestCase {
 
         let appDelegate = NewsBlurAppDelegate()
         let detailViewController = DetailViewController()
-        let feedsViewController = FeedsViewController()
         let storiesCollection = StoriesCollection()
 
         appDelegate.detailViewController = detailViewController
@@ -544,7 +634,7 @@ final class AppDelegateHelperTests: XCTestCase {
 
         feedDetailViewController.appDelegate = appDelegate
         feedDetailViewController.storiesCollection = storiesCollection
-        feedDetailViewController.storyTitlesTable = UITableView(frame: .zero, style: .plain)
+        feedDetailViewController.storyTitlesTable = BottomNextFeedTestTableView(frame: .zero, style: .plain)
         feedDetailViewController.messageView = UIView()
         feedDetailViewController.messageView.isHidden = true
         feedDetailViewController.pageFetching = false
@@ -609,6 +699,23 @@ private final class BottomNextFeedPagingViewController: FeedDetailViewController
         fetchedFeedPages.append(page)
         pageFetching = true
         callback?()
+    }
+}
+
+private final class BottomNextFeedTestTableView: UITableView {
+    var draggingForTest = false
+
+    override var isDragging: Bool {
+        draggingForTest
+    }
+}
+
+private final class BottomNextFeedSelectionViewController: FeedsViewController {
+    var selectNextUnreadFolderOrFeedCount = 0
+
+    override func selectNextUnreadFolderOrFeed() -> Bool {
+        selectNextUnreadFolderOrFeedCount += 1
+        return true
     }
 }
 

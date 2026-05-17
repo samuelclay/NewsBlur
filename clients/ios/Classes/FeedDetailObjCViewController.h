@@ -109,6 +109,9 @@
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scroll;
+- (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation;
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath;

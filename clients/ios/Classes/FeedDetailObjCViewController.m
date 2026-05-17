@@ -113,6 +113,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
+- (void)openBottomNextUnreadList;
 - (CGFloat)bottomNextFeedProbeOffset;
 - (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
@@ -3890,6 +3891,7 @@ finish_height_measurement:
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
     BOOL isBottomPulling = scroll == self.storyTitlesTable &&
+        scroll.dragging &&
         [self bottomNextFeedRevealDistanceForScroll:scroll] > 0.0f &&
         [self canPullToNextUnreadList];
 
@@ -3900,14 +3902,37 @@ finish_height_measurement:
     [self updateBottomNextFeedControlForScroll:scroll];
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scroll {
+    if (scroll == self.storyTitlesTable) {
+        self.bottomNextFeedReady = NO;
+    }
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate {
-    if (scroll != self.storyTitlesTable || !self.bottomNextFeedReady) {
+    if (scroll != self.storyTitlesTable) {
         [self resetBottomNextFeedControl];
         return;
     }
 
-    [self resetBottomNextFeedControl];
+    if (self.bottomNextFeedReady) {
+        [self openBottomNextUnreadList];
+        return;
+    }
 
+    [self resetBottomNextFeedControl];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scroll {
+    if (scroll != self.storyTitlesTable) {
+        return;
+    }
+
+    [self resetBottomNextFeedControl];
+}
+
+- (void)openBottomNextUnreadList {
+    [self resetBottomNextFeedControl];
+    
     if (![self.appDelegate.feedsViewController selectNextUnreadFolderOrFeed]) {
         [self.appDelegate showFeedsListAnimated:YES];
     }
@@ -3933,12 +3958,17 @@ finish_height_measurement:
 
 - (void)ensureBottomNextFeedControl {
     if (self.bottomNextFeedControl != nil) {
+        if (self.bottomNextFeedControl.superview != self.view) {
+            [self.bottomNextFeedControl removeFromSuperview];
+            [self.view addSubview:self.bottomNextFeedControl];
+        }
+
         return;
     }
 
     self.bottomNextFeedControl = [[BottomNextFeedControl alloc] initWithFrame:CGRectZero];
     self.bottomNextFeedControl.hidden = YES;
-    [self.storyTitlesTable addSubview:self.bottomNextFeedControl];
+    [self.view addSubview:self.bottomNextFeedControl];
 }
 
 - (CGFloat)bottomNextFeedProbeOffset {
@@ -3969,14 +3999,18 @@ finish_height_measurement:
 - (void)layoutBottomNextFeedControlForScroll:(UIScrollView *)scroll {
     [self ensureBottomNextFeedControl];
 
-    UIEdgeInsets adjustedInset = scroll.adjustedContentInset;
-    CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
-    CGFloat y = triggerOffset + CGRectGetHeight(scroll.bounds) - adjustedInset.bottom - 10.0f;
+    CGRect visibleScrollRect = [self.view convertRect:scroll.bounds fromView:scroll];
+    CGFloat bottomGap = self.isPhoneOrCompact ? 96.0f : 24.0f;
+    CGFloat y = CGRectGetMaxY(visibleScrollRect) - scroll.adjustedContentInset.bottom - NBBottomNextFeedHeight - bottomGap;
     CGFloat horizontalInset = self.isPhoneOrCompact ? 18.0f : 24.0f;
-    CGFloat width = MAX(0.0f, CGRectGetWidth(scroll.bounds) - horizontalInset * 2.0f);
+    CGFloat width = MAX(0.0f, CGRectGetWidth(visibleScrollRect) - horizontalInset * 2.0f);
 
     self.bottomNextFeedControl.transform = CGAffineTransformIdentity;
-    self.bottomNextFeedControl.frame = CGRectMake(horizontalInset, y, width, NBBottomNextFeedHeight);
+    self.bottomNextFeedControl.frame = CGRectMake(CGRectGetMinX(visibleScrollRect) + horizontalInset,
+                                                  y,
+                                                  width,
+                                                  NBBottomNextFeedHeight);
+    [self.view bringSubviewToFront:self.bottomNextFeedControl];
 }
 
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll {
@@ -3992,7 +4026,7 @@ finish_height_measurement:
         return;
     }
 
-    CGFloat revealDistance = [self bottomNextFeedRevealDistanceForScroll:scroll];
+    CGFloat revealDistance = scroll.dragging ? [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
     CGFloat progress = MIN(1.0f, revealDistance / NBBottomNextFeedThreshold);
     BOOL ready = progress >= 1.0f;
 
