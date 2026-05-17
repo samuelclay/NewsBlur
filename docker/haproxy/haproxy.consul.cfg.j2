@@ -272,9 +272,9 @@ backend mongo
 backend mongo_analytics
     option httpchk GET /db_check/mongo_analytics
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.mongo_analytics %}
-        server {{host}} {{host}}.node.nyc1.consul:5579
-    {% endfor %}
+    {# Analytics mongo runs as a container on hdb-mongo-secondary-1; reach it via the
+       db-mongo-analytics Consul service rather than a node that no longer exists. #}
+    server hdb-mongo-analytics db-mongo-analytics.service.nyc1.consul:5579
 
 backend db_redis_user
     option httpchk GET /db_check/redis_user
