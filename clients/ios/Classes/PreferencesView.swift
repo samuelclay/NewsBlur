@@ -249,7 +249,7 @@ private enum NewsBlurAppIconLibrary {
     static func apply(group: NewsBlurAppIconFlavorGroup,
                       mode: NewsBlurAppIconAppearanceMode,
                       completion: @escaping (Error?) -> Void) {
-        UIApplication.shared.setAlternateIconName(group.iconName(for: mode), completionHandler: completion)
+        UIApplication.shared.setAlternateIconNameWithoutAlert(group.iconName(for: mode), completion: completion)
     }
 
     private static func group(
@@ -298,6 +298,33 @@ private enum NewsBlurAppIconLibrary {
             green: Double((hex >> 8) & 0xFF) / 255.0,
             blue: Double(hex & 0xFF) / 255.0
         )
+    }
+}
+
+@available(iOS 15.0, *)
+private extension UIApplication {
+    /// Switches the home-screen icon without UIKit's "You have changed the icon" alert.
+    ///
+    /// The public `setAlternateIconName(_:completionHandler:)` always presents a system
+    /// alert. The private `_setAlternateIconName:completionHandler:` selector does the
+    /// identical work without it. If that selector ever disappears we fall back to the
+    /// public API so the icon still changes (just with the alert).
+    func setAlternateIconNameWithoutAlert(_ iconName: String?, completion: @escaping (Error?) -> Void) {
+        let selector = NSSelectorFromString("_setAlternateIconName:completionHandler:")
+
+        guard responds(to: selector) else {
+            setAlternateIconName(iconName, completionHandler: completion)
+            return
+        }
+
+        typealias SilentSetIcon = @convention(c) (NSObject, Selector, NSString?, @escaping (NSError?) -> Void) -> Void
+        let implementation = method(for: selector)
+        let callIcon = unsafeBitCast(implementation, to: SilentSetIcon.self)
+        callIcon(self, selector, iconName as NSString?) { error in
+            DispatchQueue.main.async {
+                completion(error)
+            }
+        }
     }
 }
 
