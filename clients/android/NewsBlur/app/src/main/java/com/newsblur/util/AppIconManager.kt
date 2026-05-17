@@ -4,7 +4,43 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.newsblur.R
+
+/**
+ * Whether the launcher icon follows the device's light/dark setting or stays
+ * pinned to a single appearance. Each flavor has three activity-aliases (auto,
+ * light, dark); the enabled alias is the source of truth, so no extra
+ * persistence is needed. See AppIconManager.kt.
+ */
+enum class AppIconAppearanceMode(
+    @StringRes val titleRes: Int,
+    @StringRes val captionRes: Int,
+    /** Suffix appended to a flavor's activity-alias name; empty for the auto alias. */
+    val componentSuffix: String,
+) {
+    LIGHT(
+        R.string.settings_app_icon_appearance_light,
+        R.string.settings_app_icon_appearance_light_caption,
+        "Light",
+    ),
+    AUTO(
+        R.string.settings_app_icon_appearance_auto,
+        R.string.settings_app_icon_appearance_auto_caption,
+        "",
+    ),
+    DARK(
+        R.string.settings_app_icon_appearance_dark,
+        R.string.settings_app_icon_appearance_dark_caption,
+        "Dark",
+    ),
+}
+
+/** A resolved flavor + appearance mode pair, as read back from the active alias. */
+data class AppIconSelection(
+    val flavor: AppIconFlavor,
+    val mode: AppIconAppearanceMode,
+)
 
 data class AppIconFlavor(
     val id: String,
@@ -155,49 +191,74 @@ object AppIconManager {
 
     fun flavorById(id: String?): AppIconFlavor = flavors.firstOrNull { it.id == id } ?: defaultFlavor
 
+    /** Preview option for a flavor given the chosen mode and the system appearance. */
     fun displayOption(
         flavor: AppIconFlavor,
-        isDarkMode: Boolean,
+        mode: AppIconAppearanceMode,
+        isSystemDark: Boolean,
     ): AppIconOption {
-        val appearance = if (isDarkMode) DARK_APPEARANCE else LIGHT_APPEARANCE
+        val useDark =
+            when (mode) {
+                AppIconAppearanceMode.LIGHT -> false
+                AppIconAppearanceMode.DARK -> true
+                AppIconAppearanceMode.AUTO -> isSystemDark
+            }
+        val appearance = if (useDark) DARK_APPEARANCE else LIGHT_APPEARANCE
         return flavor.options.firstOrNull { it.appearance == appearance } ?: flavor.options[0]
     }
 
-    fun currentFlavor(context: Context): AppIconFlavor {
+    /** Resolves which flavor + appearance mode is currently active. */
+    fun currentSelection(context: Context): AppIconSelection {
         val packageManager = context.packageManager
-        return flavors
-            .drop(1)
-            .firstOrNull { flavor ->
-                packageManager.getComponentEnabledSetting(componentName(context, flavor)) ==
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            } ?: defaultFlavor
+        for (flavor in flavors) {
+            for (mode in AppIconAppearanceMode.entries) {
+                val state = packageManager.getComponentEnabledSetting(componentName(context, flavor, mode))
+                if (state == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+                    return AppIconSelection(flavor, mode)
+                }
+            }
+        }
+        // Nothing is explicitly enabled, so the manifest default (Sunrise Gold, auto) is live.
+        return AppIconSelection(defaultFlavor, AppIconAppearanceMode.AUTO)
     }
 
-    fun setCurrentFlavor(
+    fun currentFlavor(context: Context): AppIconFlavor = currentSelection(context).flavor
+
+    fun currentMode(context: Context): AppIconAppearanceMode = currentSelection(context).mode
+
+    /** Enables the alias for [flavor] + [mode] and disables every other launcher alias. */
+    fun setAppIcon(
         context: Context,
         flavor: AppIconFlavor,
+        mode: AppIconAppearanceMode,
     ) {
         val packageManager = context.packageManager
         packageManager.setComponentEnabledSetting(
-            componentName(context, flavor),
+            componentName(context, flavor, mode),
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP,
         )
-        flavors
-            .filterNot { it.id == flavor.id }
-            .forEach { otherFlavor ->
+        for (otherFlavor in flavors) {
+            for (otherMode in AppIconAppearanceMode.entries) {
+                if (otherFlavor.id == flavor.id && otherMode == mode) continue
                 packageManager.setComponentEnabledSetting(
-                    componentName(context, otherFlavor),
+                    componentName(context, otherFlavor, otherMode),
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP,
                 )
             }
+        }
     }
 
     fun componentName(
         context: Context,
         flavor: AppIconFlavor,
-    ): ComponentName = ComponentName(context.packageName, context.packageName + flavor.aliasSuffix)
+        mode: AppIconAppearanceMode,
+    ): ComponentName =
+        ComponentName(
+            context.packageName,
+            context.packageName + flavor.aliasSuffix + mode.componentSuffix,
+        )
 
     private fun flavor(
         id: String,

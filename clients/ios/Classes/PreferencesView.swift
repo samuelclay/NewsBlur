@@ -80,12 +80,52 @@ private struct PreferencesColors {
 
 // MARK: - App Icon Choices
 
+/// Whether the app icon follows the device's light/dark setting or stays pinned
+/// to a single appearance. The active alternate-icon name encodes this, so no
+/// extra persistence is needed.
 @available(iOS 15.0, *)
-private struct NewsBlurAppIconFlavorGroup: Identifiable {
-    let id: String
-    let title: String
-    let alternateIconName: String?
-    let options: [NewsBlurAppIconOption]
+private enum NewsBlurAppIconAppearanceMode: String, CaseIterable, Identifiable {
+    case light
+    case auto
+    case dark
+
+    var id: String { rawValue }
+
+    /// Label shown in the chooser's segmented control.
+    var title: String {
+        switch self {
+        case .light: return "Light"
+        case .auto: return "Use both"
+        case .dark: return "Dark"
+        }
+    }
+
+    /// SF Symbol paired with the label in the segmented control.
+    var symbolName: String {
+        switch self {
+        case .light: return "sun.max.fill"
+        case .auto: return "circle.lefthalf.filled"
+        case .dark: return "moon.fill"
+        }
+    }
+
+    /// One-line explanation shown beneath the segmented control.
+    var caption: String {
+        switch self {
+        case .light: return "Keeps the light icon no matter how your device is set."
+        case .auto: return "The icon follows your device's light and dark appearance."
+        case .dark: return "Keeps the dark icon no matter how your device is set."
+        }
+    }
+
+    /// The appearance a pinned mode forces, or `nil` when following the system.
+    var pinnedAppearance: String? {
+        switch self {
+        case .light: return "Light"
+        case .dark: return "Dark"
+        case .auto: return nil
+        }
+    }
 }
 
 @available(iOS 15.0, *)
@@ -99,116 +139,58 @@ private struct NewsBlurAppIconOption: Identifiable {
 }
 
 @available(iOS 15.0, *)
+private struct NewsBlurAppIconFlavorGroup: Identifiable {
+    let id: String
+    let title: String
+    /// Shared stem of the flavor's appiconset names, e.g. "AppIconArcticCyan".
+    let assetBaseName: String
+    /// True for the flavor whose "Use both" icon is the bundle's primary icon.
+    let isPrimary: Bool
+    let options: [NewsBlurAppIconOption]
+
+    /// Alternate-icon name to hand to `setAlternateIconName` for a given mode.
+    /// `nil` is the bundle's primary icon (only the primary flavor in `.auto`).
+    func iconName(for mode: NewsBlurAppIconAppearanceMode) -> String? {
+        switch mode {
+        case .auto: return isPrimary ? nil : assetBaseName
+        case .light: return assetBaseName + "Light"
+        case .dark: return assetBaseName + "Dark"
+        }
+    }
+
+    /// The preview option matching a single appearance ("Light" or "Dark").
+    func option(forAppearance appearance: String) -> NewsBlurAppIconOption {
+        options.first { $0.appearance == appearance } ?? options[0]
+    }
+}
+
+@available(iOS 15.0, *)
 private enum NewsBlurAppIconLibrary {
     static let groups: [NewsBlurAppIconFlavorGroup] = [
-        group(
-            "sunrise-gold",
-            title: "Sunrise Gold",
-            alternateIconName: nil,
-            options: [
-                option("sunrise-gold-light", title: "Sunrise Gold Light", flavor: "Sunrise Gold", appearance: "Light", tint: 0xD88A26),
-                option("sunrise-gold-dark", title: "Sunrise Gold Dark", flavor: "Sunrise Gold", appearance: "Dark", tint: 0xDDA033)
-            ]
-        ),
-        group(
-            "meadow-sage",
-            title: "Meadow Sage",
-            alternateIconName: "AppIconMeadowSage",
-            options: [
-                option("meadow-sage-light", title: "Meadow Sage Light", flavor: "Meadow Sage", appearance: "Light", tint: 0x6F9E5B),
-                option("meadow-sage-dark", title: "Meadow Sage Dark", flavor: "Meadow Sage", appearance: "Dark", tint: 0x7DBD63)
-            ]
-        ),
-        group(
-            "atlantic-blue",
-            title: "Atlantic Blue",
-            alternateIconName: "AppIconAtlanticBlue",
-            options: [
-                option("atlantic-blue-light", title: "Atlantic Blue Light", flavor: "Atlantic Blue", appearance: "Light", tint: 0x3F85BC),
-                option("atlantic-blue-dark", title: "Atlantic Blue Dark", flavor: "Atlantic Blue", appearance: "Dark", tint: 0x4FA2D9)
-            ]
-        ),
-        group(
-            "coral-rose",
-            title: "Coral Rose",
-            alternateIconName: "AppIconCoralRose",
-            options: [
-                option("coral-rose-light", title: "Coral Rose Light", flavor: "Coral Rose", appearance: "Light", tint: 0xD86868),
-                option("coral-rose-dark", title: "Coral Rose Dark", flavor: "Coral Rose", appearance: "Dark", tint: 0xE96E76)
-            ]
-        ),
-        group(
-            "ruby-red",
-            title: "Ruby Red",
-            alternateIconName: "AppIconRubyRed",
-            options: [
-                option("ruby-red-light", title: "Ruby Red Light", flavor: "Ruby Red", appearance: "Light", tint: 0xCC3147),
-                option("ruby-red-dark", title: "Ruby Red Dark", flavor: "Ruby Red", appearance: "Dark", tint: 0xE5475C)
-            ]
-        ),
-        group(
-            "ember-orange",
-            title: "Ember Orange",
-            alternateIconName: "AppIconEmberOrange",
-            options: [
-                option("ember-orange-light", title: "Ember Orange Light", flavor: "Ember Orange", appearance: "Light", tint: 0xD96B27),
-                option("ember-orange-dark", title: "Ember Orange Dark", flavor: "Ember Orange", appearance: "Dark", tint: 0xE56F28)
-            ]
-        ),
-        group(
-            "teal-mint",
-            title: "Teal Mint",
-            alternateIconName: "AppIconTealMint",
-            options: [
-                option("teal-mint-light", title: "Teal Mint Light", flavor: "Teal Mint", appearance: "Light", tint: 0x2FA28E),
-                option("teal-mint-dark", title: "Teal Mint Dark", flavor: "Teal Mint", appearance: "Dark", tint: 0x3CC3AD)
-            ]
-        ),
-        group(
-            "lavender-iris",
-            title: "Lavender Iris",
-            alternateIconName: "AppIconLavenderIris",
-            options: [
-                option("lavender-iris-light", title: "Lavender Iris Light", flavor: "Lavender Iris", appearance: "Light", tint: 0x8261CE),
-                option("lavender-iris-dark", title: "Lavender Iris Dark", flavor: "Lavender Iris", appearance: "Dark", tint: 0x9879EA)
-            ]
-        ),
-        group(
-            "slate-gray",
-            title: "Slate Gray",
-            alternateIconName: "AppIconSlateGray",
-            options: [
-                option("slate-gray-light", title: "Slate Gray Light", flavor: "Slate Gray", appearance: "Light", tint: 0x6C7D8A),
-                option("slate-gray-dark", title: "Slate Gray Dark", flavor: "Slate Gray", appearance: "Dark", tint: 0x81919D)
-            ]
-        ),
-        group(
-            "sepia-cocoa",
-            title: "Sepia Cocoa",
-            alternateIconName: "AppIconSepiaCocoa",
-            options: [
-                option("sepia-cocoa-light", title: "Sepia Cocoa Light", flavor: "Sepia Cocoa", appearance: "Light", tint: 0xA16E44),
-                option("sepia-cocoa-dark", title: "Sepia Cocoa Dark", flavor: "Sepia Cocoa", appearance: "Dark", tint: 0xB87945)
-            ]
-        ),
-        group(
-            "arctic-cyan",
-            title: "Arctic Cyan",
-            alternateIconName: "AppIconArcticCyan",
-            options: [
-                option("arctic-cyan-light", title: "Arctic Cyan Light", flavor: "Arctic Cyan", appearance: "Light", tint: 0x37A8CA),
-                option("arctic-cyan-dark", title: "Arctic Cyan Dark", flavor: "Arctic Cyan", appearance: "Dark", tint: 0x44BADB)
-            ]
-        ),
-        group(
-            "plum-berry",
-            title: "Plum Berry",
-            alternateIconName: "AppIconPlumBerry",
-            options: [
-                option("plum-berry-light", title: "Plum Berry Light", flavor: "Plum Berry", appearance: "Light", tint: 0xA74A98),
-                option("plum-berry-dark", title: "Plum Berry Dark", flavor: "Plum Berry", appearance: "Dark", tint: 0xC060B2)
-            ]
-        )
+        group("sunrise-gold", title: "Sunrise Gold", assetBaseName: "AppIconSunriseGold",
+              isPrimary: true, lightTint: 0xD88A26, darkTint: 0xDDA033),
+        group("meadow-sage", title: "Meadow Sage", assetBaseName: "AppIconMeadowSage",
+              isPrimary: false, lightTint: 0x6F9E5B, darkTint: 0x7DBD63),
+        group("atlantic-blue", title: "Atlantic Blue", assetBaseName: "AppIconAtlanticBlue",
+              isPrimary: false, lightTint: 0x3F85BC, darkTint: 0x4FA2D9),
+        group("coral-rose", title: "Coral Rose", assetBaseName: "AppIconCoralRose",
+              isPrimary: false, lightTint: 0xD86868, darkTint: 0xE96E76),
+        group("ruby-red", title: "Ruby Red", assetBaseName: "AppIconRubyRed",
+              isPrimary: false, lightTint: 0xCC3147, darkTint: 0xE5475C),
+        group("ember-orange", title: "Ember Orange", assetBaseName: "AppIconEmberOrange",
+              isPrimary: false, lightTint: 0xD96B27, darkTint: 0xE56F28),
+        group("teal-mint", title: "Teal Mint", assetBaseName: "AppIconTealMint",
+              isPrimary: false, lightTint: 0x2FA28E, darkTint: 0x3CC3AD),
+        group("lavender-iris", title: "Lavender Iris", assetBaseName: "AppIconLavenderIris",
+              isPrimary: false, lightTint: 0x8261CE, darkTint: 0x9879EA),
+        group("slate-gray", title: "Slate Gray", assetBaseName: "AppIconSlateGray",
+              isPrimary: false, lightTint: 0x6C7D8A, darkTint: 0x81919D),
+        group("sepia-cocoa", title: "Sepia Cocoa", assetBaseName: "AppIconSepiaCocoa",
+              isPrimary: false, lightTint: 0xA16E44, darkTint: 0xB87945),
+        group("arctic-cyan", title: "Arctic Cyan", assetBaseName: "AppIconArcticCyan",
+              isPrimary: false, lightTint: 0x37A8CA, darkTint: 0x44BADB),
+        group("plum-berry", title: "Plum Berry", assetBaseName: "AppIconPlumBerry",
+              isPrimary: false, lightTint: 0xA74A98, darkTint: 0xC060B2)
     ]
 
     static var canChooseIcons: Bool {
@@ -223,18 +205,35 @@ private enum NewsBlurAppIconLibrary {
         #endif
     }
 
-    static var currentGroup: NewsBlurAppIconFlavorGroup {
-        if let currentName = UIApplication.shared.alternateIconName,
-           let group = groups.first(where: { $0.alternateIconName == currentName }) {
-            return group
+    /// Resolves the live alternate-icon name into a flavor + appearance mode.
+    static var currentSelection: (group: NewsBlurAppIconFlavorGroup, mode: NewsBlurAppIconAppearanceMode) {
+        guard let name = UIApplication.shared.alternateIconName else {
+            return (groups[0], .auto)
         }
 
-        return groups[0]
+        if name.hasSuffix("Light"),
+           let group = groups.first(where: { $0.assetBaseName == String(name.dropLast("Light".count)) }) {
+            return (group, .light)
+        }
+
+        if name.hasSuffix("Dark"),
+           let group = groups.first(where: { $0.assetBaseName == String(name.dropLast("Dark".count)) }) {
+            return (group, .dark)
+        }
+
+        if let group = groups.first(where: { $0.assetBaseName == name }) {
+            return (group, .auto)
+        }
+
+        return (groups[0], .auto)
     }
 
-    static func displayOption(for group: NewsBlurAppIconFlavorGroup, colorScheme: ColorScheme) -> NewsBlurAppIconOption {
-        let appearance = colorScheme == .dark ? "Dark" : "Light"
-        return group.options.first { $0.appearance == appearance } ?? group.options[0]
+    /// The preview option to show for a flavor given the mode and system appearance.
+    static func displayOption(for group: NewsBlurAppIconFlavorGroup,
+                              mode: NewsBlurAppIconAppearanceMode,
+                              colorScheme: ColorScheme) -> NewsBlurAppIconOption {
+        let appearance = mode.pinnedAppearance ?? (colorScheme == .dark ? "Dark" : "Light")
+        return group.option(forAppearance: appearance)
     }
 
     static func shouldIgnoreSimulatorIconChangeError(_ error: Error) -> Bool {
@@ -247,37 +246,48 @@ private enum NewsBlurAppIconLibrary {
         #endif
     }
 
-    static func apply(group: NewsBlurAppIconFlavorGroup, completion: @escaping (Error?) -> Void) {
-        UIApplication.shared.setAlternateIconName(group.alternateIconName, completionHandler: completion)
+    static func apply(group: NewsBlurAppIconFlavorGroup,
+                      mode: NewsBlurAppIconAppearanceMode,
+                      completion: @escaping (Error?) -> Void) {
+        UIApplication.shared.setAlternateIconName(group.iconName(for: mode), completionHandler: completion)
     }
 
     private static func group(
         _ id: String,
         title: String,
-        alternateIconName: String?,
-        options: [NewsBlurAppIconOption]
+        assetBaseName: String,
+        isPrimary: Bool,
+        lightTint: Int,
+        darkTint: Int
     ) -> NewsBlurAppIconFlavorGroup {
-        NewsBlurAppIconFlavorGroup(id: id, title: title, alternateIconName: alternateIconName, options: options)
+        NewsBlurAppIconFlavorGroup(
+            id: id,
+            title: title,
+            assetBaseName: assetBaseName,
+            isPrimary: isPrimary,
+            options: [
+                option(id: "\(id)-light", title: "\(title) Light", flavor: title,
+                       appearance: "Light", assetBaseName: assetBaseName, tint: lightTint),
+                option(id: "\(id)-dark", title: "\(title) Dark", flavor: title,
+                       appearance: "Dark", assetBaseName: assetBaseName, tint: darkTint)
+            ]
+        )
     }
 
     private static func option(
-        _ id: String,
+        id: String,
         title: String,
         flavor: String,
         appearance: String,
+        assetBaseName: String,
         tint: Int
     ) -> NewsBlurAppIconOption {
-        let assetStem = id
-            .split(separator: "-")
-            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
-            .joined()
-
-        return NewsBlurAppIconOption(
+        NewsBlurAppIconOption(
             id: id,
             title: title,
             flavor: flavor,
             appearance: appearance,
-            previewAssetName: "AppIcon\(assetStem)Preview",
+            previewAssetName: "\(assetBaseName)\(appearance)Preview",
             tintColor: colorFromHex(tint)
         )
     }
@@ -1908,7 +1918,8 @@ struct AppIconPreferenceItemView: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var showChooser = false
-    @State private var currentGroup = NewsBlurAppIconLibrary.currentGroup
+    @State private var currentGroup = NewsBlurAppIconLibrary.currentSelection.group
+    @State private var currentMode = NewsBlurAppIconLibrary.currentSelection.mode
 
     private var isPremium: Bool {
         NewsBlurAppIconLibrary.canChooseIcons
@@ -1923,7 +1934,7 @@ struct AppIconPreferenceItemView: View {
     }
 
     private var rowPreviewOption: NewsBlurAppIconOption {
-        NewsBlurAppIconLibrary.displayOption(for: currentGroup, colorScheme: colorScheme)
+        NewsBlurAppIconLibrary.displayOption(for: currentGroup, mode: currentMode, colorScheme: colorScheme)
     }
 
     var body: some View {
@@ -1969,10 +1980,10 @@ struct AppIconPreferenceItemView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .onAppear {
-            currentGroup = NewsBlurAppIconLibrary.currentGroup
+            syncCurrentSelection()
         }
-        .sheet(isPresented: $showChooser) {
-            AppIconChooserView(currentGroup: $currentGroup)
+        .sheet(isPresented: $showChooser, onDismiss: syncCurrentSelection) {
+            AppIconChooserView(currentGroup: $currentGroup, currentMode: $currentMode)
         }
     }
 
@@ -1980,11 +1991,18 @@ struct AppIconPreferenceItemView: View {
         guard NewsBlurAppIconLibrary.supportsIconSelection else { return }
 
         if isPremium {
-            currentGroup = NewsBlurAppIconLibrary.currentGroup
+            syncCurrentSelection()
             showChooser = true
         } else {
             viewModel.handleButtonAction("showPremium", key: "app_icon")
         }
+    }
+
+    /// Re-reads the live flavor + appearance mode so the row preview stays in sync.
+    private func syncCurrentSelection() {
+        let selection = NewsBlurAppIconLibrary.currentSelection
+        currentGroup = selection.group
+        currentMode = selection.mode
     }
 }
 
@@ -1993,54 +2011,54 @@ struct AppIconPreferenceItemView: View {
 @available(iOS 15.0, *)
 private struct AppIconChooserView: View {
     @Binding var currentGroup: NewsBlurAppIconFlavorGroup
+    @Binding var currentMode: NewsBlurAppIconAppearanceMode
 
     @Environment(\.dismiss) private var dismiss
     @State private var isChangingIcon = false
-    @State private var pendingGroup = NewsBlurAppIconLibrary.currentGroup
+    @State private var pendingGroup = NewsBlurAppIconLibrary.currentSelection.group
+    @State private var pendingMode = NewsBlurAppIconLibrary.currentSelection.mode
     @State private var errorMessage: String?
+
+    private let flavorColumns = [
+        GridItem(.flexible(minimum: 132), spacing: 12),
+        GridItem(.flexible(minimum: 132), spacing: 12)
+    ]
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                Text("App Icon")
-                    .font(.headline)
-                    .foregroundColor(PreferencesColors.textPrimary)
-
-                HStack {
-                    Spacer()
-
-                    if isChangingIcon {
-                        ProgressView()
-                            .controlSize(.small)
-                            .frame(width: 64, height: 36, alignment: .trailing)
-                    } else {
-                        Text("Done")
-                        .font(.body.bold())
-                        .foregroundColor(PreferencesColors.newsblurGreen)
-                        .frame(width: 64, height: 36, alignment: .trailing)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            applyPendingSelection()
-                        }
-                        .accessibilityAddTraits(.isButton)
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(PreferencesColors.cardBackground)
+            header
 
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 18) {
-                        ForEach(NewsBlurAppIconLibrary.groups) { group in
-                            AppIconFlavorSection(
-                                group: group,
-                                currentGroup: pendingGroup,
-                                isChangingIcon: isChangingIcon,
-                                onSelect: select
-                            )
-                            .id(group.id)
+                        AppIconAppearancePicker(mode: $pendingMode, isChangingIcon: isChangingIcon)
+                            .id("appearance-picker")
+
+                        if pendingMode == .auto {
+                            ForEach(NewsBlurAppIconLibrary.groups) { group in
+                                AppIconFlavorSection(
+                                    group: group,
+                                    isSelected: group.id == pendingGroup.id,
+                                    isChangingIcon: isChangingIcon,
+                                    onSelect: { select(group) }
+                                )
+                                .id(group.id)
+                            }
+                        } else {
+                            let appearance = pendingMode.pinnedAppearance ?? "Light"
+                            LazyVGrid(columns: flavorColumns, spacing: 12) {
+                                ForEach(NewsBlurAppIconLibrary.groups) { group in
+                                    AppIconOptionCard(
+                                        option: group.option(forAppearance: appearance),
+                                        displayTitle: group.title,
+                                        appearanceTag: nil,
+                                        isSelected: group.id == pendingGroup.id,
+                                        isChangingIcon: isChangingIcon,
+                                        onSelect: { select(group) }
+                                    )
+                                    .id(group.id)
+                                }
+                            }
                         }
 
                         if let errorMessage {
@@ -2055,7 +2073,7 @@ private struct AppIconChooserView: View {
                 }
                 .onAppear {
                     DispatchQueue.main.async {
-                        proxy.scrollTo(NewsBlurAppIconLibrary.groups[0].id, anchor: .top)
+                        proxy.scrollTo("appearance-picker", anchor: .top)
                     }
                 }
             }
@@ -2063,9 +2081,43 @@ private struct AppIconChooserView: View {
         .background(PreferencesColors.background.ignoresSafeArea())
         .interactiveDismissDisabled(isChangingIcon)
         .onAppear {
-            currentGroup = NewsBlurAppIconLibrary.currentGroup
-            pendingGroup = currentGroup
+            let selection = NewsBlurAppIconLibrary.currentSelection
+            currentGroup = selection.group
+            currentMode = selection.mode
+            pendingGroup = selection.group
+            pendingMode = selection.mode
         }
+    }
+
+    private var header: some View {
+        ZStack {
+            Text("App Icon")
+                .font(.headline)
+                .foregroundColor(PreferencesColors.textPrimary)
+
+            HStack {
+                Spacer()
+
+                if isChangingIcon {
+                    ProgressView()
+                        .controlSize(.small)
+                        .frame(width: 64, height: 36, alignment: .trailing)
+                } else {
+                    Text("Done")
+                        .font(.body.bold())
+                        .foregroundColor(PreferencesColors.newsblurGreen)
+                        .frame(width: 64, height: 36, alignment: .trailing)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            applyPendingSelection()
+                        }
+                        .accessibilityAddTraits(.isButton)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(PreferencesColors.cardBackground)
     }
 
     private func select(_ group: NewsBlurAppIconFlavorGroup) {
@@ -2081,7 +2133,7 @@ private struct AppIconChooserView: View {
     private func applyPendingSelection() {
         guard !isChangingIcon else { return }
 
-        guard pendingGroup.id != currentGroup.id else {
+        guard pendingGroup.id != currentGroup.id || pendingMode != currentMode else {
             dismiss()
             return
         }
@@ -2089,7 +2141,7 @@ private struct AppIconChooserView: View {
         errorMessage = nil
         isChangingIcon = true
 
-        NewsBlurAppIconLibrary.apply(group: pendingGroup) { error in
+        NewsBlurAppIconLibrary.apply(group: pendingGroup, mode: pendingMode) { error in
             DispatchQueue.main.async {
                 isChangingIcon = false
 
@@ -2105,6 +2157,7 @@ private struct AppIconChooserView: View {
 
                 withAnimation(.easeInOut(duration: 0.18)) {
                     currentGroup = pendingGroup
+                    currentMode = pendingMode
                 }
                 dismiss()
             }
@@ -2112,21 +2165,99 @@ private struct AppIconChooserView: View {
     }
 }
 
+// MARK: - Appearance Mode Picker
+
+@available(iOS 15.0, *)
+private struct AppIconAppearancePicker: View {
+    @Binding var mode: NewsBlurAppIconAppearanceMode
+    let isChangingIcon: Bool
+
+    @Namespace private var thumbNamespace
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 0) {
+                ForEach(NewsBlurAppIconAppearanceMode.allCases) { option in
+                    segment(for: option)
+                }
+            }
+            .padding(3)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(PreferencesColors.secondaryBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(PreferencesColors.border.opacity(0.35), lineWidth: 1)
+            )
+
+            Text(mode.caption)
+                .font(.system(size: 12))
+                .foregroundColor(PreferencesColors.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: 30, alignment: .topLeading)
+                .padding(.horizontal, 4)
+                .id(mode)
+                .transition(.opacity)
+        }
+    }
+
+    private func segment(for option: NewsBlurAppIconAppearanceMode) -> some View {
+        let isSelected = option == mode
+
+        return Button {
+            guard !isChangingIcon, option != mode else { return }
+            withAnimation(.spring(response: 0.34, dampingFraction: 0.86)) {
+                mode = option
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: option.symbolName)
+                    .font(.system(size: 11, weight: .bold))
+                Text(option.title)
+                    .font(.system(size: 13, weight: .semibold))
+            }
+            .foregroundColor(isSelected ? .white : PreferencesColors.textSecondary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 34)
+            .background(
+                ZStack {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .fill(PreferencesColors.newsblurGreen)
+                            .matchedGeometryEffect(id: "thumb", in: thumbNamespace)
+                    }
+                }
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(isChangingIcon)
+    }
+}
+
+// MARK: - Icon Cards
+
+@available(iOS 15.0, *)
+private struct AppIconCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
 @available(iOS 15.0, *)
 private struct AppIconFlavorSection: View {
     let group: NewsBlurAppIconFlavorGroup
-    let currentGroup: NewsBlurAppIconFlavorGroup
+    let isSelected: Bool
     let isChangingIcon: Bool
-    let onSelect: (NewsBlurAppIconFlavorGroup) -> Void
+    let onSelect: () -> Void
 
     private let columns = [
         GridItem(.flexible(minimum: 132), spacing: 12),
         GridItem(.flexible(minimum: 132), spacing: 12)
     ]
-
-    private var isSelected: Bool {
-        group.id == currentGroup.id
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -2150,8 +2281,11 @@ private struct AppIconFlavorSection: View {
                 ForEach(group.options) { option in
                     AppIconOptionCard(
                         option: option,
+                        displayTitle: option.title,
+                        appearanceTag: option.appearance,
+                        isSelected: false,
                         isChangingIcon: isChangingIcon,
-                        onSelect: { onSelect(group) }
+                        onSelect: onSelect
                     )
                 }
             }
@@ -2174,31 +2308,47 @@ private struct AppIconFlavorSection: View {
 @available(iOS 15.0, *)
 private struct AppIconOptionCard: View {
     let option: NewsBlurAppIconOption
+    let displayTitle: String
+    let appearanceTag: String?
+    let isSelected: Bool
     let isChangingIcon: Bool
     let onSelect: () -> Void
 
     var body: some View {
         Button(action: onSelect) {
             VStack(spacing: 8) {
-                AppIconPreviewImage(option: option, size: 76, cornerRadius: 18)
+                ZStack(alignment: .topTrailing) {
+                    AppIconPreviewImage(option: option, size: 76, cornerRadius: 18)
+
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(PreferencesColors.newsblurGreen)
+                            .background(Circle().fill(PreferencesColors.cardBackground).padding(1))
+                            .offset(x: 7, y: -7)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
 
                 VStack(spacing: 3) {
-                    Text(option.title)
+                    Text(displayTitle)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(PreferencesColors.textPrimary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                         .minimumScaleFactor(0.78)
 
-                    Text(option.appearance.uppercased())
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundColor(option.tintColor)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(option.tintColor.opacity(0.14))
-                        .clipShape(Capsule())
+                    if let appearanceTag {
+                        Text(appearanceTag.uppercased())
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundColor(option.tintColor)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(option.tintColor.opacity(0.14))
+                            .clipShape(Capsule())
+                    }
                 }
-                .frame(minHeight: 42)
+                .frame(minHeight: appearanceTag == nil ? 20 : 42)
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 10)
@@ -2208,12 +2358,14 @@ private struct AppIconOptionCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(PreferencesColors.border.opacity(0.35), lineWidth: 1)
+                    .stroke(isSelected ? PreferencesColors.newsblurGreen : PreferencesColors.border.opacity(0.35),
+                            lineWidth: isSelected ? 2 : 1)
                     .allowsHitTesting(false)
             )
             .shadow(color: Color.black.opacity(0.06), radius: 2, x: 0, y: 1)
+            .animation(.easeInOut(duration: 0.18), value: isSelected)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(AppIconCardButtonStyle())
         .disabled(isChangingIcon)
     }
 }

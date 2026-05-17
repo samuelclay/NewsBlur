@@ -489,6 +489,12 @@ people together to talk about the world.</string>
     <string name="settings_app_icon_light">Light</string>
     <string name="settings_app_icon_dark">Dark</string>
     <string name="settings_app_icon_save_failed">Couldn\'t change the app icon</string>
+    <string name="settings_app_icon_appearance_light">Light</string>
+    <string name="settings_app_icon_appearance_auto">Use both</string>
+    <string name="settings_app_icon_appearance_dark">Dark</string>
+    <string name="settings_app_icon_appearance_light_caption">Keeps the light icon no matter how your device is set.</string>
+    <string name="settings_app_icon_appearance_auto_caption">The icon follows your device\'s light and dark appearance.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Keeps the dark icon no matter how your device is set.</string>
 
     <string name="oldest">Oldest</string>
     <string name="newest">Newest</string>
