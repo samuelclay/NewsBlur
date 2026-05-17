@@ -40,8 +40,10 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+  - **Reuse the existing booted simulator**: before any iOS build/install/launch/screenshot flow, run `python3 clients/ios/run_ios.py list` and use the already booted simulator UDID. Build, install, and launch onto that same simulator. Do not create, clone, boot, or switch to a new simulator unless no usable simulator is booted or a clean device state is explicitly needed.
   - **All new iOS files must be written in Swift** (not Objective-C)
 - **Android**: Use the adb/emulator workflow below for emulator testing and screenshots
+  - **Reuse the existing running emulator**: before any Android build/install/launch/screenshot flow, run `adb devices -l` and use the already attached emulator/device. Install and launch onto that same target. Do not start a new emulator unless no usable emulator/device is attached or a clean device state is explicitly needed.
   - **Commit early and often for Android work**: make frequent commits throughout implementation so there is a clear trail of changes; commit freely rather than batching large edits.
   - **Theme coverage is required for Android UI work**: any Android UI change must be checked against all supported NewsBlur themes, not just the current device theme.
   - Current required Android theme coverage: `light`, `dark`, and `black`.
