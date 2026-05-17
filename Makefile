@@ -351,8 +351,27 @@ tlnb-slow:
 	/srv/newsblur/utils/tlnb.py app | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (match($$0, /\[[0-9]+\.[0-9]*s/)) {t=substr($$0, RSTART+1, RLENGTH-2); if (t+0 >= 1.0) print line}}'
 tlnb-samuel:
 	$(MAKE) tlnb-user USER=samuel
+# tlnb-user: tails production logs for a single user across all app servers.
+# Besides the colored terminal stream, it mirrors an ANSI-stripped copy into
+# logs/tlnb-<USER>.log (truncated fresh each run). Another Claude/Codex can run
+# `tail -f logs/tlnb-<USER>.log` to watch that user's live server activity.
 tlnb-user:
-	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) print line}'
+	@mkdir -p logs
+	@: > logs/tlnb-$(USER).log
+	@echo "==> Mirroring live logs for user '$(USER)' to logs/tlnb-$(USER).log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch the server:  tail -f logs/tlnb-$(USER).log"
+	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" -v logfile="logs/tlnb-$(USER).log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) {print line; print $$0 >> logfile; fflush(logfile)}}'
+# tlnb-staging: full firehose of the staging server's newsblur.log (every request
+# plus full DB transactions, useful for debugging). Besides the colored terminal
+# stream, it mirrors an ANSI-stripped copy into logs/tlnb-staging.log (truncated
+# fresh each run). Another Claude/Codex can run `tail -f logs/tlnb-staging.log`
+# to watch staging while debugging.
+tlnb-staging:
+	@mkdir -p logs
+	@: > logs/tlnb-staging.log
+	@echo "==> Mirroring staging logs to logs/tlnb-staging.log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch staging:  tail -f logs/tlnb-staging.log"
+	/srv/newsblur/utils/tlnb.py staging | awk -v logfile="logs/tlnb-staging.log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); print line; print $$0 >> logfile; fflush(logfile)}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:
