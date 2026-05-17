@@ -32,6 +32,7 @@ import com.newsblur.design.toVariant
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
+import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
@@ -154,9 +155,12 @@ class SettingsFragment : Fragment() {
         updateStoryClusteringPreference(true, clusterMode)
     }
 
-    private fun updateAppIcon(flavor: AppIconFlavor) {
+    private fun updateAppIcon(
+        flavor: AppIconFlavor,
+        mode: AppIconAppearanceMode,
+    ) {
         try {
-            AppIconManager.setCurrentFlavor(requireContext(), flavor)
+            AppIconManager.setAppIcon(requireContext(), flavor, mode)
             refreshUiState()
         } catch (_: RuntimeException) {
             Toast
