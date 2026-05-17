@@ -99,6 +99,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
+@property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
+@property (nonatomic) BOOL bottomNextFeedReady;
 
 - (BOOL)isClusterMarkReadEnabled;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
@@ -109,6 +111,11 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story;
 - (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location;
 - (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
+- (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
+- (void)resetBottomNextFeedControl;
+- (CGFloat)bottomNextFeedProbeOffset;
+- (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
+- (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
 
 @end
 
@@ -119,6 +126,9 @@ static inline CFTimeInterval NBDailyBriefingNow(void) {
 static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     return (NBDailyBriefingNow() - start) * 1000.0;
 }
+
+static const CGFloat NBBottomNextFeedThreshold = 64.0f;
+static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 @implementation FeedDetailObjCViewController
 
@@ -589,6 +599,8 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     if (indexPath && location >= 0 && self.view.window != nil) {
         [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
     }
+
+    [self updateBottomNextFeedControlForScroll:self.storyTitlesTable];
 }
 
 - (void)reloadWithSizing {
@@ -1428,10 +1440,16 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     self.fetchRequestId++;
     appDelegate.activeStory = nil;
     self.visibleStoryRows = nil;
+    if ([self respondsToSelector:@selector(resetPendingReloadsForFeedChange)]) {
+        [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
+    }
     [self clearStoryRenderCaches];
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
+    if (storiesCollection && self.isViewLoaded && self.storyTitlesTable) {
+        [self reloadImmediately];
+    }
     [appDelegate.storyPagesViewController resetPages];
     [appDelegate.storyPagesViewController hidePages];
     
@@ -3871,7 +3889,138 @@ finish_height_measurement:
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
-    [self checkScroll];
+    BOOL isBottomPulling = scroll == self.storyTitlesTable &&
+        [self bottomNextFeedRevealDistanceForScroll:scroll] > 0.0f &&
+        [self canPullToNextUnreadList];
+
+    if (!isBottomPulling) {
+        [self checkScroll];
+    }
+
+    [self updateBottomNextFeedControlForScroll:scroll];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate {
+    if (scroll != self.storyTitlesTable || !self.bottomNextFeedReady) {
+        [self resetBottomNextFeedControl];
+        return;
+    }
+
+    [self resetBottomNextFeedControl];
+
+    if (![self.appDelegate.feedsViewController selectNextUnreadFolderOrFeed]) {
+        [self.appDelegate showFeedsListAnimated:YES];
+    }
+}
+
+- (BOOL)canPullToNextUnreadList {
+#if TARGET_OS_MACCATALYST
+    return NO;
+#else
+    if (!self.isLegacyTable ||
+        self.messageView.hidden == NO ||
+        storiesCollection.isDailyBriefing ||
+        self.pageFetching ||
+        !self.pageFinished ||
+        self.inPullToRefresh_ ||
+        storiesCollection.activeFeedStories.count == 0) {
+        return NO;
+    }
+
+    return YES;
+#endif
+}
+
+- (void)ensureBottomNextFeedControl {
+    if (self.bottomNextFeedControl != nil) {
+        return;
+    }
+
+    self.bottomNextFeedControl = [[BottomNextFeedControl alloc] initWithFrame:CGRectZero];
+    self.bottomNextFeedControl.hidden = YES;
+    [self.storyTitlesTable addSubview:self.bottomNextFeedControl];
+}
+
+- (CGFloat)bottomNextFeedProbeOffset {
+    return self.textSize != FeedDetailTextSizeTitleOnly ? 80.0f : 60.0f;
+}
+
+- (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll {
+    UIEdgeInsets adjustedInset = scroll.adjustedContentInset;
+    CGFloat minOffsetY = -adjustedInset.top;
+    NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
+
+    if (rowDescriptors.count == 0) {
+        return minOffsetY;
+    }
+
+    NSIndexPath *endRowIndexPath = [NSIndexPath indexPathForRow:rowDescriptors.count inSection:0];
+    CGRect endRowRect = [self.storyTitlesTable rectForRowAtIndexPath:endRowIndexPath];
+
+    return MAX(minOffsetY, CGRectGetMinY(endRowRect) - [self bottomNextFeedProbeOffset]);
+}
+
+- (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll {
+    CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
+
+    return MAX(0.0f, scroll.contentOffset.y - triggerOffset);
+}
+
+- (void)layoutBottomNextFeedControlForScroll:(UIScrollView *)scroll {
+    [self ensureBottomNextFeedControl];
+
+    UIEdgeInsets adjustedInset = scroll.adjustedContentInset;
+    CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
+    CGFloat y = triggerOffset + CGRectGetHeight(scroll.bounds) - adjustedInset.bottom - 10.0f;
+    CGFloat horizontalInset = self.isPhoneOrCompact ? 18.0f : 24.0f;
+    CGFloat width = MAX(0.0f, CGRectGetWidth(scroll.bounds) - horizontalInset * 2.0f);
+
+    self.bottomNextFeedControl.transform = CGAffineTransformIdentity;
+    self.bottomNextFeedControl.frame = CGRectMake(horizontalInset, y, width, NBBottomNextFeedHeight);
+}
+
+- (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll {
+    if (scroll != self.storyTitlesTable) {
+        return;
+    }
+
+    [self ensureBottomNextFeedControl];
+    [self layoutBottomNextFeedControlForScroll:scroll];
+
+    if (![self canPullToNextUnreadList]) {
+        [self resetBottomNextFeedControl];
+        return;
+    }
+
+    CGFloat revealDistance = [self bottomNextFeedRevealDistanceForScroll:scroll];
+    CGFloat progress = MIN(1.0f, revealDistance / NBBottomNextFeedThreshold);
+    BOOL ready = progress >= 1.0f;
+
+    NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
+    NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
+    UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
+
+    self.bottomNextFeedControl.hidden = progress <= 0.01f;
+    [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:progress ready:ready];
+
+    if (ready && !self.bottomNextFeedReady) {
+        UISelectionFeedbackGenerator *feedback = [[UISelectionFeedbackGenerator alloc] init];
+        [feedback selectionChanged];
+    }
+
+    self.bottomNextFeedReady = ready;
+}
+
+- (void)resetBottomNextFeedControl {
+    if (self.bottomNextFeedControl == nil) {
+        return;
+    }
+
+    NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
+
+    self.bottomNextFeedReady = NO;
+    self.bottomNextFeedControl.hidden = YES;
+    [self.bottomNextFeedControl configureWithKind:kind title:nil icon:nil progress:0 ready:NO];
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
@@ -4030,6 +4179,7 @@ finish_height_measurement:
             self.scrollingMarkReadRow = topRow;
         }
     }
+
 }
 
 - (void)changeIntelligence:(NSInteger)newLevel {
@@ -5368,6 +5518,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     // Story titles header pill bar (includes search container)
     [self.storyTitlesHeaderBar updateTheme];
+    [self.bottomNextFeedControl updateTheme];
 
     self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
 

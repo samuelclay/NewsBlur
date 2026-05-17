@@ -1159,6 +1159,10 @@
 - (void)resetPages {
     appDelegate.detailViewController.navigationItem.titleView = nil;
 
+    currentPage.activeStory = nil;
+    nextPage.activeStory = nil;
+    previousPage.activeStory = nil;
+
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];

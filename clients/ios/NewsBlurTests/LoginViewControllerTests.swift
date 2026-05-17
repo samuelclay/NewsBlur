@@ -51,6 +51,106 @@ final class DetailViewControllerTests: XCTestCase {
 
         XCTAssertFalse(detailController.isViewLoaded)
     }
+
+    func test_showSecondaryInCompactRemovesStaleStoryPagesWhenNoStoryIsSelected() {
+        let appDelegate = NewsBlurAppDelegate()
+        let storiesCollection = StoriesCollection()
+        storiesCollection.activeFeed = ["id": 1, "feed_title": "Test Feed"]
+        appDelegate.storiesCollection = storiesCollection
+        appDelegate.activeStory = nil
+
+        let detailController = DetailViewController()
+        detailController.appDelegate = appDelegate
+        detailController.isCompact = true
+        appDelegate.detailViewController = detailController
+
+        let feedsViewController = FeedsViewController()
+        let feedDetailViewController = FeedDetailViewController()
+        let storyPagesViewController = StoryPagesViewController()
+        feedDetailViewController.appDelegate = appDelegate
+        storyPagesViewController.appDelegate = appDelegate
+        storyPagesViewController.loadViewIfNeeded()
+        storyPagesViewController.currentPage.clearStory()
+        storyPagesViewController.currentPage.view.isHidden = true
+
+        detailController.feedDetailViewController = feedDetailViewController
+        detailController.storyPagesViewController = storyPagesViewController
+
+        let navigationController = UINavigationController()
+        appDelegate.feedsNavigationController = navigationController
+        appDelegate.feedsViewController = feedsViewController
+        navigationController.setViewControllers(
+            [feedsViewController, feedDetailViewController, storyPagesViewController],
+            animated: false
+        )
+
+        detailController.show(column: .secondary, animated: false)
+
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssertTrue(navigationController.viewControllers[0] === feedsViewController)
+        XCTAssertTrue(navigationController.viewControllers[1] === feedDetailViewController)
+    }
+
+    func test_appDelegateUpdatesCompactFeedDetailTitleItem() {
+        let appDelegate = NewsBlurAppDelegate()
+        let storiesCollection = StoriesCollection()
+        storiesCollection.activeFeed = ["id": 1, "feed_title": "Test Feed"]
+        appDelegate.storiesCollection = storiesCollection
+
+        let detailController = DetailViewController()
+        let feedDetailViewController = FeedDetailViewController()
+        detailController.appDelegate = appDelegate
+        detailController.feedDetailViewController = feedDetailViewController
+        feedDetailViewController.appDelegate = appDelegate
+        appDelegate.detailViewController = detailController
+
+        appDelegate.perform(Selector(("updateFeedDetailTitleView")))
+
+        XCTAssertNotNil(detailController.navigationItem.titleView)
+        XCTAssertNotNil(feedDetailViewController.navigationItem.titleView)
+    }
+
+    func test_resetFeedDetailClearsVisibleStoryRowsImmediately() {
+        let appDelegate = NewsBlurAppDelegate()
+        let storiesCollection = StoriesCollection()
+        storiesCollection.appDelegate = appDelegate
+        storiesCollection.activeFeed = ["id": 1, "feed_title": "Test Feed"]
+        appDelegate.storiesCollection = storiesCollection
+        appDelegate.unreadStoryHashes = NSMutableDictionary()
+        appDelegate.recentlyReadStories = NSMutableDictionary()
+
+        let detailController = DetailViewController()
+        detailController.appDelegate = appDelegate
+        detailController.isCompact = true
+        appDelegate.detailViewController = detailController
+
+        let storyPagesViewController = StoryPagesViewController()
+        storyPagesViewController.appDelegate = appDelegate
+        storyPagesViewController.loadViewIfNeeded()
+        detailController.storyPagesViewController = storyPagesViewController
+
+        let feedDetailViewController = FeedDetailViewController()
+        feedDetailViewController.appDelegate = appDelegate
+        feedDetailViewController.storiesCollection = storiesCollection
+        detailController.feedDetailViewController = feedDetailViewController
+        feedDetailViewController.loadViewIfNeeded()
+        feedDetailViewController.messageView.isHidden = true
+
+        storiesCollection.setStories([
+            [
+                "story_hash": "old:story",
+                "story_title": "Old story",
+                "read_status": 0,
+                "intelligence": [:],
+            ],
+        ])
+        feedDetailViewController.reloadImmediately()
+        XCTAssertGreaterThan(feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0), 1)
+
+        feedDetailViewController.resetFeedDetail()
+
+        XCTAssertLessThanOrEqual(feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0), 1)
+    }
 }
 
 @available(iOS 15.0, *)
@@ -104,6 +204,32 @@ final class StoryPagesViewControllerTests: XCTestCase {
         XCTAssertTrue(controller.currentPage === nextPage)
         XCTAssertTrue(controller.scrollView.subviews.last === nextPage.view)
         XCTAssertEqual(nextPage.drawFeedGradientCallCount, 1)
+    }
+
+    func test_resetPagesClearsStalePageStories() {
+        let appDelegate = NewsBlurAppDelegate()
+        let detailController = DetailViewController()
+        let controller = StoryPagesViewController()
+
+        appDelegate.detailViewController = detailController
+        detailController.appDelegate = appDelegate
+        detailController.storyPagesViewController = controller
+        controller.appDelegate = appDelegate
+        controller.loadViewIfNeeded()
+
+        let staleStory: NSMutableDictionary = ["story_hash": "stale:story"]
+        controller.currentPage.activeStory = staleStory
+        controller.nextPage.activeStory = staleStory
+        controller.previousPage.activeStory = staleStory
+
+        controller.resetPages()
+
+        XCTAssertNil(controller.currentPage.activeStory)
+        XCTAssertNil(controller.currentPage.activeStoryId)
+        XCTAssertNil(controller.nextPage.activeStory)
+        XCTAssertNil(controller.nextPage.activeStoryId)
+        XCTAssertNil(controller.previousPage.activeStory)
+        XCTAssertNil(controller.previousPage.activeStoryId)
     }
 }
 

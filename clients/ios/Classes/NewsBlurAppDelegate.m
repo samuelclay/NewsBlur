@@ -130,6 +130,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
 
 - (void)presentFeedDetailAfterFeedSelection;
+- (void)updateFeedDetailTitleView;
 
 @end
 
@@ -2147,6 +2148,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self loadFeedDetailView:YES];
 }
 
+- (void)updateFeedDetailTitleView {
+    detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
+    self.feedDetailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
+}
+
 - (void)loadFeedDetailView:(BOOL)transition {
     [self.detailViewController resetTemporaryFullScreenIfNeeded];
 
@@ -2160,6 +2166,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     [self.feedDetailViewController resetFeedDetail];
     self.feedDetailViewController.storiesCollection = storiesCollection;
+    [self updateFeedDetailTitleView];
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -2168,7 +2175,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                           target: nil
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
-        detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
         
         [self.feedDetailViewController checkScroll];
         
@@ -2804,7 +2810,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
     
-    detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
+    [self updateFeedDetailTitleView];
     
     if (self.isCompactWidth && feedDetailView == self.feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
