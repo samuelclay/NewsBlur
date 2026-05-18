@@ -88,6 +88,43 @@ def _compute_trending_scores(popular_feeds_list):
     return scores, has_signal
 
 
+# Staleness windows for the Add Site / Discover "Updated" filter.
+# Keys match the add_site_staleness preference values set in
+# media/js/newsblur/views/add_site_style_popover.js.
+STALENESS_DAYS = {
+    "month": 31,
+    "year": 365,
+    "5years": 1825,
+}
+
+
+def _staleness_cutoff(request):
+    """Return a datetime cutoff for the requested 'staleness' window, or None for 'any time'."""
+    staleness = (request.GET.get("staleness") or request.POST.get("staleness") or "").strip()
+    days = STALENESS_DAYS.get(staleness)
+    if not days:
+        return None
+    return datetime.datetime.now() - datetime.timedelta(days=days)
+
+
+def _subscribed_feed_ids(request):
+    """
+    Return the set of feed_ids the user already subscribes to when the
+    'exclude_subscribed' flag is set, or None when the filter is off.
+    Used to hide already-subscribed feeds from the Add Site / Discover results.
+    """
+    flag = (
+        (request.GET.get("exclude_subscribed") or request.POST.get("exclude_subscribed") or "")
+        .strip()
+        .lower()
+    )
+    if flag not in ("true", "1", "yes"):
+        return None
+    if not request.user.is_authenticated:
+        return None
+    return set(UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True))
+
+
 IGNORE_AUTOCOMPLETE = [
     "facebook.com/feeds/notifications.php",
     "inbox",
@@ -169,6 +206,14 @@ def feed_autocomplete(request):
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
+
+    # Add Site / Discover filters: drop stale and already-subscribed feeds when requested.
+    staleness_cutoff = _staleness_cutoff(request)
+    if staleness_cutoff:
+        feeds = [f for f in feeds if f.last_story_date and f.last_story_date >= staleness_cutoff]
+    subscribed_ids = _subscribed_feed_ids(request)
+    if subscribed_ids:
+        feeds = [f for f in feeds if f.pk not in subscribed_ids]
 
     if autocomplete_format == "autocomplete":
         feeds = [
@@ -481,16 +526,27 @@ def trending_sites(request):
 
     one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
 
+    # Add Site / Discover filters. Trending is inherently capped at one year of
+    # freshness, so a tighter "Updated" window narrows it further while a looser
+    # one has no extra effect.
+    staleness_cutoff = _staleness_cutoff(request)
+    effective_cutoff = one_year_ago
+    if staleness_cutoff and staleness_cutoff > one_year_ago:
+        effective_cutoff = staleness_cutoff
+    subscribed_ids = _subscribed_feed_ids(request)
+
     get_trending = TRENDING_CATEGORIES[category]
-    trending_feed_ids, score_map, has_more, use_fallback = get_trending(days, limit, offset, one_year_ago)
+    trending_feed_ids, score_map, has_more, use_fallback = get_trending(days, limit, offset, effective_cutoff)
 
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
     # Build response with feed details and stories, excluding stale and branched feeds
     feeds = Feed.objects.filter(
-        pk__in=trending_feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
+        pk__in=trending_feed_ids, last_story_date__gte=effective_cutoff, branch_from_feed__isnull=True
     )
+    if subscribed_ids:
+        feeds = feeds.exclude(pk__in=subscribed_ids)
     feeds_dict = {feed.pk: feed for feed in feeds}
 
     trending_feeds = {}
@@ -1033,8 +1089,15 @@ def popular_channels(request):
     if channel_type in ("podcasts", "all"):
         urls.extend(POPULAR_PODCAST_URLS)
 
-    # Fetch feeds that exist in database
-    feeds = Feed.objects.filter(feed_address__in=urls)[:limit]
+    # Fetch feeds that exist in database, honoring the Add Site / Discover filters
+    feeds_qs = Feed.objects.filter(feed_address__in=urls)
+    staleness_cutoff = _staleness_cutoff(request)
+    if staleness_cutoff:
+        feeds_qs = feeds_qs.filter(last_story_date__gte=staleness_cutoff)
+    subscribed_ids = _subscribed_feed_ids(request)
+    if subscribed_ids:
+        feeds_qs = feeds_qs.exclude(pk__in=subscribed_ids)
+    feeds = feeds_qs[:limit]
 
     # Build response with feed details and stories
     channels = {}
@@ -1067,11 +1130,24 @@ def popular_feeds(request):
     if not feed_type:
         return {"code": -1, "message": "Feed type is required", "feeds": []}
 
+    # Add Site / Discover filters: staleness ("Updated" control) and exclude_subscribed
+    # ("Show" control). Applied to every PopularFeed queryset below so result rows and
+    # category/platform counts stay consistent.
+    staleness_cutoff = _staleness_cutoff(request)
+    subscribed_ids = _subscribed_feed_ids(request)
+
+    def _apply_discover_filters(pf_qs):
+        if staleness_cutoff:
+            pf_qs = pf_qs.filter(feed__last_story_date__gte=staleness_cutoff)
+        if subscribed_ids:
+            pf_qs = pf_qs.exclude(feed_id__in=subscribed_ids)
+        return pf_qs
+
     # Query PopularFeed records — type=all returns a mix of all feed types
     base_filter = dict(is_active=True)
     if feed_type != "all":
         base_filter["feed_type"] = feed_type
-    qs = PopularFeed.objects.filter(**base_filter)
+    qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter))
 
     if category and category != "all":
         # Try exact match first, then fall back to normalized match
@@ -1142,7 +1218,9 @@ def popular_feeds(request):
                 if semantic_feed_ids:
                     # Find PopularFeed entries linked to semantically matching feeds,
                     # respecting the same category/subcategory filters as the text search
-                    linked_qs = PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
+                    linked_qs = _apply_discover_filters(
+                        PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
+                    )
                     if feed_type != "all":
                         linked_qs = linked_qs.filter(feed_type=feed_type)
                     if category and category != "all":
@@ -1165,18 +1243,21 @@ def popular_feeds(request):
                         )
                         unlinked_ids = [fid for fid in semantic_feed_ids if fid not in linked_feed_ids]
                         if unlinked_ids:
-                            extra_semantic_feeds = list(
-                                Feed.objects.filter(
-                                    pk__in=unlinked_ids,
-                                    feed_address__icontains=url_patterns[feed_type],
-                                )
+                            extra_feeds_qs = Feed.objects.filter(
+                                pk__in=unlinked_ids,
+                                feed_address__icontains=url_patterns[feed_type],
                             )
+                            if staleness_cutoff:
+                                extra_feeds_qs = extra_feeds_qs.filter(last_story_date__gte=staleness_cutoff)
+                            if subscribed_ids:
+                                extra_feeds_qs = extra_feeds_qs.exclude(pk__in=subscribed_ids)
+                            extra_semantic_feeds = list(extra_feeds_qs)
             except Exception as e:
                 logging.debug(f" ***> ~FRSemantic search failed for popular_feeds: {e}")
 
     # Build grouped category structure with feed counts:
     # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
-    cat_qs = PopularFeed.objects.filter(**base_filter)
+    cat_qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter))
     if platform and platform != "all":
         cat_qs = cat_qs.filter(platform=platform)
 
@@ -1222,7 +1303,7 @@ def popular_feeds(request):
     categories = list(cat_qs.values_list("category", flat=True).distinct().order_by("category"))
 
     # Platform counts (unfiltered by platform so pills always show totals)
-    platform_base_qs = PopularFeed.objects.filter(**base_filter).order_by()
+    platform_base_qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter)).order_by()
     platform_counts = dict(
         platform_base_qs.values("platform").annotate(count=Count("id")).values_list("platform", "count")
     )

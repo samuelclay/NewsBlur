@@ -476,10 +476,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     ]),
                     $.make('div', {
                         className: 'NB-add-site-style-button',
-                        title: 'Display options'
+                        title: 'Sort, filter, and display options'
                     }, [
                         $.make('img', { src: '/media/img/icons/nouns/settings.svg' }),
-                        $.make('span', { className: 'NB-add-site-style-label' }, 'Style')
+                        $.make('span', { className: 'NB-add-site-style-label' }, 'Options')
                     ])
                 ])
             ])
@@ -556,6 +556,80 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
             return 0;
         });
+    },
+
+    // add_site_view.js - get_filter_params: the Style popover "Show" + "Updated"
+    // filters, sent to the discover endpoints so filtering happens server-side
+    // and each fetched page stays full.
+    get_filter_params: function () {
+        var params = {};
+        var staleness = NEWSBLUR.assets.preference('add_site_staleness') || 'any';
+        if (_.contains(['5years', 'year', 'month'], staleness)) {
+            params.staleness = staleness;
+        }
+        if (NEWSBLUR.assets.preference('add_site_hide_subscribed')) {
+            params.exclude_subscribed = 'true';
+        }
+        return params;
+    },
+
+    // add_site_view.js - has_active_filters: true when a Style filter is hiding feeds
+    has_active_filters: function () {
+        var params = this.get_filter_params();
+        return !!(params.staleness || params.exclude_subscribed);
+    },
+
+    // add_site_view.js - make_filtered_empty_state: empty-state element that adds a
+    // hint when the Style popover filters are responsible for the lack of results.
+    make_filtered_empty_state: function (empty_msg) {
+        var children = [$.make('div', { className: 'NB-add-site-empty-text' }, empty_msg)];
+        if (this.has_active_filters()) {
+            children.push($.make('div', { className: 'NB-add-site-empty-hint' },
+                'Your filters may be hiding sites — open Options to widen them.'));
+        }
+        return $.make('div', { className: 'NB-add-site-empty-state' }, children);
+    },
+
+    // add_site_view.js - reload_active_tab: re-fetch the active tab's feeds after a
+    // Style filter change. Server-side filtering means a plain re-render is not enough.
+    reload_active_tab: function () {
+        var tab = this.active_tab;
+
+        if (tab === 'search') {
+            if (this.search_query) {
+                this.perform_search();
+            } else {
+                var state = this.search_state;
+                state.trending_loaded = false;
+                state.trending_page = 1;
+                state.trending_is_loading = false;
+                state.trending_has_more = true;
+                if (state.trending_feeds_collection) state.trending_feeds_collection.reset();
+                this.render_search_tab();
+            }
+            return;
+        }
+
+        var tab_to_type = {
+            'popular': 'rss',
+            'youtube': 'youtube',
+            'reddit': 'reddit',
+            'newsletters': 'newsletter',
+            'podcasts': 'podcast'
+        };
+        var feed_type = tab_to_type[tab];
+        if (feed_type && this.FEED_TYPE_MAP[feed_type]) {
+            var popular_state = this[this.FEED_TYPE_MAP[feed_type].state];
+            popular_state.popular_feeds_loaded = false;
+            popular_state.popular_feeds = [];
+            popular_state.popular_feeds_collection = null;
+            popular_state.popular_offset = 0;
+            popular_state.popular_has_more = true;
+        }
+
+        // google-news, web-feed and categories have no server-side feed filtering;
+        // re-rendering is harmless and keeps the call uniform.
+        this.render_active_tab();
     },
 
     render_active_tab: function () {
@@ -827,7 +901,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         state.trending_is_loading = true;
 
         state.trending_feeds_collection.fetch({
-            data: { page: state.trending_page, days: state.trending_days, category: state.trending_category },
+            data: _.extend({
+                page: state.trending_page,
+                days: state.trending_days,
+                category: state.trending_category
+            }, this.get_filter_params()),
             remove: !append,  // Don't remove existing models when appending
             success: function () {
                 state.trending_loaded = true;
@@ -975,10 +1053,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var state = this[config.state];
         var render_method = config.render;
 
-        this.model.make_request('/discover/popular_channels', {
+        this.model.make_request('/discover/popular_channels', _.extend({
             type: channel_type,
             limit: 20
-        }, function (data) {
+        }, this.get_filter_params()), function (data) {
             if (data && data.channels) {
                 // Convert to collection format matching trending feeds
                 // TrendingFeed model will wrap feed/stories in proper Backbone models
@@ -1034,6 +1112,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (state.query) {
             params.query = state.query;
         }
+        _.extend(params, this.get_filter_params());
 
         this.model.make_request('/discover/popular_feeds', params, function (data) {
             if (data && data.feeds) {
@@ -1591,7 +1670,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var feeds = state.popular_feeds;
         if (!feeds || feeds.length === 0) {
             var empty_msg = state.query ? 'No sites found matching your filter.' : 'No sites found.';
-            $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
+            $content.html(this.make_filtered_empty_state(empty_msg));
             return;
         }
 
@@ -1850,7 +1929,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var channels = state.popular_feeds;
         if (!channels || channels.length === 0) {
             var empty_msg = state.query ? 'No channels found matching your filter.' : 'No channels found.';
-            $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
+            $content.html(this.make_filtered_empty_state(empty_msg));
             return;
         }
 
@@ -2385,7 +2464,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var newsletters = state.popular_feeds;
         if (!newsletters || newsletters.length === 0) {
             var empty_msg = state.query ? 'No newsletters found matching your filter.' : 'No newsletters found.';
-            $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
+            $content.html(this.make_filtered_empty_state(empty_msg));
             return;
         }
 
@@ -2556,7 +2635,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var podcasts = state.popular_feeds;
         if (!podcasts || podcasts.length === 0) {
             var empty_msg = state.query ? 'No podcasts found matching your filter.' : 'No podcasts found.';
-            $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
+            $content.html(this.make_filtered_empty_state(empty_msg));
             return;
         }
 
@@ -4618,12 +4697,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.search_state.results = [];
         this.render_search_tab({ results_only: true });
 
-        this.model.make_request('/discover/autocomplete', {
+        this.model.make_request('/discover/autocomplete', _.extend({
             query: query,
             format: 'full',
             v: 2,
             include_stories: 'true'
-        }, function (data) {
+        }, this.get_filter_params()), function (data) {
             // Ignore stale responses from previous searches
             if (current_version !== self.search_version) {
                 return;

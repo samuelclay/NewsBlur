@@ -33862,6 +33862,17 @@ h5.NB-classifier-section-header {
     font-size: 14px;
 }
 
+/* Hint shown under the empty state when the Style popover filters hide all feeds */
+.NB-add-site-empty-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.NB-dark .NB-add-site-empty-hint {
+    color: #777;
+}
+
 /* Newsletters Popular */
 .NB-add-site-newsletters-popular {
     display: flex;
