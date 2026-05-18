@@ -24,7 +24,7 @@ import QuartzCore
 
         isUserInteractionEnabled = false
         isAccessibilityElement = true
-        alpha = 0
+        alpha = 1
 
         capsuleView.translatesAutoresizingMaskIntoConstraints = false
         capsuleView.layer.cornerRadius = 12
@@ -93,7 +93,6 @@ import QuartzCore
     }
 
     func configure(kind: String, title: String?, icon: UIImage?, progress: CGFloat, ready: Bool) {
-        let clampedProgress = max(0, min(progress, 1))
         let hasTarget = title?.isEmpty == false
         let destination = kind == "folder" ? "folder" : "site"
 
@@ -107,13 +106,9 @@ import QuartzCore
             targetIconView.image = UIImage(systemName: fallbackName)?.withRenderingMode(.alwaysTemplate)
         }
 
-        let alphaProgress = clampedProgress <= 0 ? 0 : 0.36 + (clampedProgress * 0.64)
-        alpha = alphaProgress
-
-        let scale = 0.94 + clampedProgress * 0.06
-        transform = CGAffineTransform(translationX: 0, y: 12 * (1 - clampedProgress)).scaledBy(x: scale, y: scale)
-        arrowContainer.transform = CGAffineTransform(scaleX: ready ? 1.06 : 0.92 + clampedProgress * 0.08,
-                                                     y: ready ? 1.06 : 0.92 + clampedProgress * 0.08)
+        alpha = 1
+        transform = CGAffineTransform(translationX: 0, y: 12)
+        arrowContainer.transform = ready ? CGAffineTransform(scaleX: 1.06, y: 1.06) : .identity
 
         setReady(ready)
     }

@@ -353,13 +353,7 @@ final class AppDelegateHelperTests: XCTestCase {
             activeStoriesCount: 1,
             unreadCounts: ["ps": 0, "nt": 1, "ng": 0]
         )
-        feedDetailViewController.loadViewIfNeeded()
-        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
-        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
-        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.reloadData()
-        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+        prepareBottomNextFeedTable(feedDetailViewController)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
@@ -381,20 +375,14 @@ final class AppDelegateHelperTests: XCTestCase {
             unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
             feedsViewController: feedsViewController
         )
-        feedDetailViewController.loadViewIfNeeded()
-        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
-        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
-        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.reloadData()
-        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+        prepareBottomNextFeedTable(feedDetailViewController)
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
 
@@ -409,13 +397,7 @@ final class AppDelegateHelperTests: XCTestCase {
             unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
             feedsViewController: feedsViewController
         )
-        feedDetailViewController.loadViewIfNeeded()
-        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
-        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
-        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.reloadData()
-        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+        prepareBottomNextFeedTable(feedDetailViewController)
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
@@ -426,11 +408,77 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: false)
         feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: true)
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.scrollViewDidEndDecelerating(feedDetailViewController.storyTitlesTable)
 
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+    }
+
+    func test_bottomNextFeedStaysVisibleButInactiveDuringMomentum() throws {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        prepareBottomNextFeedTable(feedDetailViewController)
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: false)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDecelerating(feedDetailViewController.storyTitlesTable)
+
+        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
+        XCTAssertFalse(control.isHidden)
+        XCTAssertEqual(control.alpha, 1)
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+    }
+
+    func test_bottomNextFeedStartsEngagementFromActiveDragAfterMomentum() {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 20,
+            unreadCounts: ["ps": 0, "nt": 20, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        prepareBottomNextFeedTable(feedDetailViewController)
+        feedDetailViewController.storyTitlesTable.contentInset.bottom = 1_200
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+        let momentumEndOffset = endRowTop + 80
+
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: momentumEndOffset)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: momentumEndOffset + 24)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        let activeDragStartOffset = feedDetailViewController.value(forKey: "bottomNextFeedActiveDragStartOffsetY") as? NSNumber
+        let hasActiveDragStartOffset = feedDetailViewController.value(forKey: "hasBottomNextFeedActiveDragStartOffset") as? Bool
+        let bottomNextFeedReady = feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool
+        XCTAssertEqual(feedDetailViewController.storyTitlesTable.contentOffset.y, momentumEndOffset + 24, accuracy: 0.5)
+        XCTAssertEqual(activeDragStartOffset?.doubleValue ?? -1, momentumEndOffset, accuracy: 0.5)
+        XCTAssertEqual(hasActiveDragStartOffset, true)
+        XCTAssertEqual(bottomNextFeedReady, false)
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: momentumEndOffset)
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: momentumEndOffset + 112)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
     }
 
     func test_bottomNextFeedCanBeDisarmedBeforeRelease() {
@@ -441,20 +489,14 @@ final class AppDelegateHelperTests: XCTestCase {
             unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
             feedsViewController: feedsViewController
         )
-        feedDetailViewController.loadViewIfNeeded()
-        feedDetailViewController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 640)
-        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
-        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
-        feedDetailViewController.storyTitlesTable.reloadData()
-        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+        prepareBottomNextFeedTable(feedDetailViewController)
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
@@ -649,6 +691,16 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: 260)
     }
 
+    private func prepareBottomNextFeedTable(_ feedDetailViewController: FeedDetailViewController) {
+        feedDetailViewController.view = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 640))
+        feedDetailViewController.storyTitlesTable.frame = feedDetailViewController.view.bounds
+        feedDetailViewController.storyTitlesTable.dataSource = feedDetailViewController
+        feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
+        feedDetailViewController.view.addSubview(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.storyTitlesTable.reloadData()
+        feedDetailViewController.storyTitlesTable.layoutIfNeeded()
+    }
+
     private func setBottomNextFeedActiveDrag(_ feedDetailViewController: FeedDetailViewController, active: Bool) {
         let tableView = feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView
         tableView?.trackingForTest = active
@@ -727,6 +779,18 @@ private final class BottomNextFeedSelectionViewController: FeedsViewController {
     override func selectNextUnreadFolderOrFeed() -> Bool {
         selectNextUnreadFolderOrFeedCount += 1
         return true
+    }
+
+    override func nextUnreadNavigationKind() -> String! {
+        "site"
+    }
+
+    override func nextUnreadNavigationTitle() -> String! {
+        "Next Test Site"
+    }
+
+    override func nextUnreadNavigationIcon() -> UIImage! {
+        nil
     }
 }
 

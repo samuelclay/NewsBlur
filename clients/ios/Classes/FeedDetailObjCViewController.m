@@ -100,7 +100,10 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
+@property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
 @property (nonatomic) BOOL bottomNextFeedReady;
+@property (nonatomic) BOOL hasBottomNextFeedActiveDragStartOffset;
+@property (nonatomic) CGFloat bottomNextFeedActiveDragStartOffsetY;
 
 - (BOOL)isClusterMarkReadEnabled;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
@@ -117,6 +120,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedProbeOffset;
 - (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
+- (CGFloat)bottomNextFeedStaticRevealDistanceForScroll:(UIScrollView *)scroll;
+- (CGFloat)bottomNextFeedEffectiveTriggerOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
 
 @end
@@ -129,7 +134,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
     return (NBDailyBriefingNow() - start) * 1000.0;
 }
 
-static const CGFloat NBBottomNextFeedThreshold = 64.0f;
+static const CGFloat NBBottomNextFeedThreshold = 96.0f;
 static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 @implementation FeedDetailObjCViewController
@@ -3906,12 +3911,17 @@ finish_height_measurement:
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
         self.bottomNextFeedReady = NO;
+        self.hasBottomNextFeedActiveDragStartOffset = YES;
+        self.bottomNextFeedActiveDragStartOffsetY = scroll.contentOffset.y;
+        self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
+        [self.bottomNextFeedFeedback prepare];
     }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate {
     if (scroll != self.storyTitlesTable) {
         [self resetBottomNextFeedControl];
+        self.bottomNextFeedFeedback = nil;
         return;
     }
 
@@ -3921,6 +3931,7 @@ finish_height_measurement:
     }
 
     [self resetBottomNextFeedControl];
+    self.bottomNextFeedFeedback = nil;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scroll {
@@ -3929,13 +3940,18 @@ finish_height_measurement:
     }
 
     [self resetBottomNextFeedControl];
+    self.bottomNextFeedFeedback = nil;
 }
 
 - (void)openBottomNextUnreadList {
-    [self resetBottomNextFeedControl];
+    if (self.bottomNextFeedFeedback == nil) {
+        self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
+        [self.bottomNextFeedFeedback prepare];
+    }
 
-    UISelectionFeedbackGenerator *feedback = [[UISelectionFeedbackGenerator alloc] init];
-    [feedback selectionChanged];
+    [self.bottomNextFeedFeedback selectionChanged];
+    self.bottomNextFeedFeedback = nil;
+    [self resetBottomNextFeedControl];
     
     if (![self.appDelegate.feedsViewController selectNextUnreadFolderOrFeed]) {
         [self.appDelegate showFeedsListAnimated:YES];
@@ -3998,8 +4014,24 @@ finish_height_measurement:
     return MAX(minOffsetY, CGRectGetMinY(endRowRect) - [self bottomNextFeedProbeOffset]);
 }
 
-- (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll {
+- (CGFloat)bottomNextFeedStaticRevealDistanceForScroll:(UIScrollView *)scroll {
     CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
+
+    return MAX(0.0f, scroll.contentOffset.y - triggerOffset);
+}
+
+- (CGFloat)bottomNextFeedEffectiveTriggerOffsetForScroll:(UIScrollView *)scroll {
+    CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
+
+    if ([self isActivelyDraggingBottomNextFeedForScroll:scroll] && self.hasBottomNextFeedActiveDragStartOffset) {
+        return MAX(triggerOffset, self.bottomNextFeedActiveDragStartOffsetY);
+    }
+
+    return triggerOffset;
+}
+
+- (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll {
+    CGFloat triggerOffset = [self bottomNextFeedEffectiveTriggerOffsetForScroll:scroll];
 
     return MAX(0.0f, scroll.contentOffset.y - triggerOffset);
 }
@@ -4034,31 +4066,43 @@ finish_height_measurement:
         return;
     }
 
-    CGFloat revealDistance = [self isActivelyDraggingBottomNextFeedForScroll:scroll] ?
-        [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
+    BOOL isActivelyDragging = [self isActivelyDraggingBottomNextFeedForScroll:scroll];
+    CGFloat revealDistance = isActivelyDragging ? [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
     CGFloat progress = MIN(1.0f, revealDistance / NBBottomNextFeedThreshold);
-    BOOL ready = progress >= 1.0f;
+    BOOL ready = isActivelyDragging && progress >= 1.0f;
+    BOOL shouldShowControl = [self bottomNextFeedStaticRevealDistanceForScroll:scroll] > 0.0f;
 
     NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
     NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
     UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
 
-    self.bottomNextFeedControl.hidden = progress <= 0.01f;
+    self.bottomNextFeedControl.hidden = !shouldShowControl;
     [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:progress ready:ready];
+
+    if (ready && !self.bottomNextFeedReady) {
+        [self.bottomNextFeedFeedback prepare];
+    }
 
     self.bottomNextFeedReady = ready;
 }
 
 - (void)resetBottomNextFeedControl {
+    self.bottomNextFeedReady = NO;
+    self.bottomNextFeedFeedback = nil;
+    self.hasBottomNextFeedActiveDragStartOffset = NO;
+
     if (self.bottomNextFeedControl == nil) {
         return;
     }
 
     NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
+    BOOL shouldShowControl = [self canPullToNextUnreadList] &&
+        [self bottomNextFeedStaticRevealDistanceForScroll:self.storyTitlesTable] > 0.0f;
+    NSString *title = shouldShowControl ? [self.appDelegate.feedsViewController nextUnreadNavigationTitle] : nil;
+    UIImage *icon = shouldShowControl ? [self.appDelegate.feedsViewController nextUnreadNavigationIcon] : nil;
 
-    self.bottomNextFeedReady = NO;
-    self.bottomNextFeedControl.hidden = YES;
-    [self.bottomNextFeedControl configureWithKind:kind title:nil icon:nil progress:0 ready:NO];
+    self.bottomNextFeedControl.hidden = !shouldShowControl;
+    [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:0 ready:NO];
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
