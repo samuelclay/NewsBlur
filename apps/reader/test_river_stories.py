@@ -565,6 +565,26 @@ class Test_RiverStories(TransactionTestCase):
             )
         )
 
+    def test_river_stories__over_page_limit_returns_404_without_aggregation(self):
+        """River pages past the reader safety limit should stop before aggregation."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+
+        with patch("apps.reader.views.UserSubscription.feed_stories", return_value=([], [])) as feed_stories:
+            response = self.client.post(
+                reverse("load-river-stories"),
+                {
+                    "feeds": self.test_feeds,
+                    "read_filter": "all",
+                    "page": 401,
+                },
+            )
+
+        self.assertEqual(response.status_code, 404)
+        feed_stories.assert_not_called()
+
     def test_river_stories__specific_story_hashes(self):
         """
         Test loading specific story hashes - THIS IS THE BUG WE FIXED.
