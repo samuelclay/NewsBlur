@@ -39,6 +39,14 @@ private fun Feed.toFeedSet() =
         isMuted = !this@toFeedSet.active
     }
 
+private fun cleanFolderName(folderName: String) =
+    // ROOT FOLDER maps to ALL_STORIES_GROUP_KEY
+    if (folderName == AppConstants.ROOT_FOLDER) {
+        AppConstants.ALL_STORIES_GROUP_KEY
+    } else {
+        folderName
+    }
+
 /**
  * Represents the user's current reading session data source
  * as constructed and filtered by the home list adapter
@@ -97,14 +105,7 @@ class SessionDataSource private constructor(
         feed: Feed,
         folderName: String,
     ): Feed? {
-        val cleanFolderName =
-            // ROOT FOLDER maps to ALL_STORIES_GROUP_KEY
-            if (folderName == AppConstants.ROOT_FOLDER) {
-                AppConstants.ALL_STORIES_GROUP_KEY
-            } else {
-                folderName
-        }
-        val folderFeeds = foldersChildrenMap[cleanFolderName]
+        val folderFeeds = foldersChildrenMap[cleanFolderName(folderName)]
         return folderFeeds?.let { feeds ->
             val feedIndex = feeds.indexOf(feed)
             if (feedIndex == -1) return null // invalid feed
@@ -174,9 +175,17 @@ class SessionDataSource private constructor(
                 Session(feedSet = nextFeedSet, folderName = nextFolderName)
             }
         } else if (session.feed != null && session.folderName != null) {
-            val nextFeed = getNextFolderFeed(feed = session.feed!!, folderName = session.folderName!!)
+            val folderName = session.folderName!!
+            val nextFeed = getNextFolderFeed(feed = session.feed!!, folderName = folderName)
             nextFeed?.let {
                 Session(feedSet = it.toFeedSet(), session.folderName, it)
+            } ?: if (stateFilter != null) {
+                getNextNonEmptyFolder(cleanFolderName(folderName))?.let { (nextFolderName, nextFolderFeeds) ->
+                    val nextFeedSet = FeedSet.folder(nextFolderName, nextFolderFeeds.map { it.feedId }.toSet())
+                    Session(feedSet = nextFeedSet, folderName = nextFolderName)
+                }
+            } else {
+                null
             }
         } else {
             null
