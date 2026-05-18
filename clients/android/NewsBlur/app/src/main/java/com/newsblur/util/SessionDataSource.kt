@@ -105,7 +105,7 @@ class SessionDataSource private constructor(
         feed: Feed,
         folderName: String,
     ): Feed? {
-        val folderFeeds = foldersChildrenMap[cleanFolderName(folderName)]
+        val folderFeeds = foldersChildrenMap[folderName]
         return folderFeeds?.let { feeds ->
             val feedIndex = feeds.indexOf(feed)
             if (feedIndex == -1) return null // invalid feed
@@ -130,6 +130,11 @@ class SessionDataSource private constructor(
             nextFeedIndex?.let { feeds[it] }
         }
     }
+
+    private fun findFolderNameContainingFeed(feed: Feed): String? =
+        folders.firstOrNull { folderName ->
+            foldersChildrenMap[folderName]?.contains(feed) == true
+        }
 
     /**
      * @return The next non empty folder and its feeds based on the given folder name.
@@ -175,12 +180,18 @@ class SessionDataSource private constructor(
                 Session(feedSet = nextFeedSet, folderName = nextFolderName)
             }
         } else if (session.feed != null && session.folderName != null) {
-            val folderName = session.folderName!!
+            val requestedFolderName = cleanFolderName(session.folderName!!)
+            val folderName =
+                if (foldersChildrenMap[requestedFolderName]?.contains(session.feed!!) == true) {
+                    requestedFolderName
+                } else {
+                    findFolderNameContainingFeed(session.feed!!) ?: requestedFolderName
+                }
             val nextFeed = getNextFolderFeed(feed = session.feed!!, folderName = folderName)
             nextFeed?.let {
-                Session(feedSet = it.toFeedSet(), session.folderName, it)
+                Session(feedSet = it.toFeedSet(), folderName, it)
             } ?: if (stateFilter != null) {
-                getNextNonEmptyFolder(cleanFolderName(folderName))?.let { (nextFolderName, nextFolderFeeds) ->
+                getNextNonEmptyFolder(folderName)?.let { (nextFolderName, nextFolderFeeds) ->
                     val nextFeedSet = FeedSet.folder(nextFolderName, nextFolderFeeds.map { it.feedId }.toSet())
                     Session(feedSet = nextFeedSet, folderName = nextFolderName)
                 }

@@ -187,6 +187,31 @@ class SessionDataSourceTest {
     }
 
     @Test
+    fun `next unread feed session recovers from stale folder name`() {
+        val feed20 = createFeed("20", neutralCount = 1)
+        val session = Session(FeedSet.singleFeed("20"), "Stale Folder", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, createFeed("21", neutralCount = 1), createFeed("22")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertEquals("F2", it.folderName)
+            Assert.assertEquals("21", it.feed?.feedId)
+        } ?: Assert.fail("Next unread feed session was null")
+    }
+
+    @Test
     fun `next unread data source snapshots serializable saved feed ids`() {
         val session = Session(FeedSet.singleFeed("20"), "F2", createFeed("20"))
         val savedFeedIds = linkedMapOf("21" to true).keys
