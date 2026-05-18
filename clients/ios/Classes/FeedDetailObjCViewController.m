@@ -114,6 +114,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
 - (void)openBottomNextUnreadList;
+- (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedProbeOffset;
 - (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
@@ -3891,7 +3892,7 @@ finish_height_measurement:
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
     BOOL isBottomPulling = scroll == self.storyTitlesTable &&
-        scroll.dragging &&
+        [self isActivelyDraggingBottomNextFeedForScroll:scroll] &&
         [self bottomNextFeedRevealDistanceForScroll:scroll] > 0.0f &&
         [self canPullToNextUnreadList];
 
@@ -3932,6 +3933,9 @@ finish_height_measurement:
 
 - (void)openBottomNextUnreadList {
     [self resetBottomNextFeedControl];
+
+    UISelectionFeedbackGenerator *feedback = [[UISelectionFeedbackGenerator alloc] init];
+    [feedback selectionChanged];
     
     if (![self.appDelegate.feedsViewController selectNextUnreadFolderOrFeed]) {
         [self.appDelegate showFeedsListAnimated:YES];
@@ -3954,6 +3958,10 @@ finish_height_measurement:
 
     return YES;
 #endif
+}
+
+- (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll {
+    return scroll == self.storyTitlesTable && scroll.tracking && scroll.dragging;
 }
 
 - (void)ensureBottomNextFeedControl {
@@ -4026,7 +4034,8 @@ finish_height_measurement:
         return;
     }
 
-    CGFloat revealDistance = scroll.dragging ? [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
+    CGFloat revealDistance = [self isActivelyDraggingBottomNextFeedForScroll:scroll] ?
+        [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
     CGFloat progress = MIN(1.0f, revealDistance / NBBottomNextFeedThreshold);
     BOOL ready = progress >= 1.0f;
 
@@ -4036,11 +4045,6 @@ finish_height_measurement:
 
     self.bottomNextFeedControl.hidden = progress <= 0.01f;
     [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:progress ready:ready];
-
-    if (ready && !self.bottomNextFeedReady) {
-        UISelectionFeedbackGenerator *feedback = [[UISelectionFeedbackGenerator alloc] init];
-        [feedback selectionChanged];
-    }
 
     self.bottomNextFeedReady = ready;
 }

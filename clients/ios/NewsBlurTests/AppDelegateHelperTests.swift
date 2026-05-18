@@ -360,7 +360,7 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.storyTitlesTable.delegate = feedDetailViewController
         feedDetailViewController.storyTitlesTable.reloadData()
         feedDetailViewController.storyTitlesTable.layoutIfNeeded()
-        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
 
         let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
@@ -393,7 +393,7 @@ final class AppDelegateHelperTests: XCTestCase {
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
-        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
@@ -421,10 +421,10 @@ final class AppDelegateHelperTests: XCTestCase {
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
-        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
-        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = false
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: false)
         feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: true)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
@@ -453,7 +453,7 @@ final class AppDelegateHelperTests: XCTestCase {
         let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
-        (feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView)?.draggingForTest = true
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 10)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
@@ -648,6 +648,12 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.storyTitlesTable.contentSize = CGSize(width: 320, height: 900)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: 260)
     }
+
+    private func setBottomNextFeedActiveDrag(_ feedDetailViewController: FeedDetailViewController, active: Bool) {
+        let tableView = feedDetailViewController.storyTitlesTable as? BottomNextFeedTestTableView
+        tableView?.trackingForTest = active
+        tableView?.draggingForTest = active
+    }
 }
 
 final class ActivityModulesLayoutTests: XCTestCase {
@@ -703,7 +709,12 @@ private final class BottomNextFeedPagingViewController: FeedDetailViewController
 }
 
 private final class BottomNextFeedTestTableView: UITableView {
+    var trackingForTest = false
     var draggingForTest = false
+
+    override var isTracking: Bool {
+        trackingForTest
+    }
 
     override var isDragging: Bool {
         draggingForTest
