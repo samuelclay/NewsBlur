@@ -382,8 +382,26 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (storyListSessionDataSource == null) return false;
         Session session = storyListSessionDataSource.getNextSession();
         if (session == null) return false;
+        if (openDifferentStoryListActivity(session)) return true;
         applyNextSession(session);
         return true;
+    }
+
+    private boolean openDifferentStoryListActivity(@NonNull Session session) {
+        if (session.getFeedSet().isFolder() && !(this instanceof FolderItemsList)) {
+            if (sessionDataSource != null) {
+                sessionDataSource.setSession(session);
+            }
+            Intent intent = new Intent(this, FolderItemsList.class);
+            intent.putExtra(EXTRA_FEED_SET, session.getFeedSet());
+            intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, session.getFolderName());
+            intent.putExtra(EXTRA_SESSION_DATA, sessionDataSource);
+            intent.putExtra(EXTRA_STORY_LIST_SESSION_DATA, storyListSessionDataSource);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        return false;
     }
 
     private void applyNextSession(@NonNull Session session) {
