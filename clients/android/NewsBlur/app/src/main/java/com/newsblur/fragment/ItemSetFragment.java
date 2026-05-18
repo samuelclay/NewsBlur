@@ -562,6 +562,22 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private float getBottomNextFeedVisibilityProgress() {
+        int storyCount = adapter.getStoryCount();
+        if (storyCount > 0) {
+            View lastStoryView = layoutManager.findViewByPosition(storyCount - 1);
+            if (lastStoryView != null) {
+                int midpoint = lastStoryView.getTop() + lastStoryView.getHeight() / 2;
+                if (bottomNextFeedRevealPx <= 0) return midpoint <= 0 ? 1f : 0f;
+                return Math.max(0f, Math.min(1f, (bottomNextFeedRevealPx - midpoint) / (float) bottomNextFeedRevealPx));
+            }
+
+            if (layoutManager.findFirstVisibleItemPosition() > storyCount - 1) {
+                return 1f;
+            }
+
+            return 0f;
+        }
+
         int revealDistance = getBottomNextFeedRevealDistance();
         if (bottomNextFeedRevealPx <= 0) return revealDistance > 0 ? 1f : 0f;
         return Math.max(0f, Math.min(1f, revealDistance / (float) bottomNextFeedRevealPx));
