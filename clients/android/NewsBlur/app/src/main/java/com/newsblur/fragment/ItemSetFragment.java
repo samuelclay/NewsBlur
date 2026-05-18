@@ -557,7 +557,6 @@ public class ItemSetFragment extends NbFragment {
         FeedSet fs = getFeedSet();
         return dataSeenYet &&
                 fs != null &&
-                adapter.getRawStoryCount() > 0 &&
                 !UIUtils.needsSubscriptionAccess(fs, prefsRepo) &&
                 syncServiceState.isFeedSetExhausted(fs);
     }
