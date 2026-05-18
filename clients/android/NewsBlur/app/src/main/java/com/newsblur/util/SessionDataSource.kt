@@ -45,11 +45,14 @@ private fun Feed.toFeedSet() =
  * based on settings and preferences.
  */
 class SessionDataSource private constructor(
-    private val folders: List<String>,
-    private val foldersChildrenMap: Map<String, List<Feed>>,
+    folders: List<String>,
+    foldersChildrenMap: Map<String, List<Feed>>,
     private val stateFilter: StateFilter?,
-    private val savedFeedIds: Set<String>,
+    savedFeedIds: Set<String>,
 ) : Serializable {
+    private val folders: List<String> = folders.toList()
+    private val foldersChildrenMap: Map<String, List<Feed>> = foldersChildrenMap.mapValues { it.value.toList() }.toMap()
+    private val savedFeedIds: Set<String> = savedFeedIds.toSet()
     private lateinit var session: Session
 
     constructor(

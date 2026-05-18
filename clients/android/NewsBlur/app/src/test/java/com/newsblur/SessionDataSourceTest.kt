@@ -7,6 +7,8 @@ import com.newsblur.util.SessionDataSource
 import com.newsblur.util.StateFilter
 import org.junit.Assert
 import org.junit.Test
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 
 class SessionDataSourceTest {
     private val folders =
@@ -156,6 +158,24 @@ class SessionDataSourceTest {
             Assert.assertEquals("F5", it.folderName)
             Assert.assertEquals(setOf("50", "51"), it.feedSet.flatFeedIds)
         } ?: Assert.fail("Next unread folder session was null")
+    }
+
+    @Test
+    fun `next unread data source snapshots serializable saved feed ids`() {
+        val session = Session(FeedSet.singleFeed("20"), "F2", createFeed("20"))
+        val savedFeedIds = linkedMapOf("21" to true).keys
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                folderChildren,
+                StateFilter.SAVED,
+                savedFeedIds,
+            )
+
+        ObjectOutputStream(ByteArrayOutputStream()).use { stream ->
+            stream.writeObject(sessionDs)
+        }
     }
 
     /**
