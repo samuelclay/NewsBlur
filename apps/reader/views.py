@@ -2589,15 +2589,28 @@ def load_river_stories__redis(request):
             stories = Feed.format_stories(mstories)
             unread_feed_story_hashes = None
         else:
+            requested_feed_ids = list(feed_ids)
+            if read_filter == "unread":
+                cache_usersubs = UserSubscription.subs_for_feeds(
+                    user.pk, feed_ids=requested_feed_ids, read_filter="all"
+                )
+                cache_feed_ids = [sub.feed_id for sub in cache_usersubs]
+            else:
+                cache_feed_ids = []
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
+            if not cache_feed_ids:
+                cache_feed_ids = [sub.feed_id for sub in usersubs]
             feed_ids = Feed.exclude_briefing_feeds(feed_ids)
+            cache_feed_ids = Feed.exclude_briefing_feeds(cache_feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
+                cache_feed_ids = Feed.low_volume_feeds(cache_feed_ids, stories_per_month=infrequent)
             if feed_ids:
                 params = {
                     "user_id": user.pk,
                     "feed_ids": feed_ids,
+                    "all_feed_ids": cache_feed_ids,
                     "offset": offset,
                     "limit": limit,
                     "order": order,

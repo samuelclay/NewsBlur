@@ -714,13 +714,15 @@ class UserSubscription(models.Model):
         if feed_ids is None:
             across_all_feeds = True
             feed_ids = []
-        # Deprecated: all_feed_ids is no longer used, use feed_ids for cache keys
+        # Keep page caches keyed to the stable requested feed set while merging
+        # only the feeds that can currently contribute stories.
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
+        cache_feed_ids = [f for f in all_feed_ids]
 
         # Use helper method to generate consistent cache keys
         ranked_stories_keys, unread_ranked_stories_keys = cls.get_river_cache_keys(
-            user_id, feed_ids, cache_prefix
+            user_id, cache_feed_ids, cache_prefix
         )
         stories_cached = rt.exists(ranked_stories_keys)
         if offset and stories_cached:
@@ -753,12 +755,17 @@ class UserSubscription(models.Model):
             # drift when stories marked as read cause zdiffstore to recompute
             # the per-feed unread sets, shifting the merged list and causing
             # the offset to skip stories the user hasn't seen yet.
+            def story_hash_cache_member(story_hash):
+                if isinstance(story_hash, bytes):
+                    return story_hash.decode("utf-8")
+                return story_hash
+
             already_cached = set()
             extending_cache = False
             if cache_key:
                 cached_entries = rt.zrange(cache_key, 0, -1)
                 if cached_entries:
-                    already_cached = set(cached_entries)
+                    already_cached = {story_hash_cache_member(h) for h in cached_entries}
                     extending_cache = True
 
             per_feed_chunk = 25
@@ -836,7 +843,7 @@ class UserSubscription(models.Model):
             while heap and len(merged_story_hashes) < merge_target:
                 transformed_score, feed_id, story_hash = heapq.heappop(heap)
                 original_score = -transformed_score if order == "newest" else transformed_score
-                if extending_cache and story_hash in already_cached:
+                if extending_cache and story_hash_cache_member(story_hash) in already_cached:
                     # Skip stories from previous pages — anchors pagination to
                     # what was already shown, not to a shifting offset.
                     push_next_from_feed(feed_id)
