@@ -102,6 +102,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
 @property (nonatomic) BOOL bottomNextFeedReady;
+@property (nonatomic) BOOL bottomNextFeedTapActivationPending;
 @property (nonatomic) BOOL hasBottomNextFeedActiveDragStartOffset;
 @property (nonatomic) CGFloat bottomNextFeedActiveDragStartOffsetY;
 
@@ -117,10 +118,13 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
 - (void)openBottomNextUnreadList;
+- (void)activateBottomNextFeedControlFromTap;
 - (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer;
 - (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedProbeOffset;
+- (CGFloat)bottomNextFeedEndRowOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
+- (CGFloat)bottomNextFeedActivationTriggerOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedStaticRevealDistanceForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedEffectiveTriggerOffsetForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedRevealDistanceForScroll:(UIScrollView *)scroll;
@@ -3966,8 +3970,41 @@ finish_height_measurement:
 
 - (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer == nil || gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self openBottomNextUnreadList];
+        [self activateBottomNextFeedControlFromTap];
     }
+}
+
+- (void)activateBottomNextFeedControlFromTap {
+    if (self.bottomNextFeedTapActivationPending ||
+        ![self canPullToNextUnreadList] ||
+        self.bottomNextFeedControl == nil ||
+        self.bottomNextFeedControl.hidden ||
+        self.bottomNextFeedControl.alpha <= 0.01f) {
+        return;
+    }
+
+    self.bottomNextFeedTapActivationPending = YES;
+    self.bottomNextFeedReady = YES;
+
+    if (self.bottomNextFeedFeedback == nil) {
+        self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
+    }
+    [self.bottomNextFeedFeedback prepare];
+
+    NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
+    NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
+    UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
+    [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:1.0f ready:YES];
+    self.bottomNextFeedControl.alpha = 1.0f;
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.12 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (!self.bottomNextFeedTapActivationPending) {
+            return;
+        }
+
+        self.bottomNextFeedTapActivationPending = NO;
+        [self openBottomNextUnreadList];
+    });
 }
 
 - (BOOL)canPullToNextUnreadList {
@@ -4013,7 +4050,7 @@ finish_height_measurement:
     return self.textSize != FeedDetailTextSizeTitleOnly ? 80.0f : 60.0f;
 }
 
-- (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll {
+- (CGFloat)bottomNextFeedEndRowOffsetForScroll:(UIScrollView *)scroll {
     UIEdgeInsets adjustedInset = scroll.adjustedContentInset;
     CGFloat minOffsetY = -adjustedInset.top;
     NSArray<NSDictionary *> *rowDescriptors = [self storyRowDescriptors];
@@ -4025,7 +4062,18 @@ finish_height_measurement:
     NSIndexPath *endRowIndexPath = [NSIndexPath indexPathForRow:rowDescriptors.count inSection:0];
     CGRect endRowRect = [self.storyTitlesTable rectForRowAtIndexPath:endRowIndexPath];
 
-    return MAX(minOffsetY, CGRectGetMinY(endRowRect) - [self bottomNextFeedProbeOffset]);
+    return MAX(minOffsetY, CGRectGetMinY(endRowRect));
+}
+
+- (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll {
+    CGFloat minOffsetY = -scroll.adjustedContentInset.top;
+    CGFloat endRowOffset = [self bottomNextFeedEndRowOffsetForScroll:scroll];
+
+    return MAX(minOffsetY, endRowOffset - [self bottomNextFeedProbeOffset]);
+}
+
+- (CGFloat)bottomNextFeedActivationTriggerOffsetForScroll:(UIScrollView *)scroll {
+    return [self bottomNextFeedEndRowOffsetForScroll:scroll];
 }
 
 - (CGFloat)bottomNextFeedStaticRevealDistanceForScroll:(UIScrollView *)scroll {
@@ -4035,7 +4083,7 @@ finish_height_measurement:
 }
 
 - (CGFloat)bottomNextFeedEffectiveTriggerOffsetForScroll:(UIScrollView *)scroll {
-    CGFloat triggerOffset = [self bottomNextFeedTriggerOffsetForScroll:scroll];
+    CGFloat triggerOffset = [self bottomNextFeedActivationTriggerOffsetForScroll:scroll];
 
     if ([self isActivelyDraggingBottomNextFeedForScroll:scroll] && self.hasBottomNextFeedActiveDragStartOffset) {
         return MAX(triggerOffset, self.bottomNextFeedActiveDragStartOffsetY);
@@ -4106,6 +4154,7 @@ finish_height_measurement:
 - (void)resetBottomNextFeedControl {
     self.bottomNextFeedReady = NO;
     self.bottomNextFeedFeedback = nil;
+    self.bottomNextFeedTapActivationPending = NO;
     self.hasBottomNextFeedActiveDragStartOffset = NO;
 
     if (self.bottomNextFeedControl == nil) {

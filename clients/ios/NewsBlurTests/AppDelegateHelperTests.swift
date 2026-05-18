@@ -384,11 +384,33 @@ final class AppDelegateHelperTests: XCTestCase {
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 112)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
 
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
+    }
+
+    func test_bottomNextFeedDoesNotOpenBeforeLowerActivationPoint() {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        prepareBottomNextFeedTable(feedDetailViewController)
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+
+        feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
+        setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+        feedDetailViewController.scrollViewDidEndDragging(feedDetailViewController.storyTitlesTable, willDecelerate: false)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
     func test_bottomNextFeedDoesNotOpenWhenMomentumCrossesThreshold() {
@@ -462,6 +484,12 @@ final class AppDelegateHelperTests: XCTestCase {
 
         _ = feedDetailViewController.perform(NSSelectorFromString("didTapBottomNextFeedControl:"), with: nil)
 
+        XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, true)
+        XCTAssertEqual(control.alpha, 1)
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+
+        RunLoop.main.run(until: Date().addingTimeInterval(0.2))
+
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
     }
 
@@ -522,7 +550,7 @@ final class AppDelegateHelperTests: XCTestCase {
 
         feedDetailViewController.scrollViewWillBeginDragging(feedDetailViewController.storyTitlesTable)
         setBottomNextFeedActiveDrag(feedDetailViewController, active: true)
-        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 112)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop - 90)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
