@@ -47,6 +47,8 @@ private fun Feed.toFeedSet() =
 class SessionDataSource private constructor(
     private val folders: List<String>,
     private val foldersChildrenMap: Map<String, List<Feed>>,
+    private val stateFilter: StateFilter?,
+    private val savedFeedIds: Set<String>,
 ) : Serializable {
     private lateinit var session: Session
 
@@ -60,6 +62,26 @@ class SessionDataSource private constructor(
             folders
                 .zipFolderFeed(foldersChildren)
                 .filterNot { invalidMarkAllReadFolderKeys.contains(it.key) },
+        stateFilter = null,
+        savedFeedIds = emptySet(),
+    ) {
+        this.session = activeSession
+    }
+
+    constructor(
+        activeSession: Session,
+        folders: List<String>,
+        foldersChildren: List<List<Feed>>,
+        stateFilter: StateFilter?,
+        savedFeedIds: Set<String>,
+    ) : this(
+        folders = folders.filterNot { invalidMarkAllReadFolderKeys.contains(it) },
+        foldersChildrenMap =
+            folders
+                .zipFolderFeed(foldersChildren)
+                .filterNot { invalidMarkAllReadFolderKeys.contains(it.key) },
+        stateFilter = stateFilter,
+        savedFeedIds = savedFeedIds,
     ) {
         this.session = activeSession
     }
@@ -78,11 +100,21 @@ class SessionDataSource private constructor(
                 AppConstants.ALL_STORIES_GROUP_KEY
             } else {
                 folderName
-            }
+        }
         val folderFeeds = foldersChildrenMap[cleanFolderName]
         return folderFeeds?.let { feeds ->
             val feedIndex = feeds.indexOf(feed)
             if (feedIndex == -1) return null // invalid feed
+
+            if (stateFilter != null) {
+                for (offset in 1..feeds.size) {
+                    val nextFeedIndex = (feedIndex + offset) % feeds.size
+                    val nextFeed = feeds[nextFeedIndex]
+                    if (nextFeed == feed) continue
+                    if (nextFeed.hasNextUnread()) return nextFeed
+                }
+                return null
+            }
 
             val nextFeedIndex =
                 when (feedIndex) {
@@ -123,7 +155,7 @@ class SessionDataSource private constructor(
             }
 
             val feeds = foldersChildrenMap[nextFolderName]
-            if (feeds.isNullOrEmpty()) {
+            if (feeds.isNullOrEmpty() || !feeds.hasNextUnreadTarget()) {
                 // try and get the next non empty folder name
                 getNextNonEmptyFolder(nextFolderName)
             } else {
@@ -131,24 +163,44 @@ class SessionDataSource private constructor(
             }
         }
 
-    fun getNextSession(): Session? =
+    fun peekNextSession(): Session? =
         if (session.feedSet.isFolder) {
             val folderName = session.feedSet.folderName
             getNextNonEmptyFolder(folderName)?.let { (nextFolderName, nextFolderFeeds) ->
                 val nextFeedSet = FeedSet.folder(nextFolderName, nextFolderFeeds.map { it.feedId }.toSet())
-                Session(feedSet = nextFeedSet, folderName = nextFolderName).also { nextSession ->
-                    session = nextSession
-                }
+                Session(feedSet = nextFeedSet, folderName = nextFolderName)
             }
         } else if (session.feed != null && session.folderName != null) {
             val nextFeed = getNextFolderFeed(feed = session.feed!!, folderName = session.folderName!!)
             nextFeed?.let {
-                Session(feedSet = it.toFeedSet(), session.folderName, it).also { nextSession ->
-                    session = nextSession
-                }
+                Session(feedSet = it.toFeedSet(), session.folderName, it)
             }
         } else {
             null
+        }
+
+    fun getNextSession(): Session? =
+        peekNextSession()?.also { nextSession ->
+            session = nextSession
+        }
+
+    fun setSession(session: Session) {
+        this.session = session
+    }
+
+    private fun List<Feed>.hasNextUnreadTarget(): Boolean =
+        if (stateFilter == null) {
+            isNotEmpty()
+        } else {
+            any { it.hasNextUnread() }
+        }
+
+    private fun Feed.hasNextUnread(): Boolean =
+        when (stateFilter) {
+            StateFilter.ALL -> positiveCount + neutralCount + negativeCount > 0
+            StateFilter.BEST -> positiveCount > 0
+            StateFilter.SAVED -> savedFeedIds.contains(feedId)
+            StateFilter.SOME, StateFilter.NEUT, StateFilter.NEG, null -> positiveCount + neutralCount > 0
         }
 }
 
