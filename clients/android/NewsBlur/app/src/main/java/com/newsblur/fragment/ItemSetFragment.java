@@ -2,11 +2,13 @@ package com.newsblur.fragment;
 
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,9 +34,13 @@ import com.newsblur.databinding.FragmentItemgridBinding;
 import com.newsblur.databinding.RowFleuronBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
+import com.newsblur.domain.CustomIcon;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.service.SyncServiceState;
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.CustomIconRenderer;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -42,6 +48,7 @@ import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.Session;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.ThumbnailStyle;
@@ -63,6 +70,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ItemSetFragment extends NbFragment {
     private static final float STORY_LIST_BACK_GESTURE_TRIGGER_RATIO = 0.33f;
     private static final float STORY_LIST_BACK_GESTURE_DIRECTION_RATIO = 1.2f;
+    private static final float BOTTOM_NEXT_FEED_REVEAL_DP = 72f;
+    private static final float BOTTOM_NEXT_FEED_ACTIVATION_OFFSET_DP = 82f;
+    private static final float BOTTOM_NEXT_FEED_ACTIVATION_DISTANCE_DP = 68f;
 
     @Inject
     FeedUtils feedUtils;
@@ -124,6 +134,17 @@ public class ItemSetFragment extends NbFragment {
     private FragmentItemgridBinding binding;
     private RowFleuronBinding fleuronBinding;
     private StoriesViewModel storiesViewModel;
+    private int bottomNextFeedRevealPx;
+    private int bottomNextFeedActivationOffsetPx;
+    private int bottomNextFeedActivationDistancePx;
+    private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
+    private int bottomNextFeedActiveDragStartOffsetY;
+    private boolean hasBottomNextFeedActiveDragStartOffset;
+    private boolean bottomNextFeedReady;
+    private boolean bottomNextFeedButtonPressActive;
+    private boolean bottomNextFeedHapticFired;
+    @Nullable
+    private String bottomNextFeedLastTargetKey;
 
     public static ItemSetFragment newInstance() {
         ItemSetFragment fragment = new ItemSetFragment();
@@ -181,6 +202,7 @@ public class ItemSetFragment extends NbFragment {
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
         fleuronBinding.buttonUpgrade.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
         styleUpgradeBanner();
+        setupBottomNextFeedControl();
 
         binding.itemgridfragmentGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -225,8 +247,14 @@ public class ItemSetFragment extends NbFragment {
 
         binding.itemgridfragmentGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                ItemSetFragment.this.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 ItemSetFragment.this.onScrolled(dy);
+                updateBottomNextFeedControl();
             }
         });
         binding.itemgridfragmentGrid.addOnItemTouchListener(new StoryListBackTouchListener());
@@ -265,6 +293,7 @@ public class ItemSetFragment extends NbFragment {
             storyThawCompleted(storyBatch.getIndexOfLastUnread());
         }
         updateLoadingIndicators();
+        updateBottomNextFeedControl();
         ItemsList activity = (ItemsList) getActivity();
         if (activity != null) {
             activity.refreshStoryStatusIndicators();
@@ -288,6 +317,7 @@ public class ItemSetFragment extends NbFragment {
         updateAdapter(Collections.emptyList(), -1L);
         dataSeenYet = false;
         updateLoadingIndicators();
+        hideBottomNextFeedControl();
     }
 
     /**
@@ -361,6 +391,7 @@ public class ItemSetFragment extends NbFragment {
         }
 
         ensureSufficientStories();
+        updateBottomNextFeedControl();
     }
 
     private void updateLoadingIndicators() {
@@ -375,6 +406,7 @@ public class ItemSetFragment extends NbFragment {
             updateUpgradeBannerText();
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             fleuronResized = false;
+            hideBottomNextFeedControl();
             return;
         }
 
@@ -407,6 +439,216 @@ public class ItemSetFragment extends NbFragment {
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             }
         }
+        updateBottomNextFeedControl();
+    }
+
+    private void setupBottomNextFeedControl() {
+        bottomNextFeedRevealPx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_REVEAL_DP));
+        bottomNextFeedActivationOffsetPx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_ACTIVATION_OFFSET_DP));
+        bottomNextFeedActivationDistancePx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_ACTIVATION_DISTANCE_DP));
+        binding.bottomNextFeedControl.applyTheme(prefsRepo.getResolvedTheme(requireContext()));
+        binding.bottomNextFeedControl.setOnClickListener(view -> openBottomNextStoryListSession());
+        binding.bottomNextFeedControl.setOnTouchListener(new BottomNextFeedButtonTouchListener());
+    }
+
+    private void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+        int oldState = storyListScrollState;
+        storyListScrollState = newState;
+
+        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+            hasBottomNextFeedActiveDragStartOffset = true;
+            bottomNextFeedActiveDragStartOffsetY = recyclerView.computeVerticalScrollOffset();
+            bottomNextFeedHapticFired = false;
+        } else if (oldState == RecyclerView.SCROLL_STATE_DRAGGING) {
+            if (bottomNextFeedReady && !bottomNextFeedButtonPressActive) {
+                openBottomNextStoryListSession();
+                return;
+            }
+            resetBottomNextFeedDragState();
+        } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            resetBottomNextFeedDragState();
+        }
+
+        updateBottomNextFeedControl();
+    }
+
+    private void updateBottomNextFeedControl() {
+        if (!isAdded() || binding == null || adapter == null || layoutManager == null) return;
+
+        Session target = getBottomNextFeedTarget();
+        if (!canShowBottomNextFeedControl(target)) {
+            hideBottomNextFeedControl();
+            return;
+        }
+
+        float visibilityProgress = bottomNextFeedButtonPressActive ? 1f : getBottomNextFeedVisibilityProgress();
+        if (visibilityProgress <= 0.01f) {
+            binding.bottomNextFeedControl.setAlpha(0f);
+            binding.bottomNextFeedControl.setVisibility(View.GONE);
+            bottomNextFeedReady = false;
+            return;
+        }
+
+        boolean ready = bottomNextFeedButtonPressActive || isBottomNextFeedScrollReady();
+        if (ready && !bottomNextFeedReady && !bottomNextFeedButtonPressActive && !bottomNextFeedHapticFired) {
+            binding.bottomNextFeedControl.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            bottomNextFeedHapticFired = true;
+        } else if (!ready) {
+            bottomNextFeedHapticFired = false;
+        }
+        bottomNextFeedReady = ready;
+
+        configureBottomNextFeedTarget(target, ready);
+        binding.bottomNextFeedControl.setVisibility(View.VISIBLE);
+        binding.bottomNextFeedControl.setAlpha(visibilityProgress);
+    }
+
+    private void hideBottomNextFeedControl() {
+        bottomNextFeedReady = false;
+        bottomNextFeedButtonPressActive = false;
+        resetBottomNextFeedDragState();
+        bottomNextFeedLastTargetKey = null;
+        if (binding == null) return;
+        binding.bottomNextFeedControl.configure("site", null, false);
+        binding.bottomNextFeedControl.setAlpha(0f);
+        binding.bottomNextFeedControl.setVisibility(View.GONE);
+    }
+
+    private void resetBottomNextFeedDragState() {
+        hasBottomNextFeedActiveDragStartOffset = false;
+        bottomNextFeedActiveDragStartOffsetY = 0;
+        bottomNextFeedHapticFired = false;
+    }
+
+    @Nullable
+    private Session getBottomNextFeedTarget() {
+        ItemsList activity = (ItemsList) getActivity();
+        if (activity == null) return null;
+        return activity.peekNextStoryListSession();
+    }
+
+    private boolean canShowBottomNextFeedControl(@Nullable Session target) {
+        if (target == null || binding == null || adapter == null) return false;
+        FeedSet fs = getFeedSet();
+        return dataSeenYet &&
+                fs != null &&
+                adapter.getRawStoryCount() > 0 &&
+                !UIUtils.needsSubscriptionAccess(fs, prefsRepo) &&
+                syncServiceState.isFeedSetExhausted(fs);
+    }
+
+    private float getBottomNextFeedVisibilityProgress() {
+        int revealDistance = getBottomNextFeedRevealDistance();
+        if (bottomNextFeedRevealPx <= 0) return revealDistance > 0 ? 1f : 0f;
+        return Math.max(0f, Math.min(1f, revealDistance / (float) bottomNextFeedRevealPx));
+    }
+
+    private int getBottomNextFeedRevealDistance() {
+        if (binding == null || adapter == null || layoutManager == null) return 0;
+        View footerView = layoutManager.findViewByPosition(adapter.getStoryCount());
+        if (footerView != null) {
+            return Math.max(0, binding.itemgridfragmentGrid.getHeight() - footerView.getTop());
+        }
+        if (!binding.itemgridfragmentGrid.canScrollVertically(1)) {
+            return bottomNextFeedRevealPx;
+        }
+        return 0;
+    }
+
+    private boolean isBottomNextFeedScrollReady() {
+        if (storyListScrollState != RecyclerView.SCROLL_STATE_DRAGGING ||
+                !hasBottomNextFeedActiveDragStartOffset ||
+                binding == null) {
+            return false;
+        }
+
+        int scrollOffset = binding.itemgridfragmentGrid.computeVerticalScrollOffset();
+        int footerStartOffset = scrollOffset - getBottomNextFeedRevealDistance();
+        int activationStartOffset = footerStartOffset + bottomNextFeedActivationOffsetPx;
+        int effectiveActivationStartOffset = Math.max(activationStartOffset, bottomNextFeedActiveDragStartOffsetY);
+        return scrollOffset - effectiveActivationStartOffset >= bottomNextFeedActivationDistancePx;
+    }
+
+    private void configureBottomNextFeedTarget(@NonNull Session target, boolean ready) {
+        Feed feed = target.getFeed();
+        boolean isFolder = feed == null;
+        String title = isFolder ? getBottomNextFolderTitle(target.getFolderName()) : feed.title;
+        String targetKey = isFolder ? "folder:" + target.getFolderName() : "feed:" + feed.feedId;
+
+        if (!targetKey.equals(bottomNextFeedLastTargetKey)) {
+            bottomNextFeedLastTargetKey = targetKey;
+            updateBottomNextFeedTargetIcon(target);
+        }
+
+        binding.bottomNextFeedControl.configure(isFolder ? "folder" : "site", title, ready);
+    }
+
+    private String getBottomNextFolderTitle(@Nullable String folderName) {
+        if (AppConstants.ALL_STORIES_GROUP_KEY.equals(folderName)) {
+            return getString(R.string.all_stories_title);
+        } else if (AppConstants.ROOT_FOLDER.equals(folderName)) {
+            return getString(R.string.top_level);
+        } else if (folderName == null || folderName.trim().isEmpty()) {
+            return getString(R.string.feed_list);
+        }
+        return folderName;
+    }
+
+    private void updateBottomNextFeedTargetIcon(@NonNull Session target) {
+        Feed feed = target.getFeed();
+        if (feed != null) {
+            CustomIcon customIcon = BlurDatabaseHelper.getFeedIcon(feed.feedId);
+            Bitmap iconBitmap = renderBottomNextFeedIcon(customIcon);
+            if (iconBitmap != null) {
+                binding.bottomNextFeedControl.setTargetIconBitmap(iconBitmap);
+            } else {
+                binding.bottomNextFeedControl.loadTargetIcon(iconLoader, feed.faviconUrl, R.drawable.ic_world);
+            }
+            return;
+        }
+
+        String folderName = target.getFolderName();
+        if (AppConstants.ALL_STORIES_GROUP_KEY.equals(folderName)) {
+            binding.bottomNextFeedControl.setTargetIconResource(R.drawable.ic_all_stories);
+            return;
+        }
+
+        CustomIcon customIcon = folderName == null ? null : BlurDatabaseHelper.getFolderIcon(folderName);
+        Bitmap iconBitmap = renderBottomNextFeedIcon(customIcon);
+        if (iconBitmap != null) {
+            binding.bottomNextFeedControl.setTargetIconBitmap(iconBitmap);
+        } else {
+            binding.bottomNextFeedControl.setTargetIconResource(R.drawable.ic_folder_closed);
+        }
+    }
+
+    @Nullable
+    private Bitmap renderBottomNextFeedIcon(@Nullable CustomIcon customIcon) {
+        if (customIcon == null) return null;
+        int iconSize = UIUtils.dp2px(requireContext(), 22);
+        return CustomIconRenderer.renderIcon(requireContext(), customIcon, iconSize);
+    }
+
+    private boolean openBottomNextStoryListSession() {
+        ItemsList activity = (ItemsList) getActivity();
+        if (activity == null) return false;
+        boolean opened = activity.openNextStoryListSession();
+        if (opened) {
+            bottomNextFeedButtonPressActive = false;
+            bottomNextFeedReady = false;
+            resetBottomNextFeedDragState();
+            hideBottomNextFeedControl();
+        } else {
+            updateBottomNextFeedControl();
+        }
+        return opened;
+    }
+
+    private boolean isTouchInside(@NonNull View view, @NonNull MotionEvent event) {
+        return event.getX() >= 0f &&
+                event.getX() <= view.getWidth() &&
+                event.getY() >= 0f &&
+                event.getY() <= view.getHeight();
     }
 
     private void styleUpgradeBanner() {
@@ -663,6 +905,43 @@ public class ItemSetFragment extends NbFragment {
         return activity != null &&
                 !activity.isTaskRoot() &&
                 prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK;
+    }
+
+    private final class BottomNextFeedButtonTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            if (!canShowBottomNextFeedControl(getBottomNextFeedTarget())) return false;
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    bottomNextFeedButtonPressActive = true;
+                    view.setPressed(true);
+                    updateBottomNextFeedControl();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    bottomNextFeedButtonPressActive = isTouchInside(view, event);
+                    view.setPressed(bottomNextFeedButtonPressActive);
+                    updateBottomNextFeedControl();
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    boolean shouldOpen = bottomNextFeedButtonPressActive && isTouchInside(view, event);
+                    bottomNextFeedButtonPressActive = false;
+                    view.setPressed(false);
+                    if (shouldOpen) {
+                        view.performClick();
+                    } else {
+                        updateBottomNextFeedControl();
+                    }
+                    return true;
+                case MotionEvent.ACTION_CANCEL:
+                    bottomNextFeedButtonPressActive = false;
+                    view.setPressed(false);
+                    updateBottomNextFeedControl();
+                    return true;
+                default:
+                    return true;
+            }
+        }
     }
 
     private final class StoryListBackTouchListener implements RecyclerView.OnItemTouchListener {

@@ -61,6 +61,9 @@ people together to talk about the world.</string>
     <string name="read_stories_title">Read Stories</string>
     <string name="saved_stories_title">Saved Stories</string>
     <string name="saved_searches_title">Saved Searches</string>
+    <string name="feed_list">Feed list</string>
+    <string name="bottom_next_unread_site">Next unread site, %1$s</string>
+    <string name="bottom_next_unread_folder">Next unread folder, %1$s</string>
 
     <string name="top_level">TOP LEVEL</string>
 
