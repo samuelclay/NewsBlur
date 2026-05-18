@@ -1336,6 +1336,7 @@ class Test_RiverStories(TransactionTestCase):
             def __init__(self, redis_client, decoded_key):
                 self.redis_client = redis_client
                 self.decoded_key = decoded_key
+                self.full_cache_reads = 0
 
             def __getattr__(self, name):
                 return getattr(self.redis_client, name)
@@ -1343,6 +1344,8 @@ class Test_RiverStories(TransactionTestCase):
             def zrange(self, key, *args, **kwargs):
                 values = self.redis_client.zrange(key, *args, **kwargs)
                 if key == self.decoded_key:
+                    if args[:2] == (0, -1):
+                        self.full_cache_reads += 1
                     return [v.decode("utf-8") if isinstance(v, bytes) else v for v in values]
                 return values
 
@@ -1445,10 +1448,8 @@ class Test_RiverStories(TransactionTestCase):
         )
         stable_ranked_key, _ = UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, "")
 
-        with patch(
-            "apps.reader.models.redis.Redis",
-            return_value=RedisWithDecodedRiverCache(r, stable_ranked_key),
-        ):
+        redis_wrapper = RedisWithDecodedRiverCache(r, stable_ranked_key)
+        with patch("apps.reader.models.redis.Redis", return_value=redis_wrapper):
             page2_hashes, _ = UserSubscription.feed_stories(
                 user_id=self.user.pk,
                 feed_ids=active_feed_ids,
@@ -1463,6 +1464,11 @@ class Test_RiverStories(TransactionTestCase):
 
         page2 = [normalize(h) for h in page2_hashes]
         self.assertEqual(page2, expected_page2)
+        self.assertEqual(
+            redis_wrapper.full_cache_reads,
+            0,
+            "River page extension should not reread the full cached page set.",
+        )
 
     def test_single_feed_unread_paging_stable_after_mark_read_cache_rebuild(self):
         """
@@ -1535,6 +1541,86 @@ class Test_RiverStories(TransactionTestCase):
             page2,
             truth[test_limit : test_limit * 2],
             "Page 2 should be anchored to already-returned stories, not a shifted unread offset.",
+        )
+
+    def test_single_feed_unread_paging_extends_page_cache_from_existing_unread_cache(self):
+        """
+        Page 2 should extend the single-feed page cache from the existing zU key.
+
+        Opening page 1 marks the subscription dirty at the end of the request,
+        but mark-read intentionally leaves zU intact while the user is paging.
+        Rebuilding zU on page 2 adds avoidable Redis work.
+        """
+        from django.utils import timezone as django_tz
+
+        feed_id = self.test_feeds[0]
+        feed = Feed.objects.get(pk=feed_id)
+        usersub = UserSubscription.objects.get(user=self.user, feed=feed)
+        test_limit = 4
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.delete(f"RS:{self.user.pk}")
+        r.delete(f"RS:{self.user.pk}:{feed_id}")
+        r.delete(f"zF:{feed_id}")
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+        r.delete(f"zUP:{self.user.pk}:{feed_id}")
+
+        now = django_tz.now()
+        story_hashes = []
+        story_scores = {}
+        for i in range(12):
+            story_guid = f"single-feed-page-cache-{feed_id}-{now.timestamp()}-{i}"
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=now - datetime.timedelta(seconds=i),
+                story_title=f"Single Feed Page Cache Story {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            story_hashes.append(story.story_hash)
+            story_scores[story.story_hash] = int(story.story_date.timestamp())
+
+        r.zadd(f"zF:{feed_id}", story_scores)
+        UserSubscription.objects.filter(pk=usersub.pk).update(
+            needs_unread_recalc=True,
+            unread_count_neutral=len(story_hashes),
+            unread_count_positive=0,
+            unread_count_negative=0,
+        )
+        usersub.refresh_from_db()
+
+        truth = story_hashes[: test_limit * 2]
+        page1 = [
+            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+        ]
+        self.assertEqual(page1, truth[:test_limit])
+        self.assertTrue(r.exists(f"zU:{self.user.pk}:{feed_id}"))
+        self.assertTrue(r.exists(f"zUP:{self.user.pk}:{feed_id}"))
+
+        for story_hash in page1:
+            r.sadd(f"RS:{self.user.pk}", story_hash)
+            r.sadd(f"RS:{self.user.pk}:{feed_id}", story_hash)
+
+        UserSubscription.objects.filter(pk=usersub.pk).update(needs_unread_recalc=True)
+        usersub.refresh_from_db()
+
+        with patch(
+            "apps.reader.models.UserSubscription.story_hashes",
+            wraps=UserSubscription.story_hashes,
+        ) as story_hashes_method:
+            page2 = [
+                story["story_hash"]
+                for story in usersub.get_stories(offset=test_limit, limit=test_limit, read_filter="unread")
+            ]
+
+        self.assertEqual(page2, truth[test_limit : test_limit * 2])
+        self.assertEqual(
+            story_hashes_method.call_count,
+            0,
+            "Page 2 should not rebuild zU while the preserved unread cache can extend zUP.",
         )
 
     def test_single_feed_unread_paging_handles_decoded_page_cache_hashes(self):
