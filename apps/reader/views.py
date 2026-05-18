@@ -2430,6 +2430,9 @@ def load_river_stories__redis(request):
     page = int(get_post.get("page", 1))
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
+    if page > 400 and not story_hashes:
+        logging.user(request, "~BR~FK~SBOver page 400 on river stories: %s" % page)
+        raise Http404
     date_filter_start = get_post.get("date_filter_start")
     date_filter_end = get_post.get("date_filter_end")
     # Sanitize date filters - JS sends "null" as a string
