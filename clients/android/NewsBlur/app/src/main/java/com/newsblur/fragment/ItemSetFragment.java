@@ -285,6 +285,12 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void setStories(StoriesViewModel.@NotNull StoryBatch storyBatch) {
+        FeedSet currentFeedSet = getFeedSet();
+        if (currentFeedSet == null || !storyBatch.getFeedSet().equals(currentFeedSet)) {
+            com.newsblur.util.Log.i(this.getClass().getName(), "stale story list load");
+            return;
+        }
+
         if (!dbHelper.isFeedSetReady(getFeedSet())) {
             com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
             updateAdapter(Collections.emptyList(), storyBatch.getLoadId());
@@ -320,8 +326,18 @@ public class ItemSetFragment extends NbFragment {
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        updateAdapter(Collections.emptyList(), -1L);
+        if (binding != null) {
+            binding.itemgridfragmentGrid.stopScroll();
+            binding.itemgridfragmentGrid.setVisibility(View.INVISIBLE);
+            binding.emptyView.setVisibility(View.VISIBLE);
+        }
+        if (adapter != null) {
+            adapter.updateFeedSet(getFeedSet());
+            adapter.clearStoriesNow();
+        }
+        gridState = null;
         dataSeenYet = false;
+        skipBackFillingStories = false;
         updateLoadingIndicators();
         hideBottomNextFeedControl();
     }
@@ -386,13 +402,15 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void updateAdapter(@NonNull List<Story> stories, Long loadId) {
+        adapter.updateFeedSet(getFeedSet());
         adapter.submitStories(stories, loadId, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
         gridState = null;
-        adapter.updateFeedSet(getFeedSet());
 
         if (stories.isEmpty()) {
+            binding.itemgridfragmentGrid.setVisibility(View.INVISIBLE);
             binding.emptyView.setVisibility(View.VISIBLE);
         } else {
+            binding.itemgridfragmentGrid.setVisibility(View.VISIBLE);
             binding.emptyView.setVisibility(View.INVISIBLE);
         }
 

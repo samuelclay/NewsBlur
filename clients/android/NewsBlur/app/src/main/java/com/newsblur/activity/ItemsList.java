@@ -196,10 +196,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             }
         }
 
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
         EdgeToEdgeUtil.applyView(this, binding);
+        binding.getRoot().post(() -> getWindow().setBackgroundDrawableResource(android.R.color.transparent));
         View toolbarSettingsButton = findViewById(R.id.toolbar_settings_button);
         if (toolbarSettingsButton != null) {
             toolbarSettingsButton.setOnClickListener(this::showItemListSettingsPopup);
