@@ -117,6 +117,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
 - (void)openBottomNextUnreadList;
+- (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer;
 - (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedProbeOffset;
 - (CGFloat)bottomNextFeedTriggerOffsetForScroll:(UIScrollView *)scroll;
@@ -135,6 +136,7 @@ static inline double NBDailyBriefingElapsedMs(CFTimeInterval start) {
 }
 
 static const CGFloat NBBottomNextFeedThreshold = 96.0f;
+static const CGFloat NBBottomNextFeedFadeDistance = 56.0f;
 static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 @implementation FeedDetailObjCViewController
@@ -3944,6 +3946,10 @@ finish_height_measurement:
 }
 
 - (void)openBottomNextUnreadList {
+    if (![self canPullToNextUnreadList]) {
+        return;
+    }
+
     if (self.bottomNextFeedFeedback == nil) {
         self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
         [self.bottomNextFeedFeedback prepare];
@@ -3955,6 +3961,12 @@ finish_height_measurement:
     
     if (![self.appDelegate.feedsViewController selectNextUnreadFolderOrFeed]) {
         [self.appDelegate showFeedsListAnimated:YES];
+    }
+}
+
+- (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == nil || gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        [self openBottomNextUnreadList];
     }
 }
 
@@ -3992,6 +4004,8 @@ finish_height_measurement:
 
     self.bottomNextFeedControl = [[BottomNextFeedControl alloc] initWithFrame:CGRectZero];
     self.bottomNextFeedControl.hidden = YES;
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBottomNextFeedControl:)];
+    [self.bottomNextFeedControl addGestureRecognizer:tapGesture];
     [self.view addSubview:self.bottomNextFeedControl];
 }
 
@@ -4070,7 +4084,9 @@ finish_height_measurement:
     CGFloat revealDistance = isActivelyDragging ? [self bottomNextFeedRevealDistanceForScroll:scroll] : 0.0f;
     CGFloat progress = MIN(1.0f, revealDistance / NBBottomNextFeedThreshold);
     BOOL ready = isActivelyDragging && progress >= 1.0f;
-    BOOL shouldShowControl = [self bottomNextFeedStaticRevealDistanceForScroll:scroll] > 0.0f;
+    CGFloat staticRevealDistance = [self bottomNextFeedStaticRevealDistanceForScroll:scroll];
+    CGFloat visibilityProgress = MIN(1.0f, staticRevealDistance / NBBottomNextFeedFadeDistance);
+    BOOL shouldShowControl = visibilityProgress > 0.01f;
 
     NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
     NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
@@ -4078,6 +4094,7 @@ finish_height_measurement:
 
     self.bottomNextFeedControl.hidden = !shouldShowControl;
     [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:progress ready:ready];
+    self.bottomNextFeedControl.alpha = visibilityProgress;
 
     if (ready && !self.bottomNextFeedReady) {
         [self.bottomNextFeedFeedback prepare];
@@ -4098,11 +4115,14 @@ finish_height_measurement:
     NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
     BOOL shouldShowControl = [self canPullToNextUnreadList] &&
         [self bottomNextFeedStaticRevealDistanceForScroll:self.storyTitlesTable] > 0.0f;
+    CGFloat staticRevealDistance = [self bottomNextFeedStaticRevealDistanceForScroll:self.storyTitlesTable];
+    CGFloat visibilityProgress = shouldShowControl ? MIN(1.0f, staticRevealDistance / NBBottomNextFeedFadeDistance) : 0.0f;
     NSString *title = shouldShowControl ? [self.appDelegate.feedsViewController nextUnreadNavigationTitle] : nil;
     UIImage *icon = shouldShowControl ? [self.appDelegate.feedsViewController nextUnreadNavigationIcon] : nil;
 
     self.bottomNextFeedControl.hidden = !shouldShowControl;
     [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:0 ready:NO];
+    self.bottomNextFeedControl.alpha = visibilityProgress;
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
