@@ -364,6 +364,8 @@ final class AppDelegateHelperTests: XCTestCase {
 
         let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
         XCTAssertFalse(control.isHidden)
+        XCTAssertGreaterThan(control.alpha, 0)
+        XCTAssertLessThan(control.alpha, 1)
         XCTAssertTrue(feedDetailViewController.view.bounds.intersects(control.frame))
     }
 
@@ -435,8 +437,32 @@ final class AppDelegateHelperTests: XCTestCase {
 
         let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
         XCTAssertFalse(control.isHidden)
-        XCTAssertEqual(control.alpha, 1)
+        XCTAssertGreaterThan(control.alpha, 0)
+        XCTAssertLessThan(control.alpha, 1)
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
+    }
+
+    func test_bottomNextFeedTapOpensVisibleTarget() throws {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        prepareBottomNextFeedTable(feedDetailViewController)
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+
+        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
+        XCTAssertFalse(control.isHidden)
+
+        _ = feedDetailViewController.perform(NSSelectorFromString("didTapBottomNextFeedControl:"), with: nil)
+
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
     }
 
     func test_bottomNextFeedStartsEngagementFromActiveDragAfterMomentum() {

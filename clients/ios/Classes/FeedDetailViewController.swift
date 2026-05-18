@@ -22,9 +22,10 @@ import QuartzCore
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        isUserInteractionEnabled = false
+        isUserInteractionEnabled = true
         isAccessibilityElement = true
-        alpha = 1
+        accessibilityTraits = .button
+        alpha = 0
 
         capsuleView.translatesAutoresizingMaskIntoConstraints = false
         capsuleView.layer.cornerRadius = 12
@@ -106,7 +107,6 @@ import QuartzCore
             targetIconView.image = UIImage(systemName: fallbackName)?.withRenderingMode(.alwaysTemplate)
         }
 
-        alpha = 1
         transform = CGAffineTransform(translationX: 0, y: 12)
         arrowContainer.transform = ready ? CGAffineTransform(scaleX: 1.06, y: 1.06) : .identity
 
