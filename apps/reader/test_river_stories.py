@@ -1319,6 +1319,79 @@ class Test_RiverStories(TransactionTestCase):
 
         print(f">>> Pagination stable after mark-read: " f"p1={len(p1)}, p2={len(p2)}, ground truth matched")
 
+    def test_single_feed_unread_paging_stable_after_mark_read_cache_rebuild(self):
+        """
+        Single-feed unread pagination should not skip stories when read marks
+        make the unread cache dirty between page loads.
+        """
+        from django.utils import timezone as django_tz
+
+        feed_id = self.test_feeds[0]
+        feed = Feed.objects.get(pk=feed_id)
+        usersub = UserSubscription.objects.get(user=self.user, feed=feed)
+        test_limit = 4
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.delete(f"RS:{self.user.pk}")
+        r.delete(f"RS:{self.user.pk}:{feed_id}")
+        r.delete(f"zF:{feed_id}")
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+        r.delete(f"zUP:{self.user.pk}:{feed_id}")
+
+        now = django_tz.now()
+        story_hashes = []
+        story_scores = {}
+        for i in range(12):
+            story_guid = f"single-feed-page-{feed_id}-{now.timestamp()}-{i}"
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=now - datetime.timedelta(seconds=i),
+                story_title=f"Single Feed Story {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            story_hashes.append(story.story_hash)
+            story_scores[story.story_hash] = int(story.story_date.timestamp())
+
+        r.delete(f"zF:{feed_id}")
+        r.zadd(f"zF:{feed_id}", story_scores)
+
+        UserSubscription.objects.filter(pk=usersub.pk).update(
+            needs_unread_recalc=True,
+            unread_count_neutral=len(story_hashes),
+            unread_count_positive=0,
+            unread_count_negative=0,
+        )
+        usersub.refresh_from_db()
+
+        truth = story_hashes[: test_limit * 2]
+        page1 = [
+            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+        ]
+        self.assertEqual(page1, truth[:test_limit])
+
+        for story_hash in page1:
+            r.sadd(f"RS:{self.user.pk}", story_hash)
+            r.sadd(f"RS:{self.user.pk}:{feed_id}", story_hash)
+
+        UserSubscription.objects.filter(pk=usersub.pk).update(needs_unread_recalc=True)
+        usersub.refresh_from_db()
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        page2 = [
+            story["story_hash"]
+            for story in usersub.get_stories(offset=test_limit, limit=test_limit, read_filter="unread")
+        ]
+
+        self.assertEqual(
+            page2,
+            truth[test_limit : test_limit * 2],
+            "Page 2 should be anchored to already-returned stories, not a shifted unread offset.",
+        )
+
     def test_lazy_merge__single_feed_folder(self):
         """
         Test that lazy merge works correctly even for a single-feed river.
