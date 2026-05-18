@@ -6,6 +6,9 @@ ANDROID_SDK_ROOT ?= $(if $(ANDROID_HOME),$(ANDROID_HOME),$(HOME)/Library/Android
 ANDROID_EMULATOR := $(ANDROID_SDK_ROOT)/emulator/emulator
 ANDROID_AVD ?= NewsBlur_API_36
 ANDROID_APP_PACKAGE ?= com.newsblur
+ANDROID_PROJECT ?= clients/android/NewsBlur
+ANDROID_GRADLE_ARGS ?= --console=plain
+ANDROID_JAVA_HOME ?=
 
 # iOS simulator build/install/launch (see ios-simulator target)
 IOS_PROJECT ?= clients/ios/NewsBlur.xcodeproj
@@ -79,6 +82,10 @@ android-emulator:
 		echo "Android emulator binary not found at $(ANDROID_EMULATOR)"; \
 		exit 1; \
 	fi; \
+	if [ ! -x "$(ANDROID_PROJECT)/gradlew" ]; then \
+		echo "Android Gradle wrapper not found at $(ANDROID_PROJECT)/gradlew"; \
+		exit 1; \
+	fi; \
 	AVD_DIR="$${ANDROID_AVD_HOME:-$${ANDROID_SDK_HOME:-$$HOME/.android}/avd}"; \
 	AVD="$(ANDROID_AVD)"; \
 	if [ ! -f "$$AVD_DIR/$$AVD.ini" ]; then \
@@ -126,6 +133,19 @@ android-emulator:
 		echo "Android emulator $$SERIAL did not finish booting."; \
 		exit 1; \
 	fi; \
+	JAVA_HOME_FOR_GRADLE="$(ANDROID_JAVA_HOME)"; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]; then \
+		JAVA_HOME_FOR_GRADLE="/Applications/Android Studio.app/Contents/jbr/Contents/Home"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -n "$$JAVA_HOME" ]; then \
+		JAVA_HOME_FOR_GRADLE="$$JAVA_HOME"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ]; then \
+		echo "Set ANDROID_JAVA_HOME or JAVA_HOME to a JDK before running Android Gradle."; \
+		exit 1; \
+	fi; \
+	echo "Building and installing latest debug app on $$SERIAL..."; \
+	(cd "$(ANDROID_PROJECT)" && ANDROID_SERIAL="$$SERIAL" JAVA_HOME="$$JAVA_HOME_FOR_GRADLE" ./gradlew $(ANDROID_GRADLE_ARGS) :app:installDebug) || exit 1; \
 	echo "Restarting $(ANDROID_APP_PACKAGE) on $$SERIAL..."; \
 	adb -s "$$SERIAL" shell am force-stop "$(ANDROID_APP_PACKAGE)"; \
 	adb -s "$$SERIAL" shell monkey -p "$(ANDROID_APP_PACKAGE)" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; \
