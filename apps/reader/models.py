@@ -505,15 +505,17 @@ class UserSubscription(models.Model):
 
         def story_hash_cache_member(story_hash):
             if isinstance(story_hash, bytes):
-                return story_hash
-            return story_hash.encode("utf-8")
+                return story_hash.decode("utf-8")
+            return story_hash
 
         if read_filter == "unread" and offset and r.exists(unread_page_cache_key):
             page_end = offset + limit
             cached_count = r.zcard(unread_page_cache_key)
 
             if cached_count < page_end:
-                cached_hashes = set(r.zrange(unread_page_cache_key, 0, -1))
+                cached_hashes = {
+                    story_hash_cache_member(h) for h in r.zrange(unread_page_cache_key, 0, -1)
+                }
                 needed_count = page_end - cached_count
                 candidate_hashes = UserSubscription.story_hashes(
                     self.user.pk,

@@ -1392,6 +1392,90 @@ class Test_RiverStories(TransactionTestCase):
             "Page 2 should be anchored to already-returned stories, not a shifted unread offset.",
         )
 
+    def test_single_feed_unread_paging_handles_decoded_page_cache_hashes(self):
+        """
+        Staging Redis can return decoded strings for cached hashes. Keep
+        membership checks type-normalized so page 2 does not collapse to 1 story.
+        """
+        from django.utils import timezone as django_tz
+
+        feed_id = self.test_feeds[0]
+        feed = Feed.objects.get(pk=feed_id)
+        usersub = UserSubscription.objects.get(user=self.user, feed=feed)
+        test_limit = 4
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        class RedisWithDecodedPageCache:
+            def __init__(self, redis_client):
+                self.redis_client = redis_client
+
+            def __getattr__(self, name):
+                return getattr(self.redis_client, name)
+
+            def zrange(self, key, *args, **kwargs):
+                values = self.redis_client.zrange(key, *args, **kwargs)
+                if key == f"zUP:{usersub.user_id}:{usersub.feed_id}":
+                    return [
+                        v.decode("utf-8") if isinstance(v, bytes) else v for v in values
+                    ]
+                return values
+
+        r.delete(f"RS:{self.user.pk}")
+        r.delete(f"RS:{self.user.pk}:{feed_id}")
+        r.delete(f"zF:{feed_id}")
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+        r.delete(f"zUP:{self.user.pk}:{feed_id}")
+
+        now = django_tz.now()
+        story_hashes = []
+        story_scores = {}
+        for i in range(12):
+            story_guid = f"single-feed-decoded-page-{feed_id}-{now.timestamp()}-{i}"
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=now - datetime.timedelta(seconds=i),
+                story_title=f"Decoded Page Story {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            story_hashes.append(story.story_hash)
+            story_scores[story.story_hash] = int(story.story_date.timestamp())
+
+        r.delete(f"zF:{feed_id}")
+        r.zadd(f"zF:{feed_id}", story_scores)
+
+        UserSubscription.objects.filter(pk=usersub.pk).update(
+            needs_unread_recalc=True,
+            unread_count_neutral=len(story_hashes),
+            unread_count_positive=0,
+            unread_count_negative=0,
+        )
+        usersub.refresh_from_db()
+
+        truth = story_hashes[: test_limit * 2]
+        page1 = [
+            story["story_hash"]
+            for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+        ]
+        self.assertEqual(page1, truth[:test_limit])
+
+        r.sadd(f"RS:{self.user.pk}", page1[0])
+        r.sadd(f"RS:{self.user.pk}:{feed_id}", page1[0])
+        UserSubscription.objects.filter(pk=usersub.pk).update(needs_unread_recalc=True)
+        usersub.refresh_from_db()
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        with patch("apps.reader.models.redis.Redis", return_value=RedisWithDecodedPageCache(r)):
+            page2 = [
+                story["story_hash"]
+                for story in usersub.get_stories(offset=test_limit, limit=test_limit, read_filter="unread")
+            ]
+
+        self.assertEqual(page2, truth[test_limit : test_limit * 2])
+
     def test_lazy_merge__single_feed_folder(self):
         """
         Test that lazy merge works correctly even for a single-feed river.
