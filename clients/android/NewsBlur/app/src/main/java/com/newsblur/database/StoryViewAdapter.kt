@@ -612,6 +612,7 @@ class StoryViewAdapter(
                     feedUtils.getFeed(story!!.feedId),
                     folderName,
                     null,
+                    null,
                 )
                 return true
             } else {

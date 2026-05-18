@@ -662,8 +662,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), FolderItemsList.class);
             String canonicalFolderName = adapter.getGroupFolderName(groupPosition);
             SessionDataSource sessionDataSource = getSessionData(fs, canonicalFolderName, null);
+            SessionDataSource storyListSessionDataSource = getStoryListSessionData(fs, canonicalFolderName, null);
             i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
-            i.putExtra(ItemsList.EXTRA_SESSION_DATA, sessionDataSource);
+            if (sessionDataSource != null) {
+                i.putExtra(ItemsList.EXTRA_SESSION_DATA, sessionDataSource);
+            }
+            i.putExtra(ItemsList.EXTRA_STORY_LIST_SESSION_DATA, storyListSessionDataSource);
             adapter.lastFeedViewedId = null;
             adapter.lastFolderViewed = canonicalFolderName;
         }
@@ -740,10 +744,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 feedUtils.currentFolderName = folderName;
             }
             SessionDataSource sessionDataSource = getSessionData(fs, folderName, feed);
+            SessionDataSource storyListSessionDataSource = getStoryListSessionData(fs, folderName, feed);
             if (adapter.isTryFeed(groupPosition, childPosition)) {
                 FeedItemsList.startTryFeedActivity(getActivity(), feed);
             } else {
-			    FeedItemsList.startActivity(getActivity(), fs, feed, folderName, sessionDataSource);
+			    FeedItemsList.startActivity(getActivity(), fs, feed, folderName, sessionDataSource, storyListSessionDataSource);
             }
             adapter.lastFeedViewedId = feed.feedId;
             adapter.lastFolderViewed = null;
@@ -832,6 +837,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             return adapter.buildSessionDataSource(activeSession);
         }
         return null;
+    }
+
+    private SessionDataSource getStoryListSessionData(FeedSet fs, String folderName, @Nullable Feed feed) {
+        Session activeSession = new Session(fs, folderName, feed);
+        return adapter.buildNextUnreadSessionDataSource(activeSession);
     }
 
     @Override
