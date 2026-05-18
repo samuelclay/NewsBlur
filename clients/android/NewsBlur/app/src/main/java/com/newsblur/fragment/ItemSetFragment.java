@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -21,6 +23,9 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -73,6 +78,8 @@ public class ItemSetFragment extends NbFragment {
     private static final float BOTTOM_NEXT_FEED_REVEAL_DP = 72f;
     private static final float BOTTOM_NEXT_FEED_ACTIVATION_OFFSET_DP = 82f;
     private static final float BOTTOM_NEXT_FEED_ACTIVATION_DISTANCE_DP = 68f;
+    private static final long BOTTOM_NEXT_FEED_IDLE_HIDE_DELAY_MS = 1200L;
+    private static final long BOTTOM_NEXT_FEED_HIDE_DURATION_MS = 180L;
 
     @Inject
     FeedUtils feedUtils;
@@ -137,12 +144,15 @@ public class ItemSetFragment extends NbFragment {
     private int bottomNextFeedRevealPx;
     private int bottomNextFeedActivationOffsetPx;
     private int bottomNextFeedActivationDistancePx;
+    private int bottomNextFeedBaseBottomMarginPx;
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
     private int bottomNextFeedActiveDragStartOffsetY;
     private boolean hasBottomNextFeedActiveDragStartOffset;
     private boolean bottomNextFeedReady;
     private boolean bottomNextFeedButtonPressActive;
     private boolean bottomNextFeedHapticFired;
+    private final Handler bottomNextFeedHandler = new Handler(Looper.getMainLooper());
+    private final Runnable hideBottomNextFeedRunnable = this::hideBottomNextFeedControlAnimated;
     @Nullable
     private String bottomNextFeedLastTargetKey;
 
@@ -174,6 +184,12 @@ public class ItemSetFragment extends NbFragment {
         super.onResume();
         fleuronResized = false;
         updateLoadingIndicators();
+    }
+
+    @Override
+    public void onDestroyView() {
+        bottomNextFeedHandler.removeCallbacks(hideBottomNextFeedRunnable);
+        super.onDestroyView();
     }
 
     @Override
@@ -446,9 +462,28 @@ public class ItemSetFragment extends NbFragment {
         bottomNextFeedRevealPx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_REVEAL_DP));
         bottomNextFeedActivationOffsetPx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_ACTIVATION_OFFSET_DP));
         bottomNextFeedActivationDistancePx = Math.round(UIUtils.dp2px(requireContext(), BOTTOM_NEXT_FEED_ACTIVATION_DISTANCE_DP));
+        ViewGroup.LayoutParams params = binding.bottomNextFeedControl.getLayoutParams();
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            bottomNextFeedBaseBottomMarginPx = ((ViewGroup.MarginLayoutParams) params).bottomMargin;
+        }
+        binding.getRoot().post(this::updateBottomNextFeedBottomInset);
         binding.bottomNextFeedControl.applyTheme(prefsRepo.getResolvedTheme(requireContext()));
         binding.bottomNextFeedControl.setOnClickListener(view -> openBottomNextStoryListSession());
         binding.bottomNextFeedControl.setOnTouchListener(new BottomNextFeedButtonTouchListener());
+    }
+
+    private void updateBottomNextFeedBottomInset() {
+        if (binding == null) return;
+        WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(binding.getRoot());
+        if (rootInsets == null) return;
+        Insets navBarInsets = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        ViewGroup.LayoutParams params = binding.bottomNextFeedControl.getLayoutParams();
+        if (!(params instanceof ViewGroup.MarginLayoutParams)) return;
+        ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+        int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom;
+        if (marginParams.bottomMargin == targetBottomMargin) return;
+        marginParams.bottomMargin = targetBottomMargin;
+        binding.bottomNextFeedControl.setLayoutParams(marginParams);
     }
 
     private void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -456,6 +491,7 @@ public class ItemSetFragment extends NbFragment {
         storyListScrollState = newState;
 
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+            bottomNextFeedHandler.removeCallbacks(hideBottomNextFeedRunnable);
             hasBottomNextFeedActiveDragStartOffset = true;
             bottomNextFeedActiveDragStartOffsetY = recyclerView.computeVerticalScrollOffset();
             bottomNextFeedHapticFired = false;
@@ -469,11 +505,17 @@ public class ItemSetFragment extends NbFragment {
             resetBottomNextFeedDragState();
         }
 
+        if (newState == RecyclerView.SCROLL_STATE_IDLE && binding != null &&
+                binding.bottomNextFeedControl.getVisibility() == View.VISIBLE) {
+            scheduleBottomNextFeedIdleHide();
+        }
+
         updateBottomNextFeedControl();
     }
 
     private void updateBottomNextFeedControl() {
         if (!isAdded() || binding == null || adapter == null || layoutManager == null) return;
+        updateBottomNextFeedBottomInset();
 
         Session target = getBottomNextFeedTarget();
         if (!canShowBottomNextFeedControl(target)) {
@@ -482,11 +524,18 @@ public class ItemSetFragment extends NbFragment {
         }
 
         float visibilityProgress = bottomNextFeedButtonPressActive ? 1f : getBottomNextFeedVisibilityProgress();
-        if (visibilityProgress <= 0.01f) {
+        boolean canRevealNow = bottomNextFeedButtonPressActive ||
+                storyListScrollState != RecyclerView.SCROLL_STATE_IDLE ||
+                binding.bottomNextFeedControl.getVisibility() == View.VISIBLE;
+        if (visibilityProgress <= 0.01f || !canRevealNow) {
             binding.bottomNextFeedControl.setAlpha(0f);
             binding.bottomNextFeedControl.setVisibility(View.GONE);
             bottomNextFeedReady = false;
             return;
+        }
+
+        if (storyListScrollState != RecyclerView.SCROLL_STATE_IDLE || bottomNextFeedButtonPressActive) {
+            bottomNextFeedHandler.removeCallbacks(hideBottomNextFeedRunnable);
         }
 
         boolean ready = bottomNextFeedButtonPressActive || isBottomNextFeedScrollReady();
@@ -504,14 +553,41 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void hideBottomNextFeedControl() {
+        bottomNextFeedHandler.removeCallbacks(hideBottomNextFeedRunnable);
         bottomNextFeedReady = false;
         bottomNextFeedButtonPressActive = false;
         resetBottomNextFeedDragState();
         bottomNextFeedLastTargetKey = null;
         if (binding == null) return;
+        binding.bottomNextFeedControl.animate().cancel();
         binding.bottomNextFeedControl.configure("site", null, false);
         binding.bottomNextFeedControl.setAlpha(0f);
         binding.bottomNextFeedControl.setVisibility(View.GONE);
+    }
+
+    private void scheduleBottomNextFeedIdleHide() {
+        bottomNextFeedHandler.removeCallbacks(hideBottomNextFeedRunnable);
+        bottomNextFeedHandler.postDelayed(hideBottomNextFeedRunnable, BOTTOM_NEXT_FEED_IDLE_HIDE_DELAY_MS);
+    }
+
+    private void hideBottomNextFeedControlAnimated() {
+        if (binding == null || bottomNextFeedButtonPressActive || storyListScrollState != RecyclerView.SCROLL_STATE_IDLE) {
+            return;
+        }
+        bottomNextFeedReady = false;
+        bottomNextFeedHapticFired = false;
+        binding.bottomNextFeedControl.configure("site", null, false);
+        binding.bottomNextFeedControl
+                .animate()
+                .alpha(0f)
+                .setDuration(BOTTOM_NEXT_FEED_HIDE_DURATION_MS)
+                .withEndAction(() -> {
+                    if (binding != null && !bottomNextFeedButtonPressActive &&
+                            storyListScrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                        binding.bottomNextFeedControl.setVisibility(View.GONE);
+                    }
+                })
+                .start();
     }
 
     private void resetBottomNextFeedDragState() {
