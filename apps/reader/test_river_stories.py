@@ -1319,6 +1319,151 @@ class Test_RiverStories(TransactionTestCase):
 
         print(f">>> Pagination stable after mark-read: " f"p1={len(p1)}, p2={len(p2)}, ground truth matched")
 
+    def test_lazy_merge__pagination_stable_when_unread_feed_drops_out(self):
+        """
+        A folder river's cache key must stay anchored to the validated requested
+        feed set even when one feed reaches zero unread stories between pages.
+        """
+        from django.utils import timezone as django_tz
+
+        feed_ids = self.test_feeds[:3]
+        dropped_feed_id = feed_ids[0]
+        active_feed_ids = feed_ids[1:]
+        test_limit = 4
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        class RedisWithDecodedRiverCache:
+            def __init__(self, redis_client, decoded_key):
+                self.redis_client = redis_client
+                self.decoded_key = decoded_key
+
+            def __getattr__(self, name):
+                return getattr(self.redis_client, name)
+
+            def zrange(self, key, *args, **kwargs):
+                values = self.redis_client.zrange(key, *args, **kwargs)
+                if key == self.decoded_key:
+                    return [v.decode("utf-8") if isinstance(v, bytes) else v for v in values]
+                return values
+
+        def normalize(story_hash):
+            return story_hash.decode("utf-8") if isinstance(story_hash, bytes) else story_hash
+
+        def story_feed_id(story_hash):
+            return int(story_hash.split(":")[0])
+
+        r.delete(f"RS:{self.user.pk}")
+        for river_feed_ids in (feed_ids, active_feed_ids):
+            ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, river_feed_ids, "")
+            r.delete(ranked_key)
+            r.delete(unread_key)
+        for feed_id in feed_ids:
+            r.delete(f"RS:{self.user.pk}:{feed_id}")
+            r.delete(f"zF:{feed_id}")
+            r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        now = django_tz.now()
+        for i in range(15):
+            feed_id = feed_ids[i % len(feed_ids)]
+            story_guid = f"river-dropout-page-{feed_id}-{now.timestamp()}-{i}"
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=now - datetime.timedelta(seconds=i),
+                story_title=f"Dropout River Story {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+            )
+            story.save()
+            r.zadd(f"zF:{feed_id}", {story.story_hash: int(story.story_date.timestamp())})
+
+        UserSubscription.objects.filter(user=self.user, feed_id__in=feed_ids).update(
+            needs_unread_recalc=True,
+            unread_count_neutral=5,
+            unread_count_positive=0,
+            unread_count_negative=0,
+        )
+        usersubs = UserSubscription.subs_for_feeds(self.user.pk, feed_ids=feed_ids, read_filter="unread")
+        truth_hashes, _ = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=feed_ids,
+            all_feed_ids=feed_ids,
+            offset=0,
+            limit=15,
+            order="newest",
+            read_filter="unread",
+            usersubs=usersubs,
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        truth = [normalize(h) for h in truth_hashes]
+        self.assertGreaterEqual(len(truth), test_limit * 2)
+
+        ranked_key, unread_key = UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, "")
+        r.delete(ranked_key)
+        r.delete(unread_key)
+        self.assertEqual(r.zcard(ranked_key), 0)
+
+        page1_hashes, _ = UserSubscription.feed_stories(
+            user_id=self.user.pk,
+            feed_ids=feed_ids,
+            all_feed_ids=feed_ids,
+            offset=0,
+            limit=test_limit,
+            order="newest",
+            read_filter="unread",
+            usersubs=usersubs,
+            cutoff_date=self.user.profile.unread_cutoff,
+        )
+        page1 = [normalize(h) for h in page1_hashes]
+        self.assertEqual(page1, truth[:test_limit])
+        self.assertEqual(r.zcard(ranked_key), test_limit)
+
+        for story_hash in truth:
+            if story_feed_id(story_hash) == dropped_feed_id:
+                r.sadd(f"RS:{self.user.pk}", story_hash)
+                r.sadd(f"RS:{self.user.pk}:{dropped_feed_id}", story_hash)
+
+        UserSubscription.objects.filter(user=self.user, feed_id=dropped_feed_id).update(
+            needs_unread_recalc=False,
+            unread_count_neutral=0,
+            unread_count_positive=0,
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id__in=active_feed_ids).update(
+            needs_unread_recalc=True
+        )
+        for feed_id in active_feed_ids:
+            r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+        expected_page2 = [
+            story_hash
+            for story_hash in truth
+            if story_feed_id(story_hash) in active_feed_ids and story_hash not in page1
+        ][:test_limit]
+        usersubs = UserSubscription.subs_for_feeds(
+            self.user.pk, feed_ids=active_feed_ids, read_filter="unread"
+        )
+        stable_ranked_key, _ = UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, "")
+
+        with patch(
+            "apps.reader.models.redis.Redis",
+            return_value=RedisWithDecodedRiverCache(r, stable_ranked_key),
+        ):
+            page2_hashes, _ = UserSubscription.feed_stories(
+                user_id=self.user.pk,
+                feed_ids=active_feed_ids,
+                all_feed_ids=feed_ids,
+                offset=test_limit,
+                limit=test_limit,
+                order="newest",
+                read_filter="unread",
+                usersubs=usersubs,
+                cutoff_date=self.user.profile.unread_cutoff,
+            )
+
+        page2 = [normalize(h) for h in page2_hashes]
+        self.assertEqual(page2, expected_page2)
+
     def test_single_feed_unread_paging_stable_after_mark_read_cache_rebuild(self):
         """
         Single-feed unread pagination should not skip stories when read marks
