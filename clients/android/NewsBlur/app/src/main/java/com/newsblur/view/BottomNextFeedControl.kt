@@ -55,7 +55,6 @@ class BottomNextFeedControl
             cardBackground.cornerRadius = dp(12).toFloat()
             cardView.background = cardBackground
             cardView.clipToOutline = true
-            cardView.elevation = dp(10).toFloat()
             cardView.gravity = Gravity.CENTER_VERTICAL
             cardView.orientation = LinearLayout.HORIZONTAL
             cardView.setPadding(dp(12), 0, dp(14), 0)

@@ -143,7 +143,9 @@ public class ItemSetFragment extends NbFragment {
     private int bottomNextFeedBaseBottomMarginPx;
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
     private int bottomNextFeedActiveDragStartOffsetY;
+    private int bottomNextFeedActivationAnchorOffsetY;
     private boolean hasBottomNextFeedActiveDragStartOffset;
+    private boolean hasBottomNextFeedActivationAnchorOffset;
     private boolean bottomNextFeedReady;
     private boolean bottomNextFeedButtonPressActive;
     private boolean bottomNextFeedHapticFired;
@@ -510,10 +512,11 @@ public class ItemSetFragment extends NbFragment {
             binding.bottomNextFeedControl.setAlpha(0f);
             binding.bottomNextFeedControl.setVisibility(View.GONE);
             bottomNextFeedReady = false;
+            binding.bottomNextFeedControl.configure("site", null, false);
             return;
         }
 
-        boolean ready = bottomNextFeedButtonPressActive || isBottomNextFeedScrollReady();
+        boolean ready = bottomNextFeedButtonPressActive || isBottomNextFeedScrollReady(visibilityProgress);
         if (ready && !bottomNextFeedReady && !bottomNextFeedButtonPressActive && !bottomNextFeedHapticFired) {
             binding.bottomNextFeedControl.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             bottomNextFeedHapticFired = true;
@@ -542,6 +545,8 @@ public class ItemSetFragment extends NbFragment {
     private void resetBottomNextFeedDragState() {
         hasBottomNextFeedActiveDragStartOffset = false;
         bottomNextFeedActiveDragStartOffsetY = 0;
+        hasBottomNextFeedActivationAnchorOffset = false;
+        bottomNextFeedActivationAnchorOffsetY = 0;
         bottomNextFeedHapticFired = false;
     }
 
@@ -595,7 +600,7 @@ public class ItemSetFragment extends NbFragment {
         return 0;
     }
 
-    private boolean isBottomNextFeedScrollReady() {
+    private boolean isBottomNextFeedScrollReady(float visibilityProgress) {
         if (storyListScrollState != RecyclerView.SCROLL_STATE_DRAGGING ||
                 !hasBottomNextFeedActiveDragStartOffset ||
                 binding == null) {
@@ -605,7 +610,19 @@ public class ItemSetFragment extends NbFragment {
         int scrollOffset = binding.itemgridfragmentGrid.computeVerticalScrollOffset();
         int footerStartOffset = scrollOffset - getBottomNextFeedRevealDistance();
         int activationStartOffset = footerStartOffset + bottomNextFeedActivationOffsetPx;
-        int effectiveActivationStartOffset = Math.max(activationStartOffset, bottomNextFeedActiveDragStartOffsetY);
+        int dynamicStartOffset = Math.max(activationStartOffset, bottomNextFeedActiveDragStartOffsetY);
+        if (visibilityProgress < 0.98f) {
+            hasBottomNextFeedActivationAnchorOffset = false;
+            return false;
+        }
+
+        if (!hasBottomNextFeedActivationAnchorOffset) {
+            bottomNextFeedActivationAnchorOffsetY = Math.max(scrollOffset, dynamicStartOffset);
+            hasBottomNextFeedActivationAnchorOffset = true;
+            return false;
+        }
+
+        int effectiveActivationStartOffset = Math.max(dynamicStartOffset, bottomNextFeedActivationAnchorOffsetY);
         return scrollOffset - effectiveActivationStartOffset >= bottomNextFeedActivationDistancePx;
     }
 
