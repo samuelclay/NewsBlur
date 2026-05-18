@@ -110,7 +110,7 @@ final class DetailViewControllerTests: XCTestCase {
         XCTAssertNotNil(feedDetailViewController.navigationItem.titleView)
     }
 
-    func test_resetFeedDetailClearsVisibleStoryRowsImmediately() {
+    func test_resetFeedDetailClearsVisibleStoryRowsImmediately() throws {
         let appDelegate = NewsBlurAppDelegate()
         let storiesCollection = StoriesCollection()
         storiesCollection.appDelegate = appDelegate
@@ -129,7 +129,10 @@ final class DetailViewControllerTests: XCTestCase {
         storyPagesViewController.loadViewIfNeeded()
         detailController.storyPagesViewController = storyPagesViewController
 
-        let feedDetailViewController = FeedDetailViewController()
+        let feedDetailViewController = try XCTUnwrap(
+            UIStoryboard(name: "MainInterface", bundle: nil)
+                .instantiateViewController(withIdentifier: "FeedDetailViewController") as? FeedDetailViewController
+        )
         feedDetailViewController.appDelegate = appDelegate
         feedDetailViewController.storiesCollection = storiesCollection
         detailController.feedDetailViewController = feedDetailViewController
