@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
@@ -148,6 +151,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
+    @Nullable
+    private ImageView interactiveSwipeUnderlay;
     private final Handler storySearchHandler = new Handler(Looper.getMainLooper());
     private final Runnable showFetchingBannerRunnable = () -> {
         fetchingBannerDelayElapsed = true;
@@ -1076,8 +1081,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void beginInteractiveStoryListSwipe() {
+        prepareInteractiveSwipeUnderlay();
         View surface = getInteractiveSwipeSurface();
         surface.animate().cancel();
+        itemSetFragment.setInteractiveStoryListSwipeRendering(true);
         surface.setTranslationZ(UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP));
     }
 
@@ -1301,7 +1308,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private View getInteractiveSwipeSurface() {
         if (interactiveSwipeSurface == null) {
-            interactiveSwipeSurface = findViewById(android.R.id.content);
+            interactiveSwipeSurface = binding.getRoot();
         }
         return interactiveSwipeSurface;
     }
@@ -1329,6 +1336,35 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         surface.setTranslationX(0f);
         surface.setTranslationZ(0f);
+        itemSetFragment.setInteractiveStoryListSwipeRendering(false);
+        hideInteractiveSwipeUnderlay();
+    }
+
+    private void prepareInteractiveSwipeUnderlay() {
+        FrameLayout contentFrame = findViewById(android.R.id.content);
+        if (interactiveSwipeUnderlay == null) {
+            interactiveSwipeUnderlay = new ImageView(this);
+            interactiveSwipeUnderlay.setScaleType(ImageView.ScaleType.FIT_XY);
+            interactiveSwipeUnderlay.setVisibility(View.GONE);
+            contentFrame.addView(interactiveSwipeUnderlay, 0, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            ));
+        }
+
+        // The translucent activity surface can retain stale story-row pixels while translated.
+        // Use a fixed feed-list snapshot as the visual underlay for the interactive back drag.
+        Bitmap snapshot = Main.createVisibleFeedListSnapshot();
+        interactiveSwipeUnderlay.setImageBitmap(snapshot);
+        interactiveSwipeUnderlay.setVisibility(snapshot != null ? View.VISIBLE : View.GONE);
+    }
+
+    private void hideInteractiveSwipeUnderlay() {
+        if (interactiveSwipeUnderlay == null) {
+            return;
+        }
+        interactiveSwipeUnderlay.setVisibility(View.GONE);
+        interactiveSwipeUnderlay.setImageDrawable(null);
     }
 
     private int measureStoryStatusBannerHeight() {

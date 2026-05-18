@@ -149,6 +149,7 @@ public class ItemSetFragment extends NbFragment {
     private boolean bottomNextFeedReady;
     private boolean bottomNextFeedButtonPressActive;
     private boolean bottomNextFeedHapticFired;
+    private boolean interactiveStoryListSwipeRendering;
     @Nullable
     private String bottomNextFeedLastTargetKey;
 
@@ -355,6 +356,31 @@ public class ItemSetFragment extends NbFragment {
 
     public void scrollToTop() {
         layoutManager.scrollToPositionWithOffset(0, 0);
+    }
+
+    public void setInteractiveStoryListSwipeRendering(boolean active) {
+        if (binding == null || interactiveStoryListSwipeRendering == active) {
+            return;
+        }
+
+        interactiveStoryListSwipeRendering = active;
+        RecyclerView recyclerView = binding.itemgridfragmentGrid;
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View child = recyclerView.getChildAt(i);
+            if (active) {
+                child.setTag(R.id.story_list_back_swipe_original_layer_type, child.getLayerType());
+                if (child.getLayerType() == View.LAYER_TYPE_HARDWARE) {
+                    child.setLayerType(View.LAYER_TYPE_NONE, null);
+                }
+            } else {
+                Object originalLayerType = child.getTag(R.id.story_list_back_swipe_original_layer_type);
+                if (originalLayerType instanceof Integer) {
+                    child.setLayerType((Integer) originalLayerType, null);
+                    child.setTag(R.id.story_list_back_swipe_original_layer_type, null);
+                }
+            }
+        }
+        recyclerView.invalidate();
     }
 
     public void scrollToPosition(int position) {
