@@ -464,7 +464,7 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
-    func test_bottomNextFeedTapOpensVisibleTarget() throws {
+    func test_bottomNextFeedPressOpensVisibleTargetOnReleaseInside() throws {
         let feedsViewController = BottomNextFeedSelectionViewController()
         let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
             pageFinished: true,
@@ -479,18 +479,46 @@ final class AppDelegateHelperTests: XCTestCase {
         feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
         feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
 
-        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
+        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIControl)
         XCTAssertFalse(control.isHidden)
 
-        _ = feedDetailViewController.perform(NSSelectorFromString("didTapBottomNextFeedControl:"), with: nil)
+        control.sendActions(for: .touchDown)
 
         XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, true)
         XCTAssertEqual(control.alpha, 1)
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
 
-        RunLoop.main.run(until: Date().addingTimeInterval(0.2))
+        control.sendActions(for: .touchUpInside)
 
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 1)
+    }
+
+    func test_bottomNextFeedPressCancelsWhenReleasedOutside() throws {
+        let feedsViewController = BottomNextFeedSelectionViewController()
+        let feedDetailViewController = makeFeedDetailViewControllerForBottomNextFeed(
+            pageFinished: true,
+            activeStoriesCount: 1,
+            unreadCounts: ["ps": 0, "nt": 1, "ng": 0],
+            feedsViewController: feedsViewController
+        )
+        prepareBottomNextFeedTable(feedDetailViewController)
+
+        let endRow = feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0) - 1
+        let endRowTop = feedDetailViewController.storyTitlesTable.rectForRow(at: IndexPath(row: endRow, section: 0)).minY
+        feedDetailViewController.storyTitlesTable.contentOffset = CGPoint(x: 0, y: endRowTop + 48)
+        feedDetailViewController.scrollViewDidScroll(feedDetailViewController.storyTitlesTable)
+
+        let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIControl)
+        XCTAssertFalse(control.isHidden)
+
+        control.sendActions(for: .touchDown)
+        XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, true)
+
+        control.sendActions(for: .touchDragExit)
+        control.sendActions(for: .touchUpOutside)
+
+        XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, false)
+        XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
     func test_bottomNextFeedStartsEngagementFromActiveDragAfterMomentum() {

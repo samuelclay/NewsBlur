@@ -102,7 +102,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
 @property (nonatomic) BOOL bottomNextFeedReady;
-@property (nonatomic) BOOL bottomNextFeedTapActivationPending;
+@property (nonatomic) BOOL bottomNextFeedButtonPressActive;
 @property (nonatomic) BOOL hasBottomNextFeedActiveDragStartOffset;
 @property (nonatomic) CGFloat bottomNextFeedActiveDragStartOffsetY;
 
@@ -118,8 +118,12 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
 - (void)openBottomNextUnreadList;
-- (void)activateBottomNextFeedControlFromTap;
-- (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer;
+- (void)setBottomNextFeedButtonPressed:(BOOL)pressed;
+- (void)didTouchDownBottomNextFeedControl:(BottomNextFeedControl *)control;
+- (void)didDragEnterBottomNextFeedControl:(BottomNextFeedControl *)control;
+- (void)didDragExitBottomNextFeedControl:(BottomNextFeedControl *)control;
+- (void)didTouchUpInsideBottomNextFeedControl:(BottomNextFeedControl *)control;
+- (void)didCancelBottomNextFeedControl:(BottomNextFeedControl *)control;
 - (BOOL)isActivelyDraggingBottomNextFeedForScroll:(UIScrollView *)scroll;
 - (CGFloat)bottomNextFeedProbeOffset;
 - (CGFloat)bottomNextFeedEndRowOffsetForScroll:(UIScrollView *)scroll;
@@ -3968,45 +3972,6 @@ finish_height_measurement:
     }
 }
 
-- (void)didTapBottomNextFeedControl:(UITapGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer == nil || gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self activateBottomNextFeedControlFromTap];
-    }
-}
-
-- (void)activateBottomNextFeedControlFromTap {
-    if (self.bottomNextFeedTapActivationPending ||
-        ![self canPullToNextUnreadList] ||
-        self.bottomNextFeedControl == nil ||
-        self.bottomNextFeedControl.hidden ||
-        self.bottomNextFeedControl.alpha <= 0.01f) {
-        return;
-    }
-
-    self.bottomNextFeedTapActivationPending = YES;
-    self.bottomNextFeedReady = YES;
-
-    if (self.bottomNextFeedFeedback == nil) {
-        self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
-    }
-    [self.bottomNextFeedFeedback prepare];
-
-    NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
-    NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
-    UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
-    [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:1.0f ready:YES];
-    self.bottomNextFeedControl.alpha = 1.0f;
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.12 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (!self.bottomNextFeedTapActivationPending) {
-            return;
-        }
-
-        self.bottomNextFeedTapActivationPending = NO;
-        [self openBottomNextUnreadList];
-    });
-}
-
 - (BOOL)canPullToNextUnreadList {
 #if TARGET_OS_MACCATALYST
     return NO;
@@ -4029,6 +3994,67 @@ finish_height_measurement:
     return scroll == self.storyTitlesTable && scroll.tracking && scroll.dragging;
 }
 
+- (void)setBottomNextFeedButtonPressed:(BOOL)pressed {
+    if (pressed &&
+        (![self canPullToNextUnreadList] ||
+         self.bottomNextFeedControl == nil ||
+         self.bottomNextFeedControl.hidden ||
+         self.bottomNextFeedControl.alpha <= 0.01f)) {
+        return;
+    }
+
+    if (self.bottomNextFeedButtonPressActive == pressed && self.bottomNextFeedReady == pressed) {
+        return;
+    }
+
+    self.bottomNextFeedButtonPressActive = pressed;
+    self.bottomNextFeedReady = pressed;
+
+    if (pressed) {
+        if (self.bottomNextFeedFeedback == nil) {
+            self.bottomNextFeedFeedback = [[UISelectionFeedbackGenerator alloc] init];
+        }
+        [self.bottomNextFeedFeedback prepare];
+    }
+
+    NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
+    NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
+    UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
+    [self.bottomNextFeedControl configureWithKind:kind title:title icon:icon progress:pressed ? 1.0f : 0.0f ready:pressed];
+
+    if (pressed) {
+        self.bottomNextFeedControl.alpha = 1.0f;
+    } else {
+        CGFloat staticRevealDistance = [self bottomNextFeedStaticRevealDistanceForScroll:self.storyTitlesTable];
+        self.bottomNextFeedControl.alpha = MIN(1.0f, staticRevealDistance / NBBottomNextFeedFadeDistance);
+    }
+}
+
+- (void)didTouchDownBottomNextFeedControl:(BottomNextFeedControl *)control {
+    [self setBottomNextFeedButtonPressed:YES];
+}
+
+- (void)didDragEnterBottomNextFeedControl:(BottomNextFeedControl *)control {
+    [self setBottomNextFeedButtonPressed:YES];
+}
+
+- (void)didDragExitBottomNextFeedControl:(BottomNextFeedControl *)control {
+    [self setBottomNextFeedButtonPressed:NO];
+}
+
+- (void)didTouchUpInsideBottomNextFeedControl:(BottomNextFeedControl *)control {
+    if (!self.bottomNextFeedButtonPressActive) {
+        return;
+    }
+
+    self.bottomNextFeedButtonPressActive = NO;
+    [self openBottomNextUnreadList];
+}
+
+- (void)didCancelBottomNextFeedControl:(BottomNextFeedControl *)control {
+    [self setBottomNextFeedButtonPressed:NO];
+}
+
 - (void)ensureBottomNextFeedControl {
     if (self.bottomNextFeedControl != nil) {
         if (self.bottomNextFeedControl.superview != self.view) {
@@ -4041,8 +4067,11 @@ finish_height_measurement:
 
     self.bottomNextFeedControl = [[BottomNextFeedControl alloc] initWithFrame:CGRectZero];
     self.bottomNextFeedControl.hidden = YES;
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapBottomNextFeedControl:)];
-    [self.bottomNextFeedControl addGestureRecognizer:tapGesture];
+    [self.bottomNextFeedControl addTarget:self action:@selector(didTouchDownBottomNextFeedControl:) forControlEvents:UIControlEventTouchDown];
+    [self.bottomNextFeedControl addTarget:self action:@selector(didDragEnterBottomNextFeedControl:) forControlEvents:UIControlEventTouchDragEnter];
+    [self.bottomNextFeedControl addTarget:self action:@selector(didDragExitBottomNextFeedControl:) forControlEvents:UIControlEventTouchDragExit];
+    [self.bottomNextFeedControl addTarget:self action:@selector(didTouchUpInsideBottomNextFeedControl:) forControlEvents:UIControlEventTouchUpInside];
+    [self.bottomNextFeedControl addTarget:self action:@selector(didCancelBottomNextFeedControl:) forControlEvents:UIControlEventTouchUpOutside | UIControlEventTouchCancel];
     [self.view addSubview:self.bottomNextFeedControl];
 }
 
@@ -4136,6 +4165,13 @@ finish_height_measurement:
     CGFloat visibilityProgress = MIN(1.0f, staticRevealDistance / NBBottomNextFeedFadeDistance);
     BOOL shouldShowControl = visibilityProgress > 0.01f;
 
+    if (self.bottomNextFeedButtonPressActive) {
+        progress = 1.0f;
+        ready = YES;
+        visibilityProgress = 1.0f;
+        shouldShowControl = YES;
+    }
+
     NSString *kind = [self.appDelegate.feedsViewController nextUnreadNavigationKind] ?: @"site";
     NSString *title = [self.appDelegate.feedsViewController nextUnreadNavigationTitle];
     UIImage *icon = [self.appDelegate.feedsViewController nextUnreadNavigationIcon];
@@ -4154,7 +4190,7 @@ finish_height_measurement:
 - (void)resetBottomNextFeedControl {
     self.bottomNextFeedReady = NO;
     self.bottomNextFeedFeedback = nil;
-    self.bottomNextFeedTapActivationPending = NO;
+    self.bottomNextFeedButtonPressActive = NO;
     self.hasBottomNextFeedActiveDragStartOffset = NO;
 
     if (self.bottomNextFeedControl == nil) {

@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 import QuartzCore
 
-@objcMembers final class BottomNextFeedControl: UIView {
+@objcMembers final class BottomNextFeedControl: UIControl {
     private let capsuleView = UIView()
     private let arrowContainer = UIView()
     private let arrowImageView = UIImageView()
