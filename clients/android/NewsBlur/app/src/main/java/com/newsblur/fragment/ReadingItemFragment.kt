@@ -652,7 +652,7 @@ class ReadingItemFragment :
                         } else {
                             folderName
                         }
-                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null)
+                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null, null)
                 }
                 true
             }

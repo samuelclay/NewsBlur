@@ -1101,4 +1101,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public SessionDataSource buildSessionDataSource(Session activeSession) {
         return new SessionDataSource(activeSession, activeFolderNames, activeFolderChildren);
     }
+
+    public SessionDataSource buildNextUnreadSessionDataSource(Session activeSession) {
+        return new SessionDataSource(activeSession, activeFolderNames, activeFolderChildren, currentState, feedSavedCounts.keySet());
+    }
 }

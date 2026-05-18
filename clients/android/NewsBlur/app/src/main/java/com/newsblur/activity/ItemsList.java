@@ -103,6 +103,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_AUTO_OPEN_STORY = "auto_open_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     public static final String EXTRA_SESSION_DATA = "session_data";
+    public static final String EXTRA_STORY_LIST_SESSION_DATA = "story_list_session_data";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
@@ -125,6 +126,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private ItemListContextMenuDelegate contextMenuDelegate;
     @Nullable
     private SessionDataSource sessionDataSource;
+    @Nullable
+    private SessionDataSource storyListSessionDataSource;
     @Nullable
     private ValueAnimator storyStatusBannerAnimator;
     @Nullable
@@ -172,6 +175,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
         sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
+        storyListSessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_STORY_LIST_SESSION_DATA);
 
         if (shouldResetReadingSessionOnCreate()) {
             TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
@@ -363,22 +367,47 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (sessionDataSource != null) {
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
-                // set the next session on the parent activity
-                fs = session.getFeedSet();
-                feedUtils.prepareReadingSession(fs, false);
-                triggerSync();
-                scheduleInitialFetchingBanner();
-
-                // set the next session on the child activity
-                viewModel.updateSession(session);
-
-                // update item set fragment
-                itemSetFragment.resetEmptyState();
-                itemSetFragment.hasUpdated();
-                itemSetFragment.scrollToTop();
-                refreshStoryHeaderControls();
+                applyNextSession(session);
             } else finish();
         } else finish();
+    }
+
+    @Nullable
+    public Session peekNextStoryListSession() {
+        if (storyListSessionDataSource == null) return null;
+        return storyListSessionDataSource.peekNextSession();
+    }
+
+    public boolean openNextStoryListSession() {
+        if (storyListSessionDataSource == null) return false;
+        Session session = storyListSessionDataSource.getNextSession();
+        if (session == null) return false;
+        applyNextSession(session);
+        return true;
+    }
+
+    private void applyNextSession(@NonNull Session session) {
+        // set the next session on the parent activity
+        fs = session.getFeedSet();
+        feedUtils.prepareReadingSession(fs, false);
+        triggerSync();
+        scheduleInitialFetchingBanner();
+
+        if (sessionDataSource != null) {
+            sessionDataSource.setSession(session);
+        }
+        if (storyListSessionDataSource != null) {
+            storyListSessionDataSource.setSession(session);
+        }
+
+        // set the next session on the child activity
+        viewModel.updateSession(session);
+
+        // update item set fragment
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
+        refreshStoryHeaderControls();
     }
 
     private void updateStatusIndicators() {
