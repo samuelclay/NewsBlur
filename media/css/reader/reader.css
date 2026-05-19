@@ -13301,6 +13301,20 @@ form.opml_import_form input {
     height: 100%;
 }
 
+/* Natural Language classifier pills notify on focus (liked) prompts only —
+   a notification for a story matching a hide prompt is contradictory.
+   The story/publisher trainer uses .NB-classifier-prompt for both content
+   and image prompts; the manage tab uses .NB-classifier-image_prompt. */
+.NB-classifier-prompt .NB-classifier-notification-bell,
+.NB-classifier-image_prompt .NB-classifier-notification-bell {
+    display: none;
+}
+
+.NB-classifier-prompt.NB-classifier-like .NB-classifier-notification-bell,
+.NB-classifier-image_prompt.NB-classifier-like .NB-classifier-notification-bell {
+    display: inline-flex;
+}
+
 /* Bell styles inside liked/disliked classifier pills */
 .NB-classifier-like .NB-classifier-notification-bell {
     background: rgba(255, 255, 255, 0.15);
