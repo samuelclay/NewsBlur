@@ -1331,16 +1331,31 @@ def get_classifiers_for_user(
     # Include both feed-specific and folder-level (feed_id=0) prompts
     prompts_dict = {}
     image_prompts_dict = {}
+    prompts_scope = {}
+    image_prompts_scope = {}
     if feed_id and not isinstance(feed_id, list):
         prompts = MClassifierPrompt.objects.filter(user_id=user.pk, feed_id__in=[feed_id, 0])
     else:
         prompts = MClassifierPrompt.objects.filter(user_id=user.pk)
     for p in prompts:
         score = 1 if p.classifier_type == "focus" else -1
+        # Derive scope from the prompt's feed_id/folder_id: a non-zero feed_id is
+        # feed-scoped (the default, no entry needed), feed_id=0 with a folder_id
+        # is folder-scoped, and feed_id=0 with no folder_id is global.
+        if p.feed_id:
+            scope_info = None
+        elif p.folder_id:
+            scope_info = {"scope": "folder", "folder_name": p.folder_id}
+        else:
+            scope_info = {"scope": "global", "folder_name": ""}
         if p.include_images:
             image_prompts_dict[p.prompt] = score
+            if scope_info:
+                image_prompts_scope[p.prompt] = scope_info
         else:
             prompts_dict[p.prompt] = score
+            if scope_info:
+                prompts_scope[p.prompt] = scope_info
 
     payload = {
         "feeds": dict(feeds),
@@ -1360,6 +1375,8 @@ def get_classifiers_for_user(
         "tags_scope": tags_scope,
         "prompts": prompts_dict,
         "image_prompts": image_prompts_dict,
+        "prompts_scope": prompts_scope,
+        "image_prompts_scope": image_prompts_scope,
     }
 
     return payload

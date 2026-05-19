@@ -99,7 +99,7 @@ def set_classifier_notification(request):
     if not classifier_type or not classifier_value:
         return {"code": -1, "message": "classifier_type and classifier_value are required"}
 
-    if classifier_type not in ("title", "author", "tag", "text", "url"):
+    if classifier_type not in ("title", "author", "tag", "text", "url", "prompt", "image_prompt"):
         return {"code": -1, "message": "Invalid classifier_type"}
 
     # is_regex only applies to title, text, url, author classifiers

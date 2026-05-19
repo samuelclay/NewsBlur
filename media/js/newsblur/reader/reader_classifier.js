@@ -1764,7 +1764,17 @@ var classifier_prototype = {
         // as make_classifier() so all existing CSS and click handlers apply.
         // filter_type: 'image' (default) or 'content'
         filter_type = filter_type || 'image';
-        var scope = 'feed';
+
+        // Restore the prompt's saved scope (feed-scoped by default) so the
+        // scope toggles and the notification bell use the correct scope key.
+        var scope_key = filter_type === 'image' ? 'image_prompts_scope' : 'prompts_scope';
+        var scope_info = null;
+        if (value && this.user_classifiers && this.user_classifiers[scope_key] &&
+            value in this.user_classifiers[scope_key]) {
+            scope_info = this.user_classifiers[scope_key][value];
+        }
+        var scope = scope_info ? scope_info.scope : 'feed';
+        var folder_name = scope_info ? (scope_info.folder_name || '') : '';
 
         var label;
         if (filter_type === 'content') {
@@ -1790,10 +1800,19 @@ var classifier_prototype = {
             $scope_toggles.append($toggle);
         });
 
-        var $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
-            $scope_toggles,
+        // Scope badge, notification bell, and type label as separate containers,
+        // matching make_classifier() so all existing CSS and handlers apply.
+        var $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge' }, [
+            $scope_toggles
+        ]);
+        var $type_label = $.make('span', { className: 'NB-classifier-type-badge' }, [
             $.make('span', { className: 'NB-classifier-type-label' }, label)
         ]);
+
+        // Notification bell: only built for saved prompt pills (non-empty value),
+        // never the live preview pill. CSS hides it unless the prompt is a focus
+        // (liked) prompt — notifying on a hide prompt is contradictory.
+        var notification_type = filter_type === 'image' ? 'image_prompt' : 'prompt';
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
             $.make('span', { className: 'NB-classifier NB-classifier-prompt' }, [
@@ -1814,7 +1833,9 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    $type_badge,
+                    $scope_badge,
+                    (value && this.make_notification_bell(notification_type, value, scope, folder_name, 1, false)),
+                    $type_label,
                     $.make('span', title_html)
                 ])
             ])
@@ -1824,8 +1845,8 @@ var classifier_prototype = {
         $('.NB-classifier', $classifier).data('original-state', 'neutral');
         $('.NB-classifier', $classifier).data('scope', scope);
         $('.NB-classifier', $classifier).data('original-scope', scope);
-        $('.NB-classifier', $classifier).data('folder-name', '');
-        $('.NB-classifier', $classifier).data('original-folder-name', '');
+        $('.NB-classifier', $classifier).data('folder-name', folder_name);
+        $('.NB-classifier', $classifier).data('original-folder-name', folder_name);
 
         // Standard hover behavior matching make_classifier()
         var self = this;
