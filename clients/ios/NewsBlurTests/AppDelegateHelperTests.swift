@@ -140,6 +140,34 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertNil(persistedValue)
     }
 
+    func test_setCustomDomainPreference_persistsAndInvalidatesCachedURL() {
+        defaults.removeObject(forKey: "custom_domain")
+        let appDelegate = NewsBlurAppDelegate()
+        let defaultURL = appDelegate.url
+
+        let cases: [(input: String, expectedPersisted: String?, expectedURL: String?)] = [
+            ("custom.example.com/path", "custom.example.com/path", "https://custom.example.com"),
+            ("https://custom.example.com/path", "https://custom.example.com/path", "https://custom.example.com"),
+            ("http://custom.example.com:8080/path", "http://custom.example.com:8080/path", "http://custom.example.com:8080"),
+            ("", nil, defaultURL),
+        ]
+
+        for testCase in cases {
+            let inputs = testCase.input.isEmpty ? ["", "   "] : [testCase.input, "  \(testCase.input)  "]
+            for input in inputs {
+                defaults.removeObject(forKey: "custom_domain")
+                appDelegate.setCustomDomainPreference(input)
+
+                XCTAssertEqual(
+                    userValue("custom_domain") as? String,
+                    testCase.expectedPersisted,
+                    "input: \(input.debugDescription)"
+                )
+                XCTAssertEqual(appDelegate.url, testCase.expectedURL, "input: \(input.debugDescription)")
+            }
+        }
+    }
+
     func test_extractFolderName_treatsMissingActiveFolderAsTopLevel() {
         let appDelegate = NewsBlurAppDelegate()
 
