@@ -379,7 +379,11 @@ def load_river_blurblog(request):
         global_user = User.objects.get(username="popular")
         relative_user_id = global_user.pk
 
-    if not relative_user_id:
+    if relative_user_id and not global_feed:
+        relative_user_id = int(relative_user_id)
+        if relative_user_id != user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
+    elif not relative_user_id:
         relative_user_id = user.pk
 
     socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id)
@@ -806,8 +810,13 @@ def story_public_comments(request):
     feed_id = int(request.GET.get("feed_id"))
     story_id = request.GET.get("story_id")
 
-    if not relative_user_id:
-        relative_user_id = get_user(request).pk
+    current_user = get_user(request)
+    if relative_user_id:
+        relative_user_id = int(relative_user_id)
+        if relative_user_id != current_user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
+    else:
+        relative_user_id = current_user.pk
 
     story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     if not story:
@@ -1320,14 +1329,29 @@ def profile(request):
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 
-    user_profile = MSocialProfile.get_user(user_id)
-    user_profile.count_follows()
+    social_profile = MSocialProfile.get_user(user_id)
+    social_profile.count_follows()
 
     activities = []
-    if not user_profile.private or user_profile.is_followed_by_user(user.pk):
+    can_view_private_profile = (
+        user_id == user.pk or not social_profile.private or social_profile.is_followed_by_user(user.pk)
+    )
+    if can_view_private_profile:
         activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
 
-    user_profile = user_profile.canonical(include_follows=True, common_follows_with_user=user.pk)
+    if can_view_private_profile:
+        user_profile = social_profile.canonical(include_follows=True, common_follows_with_user=user.pk)
+    else:
+        user_profile = social_profile.canonical()
+        user_profile.update(
+            {
+                "followers_youknow": [],
+                "followers_everybody": [],
+                "following_youknow": [],
+                "following_everybody": [],
+                "requested_follow": user.pk in social_profile.requested_follow_user_ids,
+            }
+        )
     profile_ids = set(
         user_profile["followers_youknow"]
         + user_profile["followers_everybody"]
@@ -1942,7 +1966,11 @@ def load_interactions(request):
     user_id = request.GET.get("user_id", None)
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     if not user_id or "null" in user_id:
-        user_id = get_user(request).pk
+        user_id = request.user.pk
+    else:
+        user_id = int(user_id)
+        if user_id != request.user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
     page = max(1, int(request.GET.get("page", 1)))
     limit = request.GET.get("limit")
     interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit, categories=categories)
