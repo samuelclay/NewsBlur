@@ -3393,6 +3393,10 @@ class MFeedIcon(mongo.Document):
     data = mongo.StringField()
     icon_url = mongo.StringField()
     not_found = mongo.BooleanField(default=False)
+    # The feed's self-declared <icon> URL that apps/rss_feeds/icon_importer.py last
+    # resolved or attempted, so a broken/undecodable declared icon is not refetched
+    # on every poll. Mongo is schemaless, so adding this needs no migration.
+    declared_source_url = mongo.StringField()
 
     meta = {
         "collection": "feed_icons",

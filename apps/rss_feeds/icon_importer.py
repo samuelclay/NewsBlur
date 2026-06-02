@@ -36,18 +36,35 @@ from utils.youtube_fetcher import YoutubeFetcher
 
 
 class IconImporter(object):
-    def __init__(self, feed, page_data=None, force=False):
+    def __init__(self, feed, page_data=None, force=False, declared_icon_url=None, declared_logo_url=None):
         self.feed = feed
         self.force = force
         self.page_data = page_data
+        # The feed's self-declared images, captured from the source XML in
+        # utils/feed_fetcher.py: Atom <icon> (preferred) and <logo> (fallback).
+        self.declared_icon_url = declared_icon_url
+        self.declared_logo_url = declared_logo_url
         self.feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
 
     def save(self):
-        if not self.force and self.feed.favicon_not_found:
+        # Honor a freshly-declared <icon> even for feeds that already have a cached
+        # icon or are marked favicon-not-found (e.g. an existing feed stuck on the
+        # wrong site favicon, forum #13719). We only bypass the cache short-circuits
+        # when the declared <icon> differs from both the cached icon and the last
+        # declared URL we attempted -- declared_source_url is recorded after every
+        # attempt so a broken or undecodable declared icon is not refetched each poll.
+        declared_pending = bool(
+            self.declared_icon_url
+            and self.declared_icon_url != self.feed_icon.icon_url
+            and self.declared_icon_url != self.feed_icon.declared_source_url
+        )
+
+        if not self.force and not declared_pending and self.feed.favicon_not_found:
             # print 'Not found, skipping...'
             return
         if (
             not self.force
+            and not declared_pending
             and not self.feed.favicon_not_found
             and self.feed_icon.icon_url
             and self.feed.s3_icon
@@ -64,12 +81,20 @@ class IconImporter(object):
         elif "youtube.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_youtube_image()
         else:
-            image, image_file, icon_url = self.fetch_image_from_page_data()
+            # Honor the feed's self-declared <icon>/<logo> before deriving a
+            # favicon from the site's HTML or /favicon.ico.
+            image, image_file, icon_url = self.fetch_declared_image()
+            if not image:
+                image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
 
         if not image:
             self.feed_icon.not_found = True
+            # Remember the declared <icon> we just failed to fetch so the bypass
+            # above doesn't retry it on every poll.
+            if self.declared_icon_url:
+                self.feed_icon.declared_source_url = self.declared_icon_url
             self.feed_icon.save()
             self.feed.favicon_not_found = True
             self.feed.save()
@@ -93,6 +118,7 @@ class IconImporter(object):
             or self.feed_icon.data != image_str
             or self.feed_icon.icon_url != icon_url
             or self.feed_icon.not_found
+            or (self.declared_icon_url and self.feed_icon.declared_source_url != self.declared_icon_url)
             or (settings.BACKED_BY_AWS.get("icons_on_s3") and not self.feed.s3_icon)
         ):
             logging.debug(
@@ -112,6 +138,10 @@ class IconImporter(object):
             self.feed_icon.icon_url = icon_url
             self.feed_icon.color = color
             self.feed_icon.not_found = False
+            # Record the declared <icon> we resolved/attempted so the cache-bypass
+            # above terminates once this declared URL has been handled.
+            if self.declared_icon_url:
+                self.feed_icon.declared_source_url = self.declared_icon_url
             self.feed_icon.save()
             if settings.BACKED_BY_AWS.get("icons_on_s3"):
                 self.save_to_s3(image_str)
@@ -224,6 +254,20 @@ class IconImporter(object):
                 image.putalpha(mask)
 
         return image
+
+    def fetch_declared_image(self):
+        # apps/rss_feeds/icon_importer.py: honor the feed's self-declared images,
+        # captured from the source XML in utils/feed_fetcher.py. The Atom <icon> is a
+        # square favicon-style image and is preferred; <logo> is a larger banner used
+        # only as a fallback (and may be an SVG that PIL can't decode, in which case we
+        # fall through to the site-derived favicon).
+        for url in (self.declared_icon_url, self.declared_logo_url):
+            if not url:
+                continue
+            image, image_file = self.get_image_from_url(url)
+            if image:
+                return image, image_file, url
+        return None, None, None
 
     def fetch_image_from_page_data(self):
         image = None

@@ -1504,6 +1504,15 @@ class FeedFetcherWorker:
             if not feed:
                 continue
 
+            # utils/feed_fetcher.py: pull the feed's self-declared images (Atom <icon>/<logo>)
+            # from the parsed feed before the page fetch (which can reset fetched_feed) so
+            # IconImporter can prefer them over a site-derived favicon. (forum #13719)
+            declared_icon_url = ""
+            declared_logo_url = ""
+            if fetched_feed and hasattr(fetched_feed, "feed"):
+                declared_icon_url = (fetched_feed.feed.get("icon") or "").strip()
+                declared_logo_url = (fetched_feed.feed.get("logo") or "").strip()
+
             if (
                 (self.options["force"])
                 or (random.random() > 0.9)
@@ -1547,7 +1556,13 @@ class FeedFetcherWorker:
                 force = self.options["force"]
                 if random.random() > 0.99:
                     force = True
-                icon_importer = IconImporter(feed, page_data=page_data, force=force)
+                icon_importer = IconImporter(
+                    feed,
+                    page_data=page_data,
+                    force=force,
+                    declared_icon_url=declared_icon_url,
+                    declared_logo_url=declared_logo_url,
+                )
                 try:
                     icon_importer.save()
                     icon_duration = time.time() - start_duration
