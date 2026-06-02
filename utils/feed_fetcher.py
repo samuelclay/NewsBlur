@@ -66,6 +66,7 @@ from utils.bluesky_fetcher import enrich_bluesky_entries, is_bluesky_feed
 from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import (
     TimeoutError,
+    is_youtube_feed_address,
     strip_underscore_from_feed_address,
     timelimit,
 )
@@ -257,7 +258,7 @@ class FetchFeed:
         except ValueError:
             clean_address = address
 
-        if "youtube.com" in address:
+        if is_youtube_feed_address(address):
             youtube_feed = self.fetch_youtube()
             if not youtube_feed:
                 logging.debug(
@@ -1237,7 +1238,7 @@ class ProcessFeed:
                 hub_url = link.get("href")
             elif link.get("rel") == "self":
                 self_url = link.get("href")
-        if not hub_url and "youtube.com" in self_url:
+        if not hub_url and is_youtube_feed_address(self_url):
             hub_url = "https://pubsubhubbub.appspot.com/subscribe"
             channel_id = self_url.split("channel_id=")
             if len(channel_id) > 1:

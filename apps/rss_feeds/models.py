@@ -58,6 +58,7 @@ from utils import log as logging
 from utils import urlnorm
 from utils.feed_functions import (
     TimeoutError,
+    is_youtube_feed_address,
     levenshtein_distance,
     relative_timesince,
     seconds_timesince,
@@ -240,7 +241,7 @@ class Feed(models.Model):
 
     @property
     def is_youtube_feed(self):
-        return "youtube.com" in self.feed_address
+        return is_youtube_feed_address(self.feed_address)
 
     @property
     def is_google_news_feed(self):
@@ -596,22 +597,26 @@ class Feed(models.Model):
         if url and url.startswith("@") and "@" in url[1:]:
             username, domain = url[1:].split("@")
             url = f"https://{domain}/users/{username}.rss"
-        if url and "youtube.com/user/" in url:
-            username = re.search("youtube.com/user/(\w+)", url).group(1)
-            url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            without_rss = True
-        if url and "youtube.com/@" in url:
-            username = url.split("youtube.com/@")[1]
-            url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            without_rss = True
-        if url and "youtube.com/channel/" in url:
-            channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
-            url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
-            without_rss = True
-        if url and "youtube.com/feeds" in url:
-            without_rss = True
-        if url and "youtube.com/playlist" in url:
-            without_rss = True
+        # Only rewrite when YouTube actually serves the URL. Privacy proxies like
+        # openrss.org embed the channel URL in their path, so guard on the host to
+        # avoid hijacking https://openrss.org/www.youtube.com/@user/videos.
+        if url and is_youtube_feed_address(url):
+            if "youtube.com/user/" in url:
+                username = re.search("youtube.com/user/(\w+)", url).group(1)
+                url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+                without_rss = True
+            if "youtube.com/@" in url:
+                username = url.split("youtube.com/@")[1]
+                url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+                without_rss = True
+            if "youtube.com/channel/" in url:
+                channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
+                url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
+                without_rss = True
+            if "youtube.com/feeds" in url:
+                without_rss = True
+            if "youtube.com/playlist" in url:
+                without_rss = True
         if url and "reddit.com/r/" in url and url.endswith(".rss"):
             without_rss = True
         if url and "/wp-json/wp/v2/posts" in url:

@@ -450,3 +450,22 @@ def strip_underscore_from_feed_address(feed_address):
     # Strip _=#### from feed_address
     parsed_url = qurl(feed_address, remove="_")
     return parsed_url
+
+
+def is_youtube_feed_address(url):
+    """Return True only when the URL is actually served by YouTube.
+
+    Detection keys off the URL host (youtube.com or a youtube subdomain such as
+    www.youtube.com or gdata.youtube.com), not a naive ``"youtube.com" in url``
+    substring match. Privacy proxies like openrss.org embed the channel URL in
+    their own path, e.g. https://openrss.org/www.youtube.com/@JudgeJudy/videos,
+    and must keep their own embed-free content instead of being replaced by
+    NewsBlur's YouTube API decrapifier. See utils/youtube_fetcher.py.
+    """
+    if not url:
+        return False
+    # Tolerate scheme-less addresses (e.g. "openrss.org/www.youtube.com/...") by
+    # giving urlparse a netloc to find.
+    parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    host = (parsed.hostname or "").lower()
+    return host == "youtube.com" or host.endswith(".youtube.com")
