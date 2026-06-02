@@ -931,3 +931,184 @@ class Test_PreProcessStoryContentSelection(TestCase):
         out = pre_process_story(entry, fp.encoding)
         self.assertIn("Real article body.", out["story_content"])
         self.assertGreater(len(out["story_content"]), 1000)
+
+
+class Test_IconImporter(TestCase):
+    """
+    apps/rss_feeds/icon_importer.py: a feed's self-declared images (Atom <icon>
+    preferred, <logo> as fallback) should be honored before deriving a favicon
+    from the site. Regression coverage for forum issue #13719 (openrss feeds
+    showing openrss.org's favicon instead of the feed's declared icon).
+    """
+
+    def _make_image(self):
+        # Build a small two-tone RGBA PNG so the importer can decode it and the
+        # dominant-color clustering has more than one color to work with.
+        from io import BytesIO
+
+        from PIL import Image
+
+        img = Image.new("RGBA", (16, 16), (255, 86, 25, 255))
+        for x in range(8):
+            for y in range(8):
+                img.putpixel((x, y), (20, 60, 200, 255))
+        buf = BytesIO()
+        img.save(buf, "png")
+        buf.seek(0)
+        return Image.open(buf), buf
+
+    def _make_feed(self):
+        return Feed.objects.create(
+            feed_address="http://declared-icon.example.com/feed.xml",
+            feed_link="http://declared-icon.example.com/",
+            feed_title="Declared Icon Feed",
+        )
+
+    def test_fetch_declared_image_prefers_icon_over_logo(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        icon_url = "https://www.redditstatic.com/icon.png"
+        logo_url = "https://openrss.org/logos/reddit.svg"
+        feed = self._make_feed()
+        self_image_holder = self
+
+        def fake_get(self, url):
+            if url == icon_url:
+                return self_image_holder._make_image()
+            return None, None
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get):
+            importer = IconImporter(feed, declared_icon_url=icon_url, declared_logo_url=logo_url)
+            image, image_file, url = importer.fetch_declared_image()
+
+        self.assertEqual(url, icon_url)
+        self.assertIsNotNone(image)
+
+    def test_fetch_declared_image_falls_back_to_logo(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        logo_url = "https://example.com/logo.png"
+        feed = self._make_feed()
+        self_image_holder = self
+
+        def fake_get(self, url):
+            if url == logo_url:
+                return self_image_holder._make_image()
+            return None, None
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get):
+            importer = IconImporter(feed, declared_logo_url=logo_url)
+            image, image_file, url = importer.fetch_declared_image()
+
+        self.assertEqual(url, logo_url)
+        self.assertIsNotNone(image)
+
+    def test_fetch_declared_image_none_when_undeclared(self):
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        feed = self._make_feed()
+
+        def fake_get(self, url):
+            raise AssertionError("get_image_from_url should not be called with no declared URLs")
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get):
+            importer = IconImporter(feed)
+            image, image_file, url = importer.fetch_declared_image()
+
+        self.assertIsNone(image)
+        self.assertIsNone(url)
+
+    def test_save_prefers_declared_icon_over_site_favicon(self):
+        # End-to-end: with a declared <icon>, save() stores it as the icon_url and
+        # never falls back to the site's /favicon.ico. This is the fix for #13719.
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        icon_url = "https://www.redditstatic.com/icon.png"
+        favicon_url = "http://declared-icon.example.com/favicon.ico"
+        feed = self._make_feed()
+        self_image_holder = self
+
+        def fake_get(self, url):
+            # Both the declared icon and the site favicon are reachable; the
+            # importer must choose the declared icon.
+            if url in (icon_url, favicon_url):
+                return self_image_holder._make_image()
+            return None, None
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get):
+            importer = IconImporter(feed, force=True, declared_icon_url=icon_url)
+            importer.save()
+
+        feed_icon = MFeedIcon.get_feed(feed_id=feed.pk)
+        self.assertEqual(feed_icon.icon_url, icon_url)
+        self.assertFalse(feed_icon.not_found)
+
+    def _seed_cached_icon(self, feed, icon_url, color="f3e34d"):
+        # Simulate an existing feed already cached with a (wrong) site favicon on S3.
+        feed.s3_icon = True
+        feed.favicon_not_found = False
+        feed.save()
+        feed_icon = MFeedIcon.get_feed(feed_id=feed.pk)
+        feed_icon.icon_url = icon_url
+        feed_icon.data = "x" * 100
+        feed_icon.color = color
+        feed_icon.save()
+
+    def test_save_bypasses_cached_favicon_for_declared_icon(self):
+        # forum #13719: a feed already cached with the wrong site favicon should pick
+        # up a newly-declared <icon> on a normal (non-forced) fetch, not only when forced.
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        icon_url = "https://www.redditstatic.com/icon.png"
+        stale_favicon = "https://openrss.org/favicon.ico"
+        feed = self._make_feed()
+        self._seed_cached_icon(feed, stale_favicon)
+        self_image_holder = self
+
+        def fake_get(self, url):
+            if url == icon_url:
+                return self_image_holder._make_image()
+            return None, None
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get):
+            # No force=True: the declared <icon> must override the cached short-circuit.
+            IconImporter(feed, declared_icon_url=icon_url).save()
+
+        feed_icon = MFeedIcon.get_feed(feed_id=feed.pk)
+        self.assertEqual(feed_icon.icon_url, icon_url)
+        self.assertEqual(feed_icon.declared_source_url, icon_url)
+
+    def test_save_does_not_refetch_failed_declared_icon(self):
+        # A declared <icon> that can't be fetched is attempted once and recorded, so
+        # later non-forced polls short-circuit instead of refetching it every time.
+        from apps.rss_feeds.icon_importer import IconImporter
+
+        broken_icon = "https://broken.example.com/icon.png"
+        favicon_url = "http://declared-icon.example.com/favicon.ico"
+        feed = self._make_feed()
+        self._seed_cached_icon(feed, favicon_url, color="abcdef")
+        attempts = []
+        self_image_holder = self
+
+        def fake_get(self, url):
+            attempts.append(url)
+            if url == favicon_url:
+                return self_image_holder._make_image()
+            return None, None
+
+        with patch.object(IconImporter, "get_image_from_url", new=fake_get), patch(
+            "apps.rss_feeds.icon_importer.requests.get"
+        ) as mock_requests_get:
+            mock_requests_get.return_value = MagicMock(content=b"", status_code=200)
+            IconImporter(feed, declared_icon_url=broken_icon).save()
+            first_round = list(attempts)
+            attempts.clear()
+            IconImporter(feed, declared_icon_url=broken_icon).save()
+            second_round = list(attempts)
+
+        # First poll attempts the broken declared icon; the second poll does not
+        # re-attempt anything because the failed declared URL was recorded.
+        self.assertIn(broken_icon, first_round)
+        self.assertEqual(second_round, [])
+        feed_icon = MFeedIcon.get_feed(feed_id=feed.pk)
+        self.assertEqual(feed_icon.declared_source_url, broken_icon)
