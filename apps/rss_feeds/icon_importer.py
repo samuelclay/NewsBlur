@@ -6,7 +6,6 @@ import operator
 import struct
 import urllib.error
 import urllib.parse
-import urllib.request
 import zlib
 from io import BytesIO
 from socket import error as SocketError
@@ -32,6 +31,7 @@ from apps.rss_feeds.models import MFeedIcon, MFeedPage
 from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import TimeoutError, timelimit
+from utils.url_safety import UnsafeUrlError, safe_requests_get
 from utils.youtube_fetcher import YoutubeFetcher
 
 
@@ -315,9 +315,10 @@ class IconImporter(object):
                         self.feed.fake_user_agent,
                     ),
                 }
-                content = requests.get(self.cleaned_feed_link, headers=headers, timeout=10).content
+                content = safe_requests_get(self.cleaned_feed_link, headers=headers, timeout=10).content
                 url = self._url_from_html(content)
             except (
+                UnsafeUrlError,
                 AttributeError,
                 SocketError,
                 requests.ConnectionError,
@@ -406,9 +407,8 @@ class IconImporter(object):
                 "Accept": "image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8",
             }
             try:
-                request = urllib.request.Request(url, headers=headers)
-                icon = urllib.request.urlopen(request).read()
-            except Exception:
+                icon = safe_requests_get(url, headers=headers, timeout=30).content
+            except (UnsafeUrlError, requests.RequestException):
                 return None
             return icon
 

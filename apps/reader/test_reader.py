@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
@@ -318,6 +320,20 @@ class Test_Reader(TransactionTestCase):
         response = self.client.post("/reader/add_url", {})
         content = json.decode(response.content)
         self.assertEqual(content["code"], -1)
+
+    @patch("apps.reader.views.UserSubscription.add_subscription")
+    def test_add_url__rejects_metadata_ip(self, mock_add_subscription):
+        """POST to add_url should reject private/link-local addresses before fetching."""
+        self.client.login(username="conesus", password="test")
+
+        response = self.client.post(
+            "/reader/add_url",
+            {"url": "http://169.254.169.254/latest/meta-data/", "folder": ""},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        mock_add_subscription.assert_not_called()
 
     def test_rename_folder_no_substring_match(self):
         """Renaming 'Tech' should not affect 'Deep Tech'."""

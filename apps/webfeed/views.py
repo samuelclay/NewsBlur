@@ -7,6 +7,7 @@ from apps.rss_feeds.models import Feed
 from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 from utils import json_functions as json
 from utils import log as logging
+from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
@@ -29,6 +30,10 @@ def analyze(request):
 
     if not URL_RE.match(url):
         return {"code": -1, "message": "Please enter a valid URL starting with http:// or https://"}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if request_id:
         if not REQUEST_ID_RE.match(request_id):
@@ -91,6 +96,10 @@ def subscribe(request):
 
     if not URL_RE.match(url):
         return {"code": -1, "message": "Invalid URL"}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if not story_container_xpath or not title_xpath:
         logging.user(

@@ -1,19 +1,24 @@
 import datetime
+import socket
 import zlib
 from unittest.mock import MagicMock, patch
 
 import redis
+import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core import management
 from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 from django.utils.encoding import smart_str
 
+from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 from utils.feed_functions import is_youtube_feed_address
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 
 class Test_Feed(TransactionTestCase):
@@ -491,6 +496,80 @@ class Test_GetFeedFromUrl(TestCase):
         self.assertIsNone(result)
 
 
+class Test_FeedUrlSSRFProtection(TestCase):
+    """Tests for blocking user-controlled feed URLs that target private networks."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="ssrf-user", password="testpass")
+        self.client.login(username="ssrf-user", password="testpass")
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/feed.xml",
+            feed_link="http://example.com",
+            feed_title="SSRF Test Feed",
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.feed)
+
+    @patch("apps.rss_feeds.views.Feed.update")
+    def test_exception_change_feed_address__rejects_loopback_ip(self, mock_update):
+        response = self.client.post(
+            reverse("exception-change-feed-address"),
+            {"feed_id": self.feed.pk, "feed_address": "http://127.0.0.1:9966/feed.xml"},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        mock_update.assert_not_called()
+
+    @patch("apps.rss_feeds.models.requests.get")
+    @patch("apps.rss_feeds.models.feedfinder_pilgrim")
+    @patch("apps.rss_feeds.models.feedfinder_forman")
+    def test_get_feed_from_url__rejects_loopback_ip(
+        self, mock_forman, mock_pilgrim, mock_requests_get
+    ):
+        result = Feed.get_feed_from_url("http://127.0.0.1:9966/feed.xml", create=False, fetch=True)
+
+        self.assertIsNone(result)
+        mock_forman.find_feeds.assert_not_called()
+        mock_pilgrim.feeds.assert_not_called()
+        mock_requests_get.assert_not_called()
+
+
+class Test_PublicUrlSafety(TestCase):
+    def test_validate_public_url__rejects_private_dns_result(self):
+        with patch(
+            "utils.url_safety.socket.getaddrinfo",
+            return_value=[
+                (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("10.0.0.5", 80)),
+            ],
+        ):
+            with self.assertRaises(UnsafeUrlError):
+                validate_public_url("http://private.example.com/feed.xml")
+
+    def test_validate_public_url__rejects_multicast_ip(self):
+        with self.assertRaises(UnsafeUrlError):
+            validate_public_url("http://224.0.0.1/feed.xml")
+
+    @patch("utils.url_safety.requests.request")
+    @patch(
+        "utils.url_safety.socket.getaddrinfo",
+        return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 80)),
+        ],
+    )
+    def test_safe_requests_get__rejects_private_redirect(self, mock_getaddrinfo, mock_request):
+        response = requests.Response()
+        response.status_code = 302
+        response.headers["Location"] = "http://127.0.0.1:9966/secret"
+        response.url = "http://example.com/start"
+        mock_request.return_value = response
+
+        with self.assertRaises(UnsafeUrlError):
+            safe_requests_get("http://example.com/start")
+
+        mock_request.assert_called_once()
+
+
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 
@@ -584,7 +663,7 @@ class Test_PageImporterEncoding(TestCase):
         resp.connection = MagicMock()
         return resp
 
-    @patch("apps.rss_feeds.page_importer.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
     def test_fetch_story_utf8_declared_in_html_with_iso8859_header(self, mock_get):
         """When server says ISO-8859-1 but HTML declares UTF-8, use UTF-8."""
         from apps.rss_feeds.page_importer import PageImporter
@@ -604,7 +683,7 @@ class Test_PageImporterEncoding(TestCase):
         self.assertIn("liquéfiaient", html)
         self.assertNotIn("Ã©", html)
 
-    @patch("apps.rss_feeds.page_importer.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
     def test_fetch_story_utf8_bom_with_iso8859_header(self, mock_get):
         """When server says ISO-8859-1 but content has UTF-8 BOM, use UTF-8."""
         from apps.rss_feeds.page_importer import PageImporter
@@ -620,7 +699,7 @@ class Test_PageImporterEncoding(TestCase):
 
         self.assertIn("café", html)
 
-    @patch("apps.rss_feeds.page_importer.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
     def test_fetch_story_actual_iso8859_content(self, mock_get):
         """When server says ISO-8859-1 and HTML has no UTF-8 declaration, use ISO-8859-1."""
         from apps.rss_feeds.page_importer import PageImporter
@@ -636,7 +715,7 @@ class Test_PageImporterEncoding(TestCase):
 
         self.assertIn("café", html)
 
-    @patch("apps.rss_feeds.page_importer.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
     def test_fetch_page_utf8_declared_in_html_with_iso8859_header(self, mock_get):
         """fetch_page_timeout: when server says ISO-8859-1 but HTML declares UTF-8, use UTF-8."""
         from apps.rss_feeds.page_importer import PageImporter
@@ -670,7 +749,7 @@ class Test_TextImporterEncoding(TestCase):
         resp.connection = MagicMock()
         return resp
 
-    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
     def test_fetch_manually_utf8_declared_in_html_with_iso8859_header(self, mock_get):
         """When server says ISO-8859-1 but HTML declares UTF-8, readability should use UTF-8."""
         from apps.rss_feeds.text_importer import TextImporter
@@ -695,7 +774,7 @@ class Test_TextImporterEncoding(TestCase):
         self.assertIn("repoussé", result["content"])
         self.assertNotIn("Ã©", result["content"])
 
-    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
     def test_fetch_manually_utf8_bom_with_iso8859_header(self, mock_get):
         """When server says ISO-8859-1 but content has UTF-8 BOM, use UTF-8."""
         from apps.rss_feeds.text_importer import TextImporter
@@ -1098,7 +1177,7 @@ class Test_IconImporter(TestCase):
             return None, None
 
         with patch.object(IconImporter, "get_image_from_url", new=fake_get), patch(
-            "apps.rss_feeds.icon_importer.requests.get"
+            "apps.rss_feeds.icon_importer.safe_requests_get"
         ) as mock_requests_get:
             mock_requests_get.return_value = MagicMock(content=b"", status_code=200)
             IconImporter(feed, declared_icon_url=broken_icon).save()

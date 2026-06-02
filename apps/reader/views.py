@@ -140,6 +140,7 @@ from utils.story_functions import (
     strip_tags,
     strip_tags_preserve_blockquote,
 )
+from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
     RequestDeduplicator,
@@ -3771,7 +3772,14 @@ def add_url(request):
     elif any([(banned_url in url) for banned_url in BANNED_URLS]):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
-    elif re.match(r"(https?://)?twitter.com/\w+/?$", url):
+    else:
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError:
+            code = -1
+            message = BLOCKED_PRIVATE_URL_MESSAGE
+
+    if code == 0 and re.match(r"(https?://)?twitter.com/\w+/?$", url):
         if not request.user.profile.is_premium:
             message = "You must be a premium subscriber to add Twitter feeds."
             code = -1

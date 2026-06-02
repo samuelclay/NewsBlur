@@ -74,6 +74,7 @@ from utils.story_functions import (
     strip_comments__lxml,
     strip_tags,
 )
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
@@ -672,6 +673,11 @@ class Feed(models.Model):
         if not url:
             logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.debug(" ---> ~FRUnsafe feed URL rejected: ~SB%s~SN (%s)" % (url, e))
+            return
 
         feed = by_url(url)
         found_feed_urls = []
@@ -735,8 +741,9 @@ class Feed(models.Model):
         # Check for JSON feed
         if not feed and fetch and create:
             try:
-                r = requests.get(url, timeout=10)
+                r = safe_requests_get(url, timeout=10)
             except (
+                UnsafeUrlError,
                 requests.ConnectionError,
                 requests.models.InvalidURL,
                 requests.ReadTimeout,
@@ -944,13 +951,18 @@ class Feed(models.Model):
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
+                validate_public_url(self.feed_address)
                 found_feed_urls = feedfinder_forman.find_feeds(self.feed_address)
                 if found_feed_urls:
                     feed_address = found_feed_urls[0]
-            except KeyError:
+            except (KeyError, UnsafeUrlError):
                 pass
             if not len(found_feed_urls) and self.feed_link:
-                found_feed_urls = feedfinder_forman.find_feeds(self.feed_link)
+                try:
+                    validate_public_url(self.feed_link)
+                    found_feed_urls = feedfinder_forman.find_feeds(self.feed_link)
+                except UnsafeUrlError:
+                    found_feed_urls = []
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
 
@@ -4076,7 +4088,7 @@ class MStory(mongo.Document):
                     return None
 
             try:
-                resp = requests.get(
+                resp = safe_requests_get(
                     article_url,
                     headers={"User-Agent": "NewsBlur OG Image Fetcher"},
                     timeout=8,

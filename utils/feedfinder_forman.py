@@ -12,11 +12,11 @@ except NameError:
 if not __FEEDFINDER2_SETUP__:
     __all__ = ["find_feeds"]
 
-    import requests
     from bs4 import BeautifulSoup
     from six.moves.urllib import parse as urlparse
 
     from utils import log as logging
+    from utils.url_safety import safe_requests_get
 
 
 def coerce_url(url):
@@ -39,7 +39,7 @@ class FeedFinder(object):
 
     def get_feed(self, url, skip_user_agent=False):
         try:
-            r = requests.get(
+            r = safe_requests_get(
                 url, headers={"User-Agent": self.user_agent if not skip_user_agent else None}, timeout=15
             )
         except Exception as e:

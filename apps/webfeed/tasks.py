@@ -14,6 +14,7 @@ from lxml import html as lxml_html
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 from .prompts import get_analysis_messages
 
@@ -131,10 +132,14 @@ def strip_navigation_elements(html_text, gentle=False):
 def fetch_page_html(url):
     """Fetch page HTML with fallback to scraping proxies."""
     headers = {"User-Agent": USER_AGENT}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return None
 
     # Try direct fetch first
     try:
-        response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
+        response = safe_requests_get(url, headers=headers, timeout=15, allow_redirects=True)
         text = decode_response_text(response)
         if response.status_code == 200 and text:
             return text

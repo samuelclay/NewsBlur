@@ -11,6 +11,7 @@ from apps.rss_feeds.models import Feed
 from apps.webfeed.models import MWebFeedConfig
 from apps.webfeed.tasks import decode_response_text, extract_image_url
 from utils import log as logging
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
 
@@ -81,10 +82,14 @@ class WebFeedFetcher:
     def _fetch_html(self):
         """Fetch page HTML with proxy fallbacks for forbidden feeds."""
         headers = {"User-Agent": USER_AGENT}
+        try:
+            validate_public_url(self.url)
+        except UnsafeUrlError:
+            return None
 
         # Try direct fetch first
         try:
-            response = requests.get(self.url, headers=headers, timeout=15, allow_redirects=True)
+            response = safe_requests_get(self.url, headers=headers, timeout=15, allow_redirects=True)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
                 return text
