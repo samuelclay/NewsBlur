@@ -18,6 +18,7 @@ from simplejson.decoder import JSONDecodeError
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
 from utils.story_functions import _normalize_image_url_for_dedup
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 from vendor import readability
 from vendor.readability.readability import Unparseable
 
@@ -301,6 +302,12 @@ class TextImporter:
         headers = self.headers
         url = self.story_url
 
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
+            return
+
         if use_mercury:
             mercury_api_key = getattr(settings, "MERCURY_PARSER_API_KEY", "abc123")
             headers["content-type"] = "application/json"
@@ -315,9 +322,12 @@ class TextImporter:
             url = f"{protocol}://{domain}/rss_feeds/original_text_fetcher?url={url}"
 
         try:
-            r = requests.get(url, headers=headers, timeout=15)
-            r.connection.close()
+            request_get = requests.get if use_mercury else safe_requests_get
+            r = request_get(url, headers=headers, timeout=15)
+            if getattr(r, "connection", None):
+                r.connection.close()
         except (
+            UnsafeUrlError,
             AttributeError,
             SocketError,
             requests.ConnectionError,
