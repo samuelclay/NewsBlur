@@ -13,6 +13,7 @@ from django.utils.encoding import smart_str
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
+from utils.feed_functions import is_youtube_feed_address
 
 
 class Test_Feed(TransactionTestCase):
@@ -1112,3 +1113,59 @@ class Test_IconImporter(TestCase):
         self.assertEqual(second_round, [])
         feed_icon = MFeedIcon.get_feed(feed_id=feed.pk)
         self.assertEqual(feed_icon.declared_source_url, broken_icon)
+
+
+class Test_YouTubeFeedDetection(TestCase):
+    """
+    Privacy proxies such as openrss.org embed the channel URL in their own path,
+    e.g. https://openrss.org/www.youtube.com/@JudgeJudy/videos. NewsBlur used to
+    treat any address merely *containing* the substring "youtube.com" as a YouTube
+    feed and replace its content with API-generated stories that carry video embeds,
+    which defeats the proxy's privacy guarantee. Detection must key off the actual
+    URL host instead. Reported by openrss.org, June 2026.
+    """
+
+    def test_is_youtube_feed_address__genuine_youtube_hosts(self):
+        for url in [
+            "https://www.youtube.com/@JudgeJudy/videos",
+            "https://youtube.com/@JudgeJudy/videos",
+            "https://www.youtube.com/feeds/videos.xml?channel_id=UC123",
+            "http://gdata.youtube.com/feeds/base/users/judgejudy/uploads",
+            "https://m.youtube.com/playlist?list=PL123",
+            "www.youtube.com/@JudgeJudy/videos",  # scheme-less
+        ]:
+            self.assertTrue(is_youtube_feed_address(url), url)
+
+    def test_is_youtube_feed_address__proxied_and_lookalike_hosts(self):
+        for url in [
+            "https://openrss.org/www.youtube.com/@JudgeJudy/videos",
+            "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos",
+            "openrss.org/www.youtube.com/@JudgeJudy/videos",  # scheme-less
+            "https://notyoutube.com/@JudgeJudy/videos",
+            "https://www.youtube.com.evil.example/@JudgeJudy",
+            "https://example.com/?ref=youtube.com",
+            "",
+            None,
+        ]:
+            self.assertFalse(is_youtube_feed_address(url), url)
+
+    def test_feed_is_youtube_feed_property(self):
+        """The reported bug: openrss proxy feeds were detected as YouTube feeds."""
+        proxied = Feed(feed_address="https://openrss.org/www.youtube.com/@JudgeJudy/videos")
+        self.assertFalse(proxied.is_youtube_feed)
+
+        genuine = Feed(feed_address="https://www.youtube.com/feeds/videos.xml?channel_id=UC123")
+        self.assertTrue(genuine.is_youtube_feed)
+
+    def test_get_feed_from_url_does_not_rewrite_proxied_youtube_url(self):
+        """A proxied openrss URL must resolve to the proxy feed, never a rewritten gdata feed."""
+        from utils import urlnorm
+
+        proxied_url = "https://openrss.org/www.youtube.com/@JudgeJudy/videos"
+        proxy_feed = Feed.objects.create(feed_address=urlnorm.normalize(proxied_url))
+
+        # With the bug, get_feed_from_url rewrote the address to a gdata.youtube.com URL
+        # and never matched the proxy feed. The exact-address lookup below proves the
+        # proxied URL is left intact (and avoids any feedfinder network call).
+        found = Feed.get_feed_from_url(proxied_url, create=False, fetch=False)
+        self.assertEqual(found, proxy_feed)
