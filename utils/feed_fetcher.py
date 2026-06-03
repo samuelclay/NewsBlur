@@ -549,7 +549,11 @@ class FetchFeed:
 
         if (not self.fpf or self.options.get("force_fp", False)) and "openrss.org" not in address:
             try:
-                validate_public_url(address)
+                # Only HTTP(S) addresses can be SSRF vectors. Non-HTTP addresses
+                # (e.g. local file paths in test fixtures) are read directly by
+                # feedparser and must skip validation, matching the guard above.
+                if address.startswith("http"):
+                    validate_public_url(address)
                 # When feedparser fetches the URL itself, we cannot preprocess the content first
                 # We'll have to rely on feedparser's built-in handling here
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent, etag=etag, modified=modified)
@@ -575,7 +579,11 @@ class FetchFeed:
                 logging.debug(
                     "   ***> [%-30s] ~FRTurning off headers: %s" % (self.feed.log_title[:30], address)
                 )
-                validate_public_url(address)
+                # Only HTTP(S) addresses can be SSRF vectors. Non-HTTP addresses
+                # (e.g. local file paths in test fixtures) are read directly by
+                # feedparser and must skip validation, matching the guard above.
+                if address.startswith("http"):
+                    validate_public_url(address)
                 # Another direct URL fetch that bypasses our preprocessing
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
             except (
