@@ -1,10 +1,15 @@
 import hashlib
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from apps.ask_ai import providers
 from apps.webfeed.models import MWebFeedConfig
-from apps.webfeed.tasks import extract_image_url, extract_preview_stories
+from apps.webfeed.tasks import (
+    AnalyzeWebFeedPage,
+    extract_image_url,
+    extract_preview_stories,
+)
 from utils.webfeed_fetcher import WebFeedFetcher
 
 
@@ -161,6 +166,67 @@ class Test_GuidGeneration(TestCase):
 
         guid = fetcher._generate_guid("https://example.com/test", "Test")
         self.assertEqual(len(guid), 32)
+
+
+class Test_AnalyzeWebFeedPageModelSelection(TestCase):
+    html = "<html><body></body></html>"
+
+    variants_json = """
+    [{
+        "story_container": "//article",
+        "title": ".//h2/text()",
+        "link": ".//a/@href"
+    }]
+    """
+
+    def _model_config(self, vendor="local", vendor_display="Local"):
+        return {
+            "display_name": "Local Model",
+            "vendor": vendor,
+            "vendor_display": vendor_display,
+            "model_id": "local-model",
+        }
+
+    def _run_analysis(self):
+        user = MagicMock()
+        user.username = "webfeed-test"
+
+        with patch("apps.webfeed.tasks.redis.Redis") as redis_mock, patch(
+            "apps.webfeed.tasks.User.objects.get",
+            return_value=user,
+        ), patch(
+            "apps.webfeed.tasks.fetch_page_html",
+            return_value=self.html,
+        ), patch(
+            "apps.webfeed.tasks.get_analysis_messages",
+            return_value=[{"role": "user", "content": "analyze"}],
+        ), patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result"):
+            redis_mock.return_value.publish = MagicMock()
+            return AnalyzeWebFeedPage.run(1, "https://example.com", request_id="request-token")
+
+    @override_settings(WEBFEED_MODEL="openrouter")
+    def test_webfeed_uses_configured_model_for_provider_and_cost_tracking(self):
+        provider = MagicMock()
+        provider.is_configured.return_value = True
+        provider.stream_response.return_value = [self.variants_json]
+        provider.get_last_usage.return_value = (31, 11)
+        briefing_models = {"openrouter": self._model_config(vendor="openrouter", vendor_display="OpenRouter")}
+
+        with patch.object(providers, "BRIEFING_MODELS", briefing_models), patch.object(
+            providers,
+            "DEFAULT_BRIEFING_MODEL",
+            "openrouter",
+        ), patch(
+            "apps.ask_ai.providers.get_briefing_provider",
+            return_value=(provider, "openrouter-model"),
+        ) as get_provider, patch("apps.webfeed.tasks.LLMCostTracker.record_usage") as record_usage:
+            result = self._run_analysis()
+
+        self.assertEqual(result["code"], 1)
+        get_provider.assert_called_once_with("openrouter")
+        record_usage.assert_called_once()
+        self.assertEqual(record_usage.call_args.kwargs["provider"], "openrouter")
+        self.assertEqual(record_usage.call_args.kwargs["model"], "openrouter-model")
 
 
 class Test_MWebFeedConfig(TestCase):

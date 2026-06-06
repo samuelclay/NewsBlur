@@ -152,6 +152,7 @@ ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ASK_AI_MODEL = "opus"  # Options: opus, gpt-5.2, gemini-3, grok-4.1
 BRIEFING_MODEL = "haiku"  # Options: haiku, gpt-5-mini, gemini-flash-lite, grok-4.1-fast
+WEBFEED_MODEL = "haiku"  # Options: haiku, gpt-5-mini, gemini-flash-lite, grok-4.1-fast
 
 # Furthermore, you can connect to any OpenAI-compatible provider (OpenRouter,
 # local inference etc.) by setting BRIEFING_MODELS and/or ASK_AI_MODELS.
