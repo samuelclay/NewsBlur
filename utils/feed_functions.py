@@ -466,6 +466,9 @@ def is_youtube_feed_address(url):
         return False
     # Tolerate scheme-less addresses (e.g. "openrss.org/www.youtube.com/...") by
     # giving urlparse a netloc to find.
-    parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    try:
+        parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    except ValueError:
+        return False
     host = (parsed.hostname or "").lower()
     return host == "youtube.com" or host.endswith(".youtube.com")

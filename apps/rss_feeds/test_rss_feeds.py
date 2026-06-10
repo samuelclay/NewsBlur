@@ -1223,6 +1223,8 @@ class Test_YouTubeFeedDetection(TestCase):
             "https://notyoutube.com/@JudgeJudy/videos",
             "https://www.youtube.com.evil.example/@JudgeJudy",
             "https://example.com/?ref=youtube.com",
+            'newsletter:118958:list-id:["bf6a361f2d4146e7bf542399822c985e@growomaha.com"]',
+            'newsletter:238807:list-id:["1.816639.3123"]',
             "",
             None,
         ]:
