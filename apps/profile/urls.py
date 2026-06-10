@@ -54,6 +54,11 @@ urlpatterns = [
     url(r"^count_classifiers/?", views.count_classifiers, name="profile-count-classifiers"),
     url(r"^delete_classifiers/?", views.delete_classifiers, name="profile-delete-classifiers"),
     url(r"^delete_all_sites/?", views.delete_all_sites, name="profile-delete-all-sites"),
+    url(
+        r"^email_optout/(?P<username>\w+)/(?P<secret>\w+)/?$",
+        views.email_optout_token,
+        name="profile-email-optout-token",
+    ),
     url(r"^email_optout/?", views.email_optout, name="profile-email-optout"),
     url(r"^ios_subscription_status/?", views.ios_subscription_status, name="profile-ios-subscription-status"),
     url(r"^gift_checkout/?", views.gift_checkout, name="gift-checkout"),

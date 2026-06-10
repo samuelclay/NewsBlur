@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -152,7 +152,14 @@ def get_preference(request):
 
     payload = preferences
     if preference_name:
-        payload = preferences.get(preference_name)
+        if preference_name in SINGLE_FIELD_PREFS:
+            # These live on the Profile model, not in the preferences JSON blob
+            # (see set_preference above), so read the field for a fresh value.
+            payload = getattr(request.user.profile, preference_name)
+            if not isinstance(payload, (bool, int, str, type(None))):
+                payload = str(payload)
+        else:
+            payload = preferences.get(preference_name)
 
     response = dict(code=code, payload=payload)
     return response
@@ -1820,12 +1827,53 @@ def delete_all_sites(request):
 @login_required
 @render_to("profile/email_optout.xhtml")
 def email_optout(request):
+    """Unsubscribe from all NewsBlur emails. GET shows a confirmation button so that
+    mail clients pre-loading links don't unsubscribe anybody; only the POST from the
+    button on templates/profile/email_optout.xhtml actually unsubscribes."""
     user = request.user
-    user.profile.send_emails = False
-    user.profile.save()
+    unsubscribed = False
+
+    if request.method == "POST":
+        user.profile.send_emails = False
+        user.profile.save()
+        unsubscribed = True
+        logging.user(user, "~BB~FM~SBUnsubscribed from all NewsBlur emails")
 
     return {
         "user": user,
+        "unsubscribed": unsubscribed,
+    }
+
+
+@csrf_exempt
+@render_to("profile/email_optout.xhtml")
+def email_optout_token(request, username, secret):
+    """Tokened unsubscribe link used in email footers (templates/mail/email_base.xhtml).
+    Validates the same secret_token as the autologin links in emails and logs the user
+    in, so no login is required to unsubscribe. GET shows a confirmation button; POST
+    unsubscribes. POST also serves RFC 8058 List-Unsubscribe one-click requests from
+    mail providers, which is why this view is csrf_exempt: the secret token in the URL
+    authorizes the action."""
+    profile = Profile.objects.filter(user__username=username, secret_token=secret).first()
+    if not profile:
+        return HttpResponseForbidden()
+
+    user = profile.user
+    if request.user.pk != user.pk:
+        user.backend = settings.AUTHENTICATION_BACKENDS[0]
+        login_user(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        logging.user(user, "~FG~BB~SKAuto-Login via email unsubscribe link~FW")
+
+    unsubscribed = False
+    if request.method == "POST":
+        profile.send_emails = False
+        profile.save()
+        unsubscribed = True
+        logging.user(user, "~BB~FM~SBUnsubscribed from all NewsBlur emails via email link")
+
+    return {
+        "user": user,
+        "unsubscribed": unsubscribed,
     }
 
 
