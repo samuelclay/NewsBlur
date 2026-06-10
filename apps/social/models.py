@@ -726,6 +726,7 @@ class MSocialProfile(mongo.Document):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user.username, user.email)],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -784,6 +785,7 @@ class MSocialProfile(mongo.Document):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user.username, user.email)],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2615,6 +2617,7 @@ class MSharedStory(mongo.DynamicDocument):
                 text,
                 from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
                 to=["%s <%s>" % (user.username, user.email)],
+                headers=user.profile.email_unsubscribe_headers(),
             )
             msg.attach_alternative(html, "text/html")
             msg.send()
@@ -2692,6 +2695,7 @@ class MSharedStory(mongo.DynamicDocument):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (original_user.username, original_user.email)],
+            headers=original_user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()

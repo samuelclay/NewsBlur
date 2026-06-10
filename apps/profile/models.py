@@ -2782,6 +2782,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2818,6 +2819,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.attach(filename, opml, "text/xml")
@@ -2859,6 +2861,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2887,6 +2890,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2923,6 +2927,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2955,6 +2960,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3110,6 +3116,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3139,6 +3146,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3159,6 +3167,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3179,6 +3188,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3199,6 +3209,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3242,6 +3253,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3286,6 +3298,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3330,6 +3343,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3381,6 +3395,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3416,6 +3431,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3451,6 +3467,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3482,6 +3499,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3537,6 +3555,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3551,6 +3570,24 @@ class Profile(models.Model):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
         )
+
+    def email_optout_url(self):
+        """Tokened two-click unsubscribe link used in email footers. Auto-logs in the
+        user, then unsubscribes on a button press (apps/profile/views.py email_optout_token)."""
+        return reverse(
+            "profile-email-optout-token",
+            kwargs={"username": self.user.username, "secret": self.secret_token},
+        )
+
+    def email_unsubscribe_headers(self):
+        """RFC 8058 one-click unsubscribe headers so mail clients can offer their own
+        unsubscribe button. Providers POST to the tokened unsubscribe URL, which
+        unsubscribes immediately (apps/profile/views.py email_optout_token)."""
+        domain = Site.objects.get_current().domain
+        return {
+            "List-Unsubscribe": "<https://%s%s>" % (domain, self.email_optout_url()),
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        }
 
     @classmethod
     def doublecheck_paypal_payments(cls, days=14):

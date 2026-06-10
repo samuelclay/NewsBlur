@@ -24354,6 +24354,29 @@ h5.NB-classifier-section-header {
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
+.NB-modal-preferences .NB-preferences-unsubscribed {
+    padding: 6px 12px;
+    background-color: #F8E3DC;
+    text-align: center;
+    margin: 12px 0;
+    border-radius: 3px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+/* Long email radio labels wrap beside the radio instead of dropping below it */
+.NB-modal-preferences .NB-preference-emails .NB-preference-options label {
+    float: none;
+    display: block;
+    overflow: hidden;
+}
+
+.NB-modal-preferences .NB-preference-email-settings .NB-preference-email-status {
+    color: #83210A;
+    font-size: 11px;
+    margin-top: 4px;
+    font-weight: bold;
+}
+
 .NB-modal-preferences .NB-preference-story-pane-position input {
     margin-top: 4px;
 }

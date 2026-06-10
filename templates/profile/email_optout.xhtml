@@ -11,16 +11,9 @@
             font-weight: bold;
             color: #A0A0A0;
         }
-        .NB-demo {
-            position: absolute;
-            top: 200px;
-            margin: 0 auto;
-            width: 100%;
-            text-align: center;
-        }
         .NB-thanks {
             position: absolute;
-            top: 230px;
+            top: 200px;
             margin: 0 auto;
             width: 100%;
             text-align: center;
@@ -29,18 +22,39 @@
             margin: 0 0 12px 0;
             text-shadow: 0 1px 0 #FFF;
         }
+        .NB-unsubscribe-button {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #BC1010;
+            border: 1px solid #8A0A0A;
+            border-radius: 4px;
+            padding: 8px 24px;
+            margin: 12px 0 24px;
+            cursor: pointer;
+        }
+        .NB-unsubscribe-button:hover {
+            background-color: #D41616;
+        }
     </style>
-    
+
     <div style="text-align: center;position: relative;">
 
         <div class="NB-thanks">
-            <div style="color: #175700;font-size: 28px">Unsubscribed</div>
-            {% if user.profile.is_active %}
+            {% if unsubscribed %}
+                <div style="color: #175700;font-size: 28px">Unsubscribed</div>
                 <div>You will no longer receive any emails from NewsBlur.</div>
+                <div><a href="{% url "index" %}?next=optout">Changed your mind? Manage your email settings &raquo;</a></div>
+                <div><a href="{% url "index" %}">Continue to NewsBlur &raquo;</a></div>
             {% else %}
-                <div style="max-width: 600px;margin: 24px auto;">You will no longer receive any emails from NewsBlur.</div>
+                <div style="color: #404040;font-size: 28px">Unsubscribe from NewsBlur emails</div>
+                <div>Stop sending all NewsBlur emails to <b>{{ user.email }}</b> for the account <b>{{ user.username }}</b>?</div>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="NB-unsubscribe-button">Unsubscribe</button>
+                </form>
+                <div><a href="{% url "index" %}">No thanks, keep my emails and continue to NewsBlur &raquo;</a></div>
             {% endif %}
-            <div><a href="{% url "index" %}">Continue to NewsBlur &raquo;</a></div>
         </div>
 
     </div>

@@ -267,6 +267,7 @@ def EmailFeedLimitNotifications():
             text,
             from_email=f"NewsBlur <{settings.HELLO_EMAIL}>",
             to=[f"{user.username} <{user.email}>"],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -339,6 +340,7 @@ def EmailReferralCredit(referrer_user_id, referred_username, credit_days, referr
         text,
         from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
         to=["%s <%s>" % (profile.user.username, profile.user.email)],
+        headers=profile.email_unsubscribe_headers(),
     )
     msg.attach_alternative(html, "text/html")
     msg.send()
@@ -384,6 +386,7 @@ def EmailGiftCreated(gifter_user_id, gift_url, gift_tier):
         text,
         from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
         to=["%s <%s>" % (profile.user.username, profile.user.email)],
+        headers=profile.email_unsubscribe_headers(),
     )
     msg.send()
     logging.user(profile.user, "~BB~FM~SBSent gift created email: %s for %s" % (gift_url, tier_name))

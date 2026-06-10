@@ -189,14 +189,15 @@ class EmailNewsletter:
         except MSentEmail.DoesNotExist:
             MSentEmail.objects.create(**params)
 
-        text = render_to_string("mail/email_first_newsletter.txt", {})
-        html = render_to_string("mail/email_first_newsletter.xhtml", {})
+        text = render_to_string("mail/email_first_newsletter.txt", {"user": user})
+        html = render_to_string("mail/email_first_newsletter.xhtml", {"user": user})
         subject = "Your email newsletters are now being sent to NewsBlur"
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()

@@ -35,8 +35,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.handle_change();
         this.open_modal();
         this.original_preferences = this.serialize_preferences();
+        this.fetch_email_status();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+    },
+
+    fetch_email_status: function () {
+        // The page-load preferences can be stale if emails were unsubscribed on
+        // another page (e.g. the email unsubscribe link), so fetch a fresh value.
+        var self = this;
+        this.model.make_request('/profile/get_preference', { 'preference': 'send_emails' }, function (data) {
+            if (!data || _.isUndefined(data.payload) || _.isNull(data.payload)) return;
+            NEWSBLUR.Preferences['send_emails'] = data.payload;
+            $('.NB-preference-email-status', self.$modal).toggle(!data.payload);
+        }, $.noop);
     },
 
     make_modal: function () {
@@ -437,6 +449,16 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Backup your sites',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-email-settings' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('a', { className: 'NB-splash-link NB-link-account-email-settings', href: '#' }, 'Manage email settings'),
+                            $.make('div', { className: 'NB-preference-email-status' }, 'You are unsubscribed from all NewsBlur emails').toggle(!NEWSBLUR.assets.preference('send_emails'))
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Emails',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Found in the Account dialog')
                         ])
                     ])
                 ]),
@@ -1716,6 +1738,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
+    close_and_load_account_emails: function () {
+        this.close(function () {
+            NEWSBLUR.reader.open_account_modal({ 'animate_email': true });
+        });
+    },
+
     close_and_load_feedchooser: function () {
         this.close(function () {
             NEWSBLUR.reader.open_feedchooser_modal();
@@ -1793,6 +1821,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
 
             self.save_preferences();
+        });
+        $.targetIs(e, { tagSelector: '.NB-link-account-email-settings' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.close_and_load_account_emails();
         });
         $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function ($t, $p) {
             e.preventDefault();
