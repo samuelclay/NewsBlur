@@ -1,5 +1,4 @@
 import datetime
-import logging
 import re
 import urllib.error
 import urllib.parse
@@ -9,13 +8,39 @@ import dateutil.parser
 import isodate
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
 
 from apps.reader.models import UserSubscription
 from apps.social.models import MSocialServices
 from utils import json_functions as json
+from utils import log as logging
 from utils.story_functions import linkify
+
+# An uploads playlist id never changes for a username, so cache the channels.list
+# resolution to conserve the shared YouTube API quota. See utils/youtube_fetcher.py.
+UPLOADS_LIST_ID_CACHE_KEY = "youtube_uploads_list_id:%s"
+UPLOADS_LIST_ID_CACHE_TTL = 60 * 60 * 24 * 30  # 30 days
+
+QUOTA_ERROR_REASONS = {
+    "quotaExceeded",
+    "dailyLimitExceeded",
+    "rateLimitExceeded",
+    "userRateLimitExceeded",
+}
+
+UNTITLED_FEED_TITLES = ("", "[Untitled]", "Untitled")
+
+
+class YoutubeApiError(Exception):
+    pass
+
+
+class YoutubeQuotaError(YoutubeApiError):
+    """The shared YouTube Data API quota is exhausted; resets at midnight Pacific."""
+
+    pass
 
 
 class YoutubeFetcher:
@@ -47,7 +72,10 @@ class YoutubeFetcher:
             video_ids, title, description = self.fetch_channel_videos(channel_id, target_page=target_page)
             channel_url = "https://www.youtube.com/channel/%s" % channel_id
         elif list_id:
-            video_ids, title, description = self.fetch_playlist_videos(list_id, target_page=target_page)
+            cached_title, cached_description = self.cached_feed_metadata()
+            video_ids, title, description = self.fetch_playlist_videos(
+                list_id, cached_title, cached_description, target_page=target_page
+            )
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
             video_ids, title, description = self.fetch_user_videos(username, target_page=target_page)
@@ -207,6 +235,46 @@ class YoutubeFetcher:
         except Exception:
             return None
 
+    def check_api_error(self, payload):
+        """Raise YoutubeQuotaError on quota exhaustion; return True for any other API error.
+
+        Quota errors are raised so utils/feed_fetcher.py can record them in fetch
+        history and back off, instead of every quota failure looking like a feed
+        with no new stories.
+        """
+        if not isinstance(payload, dict) or "error" not in payload:
+            return False
+        error = payload["error"] or {}
+        reasons = set()
+        if isinstance(error, dict):
+            for suberror in error.get("errors") or []:
+                if suberror.get("reason"):
+                    reasons.add(suberror["reason"])
+            if error.get("status") == "RESOURCE_EXHAUSTED" or reasons & QUOTA_ERROR_REASONS:
+                raise YoutubeQuotaError(
+                    "YouTube API quota exceeded for %s: %s" % (self.address, error.get("message"))
+                )
+        return True
+
+    def cached_feed_metadata(self):
+        """Reuse the feed's stored title/description to skip API metadata lookups.
+
+        Channel titles and descriptions rarely change, so refetching them on every
+        fetch wastes quota. Returns (None, None) when the feed has no usable title
+        yet (first fetch) or when a forced refresh is requested.
+        """
+        if self.options.get("force"):
+            return None, None
+        title = (self.feed.feed_title or "").strip() if self.feed else ""
+        if title in UNTITLED_FEED_TITLES:
+            return None, None
+        description = None
+        try:
+            description = self.feed.data.feed_tagline
+        except Exception:
+            pass
+        return title, description
+
     def extract_username(self, url):
         if "gdata.youtube.com" in url:
             try:
@@ -277,7 +345,7 @@ class YoutubeFetcher:
                 % (",".join(chunk), settings.YOUTUBE_API_KEY)
             )
             videos = json.decode(videos_json.content)
-            if "error" in videos:
+            if self.check_api_error(videos):
                 logging.debug(
                     " ***> ~FRYoutube returned an error for chunk %d-%d: ~FM~SB%s" % (i, i + 50, videos)
                 )
@@ -300,11 +368,20 @@ class YoutubeFetcher:
 
     def fetch_channel_videos(self, channel_id, target_page=1):
         logging.debug(" ***> ~FBFetching YouTube channel: ~SB%s" % channel_id)
+        title, description = self.cached_feed_metadata()
+        if title and channel_id.startswith("UC"):
+            # A channel's uploads playlist id is always its channel id with a UU
+            # prefix, so a usable stored title lets us skip the channels.list call
+            # and its quota cost entirely. See utils/youtube_fetcher.py.
+            uploads_list_id = "UU" + channel_id[2:]
+            return self.fetch_playlist_videos(uploads_list_id, title, description, target_page=target_page)
+
         channel_json = requests.get(
             "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&id=%s&key=%s"
             % (channel_id, settings.YOUTUBE_API_KEY)
         )
         channel = json.decode(channel_json.content)
+        self.check_api_error(channel)
         try:
             title = channel["items"][0]["snippet"]["title"]
             description = channel["items"][0]["snippet"]["description"]
@@ -324,6 +401,7 @@ class YoutubeFetcher:
                 % (list_id, settings.YOUTUBE_API_KEY)
             )
             playlist = json.decode(playlist_json.content)
+            self.check_api_error(playlist)
             try:
                 title = playlist["items"][0]["snippet"]["title"]
                 description = playlist["items"][0]["snippet"]["description"]
@@ -349,7 +427,7 @@ class YoutubeFetcher:
             playlist_json = requests.get(url)
             playlist = json.decode(playlist_json.content)
 
-            if "error" in playlist:
+            if self.check_api_error(playlist):
                 logging.debug("   ---> [Playlist] Error fetching videos: %s" % playlist["error"])
                 return None, None, None
 
@@ -388,11 +466,26 @@ class YoutubeFetcher:
 
     def fetch_user_videos(self, username, username_key="forUsername", target_page=1):
         logging.debug(" ***> ~FBFetching YouTube user: ~SB%s" % username)
+        cache_key = UPLOADS_LIST_ID_CACHE_KEY % username
+        cached_title, cached_description = self.cached_feed_metadata()
+        if cached_title and username_key == "forUsername":
+            uploads_list_id = cache.get(cache_key)
+            if uploads_list_id:
+                video_ids, title, description = self.fetch_playlist_videos(
+                    uploads_list_id, cached_title, cached_description, target_page=target_page
+                )
+                if video_ids:
+                    return video_ids, title, description
+                # The cached uploads playlist went stale (channel deleted or
+                # recreated), so re-resolve it below. See utils/youtube_fetcher.py.
+                cache.delete(cache_key)
+
         channel_json = requests.get(
             "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&%s=%s&key=%s"
             % (username_key, username, settings.YOUTUBE_API_KEY)
         )
         channel = json.decode(channel_json.content)
+        self.check_api_error(channel)
         try:
             title = channel["items"][0]["snippet"]["title"]
             description = channel["items"][0]["snippet"]["description"]
@@ -405,6 +498,7 @@ class YoutubeFetcher:
                 return self.fetch_user_videos(username, username_key="forHandle", target_page=target_page)
             return None, None, None
 
+        cache.set(cache_key, uploads_list_id, UPLOADS_LIST_ID_CACHE_TTL)
         return self.fetch_playlist_videos(uploads_list_id, title, description, target_page=target_page)
 
     def get_next_page_token(self, channel_id=None, list_id=None, username=None, page_token=None):
