@@ -78,6 +78,14 @@ NAV_INDICATORS = [
 ]
 
 
+def get_webfeed_briefing_model():
+    """Resolve the configured briefing model key and metadata for webfeed analysis."""
+    from apps.ask_ai.providers import BRIEFING_MODELS
+
+    model_name = getattr(settings, "WEBFEED_MODEL", "haiku")
+    return model_name, BRIEFING_MODELS[model_name]
+
+
 def strip_navigation_elements(html_text, gentle=False):
     """Remove navigation, header, footer, and other non-content elements
     to help the LLM focus on main content patterns.
@@ -342,9 +350,17 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         html_hash = hashlib.sha256(page_html[:10000].encode("utf-8", errors="replace")).hexdigest()[:16]
 
+        # Step 2: Call configured briefing model for XPath analysis
+        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
+
+        model_name, model_config = get_webfeed_briefing_model()
+        model_display = model_config.get("display_name", model_name)
+        vendor = model_config.get("vendor", "unknown")
+        vendor_display = model_config.get("vendor_display", vendor.title())
+
         logging.user(
             user,
-            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
+            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with ~SB{model_display}~SN",
         )
 
         publish_event("progress", {"message": "Preparing page..."})
@@ -360,14 +376,11 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event("progress", {"message": "Finding story patterns..."})
 
-        # Step 2: Call Claude for XPath analysis
-        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
-
         messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint)
-        provider, model_id = get_briefing_provider("haiku")
+        provider, model_id = get_briefing_provider(model_name)
 
         if not provider.is_configured():
-            error_msg = "Anthropic API key not configured"
+            error_msg = f"{vendor_display} API key not configured"
             publish_event("error", {"error": error_msg})
             return {"code": -1, "message": error_msg}
 
@@ -380,7 +393,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         # Record LLM cost
         input_tokens, output_tokens = provider.get_last_usage()
         LLMCostTracker.record_usage(
-            provider="anthropic",
+            provider=vendor,
             model=model_id,
             feature="webfeed",
             input_tokens=input_tokens,
