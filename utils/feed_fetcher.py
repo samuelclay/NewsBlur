@@ -71,15 +71,10 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.story_functions import (
-    extract_story_date,
-    linkify,
-    pre_process_story,
-    strip_tags,
-)
+from utils.story_functions import extract_story_date, linkify, pre_process_story, strip_tags
 from utils.twitter_fetcher import TwitterFetcher
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
-from utils.youtube_fetcher import YoutubeFetcher
+from utils.youtube_fetcher import YoutubeFetcher, YoutubeQuotaError
 
 
 def preprocess_feed_encoding(raw_xml):
@@ -273,11 +268,24 @@ class FetchFeed:
             return FEED_ERRHTTP, None
 
         if is_youtube_feed_address(address):
-            youtube_feed = self.fetch_youtube()
+            try:
+                youtube_feed = self.fetch_youtube()
+            except YoutubeQuotaError as e:
+                # Record the quota failure so the feed backs off and the stall is
+                # visible in fetch history instead of silently showing no stories.
+                # The shared quota resets at midnight Pacific. utils/feed_fetcher.py
+                logging.debug(
+                    "   ***> [%-30s] ~FRYouTube API quota exceeded: %s" % (self.feed.log_title[:30], e)
+                )
+                self.feed.save_feed_history(429, "YouTube API quota exceeded")
+                self.feed = self.feed.save()
+                return FEED_ERRHTTP, None
             if not youtube_feed:
                 logging.debug(
                     "   ***> [%-30s] ~FRYouTube fetch failed: %s." % (self.feed.log_title[:30], address)
                 )
+                self.feed.save_feed_history(404, "YouTube fetch failed")
+                self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             # Apply encoding preprocessing to special feed content
             processed_youtube_feed = preprocess_feed_encoding(youtube_feed)
@@ -662,8 +670,7 @@ class FetchFeed:
             validate_public_url(self.feed.feed_address)
         except UnsafeUrlError as e:
             logging.debug(
-                "   ***> [%-30s] ~FRScrapingBee target URL rejected: %s"
-                % (self.feed.log_title[:30], e)
+                "   ***> [%-30s] ~FRScrapingBee target URL rejected: %s" % (self.feed.log_title[:30], e)
             )
             return None, None
         params = {
@@ -744,8 +751,7 @@ class FetchFeed:
             validate_public_url(self.feed.feed_address)
         except UnsafeUrlError as e:
             logging.debug(
-                "   ***> [%-30s] ~FRScrapeNinja target URL rejected: %s"
-                % (self.feed.log_title[:30], e)
+                "   ***> [%-30s] ~FRScrapeNinja target URL rejected: %s" % (self.feed.log_title[:30], e)
             )
             return None, None
 
