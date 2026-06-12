@@ -98,6 +98,8 @@ public class AppConstants {
     public static final String ALL_STORIES_GROUP_KEY = "ALL_STORIES_GROUP_KEY";
     public static final String DAILY_BRIEFING_GROUP_KEY = "DAILY_BRIEFING_GROUP_KEY";
     public static final String INFREQUENT_SITE_STORIES_GROUP_KEY = "INFREQUENT_SITE_STORIES_GROUP_KEY";
+    public static final String WIDELY_READ_STORIES_GROUP_KEY = "WIDELY_READ_STORIES_GROUP_KEY";
+    public static final String LONG_READS_GROUP_KEY = "LONG_READS_GROUP_KEY";
     public static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
     public static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
     public static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";

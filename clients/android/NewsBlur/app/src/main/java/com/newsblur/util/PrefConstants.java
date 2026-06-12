@@ -52,6 +52,8 @@ public class PrefConstants {
     public static final String ALL_SHARED_STORIES_FOLDER_NAME = "all_shared_stories";
     public static final String GLOBAL_SHARED_STORIES_FOLDER_NAME = "global_shared_stories";
     public static final String INFREQUENT_FOLDER_NAME = "infrequent_stories";
+    public static final String WIDELY_READ_STORIES_FOLDER_NAME = "widely_read_stories";
+    public static final String LONG_READS_FOLDER_NAME = "long_reads";
 
     public static final String DEFAULT_STORY_ORDER = "default_story_order";
     public static final String DEFAULT_READ_FILTER = "default_read_filter";
@@ -97,6 +99,8 @@ public class PrefConstants {
     public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
     public static final String ENABLE_ROW_DAILY_BRIEFING = "enable_row_daily_briefing";
+    public static final String ENABLE_ROW_WIDELY_READ_STORIES = "enable_row_widely_read_stories";
+    public static final String ENABLE_ROW_LONG_READS = "enable_row_long_reads";
 
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";

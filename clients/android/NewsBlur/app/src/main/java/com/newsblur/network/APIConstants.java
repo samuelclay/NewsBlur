@@ -38,6 +38,7 @@ public class APIConstants {
 	public static final String PATH_USER_ACTIVITIES = "/social/activities";
 	public static final String PATH_USER_INTERACTIONS = "/social/interactions";
 	public static final String PATH_RIVER_STORIES = "/reader/river_stories";
+    public static final String PATH_TRENDING_STORIES = "/reader/trending_stories";
 	public static final String PATH_SHARED_RIVER_STORIES = "/social/river_stories";
 	public static final String PATH_FEED_STORIES = "/reader/feed";
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
@@ -147,6 +148,7 @@ public class APIConstants {
 	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
+    public static final String PARAMETER_TRENDING_TYPE = "trending_type";
     public static final String PARAMETER_FEEDTITLE = "feed_title";
     public static final String PARAMETER_FOLDER_TO_DELETE = "folder_to_delete";
     public static final String PARAMETER_FOLDER_TO_RENAME = "folder_to_rename";

@@ -46,12 +46,14 @@ import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.LongReadsItemsList;
 import com.newsblur.activity.Main;
 import com.newsblur.activity.MuteConfig;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
+import com.newsblur.activity.WidelyReadStoriesItemsList;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.databinding.FragmentFolderfeedlistBinding;
@@ -654,6 +656,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), AllSharedStoriesItemsList.class);
         } else if (adapter.isRowInfrequentStories(groupPosition)) {
             i = new Intent(getActivity(), InfrequentItemsList.class);
+        } else if (adapter.isRowWidelyReadStories(groupPosition)) {
+            i = new Intent(getActivity(), WidelyReadStoriesItemsList.class);
+        } else if (adapter.isRowLongReads(groupPosition)) {
+            i = new Intent(getActivity(), LongReadsItemsList.class);
         } else if (adapter.isRowReadStories(groupPosition)) {
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
         } else if (adapter.isRowSavedStories(groupPosition)) {
@@ -779,6 +785,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             // infrequent stories
             intent = new Intent(getActivity(), InfrequentItemsList.class);
             fs = FeedSet.infrequentFeeds();
+        } else if (feedId.equals("trending:well_read")) {
+            intent = new Intent(getActivity(), WidelyReadStoriesItemsList.class);
+            fs = FeedSet.widelyReadStories();
+        } else if (feedId.equals("trending:long_reads")) {
+            intent = new Intent(getActivity(), LongReadsItemsList.class);
+            fs = FeedSet.longReads();
         } else if (feedId.startsWith("river:")) {
             intent = new Intent(getActivity(), FolderItemsList.class);
             String folderName = feedId.replace("river:", "");

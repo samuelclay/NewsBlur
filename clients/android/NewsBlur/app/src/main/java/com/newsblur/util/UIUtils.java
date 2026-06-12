@@ -274,6 +274,10 @@ public class UIUtils {
             activityClass = ReadStoriesReading.class;
         } else if (fs.isInfrequent()) {
             activityClass = InfrequentReading.class;
+        } else if (fs.isWidelyReadStories()) {
+            activityClass = WidelyReadStoriesReading.class;
+        } else if (fs.isLongReads()) {
+            activityClass = LongReadsReading.class;
         } else if (fs.isDailyBriefing()) {
             activityClass = DailyBriefingReading.class;
         } else {
@@ -603,6 +607,7 @@ public class UIUtils {
 
         if ( fs.isAllRead() ||
              fs.isInfrequent() ||
+             fs.isTrending() ||
              fs.isAllSocial() ||
              fs.isGlobalShared() ||
              fs.isAllSaved() ) {

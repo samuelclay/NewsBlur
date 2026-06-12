@@ -58,7 +58,7 @@ class FeedUtils(
                 try {
                     if (resetFirst) syncServiceState.resetReadingSession(dbHelper)
                     fs?.let { feedSet ->
-                        if (feedSet.isDailyBriefing) {
+                        if (feedSet.isDailyBriefing || feedSet.isTrending) {
                             return@let
                         }
                         synchronized(syncServiceState.pendingFeedMutex) {

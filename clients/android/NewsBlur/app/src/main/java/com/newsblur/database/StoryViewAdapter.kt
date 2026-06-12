@@ -156,6 +156,11 @@ class StoryViewAdapter(
             ignoreIntel = false
             singleFeed = false
         }
+        if (fs.isTrending) {
+            ignoreReadStatus = false
+            ignoreIntel = false
+            singleFeed = false
+        }
         if (fs.isSingleSocial) {
             ignoreReadStatus = false
             ignoreIntel = false

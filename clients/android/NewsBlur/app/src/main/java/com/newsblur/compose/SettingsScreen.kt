@@ -131,6 +131,8 @@ data class SettingsUiState(
     val enableRowGlobalShared: Boolean = true,
     val enableRowInfrequentStories: Boolean = true,
     val enableRowDailyBriefing: Boolean = true,
+    val enableRowWidelyReadStories: Boolean = true,
+    val enableRowLongReads: Boolean = true,
     val defaultStoryOrder: String = StoryOrder.NEWEST.name,
     val defaultReadFilter: String = ReadFilter.ALL.name,
     val markAllReadConfirmation: String = MarkAllReadConfirmation.FOLDER_ONLY.name,
@@ -181,6 +183,8 @@ fun buildSettingsUiState(
         enableRowGlobalShared = prefsRepo.isEnableRowGlobalShared(),
         enableRowInfrequentStories = prefsRepo.isEnableRowInfrequent(),
         enableRowDailyBriefing = prefsRepo.isEnableRowDailyBriefing(),
+        enableRowWidelyReadStories = prefsRepo.isEnableRowWidelyReadStories(),
+        enableRowLongReads = prefsRepo.isEnableRowLongReads(),
         defaultStoryOrder = prefsRepo.getDefaultStoryOrder().name,
         defaultReadFilter =
             sharedPreferences.getString(
@@ -666,6 +670,26 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.settings_enable_row_daily_briefing_sum),
                 palette = palette,
                 onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_DAILY_BRIEFING, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_enable_row_widely_read_stories),
+                icon = Icons.Rounded.AutoAwesome,
+                iconColor = NewsblurOrange,
+                checked = state.enableRowWidelyReadStories,
+                subtitle = stringResource(R.string.settings_enable_row_widely_read_stories_sum),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_WIDELY_READ_STORIES, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_enable_row_long_reads),
+                icon = Icons.Rounded.DarkMode,
+                iconColor = NewsblurPurple,
+                checked = state.enableRowLongReads,
+                subtitle = stringResource(R.string.settings_enable_row_long_reads_sum),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_LONG_READS, it) },
             )
         }
 
