@@ -43,12 +43,7 @@ from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_s
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
 
-from apps.rss_feeds.tasks import (
-    IndexDiscoverStories,
-    PushFeeds,
-    ScheduleCountTagsForUser,
-    UpdateFeeds,
-)
+from apps.rss_feeds.tasks import IndexDiscoverStories, PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
@@ -2939,6 +2934,33 @@ class Feed(models.Model):
         #     print 'New/updated story: %s' % (story),
         return story_in_system, story_has_changed
 
+    def has_solo_mega_subscriber(self):
+        """True when this feed's single active subscriber carries more feeds than the
+        Premium limit.
+
+        A mega subscriber (a Pro/Archive user with thousands of feeds) shouldn't put
+        feeds only they read on the fastest fetch schedule: one Pro user importing
+        thousands of YouTube channels can burn the shared YouTube API quota for everyone.
+        Feeds with 2+ active subscribers are never penalized. See
+        apps/rss_feeds/models.py get_next_scheduled_update.
+        """
+        from apps.profile.models import Profile
+        from apps.reader.models import UserSubscription
+
+        if self.active_subscribers != 1:
+            return False
+
+        user_ids = list(
+            UserSubscription.objects.filter(feed=self, active=True).values_list("user_id", flat=True)[:2]
+        )
+        if len(user_ids) != 1:
+            return False
+
+        # Count only active subscriptions, matching how the Premium feed limit is
+        # enforced: muted/inactive rows don't count against a user's limit
+        subscription_count = UserSubscription.objects.filter(user_id=user_ids[0], active=True).count()
+        return subscription_count > Profile.PREMIUM_FEED_LIMIT
+
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
             if verbose:
@@ -3114,6 +3136,18 @@ class Feed(models.Model):
                         "Pro boost: %s min -> %s min (%s min max for %s pro subs)"
                         % (before_pro, total, settings.PRO_MINUTES_BETWEEN_FETCHES, self.pro_subscribers)
                     )
+
+        # YouTube feeds whose single subscriber is a mega subscriber (more feeds
+        # than the Premium limit) get 4 fetches/day max, overriding the Pro boost:
+        # bulk YouTube imports would otherwise burn the shared YouTube API quota
+        # for everyone. Feeds with 2+ subscribers are never penalized.
+        if total < 60 * 6 and is_youtube_feed_address(self.feed_address) and self.has_solo_mega_subscriber():
+            before_mega = total
+            total = 60 * 6
+            adjustments.append(
+                "Solo mega subscriber YouTube floor: %s min -> %s min (4 fetches/day max)"
+                % (before_mega, total)
+            )
 
         # Forbidden feeds get a min of 6 hours
         if self.is_forbidden:
