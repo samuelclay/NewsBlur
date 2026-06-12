@@ -503,6 +503,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (NSString *)searchFolderForFeedId:(NSString *)feedId;
 - (NSSet<NSString *> *)subscribedFeedIdsForStoryClusters;
 - (BOOL)isSubscribedFeedIdForStoryClusters:(NSString *)feedId;
+- (NSDictionary *)feedMetadataForStory:(NSDictionary *)story preferActiveFeeds:(BOOL)preferActiveFeeds;
 - (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;

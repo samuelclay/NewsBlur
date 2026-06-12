@@ -912,7 +912,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     BOOL markReadEnabled = !(self.isDashboard ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
-        storiesCollection.isReadView);
+        storiesCollection.isReadView ||
+        storiesCollection.isTrending);
     feedMarkReadButton.enabled = markReadEnabled;
     [self.storyTitlesHeaderBar updateMarkReadEnabled:markReadEnabled];
 
@@ -2034,6 +2035,13 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                             @"%@/reader/read_stories/?page=%d&v=2",
                             self.appDelegate.url,
                             storiesCollection.feedPage];
+    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
+        NSString *trendingType = [storiesCollection.activeFolder stringByReplacingOccurrencesOfString:@"trending:" withString:@""];
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/trending_stories/?trending_type=%@&page=%d",
+                            self.appDelegate.url,
+                            trendingType,
+                            storiesCollection.feedPage];
     } else {
         NSString *feeds = @"";
         if (storiesCollection.activeFolderFeeds.count) {
@@ -2122,16 +2130,16 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         && ![receivedFeedId isEqualToString:sentFeedId]) {
         return;
     }
-    if (storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView ||
-        storiesCollection.isSavedView ||
-        storiesCollection.isWidgetView ||
-        storiesCollection.isReadView) {
-        NSArray *newFeeds = [results objectForKey:@"feeds"];
+    NSArray *newFeeds = [results objectForKey:@"feeds"];
+    if ([newFeeds isKindOfClass:[NSArray class]] && newFeeds.count) {
         for (int i = 0; i < newFeeds.count; i++){
-            NSString *feedKey = [NSString stringWithFormat:@"%@", [[newFeeds objectAtIndex:i] objectForKey:@"id"]];
-            [appDelegate.dictActiveFeeds setObject:[newFeeds objectAtIndex:i]
-                                            forKey:feedKey];
+            NSDictionary *feed = [newFeeds objectAtIndex:i];
+            if (![feed isKindOfClass:[NSDictionary class]]) continue;
+
+            NSString *feedKey = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+            if (feedKey.length) {
+                [appDelegate.dictActiveFeeds setObject:feed forKey:feedKey];
+            }
         }
         [self loadFaviconsFromActiveFeed];
     }
@@ -2142,7 +2150,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         storiesCollection.isReadView ||
         storiesCollection.isWidgetView ||
         storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
+        storiesCollection.isSocialRiverView ||
+        storiesCollection.isTrending) {
         for (id key in [newClassifiers allKeys]) {
             [storiesCollection.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
@@ -3212,16 +3221,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
-    if (storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
-        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
-        // this is to catch when a user is already subscribed
-        if (!feed) {
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-    }
+    BOOL preferActiveFeeds = storiesCollection.isSocialView || storiesCollection.isSocialRiverView;
+    feed = [appDelegate feedMetadataForStory:story preferActiveFeeds:preferActiveFeeds];
     
     NSString *siteTitle = [feed objectForKey:@"feed_title"];
     cell.siteTitle = siteTitle; 
@@ -3380,6 +3381,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 feedTitle = @"All Shared Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 feedTitle = @"Global Shared Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
+                feedTitle = @"Widely Read Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
+                feedTitle = @"Long Reads";
             } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
                 feedTitle = @"NewsBlur Dashboard";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
@@ -4745,7 +4750,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     BOOL dashboard = self.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
-    BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
+    BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL social = appDelegate.storiesCollection.isSocialRiverView;
@@ -4897,7 +4902,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self updateStoryTitlesHeaderPillState];
         }];
 
-        BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
+        BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
         BOOL river = [self isRiver];
 
         if (!dashboard || infrequent || !river) {
@@ -5077,7 +5082,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL isSaved = storiesCollection.isSavedView;
     BOOL isRead = storiesCollection.isReadView;
     BOOL isWidget = storiesCollection.isWidgetView;
-    BOOL isInfrequent = storiesCollection.isInfrequent;
+    BOOL isInfrequent = storiesCollection.isInfrequent || storiesCollection.isTrending;
     [self.storyTitlesHeaderBar updateDiscoverVisibilityWithIsRiver:storiesCollection.isRiverView isEverything:isEverything isSocial:isSocial isSaved:isSaved isRead:isRead isWidget:isWidget isInfrequent:isInfrequent];
     if (storiesCollection.isDailyBriefing) {
         self.storyTitlesHeaderBar.discoverPill.hidden = NO;
@@ -5087,6 +5092,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *collectionTitle;
     if (storiesCollection.isDailyBriefing) {
         collectionTitle = @"daily briefing";
+    } else if (storiesCollection.isTrending) {
+        collectionTitle = @"this list";
     } else if (storiesCollection.isRiverView) {
         collectionTitle = [storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder";
     } else {
@@ -5184,6 +5191,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return [NSString stringWithFormat:@"feed:%@", [storiesCollection.activeFeed objectForKey:@"id"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
         return @"river:";
+    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
+        return storiesCollection.activeFolder;
     } else {
         return [NSString stringWithFormat:@"river:%@", storiesCollection.activeFolder];
     }
@@ -5829,7 +5838,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (BOOL)canPullToRefresh {
     BOOL river = appDelegate.storiesCollection.isRiverView;
-    BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
+    BOOL infrequent = appDelegate.storiesCollection.isInfrequent || appDelegate.storiesCollection.isTrending;
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;

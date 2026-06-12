@@ -2573,6 +2573,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                           @"saved_stories",
                                           @"river_global",
                                           @"river_blurblogs",
+                                          @"trending:well_read",
+                                          @"trending:long_reads",
                                           @"widget_stories",
                                           nil];
 
@@ -2600,6 +2602,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
     if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
+    } else if ([folderTitle hasPrefix:@"trending:"]) {
+        return @[];
     } else if ([folderTitle isEqualToString:@"daily_briefing"]) {
         return @[];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
@@ -2719,6 +2723,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;
         [feedDetailView.storiesCollection setActiveFolder:@"river_global"];
+    } else if ([folder hasPrefix:@"trending:"]) {
+        feedDetailView.storiesCollection.isRiverView = YES;
+        [feedDetailView.storiesCollection setActiveFolder:folder];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;
@@ -3318,6 +3325,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
+    } else if ([folder isEqualToString:@"trending:well_read"]) {
+        activity.title = @"Read Widely Read Stories";
+    } else if ([folder isEqualToString:@"trending:long_reads"]) {
+        activity.title = @"Read Long Reads";
     } else if ([folder isEqualToString:@"dashboard"]) {
         activity.title = @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
@@ -3509,6 +3520,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
+    } else if ([folderName hasPrefix:@"trending:"] ||
+               (!folderName && [storiesCollection.activeFolder hasPrefix:@"trending:"])) {
+        total = 0;
     } else if ([folderName isEqual:@"dashboard"] ||
                [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
@@ -3578,6 +3592,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
+    } else if ([folderName hasPrefix:@"trending:"] ||
+               (!folderName && [storiesCollection.activeFolder hasPrefix:@"trending:"])) {
+        // Nothing for trending
     } else if ([folderName isEqual:@"dashboard"] ||
                [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
@@ -4354,6 +4371,42 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return [feed isKindOfClass:[NSDictionary class]] && ![feed[@"temp"] boolValue];
 }
 
+- (NSDictionary *)feedMetadataForStory:(NSDictionary *)story preferActiveFeeds:(BOOL)preferActiveFeeds {
+    if (![story isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    id feedId = story[@"story_feed_id"];
+    NSString *feedIdStr = [self feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", feedId ?: @""]];
+    if (!feedIdStr.length) {
+        return nil;
+    }
+
+    NSDictionary *activeFeed = [self.dictActiveFeeds[feedIdStr] isKindOfClass:[NSDictionary class]] ?
+        self.dictActiveFeeds[feedIdStr] : nil;
+    NSDictionary *subscribedFeed = [self.dictFeeds[feedIdStr] isKindOfClass:[NSDictionary class]] ?
+        self.dictFeeds[feedIdStr] : nil;
+
+    if (preferActiveFeeds) {
+        if (activeFeed) return activeFeed;
+        if (subscribedFeed) return subscribedFeed;
+    } else {
+        if (subscribedFeed) return subscribedFeed;
+        if (activeFeed) return activeFeed;
+    }
+
+    NSMutableDictionary *storyFeed = [@{@"id": feedIdStr} mutableCopy];
+    NSArray *keys = @[@"feed_title", @"favicon_fade", @"favicon_color", @"favicon_border", @"favicon_text_color", @"favicon_url", @"favicon"];
+    for (NSString *key in keys) {
+        id value = story[key];
+        if (value && value != [NSNull null]) {
+            storyFeed[key] = value;
+        }
+    }
+
+    return storyFeed[@"feed_title"] ? storyFeed : nil;
+}
+
 - (NSDictionary *)getFeedWithId:(id)feedId {
      NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     
@@ -4543,6 +4596,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Widely Read Stories"];
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Long Reads"];
+    } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
         titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
     } else if (storiesCollection.isRiverView &&
@@ -4597,6 +4656,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (storiesCollection.isSocialRiverView &&
             [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
+            titleImage = [UIImage imageNamed:@"trending-well-read"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
+            titleImage = [UIImage imageNamed:@"trending-long-reads"];
         } else if (storiesCollection.isSocialRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"all-shares"];
@@ -4654,6 +4719,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return @"All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
+    } else if ([folder isEqualToString:@"trending:well_read"]) {
+        return @"Widely Read Stories";
+    } else if ([folder isEqualToString:@"trending:long_reads"]) {
+        return @"Long Reads";
     } else if ([folder isEqualToString:@"dashboard"]) {
         return @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
@@ -4678,6 +4747,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (UIImage *)folderIcon:(NSString *)folder {
     if ([folder isEqualToString:@"river_global"]) {
         return [UIImage imageNamed:@"global-shares"];
+    } else if ([folder isEqualToString:@"trending:well_read"]) {
+        return [UIImage imageNamed:@"trending-well-read"];
+    } else if ([folder isEqualToString:@"trending:long_reads"]) {
+        return [UIImage imageNamed:@"trending-long-reads"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         return [UIImage imageNamed:@"all-shares"];
     } else if ([folder isEqualToString:@"dashboard"]) {

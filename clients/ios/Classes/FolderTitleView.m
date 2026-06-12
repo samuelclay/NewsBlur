@@ -153,6 +153,10 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         folderTitle = @"Read Stories";
     } else if ([folderName isEqual:@"river_global"]) {
         folderTitle = @"Global Shared Stories";
+    } else if ([folderName isEqual:@"trending:well_read"]) {
+        folderTitle = @"Widely Read Stories";
+    } else if ([folderName isEqual:@"trending:long_reads"]) {
+        folderTitle = @"Long Reads";
     } else if ([folderName isEqual:@"river_blurblogs"]) {
         folderTitle = @"All Shared Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
@@ -240,7 +244,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
             }
             [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"daily_briefing"] && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"daily_briefing"] && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName hasPrefix:@"trending:"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -306,6 +310,20 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         allowLongPress = NO;
     } else if ([folderName isEqual:@"river_global"]) {
         folderImage = [UIImage imageNamed:@"global-shares"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if ([folderName isEqual:@"trending:well_read"]) {
+        folderImage = [UIImage imageNamed:@"trending-well-read"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if ([folderName isEqual:@"trending:long_reads"]) {
+        folderImage = [UIImage imageNamed:@"trending-long-reads"];
         if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {

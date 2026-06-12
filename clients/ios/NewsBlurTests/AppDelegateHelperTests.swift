@@ -128,6 +128,43 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(appDelegate.url, defaultURL)
     }
 
+    func test_feedMetadataForStoryFallsBackToActiveFeedsForSupplementalStoryFeeds() {
+        let appDelegate = NewsBlurAppDelegate()
+        appDelegate.dictFeeds = NSMutableDictionary()
+        appDelegate.dictActiveFeeds = NSMutableDictionary(dictionary: [
+            "42": [
+                "id": "42",
+                "feed_title": "Unsubscribed Source",
+                "favicon_fade": "707070",
+                "favicon_color": "505050",
+            ],
+        ])
+
+        let feed = appDelegate.feedMetadata(forStory: ["story_feed_id": "42"], preferActiveFeeds: false)
+
+        XCTAssertEqual(feed?["feed_title"] as? String, "Unsubscribed Source")
+    }
+
+    func test_feedMetadataForStoryPrefersSubscribedFeedForNormalRiverRows() {
+        let appDelegate = NewsBlurAppDelegate()
+        appDelegate.dictFeeds = NSMutableDictionary(dictionary: [
+            "42": [
+                "id": "42",
+                "feed_title": "Subscribed Source",
+            ],
+        ])
+        appDelegate.dictActiveFeeds = NSMutableDictionary(dictionary: [
+            "42": [
+                "id": "42",
+                "feed_title": "Supplemental Source",
+            ],
+        ])
+
+        let feed = appDelegate.feedMetadata(forStory: ["story_feed_id": "42"], preferActiveFeeds: false)
+
+        XCTAssertEqual(feed?["feed_title"] as? String, "Subscribed Source")
+    }
+
     func test_setCustomDomainForTesting_doesNotPersistFakeDomainIntoUserDefaults() {
         defaults.removeObject(forKey: "custom_domain")
 

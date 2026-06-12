@@ -349,6 +349,8 @@ private enum ReaderUITestFixtures {
         defaults.set("title", forKey: "feed_list_sort_order")
         defaults.set(false, forKey: "show_infrequent_site_stories")
         defaults.set(false, forKey: "show_global_shared_stories")
+        defaults.set(false, forKey: "show_widely_read_stories")
+        defaults.set(false, forKey: "show_long_reads")
         defaults.set(true, forKey: "story_clustering")
         defaults.set("related", forKey: "cluster_mode")
 
