@@ -443,6 +443,10 @@ class PrefsRepo(
 
     fun isEnableRowDailyBriefing() = prefs.getBoolean(PrefConstants.ENABLE_ROW_DAILY_BRIEFING, true)
 
+    fun isEnableRowWidelyReadStories() = prefs.getBoolean(PrefConstants.ENABLE_ROW_WIDELY_READ_STORIES, true)
+
+    fun isEnableRowLongReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_LONG_READS, true)
+
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
 
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
@@ -502,6 +506,8 @@ class PrefsRepo(
             return StoryOrder.NEWEST
         } else if (fs.isInfrequent) {
             return getStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getStoryOrderForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
@@ -531,6 +537,8 @@ class PrefsRepo(
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSavedTag != null) {
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
+        } else if (fs.isTrending) {
+            setStoryOrderForFolder(fs.trendingPreferenceName, newOrder)
         } else if (!fs.isGlobalShared) {
             throw IllegalArgumentException("GlobalShared FeedSet type has fixed ordering")
         } else if (fs.isInfrequent) {
@@ -568,6 +576,8 @@ class PrefsRepo(
             return getReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getReadFilterForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         }
@@ -600,6 +610,8 @@ class PrefsRepo(
             setReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.isInfrequent) {
             setReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
+        } else if (fs.isTrending) {
+            setReadFilterForFolder(fs.trendingPreferenceName, newFilter)
         } else if (fs.isDailyBriefing) {
             setReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
         } else {
@@ -630,6 +642,8 @@ class PrefsRepo(
             return getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getStoryListStyleForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
@@ -663,6 +677,8 @@ class PrefsRepo(
             setStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isInfrequent) {
             setStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle)
+        } else if (fs.isTrending) {
+            setStoryListStyleForFolder(fs.trendingPreferenceName, newListStyle)
         } else if (fs.isDailyBriefing) {
             setStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
         } else {

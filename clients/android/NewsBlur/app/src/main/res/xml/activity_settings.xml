@@ -61,6 +61,14 @@
             android:defaultValue="true"
             android:key="enable_row_daily_briefing"
             android:title="@string/settings_enable_row_daily_briefing" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_widely_read_stories"
+            android:title="@string/settings_enable_row_widely_read_stories" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_long_reads"
+            android:title="@string/settings_enable_row_long_reads" />
     </PreferenceCategory>
 
     <PreferenceCategory 

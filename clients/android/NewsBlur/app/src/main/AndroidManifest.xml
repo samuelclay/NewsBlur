@@ -709,6 +709,14 @@
             android:theme="@style/Theme.Translucent" />
 
         <activity
+            android:name=".activity.WidelyReadStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.LongReadsItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
             android:name=".activity.ReadStoriesItemsList"
             android:theme="@style/Theme.Translucent" />
 
@@ -749,6 +757,16 @@
 
         <activity
             android:name=".activity.InfrequentReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.WidelyReadStoriesReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.LongReadsReading"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 

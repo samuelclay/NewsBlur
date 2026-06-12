@@ -1599,6 +1599,7 @@ abstract class Reading :
                 feedSet.isAllRead -> "read"
                 feedSet.isGlobalShared -> "global-shared"
                 feedSet.isInfrequent -> "infrequent"
+                feedSet.isTrending -> "trending:${feedSet.trendingType}"
                 feedSet.isDailyBriefing -> "daily-briefing"
                 else -> feedSet.toCompactSerial().take(80)
             }
