@@ -446,6 +446,12 @@
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
+                titleImage = [UIImage imageNamed:@"trending-well-read"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
+                titleImage = [UIImage imageNamed:@"trending-long-reads"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
                 titleImage = [UIImage imageNamed:@"briefing"];
             } else if (appDelegate.storiesCollection.isSavedView &&
@@ -967,6 +973,14 @@
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             titleText = @"Infrequent Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
+            titleImage = [UIImage imageNamed:@"trending-well-read"];
+            titleText = @"Widely Read Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
+            titleImage = [UIImage imageNamed:@"trending-long-reads"];
+            titleText = @"Long Reads";
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
             titleImage = [UIImage imageNamed:@"briefing"];

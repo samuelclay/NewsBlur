@@ -61,6 +61,10 @@ import Foundation
                 folderId = "river_global"
             } else if localRiverId == "river:blurblogs" {
                 folderId = "river_blurblogs"
+            } else if localRiverId == "trending:well_read" {
+                folderId = "trending:well_read"
+            } else if localRiverId == "trending:long_reads" {
+                folderId = "trending:long_reads"
             } else if localRiverId.hasPrefix("river:") {
                 folderId = localRiverId.deletingPrefix("river:")
             } else if localRiverId.hasPrefix("starred:") {
@@ -131,6 +135,10 @@ import Foundation
             return "Saved Stories — \(feedId.deletingPrefix("saved:"))"
         } else if baseName == "global" {
             return "Global Shared Stories"
+        } else if folderId == "trending:well_read" {
+            return "Widely Read Stories"
+        } else if folderId == "trending:long_reads" {
+            return "Long Reads"
         } else {
             return baseName
         }
@@ -141,6 +149,10 @@ import Foundation
             return UIImage(named: "tag")
         } else if riverId == "river:global" {
             return UIImage(named: "global-shares")
+        } else if folderId == "trending:well_read" {
+            return UIImage(named: "trending-well-read")
+        } else if folderId == "trending:long_reads" {
+            return UIImage(named: "trending-long-reads")
         } else if isFolder {
             return folder?.image ?? UIImage(named: "folder-open")
         } else {

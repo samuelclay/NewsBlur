@@ -676,6 +676,18 @@ class PreferencesViewModel: ObservableObject {
                         icon: "globe",
                         iconColor: .purple,
                         type: .toggle(key: "show_global_shared_stories", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: "Show Widely Read Stories",
+                        icon: "flame",
+                        iconColor: .orange,
+                        type: .toggle(key: "show_widely_read_stories", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: "Show Long Reads",
+                        icon: "moon",
+                        iconColor: .indigo,
+                        type: .toggle(key: "show_long_reads", defaultValue: true)
                     )
                 ]
             ),

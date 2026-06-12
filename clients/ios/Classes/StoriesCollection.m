@@ -108,6 +108,10 @@
     return [activeFolder isEqualToString:@"infrequent"];
 }
 
+- (BOOL)isTrending {
+    return [activeFolder hasPrefix:@"trending:"];
+}
+
 - (BOOL)isRiverOrSocial {
     return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
 }
@@ -116,6 +120,7 @@
     return self.isRiverView &&
     !self.isEverything &&
     !self.isInfrequent &&
+    !self.isTrending &&
     !self.isDailyBriefing &&
     !self.isSavedView &&
     !self.isReadView &&
@@ -376,6 +381,10 @@
             return @"NewsBlur Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
+        } else if ([activeFolder isEqualToString:@"trending:well_read"]) {
+            return @"Widely Read Stories";
+        } else if ([activeFolder isEqualToString:@"trending:long_reads"]) {
+            return @"Long Reads";
         } else if ([activeFolder isEqualToString:@"daily_briefing"]) {
             return @"Daily Briefing";
         } else if (isSavedView && activeSavedStoryTag) {

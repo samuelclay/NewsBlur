@@ -1116,6 +1116,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
+    [allFolders setValue:@[] forKey:@"trending:well_read"];
+    [allFolders setValue:@[] forKey:@"trending:long_reads"];
     
     NSArray *savedSearches = [appDelegate updateSavedSearches:results];
     [allFolders setValue:savedSearches forKey:@"saved_searches"];
@@ -1224,6 +1226,12 @@ static BOOL NBBoolPreferenceValue(id value) {
     // Add Global Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_global"];
     [appDelegate.dictFoldersArray addObject:@"river_global"];
+
+    // Add trending story folders to bottom
+    [appDelegate.dictFoldersArray removeObject:@"trending:well_read"];
+    [appDelegate.dictFoldersArray addObject:@"trending:well_read"];
+    [appDelegate.dictFoldersArray removeObject:@"trending:long_reads"];
+    [appDelegate.dictFoldersArray addObject:@"trending:long_reads"];
     
     // Add All Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
@@ -2422,6 +2430,7 @@ heightForHeaderInSection:(NSInteger)section {
         ![folderName isEqualToString:@"daily_briefing"] &&
         ![folderName isEqualToString:@"river_global"] &&
         ![folderName isEqualToString:@"river_blurblogs"] &&
+        ![folderName hasPrefix:@"trending:"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
@@ -2452,6 +2461,16 @@ heightForHeaderInSection:(NSInteger)section {
 
     if ([folderName isEqual:@"river_global"] &&
         ![prefs boolForKey:@"show_global_shared_stories"]) {
+        return 0;
+    }
+
+    if ([folderName isEqualToString:@"trending:well_read"] &&
+        ![prefs boolForKey:@"show_widely_read_stories"]) {
+        return 0;
+    }
+
+    if ([folderName isEqualToString:@"trending:long_reads"] &&
+        ![prefs boolForKey:@"show_long_reads"]) {
         return 0;
     }
     
@@ -2492,7 +2511,9 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {
         folder = NewsBlurTopSectionNames[tag];
-    } else if (![folder isEqualToString:@"river_global"] && ![folder isEqualToString:@"river_blurblogs"]) {
+    } else if (![folder isEqualToString:@"river_global"] &&
+               ![folder isEqualToString:@"river_blurblogs"] &&
+               ![folder hasPrefix:@"trending:"]) {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
@@ -2735,6 +2756,10 @@ heightForHeaderInSection:(NSInteger)section {
         return @"All Site Stories";
     } else if ([folderName isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
+    } else if ([folderName isEqualToString:@"trending:well_read"]) {
+        return @"Widely Read Stories";
+    } else if ([folderName isEqualToString:@"trending:long_reads"]) {
+        return @"Long Reads";
     } else if ([folderName isEqualToString:@"river_blurblogs"]) {
         return @"All Shared Stories";
     } else if ([folderName isEqualToString:@"saved_stories"]) {
@@ -3206,6 +3231,7 @@ heightForHeaderInSection:(NSInteger)section {
             [folderName isEqualToString:@"interactions"] ||
             [folderName isEqualToString:@"river_global"] ||
             [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName hasPrefix:@"trending:"] ||
             [folderName isEqualToString:@"widget_stories"]) {
             continue;
         }
@@ -3236,6 +3262,7 @@ heightForHeaderInSection:(NSInteger)section {
             [folderName isEqualToString:@"interactions"] ||
             [folderName isEqualToString:@"river_global"] ||
             [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName hasPrefix:@"trending:"] ||
             [folderName isEqualToString:@"widget_stories"]) {
             continue;
         }
@@ -3487,6 +3514,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         if ([folderName isEqualToString:@"river_global"]) continue;
+        if ([folderName hasPrefix:@"trending:"]) continue;
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f = 0; f < [folder count]; f++) {

@@ -536,7 +536,7 @@
             [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByEncodingHTMLEntities] : @"";
         NSString *encodedTitle = [clusterStory[@"story_title"] isKindOfClass:[NSString class]] ?
             [[clusterStory[@"story_title"] stringByDecodingHTMLEntities] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]] : @"";
-        NSDictionary *feed = [appDelegate getFeed:feedId];
+        NSDictionary *feed = [appDelegate feedMetadataForStory:clusterStory preferActiveFeeds:NO];
         NSString *borderOuter = [feed[@"favicon_color"] isKindOfClass:[NSString class]] ? feed[@"favicon_color"] : @"505050";
         NSString *borderInner = [feed[@"favicon_fade"] isKindOfClass:[NSString class]] ? feed[@"favicon_fade"] : @"707070";
         NSInteger score = [clusterStory[@"score"] respondsToSelector:@selector(integerValue)] ? [clusterStory[@"score"] integerValue] : 0;
@@ -755,7 +755,7 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
-    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSDictionary *feed = [appDelegate feedMetadataForStory:self.activeStory preferActiveFeeds:NO];
     NSString *storyClassSuffix = @"";
     
     if ([feed[@"is_newsletter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
@@ -766,7 +766,8 @@
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
                             appDelegate.storiesCollection.isWidgetView ||
-                            appDelegate.storiesCollection.isReadView) ?
+                            appDelegate.storiesCollection.isReadView ||
+                            appDelegate.storiesCollection.isTrending) ?
                             @"NB-river" : @"NB-non-river";
     
     // Inline CSS and JS to avoid custom URL scheme issues with HTTPS baseURL
@@ -896,10 +897,7 @@
 - (void)drawFeedGradient {
     BOOL shouldHideStatusBar = appDelegate.storyPagesViewController.shouldHideStatusBar;
     CGFloat yOffset = [self feedTitleGradientBaseYOffset];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                           [self.activeStory
-                            objectForKey:@"story_feed_id"]];
-    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSDictionary *feed = [appDelegate feedMetadataForStory:self.activeStory preferActiveFeeds:NO];
     
     if (self.feedTitleGradient) {
         [self.feedTitleGradient removeFromSuperview];
@@ -916,7 +914,8 @@
         appDelegate.storiesCollection.isSocialView ||
         appDelegate.storiesCollection.isSavedView ||
         appDelegate.storiesCollection.isWidgetView ||
-        appDelegate.storiesCollection.isReadView) {
+        appDelegate.storiesCollection.isReadView ||
+        appDelegate.storiesCollection.isTrending) {
         self.feedTitleGradient.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
                                        initWithTarget:self
@@ -934,7 +933,8 @@
         appDelegate.storiesCollection.isSocialView ||
         appDelegate.storiesCollection.isSavedView ||
         appDelegate.storiesCollection.isWidgetView ||
-        appDelegate.storiesCollection.isReadView) {
+        appDelegate.storiesCollection.isReadView ||
+        appDelegate.storiesCollection.isTrending) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);

@@ -232,7 +232,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSMutableDictionary *allFoldersDict = [self.dictFolders mutableCopy];
-    NSArray *specialFolders = @[@"river_blurblogs", @"saved_searches", @"saved_stories"];
+    NSArray *specialFolders = @[@"river_blurblogs", @"trending:well_read", @"trending:long_reads", @"saved_searches", @"saved_stories"];
     
     [allFoldersDict removeObjectsForKeys:specialFolders];
     
@@ -321,6 +321,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
             identifier = @"river:blurblogs";
         } else if ([folderName isEqualToString:@"river_global"]) {
             identifier = @"river:global";
+        } else if ([folderName hasPrefix:@"trending:"]) {
+            // Already correct.
         } else if ([folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"]) {
             // Already correct.
         } else {
