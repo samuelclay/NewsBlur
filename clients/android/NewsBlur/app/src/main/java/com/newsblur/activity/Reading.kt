@@ -110,7 +110,7 @@ internal fun readerWebViewReleaseScopeForTrim(
 ): ReaderWebViewReleaseScope =
     when {
         isChangingConfigurations -> ReaderWebViewReleaseScope.NONE
-        level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> ReaderWebViewReleaseScope.ALL
+        level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE -> ReaderWebViewReleaseScope.ALL
         level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> ReaderWebViewReleaseScope.BACKGROUND_ONLY
         else -> ReaderWebViewReleaseScope.NONE
     }
