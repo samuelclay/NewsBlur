@@ -472,3 +472,48 @@ def is_youtube_feed_address(url):
         return False
     host = (parsed.hostname or "").lower()
     return host == "youtube.com" or host.endswith(".youtube.com")
+
+
+def is_openrss_feed_address(url):
+    """Return True only when the URL is actually served by openrss.org.
+
+    Like is_youtube_feed_address, detection keys off the URL host rather than a
+    naive ``"openrss.org" in url`` substring match, so a target site that merely
+    references openrss.org in a query string is never mistaken for the proxy.
+    """
+    if not url:
+        return False
+    # Tolerate scheme-less addresses (e.g. "openrss.org/www.youtube.com/...") by
+    # giving urlparse a netloc to find.
+    try:
+        parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    except ValueError:
+        return False
+    host = (parsed.hostname or "").lower()
+    return host == "openrss.org" or host.endswith(".openrss.org")
+
+
+def rewrite_openrss_to_feed_address(url):
+    """Normalize an Open RSS preview URL to its actual feed (/feed/) address.
+
+    Open RSS serves a human-readable HTML preview at the bare path, e.g.
+    https://openrss.org/www.youtube.com/@JudgeJudy/videos, and the real feed
+    under /feed/, e.g. https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos.
+    The preview page advertises the feed via an autodiscovery <link>, but we
+    rewrite to the /feed/ path up front so we never cache the preview page as the
+    feed address. Open RSS asked us to do this rather than rely on autodiscovery.
+
+    Returns the rewritten URL, or the original URL unchanged when it is not an
+    openrss.org address, is already a /feed/ address, or is openrss.org's own root.
+    """
+    if not is_openrss_feed_address(url):
+        return url
+    had_scheme = "://" in url
+    parsed = urllib.parse.urlparse(url if had_scheme else "//" + url)
+    path = parsed.path or ""
+    if path in ("", "/") or path == "/feed" or path.startswith("/feed/"):
+        return url
+    rewritten = urllib.parse.urlunparse(parsed._replace(path="/feed" + path))
+    if not had_scheme and rewritten.startswith("//"):
+        rewritten = rewritten[2:]
+    return rewritten

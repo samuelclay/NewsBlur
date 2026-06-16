@@ -18,7 +18,11 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
-from utils.feed_functions import is_youtube_feed_address
+from utils.feed_functions import (
+    is_openrss_feed_address,
+    is_youtube_feed_address,
+    rewrite_openrss_to_feed_address,
+)
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 
@@ -1521,11 +1525,150 @@ class Test_YouTubeFeedDetection(TestCase):
         """A proxied openrss URL must resolve to the proxy feed, never a rewritten gdata feed."""
         from utils import urlnorm
 
-        proxied_url = "https://openrss.org/www.youtube.com/@JudgeJudy/videos"
-        proxy_feed = Feed.objects.create(feed_address=urlnorm.normalize(proxied_url))
+        # The canonical openrss feed address is the /feed/ path; a bare preview URL is
+        # normalized to it (see Test_OpenRSSFeedRewrite). Create the feed at /feed/ and
+        # confirm the preview URL resolves to it rather than a rewritten gdata feed.
+        feed_url = "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos"
+        proxy_feed = Feed.objects.create(feed_address=urlnorm.normalize(feed_url))
 
-        # With the bug, get_feed_from_url rewrote the address to a gdata.youtube.com URL
-        # and never matched the proxy feed. The exact-address lookup below proves the
-        # proxied URL is left intact (and avoids any feedfinder network call).
-        found = Feed.get_feed_from_url(proxied_url, create=False, fetch=False)
+        preview_url = "https://openrss.org/www.youtube.com/@JudgeJudy/videos"
+        found = Feed.get_feed_from_url(preview_url, create=False, fetch=False)
         self.assertEqual(found, proxy_feed)
+
+
+class Test_OpenRSSFeedRewrite(TestCase):
+    """
+    Open RSS (openrss.org) serves a human-readable HTML preview at the bare path,
+    e.g. https://openrss.org/www.youtube.com/@JudgeJudy/videos, and the actual
+    feed under /feed/. NewsBlur was caching the preview page as the feed address
+    instead of following the autodiscovery <link> to the /feed/ URL. Open RSS
+    asked us to rewrite preview URLs to the /feed/ path directly rather than rely
+    on autodiscovery. Reported by openrss.org, June 2026.
+    """
+
+    def test_is_openrss_feed_address__genuine_hosts(self):
+        for url in [
+            "https://openrss.org/www.youtube.com/@JudgeJudy/videos",
+            "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos",
+            "https://www.openrss.org/reddit.com/r/python",
+            "openrss.org/www.youtube.com/@JudgeJudy/videos",  # scheme-less
+        ]:
+            self.assertTrue(is_openrss_feed_address(url), url)
+
+    def test_is_openrss_feed_address__lookalike_hosts(self):
+        for url in [
+            "https://notopenrss.org/www.youtube.com/@JudgeJudy",
+            "https://openrss.org.evil.example/reddit.com/r/python",
+            "https://example.com/?ref=openrss.org",
+            "",
+            None,
+        ]:
+            self.assertFalse(is_openrss_feed_address(url), url)
+
+    def test_rewrite_preview_url_to_feed_path(self):
+        self.assertEqual(
+            rewrite_openrss_to_feed_address("https://openrss.org/www.youtube.com/@JudgeJudy/videos"),
+            "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos",
+        )
+        self.assertEqual(
+            rewrite_openrss_to_feed_address("https://openrss.org/reddit.com/r/python"),
+            "https://openrss.org/feed/reddit.com/r/python",
+        )
+
+    def test_rewrite_preview_url_preserves_query_string(self):
+        self.assertEqual(
+            rewrite_openrss_to_feed_address("https://openrss.org/example.com/news?page=2"),
+            "https://openrss.org/feed/example.com/news?page=2",
+        )
+
+    def test_rewrite_scheme_less_preview_url(self):
+        self.assertEqual(
+            rewrite_openrss_to_feed_address("openrss.org/www.youtube.com/@JudgeJudy/videos"),
+            "openrss.org/feed/www.youtube.com/@JudgeJudy/videos",
+        )
+
+    def test_rewrite_leaves_existing_feed_url_untouched(self):
+        for url in [
+            "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos",
+            "https://openrss.org/feed",  # openrss.org's own changelog feed
+            "https://openrss.org/",  # bare root, nothing to proxy
+            "https://openrss.org",
+        ]:
+            self.assertEqual(rewrite_openrss_to_feed_address(url), url, url)
+
+    def test_rewrite_leaves_non_openrss_url_untouched(self):
+        url = "https://example.com/www.youtube.com/@JudgeJudy/videos"
+        self.assertEqual(rewrite_openrss_to_feed_address(url), url)
+
+    def test_get_feed_from_url_resolves_preview_to_feed_address(self):
+        """Adding an openrss preview URL must resolve to the /feed/ feed, not the preview."""
+        from utils import urlnorm
+
+        feed_url = "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos"
+        feed = Feed.objects.create(feed_address=urlnorm.normalize(feed_url))
+
+        preview_url = "https://openrss.org/www.youtube.com/@JudgeJudy/videos"
+        found = Feed.get_feed_from_url(preview_url, create=False, fetch=False)
+        self.assertEqual(found, feed)
+
+    def test_fetcher_self_corrects_legacy_preview_address(self):
+        """On fetch, a legacy feed cached at the preview path rewrites itself to /feed/."""
+        from utils.feed_fetcher import FetchFeed
+
+        feed = Feed.objects.create(feed_address="https://openrss.org/www.youtube.com/@JudgeJudy/videos")
+        fetcher = FetchFeed(feed.pk, {})
+
+        corrected = fetcher.openrss_corrected_address(feed.feed_address)
+
+        feed_url = "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos"
+        # The address handed to the request is the /feed/ form...
+        self.assertEqual(corrected, feed_url)
+        # ...and feed_address is updated so the normal save flow persists it.
+        self.assertEqual(fetcher.feed.feed_address, feed_url)
+
+    def test_fetcher_leaves_existing_feed_address_untouched(self):
+        """A feed already at the /feed/ path is not rewritten or churned."""
+        from utils.feed_fetcher import FetchFeed
+
+        feed_url = "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos"
+        feed = Feed.objects.create(feed_address=feed_url)
+        fetcher = FetchFeed(feed.pk, {})
+
+        self.assertEqual(fetcher.openrss_corrected_address(feed_url), feed_url)
+        self.assertEqual(fetcher.feed.feed_address, feed_url)
+
+    def test_processfeed_migrates_legacy_preview_address(self):
+        """ProcessFeed persists the /feed/ correction so the address migrates on disk."""
+        from utils.feed_fetcher import ProcessFeed
+
+        feed = Feed.objects.create(feed_address="https://openrss.org/www.youtube.com/@JudgeJudy/videos")
+        pfeed = ProcessFeed(feed.pk, None, {})
+        pfeed.refresh_feed()
+        pfeed.migrate_openrss_feed_address()
+
+        feed.refresh_from_db()
+        self.assertEqual(feed.feed_address, "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos")
+
+    def test_processfeed_migration_does_not_churn_feed_url(self):
+        """A feed already at the /feed/ path is not re-saved by the migration step."""
+        from utils.feed_fetcher import ProcessFeed
+
+        feed_url = "https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos"
+        feed = Feed.objects.create(feed_address=feed_url)
+        pfeed = ProcessFeed(feed.pk, None, {})
+        pfeed.refresh_feed()
+        pfeed.migrate_openrss_feed_address()
+
+        self.assertEqual(pfeed.feed.feed_address, feed_url)
+        self.assertEqual(pfeed.feed.pk, feed.pk)
+
+    def test_get_feed_from_url_reuses_legacy_preview_feed(self):
+        """Subscribing via a preview URL reuses an existing legacy feed, not a duplicate."""
+        from utils import urlnorm
+
+        preview_url = "https://openrss.org/www.youtube.com/@JudgeJudy/videos"
+        legacy = Feed.objects.create(feed_address=urlnorm.normalize(preview_url))
+
+        found = Feed.get_feed_from_url(preview_url, create=False, fetch=False)
+        self.assertEqual(found, legacy)
+        self.assertEqual(Feed.objects.filter(feed_address__contains="@JudgeJudy").count(), 1)

@@ -67,6 +67,7 @@ from utils.facebook_fetcher import FacebookFetcher
 from utils.feed_functions import (
     TimeoutError,
     is_youtube_feed_address,
+    rewrite_openrss_to_feed_address,
     strip_underscore_from_feed_address,
     timelimit,
 )
@@ -196,6 +197,26 @@ class FetchFeed:
         self.fpf = None
         self.raw_feed = None
 
+    def openrss_corrected_address(self, address):
+        """Rewrite a legacy Open RSS preview address to its actual /feed/ form.
+
+        Open RSS serves a human-readable preview at the bare path and the real
+        feed under /feed/. This returns the /feed/ address to fetch so we download
+        the actual feed, and updates self.feed.feed_address in memory so the rest
+        of fetch() (retries, JSON/forbidden checks) operate on the same address.
+        The corrected address is persisted later by ProcessFeed.migrate_openrss_feed_address,
+        since this FetchFeed instance is discarded after the download. See
+        utils/feed_functions.py.
+        """
+        corrected = rewrite_openrss_to_feed_address(address)
+        if corrected != address:
+            logging.debug(
+                "   ---> [%-30s] ~FBOpen RSS preview, fetching feed instead: ~SB%s~SN -> ~SB%s"
+                % (self.feed.log_title[:30], address, corrected)
+            )
+            self.feed.feed_address = corrected
+        return corrected
+
     @timelimit(45)
     def fetch(self):
         """
@@ -222,6 +243,18 @@ class FetchFeed:
         etag = self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         address = self.feed.feed_address
+
+        # Self-correct legacy Open RSS feeds cached at the human-readable preview
+        # path by fetching the actual /feed/ address instead. Like the 301/308
+        # redirect below, the corrected feed_address is persisted by the normal
+        # save flow that follows.
+        corrected_address = self.openrss_corrected_address(address)
+        if corrected_address != address:
+            address = corrected_address
+            # The /feed/ URL is a different resource than the cached preview, so
+            # drop the preview's validators to force a fresh fetch.
+            etag = None
+            modified = None
 
         if self.options.get("force") or self.options.get("archive_page", None) or random.random() <= 0.01:
             self.options["force"] = True
@@ -883,10 +916,34 @@ class ProcessFeed:
             logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
             self.feed_id = self.feed.pk
 
+    def migrate_openrss_feed_address(self):
+        """Persist the Open RSS /feed/ correction for a legacy feed cached at the
+        preview path, so it migrates once instead of re-correcting on every fetch.
+
+        FetchFeed downloads the /feed/ URL but is discarded, and the happy-path
+        saves here are field-scoped (update_fields), so the address is only
+        persisted by this full save. The full save recomputes the address hash and
+        merges into an existing /feed/ feed on collision, mirroring the 301/308
+        redirect handling. No-op once migrated. See utils/feed_functions.py.
+        """
+        corrected = rewrite_openrss_to_feed_address(self.feed.feed_address)
+        if corrected == self.feed.feed_address:
+            return
+        logging.debug(
+            "   ---> [%-30s] ~FBMigrating Open RSS feed address: ~SB%s~SN -> ~SB%s"
+            % (self.feed.log_title[:30], self.feed.feed_address, corrected)
+        )
+        self.feed.feed_address = corrected
+        saved_feed = self.feed.save()
+        if saved_feed:
+            self.feed = saved_feed
+            self.feed_id = self.feed.pk
+
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
         self.refresh_feed()
+        self.migrate_openrss_feed_address()
 
         if not self.options.get("archive_page", None):
             feed_status, ret_values = self.verify_feed_integrity()
