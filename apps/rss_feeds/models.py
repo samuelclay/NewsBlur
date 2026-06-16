@@ -53,9 +53,11 @@ from utils import log as logging
 from utils import urlnorm
 from utils.feed_functions import (
     TimeoutError,
+    is_openrss_feed_address,
     is_youtube_feed_address,
     levenshtein_distance,
     relative_timesince,
+    rewrite_openrss_to_feed_address,
     seconds_timesince,
     strip_underscore_from_feed_address,
     timelimit,
@@ -613,6 +615,17 @@ class Feed(models.Model):
                 without_rss = True
             if "youtube.com/playlist" in url:
                 without_rss = True
+        # Open RSS (openrss.org) proxies a site's feed under /feed/ and serves a
+        # human-readable preview at the bare path. Rewrite previews to the /feed/
+        # address so we never cache the preview page as the feed. Guarded on host
+        # like is_youtube_feed_address above. See utils/feed_functions.py.
+        openrss_preview_url = None
+        if url and is_openrss_feed_address(url):
+            rewritten = rewrite_openrss_to_feed_address(url)
+            if rewritten != url:
+                openrss_preview_url = url
+                url = rewritten
+                without_rss = True
         if url and "reddit.com/r/" in url and url.endswith(".rss"):
             without_rss = True
         if url and "/wp-json/wp/v2/posts" in url:
@@ -675,6 +688,10 @@ class Feed(models.Model):
             return
 
         feed = by_url(url)
+        if not feed and openrss_preview_url:
+            # A pre-change feed may still be stored at the preview address; reuse it
+            # (it migrates to /feed/ on its next fetch) rather than create a duplicate.
+            feed = by_url(urlnorm.normalize(openrss_preview_url))
         found_feed_urls = []
 
         if interactive:
