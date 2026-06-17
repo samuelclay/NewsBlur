@@ -1,0 +1,17 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <p style="line-height: 20px;">Hi {{ user.username }},</p>
+
+    <p style="line-height: 20px;">I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of <b>$36 per year</b>, and your subscription will renew at that rate on <b>{{ renewal_date|date:"F j, Y" }}</b>.</p>
+
+    <p style="line-height: 20px;">You have been on an older grandfathered price of <b>${{ old_amount }} per year</b>, and I am grateful you have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it.</p>
+
+    <p style="line-height: 20px;">There is nothing you need to do. The new rate takes effect automatically at your next renewal. Your account, your sites, and everything you have saved stay exactly as they are. You can adjust your subscription anytime in your account settings.</p>
+
+    <p style="line-height: 20px;">Thank you for being a premium member. It genuinely keeps NewsBlur going.</p>
+
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}

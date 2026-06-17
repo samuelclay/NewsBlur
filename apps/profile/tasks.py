@@ -195,6 +195,26 @@ def EmailPremiumRenewalNotice():
         profile.send_premium_renewal_notice_email()
 
 
+@app.task(name="premium-pricing-migration")
+def PremiumPricingMigration():
+    """Nightly: move grandfathered $12/$24 premium subscribers to $36 as they approach renewal.
+    No-op until settings.PREMIUM_PRICING_MIGRATION_ENABLED is flipped on for the rollout."""
+    if not getattr(settings, "PREMIUM_PRICING_MIGRATION_ENABLED", False):
+        logging.debug(" ---> Premium pricing migration disabled (PREMIUM_PRICING_MIGRATION_ENABLED)")
+        return
+    Profile.run_premium_pricing_migration()
+
+
+@app.task(name="reconcile-premium-pricing-migration")
+def ReconcilePremiumPricingMigration():
+    """Nightly: record upgrade/cancel outcomes for the pricing migration and cancel non-approving
+    PayPal subscriptions. No-op until settings.PREMIUM_PRICING_MIGRATION_ENABLED is flipped on."""
+    if not getattr(settings, "PREMIUM_PRICING_MIGRATION_ENABLED", False):
+        logging.debug(" ---> Premium pricing reconciliation disabled (PREMIUM_PRICING_MIGRATION_ENABLED)")
+        return
+    Profile.reconcile_premium_pricing_migration()
+
+
 @app.task(name="email-feed-limit-notifications")
 def EmailFeedLimitNotifications():
     """

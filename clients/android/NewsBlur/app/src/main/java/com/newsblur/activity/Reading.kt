@@ -110,7 +110,7 @@ internal fun readerWebViewReleaseScopeForTrim(
 ): ReaderWebViewReleaseScope =
     when {
         isChangingConfigurations -> ReaderWebViewReleaseScope.NONE
-        level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> ReaderWebViewReleaseScope.ALL
+        level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE -> ReaderWebViewReleaseScope.ALL
         level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> ReaderWebViewReleaseScope.BACKGROUND_ONLY
         else -> ReaderWebViewReleaseScope.NONE
     }
@@ -384,7 +384,13 @@ abstract class Reading :
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        when (readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)) {
+        val releaseScope = readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)
+        logReaderRestore(
+            "onTrimMemory level=$level scope=$releaseScope changing=$isChangingConfigurations " +
+                "active=${storyDebug(activeReadingStory())} pager=${storyDebug(pagerReadingStory())} " +
+                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
+        )
+        when (releaseScope) {
             ReaderWebViewReleaseScope.BACKGROUND_ONLY ->
                 readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
 

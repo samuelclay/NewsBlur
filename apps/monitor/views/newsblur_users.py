@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 
-from apps.profile.models import Profile, RNewUserQueue
+from apps.profile.models import PremiumPricingMigration, Profile, RNewUserQueue
 from apps.statistics.models import MStatistics
 
 
@@ -101,6 +101,38 @@ class Users(View):
                     is_grandfathered=True,
                     grandfather_expires__isnull=False,
                     grandfather_expires__gt=datetime.datetime.now(datetime.timezone.utc),
+                ).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_upgrades_stripe": MStatistics.get(
+                "munin:users_premium_pricing_upgrades_stripe",
+                lambda: PremiumPricingMigration.objects.filter(status="upgraded", provider="stripe").count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_upgrades_paypal": MStatistics.get(
+                "munin:users_premium_pricing_upgrades_paypal",
+                lambda: PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_cancellations_stripe": MStatistics.get(
+                "munin:users_premium_pricing_cancellations_stripe",
+                lambda: PremiumPricingMigration.objects.filter(status="cancelled", provider="stripe").count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_cancellations_paypal": MStatistics.get(
+                "munin:users_premium_pricing_cancellations_paypal",
+                lambda: PremiumPricingMigration.objects.filter(status="cancelled", provider="paypal").count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_would_cancel_paypal": MStatistics.get(
+                "munin:users_premium_pricing_would_cancel_paypal",
+                lambda: PremiumPricingMigration.objects.filter(
+                    status="would_cancel", provider="paypal"
                 ).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
