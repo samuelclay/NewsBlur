@@ -521,10 +521,10 @@ CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
 # Master switch for the grandfathered $12/$24 -> $36 premium pricing migration. The nightly beat
-# tasks below are always registered (cron-driven), but they take no action until this is True.
-# Flip it on in production secrets when ready to begin the rollout. Shell calls to
-# Profile.run_premium_pricing_migration(...) bypass this flag for testing (apps/profile/tasks.py).
-PREMIUM_PRICING_MIGRATION_ENABLED = False
+# tasks below are always registered (cron-driven); they only act while this is True. Set here in
+# base settings so every server (including the task workers that run the campaign) loads it.
+# Shell calls to Profile.run_premium_pricing_migration(...) bypass this flag for testing.
+PREMIUM_PRICING_MIGRATION_ENABLED = True
 
 # Safety gate for the dangerous step: actually cancelling a non-approving PayPal subscriber's old
 # subscription. While False (shadow mode), reconciliation does NOT cancel anything — it emails staff
