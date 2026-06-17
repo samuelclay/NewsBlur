@@ -604,9 +604,10 @@ public enum DailyBriefingSectionLayoutDecision {
     public class func shouldAnimateSelection(
         isPhoneOrCompact: Bool,
         usesNativeFullscreenSidebar: Bool,
-        presentation: FullscreenSidebarPresentation
+        presentation: FullscreenSidebarPresentation,
+        isMac: Bool
     ) -> Bool {
-        guard !isPhoneOrCompact else {
+        guard !isPhoneOrCompact, !isMac else {
             return true
         }
 
@@ -934,6 +935,35 @@ public enum StoryScrollReadDecision {
 @objcMembers public final class StoryPageRefreshDecision: NSObject {
     public class func shouldBeginRefresh(isRefreshInProgress: Bool) -> Bool {
         !isRefreshInProgress
+    }
+}
+
+@objcMembers public final class StoryTraverseFadeDecision: NSObject {
+    public class func accumulator(
+        currentAccumulator: CGFloat,
+        deltaY: CGFloat,
+        fadeDistance: CGFloat,
+        isUserScroll: Bool
+    ) -> CGFloat {
+        let clampedCurrent = max(0, min(fadeDistance, currentAccumulator))
+
+        guard isUserScroll else {
+            return clampedCurrent
+        }
+
+        return max(0, min(fadeDistance, clampedCurrent + deltaY))
+    }
+
+    public class func alpha(
+        accumulator: CGFloat,
+        fadeDistance: CGFloat
+    ) -> CGFloat {
+        guard fadeDistance > 0 else {
+            return 1
+        }
+
+        let clampedAccumulator = max(0, min(fadeDistance, accumulator))
+        return 1 - (clampedAccumulator / fadeDistance)
     }
 }
 

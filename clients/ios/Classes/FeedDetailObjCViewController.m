@@ -3351,7 +3351,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self setTitleForBackButton];
     BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithIsPhoneOrCompact:self.isPhoneOrCompact
                                                                                    usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
-                                                                                                     presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];
+                                                                                                     presentation:appDelegate.detailViewController.fullscreenSidebarPresentation
+                                                                                                             isMac:self.isMac];
     BOOL shouldUseExplicitLocation = [StorySelectionNavigationDecision shouldUseExplicitLocationWithIsPhoneOrCompact:self.isPhoneOrCompact
                                                                                       usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
                                                                                                             presentation:appDelegate.detailViewController.fullscreenSidebarPresentation];

@@ -193,6 +193,39 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory, timeout: 30))
     }
 
+    func test_traverseButtonsFadeRelativeAfterNextWithHiddenToolbar() {
+        launch(on: "reader-story-swift-1")
+
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+
+        let nextButton = app.buttons["story-traverse-next-button"]
+        XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForTraverseFadeAlpha({ $0 >= 0.99 }), "Traverse controls should start fully visible")
+
+        let storyContent = app.webViews.firstMatch
+        XCTAssertTrue(storyContent.waitForExistence(timeout: 10))
+
+        dragUp(on: storyContent, distance: 52)
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 > 0.05 && $0 < 0.95 }),
+            "Initial scroll should partially fade traversal controls without hiding them immediately; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+
+        tapElementCenter(nextButton)
+        XCTAssertTrue(waitForLabel("Swift Fixture Story Two", on: currentStory))
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 >= 0.99 }),
+            "Next story should reset traversal fade even while the toolbar remains hidden; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+
+        dragUp(on: storyContent, distance: 20)
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 > 0.20 && $0 < 1.0 }),
+            "First scroll on the next story should fade traversal controls relative to the new story; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+    }
+
     func test_profileCurrentStoryTitlesScroll() throws {
 #if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
@@ -293,6 +326,39 @@ final class ReaderUITests: XCTestCase {
 
     private func currentStoryProbe() -> XCUIElement {
         app.staticTexts["story-current-story"].firstMatch
+    }
+
+    private func traverseFadeProbe() -> XCUIElement {
+        app.staticTexts["story-traverse-fade-state"].firstMatch
+    }
+
+    private func traverseFadeAlpha(from element: XCUIElement? = nil) -> Double? {
+        let fadeElement = element ?? traverseFadeProbe()
+        guard let value = fadeElement.value as? String else {
+            return nil
+        }
+
+        return value.split(separator: " ")
+            .first { $0.hasPrefix("alpha=") }
+            .flatMap { Double($0.dropFirst("alpha=".count)) }
+    }
+
+    private func waitForTraverseFadeAlpha(_ isExpectedAlpha: @escaping (Double) -> Bool, timeout: TimeInterval = 5) -> Bool {
+        let fadeProbe = traverseFadeProbe()
+        guard fadeProbe.waitForExistence(timeout: timeout) else {
+            return false
+        }
+
+        let predicate = NSPredicate { object, _ in
+            guard let element = object as? XCUIElement,
+                  let alpha = self.traverseFadeAlpha(from: element) else {
+                return false
+            }
+
+            return isExpectedAlpha(alpha)
+        }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: fadeProbe)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
 
     private func isVisibleOnScreen(_ element: XCUIElement) -> Bool {
@@ -504,6 +570,22 @@ final class ReaderUITests: XCTestCase {
             .withOffset(CGVector(dx: max(frame.minX + 12, frame.maxX - distance), dy: frame.midY))
 
         start.press(forDuration: 0.05, thenDragTo: end)
+    }
+
+    private func dragUp(on element: XCUIElement, distance: CGFloat) {
+        XCTAssertTrue(element.exists)
+
+        let frame = element.frame
+        XCTAssertFalse(frame.isEmpty)
+
+        let startY = min(frame.midY + distance / 2, frame.maxY - 20)
+        let endY = max(frame.midY - distance / 2, frame.minY + 20)
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+            .withOffset(CGVector(dx: frame.midX, dy: startY))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+            .withOffset(CGVector(dx: frame.midX, dy: endY))
+
+        start.press(forDuration: 0.2, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
     }
 
     private func launch(on screen: String, storyTitlesStyle: String? = nil) {
