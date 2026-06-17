@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
@@ -190,7 +190,9 @@ class Test_UpgradePaths(TestCase):
         email_staff = patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
         schedule_setup = patch("apps.profile.models.SchedulePremiumSetup").start()
         queue_feeds = patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
-        archive_fetch = patch("apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user").start()
+        archive_fetch = patch(
+            "apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user"
+        ).start()
         setup_history = patch.object(Profile, "setup_premium_history").start()
         self.addCleanup(patch.stopall)
         return {
@@ -703,3 +705,389 @@ class Test_ProratedProviderSwitchRefund(TestCase):
 
         self.assertIsNone(refunded)
         mock_refund.assert_not_called()
+
+
+class Test_PremiumPricingMigration(TestCase):
+    """Migrate grandfathered $12/$24 premium subscribers up to $36 (apps/profile/models.py).
+
+    Covers the Stripe silent price switch (no early charge), the PayPal approval-link flow,
+    both email variants, the cohort selection, idempotency, and the reconciliation that records
+    upgraded/cancelled outcomes and cancels non-approving PayPal subscriptions.
+    """
+
+    def setUp(self):
+        from django.core import mail
+
+        mail.outbox = []
+        self.user = User.objects.create_user(
+            username="pricingmig", password="password", email="pricingmig@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = False
+        self.profile.premium_renewal = True
+        self.profile.active_provider = "stripe"
+        self.profile.last_seen_on = datetime.datetime.now()
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(hours=60)
+        self.profile.stripe_id = "cus_pricingmig"
+        self.profile.save()
+
+    def _add_payment(self, amount, days_ago=10, provider="stripe", refunded=None, user=None):
+        return PaymentHistory.objects.create(
+            user=user or self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=days_ago),
+            payment_amount=amount,
+            payment_provider=provider,
+            refunded=refunded,
+        )
+
+    def _make_stripe_sub(self, plan_id="newsblur-premium-24", active=True):
+        plan = MagicMock(active=active)
+        plan.id = plan_id
+        item = MagicMock()
+        item.id = "si_1"
+        item.plan = plan
+        sub = MagicMock()
+        sub.id = "sub_1"
+        sub.plan = plan
+        sub.__getitem__.side_effect = lambda key: {"items": {"data": [item]}}[key]
+        return sub
+
+    # --- Stripe silent price switch -----------------------------------------
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    @patch.object(Profile, "setup_premium_history")
+    def test_stripe_switch_uses_no_proration_and_36_price(
+        self, mock_history, mock_customer, mock_list, mock_modify
+    ):
+        mock_customer.return_value = MagicMock(id="cus_pricingmig")
+        mock_list.return_value = MagicMock(data=[self._make_stripe_sub("newsblur-premium-24")])
+
+        result = self.profile.switch_stripe_subscription("premium", proration_behavior="none")
+
+        self.assertTrue(result)
+        mock_modify.assert_called_once()
+        _, kwargs = mock_modify.call_args
+        self.assertEqual(kwargs["proration_behavior"], "none")
+        self.assertNotIn("billing_cycle_anchor", kwargs)
+        self.assertEqual(kwargs["items"][0]["price"], "newsblur-premium-36")
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    @patch.object(Profile, "setup_premium_history")
+    def test_stripe_switch_default_still_always_invoice(
+        self, mock_history, mock_customer, mock_list, mock_modify
+    ):
+        """The user-facing upgrade view depends on the always_invoice default; don't regress it."""
+        mock_customer.return_value = MagicMock(id="cus_pricingmig")
+        mock_list.return_value = MagicMock(data=[self._make_stripe_sub("newsblur-premium-24")])
+
+        self.profile.switch_stripe_subscription("premium")
+
+        _, kwargs = mock_modify.call_args
+        self.assertEqual(kwargs["proration_behavior"], "always_invoice")
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    @patch.object(Profile, "setup_premium_history")
+    def test_stripe_switch_noop_when_already_36(self, mock_history, mock_customer, mock_list, mock_modify):
+        mock_customer.return_value = MagicMock(id="cus_pricingmig")
+        mock_list.return_value = MagicMock(data=[self._make_stripe_sub("newsblur-premium-36")])
+
+        result = self.profile.switch_stripe_subscription("premium", proration_behavior="none")
+
+        self.assertTrue(result)
+        mock_modify.assert_not_called()
+
+    # --- PayPal approval link -----------------------------------------------
+
+    @patch.object(Profile, "paypal_api")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_paypal_price_change_approval_url_uses_revise(self, mock_ids, mock_api):
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.save()
+        api = MagicMock()
+        api.post.return_value = {
+            "links": [
+                {"rel": "self", "href": "https://paypal/self"},
+                {"rel": "approve", "href": "https://paypal/approve"},
+            ]
+        }
+        mock_api.return_value = api
+
+        url = self.profile.paypal_price_change_approval_url("premium")
+
+        self.assertEqual(url, "https://paypal/approve")
+        path, body = api.post.call_args[0]
+        self.assertEqual(path, "/v1/billing/subscriptions/I-SUB123/revise")
+        self.assertEqual(body["plan_id"], Profile.plan_to_paypal_plan_id("premium"))
+
+    @patch.object(Profile, "paypal_api")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_paypal_price_change_approval_url_none_without_sub(self, mock_ids, mock_api):
+        self.profile.paypal_sub_id = ""
+        self.profile.save()
+
+        self.assertIsNone(self.profile.paypal_price_change_approval_url("premium"))
+
+    # --- Email variants render ----------------------------------------------
+
+    def test_stripe_email_renders(self):
+        from django.core import mail
+
+        renewal = datetime.datetime(2026, 8, 1)
+        self.profile.send_premium_pricing_upgrade_email(
+            old_amount=24, renewal_date=renewal, variant="stripe", force=True
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        body = mail.outbox[0].body
+        self.assertIn("$36", body)
+        self.assertIn("$24", body)
+        self.assertIn("August 1, 2026", body)
+
+    def test_paypal_email_includes_approval_url(self):
+        from django.core import mail
+
+        self.profile.active_provider = "paypal"
+        self.profile.save()
+        self.profile.send_premium_pricing_upgrade_email(
+            old_amount=12,
+            renewal_date=datetime.datetime(2026, 8, 1),
+            approval_url="https://paypal/approve-me",
+            variant="paypal",
+            force=True,
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("https://paypal/approve-me", mail.outbox[0].body)
+
+    def test_preview_sends_both_variants_no_record(self):
+        from django.core import mail
+
+        from apps.profile.models import MSentEmail
+
+        self.profile.send_premium_pricing_upgrade_email(preview=True, old_amount=24)
+
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(
+            MSentEmail.objects.filter(
+                receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade"
+            ).count(),
+            0,
+        )
+        from apps.profile.models import PremiumPricingMigration
+
+        self.assertFalse(PremiumPricingMigration.objects.filter(user=self.user).exists())
+
+    def test_staff_would_cancel_email_renders(self):
+        from django.core import mail
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.save()
+        self._add_payment(24, days_ago=400, provider="paypal")
+        self._add_payment(24, days_ago=35, provider="paypal")
+
+        self.profile.send_staff_pricing_would_cancel_email(
+            old_amount=24, next_billing=datetime.datetime(2026, 8, 1)
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+        msg = mail.outbox[0]
+        self.assertIn("WOULD CANCEL", msg.subject)
+        self.assertIn(self.user.username, msg.subject)
+        self.assertIn("$24", msg.body)
+        self.assertIn("I-SUB123", msg.body)
+        self.assertTrue(len(msg.to) >= 1)  # sent to staff/admins
+
+    # --- Cohort selection ----------------------------------------------------
+
+    def test_cohort_dry_run_selects_only_grandfathered(self):
+        from apps.profile.models import PremiumPricingMigration
+
+        # Target: the setUp user, stripe, $24, in window, active.
+        self._add_payment(24)
+
+        # Excluded: already at $36.
+        u36 = User.objects.create_user(username="at36", password="p", email="at36@test.com")
+        p36 = u36.profile
+        p36.is_premium = True
+        p36.is_premium_trial = False
+        p36.premium_renewal = True
+        p36.active_provider = "stripe"
+        p36.last_seen_on = datetime.datetime.now()
+        p36.premium_expire = datetime.datetime.now() + datetime.timedelta(hours=60)
+        p36.save()
+        self._add_payment(36, user=u36)
+
+        # Excluded: renewal off.
+        uoff = User.objects.create_user(username="renewoff", password="p", email="off@test.com")
+        poff = uoff.profile
+        poff.is_premium = True
+        poff.is_premium_trial = False
+        poff.premium_renewal = False
+        poff.active_provider = "stripe"
+        poff.last_seen_on = datetime.datetime.now()
+        poff.premium_expire = datetime.datetime.now() + datetime.timedelta(hours=60)
+        poff.save()
+        self._add_payment(24, user=uoff)
+
+        processed = Profile.run_premium_pricing_migration(dry_run=True)
+
+        self.assertEqual(processed, 1)
+        self.assertFalse(PremiumPricingMigration.objects.exists())
+
+    # --- Live run + idempotency ---------------------------------------------
+
+    @patch.object(Profile, "switch_stripe_subscription", return_value=True)
+    def test_live_run_is_idempotent(self, mock_switch):
+        from django.core import mail
+
+        from apps.profile.models import PremiumPricingMigration
+
+        self._add_payment(24)
+
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        rows = PremiumPricingMigration.objects.filter(user=self.user)
+        self.assertEqual(rows.count(), 1)
+        row = rows.first()
+        self.assertEqual(row.status, "emailed")
+        self.assertEqual(row.provider, "stripe")
+        self.assertEqual(row.old_amount, 24)
+        self.assertIsNotNone(row.price_switched_date)
+        self.assertEqual(len(mail.outbox), 1)
+        mock_switch.assert_called_once_with("premium", proration_behavior="none")
+
+    @patch.object(Profile, "switch_stripe_subscription", return_value=True)
+    def test_dry_run_makes_no_writes_or_switch(self, mock_switch):
+        from django.core import mail
+
+        from apps.profile.models import PremiumPricingMigration
+
+        self._add_payment(24)
+        Profile.run_premium_pricing_migration(dry_run=True, only_username="pricingmig")
+
+        mock_switch.assert_not_called()
+        self.assertFalse(PremiumPricingMigration.objects.filter(user=self.user).exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+    # --- Reconciliation ------------------------------------------------------
+
+    def _emailed_row(self, provider="stripe", renewal_offset_days=-1):
+        from apps.profile.models import PremiumPricingMigration
+
+        return PremiumPricingMigration.objects.create(
+            user=self.user,
+            provider=provider,
+            old_amount=24,
+            email_sent_date=datetime.datetime.now() - datetime.timedelta(days=2),
+            renewal_date_at_send=datetime.datetime.now() + datetime.timedelta(days=renewal_offset_days),
+            price_switched_date=datetime.datetime.now() - datetime.timedelta(days=2),
+            status="emailed",
+        )
+
+    def test_reconcile_marks_upgraded_on_36_charge(self):
+        row = self._emailed_row()
+        self._add_payment(36, days_ago=0)  # charge after email_sent_date
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.status, "upgraded")
+
+    def test_reconcile_marks_cancelled_when_renewal_off(self):
+        row = self._emailed_row()
+        self.profile.premium_renewal = False
+        self.profile.save()
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.status, "cancelled")
+
+    def _paypal_detail(self, plan_id="P-OLD-24", hours_until_billing=5, status="ACTIVE"):
+        nb = (datetime.datetime.utcnow() + datetime.timedelta(hours=hours_until_billing)).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+        return {"status": status, "plan_id": plan_id, "billing_info": {"next_billing_time": nb}}
+
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=False)
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_shadow_mode_notifies_staff_does_not_cancel(self, mock_detail, mock_cancel, mock_staff):
+        # Default (shadow) mode: imminent non-approver -> notify staff, never touch PayPal.
+        row = self._emailed_row(provider="paypal")
+        mock_detail.return_value = self._paypal_detail(plan_id="P-OLD-24", hours_until_billing=5)
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_not_called()
+        mock_staff.assert_called_once()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "would_cancel")
+        self.assertIsNotNone(row.would_cancel_date)
+
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True)
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_real_cancel_when_enabled(self, mock_detail, mock_cancel, mock_staff):
+        # Only when explicitly enabled: imminent non-approver -> actually cancel.
+        row = self._emailed_row(provider="paypal")
+        mock_detail.return_value = self._paypal_detail(plan_id="P-OLD-24", hours_until_billing=5)
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_called_once()
+        mock_staff.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "cancelled")
+        self.assertIsNotNone(row.paypal_canceled_date)
+
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_does_not_touch_approved_paypal(self, mock_detail, mock_cancel, mock_staff):
+        # Approved the $36 plan -> leave it alone; it will renew at $36 and become upgraded.
+        row = self._emailed_row(provider="paypal")
+        mock_detail.return_value = self._paypal_detail(
+            plan_id=Profile.plan_to_paypal_plan_id("premium"), hours_until_billing=5
+        )
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_not_called()
+        mock_staff.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "emailed")
+
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_does_not_touch_paypal_when_charge_far_off(self, mock_detail, mock_cancel, mock_staff):
+        # Not approved, but the next charge is far away -> wait, do not act early.
+        row = self._emailed_row(provider="paypal")
+        mock_detail.return_value = self._paypal_detail(plan_id="P-OLD-24", hours_until_billing=24 * 10)
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_not_called()
+        mock_staff.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "emailed")
+
+    def test_reconcile_no_double_count(self):
+        row = self._emailed_row()
+        self._add_payment(36, days_ago=0)
+
+        Profile.reconcile_premium_pricing_migration()
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.status, "upgraded")
