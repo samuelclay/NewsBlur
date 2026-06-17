@@ -956,28 +956,32 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
-                presentation: .storyTitles
+                presentation: .storyTitles,
+                isMac: false
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
-                presentation: .feeds
+                presentation: .feeds,
+                isMac: false
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
-                presentation: .storyTitles
+                presentation: .storyTitles,
+                isMac: false
             )
         )
         XCTAssertFalse(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
-                presentation: .feeds
+                presentation: .feeds,
+                isMac: false
             )
         )
     }
@@ -987,14 +991,16 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
-                presentation: .fullscreen
+                presentation: .fullscreen,
+                isMac: false
             )
         )
         XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
-                presentation: .fullscreen
+                presentation: .fullscreen,
+                isMac: false
             )
         )
     }
@@ -1004,15 +1010,63 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: true,
                 usesNativeFullscreenSidebar: false,
-                presentation: .storyTitles
+                presentation: .storyTitles,
+                isMac: false
             )
         )
         XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: true,
                 usesNativeFullscreenSidebar: false,
-                presentation: .feeds
+                presentation: .feeds,
+                isMac: false
             )
+        )
+    }
+
+    func test_mac_story_selection_keeps_animation_even_if_sidebar_state_is_visible() {
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
+                usesNativeFullscreenSidebar: false,
+                presentation: .storyTitles,
+                isMac: true
+            )
+        )
+        XCTAssertTrue(
+            StorySelectionAnimationDecision.shouldAnimateSelection(
+                isPhoneOrCompact: false,
+                usesNativeFullscreenSidebar: false,
+                presentation: .feeds,
+                isMac: true
+            )
+        )
+    }
+
+    func test_traverse_fade_ignores_toolbar_adjustment_before_user_scroll() {
+        let fadeDistance: CGFloat = 80.0
+
+        let adjustedForHiddenToolbar = StoryTraverseFadeDecision.accumulator(
+            currentAccumulator: 0,
+            deltaY: 44,
+            fadeDistance: fadeDistance,
+            isUserScroll: false
+        )
+        XCTAssertEqual(adjustedForHiddenToolbar, 0)
+
+        let afterFirstUserScroll = StoryTraverseFadeDecision.accumulator(
+            currentAccumulator: adjustedForHiddenToolbar,
+            deltaY: 20,
+            fadeDistance: fadeDistance,
+            isUserScroll: true
+        )
+        XCTAssertEqual(afterFirstUserScroll, 20)
+        XCTAssertEqual(
+            StoryTraverseFadeDecision.alpha(
+                accumulator: afterFirstUserScroll,
+                fadeDistance: fadeDistance
+            ),
+            0.75
         )
     }
 

@@ -17155,6 +17155,131 @@
       ],
       "title": "Active vs Stale Notification Users",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Outcomes of the grandfathered $12/$24 -> $36 premium pricing migration, split by payment provider so Stripe and PayPal upgrade vs cancellation rates can be compared.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 661
+      },
+      "id": 297,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_upgrades_stripe\"}",
+          "legendFormat": "Stripe upgrades",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_upgrades_paypal\"}",
+          "legendFormat": "PayPal upgrades",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_cancellations_stripe\"}",
+          "legendFormat": "Stripe cancellations",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_cancellations_paypal\"}",
+          "legendFormat": "PayPal cancellations",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_would_cancel_paypal\"}",
+          "legendFormat": "PayPal would-cancel (shadow)",
+          "refId": "E"
+        }
+      ],
+      "title": "Premium Pricing Migration ($12/$24 -> $36)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",

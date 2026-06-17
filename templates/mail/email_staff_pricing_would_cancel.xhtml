@@ -1,0 +1,111 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block header_color %}#c0392b{% endblock %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 20px; font-weight: bold; text-align: center; margin: 20px 0 4px;">
+        Would cancel PayPal subscription
+    </h2>
+    <p style="text-align: center; color: #888; font-size: 14px; margin: 0 0 24px;">
+        {{ user.username }} did not approve the $36 rate. Shadow mode: nothing was cancelled.
+    </p>
+
+    <hr style="border: none; border-top: 2px solid #c0392b; margin: 0 0 20px;">
+    <h3 style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 12px;">
+        Account
+    </h3>
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 26px;">
+        <tr>
+            <td style="color: #999; padding: 2px 0; width: 150px;">Username</td>
+            <td style="font-weight: bold;">{{ user.username }}</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Email</td>
+            <td><a href="mailto:{{ email }}" style="color: #1251ba; text-decoration: none;">{{ email }}</a></td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Member for</td>
+            <td>{{ account_age_days }} days <span style="color: #bbb;">(since {{ date_joined|date:"M j, Y" }})</span></td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Last seen</td>
+            <td>{{ last_seen|date:"M j, Y" }}</td>
+        </tr>
+    </table>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <h3 style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 12px;">
+        Pricing migration
+    </h3>
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 26px;">
+        <tr>
+            <td style="color: #999; padding: 2px 0; width: 150px;">Old rate</td>
+            <td style="font-weight: bold;">${{ old_amount }}/year</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">New rate</td>
+            <td>${{ new_amount }}/year</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">PayPal sub</td>
+            <td style="font-family: monospace; font-size: 13px;">{{ paypal_sub_id|default:"--" }}</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Next charge</td>
+            <td style="font-weight: bold; color: #c0392b;">{{ next_billing|date:"M j, Y H:i" }} UTC</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Premium expires</td>
+            <td>{{ premium_expire|date:"M j, Y" }}</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Auto-renewal</td>
+            <td>{% if premium_renewal %}Yes{% else %}No{% endif %}</td>
+        </tr>
+    </table>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <h3 style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 12px;">
+        Payment History
+    </h3>
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 26px;">
+        <tr>
+            <td style="color: #999; padding: 2px 0; width: 150px;">Total paid</td>
+            <td style="font-weight: bold;">${{ total_paid }}</td>
+        </tr>
+        <tr>
+            <td style="color: #999; padding: 2px 0;">Payments</td>
+            <td>{{ payment_count }} payment{{ payment_count|pluralize }}</td>
+        </tr>
+        {% if first_payment_date %}
+        <tr>
+            <td style="color: #999; padding: 2px 0;">First payment</td>
+            <td>{{ first_payment_date|date:"M j, Y" }}</td>
+        </tr>
+        {% endif %}
+    </table>
+
+    {% if payments %}
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; line-height: 22px; margin-top: 16px; border-collapse: collapse;">
+        <tr style="border-bottom: 2px solid #eee;">
+            <td style="color: #999; padding: 6px 8px 6px 0; font-weight: bold;">Date</td>
+            <td style="color: #999; padding: 6px 8px; font-weight: bold;">Amount</td>
+            <td style="color: #999; padding: 6px 8px; font-weight: bold;">Provider</td>
+            <td style="color: #999; padding: 6px 0 6px 8px; font-weight: bold;">Status</td>
+        </tr>
+        {% for payment in payments %}
+        <tr style="border-bottom: 1px solid #f5f5f5;">
+            <td style="padding: 5px 8px 5px 0;">{{ payment.payment_date|date:"M j, Y" }}</td>
+            <td style="padding: 5px 8px;">${{ payment.payment_amount }}</td>
+            <td style="padding: 5px 8px;">{{ payment.payment_provider }}</td>
+            <td style="padding: 5px 0 5px 8px;">{% if payment.refunded %}<span style="color: #c0392b; font-weight: bold;">Refunded</span>{% else %}Paid{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}{% endblock %}
+{% block optout %}{% endblock %}
