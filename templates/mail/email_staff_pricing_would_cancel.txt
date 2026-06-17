@@ -1,0 +1,21 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}WOULD CANCEL PayPal subscription (shadow mode, nothing was cancelled)
+
+{{ user.username }} <{{ email }}> did not approve the $36 rate before their renewal.
+
+Old rate: ${{ old_amount }}/year
+New rate: ${{ new_amount }}/year
+PayPal sub: {{ paypal_sub_id|default:"--" }}
+Next charge: {{ next_billing|date:"M j, Y H:i" }} UTC
+Premium expires: {{ premium_expire|date:"M j, Y" }}
+Auto-renewal: {% if premium_renewal %}Yes{% else %}No{% endif %}
+Member for: {{ account_age_days }} days (since {{ date_joined|date:"M j, Y" }})
+Last seen: {{ last_seen|date:"M j, Y" }}
+
+Payment history: {{ payment_count }} payment{{ payment_count|pluralize }}, ${{ total_paid }} total{% if first_payment_date %}, first {{ first_payment_date|date:"M j, Y" }}{% endif %}
+{% for payment in payments %}
+  {{ payment.payment_date|date:"M j, Y" }}  ${{ payment.payment_amount }}  {{ payment.payment_provider }}{% if payment.refunded %}  REFUNDED{% endif %}{% endfor %}
+{% endblock body %}
