@@ -652,6 +652,16 @@ private enum ReaderUITestFixtures {
         return story
     }
 
+    private static func longStoryContent(_ opening: String, paragraphs: Int) -> String {
+        let filler = (1...paragraphs).map { index in
+            """
+            <p>\(opening) Fixture paragraph \(index) keeps the story long enough for scroll-based reader controls, toolbar hiding, and traversal fade behavior to be exercised in UI tests.</p>
+            """
+        }
+
+        return filler.joined()
+    }
+
     private static let techStoriesPageOne: [[String: Any]] = [
         story(
             hash: "ui-story-arc-1",
@@ -678,7 +688,10 @@ private enum ReaderUITestFixtures {
             hash: "ui-story-swift-1",
             feedID: swiftFeedId,
             title: "Swift Fixture Story One",
-            content: "<p>The first Swift story should open in the detail reader.</p>",
+            content: longStoryContent(
+                "The first Swift story should open in the detail reader.",
+                paragraphs: 60
+            ),
             date: "5m",
             timestamp: 1_700_001_050,
             author: "Swift Weekly"
@@ -687,7 +700,10 @@ private enum ReaderUITestFixtures {
             hash: "ui-story-swift-2",
             feedID: swiftFeedId,
             title: "Swift Fixture Story Two",
-            content: "<p>The Next story control should move from story one to story two.</p>",
+            content: longStoryContent(
+                "The Next story control should move from story one to story two.",
+                paragraphs: 60
+            ),
             date: "8m",
             timestamp: 1_700_001_025,
             author: "Swift Weekly"

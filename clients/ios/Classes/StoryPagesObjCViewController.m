@@ -40,6 +40,9 @@
 @property (nonatomic, strong) UIBarButtonItem *temporaryFullScreenButton;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
 @property (nonatomic, strong) UIView *uiTestStoryStateProbeView;
+@property (nonatomic, strong) UIView *uiTestTraverseFadeProbeView;
+
+- (void)resetTraverseFadeForStoryChange;
 
 @end
 
@@ -178,6 +181,16 @@
 
     [self ensureCurrentPageViewIsFrontmost];
     [self.currentPage drawFeedGradient];
+}
+
+- (void)resetTraverseFadeForStoryChange {
+    self.traverseFadeAccumulator = 0.0;
+
+    BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+    if (hasFeedOrFolder) {
+        self.traverseView.alpha = 1.0;
+    }
+    [self updateUITestTraverseFadeProbe];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -358,6 +371,25 @@
             [probeView.heightAnchor constraintEqualToConstant:1],
         ]];
         self.uiTestStoryStateProbeView = probeView;
+    }
+    if (!self.uiTestTraverseFadeProbeView) {
+        UIView *probeView = [[UIView alloc] init];
+        probeView.translatesAutoresizingMaskIntoConstraints = NO;
+        probeView.userInteractionEnabled = NO;
+        probeView.isAccessibilityElement = YES;
+        probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
+        probeView.accessibilityIdentifier = @"story-traverse-fade-state";
+        probeView.accessibilityLabel = @"Traverse fade state";
+        probeView.alpha = 0.01;
+        [self.view addSubview:probeView];
+        [NSLayoutConstraint activateConstraints:@[
+            [probeView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [probeView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:1],
+            [probeView.widthAnchor constraintEqualToConstant:1],
+            [probeView.heightAnchor constraintEqualToConstant:1],
+        ]];
+        self.uiTestTraverseFadeProbeView = probeView;
+        [self updateUITestTraverseFadeProbe];
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -560,6 +592,7 @@
     // Only show traverse controls when there's an active feed or folder
     BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
     self.traverseView.alpha = hasFeedOrFolder ? 1 : 0;
+    [self updateUITestTraverseFadeProbe];
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
 
@@ -826,6 +859,7 @@
         // Only show traverse controls when there's an active feed or folder
         BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
         self.traverseView.alpha = (hide || !hasFeedOrFolder) ? 0 : 1;
+        [self updateUITestTraverseFadeProbe];
 
         if (hide) {
             [self hideAutoscrollImmediately];
@@ -1883,6 +1917,7 @@
 
     appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
     [self updatePageWithActiveStory:pageIndex updateFeedDetail:YES];
+    [self resetTraverseFadeForStoryChange];
 }
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
@@ -2067,6 +2102,7 @@
 
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
+        [self resetTraverseFadeForStoryChange];
         [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
         [appDelegate.storyPagesViewController.currentPage refreshHeader];
@@ -2202,6 +2238,16 @@
 
     self.uiTestStoryStateProbeView.accessibilityLabel = storyTitle.length ? storyTitle : @"No story selected";
     self.uiTestStoryStateProbeView.accessibilityValue = storyHash;
+}
+
+- (void)updateUITestTraverseFadeProbe {
+    if (!self.uiTestTraverseFadeProbeView) {
+        return;
+    }
+
+    self.uiTestTraverseFadeProbeView.accessibilityValue = [NSString stringWithFormat:@"alpha=%.3f accumulator=%.3f",
+                                                           self.traverseView.alpha,
+                                                           self.traverseFadeAccumulator];
 }
 
 - (void)setTextButton {

@@ -2171,11 +2171,16 @@
         if (!atTopForFade && !atBottom && !singlePage) {
             StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
             CGFloat traverseFadeDistance = 80.0;
-            CGFloat newAccum = pagesVC.traverseFadeAccumulator + deltaY;
-            newAccum = MAX(0.0, MIN(traverseFadeDistance, newAccum));
+            BOOL isUserTraverseScroll = self.isUserScrolling && (isUserDragging || scrollView.isDecelerating);
+            CGFloat newAccum = [StoryTraverseFadeDecision accumulatorWithCurrentAccumulator:pagesVC.traverseFadeAccumulator
+                                                                                     deltaY:deltaY
+                                                                               fadeDistance:traverseFadeDistance
+                                                                               isUserScroll:isUserTraverseScroll];
             pagesVC.traverseFadeAccumulator = newAccum;
-            CGFloat traverseAlpha = 1.0 - (newAccum / traverseFadeDistance);
+            CGFloat traverseAlpha = [StoryTraverseFadeDecision alphaWithAccumulator:newAccum
+                                                                       fadeDistance:traverseFadeDistance];
             pagesVC.traverseView.alpha = traverseAlpha;
+            [pagesVC updateUITestTraverseFadeProbe];
 
             if (traverseAlpha == 0) {
                 [pagesVC hideAutoscrollImmediately];
@@ -2183,6 +2188,7 @@
         } else if (singlePage || !isHorizontal) {
             appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
+            [appDelegate.storyPagesViewController updateUITestTraverseFadeProbe];
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             CGFloat gap = appDelegate.storyPagesViewController.traverseBottomGap;
             if (bottomPosition >= 0 || !isHorizontal) {
