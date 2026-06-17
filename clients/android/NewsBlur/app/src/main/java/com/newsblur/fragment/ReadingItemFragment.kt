@@ -244,17 +244,25 @@ class ReadingItemFragment :
         return binding.readingScrollview.scrollY.toFloat() / contentHeight
     }
 
-    private fun captureCurrentScrollPosition(preferAbsoluteRestore: Boolean): Boolean {
+    private fun captureCurrentScrollPosition(
+        preferAbsoluteRestore: Boolean,
+        reason: String,
+    ): Boolean {
         val scrollPosRel = currentScrollPosRel() ?: return false
         savedScrollPosRel = scrollPosRel
         savedScrollPosPx = binding.readingScrollview.scrollY
         hasSavedScrollPosition = true
         preferAbsoluteScrollRestore = preferAbsoluteRestore
+        logReaderRestore(
+            "capture reason=$reason px=$savedScrollPosPx rel=$savedScrollPosRel " +
+                "height=${binding.readingScrollview.getChildAt(0).measuredHeight} preferAbs=$preferAbsoluteRestore " +
+                "state=${lifecycle.currentState}",
+        )
         return true
     }
 
     fun prepareForConfigurationChange(): Float {
-        captureCurrentScrollPosition(preferAbsoluteRestore = false)
+        captureCurrentScrollPosition(preferAbsoluteRestore = false, reason = "configuration")
         return savedScrollPosRel
     }
 
@@ -269,7 +277,7 @@ class ReadingItemFragment :
     override fun onPause() {
         if (::binding.isInitialized) {
             enableProgress(false)
-            captureCurrentScrollPosition(preferAbsoluteRestore = true)
+            captureCurrentScrollPosition(preferAbsoluteRestore = true, reason = "pause")
         }
         readingWebview?.onPause()
         super.onPause()
@@ -282,6 +290,11 @@ class ReadingItemFragment :
                 isWebViewReleasedForBackground = isWebViewReleasedForBackground,
                 hasCompletedInitialStoryRender = hasCompletedInitialStoryRender,
             )
+        logReaderRestore(
+            "onResume released=$isWebViewReleasedForBackground completed=$hasCompletedInitialStoryRender " +
+                "reload=$shouldReloadStoryContent savedPx=$savedScrollPosPx savedRel=$savedScrollPosRel " +
+                "hasSaved=$hasSavedScrollPosition preferAbs=$preferAbsoluteScrollRestore",
+        )
         isRestoringReleasedWebView = isWebViewReleasedForBackground
         if (shouldReloadStoryContent) {
             contentHash = 0
@@ -1554,8 +1567,12 @@ class ReadingItemFragment :
                 isViewStarted = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED),
                 hasSavedScrollPosition = hasSavedScrollPosition,
             )
+        logReaderRestore(
+            "releaseWebView shouldCapture=$shouldCapture state=${lifecycle.currentState} " +
+                "savedPx=$savedScrollPosPx savedRel=$savedScrollPosRel preferAbs=$preferAbsoluteScrollRestore",
+        )
         if (shouldCapture) {
-            captureCurrentScrollPosition(preferAbsoluteRestore = true)
+            captureCurrentScrollPosition(preferAbsoluteRestore = true, reason = "release")
         }
         contentHash = 0
         destroyReadingWebviewForBackground()
@@ -1599,7 +1616,13 @@ class ReadingItemFragment :
         val delayMs = STORY_SCROLL_RESTORE_DELAYS_MS.getOrNull(attempt) ?: return
         binding.readingScrollview.postDelayed({
             if (!::binding.isInitialized || !hasSavedScrollPosition) return@postDelayed
-            if (!shouldApplyScrollRestore(binding.readingScrollview.scrollY, previousAppliedScrollY)) return@postDelayed
+            if (!shouldApplyScrollRestore(binding.readingScrollview.scrollY, previousAppliedScrollY)) {
+                logReaderRestore(
+                    "restore skipped attempt=$attempt current=${binding.readingScrollview.scrollY} " +
+                        "previousApplied=$previousAppliedScrollY",
+                )
+                return@postDelayed
+            }
 
             val contentHeight = binding.readingScrollview.getChildAt(0).measuredHeight
             val desiredScrollY =
@@ -1614,7 +1637,7 @@ class ReadingItemFragment :
             binding.readingScrollview.scrollTo(0, restoreY)
 
             val appliedScrollY = binding.readingScrollview.scrollY
-            if (
+            val shouldRetry =
                 shouldRetryScrollRestore(
                     desiredScrollY = desiredScrollY,
                     maxScrollY = maxScrollY,
@@ -1622,10 +1645,19 @@ class ReadingItemFragment :
                     attempt = attempt,
                     maxAttempts = STORY_SCROLL_RESTORE_DELAYS_MS.size,
                 )
-            ) {
+            logReaderRestore(
+                "restore attempt=$attempt desired=$desiredScrollY max=$maxScrollY applied=$appliedScrollY " +
+                    "contentHeight=$contentHeight viewport=${binding.readingScrollview.height} retry=$shouldRetry",
+            )
+            if (shouldRetry) {
                 scheduleSavedScrollRestore(attempt + 1, appliedScrollY)
             }
         }, delayMs)
+    }
+
+    private fun logReaderRestore(message: String) {
+        com.newsblur.util.Log
+            .d(this.javaClass.name, "reader_restore story=${story?.storyHash} $message")
     }
 
     fun showStoryShortcuts() {

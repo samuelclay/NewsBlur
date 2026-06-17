@@ -384,7 +384,13 @@ abstract class Reading :
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        when (readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)) {
+        val releaseScope = readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)
+        logReaderRestore(
+            "onTrimMemory level=$level scope=$releaseScope changing=$isChangingConfigurations " +
+                "active=${storyDebug(activeReadingStory())} pager=${storyDebug(pagerReadingStory())} " +
+                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
+        )
+        when (releaseScope) {
             ReaderWebViewReleaseScope.BACKGROUND_ONLY ->
                 readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
 
