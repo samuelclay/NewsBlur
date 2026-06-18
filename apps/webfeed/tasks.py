@@ -254,6 +254,67 @@ def extract_preview_stories(html_text, variant, url):
     return stories
 
 
+def parse_variants_json(response_text):
+    """Parse the LLM analysis response into a list of variant dicts.
+
+    Tolerates markdown code fences around the JSON. Returns a list (possibly
+    empty) on success, or None when the text is not valid JSON / not a list.
+    """
+    cleaned = response_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
+    if cleaned.endswith("```"):
+        cleaned = cleaned[: cleaned.rfind("```")]
+    cleaned = cleaned.strip()
+
+    try:
+        variants = json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(variants, list):
+        return None
+    return variants
+
+
+def rank_variants_by_previews(variants):
+    """Order variants best-first by how many preview stories they extracted.
+
+    A variant's worth is judged by what it actually pulls off the page, not by
+    the LLM's self-reported confidence order -- which is exactly the signal that
+    fails on sites with churn-prone utility classes. Re-numbers each variant's
+    `index` to match the new display order and returns (ranked, usable_count),
+    where usable_count is how many variants produced at least one story.
+    """
+    ranked = sorted(variants, key=lambda v: len(v.get("preview_stories", [])), reverse=True)
+    usable_count = 0
+    for i, variant in enumerate(ranked):
+        variant["index"] = i
+        if variant.get("preview_stories"):
+            usable_count += 1
+    return ranked, usable_count
+
+
+def choose_better_attempt(first, second):
+    """Pick the better of two analysis attempts.
+
+    Each attempt is a (variants, usable_count, response_text) tuple. Prefer the
+    attempt that extracted more stories; if neither matched anything, fall back
+    to whichever returned any variants at all so the user still has options.
+    """
+    first_variants, first_usable, _ = first
+    second_variants, second_usable, _ = second
+    if second_usable > first_usable:
+        return second
+    if first_usable > 0:
+        return first
+    # Neither attempt matched a story -- prefer a non-empty variant list.
+    if first_variants:
+        return first
+    if second_variants:
+        return second
+    return first
+
+
 @app.task(name="fetch-webfeed", time_limit=60, soft_time_limit=55)
 def FetchWebFeed(feed_id, user_id):
     """Fetch stories for a web feed in the background, publishing progress via Redis PubSub."""
@@ -360,10 +421,13 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event("progress", {"message": "Finding story patterns..."})
 
-        # Step 2: Call Claude for XPath analysis
+        # Step 2: Call Claude for XPath analysis. The model is non-deterministic
+        # and sometimes returns selectors that match nothing (especially on
+        # utility-class-heavy sites like Tailwind), so wrap the call in a helper
+        # we can retry, and judge each pass by what its selectors actually
+        # extract rather than by the model's self-reported confidence order.
         from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
 
-        messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint)
         provider, model_id = get_briefing_provider("haiku")
 
         if not provider.is_configured():
@@ -371,44 +435,54 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             publish_event("error", {"error": error_msg})
             return {"code": -1, "message": error_msg}
 
-        full_response = []
-        for text in provider.stream_response(messages, model_id):
-            full_response.append(text)
+        def request_variants(retry):
+            """Run one analysis pass: call Claude, parse the JSON, attach preview
+            stories, and rank best-first. Returns (variants, usable_count, text)
+            where variants is None on a parse failure and usable_count is the
+            number of variants that extracted at least one story."""
+            messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint, retry=retry)
+            response_chunks = []
+            for chunk in provider.stream_response(messages, model_id):
+                response_chunks.append(chunk)
+            text = "".join(response_chunks)
 
-        response_text = "".join(full_response)
+            input_tokens, output_tokens = provider.get_last_usage()
+            LLMCostTracker.record_usage(
+                provider="anthropic",
+                model=model_id,
+                feature="webfeed",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                user_id=user_id,
+                request_id=f"{request_token}:retry" if retry else request_token,
+                metadata={"url": url, "retry": retry},
+            )
 
-        # Record LLM cost
-        input_tokens, output_tokens = provider.get_last_usage()
-        LLMCostTracker.record_usage(
-            provider="anthropic",
-            model=model_id,
-            feature="webfeed",
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            user_id=user_id,
-            request_id=request_token,
-            metadata={"url": url},
-        )
+            parsed = parse_variants_json(text)
+            if not parsed:
+                return parsed, 0, text
+            for variant in parsed:
+                variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
+            ranked, usable = rank_variants_by_previews(parsed)
+            return ranked, usable, text
 
-        # Step 3: Parse JSON response
-        # Strip markdown code fences if present
-        cleaned = response_text.strip()
-        if cleaned.startswith("```"):
-            cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
-        if cleaned.endswith("```"):
-            cleaned = cleaned[: cleaned.rfind("```")]
-        cleaned = cleaned.strip()
+        # Step 3: First analysis pass, plus a single retry when nothing matched.
+        variants, usable_count, response_text = request_variants(retry=False)
+        if usable_count == 0:
+            publish_event("progress", {"message": "Refining story patterns..."})
+            retry_attempt = request_variants(retry=True)
+            variants, usable_count, response_text = choose_better_attempt(
+                (variants, usable_count, response_text), retry_attempt
+            )
 
-        try:
-            variants = json.loads(cleaned)
-        except json.JSONDecodeError:
+        if variants is None:
             error_msg = "Failed to parse AI response. Please try again."
             publish_event("error", {"error": error_msg})
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBJSON parse failed~SN~FW: {response_text[:200]}")
             RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
-        if not isinstance(variants, list) or len(variants) == 0:
+        if len(variants) == 0:
             error_msg = "No story patterns found on this page."
             publish_event("error", {"error": error_msg})
             RTrendingWebFeed.record_analysis_result(success=False)
@@ -445,17 +519,11 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         except Exception:
             pass
 
-        publish_event("progress", {"message": "Extracting previews..."})
-
-        # Step 4: Extract preview stories for each variant
-        for i, variant in enumerate(variants):
-            variant["index"] = i
-            variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
-
-        # Filter out variants with no preview stories
-        valid_variants = [v for v in variants if len(v.get("preview_stories", [])) > 0]
+        # Step 4: Variants already carry preview stories and are ranked best-first.
+        # Show only the ones that actually extracted stories; if none did, fall
+        # back to showing all so the user can still choose or refine with a hint.
+        valid_variants = [v for v in variants if v.get("preview_stories")]
         if not valid_variants:
-            # Keep all variants even without previews so user can still choose
             valid_variants = variants
 
         logging.user(
