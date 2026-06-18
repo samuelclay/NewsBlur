@@ -80,6 +80,24 @@ class FeedFinder(object):
         return any(map(url.lower().count, ["rss", "rdf", "xml", "atom", "feed", "json"]))
 
 
+def url_is_feed(url, user_agent=None):
+    """Return True only when the document at this URL is itself a feed.
+
+    Unlike find_feeds(), this does NOT scrape <link>/<a> tags for a feed that a
+    web *page* merely references -- it answers the narrower question "is the thing
+    served at this URL already an RSS/Atom/JSON feed?" Used to short-circuit the
+    Web Feed page-monitoring flow: when a user pastes a real feed URL we route
+    them to a normal (free) subscription, but a page that only links to a feed is
+    left alone because that referenced feed may not be the one they want.
+    utils/feedfinder_forman.py
+    """
+    finder = FeedFinder(user_agent=user_agent)
+    text = finder.get_feed(coerce_url(url))
+    if not text:
+        return False
+    return bool(finder.is_feed_data(text))
+
+
 def find_feeds(url, check_all=False, user_agent=None):
     finder = FeedFinder(user_agent=user_agent)
 
