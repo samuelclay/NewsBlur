@@ -3788,6 +3788,23 @@ class Profile(models.Model):
         if not preview:
             MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
 
+    @staticmethod
+    def _acquire_pricing_lock(name):
+        """Acquire a short-lived redis lock so only one beat scheduler runs a pricing-migration
+        task at a time (all three htask-work hosts run their own celery beat). Returns the held
+        lock (release it when done), the string "skip" if another runner already holds it, or None
+        if redis is unavailable (caller proceeds without locking rather than never running). The
+        30-minute timeout releases the lock automatically if a run crashes (apps/profile/models.py)."""
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+            lock = r.lock(name, timeout=60 * 30)
+            if lock.acquire(blocking=False):
+                return lock
+            return "skip"
+        except Exception as e:
+            logging.debug(" ---> Pricing migration lock unavailable (%s); proceeding without it" % e)
+            return None
+
     @classmethod
     def run_premium_pricing_migration(cls, dry_run=False, limit=None, only_username=None):
         """Nightly campaign: move grandfathered $12/$24 premium subscribers to the $36 rate as
@@ -3795,6 +3812,12 @@ class Profile(models.Model):
         the existing next renewal, no charge now); PayPal subscriptions get an approval-link
         email. Idempotent via the PremiumPricingMigration tracking row. dry_run/limit/only_username
         exist so this can be exercised from the Django shell for testing (apps/profile/tasks.py)."""
+        lock = None
+        if not dry_run:
+            lock = cls._acquire_pricing_lock("lock:premium_pricing_migration")
+            if lock == "skip":
+                logging.debug(" ---> Premium pricing migration already running elsewhere; skipping")
+                return 0
         now = datetime.datetime.now()
         window_start = now + datetime.timedelta(hours=48)
         window_end = now + datetime.timedelta(hours=72)
@@ -3880,6 +3903,11 @@ class Profile(models.Model):
             " ---> Premium pricing migration processed %s users%s"
             % (processed, " (dry-run)" if dry_run else "")
         )
+        if lock and lock != "skip":
+            try:
+                lock.release()
+            except Exception:
+                pass
         return processed
 
     @staticmethod
@@ -3909,6 +3937,10 @@ class Profile(models.Model):
         when auto-renew is off. Records resubscribes for cancelled users so we can judge the PayPal
         experiment. Runs daily, so the cancel window is sized a little above the daily interval to
         guarantee we cancel before PayPal's next_billing_time without acting too early."""
+        lock = cls._acquire_pricing_lock("lock:premium_pricing_reconcile")
+        if lock == "skip":
+            logging.debug(" ---> Premium pricing reconciliation already running elsewhere; skipping")
+            return 0
         now = datetime.datetime.now()
         now_utc = datetime.datetime.utcnow()
         target_paypal_plan = Profile.plan_to_paypal_plan_id("premium")
@@ -3996,6 +4028,11 @@ class Profile(models.Model):
                 row.resubscribed_provider = resub.payment_provider
                 row.save()
 
+        if lock and lock != "skip":
+            try:
+                lock.release()
+            except Exception:
+                pass
         return emailed.count()
 
     def autologin_url(self, next=None):
