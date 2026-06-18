@@ -405,11 +405,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		}
 	}
 
-    @Override
+	@Override
 	public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_notifications) {
             // this means the notifications menu has been opened, but this is our one chance to see the list position
             // and get the ID of the feed for which the menu was opened. (no packed pos when the submenu is tapped)
+            if (!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo)) {
+                return true;
+            }
             ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
             int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
             int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
@@ -417,20 +420,34 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_disable) {
+            if (lastMenuFeed == null) return true;
             feedUtils.disableNotifications(getActivity(), lastMenuFeed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_focus) {
+            if (lastMenuFeed == null) return true;
             feedUtils.enableFocusNotifications(getActivity(), lastMenuFeed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_unread) {
+            if (lastMenuFeed == null) return true;
             feedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
+        if (!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo)) {
             return true;
         }
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+        Folder folderForMenuAction = null;
+        if (requiresLiveFolderContextMenuRow(item.getItemId())) {
+            folderForMenuAction = adapter.getGroupFolder(groupPosition);
+            if (folderForMenuAction == null) {
+                com.newsblur.util.Log.w(this, "Ignoring stale folder context menu action: " + item.getItemId());
+                return true;
+            }
+        }
 
 		if (item.getItemId() == R.id.menu_delete_feed || item.getItemId() == R.id.menu_unfollow) {
 			DialogFragment deleteFeedFragment;
@@ -471,9 +488,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
             feedUtils.unmuteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_mute_folder) {
-            feedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+            feedUtils.muteFeeds(getActivity(), FolderListAdapter.safeFolderFeedIds(folderForMenuAction));
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
-            feedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+            feedUtils.unmuteFeeds(getActivity(), FolderListAdapter.safeFolderFeedIds(folderForMenuAction));
         } else if (item.getItemId() == R.id.menu_instafetch_feed) {
             feedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         } else if (item.getItemId() == R.id.menu_intel) {
@@ -486,19 +503,24 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 deleteFeedFragment.show(getParentFragmentManager(), "dialog");
             }
 		} else if (item.getItemId() == R.id.menu_delete_folder) {
-		    Folder folder = adapter.getGroupFolder(groupPosition);
-		    String folderParentName = folder.getFirstParentName();
-            DeleteFolderDialogFragment deleteFolderFragment = DeleteFolderDialogFragment.newInstance(folder.name, folderParentName);
+		    String folderParentName = folderForMenuAction.getFirstParentName();
+            DeleteFolderDialogFragment deleteFolderFragment = DeleteFolderDialogFragment.newInstance(folderForMenuAction.name, folderParentName);
 		    deleteFolderFragment.show(getParentFragmentManager(), deleteFolderFragment.getTag());
         } else if (item.getItemId() == R.id.menu_rename_folder) {
-		    Folder folder = adapter.getGroupFolder(groupPosition);
-            String folderParentName = folder.getFirstParentName();
-            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newFolderInstance(folder.name, folderParentName);
+            String folderParentName = folderForMenuAction.getFirstParentName();
+            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newFolderInstance(folderForMenuAction.name, folderParentName);
             renameDialogFragment.show(getParentFragmentManager(), renameDialogFragment.getTag());
         }
 
 		return super.onContextItemSelected(item);
 	}
+
+    static boolean requiresLiveFolderContextMenuRow(int itemId) {
+        return itemId == R.id.menu_mute_folder ||
+               itemId == R.id.menu_unmute_folder ||
+               itemId == R.id.menu_delete_folder ||
+               itemId == R.id.menu_rename_folder;
+    }
 
     private void markFeedsAsRead(FeedSet fs) {
         feedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options);

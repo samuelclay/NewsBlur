@@ -514,6 +514,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     public Folder getGroupFolder(int groupPosition) {
+        if (!isValidGroupPosition(groupPosition)) return null;
         String flatFolderName = activeFolderNames.get(groupPosition);
         return flatFolders.get(flatFolderName);
     }
@@ -960,9 +961,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     public Set<String> getAllFeedsForFolder(int groupPosition) {
-        String flatFolderName = activeFolderNames.get(groupPosition);
-        Folder folder = flatFolders.get(flatFolderName);
+        return safeFolderFeedIds(getGroupFolder(groupPosition));
+    }
+
+    public static Set<String> safeFolderFeedIds(@Nullable Folder folder) {
+        if (folder == null || folder.feedIds == null) return Collections.emptySet();
         return new HashSet<>(folder.feedIds);
+    }
+
+    public synchronized boolean isValidGroupPosition(int groupPosition) {
+        return activeFolderNames != null && groupPosition >= 0 && groupPosition < activeFolderNames.size();
     }
 
     /** Get the cached SocialFeed object for the feed at the given list location. */
