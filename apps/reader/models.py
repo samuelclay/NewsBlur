@@ -1730,6 +1730,10 @@ class UserSubscription(models.Model):
         ucu = self.unread_count_updated
         onur = self.needs_unread_recalc
         oit = self.is_trained
+        # Snapshot last_read_date before sampling unread stories below, so the
+        # write-back can detect a story marked read mid-recompute and avoid
+        # clobbering the recalc flag (see the conditional clear at the end).
+        olrd = self.last_read_date
 
         # if not self.feed.fetched_once:
         #     if not silent:
@@ -1975,14 +1979,25 @@ class UserSubscription(models.Model):
             update_fields.append("unread_count_updated")
         if self.oldest_unread_story_date != oousd:
             update_fields.append("oldest_unread_story_date")
-        if self.needs_unread_recalc != onur:
-            update_fields.append("needs_unread_recalc")
         if self.is_trained != oit:
             update_fields.append("is_trained")
         if len(update_fields):
             update_dict = {field: getattr(self, field) for field in update_fields}
             if not UserSubscription.objects.filter(pk=self.pk).update(**update_dict):
                 return None
+
+        # Clear needs_unread_recalc only if no story was marked read while we were
+        # recomputing. mark_story_ids_as_read advances last_read_date (and sets the
+        # flag); if it moved since our snapshot, a read raced the count above, which
+        # is now stale. Leave the flag set so the next recount produces the correct
+        # number instead of clobbering the flag with a stale count (a lost-update
+        # race that otherwise leaves a permanently wrong, "clean" unread count).
+        if onur and not self.needs_unread_recalc:
+            cleared = UserSubscription.objects.filter(pk=self.pk, last_read_date=olrd).update(
+                needs_unread_recalc=False
+            )
+            if not cleared:
+                self.needs_unread_recalc = True
 
         if self.unread_count_positive == 0 and self.unread_count_neutral == 0:
             self.mark_feed_read()
