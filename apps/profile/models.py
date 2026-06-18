@@ -1198,7 +1198,9 @@ class Profile(models.Model):
                     "application_context": application_context,
                 },
             )
-        except paypalrestsdk.ResourceNotFound as e:
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            # Covers 404 (not found), 422 (subscription not active / not revisable), 5xx, etc.
+            # A non-revisable sub just means we can't offer this user the approval link; skip them.
             logging.user(self.user, f"~FRPayPal revise failed: {self.paypal_sub_id} {plan}: {e}")
             return None
 
@@ -1222,7 +1224,7 @@ class Profile(models.Model):
             return None
         try:
             return paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}")
-        except paypalrestsdk.ResourceNotFound as e:
+        except paypalrestsdk.exceptions.ConnectionError as e:
             logging.user(self.user, f"~FRCouldn't fetch paypal subscription {self.paypal_sub_id}: {e}")
             return None
 
@@ -3838,77 +3840,88 @@ class Profile(models.Model):
             )
 
         processed = 0
-        for profile in profiles:
-            if limit and processed >= limit:
-                break
+        try:
+            for profile in profiles:
+                if limit and processed >= limit:
+                    break
 
-            old_amount = profile.latest_premium_payment_amount()
-            if old_amount not in (12, 24):
-                continue
+                # Isolate each user: a failure on one (e.g. a PayPal sub that can't be revised)
+                # must never abort the whole batch.
+                try:
+                    old_amount = profile.latest_premium_payment_amount()
+                    if old_amount not in (12, 24):
+                        continue
 
-            provider = profile.active_provider
-            if provider not in ("stripe", "paypal"):
-                logging.user(profile.user, "~FBSkipping pricing migration (provider=%s)" % provider)
-                continue
+                    provider = profile.active_provider
+                    if provider not in ("stripe", "paypal"):
+                        logging.user(profile.user, "~FBSkipping pricing migration (provider=%s)" % provider)
+                        continue
 
-            existing = PremiumPricingMigration.objects.filter(user=profile.user).first()
-            if existing and existing.status != "pending":
-                continue
-            if MSentEmail.objects.filter(
-                receiver_user_id=profile.user.pk, email_type="premium_pricing_upgrade"
-            ).count():
-                continue
+                    existing = PremiumPricingMigration.objects.filter(user=profile.user).first()
+                    if existing and existing.status != "pending":
+                        continue
+                    if MSentEmail.objects.filter(
+                        receiver_user_id=profile.user.pk, email_type="premium_pricing_upgrade"
+                    ).count():
+                        continue
 
-            if dry_run:
-                logging.user(
-                    profile.user,
-                    "~FC[dry-run] Would migrate %s ($%s/%s) renewing %s"
-                    % (profile.user.username, old_amount, provider, profile.premium_expire),
-                )
-                processed += 1
-                continue
+                    if dry_run:
+                        logging.user(
+                            profile.user,
+                            "~FC[dry-run] Would migrate %s ($%s/%s) renewing %s"
+                            % (profile.user.username, old_amount, provider, profile.premium_expire),
+                        )
+                        processed += 1
+                        continue
 
-            row, _ = PremiumPricingMigration.objects.get_or_create(
-                user=profile.user, defaults=dict(provider=provider, old_amount=old_amount)
-            )
-            row.provider = provider
-            row.old_amount = old_amount
-            row.renewal_date_at_send = profile.premium_expire
+                    row, _ = PremiumPricingMigration.objects.get_or_create(
+                        user=profile.user, defaults=dict(provider=provider, old_amount=old_amount)
+                    )
+                    row.provider = provider
+                    row.old_amount = old_amount
+                    row.renewal_date_at_send = profile.premium_expire
 
-            approval_url = None
-            if provider == "stripe":
-                switched = profile.switch_stripe_subscription("premium", proration_behavior="none")
-                if not switched:
-                    logging.user(profile.user, "~FRStripe price switch failed; not emailing")
+                    approval_url = None
+                    if provider == "stripe":
+                        switched = profile.switch_stripe_subscription("premium", proration_behavior="none")
+                        if not switched:
+                            logging.user(profile.user, "~FRStripe price switch failed; not emailing")
+                            continue
+                        row.price_switched_date = now
+                    else:  # paypal
+                        approval_url = profile.paypal_price_change_approval_url("premium")
+                        if not approval_url:
+                            logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
+                            continue
+
+                    profile.send_premium_pricing_upgrade_email(
+                        old_amount=old_amount,
+                        renewal_date=profile.premium_expire,
+                        approval_url=approval_url,
+                        variant=provider,
+                    )
+                    row.email_sent_date = now
+                    row.status = "emailed"
+                    row.save()
+                    processed += 1
+                except Exception as e:
+                    logging.user(
+                        profile.user,
+                        "~FRPricing migration error for %s, skipping: %s" % (profile.user.username, e),
+                    )
                     continue
-                row.price_switched_date = now
-            else:  # paypal
-                approval_url = profile.paypal_price_change_approval_url("premium")
-                if not approval_url:
-                    logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
-                    continue
 
-            profile.send_premium_pricing_upgrade_email(
-                old_amount=old_amount,
-                renewal_date=profile.premium_expire,
-                approval_url=approval_url,
-                variant=provider,
+            logging.debug(
+                " ---> Premium pricing migration processed %s users%s"
+                % (processed, " (dry-run)" if dry_run else "")
             )
-            row.email_sent_date = now
-            row.status = "emailed"
-            row.save()
-            processed += 1
-
-        logging.debug(
-            " ---> Premium pricing migration processed %s users%s"
-            % (processed, " (dry-run)" if dry_run else "")
-        )
-        if lock and lock != "skip":
-            try:
-                lock.release()
-            except Exception:
-                pass
-        return processed
+            return processed
+        finally:
+            if lock and lock != "skip":
+                try:
+                    lock.release()
+                except Exception:
+                    pass
 
     @staticmethod
     def _parse_paypal_next_billing(detail):
@@ -3947,69 +3960,74 @@ class Profile(models.Model):
 
         emailed = PremiumPricingMigration.objects.filter(status="emailed").select_related("user")
         for row in emailed:
-            profile = row.user.profile
+            # Isolate each row so one failure (PayPal API, email render) can't abort reconciliation.
+            try:
+                profile = row.user.profile
 
-            upgraded = (
-                PaymentHistory.objects.filter(
-                    user=row.user, payment_amount__gte=36, payment_date__gt=row.email_sent_date
+                upgraded = (
+                    PaymentHistory.objects.filter(
+                        user=row.user, payment_amount__gte=36, payment_date__gt=row.email_sent_date
+                    )
+                    .exclude(refunded=True)
+                    .exists()
                 )
-                .exclude(refunded=True)
-                .exists()
-            )
-            if upgraded:
-                row.status = "upgraded"
-                if not row.price_switched_date:
-                    row.price_switched_date = now
-                row.save()
-                continue
-
-            # PayPal non-approvers: cancel the old grandfathered subscription, but only right
-            # before its next charge, so they keep the most time to approve the $36 rate and are
-            # never billed again at the old rate. Approval is detected from the live plan_id.
-            if row.provider == "paypal":
-                detail = profile.paypal_subscription_detail()
-                if detail is not None:
-                    status = detail.get("status")
-                    plan_id = detail.get("plan_id")
-                    if plan_id == target_paypal_plan:
-                        # Approved the new rate; leave emailed until the $36 charge lands above.
-                        continue
-                    if status not in ("ACTIVE", "APPROVED", "APPROVAL_PENDING"):
-                        # Subscriber already cancelled/suspended it themselves.
-                        row.status = "cancelled"
-                        row.save()
-                        continue
-                    next_billing = cls._parse_paypal_next_billing(detail)
-                    if next_billing is not None and next_billing <= now_utc + datetime.timedelta(
-                        hours=paypal_cancel_window_hours
-                    ):
-                        if getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
-                            profile.cancel_premium_paypal()
-                            row.paypal_canceled_date = now
-                            row.status = "cancelled"
-                        else:
-                            # Shadow mode (default): never touch PayPal. Email staff that we WOULD
-                            # have cancelled this user, with their full payment history, so we can
-                            # verify targeting before enabling real cancellations. Their old
-                            # subscription renews untouched at the grandfathered rate.
-                            profile.send_staff_pricing_would_cancel_email(
-                                old_amount=row.old_amount, next_billing=next_billing
-                            )
-                            row.would_cancel_date = now
-                            row.status = "would_cancel"
-                        row.save()
-                        continue
-                    # Not approved, but the charge isn't imminent yet: wait for a later run.
+                if upgraded:
+                    row.status = "upgraded"
+                    if not row.price_switched_date:
+                        row.price_switched_date = now
+                    row.save()
                     continue
 
-            # General cancellation: auto-renew off, or well past renewal with no $36 charge.
-            if not profile.premium_renewal:
-                row.status = "cancelled"
-                row.save()
-                continue
-            if row.renewal_date_at_send and now > row.renewal_date_at_send + datetime.timedelta(days=33):
-                row.status = "cancelled"
-                row.save()
+                # PayPal non-approvers: cancel the old grandfathered subscription, but only right
+                # before its next charge, so they keep the most time to approve the $36 rate and are
+                # never billed again at the old rate. Approval is detected from the live plan_id.
+                if row.provider == "paypal":
+                    detail = profile.paypal_subscription_detail()
+                    if detail is not None:
+                        status = detail.get("status")
+                        plan_id = detail.get("plan_id")
+                        if plan_id == target_paypal_plan:
+                            # Approved the new rate; leave emailed until the $36 charge lands above.
+                            continue
+                        if status not in ("ACTIVE", "APPROVED", "APPROVAL_PENDING"):
+                            # Subscriber already cancelled/suspended it themselves.
+                            row.status = "cancelled"
+                            row.save()
+                            continue
+                        next_billing = cls._parse_paypal_next_billing(detail)
+                        if next_billing is not None and next_billing <= now_utc + datetime.timedelta(
+                            hours=paypal_cancel_window_hours
+                        ):
+                            if getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
+                                profile.cancel_premium_paypal()
+                                row.paypal_canceled_date = now
+                                row.status = "cancelled"
+                            else:
+                                # Shadow mode (default): never touch PayPal. Email staff that we
+                                # WOULD have cancelled this user, with their full payment history, so
+                                # we can verify targeting before enabling real cancellations. Their
+                                # old subscription renews untouched at the grandfathered rate.
+                                profile.send_staff_pricing_would_cancel_email(
+                                    old_amount=row.old_amount, next_billing=next_billing
+                                )
+                                row.would_cancel_date = now
+                                row.status = "would_cancel"
+                            row.save()
+                            continue
+                        # Not approved, but the charge isn't imminent yet: wait for a later run.
+                        continue
+
+                # General cancellation: auto-renew off, or well past renewal with no $36 charge.
+                if not profile.premium_renewal:
+                    row.status = "cancelled"
+                    row.save()
+                    continue
+                if row.renewal_date_at_send and now > row.renewal_date_at_send + datetime.timedelta(days=33):
+                    row.status = "cancelled"
+                    row.save()
+                    continue
+            except Exception as e:
+                logging.user(row.user, "~FRReconcile error for %s, skipping: %s" % (row.user.username, e))
                 continue
 
         cancelled = PremiumPricingMigration.objects.filter(

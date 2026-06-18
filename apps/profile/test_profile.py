@@ -1123,3 +1123,32 @@ class Test_PremiumPricingMigration(TestCase):
         mock_cancel.assert_not_called()
         row.refresh_from_db()
         self.assertEqual(row.status, "emailed")  # untouched
+
+    # --- Resilience: a non-revisable PayPal sub or a per-user error must not crash the batch -----
+
+    @patch.object(Profile, "paypal_api")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_paypal_approval_url_returns_none_on_api_error(self, mock_ids, mock_api):
+        # PayPal revise raises ResourceInvalid (422) when a sub isn't active; we must return None,
+        # not raise (which previously crashed the whole batch).
+        import paypalrestsdk
+
+        self.profile.paypal_sub_id = "I-SUB"
+        self.profile.save()
+        api = MagicMock()
+        api.post.side_effect = paypalrestsdk.exceptions.ConnectionError(MagicMock())
+        mock_api.return_value = api
+
+        self.assertIsNone(self.profile.paypal_price_change_approval_url("premium"))
+
+    @patch.object(Profile, "switch_stripe_subscription", side_effect=Exception("boom"))
+    def test_run_isolates_per_user_errors(self, mock_switch):
+        # A failure on one user must not abort the run; the row is left non-emailed (retryable).
+        from apps.profile.models import PremiumPricingMigration
+
+        self._add_payment(24)
+        result = Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        self.assertEqual(result, 0)
+        row = PremiumPricingMigration.objects.filter(user=self.user).first()
+        self.assertNotEqual(getattr(row, "status", None), "emailed")
