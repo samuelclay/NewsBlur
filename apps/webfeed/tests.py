@@ -7,7 +7,14 @@ from django.test.client import Client
 from django.urls import reverse
 
 from apps.webfeed.models import MWebFeedConfig
-from apps.webfeed.tasks import extract_image_url, extract_preview_stories
+from apps.webfeed.prompts import get_analysis_messages
+from apps.webfeed.tasks import (
+    choose_better_attempt,
+    extract_image_url,
+    extract_preview_stories,
+    parse_variants_json,
+    rank_variants_by_previews,
+)
 from utils import feedfinder_forman
 from utils import json_functions as json
 from utils.webfeed_fetcher import WebFeedFetcher
@@ -97,6 +104,73 @@ class Test_ExtractPreviewStories(TestCase):
         self.assertEqual(stories[1]["image"], "https://example.com/images/photo2.webp")
 
 
+class Test_XPathBrittleness(TestCase):
+    """Reproduces the csis.org failure report: an exact full-class XPath breaks
+    the moment a site reorders its utility classes (or the LLM mis-copies the
+    long class string), while contains() on a single stable token keeps working.
+
+    csis.org is a Tailwind/utility-CSS site, so its story containers carry long
+    class strings like "@container ts-card-slim relative". Matching the whole
+    string with @class='...' is fragile both at generation time and across site
+    deploys; matching contains(@class,'ts-card-slim') is not.
+    """
+
+    # The same two article cards in two layouts. HTML_REORDERED only shuffles
+    # the order of the utility classes -- exactly what a front-end rebuild does.
+    HTML_ORIGINAL = """
+    <html><body><main>
+    <article class="@container ts-card-slim relative">
+        <h3 class="ts-card-slim__headline"><span>First Analysis</span></h3>
+        <a class="card_overlay-link" href="/analysis/first"></a>
+    </article>
+    <article class="@container ts-card-slim relative">
+        <h3 class="ts-card-slim__headline"><span>Second Analysis</span></h3>
+        <a class="card_overlay-link" href="/analysis/second"></a>
+    </article>
+    </main></body></html>
+    """
+    HTML_REORDERED = """
+    <html><body><main>
+    <article class="relative ts-card-slim @container">
+        <h3 class="ts-card-slim__headline"><span>First Analysis</span></h3>
+        <a class="card_overlay-link" href="/analysis/first"></a>
+    </article>
+    <article class="relative ts-card-slim @container">
+        <h3 class="ts-card-slim__headline"><span>Second Analysis</span></h3>
+        <a class="card_overlay-link" href="/analysis/second"></a>
+    </article>
+    </main></body></html>
+    """
+
+    EXACT_VARIANT = {
+        "story_container": "//article[@class='@container ts-card-slim relative']",
+        "title": ".//h3/span/text()",
+        "link": ".//a/@href",
+    }
+    CONTAINS_VARIANT = {
+        "story_container": "//article[contains(@class,'ts-card-slim')]",
+        "title": ".//h3/span/text()",
+        "link": ".//a/@href",
+    }
+
+    def test_exact_class_match_works_on_original_layout(self):
+        stories = extract_preview_stories(self.HTML_ORIGINAL, self.EXACT_VARIANT, "https://csis.org")
+        self.assertEqual(len(stories), 2)
+
+    def test_exact_class_match_breaks_when_classes_reorder(self):
+        # The bug: a trivial utility-class reorder yields zero stories.
+        stories = extract_preview_stories(self.HTML_REORDERED, self.EXACT_VARIANT, "https://csis.org")
+        self.assertEqual(len(stories), 0)
+
+    def test_contains_match_is_robust_to_reorder(self):
+        # The fix: contains() on a stable token extracts in both layouts.
+        original = extract_preview_stories(self.HTML_ORIGINAL, self.CONTAINS_VARIANT, "https://csis.org")
+        reordered = extract_preview_stories(self.HTML_REORDERED, self.CONTAINS_VARIANT, "https://csis.org")
+        self.assertEqual(len(original), 2)
+        self.assertEqual(len(reordered), 2)
+        self.assertEqual(original[0]["title"], "First Analysis")
+
+
 class Test_ExtractImageUrl(TestCase):
     def test_plain_url_passthrough(self):
         self.assertEqual(extract_image_url("/images/photo.jpg"), "/images/photo.jpg")
@@ -125,6 +199,86 @@ class Test_ExtractImageUrl(TestCase):
     def test_data_uri(self):
         result = extract_image_url("background-image: url(data:image/png;base64,ABC123)")
         self.assertEqual(result, "data:image/png;base64,ABC123")
+
+
+class Test_ParseVariantsJson(TestCase):
+    def test_plain_json_array(self):
+        self.assertEqual(parse_variants_json('[{"a": 1}]'), [{"a": 1}])
+
+    def test_strips_code_fences(self):
+        self.assertEqual(parse_variants_json('```json\n[{"a": 1}]\n```'), [{"a": 1}])
+
+    def test_invalid_json_returns_none(self):
+        self.assertIsNone(parse_variants_json("not json at all"))
+
+    def test_non_list_returns_none(self):
+        self.assertIsNone(parse_variants_json('{"a": 1}'))
+
+    def test_empty_list_returns_empty_list(self):
+        self.assertEqual(parse_variants_json("[]"), [])
+
+
+class Test_RankVariantsByPreviews(TestCase):
+    def test_ranks_by_story_count_descending(self):
+        variants = [
+            {"label": "few", "preview_stories": [{"t": 1}]},
+            {"label": "many", "preview_stories": [{"t": 1}, {"t": 2}, {"t": 3}]},
+            {"label": "none", "preview_stories": []},
+        ]
+        ranked, usable = rank_variants_by_previews(variants)
+        self.assertEqual([v["label"] for v in ranked], ["many", "few", "none"])
+        self.assertEqual(usable, 2)
+        # index is renumbered to match the new display order
+        self.assertEqual([v["index"] for v in ranked], [0, 1, 2])
+
+    def test_zero_usable_when_no_previews(self):
+        ranked, usable = rank_variants_by_previews([{"preview_stories": []}, {"preview_stories": []}])
+        self.assertEqual(usable, 0)
+
+    def test_stable_order_for_ties(self):
+        variants = [
+            {"label": "a", "preview_stories": [{"t": 1}]},
+            {"label": "b", "preview_stories": [{"t": 1}]},
+        ]
+        ranked, usable = rank_variants_by_previews(variants)
+        self.assertEqual([v["label"] for v in ranked], ["a", "b"])
+        self.assertEqual(usable, 2)
+
+
+class Test_ChooseBetterAttempt(TestCase):
+    def test_prefers_more_usable(self):
+        first = ([{"x": 1}], 0, "ra")
+        second = ([{"y": 1}], 2, "rb")
+        self.assertIs(choose_better_attempt(first, second), second)
+
+    def test_keeps_first_when_it_has_more(self):
+        first = ([{"x": 1}], 3, "ra")
+        second = ([{"y": 1}], 1, "rb")
+        self.assertIs(choose_better_attempt(first, second), first)
+
+    def test_falls_back_to_nonempty_when_both_zero(self):
+        first = (None, 0, "ra")
+        second = ([{"y": 1}], 0, "rb")
+        self.assertIs(choose_better_attempt(first, second), second)
+
+    def test_both_unparseable_returns_first(self):
+        first = (None, 0, "ra")
+        second = (None, 0, "rb")
+        self.assertIs(choose_better_attempt(first, second), first)
+
+
+class Test_AnalysisMessages(TestCase):
+    def test_system_prompt_steers_to_contains_matching(self):
+        msgs = get_analysis_messages("https://example.com", "<html></html>")
+        system = msgs[0]["content"]
+        self.assertIn("contains(@class", system)
+        self.assertIn("NEVER match the whole class attribute", system)
+
+    def test_retry_appends_nudge(self):
+        base = get_analysis_messages("https://example.com", "<html></html>", retry=False)
+        retried = get_analysis_messages("https://example.com", "<html></html>", retry=True)
+        self.assertNotIn("RETRY NOTE", base[1]["content"])
+        self.assertIn("RETRY NOTE", retried[1]["content"])
 
 
 class Test_GuidGeneration(TestCase):
