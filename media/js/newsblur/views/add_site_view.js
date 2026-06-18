@@ -3194,13 +3194,55 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }, this), 60000);
 
         NEWSBLUR.assets.analyze_webfeed(url, request_id, _.bind(function (data) {
-            if (data.code < 0) {
+            if (data.code === 2) {
+                // The pasted URL is itself a real RSS feed, not a page to monitor.
+                // Leave the Premium-Archive Web Feed flow and subscribe normally.
+                if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+                this.webfeed_state.is_analyzing = false;
+                this.redirect_to_rss_subscribe(data.feed_address || url);
+            } else if (data.code < 0) {
                 if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
                 this.webfeed_state.is_analyzing = false;
                 this.webfeed_state.error = data.message;
                 this.render_webfeed_tab();
             }
         }, this));
+    },
+
+    redirect_to_rss_subscribe: function (url) {
+        // The URL is already an RSS feed, so subscribe through the normal (free)
+        // Search-tab path instead of the Web Feed page-monitoring flow. The Search
+        // tab renders a one-click subscribe card for a pasted URL; we switch to it
+        // and run the subscription immediately. add_site_view.js
+        this.search_query = url;
+        this.search_state.is_loading = false;
+        this.search_state.results = [];
+
+        this.activate_tab('search');
+
+        var $btn = this.$('.NB-add-site-search-tab .NB-add-site-subscribe-btn');
+        if ($btn.length) {
+            $btn.trigger('click');
+        }
+    },
+
+    activate_tab: function (tab_id) {
+        // Programmatically switch tabs, mirroring switch_tab/select_overflow_tab
+        // but selecting the target tab by its data-tab attribute. add_site_view.js
+        if (!tab_id) return;
+
+        this.active_tab = tab_id;
+
+        this.$('.NB-add-site-tab').removeClass('NB-active');
+        this.$('.NB-add-site-tab[data-tab="' + tab_id + '"]').addClass('NB-active');
+
+        this.$('.NB-add-site-tab-pane').removeClass('NB-active');
+        this.$('.NB-add-site-' + tab_id + '-tab').addClass('NB-active');
+
+        this.render_active_tab();
+        this.bind_scroll_handler();
+        this.update_tab_overflow();
+        this.update_url();
     },
 
     handle_webfeed_search_keypress: function (e) {

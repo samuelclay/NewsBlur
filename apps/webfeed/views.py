@@ -5,9 +5,14 @@ from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
 from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+from utils import feedfinder_forman
 from utils import json_functions as json
 from utils import log as logging
-from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
+from utils.url_safety import (
+    BLOCKED_PRIVATE_URL_MESSAGE,
+    UnsafeUrlError,
+    validate_public_url,
+)
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
@@ -40,6 +45,19 @@ def analyze(request):
             return {"code": -1, "message": "Invalid request identifier"}
     else:
         request_id = str(uuid.uuid4())
+
+    # If the pasted URL is itself a real RSS/Atom/JSON feed, don't run the
+    # Premium-Archive page-monitoring analysis on it. Hand it back to the client
+    # so it can subscribe through the normal (free) add-feed flow. A web page that
+    # merely links to a feed is left alone -- that feed may not be what they want.
+    # Skip the check when refining with a hint: by then we know it's a page.
+    if not story_hint and feedfinder_forman.url_is_feed(url):
+        logging.user(request.user, f"~BB~FWWeb Feed: ~SB{url}~SN is already a feed, redirecting to subscribe")
+        return {
+            "code": 2,
+            "message": "This is already an RSS feed. Subscribing directly.",
+            "feed_address": url,
+        }
 
     logging.user(
         request.user,
