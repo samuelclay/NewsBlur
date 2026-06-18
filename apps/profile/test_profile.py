@@ -731,6 +731,11 @@ class Test_PremiumPricingMigration(TestCase):
         self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(hours=60)
         self.profile.stripe_id = "cus_pricingmig"
         self.profile.save()
+        # Default the redis lock to "proceed without lock" so tests don't depend on a live redis;
+        # the dedicated lock tests override this to exercise the "skip" path.
+        lock_patch = patch.object(Profile, "_acquire_pricing_lock", return_value=None)
+        lock_patch.start()
+        self.addCleanup(lock_patch.stop)
 
     def _add_payment(self, amount, days_ago=10, provider="stripe", refunded=None, user=None):
         return PaymentHistory.objects.create(
@@ -1091,3 +1096,30 @@ class Test_PremiumPricingMigration(TestCase):
 
         row.refresh_from_db()
         self.assertEqual(row.status, "upgraded")
+
+    # --- Redis lock (single-runner across the 3 beat schedulers) -------------
+
+    @patch.object(Profile, "switch_stripe_subscription", return_value=True)
+    @patch.object(Profile, "_acquire_pricing_lock", return_value="skip")
+    def test_run_skips_when_lock_held(self, mock_lock, mock_switch):
+        from apps.profile.models import PremiumPricingMigration
+
+        self._add_payment(24)
+        result = Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        self.assertEqual(result, 0)
+        mock_switch.assert_not_called()
+        self.assertFalse(PremiumPricingMigration.objects.filter(user=self.user).exists())
+
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "_acquire_pricing_lock", return_value="skip")
+    def test_reconcile_skips_when_lock_held(self, mock_lock, mock_cancel):
+        row = self._emailed_row()
+        self._add_payment(36, days_ago=0)
+
+        result = Profile.reconcile_premium_pricing_migration()
+
+        self.assertEqual(result, 0)
+        mock_cancel.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "emailed")  # untouched
