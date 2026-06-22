@@ -1,0 +1,357 @@
+"""Fetch subreddit and Reddit user feeds through Reddit's authenticated API.
+
+Reddit rate-limits unauthenticated .rss requests aggressively (HTTP 429), so this
+module fetches subreddit/user listings through Reddit's OAuth2 app-only API instead
+and renders them into an Atom feed that the normal feedparser pipeline can ingest.
+
+Two pieces of shared coordination live in Redis (settings.REDIS_FEED_UPDATE_POOL),
+so every celery fetch worker cooperates:
+
+  * the OAuth2 app-only access token is cached and reused until shortly before it
+    expires, so we only hit the token endpoint about once a day, and
+  * a fixed one-minute-window counter keeps the whole fleet under Reddit's free-tier
+    budget of ~100 requests/minute. When the budget for the current minute is spent,
+    RedditRateLimitError is raised so utils/feed_fetcher.py records a 429 in fetch
+    history and the feed simply backs off until the next cycle.
+
+Credentials come from settings.REDDIT_CLIENT_ID / settings.REDDIT_CLIENT_SECRET.
+See utils/reddit_fetcher.py.
+"""
+
+import datetime
+import html
+
+import redis
+import requests
+from django.conf import settings
+from django.utils import feedgenerator
+
+from utils import log as logging
+
+# Reddit's free OAuth tier averages ~100 requests/minute per client. We cap the
+# shared budget a little below that to leave headroom for the occasional token
+# refresh and for the discover_subreddits batch job, which shares the same client.
+REDDIT_REQUESTS_PER_MINUTE = getattr(settings, "REDDIT_API_REQUESTS_PER_MINUTE", 95)
+
+# Redis keys (settings.REDIS_FEED_UPDATE_POOL, db 4) shared across all fetch workers.
+TOKEN_CACHE_KEY = "reddit_api:access_token"
+RATE_LIMIT_KEY = "reddit_api:ratelimit"
+
+# How many posts to pull per fetch, matching the size of Reddit's default .rss page.
+LISTING_LIMIT = 25
+
+# Listing sorts Reddit exposes as URL path segments (e.g. /r/python/new/.rss). The
+# bare /r/<sub>/.rss feed is "hot", so that is our default.
+VALID_SORTS = {"hot", "new", "top", "rising", "best", "controversial"}
+DEFAULT_SORT = "hot"
+
+USER_AGENT = "NewsBlur/1.0 (+https://www.newsblur.com)"
+
+
+class RedditApiError(Exception):
+    """Reddit's API returned an error we cannot turn into a feed."""
+
+    pass
+
+
+class RedditRateLimitError(RedditApiError):
+    """The shared per-minute Reddit API budget is exhausted; back off and retry later."""
+
+    pass
+
+
+class RedditFetcher:
+    def __init__(self, feed, options=None):
+        self.feed = feed
+        self.options = options or {}
+        self.address = self.feed.feed_address or self.feed.feed_link or ""
+
+    def fetch(self):
+        """Return an Atom feed string for this Reddit feed, or None if unfetchable.
+
+        Raises RedditRateLimitError when the shared minute budget is spent so the
+        caller can record a 429 and back off. See utils/feed_fetcher.py.
+        """
+        listing_path, sort = self.extract_listing_path_and_sort()
+        if not listing_path:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit feed has no subreddit/user: %s"
+                % (self.feed.log_title[:30], self.address)
+            )
+            return None
+
+        children = self.fetch_listing(listing_path, sort)
+        if children is None:
+            return None
+
+        return self.build_feed(listing_path, children)
+
+    def extract_listing_path_and_sort(self):
+        """Map a Reddit feed URL to an OAuth API listing path and sort.
+
+        Examples:
+            https://www.reddit.com/r/python/.rss          -> ("r/python", "hot")
+            https://www.reddit.com/r/python/new/.rss      -> ("r/python", "new")
+            https://www.reddit.com/r/a+b+c/top.rss        -> ("r/a+b+c", "top")
+            https://www.reddit.com/user/foo/.rss          -> ("user/foo/submitted", "new")
+            https://reddit.com/.rss                       -> ("r/popular", "hot")
+
+        Returns (listing_path, sort) or (None, None) when the URL is unrecognized.
+        See utils/reddit_fetcher.py.
+        """
+        path = self.address.split("?")[0].split("#")[0]
+        # Drop everything up to and including the reddit.com host.
+        if "reddit.com/" in path:
+            path = path.split("reddit.com/", 1)[1]
+        elif "reddit.com" in path:
+            path = path.split("reddit.com", 1)[1]
+        # Strip a trailing .rss (either /r/x/.rss or /r/x/new.rss) and bounding slashes.
+        path = path.rstrip("/")
+        if path.endswith(".rss"):
+            path = path[: -len(".rss")]
+        path = path.strip("/")
+
+        segments = [seg for seg in path.split("/") if seg]
+
+        # Home page (reddit.com/.rss or reddit.com/) -> the "popular" subreddit.
+        if not segments or segments[0] in VALID_SORTS:
+            sort = segments[0] if segments and segments[0] in VALID_SORTS else DEFAULT_SORT
+            return "r/popular", sort
+
+        if segments[0] == "r" and len(segments) >= 2:
+            subreddit = segments[1]
+            sort = segments[2] if len(segments) >= 3 and segments[2] in VALID_SORTS else DEFAULT_SORT
+            return f"r/{subreddit}", sort
+
+        if segments[0] in ("u", "user") and len(segments) >= 2:
+            user = segments[1]
+            # A user's posts live under /user/<name>/submitted; default to newest first.
+            sort = segments[2] if len(segments) >= 3 and segments[2] in VALID_SORTS else "new"
+            return f"user/{user}/submitted", sort
+
+        # Fall back to treating the first segment as a subreddit name.
+        sort = segments[1] if len(segments) >= 2 and segments[1] in VALID_SORTS else DEFAULT_SORT
+        return f"r/{segments[0]}", sort
+
+    def fetch_listing(self, listing_path, sort):
+        """Fetch a Reddit listing through the OAuth API, returning its children list.
+
+        Returns the list of post objects, or None on a non-rate-limit failure.
+        Raises RedditRateLimitError when throttled (locally or by Reddit).
+        """
+        if not self.reserve_rate_limit_slot():
+            raise RedditRateLimitError(
+                "Reddit API budget of %s req/min is spent" % REDDIT_REQUESTS_PER_MINUTE
+            )
+
+        token = self.access_token()
+        if not token:
+            return None
+
+        # User listings take the sort as a query param; subreddit listings as a path.
+        if listing_path.startswith("user/"):
+            url = f"https://oauth.reddit.com/{listing_path}"
+            params = {"limit": LISTING_LIMIT, "sort": sort, "raw_json": 1}
+        else:
+            url = f"https://oauth.reddit.com/{listing_path}/{sort}"
+            params = {"limit": LISTING_LIMIT, "raw_json": 1}
+
+        headers = {"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT}
+        try:
+            resp = requests.get(url, params=params, headers=headers, timeout=15)
+        except requests.RequestException as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit request failed: %s: %s"
+                % (self.feed.log_title[:30], self.address, e)
+            )
+            return None
+
+        if resp.status_code == 429:
+            # Reddit disagrees with our local counter (clock skew, shared client).
+            # Treat it the same as a local budget miss so the feed backs off.
+            raise RedditRateLimitError("Reddit returned HTTP 429 for %s" % url)
+        if resp.status_code == 401:
+            # The cached token is no longer valid; drop it so the next fetch re-auths.
+            self.clear_cached_token()
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit auth rejected (401): %s" % (self.feed.log_title[:30], self.address)
+            )
+            return None
+        if resp.status_code != 200:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit HTTP %s: %s"
+                % (self.feed.log_title[:30], resp.status_code, self.address)
+            )
+            return None
+
+        try:
+            children = resp.json().get("data", {}).get("children", [])
+        except ValueError:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit returned non-JSON: %s" % (self.feed.log_title[:30], self.address)
+            )
+            return None
+
+        return children
+
+    def build_feed(self, listing_path, children):
+        """Render Reddit listing children into an Atom feed string."""
+        data = {
+            "title": self.feed.feed_title or listing_path,
+            "link": f"https://www.reddit.com/{listing_path}",
+            "description": self.feed_description(),
+            "lastBuildDate": datetime.datetime.utcnow(),
+            "generator": "NewsBlur Reddit API Decrapifier - %s" % settings.NEWSBLUR_URL,
+            "docs": None,
+            "feed_url": self.address,
+        }
+        rss = feedgenerator.Atom1Feed(**data)
+
+        for child in children:
+            if child.get("kind") != "t3":
+                continue
+            story = self.story_data(child.get("data") or {})
+            if story:
+                rss.add_item(**story)
+
+        return rss.writeString("utf-8")
+
+    def feed_description(self):
+        """Reuse the feed's stored tagline so we avoid an extra /about API call."""
+        try:
+            return self.feed.data.feed_tagline or ""
+        except Exception:
+            return ""
+
+    def story_data(self, post):
+        """Turn one Reddit post (t3 data) into a feedgenerator item dict, or None."""
+        post_id = post.get("id")
+        if not post_id:
+            return None
+        # Pinned/announcement posts repeat across fetches; skip them like the .rss feed's
+        # consumers generally expect to read the actual content stream.
+        if post.get("stickied"):
+            return None
+
+        author = post.get("author") or "[deleted]"
+        permalink = "https://www.reddit.com%s" % post.get("permalink", "")
+        # Link posts point at the external article; self posts point at their permalink.
+        link = post.get("url") or permalink
+
+        categories = []
+        flair = post.get("link_flair_text")
+        if flair:
+            categories.append(flair)
+
+        created = post.get("created_utc") or 0
+
+        return {
+            "title": post.get("title") or "(no title)",
+            "link": link,
+            "description": self.story_content(post, author, permalink),
+            "author_name": author,
+            "categories": categories,
+            "unique_id": "reddit_post:%s" % post_id,
+            "pubdate": datetime.datetime.utcfromtimestamp(created),
+        }
+
+    def story_content(self, post, author, permalink):
+        """Build the HTML body for a post: selftext or a link preview, plus a footer.
+
+        We request listings with raw_json=1, so selftext_html already contains real
+        HTML rather than entity-escaped markup. See utils/reddit_fetcher.py.
+        """
+        body = ""
+        selftext_html = post.get("selftext_html")
+        if selftext_html:
+            body = html.unescape(selftext_html)
+        elif not post.get("is_self"):
+            preview = self.preview_image_html(post)
+            external = post.get("url")
+            if preview:
+                body += preview
+            if external:
+                body += '<p><a href="%s">%s</a></p>' % (external, external)
+
+        footer = (
+            '<p>Posted by <a href="https://www.reddit.com/user/%s">u/%s</a> &middot; '
+            '<a href="%s">[comments]</a></p>' % (author, author, permalink)
+        )
+        return (body + footer) if body else footer
+
+    def preview_image_html(self, post):
+        """Return an <img> tag for a link post's Reddit preview image, if present."""
+        try:
+            source = post["preview"]["images"][0]["source"]["url"]
+        except (KeyError, IndexError, TypeError):
+            return ""
+        if not source:
+            return ""
+        # Reddit preview URLs are HTML-escaped even under raw_json=1.
+        source = html.unescape(source)
+        return '<p><img src="%s" /></p>' % source
+
+    # --- Shared Redis coordination (token cache + rate limiter) ------------------
+
+    def redis_connection(self):
+        return redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+
+    def reserve_rate_limit_slot(self):
+        """Atomically claim one slot in the shared per-minute Reddit API budget.
+
+        Uses a fixed one-minute window: the first request of a window sets a 60s TTL,
+        and at most REDDIT_REQUESTS_PER_MINUTE claims succeed before the window rolls
+        over. Returns True if a slot was claimed, False if the budget is spent.
+        See utils/reddit_fetcher.py.
+        """
+        r = self.redis_connection()
+        count = r.incr(RATE_LIMIT_KEY)
+        if count == 1:
+            r.expire(RATE_LIMIT_KEY, 60)
+        elif r.ttl(RATE_LIMIT_KEY) < 0:
+            # Guard the rare case where the window key lost its expiry (e.g. a worker
+            # crashed between INCR and EXPIRE) so the limiter can never wedge shut.
+            r.expire(RATE_LIMIT_KEY, 60)
+        return count <= REDDIT_REQUESTS_PER_MINUTE
+
+    def access_token(self):
+        """Return a cached OAuth2 app-only token, fetching a new one when needed."""
+        r = self.redis_connection()
+        token = r.get(TOKEN_CACHE_KEY)
+        if token:
+            return token
+
+        client_id = getattr(settings, "REDDIT_CLIENT_ID", None)
+        client_secret = getattr(settings, "REDDIT_CLIENT_SECRET", None)
+        if not client_id or not client_secret:
+            logging.debug("   ***> ~FRReddit API credentials are not configured")
+            return None
+
+        try:
+            resp = requests.post(
+                "https://www.reddit.com/api/v1/access_token",
+                auth=(client_id, client_secret),
+                data={"grant_type": "client_credentials"},
+                headers={"User-Agent": USER_AGENT},
+                timeout=10,
+            )
+        except requests.RequestException as e:
+            logging.debug("   ***> ~FRReddit auth request failed: %s" % e)
+            return None
+
+        if resp.status_code != 200:
+            logging.debug("   ***> ~FRReddit auth failed: HTTP %s" % resp.status_code)
+            return None
+
+        payload = resp.json()
+        token = payload.get("access_token")
+        if not token:
+            return None
+
+        # Cache until 10 minutes before Reddit says the token expires.
+        ttl = max(int(payload.get("expires_in", 3600)) - 600, 60)
+        r.set(TOKEN_CACHE_KEY, token, ex=ttl)
+        return token
+
+    def clear_cached_token(self):
+        self.redis_connection().delete(TOKEN_CACHE_KEY)
