@@ -72,6 +72,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
+from utils.reddit_fetcher import RedditFetcher, RedditRateLimitError
 from utils.story_functions import extract_story_date, linkify, pre_process_story, strip_tags
 from utils.twitter_fetcher import TwitterFetcher
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
@@ -358,6 +359,34 @@ class FetchFeed:
                     % (self.feed.log_title[:30])
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
+        elif re.match(r"(https?://)?(\w+\.)?reddit\.com/", clean_address):
+            try:
+                reddit_feed = self.fetch_reddit()
+            except RedditRateLimitError as e:
+                # The shared 100 req/min Reddit budget is spent. Record the throttle so
+                # the feed backs off and the stall is visible in fetch history, instead
+                # of silently showing no new stories. See utils/reddit_fetcher.py.
+                logging.debug(
+                    "   ***> [%-30s] ~FRReddit API rate limit reached: %s" % (self.feed.log_title[:30], e)
+                )
+                self.feed.save_feed_history(429, "Reddit API rate limit reached")
+                self.feed = self.feed.save()
+                return FEED_ERRHTTP, None
+            if not reddit_feed:
+                logging.debug(
+                    "   ***> [%-30s] ~FRReddit fetch failed: %s" % (self.feed.log_title[:30], address)
+                )
+                self.feed.save_feed_history(404, "Reddit fetch failed")
+                self.feed = self.feed.save()
+                return FEED_ERRHTTP, None
+            # Apply encoding preprocessing to special feed content
+            processed_reddit_feed = preprocess_feed_encoding(reddit_feed)
+            if processed_reddit_feed != reddit_feed:
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to Reddit feed"
+                    % (self.feed.log_title[:30])
+                )
+            self.fpf = feedparser.parse(processed_reddit_feed)
         elif self.feed.is_forbidden:
             # 10% chance to turn off is_forbidden flag and fetch normally,
             # ensuring we constantly re-check whether is_forbidden is still necessary
@@ -688,6 +717,10 @@ class FetchFeed:
     def fetch_facebook(self):
         facebook_fetcher = FacebookFetcher(self.feed, self.options)
         return facebook_fetcher.fetch()
+
+    def fetch_reddit(self):
+        reddit_fetcher = RedditFetcher(self.feed, self.options)
+        return reddit_fetcher.fetch()
 
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
