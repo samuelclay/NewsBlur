@@ -17276,6 +17276,33 @@
           "expr": "users{category=\"premium_pricing_would_cancel_paypal\"}",
           "legendFormat": "PayPal would-cancel (shadow)",
           "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_awaiting_charge\"}",
+          "legendFormat": "Switched, awaiting charge",
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_upgrades_12\"}",
+          "legendFormat": "Upgrades ($12 -> $36)",
+          "refId": "G"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_upgrades_24\"}",
+          "legendFormat": "Upgrades ($24 -> $36)",
+          "refId": "H"
         }
       ],
       "title": "Premium Pricing Migration ($12/$24 -> $36)",
