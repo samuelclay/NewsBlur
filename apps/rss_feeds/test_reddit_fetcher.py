@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 import feedparser
 from django.test import SimpleTestCase
 
-from utils.reddit_fetcher import REDDIT_REQUESTS_PER_MINUTE, RedditFetcher, RedditRateLimitError
+from utils.reddit_fetcher import MAX_COMMENTS, REDDIT_REQUESTS_PER_MINUTE, RedditFetcher, RedditRateLimitError
 
 
 class StubFeedData:
@@ -46,6 +46,32 @@ def make_post(**overrides):
 
 def child(post):
     return {"kind": "t3", "data": post}
+
+
+def make_comment(**overrides):
+    comment = {
+        "id": "c1",
+        "author": "commenter",
+        "body": "This is a comment body",
+        "body_html": "<div>This is a comment body</div>",
+        "permalink": "/r/python/comments/abc123/t/c1/",
+        "created_utc": 1700000100,
+        "replies": "",
+    }
+    comment.update(overrides)
+    return comment
+
+
+def comment_child(comment):
+    return {"kind": "t1", "data": comment}
+
+
+def comments_payload(post, comment_children):
+    """Shape of Reddit's /comments/<id> API response: [post listing, comments listing]."""
+    return [
+        {"data": {"children": [{"kind": "t3", "data": post}]}},
+        {"data": {"children": comment_children}},
+    ]
 
 
 class TestExtractListingPathAndSort(SimpleTestCase):
@@ -266,3 +292,113 @@ class TestAccessToken(SimpleTestCase):
         fetcher = RedditFetcher(StubFeed("https://www.reddit.com/r/python/.rss"))
         fetcher.redis_connection = MagicMock(return_value=redis_mock)
         self.assertEqual(fetcher.access_token(), "cached-token")
+
+
+class TestExtractArticleId(SimpleTestCase):
+    def _aid(self, url):
+        return RedditFetcher(StubFeed(url)).extract_article_id()
+
+    def test_standard_comments_rss(self):
+        self.assertEqual(
+            self._aid("https://www.reddit.com/r/python/comments/abc123/some_title/.rss"), "abc123"
+        )
+
+    def test_index_rss_suffix(self):
+        self.assertEqual(
+            self._aid("https://www.reddit.com/r/python/comments/abc123/some_title/index.rss"), "abc123"
+        )
+
+    def test_index_xml_trailing_slash(self):
+        self.assertEqual(self._aid("https://www.reddit.com/r/sub/comments/18cyhj5/x/index.xml/"), "18cyhj5")
+
+    def test_old_reddit_host(self):
+        self.assertEqual(self._aid("https://old.reddit.com/r/awesomewm/comments/1fx33ed/4k/.rss"), "1fx33ed")
+
+    def test_user_comments(self):
+        self.assertEqual(self._aid("https://www.reddit.com/user/foo/comments/yr79mr/x/index.xml/"), "yr79mr")
+
+    def test_subreddit_feed_is_not_comments(self):
+        self.assertIsNone(self._aid("https://www.reddit.com/r/python/.rss"))
+
+    def test_home_is_not_comments(self):
+        self.assertIsNone(self._aid("https://www.reddit.com/.rss"))
+
+
+class TestCommentSort(SimpleTestCase):
+    def _sort(self, url):
+        return RedditFetcher(StubFeed(url)).comment_sort()
+
+    def test_defaults_to_new(self):
+        self.assertEqual(self._sort("https://www.reddit.com/r/p/comments/a/x/.rss"), "new")
+
+    def test_honors_query_param(self):
+        self.assertEqual(self._sort("https://www.reddit.com/r/p/comments/a/x/.rss?sort=top"), "top")
+
+    def test_ignores_invalid_query(self):
+        self.assertEqual(self._sort("https://www.reddit.com/r/p/comments/a/x/.rss?sort=bogus"), "new")
+
+
+class TestBuildCommentsFeed(SimpleTestCase):
+    def _fetcher(self):
+        return RedditFetcher(
+            StubFeed("https://www.reddit.com/r/python/comments/abc123/t/.rss", feed_title="")
+        )
+
+    def test_op_first_then_comments(self):
+        post = make_post(id="abc123", title="OP Title", is_self=True, selftext_html="<div>OP body</div>")
+        children = [comment_child(make_comment(id="c1", author="alice"))]
+        parsed = feedparser.parse(self._fetcher().build_comments_feed(post, children))
+
+        self.assertEqual(len(parsed.entries), 2)
+        self.assertEqual(parsed.entries[0].title, "OP Title")
+        self.assertEqual(parsed.entries[0].id, "reddit_post:abc123")
+        self.assertTrue(parsed.entries[1].title.startswith("alice:"))
+        self.assertEqual(parsed.entries[1].id, "reddit_comment:c1")
+
+    def test_flattens_nested_replies(self):
+        reply = comment_child(make_comment(id="c2", author="bob"))
+        parent = make_comment(id="c1", author="alice", replies={"data": {"children": [reply]}})
+        parsed = feedparser.parse(
+            self._fetcher().build_comments_feed(make_post(id="abc123"), [comment_child(parent)])
+        )
+        ids = {e.id for e in parsed.entries}
+        self.assertIn("reddit_comment:c1", ids)
+        self.assertIn("reddit_comment:c2", ids)
+
+    def test_skips_more_stubs(self):
+        children = [comment_child(make_comment(id="c1")), {"kind": "more", "data": {"id": "x"}}]
+        parsed = feedparser.parse(self._fetcher().build_comments_feed(make_post(id="abc123"), children))
+        # OP + one real comment; the "more" stub is skipped.
+        self.assertEqual(len(parsed.entries), 2)
+
+    def test_caps_at_max_comments(self):
+        children = [comment_child(make_comment(id="c%d" % i)) for i in range(MAX_COMMENTS + 20)]
+        parsed = feedparser.parse(self._fetcher().build_comments_feed(make_post(id="abc123"), children))
+        # OP + MAX_COMMENTS comments.
+        self.assertEqual(len(parsed.entries), MAX_COMMENTS + 1)
+
+
+class TestFetchCommentsEndToEnd(SimpleTestCase):
+    def _fetcher(self):
+        fetcher = RedditFetcher(StubFeed("https://www.reddit.com/r/python/comments/abc123/t/.rss"))
+        fetcher.reserve_rate_limit_slot = MagicMock(return_value=True)
+        fetcher.access_token = MagicMock(return_value="tok")
+        return fetcher
+
+    @patch("utils.reddit_fetcher.requests.get")
+    def test_full_comments_fetch(self, mock_get):
+        payload = comments_payload(
+            make_post(id="abc123", title="OP"), [comment_child(make_comment(id="c1", author="alice"))]
+        )
+        mock_get.return_value = MagicMock(status_code=200, json=MagicMock(return_value=payload))
+        parsed = feedparser.parse(self._fetcher().fetch())
+
+        self.assertEqual(len(parsed.entries), 2)
+        # Routed to the comments endpoint, not a subreddit listing.
+        self.assertEqual(mock_get.call_args[0][0], "https://oauth.reddit.com/comments/abc123")
+
+    @patch("utils.reddit_fetcher.requests.get")
+    def test_comments_429_raises_rate_limit(self, mock_get):
+        mock_get.return_value = MagicMock(status_code=429)
+        with self.assertRaises(RedditRateLimitError):
+            self._fetcher().fetch()
