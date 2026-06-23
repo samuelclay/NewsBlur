@@ -38,6 +38,9 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 ## Bug Fixing Workflow
 When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
 
+## Git Branching
+- **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
   - **Reuse the existing booted simulator**: before any iOS build/install/launch/screenshot flow, run `python3 clients/ios/run_ios.py list` and use the already booted simulator UDID. Build, install, and launch onto that same simulator. Do not create, clone, boot, or switch to a new simulator unless no usable simulator is booted or a clean device state is explicitly needed.
