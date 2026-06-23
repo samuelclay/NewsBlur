@@ -6,7 +6,6 @@ import json
 import re
 
 import redis
-import sentry_sdk
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
@@ -472,33 +471,11 @@ class EmailNewsletter:
         if force_plain:
             return self._get_content(params, force_plain=False)
 
-        # apps/newsletters/models.py: No content found, capture in Sentry and log for debugging
-        with sentry_sdk.push_scope() as scope:
-            # Include all params for debugging, with size info for large values
-            params_info = {}
-            for key, value in params.items():
-                if isinstance(value, str):
-                    if len(value) > 1000:
-                        # Truncate large values but show first/last parts and size
-                        params_info[key] = f"[{len(value)} chars] {value[:200]}...{value[-200:]}"
-                    else:
-                        params_info[key] = value
-                else:
-                    params_info[key] = str(value)
-
-            scope.set_context(
-                "newsletter_params",
-                {
-                    "force_plain": force_plain,
-                    "all_params": params_info,
-                    "param_keys": list(params.keys()),
-                    "param_sizes": {k: len(str(v)) for k, v in params.items()},
-                },
-            )
-            sentry_sdk.capture_message("Newsletter content not found", level="error")
-
-        logging.error(
-            f" ***> Newsletter content not found. force_plain={force_plain}, "
+        # apps/newsletters/models.py: No usable body. This is expected for forwarded
+        # personal emails, auto-replies, and attachment-only mail, so log at debug
+        # (not error) to avoid Sentry noise while keeping a local trace for debugging.
+        logging.debug(
+            f" ---> Newsletter content not found. force_plain={force_plain}, "
             f"recipient={params.get('recipient')}, from={params.get('from')}, "
             f"subject={params.get('subject')}, available_keys={list(params.keys())}"
         )
