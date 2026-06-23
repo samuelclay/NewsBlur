@@ -1,8 +1,10 @@
-"""Fetch subreddit and Reddit user feeds through Reddit's authenticated API.
+"""Fetch subreddit, user, and individual-post Reddit feeds through Reddit's API.
 
 Reddit rate-limits unauthenticated .rss requests aggressively (HTTP 429), so this
-module fetches subreddit/user listings through Reddit's OAuth2 app-only API instead
-and renders them into an Atom feed that the normal feedparser pipeline can ingest.
+module fetches subreddit/user listings and individual-post comment threads through
+Reddit's OAuth2 app-only API instead and renders them into an Atom feed that the
+normal feedparser pipeline can ingest. Individual-post feeds (/comments/<id>/.rss)
+render the submission followed by its comments as entries.
 
 Two pieces of shared coordination live in Redis (settings.REDIS_FEED_UPDATE_POOL),
 so every celery fetch worker cooperates:
@@ -20,6 +22,7 @@ See utils/reddit_fetcher.py.
 
 import datetime
 import html
+import urllib.parse
 
 import redis
 import requests
@@ -44,6 +47,14 @@ LISTING_LIMIT = 25
 # bare /r/<sub>/.rss feed is "hot", so that is our default.
 VALID_SORTS = {"hot", "new", "top", "rising", "best", "controversial"}
 DEFAULT_SORT = "hot"
+
+# Individual-post ("comments") feeds: /r/<sub>/comments/<id>/<slug>/.rss. Reddit serves
+# the submission plus its comment thread; we render the post and each comment as entries.
+# The sort is a ?sort= query param on these URLs, and we default to newest-first so the
+# feed surfaces fresh comments. See utils/reddit_fetcher.py.
+COMMENT_SORTS = {"top", "best", "new", "old", "controversial", "qa", "confidence"}
+DEFAULT_COMMENT_SORT = "new"
+MAX_COMMENTS = 100
 
 USER_AGENT = "NewsBlur/1.0 (+https://www.newsblur.com)"
 
@@ -72,6 +83,12 @@ class RedditFetcher:
         Raises RedditRateLimitError when the shared minute budget is spent so the
         caller can record a 429 and back off. See utils/feed_fetcher.py.
         """
+        # Individual-post feeds (/comments/<id>/) render the submission and its thread,
+        # so they take a different API endpoint than subreddit/user listings.
+        article_id = self.extract_article_id()
+        if article_id:
+            return self.fetch_comments_feed(article_id)
+
         listing_path, sort = self.extract_listing_path_and_sort()
         if not listing_path:
             logging.debug(
@@ -132,6 +149,165 @@ class RedditFetcher:
         # Fall back to treating the first segment as a subreddit name.
         sort = segments[1] if len(segments) >= 2 and segments[1] in VALID_SORTS else DEFAULT_SORT
         return f"r/{segments[0]}", sort
+
+    def extract_article_id(self):
+        """Return the base36 post id for an individual-post (comments) feed, else None.
+
+        Reddit serves a single submission's comment thread at URLs like
+        /r/<sub>/comments/<id>/<slug>/.rss (also /index.rss, /index.xml, old.reddit.com,
+        and /user/<name>/comments/<id>/...). The id is always the segment right after
+        "comments". See utils/reddit_fetcher.py.
+        """
+        path = self.address.split("?")[0].split("#")[0]
+        if "reddit.com/" in path:
+            path = path.split("reddit.com/", 1)[1]
+        elif "reddit.com" in path:
+            path = path.split("reddit.com", 1)[1]
+        segments = [seg for seg in path.split("/") if seg]
+        if "comments" in segments:
+            idx = segments.index("comments")
+            if idx + 1 < len(segments):
+                article_id = segments[idx + 1]
+                if article_id.isalnum():
+                    return article_id
+        return None
+
+    def comment_sort(self):
+        """Read the ?sort= comment ordering off the feed URL, defaulting to newest."""
+        query = urllib.parse.urlparse(self.address).query
+        sort = urllib.parse.parse_qs(query).get("sort", [None])[0]
+        if sort in COMMENT_SORTS:
+            return sort
+        return DEFAULT_COMMENT_SORT
+
+    def fetch_comments_feed(self, article_id):
+        """Fetch a single submission and its comment thread as an Atom feed string.
+
+        Returns None on a non-rate-limit failure; raises RedditRateLimitError when
+        throttled (locally or by Reddit). See utils/reddit_fetcher.py.
+        """
+        if not self.reserve_rate_limit_slot():
+            raise RedditRateLimitError(
+                "Reddit API budget of %s req/min is spent" % REDDIT_REQUESTS_PER_MINUTE
+            )
+
+        token = self.access_token()
+        if not token:
+            return None
+
+        url = "https://oauth.reddit.com/comments/%s" % article_id
+        params = {"limit": MAX_COMMENTS, "raw_json": 1, "sort": self.comment_sort()}
+        headers = {"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT}
+        try:
+            resp = requests.get(url, params=params, headers=headers, timeout=15)
+        except requests.RequestException as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit comments request failed: %s: %s"
+                % (self.feed.log_title[:30], self.address, e)
+            )
+            return None
+
+        if resp.status_code == 429:
+            raise RedditRateLimitError("Reddit returned HTTP 429 for %s" % url)
+        if resp.status_code == 401:
+            self.clear_cached_token()
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit auth rejected (401): %s" % (self.feed.log_title[:30], self.address)
+            )
+            return None
+        if resp.status_code != 200:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit comments HTTP %s: %s"
+                % (self.feed.log_title[:30], resp.status_code, self.address)
+            )
+            return None
+
+        try:
+            payload = resp.json()
+            post = payload[0]["data"]["children"][0]["data"]
+            comment_children = payload[1]["data"]["children"]
+        except (ValueError, IndexError, KeyError, TypeError):
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit comments unexpected payload: %s"
+                % (self.feed.log_title[:30], self.address)
+            )
+            return None
+
+        return self.build_comments_feed(post, comment_children)
+
+    def build_comments_feed(self, post, comment_children):
+        """Render a submission and its comments into an Atom feed string."""
+        data = {
+            "title": self.feed.feed_title or post.get("title") or "Reddit comments",
+            "link": "https://www.reddit.com%s" % post.get("permalink", ""),
+            "description": self.feed_description(),
+            "lastBuildDate": datetime.datetime.utcnow(),
+            "generator": "NewsBlur Reddit API Decrapifier - %s" % settings.NEWSBLUR_URL,
+            "docs": None,
+            "feed_url": self.address,
+        }
+        rss = feedgenerator.Atom1Feed(**data)
+
+        # Lead with the submission itself so the feed always carries the OP for context,
+        # even before any comments arrive.
+        op = self.story_data(post, skip_stickied=False)
+        if op:
+            rss.add_item(**op)
+
+        comments = []
+        self.flatten_comments(comment_children, comments)
+        for comment in comments:
+            item = self.comment_story_data(comment)
+            if item:
+                rss.add_item(**item)
+
+        return rss.writeString("utf-8")
+
+    def flatten_comments(self, children, acc):
+        """Depth-first collect comment ('t1') data dicts, descending into replies.
+
+        Caps at MAX_COMMENTS so a busy thread can't produce an unbounded feed. "more"
+        stubs (collapsed comment links) are skipped.
+        """
+        for child in children:
+            if len(acc) >= MAX_COMMENTS:
+                return
+            if child.get("kind") != "t1":
+                continue
+            comment = child.get("data") or {}
+            acc.append(comment)
+            replies = comment.get("replies")
+            if isinstance(replies, dict):
+                reply_children = replies.get("data", {}).get("children", [])
+                self.flatten_comments(reply_children, acc)
+
+    def comment_story_data(self, comment):
+        """Turn one Reddit comment into a feedgenerator item dict, or None."""
+        comment_id = comment.get("id")
+        if not comment_id:
+            return None
+
+        author = comment.get("author") or "[deleted]"
+        permalink = "https://www.reddit.com%s" % comment.get("permalink", "")
+        body_html = comment.get("body_html") or ""
+        body = html.unescape(body_html) if body_html else ""
+
+        snippet = " ".join((comment.get("body") or "").split())[:100]
+        title = ("%s: %s" % (author, snippet)) if snippet else "Comment by %s" % author
+
+        footer = '<p><a href="%s">[context]</a></p>' % permalink
+        description = (body + footer) if body else footer
+
+        created = comment.get("created_utc") or 0
+        return {
+            "title": title,
+            "link": permalink,
+            "description": description,
+            "author_name": author,
+            "categories": [],
+            "unique_id": "reddit_comment:%s" % comment_id,
+            "pubdate": datetime.datetime.utcfromtimestamp(created),
+        }
 
     def fetch_listing(self, listing_path, sort):
         """Fetch a Reddit listing through the OAuth API, returning its children list.
@@ -223,14 +399,17 @@ class RedditFetcher:
         except Exception:
             return ""
 
-    def story_data(self, post):
-        """Turn one Reddit post (t3 data) into a feedgenerator item dict, or None."""
+    def story_data(self, post, skip_stickied=True):
+        """Turn one Reddit post (t3 data) into a feedgenerator item dict, or None.
+
+        skip_stickied is True for subreddit listings (pinned mod posts repeat and
+        aren't the content stream) but False when this post is the OP of a comments
+        feed, where we always want to include it.
+        """
         post_id = post.get("id")
         if not post_id:
             return None
-        # Pinned/announcement posts repeat across fetches; skip them like the .rss feed's
-        # consumers generally expect to read the actual content stream.
-        if post.get("stickied"):
+        if skip_stickied and post.get("stickied"):
             return None
 
         author = post.get("author") or "[deleted]"
