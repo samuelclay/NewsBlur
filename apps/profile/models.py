@@ -3958,8 +3958,10 @@ class Profile(models.Model):
         now_utc = datetime.datetime.utcnow()
         target_paypal_plan = Profile.plan_to_paypal_plan_id("premium")
 
-        emailed = PremiumPricingMigration.objects.filter(status="emailed").select_related("user")
-        for row in emailed:
+        rows = list(
+            PremiumPricingMigration.objects.filter(status__in=["emailed", "would_cancel"]).select_related("user")
+        )
+        for row in rows:
             # Isolate each row so one failure (PayPal API, email render) can't abort reconciliation.
             try:
                 profile = row.user.profile
@@ -3998,11 +4000,13 @@ class Profile(models.Model):
                         if next_billing is not None and next_billing <= now_utc + datetime.timedelta(
                             hours=paypal_cancel_window_hours
                         ):
+                            row_changed = False
                             if getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
                                 profile.cancel_premium_paypal()
                                 row.paypal_canceled_date = now
                                 row.status = "cancelled"
-                            else:
+                                row_changed = True
+                            elif row.status != "would_cancel":
                                 # Shadow mode (default): never touch PayPal. Email staff that we
                                 # WOULD have cancelled this user, with their full payment history, so
                                 # we can verify targeting before enabling real cancellations. Their
@@ -4012,7 +4016,9 @@ class Profile(models.Model):
                                 )
                                 row.would_cancel_date = now
                                 row.status = "would_cancel"
-                            row.save()
+                                row_changed = True
+                            if row_changed:
+                                row.save()
                             continue
                         # Not approved, but the charge isn't imminent yet: wait for a later run.
                         continue
@@ -4051,7 +4057,7 @@ class Profile(models.Model):
                 lock.release()
             except Exception:
                 pass
-        return emailed.count()
+        return len(rows)
 
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (

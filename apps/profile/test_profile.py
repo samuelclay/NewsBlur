@@ -1042,6 +1042,28 @@ class Test_PremiumPricingMigration(TestCase):
     @patch.object(Profile, "send_staff_pricing_would_cancel_email")
     @patch.object(Profile, "cancel_premium_paypal")
     @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_cancels_previous_shadow_paypal_row_when_enabled(
+        self, mock_detail, mock_cancel, mock_staff
+    ):
+        # A row shadowed before cancellation was enabled must still be cancellable later.
+        row = self._emailed_row(provider="paypal")
+        row.status = "would_cancel"
+        row.would_cancel_date = datetime.datetime.now() - datetime.timedelta(days=1)
+        row.save()
+        mock_detail.return_value = self._paypal_detail(plan_id="P-OLD-24", hours_until_billing=5)
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_called_once()
+        mock_staff.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "cancelled")
+        self.assertIsNotNone(row.paypal_canceled_date)
+
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True)
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
     def test_reconcile_real_cancel_when_enabled(self, mock_detail, mock_cancel, mock_staff):
         # Only when explicitly enabled: imminent non-approver -> actually cancel.
         row = self._emailed_row(provider="paypal")
