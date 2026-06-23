@@ -137,6 +137,26 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
+            # Switched to $36 and emailed, but the renewal charge hasn't landed yet (in-flight).
+            "premium_pricing_awaiting_charge": MStatistics.get(
+                "munin:users_premium_pricing_awaiting_charge",
+                lambda: PremiumPricingMigration.objects.filter(status="emailed").count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            # Confirmed upgrades split by the old grandfathered rate.
+            "premium_pricing_upgrades_12": MStatistics.get(
+                "munin:users_premium_pricing_upgrades_12",
+                lambda: PremiumPricingMigration.objects.filter(status="upgraded", old_amount=12).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_pricing_upgrades_24": MStatistics.get(
+                "munin:users_premium_pricing_upgrades_24",
+                lambda: PremiumPricingMigration.objects.filter(status="upgraded", old_amount=24).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
         }
         chart_name = "users"
         chart_type = "counter"
