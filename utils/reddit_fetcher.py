@@ -431,21 +431,25 @@ class RedditFetcher:
         }
 
     def story_content(self, post, author, permalink):
-        """Build the HTML body for a post: selftext or a link preview, plus a footer.
+        """Build the HTML body for a post: selftext, images, and a footer.
 
         We request listings with raw_json=1, so selftext_html already contains real
-        HTML rather than entity-escaped markup. See utils/reddit_fetcher.py.
+        HTML rather than entity-escaped markup. Images are reattached from the post's
+        media (galleries, direct image, preview, or thumbnail) because Reddit's own
+        .rss omits them. See utils/reddit_fetcher.py.
         """
         body = ""
         selftext_html = post.get("selftext_html")
         if selftext_html:
-            body = html.unescape(selftext_html)
-        elif not post.get("is_self"):
-            preview = self.preview_image_html(post)
+            body += html.unescape(selftext_html)
+
+        body += self.media_html(post)
+
+        # For true link posts (an external article), link out to the source. Image,
+        # gallery, and other reddit-hosted URLs are already shown inline above.
+        if not post.get("is_self"):
             external = post.get("url")
-            if preview:
-                body += preview
-            if external:
+            if external and not self.is_reddit_internal_url(external) and not self.is_image_url(external):
                 body += '<p><a href="%s">%s</a></p>' % (external, external)
 
         footer = (
@@ -454,17 +458,70 @@ class RedditFetcher:
         )
         return (body + footer) if body else footer
 
-    def preview_image_html(self, post):
-        """Return an <img> tag for a link post's Reddit preview image, if present."""
+    def media_html(self, post):
+        """Return <img> tags for a post's images: gallery, direct image, or fallbacks.
+
+        Reddit serves images several different ways, and its .rss strips all of them,
+        so we reattach them from the API payload. See utils/reddit_fetcher.py.
+        """
+        urls = []
+        if post.get("is_gallery") or post.get("gallery_data"):
+            urls = self.gallery_image_urls(post)
+        elif post.get("post_hint") == "image" or self.is_image_url(post.get("url")):
+            if post.get("url"):
+                urls = [post["url"]]
+
+        # Fall back to the preview source, then a real thumbnail, for anything else
+        # that carries an image (e.g. link posts with a rich preview).
+        if not urls:
+            source = self.preview_source_url(post)
+            if source:
+                urls = [source]
+        if not urls:
+            thumb = post.get("thumbnail") or ""
+            if thumb.startswith("http"):
+                urls = [thumb]
+
+        # Reddit media URLs are HTML-escaped (&amp;) even under raw_json=1.
+        return "".join('<p><img src="%s" /></p>' % html.unescape(u) for u in urls if u)
+
+    def gallery_image_urls(self, post):
+        """Extract ordered image URLs from a Reddit gallery post's media_metadata."""
+        media_metadata = post.get("media_metadata") or {}
+        if not media_metadata:
+            return []
+        gallery_items = (post.get("gallery_data") or {}).get("items") or []
+        # Honor the gallery's ordering when present; otherwise take whatever media exists.
+        media_ids = [item.get("media_id") for item in gallery_items] or list(media_metadata.keys())
+
+        urls = []
+        for media_id in media_ids:
+            meta = media_metadata.get(media_id) or {}
+            if meta.get("status") and meta["status"] != "valid":
+                continue
+            source = meta.get("s") or {}
+            # Animated gallery items expose gif/mp4 instead of a still under "u".
+            url = source.get("u") or source.get("gif") or source.get("mp4")
+            if url:
+                urls.append(url)
+        return urls
+
+    def preview_source_url(self, post):
+        """Return the full-size Reddit preview image URL, if the post has one."""
         try:
-            source = post["preview"]["images"][0]["source"]["url"]
+            return post["preview"]["images"][0]["source"]["url"]
         except (KeyError, IndexError, TypeError):
-            return ""
-        if not source:
-            return ""
-        # Reddit preview URLs are HTML-escaped even under raw_json=1.
-        source = html.unescape(source)
-        return '<p><img src="%s" /></p>' % source
+            return None
+
+    def is_image_url(self, url):
+        """True when a URL points directly at an image file."""
+        if not url:
+            return False
+        return url.split("?")[0].lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
+
+    def is_reddit_internal_url(self, url):
+        """True for reddit-hosted URLs (gallery pages, i.redd.it, permalinks)."""
+        return bool(url) and ("reddit.com/" in url or "redd.it" in url)
 
     # --- Shared Redis coordination (token cache + rate limiter) ------------------
 
