@@ -72,7 +72,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.reddit_fetcher import RedditFetcher, RedditRateLimitError
+from utils.reddit_fetcher import RedditFetcher
 from utils.story_functions import extract_story_date, linkify, pre_process_story, strip_tags
 from utils.twitter_fetcher import TwitterFetcher
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
@@ -360,15 +360,12 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif re.match(r"(https?://)?(\w+\.)?reddit\.com/", clean_address):
-            try:
-                reddit_feed = self.fetch_reddit()
-            except RedditRateLimitError as e:
+            reddit_feed, reddit_rate_limited = self.fetch_reddit()
+            if reddit_rate_limited:
                 # The shared 100 req/min Reddit budget is spent. Record the throttle so
                 # the feed backs off and the stall is visible in fetch history, instead
                 # of silently showing no new stories. See utils/reddit_fetcher.py.
-                logging.debug(
-                    "   ***> [%-30s] ~FRReddit API rate limit reached: %s" % (self.feed.log_title[:30], e)
-                )
+                logging.debug("   ***> [%-30s] ~FRReddit API rate limit reached" % (self.feed.log_title[:30]))
                 self.feed.save_feed_history(429, "Reddit API rate limit reached")
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
@@ -719,8 +716,11 @@ class FetchFeed:
         return facebook_fetcher.fetch()
 
     def fetch_reddit(self):
+        # Returns (feed_xml, rate_limited). rate_limited is True when the shared Reddit
+        # budget is spent so the caller backs the feed off. See utils/reddit_fetcher.py.
         reddit_fetcher = RedditFetcher(self.feed, self.options)
-        return reddit_fetcher.fetch()
+        reddit_feed = reddit_fetcher.fetch()
+        return reddit_feed, reddit_fetcher.rate_limited
 
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)

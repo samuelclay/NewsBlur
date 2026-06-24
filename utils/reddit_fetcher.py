@@ -13,8 +13,9 @@ so every celery fetch worker cooperates:
     expires, so we only hit the token endpoint about once a day, and
   * a fixed one-minute-window counter keeps the whole fleet under Reddit's free-tier
     budget of ~100 requests/minute. When the budget for the current minute is spent,
-    RedditRateLimitError is raised so utils/feed_fetcher.py records a 429 in fetch
-    history and the feed simply backs off until the next cycle.
+    fetch() returns None and sets self.rate_limited, so utils/feed_fetcher.py records a
+    429 in fetch history and the feed simply backs off until the next cycle. This is
+    expected backpressure, so it is a return flag rather than a raised exception.
 
 Credentials come from settings.REDDIT_CLIENT_ID / settings.REDDIT_CLIENT_SECRET.
 See utils/reddit_fetcher.py.
@@ -59,29 +60,22 @@ MAX_COMMENTS = 100
 USER_AGENT = "NewsBlur/1.0 (+https://www.newsblur.com)"
 
 
-class RedditApiError(Exception):
-    """Reddit's API returned an error we cannot turn into a feed."""
-
-    pass
-
-
-class RedditRateLimitError(RedditApiError):
-    """The shared per-minute Reddit API budget is exhausted; back off and retry later."""
-
-    pass
-
-
 class RedditFetcher:
     def __init__(self, feed, options=None):
         self.feed = feed
         self.options = options or {}
         self.address = self.feed.feed_address or self.feed.feed_link or ""
+        # Set True when a fetch is skipped because the shared per-minute Reddit budget
+        # is spent (locally or per Reddit's own 429). This is expected backpressure,
+        # not an error, so the caller reads the flag instead of catching an exception
+        # and records a 429 in fetch history to back the feed off. See utils/feed_fetcher.py.
+        self.rate_limited = False
 
     def fetch(self):
         """Return an Atom feed string for this Reddit feed, or None if unfetchable.
 
-        Raises RedditRateLimitError when the shared minute budget is spent so the
-        caller can record a 429 and back off. See utils/feed_fetcher.py.
+        When the shared minute budget is spent, returns None and sets self.rate_limited
+        so the caller can record a 429 and back off. See utils/feed_fetcher.py.
         """
         # Individual-post feeds (/comments/<id>/) render the submission and its thread,
         # so they take a different API endpoint than subreddit/user listings.
@@ -183,13 +177,12 @@ class RedditFetcher:
     def fetch_comments_feed(self, article_id):
         """Fetch a single submission and its comment thread as an Atom feed string.
 
-        Returns None on a non-rate-limit failure; raises RedditRateLimitError when
-        throttled (locally or by Reddit). See utils/reddit_fetcher.py.
+        Returns None on failure. When throttled (locally or by Reddit) it also sets
+        self.rate_limited so the caller can record a 429. See utils/reddit_fetcher.py.
         """
         if not self.reserve_rate_limit_slot():
-            raise RedditRateLimitError(
-                "Reddit API budget of %s req/min is spent" % REDDIT_REQUESTS_PER_MINUTE
-            )
+            self.rate_limited = True
+            return None
 
         token = self.access_token()
         if not token:
@@ -208,7 +201,10 @@ class RedditFetcher:
             return None
 
         if resp.status_code == 429:
-            raise RedditRateLimitError("Reddit returned HTTP 429 for %s" % url)
+            # Reddit disagrees with our local counter (clock skew, shared client); treat
+            # it as backpressure too so the feed backs off.
+            self.rate_limited = True
+            return None
         if resp.status_code == 401:
             self.clear_cached_token()
             logging.debug(
@@ -312,13 +308,12 @@ class RedditFetcher:
     def fetch_listing(self, listing_path, sort):
         """Fetch a Reddit listing through the OAuth API, returning its children list.
 
-        Returns the list of post objects, or None on a non-rate-limit failure.
-        Raises RedditRateLimitError when throttled (locally or by Reddit).
+        Returns the list of post objects, or None on failure. When throttled (locally
+        or by Reddit) it also sets self.rate_limited so the caller can record a 429.
         """
         if not self.reserve_rate_limit_slot():
-            raise RedditRateLimitError(
-                "Reddit API budget of %s req/min is spent" % REDDIT_REQUESTS_PER_MINUTE
-            )
+            self.rate_limited = True
+            return None
 
         token = self.access_token()
         if not token:
@@ -345,7 +340,8 @@ class RedditFetcher:
         if resp.status_code == 429:
             # Reddit disagrees with our local counter (clock skew, shared client).
             # Treat it the same as a local budget miss so the feed backs off.
-            raise RedditRateLimitError("Reddit returned HTTP 429 for %s" % url)
+            self.rate_limited = True
+            return None
         if resp.status_code == 401:
             # The cached token is no longer valid; drop it so the next fetch re-auths.
             self.clear_cached_token()
