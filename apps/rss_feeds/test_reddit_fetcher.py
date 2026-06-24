@@ -403,3 +403,111 @@ class TestFetchCommentsEndToEnd(SimpleTestCase):
         fetcher = self._fetcher()
         self.assertIsNone(fetcher.fetch())
         self.assertTrue(fetcher.rate_limited)
+
+
+class TestMediaHtml(SimpleTestCase):
+    def _fetcher(self):
+        return RedditFetcher(StubFeed("https://www.reddit.com/r/stainedglass/.rss"))
+
+    def test_gallery_images_in_gallery_order(self):
+        post = make_post(
+            id="g1",
+            is_self=False,
+            is_gallery=True,
+            url="https://www.reddit.com/gallery/g1",
+            gallery_data={"items": [{"media_id": "m2"}, {"media_id": "m1"}]},
+            media_metadata={
+                "m1": {"status": "valid", "s": {"u": "https://preview.redd.it/m1.jpg?s=x"}},
+                "m2": {"status": "valid", "s": {"u": "https://preview.redd.it/m2.jpg"}},
+            },
+        )
+        out = self._fetcher().media_html(post)
+        self.assertEqual(out.count("<img"), 2)
+        # Ordering follows gallery_data (m2 before m1), not dict insertion.
+        self.assertLess(out.index("m2.jpg"), out.index("m1.jpg"))
+
+    def test_gallery_skips_non_valid_items(self):
+        post = make_post(
+            id="g2",
+            is_gallery=True,
+            gallery_data={"items": [{"media_id": "ok"}, {"media_id": "bad"}]},
+            media_metadata={
+                "ok": {"status": "valid", "s": {"u": "https://preview.redd.it/ok.jpg"}},
+                "bad": {"status": "failed", "s": {}},
+            },
+        )
+        self.assertEqual(self._fetcher().media_html(post).count("<img"), 1)
+
+    def test_gallery_animated_uses_mp4_or_gif(self):
+        post = make_post(
+            id="g3",
+            is_gallery=True,
+            media_metadata={"a": {"status": "valid", "s": {"gif": "https://preview.redd.it/a.gif"}}},
+        )
+        self.assertIn("a.gif", self._fetcher().media_html(post))
+
+    def test_direct_image_post(self):
+        post = make_post(id="i1", is_self=False, post_hint="image", url="https://i.redd.it/abc.jpeg")
+        self.assertIn('src="https://i.redd.it/abc.jpeg"', self._fetcher().media_html(post))
+
+    def test_image_url_without_post_hint(self):
+        post = make_post(id="i2", is_self=False, post_hint=None, url="https://i.redd.it/x.png")
+        self.assertEqual(self._fetcher().media_html(post).count("<img"), 1)
+
+    def test_preview_source_fallback(self):
+        post = make_post(
+            id="l1",
+            is_self=False,
+            url="https://example.com/article",
+            preview={"images": [{"source": {"url": "https://preview.redd.it/p.jpg"}}]},
+        )
+        self.assertIn("preview.redd.it/p.jpg", self._fetcher().media_html(post))
+
+    def test_thumbnail_fallback(self):
+        post = make_post(
+            id="t1",
+            is_self=False,
+            url="https://example.com/article",
+            thumbnail="https://b.thumbs.redditmedia.com/x.jpg",
+        )
+        self.assertIn("thumbs.redditmedia.com/x.jpg", self._fetcher().media_html(post))
+
+    def test_text_self_post_has_no_media(self):
+        post = make_post(
+            id="s1", is_self=True, url="https://www.reddit.com/r/x/comments/s1/", thumbnail="self"
+        )
+        self.assertEqual(self._fetcher().media_html(post), "")
+
+    def test_unescapes_reddit_amp_entities(self):
+        post = make_post(
+            id="g4",
+            is_gallery=True,
+            media_metadata={
+                "a": {"status": "valid", "s": {"u": "https://preview.redd.it/a.jpg?w=1&amp;s=2"}}
+            },
+        )
+        out = self._fetcher().media_html(post)
+        self.assertIn("w=1&s=2", out)
+        self.assertNotIn("&amp;", out)
+
+    def test_external_article_link_added(self):
+        post = make_post(id="a1", is_self=False, url="https://example.com/article")
+        body = self._fetcher().story_content(post, "auth", "https://reddit.com/perm")
+        self.assertIn("https://example.com/article", body)
+
+    def test_no_external_link_for_image_post(self):
+        post = make_post(id="i3", is_self=False, post_hint="image", url="https://i.redd.it/x.jpg")
+        body = self._fetcher().story_content(post, "auth", "https://reddit.com/perm")
+        self.assertIn("<img", body)
+        self.assertNotIn('<a href="https://i.redd.it/x.jpg">', body)
+
+    def test_is_image_url(self):
+        f = self._fetcher()
+        self.assertTrue(f.is_image_url("https://i.redd.it/x.JPG?width=1"))
+        self.assertFalse(f.is_image_url("https://www.reddit.com/gallery/x"))
+
+    def test_is_reddit_internal_url(self):
+        f = self._fetcher()
+        self.assertTrue(f.is_reddit_internal_url("https://i.redd.it/x.jpg"))
+        self.assertTrue(f.is_reddit_internal_url("https://www.reddit.com/gallery/x"))
+        self.assertFalse(f.is_reddit_internal_url("https://example.com/a"))
