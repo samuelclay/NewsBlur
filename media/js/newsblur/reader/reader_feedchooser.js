@@ -264,9 +264,16 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         }
     },
 
+    // SimpleModal clones the modal into the DOM on open, so this.$modal is the
+    // stale pre-open node. Any update to the visible modal must query the live
+    // DOM element instead. (reader_feedchooser.js)
+    live_modal: function () {
+        return $('.NB-modal-feedchooser');
+    },
+
     update_counts: function (autoselected) {
         var approved = this.feedlist.folder_view.highlighted_count();
-        var $submit = $('.NB-modal-submit-save', this.$modal);
+        var $submit = $('.NB-modal-submit-save', this.live_modal());
         var muted = this.feed_count - approved;
         var has_limit = this.MAX_FEEDS !== null;
         var over_limit = has_limit && approved > this.MAX_FEEDS;
@@ -357,10 +364,10 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         if (!feeds.size()) {
             _.defer(_.bind(function () {
                 // Hide header elements when no feeds exist
-                $('.NB-feedchooser-progress-container', this.$modal).hide();
-                $('.NB-feedchooser-upgrade-inline', this.$modal).hide();
-                $('.NB-feedchooser-info-sort', this.$modal).hide();
-                $('.NB-feedchooser-info-reset', this.$modal).hide();
+                $('.NB-feedchooser-progress-container', this.live_modal()).hide();
+                $('.NB-feedchooser-upgrade-inline', this.live_modal()).hide();
+                $('.NB-feedchooser-info-sort', this.live_modal()).hide();
+                $('.NB-feedchooser-info-reset', this.live_modal()).hide();
                 $('#NB-feedchooser-feeds').hide();
                 $('.NB-modal-submit-save').hide();
                 $('.NB-modal-submit-add').show();
@@ -438,24 +445,24 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
 
     show_autoselected_label: function () {
-        $('.NB-feedchooser-info-sort', this.$modal).stop();
-        $('.NB-feedchooser-info-reset', this.$modal).stop().fadeOut(500, _.bind(function () {
-            $('.NB-feedchooser-info-reset', this.$modal).hide();
-            $('.NB-feedchooser-info-sort', this.$modal).fadeIn(500);
+        $('.NB-feedchooser-info-sort', this.live_modal()).stop();
+        $('.NB-feedchooser-info-reset', this.live_modal()).stop().fadeOut(500, _.bind(function () {
+            $('.NB-feedchooser-info-reset', this.live_modal()).hide();
+            $('.NB-feedchooser-info-sort', this.live_modal()).fadeIn(500);
         }, this));
     },
 
     hide_autoselected_label: function () {
-        $('.NB-feedchooser-info-reset', this.$modal).stop();
-        $('.NB-feedchooser-info-sort', this.$modal).stop().fadeOut(500, _.bind(function () {
-            $('.NB-feedchooser-info-sort', this.$modal).hide();
-            $('.NB-feedchooser-info-reset', this.$modal).fadeIn(500);
+        $('.NB-feedchooser-info-reset', this.live_modal()).stop();
+        $('.NB-feedchooser-info-sort', this.live_modal()).stop().fadeOut(500, _.bind(function () {
+            $('.NB-feedchooser-info-sort', this.live_modal()).hide();
+            $('.NB-feedchooser-info-reset', this.live_modal()).fadeIn(500);
         }, this));
     },
 
     save: function () {
         var self = this;
-        var $submit = $('.NB-modal-submit-save', this.$modal);
+        var $submit = $('.NB-modal-submit-save', this.live_modal());
         $submit.addClass('NB-disabled').removeClass('NB-modal-submit-green').val('Saving...');
         var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function (feed) {
             return feed.get('highlighted');
