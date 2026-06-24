@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 import feedparser
 from django.test import SimpleTestCase
 
-from utils.reddit_fetcher import MAX_COMMENTS, REDDIT_REQUESTS_PER_MINUTE, RedditFetcher, RedditRateLimitError
+from utils.reddit_fetcher import MAX_COMMENTS, REDDIT_REQUESTS_PER_MINUTE, RedditFetcher
 
 
 class StubFeedData:
@@ -185,11 +185,11 @@ class TestRateLimiter(SimpleTestCase):
         fetcher.reserve_rate_limit_slot()
         redis_mock.expire.assert_called_once()
 
-    def test_fetch_listing_raises_when_budget_spent(self):
+    def test_fetch_listing_flags_rate_limited_when_budget_spent(self):
         fetcher = RedditFetcher(StubFeed("https://www.reddit.com/r/python/.rss"))
         fetcher.reserve_rate_limit_slot = MagicMock(return_value=False)
-        with self.assertRaises(RedditRateLimitError):
-            fetcher.fetch_listing("r/python", "hot")
+        self.assertIsNone(fetcher.fetch_listing("r/python", "hot"))
+        self.assertTrue(fetcher.rate_limited)
 
 
 class TestFetchListing(SimpleTestCase):
@@ -224,11 +224,11 @@ class TestFetchListing(SimpleTestCase):
         self.assertEqual(mock_get.call_args[1]["params"]["sort"], "new")
 
     @patch("utils.reddit_fetcher.requests.get")
-    def test_429_raises_rate_limit_error(self, mock_get):
+    def test_429_flags_rate_limited(self, mock_get):
         mock_get.return_value = MagicMock(status_code=429)
         fetcher = self._fetcher()
-        with self.assertRaises(RedditRateLimitError):
-            fetcher.fetch_listing("r/python", "hot")
+        self.assertIsNone(fetcher.fetch_listing("r/python", "hot"))
+        self.assertTrue(fetcher.rate_limited)
 
     @patch("utils.reddit_fetcher.requests.get")
     def test_401_clears_token_and_returns_none(self, mock_get):
@@ -398,7 +398,8 @@ class TestFetchCommentsEndToEnd(SimpleTestCase):
         self.assertEqual(mock_get.call_args[0][0], "https://oauth.reddit.com/comments/abc123")
 
     @patch("utils.reddit_fetcher.requests.get")
-    def test_comments_429_raises_rate_limit(self, mock_get):
+    def test_comments_429_flags_rate_limited(self, mock_get):
         mock_get.return_value = MagicMock(status_code=429)
-        with self.assertRaises(RedditRateLimitError):
-            self._fetcher().fetch()
+        fetcher = self._fetcher()
+        self.assertIsNone(fetcher.fetch())
+        self.assertTrue(fetcher.rate_limited)
