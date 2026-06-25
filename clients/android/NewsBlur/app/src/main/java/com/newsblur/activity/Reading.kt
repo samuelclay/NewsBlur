@@ -98,6 +98,12 @@ internal data class ReadingConfigChangeRestore(
     val story: Story? = null,
 )
 
+internal data class ReadingPagerTargetRestoreState(
+    val storyHash: String?,
+    val restoredCurrentStory: Story?,
+    val isRestoringState: Boolean,
+)
+
 internal enum class ReaderWebViewReleaseScope {
     NONE,
     BACKGROUND_ONLY,
@@ -142,6 +148,13 @@ internal fun createReadingConfigChangeRestore(
         story = story,
     )
 }
+
+internal fun readingStateAfterPagerTargetFound(restoredCurrentStory: Story?): ReadingPagerTargetRestoreState =
+    ReadingPagerTargetRestoreState(
+        storyHash = null,
+        restoredCurrentStory = restoredCurrentStory,
+        isRestoringState = false,
+    )
 
 internal fun mergeRestoredStoryIntoStories(
     stories: List<Story>,
@@ -683,12 +696,13 @@ abstract class Reading :
         if (position >= 0) {
             pager!!.setCurrentItem(position, false)
             onPageSelected(position)
-            isRestoringState = false
-            restoredCurrentStory = null
+            val restoreState = readingStateAfterPagerTargetFound(restoredCurrentStory)
+            isRestoringState = restoreState.isRestoringState
+            restoredCurrentStory = restoreState.restoredCurrentStory
             // now that the pager is getting the right story, make it visible
             pager!!.visibility = View.VISIBLE
             binding.readingEmptyViewText.visibility = View.INVISIBLE
-            storyHash = null
+            storyHash = restoreState.storyHash
             return
         }
 
@@ -797,7 +811,7 @@ abstract class Reading :
     // interface OnPageChangeListener
     override fun onPageScrollStateChanged(arg0: Int) {
         if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
-            clearRecentlyMarkedReadStory()
+            clearCurrentStoryPins()
         }
     }
 
@@ -1042,7 +1056,7 @@ abstract class Reading :
      * Search our set of stories for the next unread one.
      */
     private fun nextUnread() {
-        clearRecentlyMarkedReadStory()
+        clearCurrentStoryPins()
         unreadSearchActive = true
 
         // if we somehow got tapped before construction or are running during destruction, stop and
@@ -1114,7 +1128,7 @@ abstract class Reading :
     private fun overlayLeftClick() {
         val targetPosition = getLastReadPosition(true)
         if (targetPosition != -1) {
-            clearRecentlyMarkedReadStory()
+            clearCurrentStoryPins()
             pager!!.setCurrentItem(targetPosition, true)
         } else {
             Log.e(this.javaClass.name, "reading history contained item not found in cursor.")
@@ -1281,7 +1295,7 @@ abstract class Reading :
 
     private fun nextStory() {
         if (pager == null) return
-        clearRecentlyMarkedReadStory()
+        clearCurrentStoryPins()
         val nextPosition = pager!!.currentItem + 1
         if (nextPosition < readingAdapter!!.count) {
             try {
@@ -1294,7 +1308,7 @@ abstract class Reading :
 
     private fun previousStory() {
         if (pager == null) return
-        clearRecentlyMarkedReadStory()
+        clearCurrentStoryPins()
         val nextPosition = pager!!.currentItem - 1
         if (nextPosition >= 0) {
             try {
@@ -1360,7 +1374,8 @@ abstract class Reading :
         feedUtils.syncStoryAsRead(story, this, readTimesJson)
     }
 
-    private fun clearRecentlyMarkedReadStory() {
+    private fun clearCurrentStoryPins() {
+        restoredCurrentStory = null
         recentlyMarkedReadStory = null
     }
 
