@@ -143,7 +143,7 @@ def db_check_mongo_analytics():
     try:
         # Connect via MONGO_ANALYTICS_DB['host'], which carries the analytics-specific
         # host:port (27018). The analytics mongo runs alongside the replica-set mongo
-        # (27017) on hdb-mongo-secondary-1, so the port matters — see flask_monitor/db_monitor.py.
+        # (27017) on the configured sidecar host, so the port matters.
         client = pymongo.MongoClient(
             f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin"
         )

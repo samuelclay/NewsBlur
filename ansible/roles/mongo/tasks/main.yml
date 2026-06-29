@@ -267,13 +267,13 @@
         recurse: yes
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-analytics']
 
-# hdb-mongo-secondary-1 hosts a second mongo container alongside the
+# {{ mongo_analytics_sidecar_host }} hosts a second mongo container alongside the
 # replica-set mongo to stand in for the offline hdb-mongo-analytics-* boxes.
 # It listens on host port 27018 (mapped to container 27017), uses its own
 # data/log dirs, and is reached via the db-mongo-analytics consul service.
-- name: Start mongo analytics on hdb-mongo-secondary-1
+- name: Start mongo analytics sidecar
   block:
-    - name: Create mongo analytics data directory on secondary-1
+    - name: Create mongo analytics data directory on sidecar host
       become: yes
       file:
         path: "/srv/newsblur/docker/volumes/mongo_analytics"
@@ -282,7 +282,7 @@
         group: "{{ ansible_effective_group_id|int }}"
         mode: 0755
 
-    - name: Create mongo analytics backup directory on secondary-1
+    - name: Create mongo analytics backup directory on sidecar host
       become: yes
       file:
         path: "/srv/newsblur/docker/volumes/mongo_analytics/backup"
@@ -291,7 +291,7 @@
         group: "{{ ansible_effective_group_id|int }}"
         mode: 0755
 
-    - name: Create mongo analytics log directory on secondary-1
+    - name: Create mongo analytics log directory on sidecar host
       become: yes
       file:
         path: /var/log/mongodb_analytics
@@ -300,7 +300,7 @@
         group: "{{ ansible_effective_group_id|int }}"
         mode: 0755
 
-    - name: Create mongo analytics log file on secondary-1
+    - name: Create mongo analytics log file on sidecar host
       become: yes
       file:
         path: /var/log/mongodb_analytics/mongod.log
@@ -311,7 +311,7 @@
         modification_time: preserve
         access_time: preserve
 
-    - name: Start db-mongo-analytics docker container on secondary-1
+    - name: Start db-mongo-analytics docker container on sidecar host
       become: yes
       docker_container:
         name: mongo_analytics
@@ -336,14 +336,14 @@
           - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
           - /var/log/mongodb_analytics/:/var/log/mongodb/
           - /srv/newsblur/docker/volumes/mongo_analytics/backup/:/backup/
-  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  when: inventory_hostname == mongo_analytics_sidecar_host
   tags:
     - mongo_analytics
 
 # Bootstrap the admin user on the analytics container. Tagged `never` so
 # it only runs when explicitly invoked (-t mongoauth) — and only works on
 # a fresh data dir before authorization locks the localhost exception.
-- name: Create mongo analytics database user on secondary-1
+- name: Create mongo analytics database user on sidecar host
   shell:
     cmd: >-
       sleep 2; docker exec mongo_analytics mongo admin
@@ -364,8 +364,9 @@
     - "'Successfully added user' not in analytics_auth_result.stdout"
     - "'already exists' not in analytics_auth_result.stdout"
     - "'there are no users authenticated' not in analytics_auth_result.stdout"
-  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  when: inventory_hostname == mongo_analytics_sidecar_host
   tags:
+    - mongo_analytics_auth
     - mongoauth
     - never
 
@@ -419,18 +420,49 @@
   notify:
     - reload consul
 
-# hdb-mongo-secondary-1 hosts a second mongo container on port 27018
+# {{ mongo_analytics_sidecar_host }} hosts a second mongo container on port 27018
 # that serves as the db-mongo-analytics service while the dedicated
 # hdb-mongo-analytics-* boxes are offline. The standard mongo replica-set
 # container keeps port 27017, so this registers the analytics service
 # alongside the existing db-mongo service on the same host.
-- name: Register mongo-analytics on secondary-1 in consul
-  tags: consul
+- name: Remove stale mongo-analytics consul registration from non-sidecar mongo hosts
+  tags:
+    - consul
+    - mongo_analytics_consul
+  become: yes
+  file:
+    path: "/etc/consul.d/{{ item }}"
+    state: absent
+  loop:
+    - mongo_analytics.json
+    - mongo-analytics.json
+  when:
+    - inventory_hostname != mongo_analytics_sidecar_host
+    - (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-primary', 'hdb-mongo-secondary']
+  notify:
+    - reload consul
+
+- name: Remove legacy mongo-analytics consul filename on sidecar host
+  tags:
+    - consul
+    - mongo_analytics_consul
+  become: yes
+  file:
+    path: /etc/consul.d/mongo-analytics.json
+    state: absent
+  when: inventory_hostname == mongo_analytics_sidecar_host
+  notify:
+    - reload consul
+
+- name: Register mongo-analytics sidecar in consul
+  tags:
+    - consul
+    - mongo_analytics_consul
   become: yes
   template:
-    src: consul_service.analytics_secondary_1.json
+    src: consul_service.analytics_sidecar.json
     dest: /etc/consul.d/mongo_analytics.json
-  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  when: inventory_hostname == mongo_analytics_sidecar_host
   notify:
     - reload consul
 
@@ -511,4 +543,3 @@
 #  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]"
 #  - Change hostname to db-mongo2 in /etc/hostname
 #  - sudo hostname db-mongo-primary2
-
