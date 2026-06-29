@@ -526,11 +526,10 @@ SECONDS_TO_DELAY_CELERY_EMAILS = 60
 # Shell calls to Profile.run_premium_pricing_migration(...) bypass this flag for testing.
 PREMIUM_PRICING_MIGRATION_ENABLED = True
 
-# Safety gate for the dangerous step: actually cancelling a non-approving PayPal subscriber's old
-# subscription. While False (shadow mode), reconciliation does NOT cancel anything — it emails staff
-# "we would have cancelled this user" with their full payment history, so we can verify targeting and
-# volume over a week or two before any real cancellations happen. Flip to True only after verifying.
-PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED = False
+# Safety gate for actually cancelling a non-approving PayPal subscriber's old subscription.
+# When True, legacy PayPal subscriptions that cannot be revised to $36 are cancelled before
+# renewal and the subscriber receives the PayPal pricing migration email.
+PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED = True
 
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
