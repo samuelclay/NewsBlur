@@ -1,14 +1,11 @@
 """Briefing views: manage user briefing feeds with customizable sections and notifications."""
 
-import datetime
 import re
-import zlib
 
 import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
-from django.utils.encoding import smart_str
 
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
@@ -573,26 +570,9 @@ def load_all_briefings_admin(request):
 
 def _story_to_dict(story):
     """Convert an MStory to a serializable dict."""
-    content = story.story_content
-    if not content and story.story_content_z:
-        try:
-            content = smart_str(zlib.decompress(story.story_content_z))
-        except Exception:
-            content = ""
-
-    story_date = story.story_date or datetime.datetime.utcnow()
-
-    return {
-        "story_hash": story.story_hash,
-        "story_title": story.story_title,
-        "story_content": content,
-        "story_date": story_date.isoformat(),
-        "story_timestamp": story_date.strftime("%s"),
-        "story_authors": story.story_author_name or "",
-        "story_permalink": story.story_permalink,
-        "story_feed_id": story.story_feed_id,
-        "story_tags": story.story_tags or [],
-        "image_urls": story.image_urls or [],
-        "secure_image_urls": Feed.secure_image_urls(story.image_urls or []),
-        "id": story.story_guid or story.story_hash,
-    }
+    story_dict = Feed.format_story(story, story.story_feed_id)
+    story_date = story_dict.get("story_date")
+    if story_date:
+        story_dict["story_date"] = story_date.isoformat()
+    story_dict["id"] = story.story_guid or story.story_hash
+    return story_dict

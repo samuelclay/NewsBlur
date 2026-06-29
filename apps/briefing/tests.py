@@ -1686,6 +1686,29 @@ class Test_Views(BriefingTestCase):
         self.assertEqual(len(data["briefings"][0]["curated_story_hashes"]), 6)
 
     @patch("apps.briefing.views.redis.Redis")
+    def test_load_hides_story_changes_by_default(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+        mock_pipe.execute.return_value = [False]
+
+        story = self.make_story(self.feed, "Story With Changes", content="<p>Old content.</p>")
+        story.story_content = '<p>Updated <ins>new</ins><del>old</del> content.</p>'
+        story.story_latest_content = "<p>Updated new content.</p>"
+        story.save()
+        self.make_briefing(curated_hashes=[story.story_hash])
+
+        response = self.client.get(reverse("load-briefing-stories"))
+        data = json.decode(response.content)
+        rendered_story = data["briefings"][0]["curated_stories"][0]
+
+        self.assertTrue(rendered_story["has_modifications"])
+        self.assertEqual(rendered_story["story_content"], "<p>Updated new content.</p>")
+        self.assertNotIn("<ins", rendered_story["story_content"])
+        self.assertNotIn("<del", rendered_story["story_content"])
+
+    @patch("apps.briefing.views.redis.Redis")
     def test_normalizes_section_keys(self, mock_redis_cls):
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
