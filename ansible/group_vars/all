@@ -4,6 +4,9 @@ ansible_cache_dir: /var/cache # Need to update references to ansible cache to us
 software_install_dir: /usr/local/share
 user_binaries: /usr/local/bin
 
+# Mongo analytics runs as a sidecar container on one Mongo secondary.
+mongo_analytics_sidecar_host: hdb-mongo-secondary-3
+
 # Cloud-based hdb servers (Hetzner Cloud) that use eth0 interface instead of enp/eno
 # These servers need different network interface patterns in consul configuration
 hdb_cloud_servers:
