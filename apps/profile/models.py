@@ -49,6 +49,8 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
 from utils.user_functions import generate_secret_token
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
+from vendor.paypalapi.interface import PayPalInterface
 from vendor.timezones.fields import TimeZoneField
 
 
@@ -2222,7 +2224,9 @@ class Profile(models.Model):
             try:
                 paypal_subscription = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}")
             except paypalrestsdk.ResourceNotFound:
-                logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
+                logging.user(self.user, f"~FRCouldn't find REST paypal subscription: {paypal_id}")
+                if self.cancel_premium_paypal_classic(paypal_id, today=today):
+                    return paypal_id
                 continue
             if paypal_subscription["status"] not in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]:
                 logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % paypal_id)
@@ -2240,6 +2244,45 @@ class Profile(models.Model):
             logging.user(self.user, "~FRCanceling Paypal subscription: %s" % paypal_id)
             return paypal_id
 
+        return True
+
+    def paypal_classic_api(self):
+        username = getattr(settings, "PAYPAL_API_USERNAME", None)
+        password = getattr(settings, "PAYPAL_API_PASSWORD", None)
+        signature = getattr(settings, "PAYPAL_API_SIGNATURE", None)
+        if not (username and password and signature):
+            logging.user(self.user, "~FRCouldn't load classic PayPal API credentials")
+            return None
+
+        environment = "SANDBOX" if getattr(settings, "PAYPAL_TEST", False) or settings.DEBUG else "PRODUCTION"
+        return PayPalInterface(
+            API_ENVIRONMENT=environment,
+            API_USERNAME=username,
+            API_PASSWORD=password,
+            API_SIGNATURE=signature,
+        )
+
+    def cancel_premium_paypal_classic(self, paypal_id, today=None):
+        paypal_api = self.paypal_classic_api()
+        if not paypal_api:
+            return False
+
+        today = today or datetime.datetime.now().strftime("%B %d, %Y")
+        try:
+            paypal_api.manage_recurring_payments_profile_status(
+                paypal_id,
+                "Cancel",
+                note=f"Cancelled on {today}",
+            )
+        except PayPalAPIResponseError as e:
+            logging.user(
+                self.user,
+                "~FRCouldn't cancel classic PayPal subscription %s: %s %s"
+                % (paypal_id, e.error_code, e.message),
+            )
+            return False
+
+        logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
     def cancel_premium_stripe(self, force=False):
@@ -3721,12 +3764,21 @@ class Profile(models.Model):
         return payment.payment_amount if payment else None
 
     def send_premium_pricing_upgrade_email(
-        self, old_amount=None, renewal_date=None, approval_url=None, variant=None, force=False, preview=False
+        self,
+        old_amount=None,
+        renewal_date=None,
+        approval_url=None,
+        variant=None,
+        force=False,
+        preview=False,
+        paypal_cancelled=False,
     ):
         """Email a grandfathered premium subscriber before their renewal moves to $36. Stripe
         users get the "automatic" variant; PayPal users get the "approve the new rate" variant
-        with a one-click approval link. In preview mode, both variants are sent (with sample
-        data) and nothing is recorded, so it is safe to show to a test user."""
+        with a one-click approval link when PayPal provides one. Legacy PayPal subscriptions that
+        cannot be revised use the same PayPal template with cancellation/resubscribe copy. In
+        preview mode, both variants are sent (with sample data) and nothing is recorded, so it is
+        safe to show to a test user."""
         if not self.user.email:
             logging.user(
                 self.user, "~FM~SB~FRNot~FM sending pricing upgrade email (no email): %s" % self.user
@@ -3759,19 +3811,22 @@ class Profile(models.Model):
             if v == "paypal" and not v_approval_url:
                 if preview:
                     v_approval_url = "https://www.paypal.com/"
-                else:
+                elif not paypal_cancelled:
                     logging.user(self.user, "~FRNo PayPal approval URL for pricing upgrade email, skipping")
                     continue
+            resubscribe_url = "https://newsblur.com/?next=premium"
             data = dict(
                 user=user,
                 old_amount=old_amount,
                 new_amount=36,
                 renewal_date=renewal_date,
                 approval_url=v_approval_url,
+                paypal_cancelled=paypal_cancelled,
+                resubscribe_url=resubscribe_url,
             )
             text = render_to_string("mail/email_premium_pricing_upgrade_%s.txt" % v, data)
             html = render_to_string("mail/email_premium_pricing_upgrade_%s.xhtml" % v, data)
-            subject = "After years at the old price, NewsBlur Premium is moving to $36"
+            subject = "After years at the old price, NewsBlur Premium is moving to $36/year"
             if preview:
                 subject = "[%s preview] %s" % (v, subject)
             msg = EmailMultiAlternatives(
@@ -3882,6 +3937,7 @@ class Profile(models.Model):
                     row.renewal_date_at_send = profile.premium_expire
 
                     approval_url = None
+                    paypal_cancelled = False
                     if provider == "stripe":
                         switched = profile.switch_stripe_subscription("premium", proration_behavior="none")
                         if not switched:
@@ -3891,17 +3947,27 @@ class Profile(models.Model):
                     else:  # paypal
                         approval_url = profile.paypal_price_change_approval_url("premium")
                         if not approval_url:
-                            logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
-                            continue
+                            if not getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
+                                logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
+                                continue
+                            cancelled_paypal_sub_id = profile.cancel_premium_paypal()
+                            if not isinstance(cancelled_paypal_sub_id, str):
+                                logging.user(profile.user, "~FRPayPal cancellation failed; not emailing")
+                                continue
+                            profile.premium_renewal = False
+                            profile.save(update_fields=["premium_renewal"])
+                            row.paypal_canceled_date = now
+                            paypal_cancelled = True
 
                     profile.send_premium_pricing_upgrade_email(
                         old_amount=old_amount,
                         renewal_date=profile.premium_expire,
                         approval_url=approval_url,
                         variant=provider,
+                        paypal_cancelled=paypal_cancelled,
                     )
                     row.email_sent_date = now
-                    row.status = "emailed"
+                    row.status = "cancelled" if paypal_cancelled else "emailed"
                     row.save()
                     processed += 1
                 except Exception as e:

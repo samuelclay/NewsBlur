@@ -869,6 +869,25 @@ class Test_PremiumPricingMigration(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("https://paypal/approve-me", mail.outbox[0].body)
 
+    def test_paypal_cancelled_email_uses_resubscribe_url(self):
+        from django.core import mail
+
+        self.profile.active_provider = "paypal"
+        self.profile.save()
+        self.profile.send_premium_pricing_upgrade_email(
+            old_amount=24,
+            renewal_date=datetime.datetime(2026, 8, 1),
+            variant="paypal",
+            force=True,
+            paypal_cancelled=True,
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("I cancelled the old PayPal subscription", mail.outbox[0].body)
+        self.assertIn("Re-subscribe at the new $36/year rate", mail.outbox[0].body)
+        self.assertIn("https://newsblur.com/?next=premium", mail.outbox[0].body)
+        self.assertNotIn("Approve the new $36/year rate", mail.outbox[0].body)
+
     def test_preview_sends_both_variants_no_record(self):
         from django.core import mail
 
@@ -980,6 +999,33 @@ class Test_PremiumPricingMigration(TestCase):
         mock_switch.assert_not_called()
         self.assertFalse(PremiumPricingMigration.objects.filter(user=self.user).exists())
         self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True)
+    @patch.object(Profile, "cancel_premium_paypal", return_value="I-SUB123")
+    @patch.object(Profile, "paypal_price_change_approval_url", return_value=None)
+    def test_live_run_cancels_and_emails_legacy_paypal(self, mock_approval_url, mock_cancel):
+        from django.core import mail
+
+        from apps.profile.models import PremiumPricingMigration
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.save()
+        self._add_payment(24, provider="paypal")
+
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        mock_approval_url.assert_called_once_with("premium")
+        mock_cancel.assert_called_once()
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.premium_renewal)
+        row = PremiumPricingMigration.objects.get(user=self.user)
+        self.assertEqual(row.status, "cancelled")
+        self.assertEqual(row.provider, "paypal")
+        self.assertIsNotNone(row.paypal_canceled_date)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("I cancelled the old PayPal subscription", mail.outbox[0].body)
+        self.assertIn("https://newsblur.com/?next=premium", mail.outbox[0].body)
 
     # --- Reconciliation ------------------------------------------------------
 
@@ -1174,3 +1220,29 @@ class Test_PremiumPricingMigration(TestCase):
         self.assertEqual(result, 0)
         row = PremiumPricingMigration.objects.filter(user=self.user).first()
         self.assertNotEqual(getattr(row, "status", None), "emailed")
+
+    @patch.object(Profile, "paypal_classic_api")
+    @patch.object(Profile, "paypal_api")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_paypal_cancel_falls_back_to_classic_when_rest_missing(
+        self, mock_retrieve, mock_paypal_api, mock_classic_api
+    ):
+        import paypalrestsdk
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-LEGACY"
+        self.profile.save()
+        self.user.paypal_ids.create(paypal_sub_id="I-LEGACY")
+        rest_api = MagicMock()
+        rest_api.get.side_effect = paypalrestsdk.ResourceNotFound(MagicMock())
+        mock_paypal_api.return_value = rest_api
+        classic_api = MagicMock()
+        mock_classic_api.return_value = classic_api
+
+        result = self.profile.cancel_premium_paypal()
+
+        self.assertEqual(result, "I-LEGACY")
+        classic_api.manage_recurring_payments_profile_status.assert_called_once()
+        args, kwargs = classic_api.manage_recurring_payments_profile_status.call_args
+        self.assertEqual(args[:2], ("I-LEGACY", "Cancel"))
+        self.assertIn("note", kwargs)
