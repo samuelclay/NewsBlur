@@ -1,11 +1,13 @@
 """Newsletter models: process incoming email newsletters and manage newsletter feeds."""
 
 import datetime
+import email.utils
 import html as html_module
 import json
 import re
 
 import redis
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
@@ -58,10 +60,19 @@ class EmailNewsletter:
             logging.debug(" ***> receive_newsletter: No user found, returning early")
             return
 
+        forwarded_newsletter = self._extract_forwarded_newsletter(params)
+        if forwarded_newsletter:
+            params = self._params_from_forwarded_newsletter(params, forwarded_newsletter)
+
         logging.debug(f" ---> receive_newsletter: Processing for user {user.username}")
         sender_name, sender_username, sender_domain = self._split_sender(params["from"])
         sender_email = "%s@%s" % (sender_username, sender_domain)
         newsletter_headers = self._extract_headers(params)
+        if forwarded_newsletter:
+            merged_headers = {}
+            self._merge_headers(merged_headers, forwarded_newsletter["headers"])
+            self._merge_headers(merged_headers, newsletter_headers)
+            newsletter_headers = merged_headers
         newsletter_identity, newsletter_identity_source = self._newsletter_identity(
             sender_name, sender_email, newsletter_headers
         )
@@ -124,7 +135,7 @@ class EmailNewsletter:
         story_content = self._clean_content(story_content or "")
         story_params = {
             "story_feed_id": feed.pk,
-            "story_date": self._clean_story_date(params.get("timestamp")),
+            "story_date": self._clean_story_date(params.get("_story_date") or params.get("timestamp")),
             "story_title": params["subject"],
             "story_content": story_content,
             "story_author_name": params["from"],
@@ -335,6 +346,13 @@ class EmailNewsletter:
                 if isinstance(header, (list, tuple)) and len(header) >= 2:
                     self._add_header(headers, header[0], header[1])
 
+    def _merge_headers(self, headers, extra_headers):
+        for name, values in extra_headers.items():
+            if not isinstance(values, list):
+                values = [values]
+            for value in values:
+                self._add_header(headers, name, value)
+
     def _add_header(self, headers, name, value):
         if value is None:
             return
@@ -452,9 +470,185 @@ class EmailNewsletter:
             try:
                 return datetime.datetime.fromtimestamp(int(timestamp))
             except (ValueError, TypeError):
-                return datetime.datetime.now()
+                try:
+                    parsed_date = email.utils.parsedate_to_datetime(str(timestamp))
+                    if parsed_date.tzinfo:
+                        parsed_date = parsed_date.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+                    return parsed_date
+                except (TypeError, ValueError, IndexError):
+                    return datetime.datetime.now()
         else:
             return datetime.datetime.now()
+
+    def _extract_forwarded_newsletter(self, params):
+        forwarded = {"headers": {}, "content": {}}
+
+        for field in ["body-html", "stripped-html", "body-enriched"]:
+            extracted = self._extract_forwarded_html(params.get(field))
+            if extracted:
+                self._merge_headers(forwarded["headers"], extracted["headers"])
+                forwarded["content"][field] = extracted["content"]
+
+        for field in ["body-plain", "stripped-text"]:
+            extracted = self._extract_forwarded_plain(params.get(field))
+            if extracted:
+                self._merge_headers(forwarded["headers"], extracted["headers"])
+                forwarded["content"]["body-plain"] = extracted["content"]
+
+        if forwarded["headers"] and ("Subject" in forwarded["headers"] or "From" in forwarded["headers"]):
+            return forwarded
+        return None
+
+    def _params_from_forwarded_newsletter(self, params, forwarded_newsletter):
+        params = dict(params)
+        headers = forwarded_newsletter["headers"]
+
+        subject = self._forwarded_header_value(headers, "Subject") or self._strip_forwarded_subject(
+            params.get("subject", "")
+        )
+        if subject:
+            params["subject"] = subject
+
+        sender = self._forwarded_header_value(headers, "From") or self._forwarded_header_value(
+            headers, "Reply-To"
+        )
+        if sender:
+            params["from"] = sender
+
+        story_date = self._forwarded_header_value(headers, "Date")
+        if story_date:
+            params["date"] = story_date
+            params["_story_date"] = story_date
+
+        content = forwarded_newsletter["content"]
+        if content:
+            for field in ["body-html", "stripped-html", "body-enriched", "body-plain"]:
+                if field in content:
+                    params[field] = content[field]
+                elif field in params:
+                    params[field] = ""
+
+        logging.debug(" ---> Email newsletter parsed forwarded message headers")
+        return params
+
+    def _forwarded_header_value(self, headers, name):
+        values = headers.get(self._normalize_header_name(name))
+        if values:
+            return values[0]
+        return None
+
+    def _strip_forwarded_subject(self, subject):
+        subject = subject or ""
+        return re.sub(r"^\s*(?:fwd?|fw)\s*:\s*", "", subject, flags=re.IGNORECASE).strip()
+
+    def _extract_forwarded_html(self, content):
+        if not content or not re.search(r"Forwarded\s+Message", content, re.IGNORECASE):
+            return None
+
+        soup = BeautifulSoup(content, features="lxml")
+        containers = soup.select(".moz-forward-container") or [soup]
+        for container in containers:
+            if not re.search(r"Forwarded\s+Message", container.get_text(" ", strip=True), re.IGNORECASE):
+                continue
+
+            table = container.find("table", class_="moz-email-headers-table")
+            if not table:
+                extracted = self._extract_forwarded_plain(container.get_text("\n"))
+                if extracted:
+                    return extracted
+                continue
+
+            headers = self._extract_forwarded_html_headers(table)
+            if not headers:
+                continue
+
+            return {
+                "headers": headers,
+                "content": self._strip_leading_forwarded_breaks(
+                    "".join(str(sibling) for sibling in table.next_siblings)
+                ),
+            }
+
+        return None
+
+    def _extract_forwarded_html_headers(self, table):
+        headers = {}
+        for row in table.find_all("tr"):
+            label = row.find(["th", "td"])
+            value_cell = label.find_next_sibling(["td", "th"]) if label else None
+            if not label or not value_cell:
+                continue
+
+            name = self._normalize_forwarded_header_name(label.get_text(" ", strip=True))
+            value = value_cell.get_text(" ", strip=True)
+            if name and value:
+                self._add_header(headers, name, value)
+        return headers
+
+    def _extract_forwarded_plain(self, content):
+        if not content or not re.search(r"Forwarded\s+Message", content, re.IGNORECASE):
+            return None
+
+        lines = content.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        for index, line in enumerate(lines):
+            if not re.match(r"^\s*-{2,}\s*Forwarded Message\s*-{2,}\s*$", line, re.IGNORECASE):
+                continue
+
+            headers, body_start = self._extract_forwarded_plain_headers(lines, index + 1)
+            if headers:
+                return {
+                    "headers": headers,
+                    "content": "\n".join(lines[body_start:]).strip(),
+                }
+
+        return None
+
+    def _extract_forwarded_plain_headers(self, lines, start_index):
+        headers = {}
+        current_name = None
+        found_header = False
+
+        for index in range(start_index, len(lines)):
+            line = lines[index]
+            if not line.strip():
+                if found_header:
+                    return headers, index + 1
+                continue
+
+            tokens = re.match(r"^\s*([A-Za-z][A-Za-z0-9-]{0,63})\s*:\s*(.*)$", line)
+            if tokens:
+                name = self._normalize_forwarded_header_name(tokens.group(1))
+                value = tokens.group(2).strip()
+                if not name:
+                    if found_header:
+                        return headers, index
+                    return {}, index
+
+                self._add_header(headers, name, value)
+                current_name = self._normalize_header_name(name)
+                found_header = True
+                continue
+
+            if current_name and line[:1].isspace():
+                values = headers.get(current_name)
+                if values:
+                    values[-1] = "%s %s" % (values[-1], line.strip())
+                continue
+
+            if found_header:
+                return headers, index
+            return {}, index
+
+        return headers, len(lines)
+
+    def _normalize_forwarded_header_name(self, name):
+        name = (name or "").strip().rstrip(":").strip()
+        if not re.match(r"^[A-Za-z][A-Za-z0-9-]{0,63}$", name):
+            return None
+        return self._normalize_header_name(name)
+
+    def _strip_leading_forwarded_breaks(self, content):
+        return re.sub(r"^(?:\s|&nbsp;|<br\s*/?>)+", "", content or "", flags=re.IGNORECASE).strip()
 
     def _get_content(self, params, force_plain=False):
         # apps/newsletters/models.py: Check for enriched, html, and plain content

@@ -1,6 +1,7 @@
 """Tests for email newsletter ingestion."""
 
 import uuid
+from datetime import datetime
 from unittest.mock import patch
 
 from django.conf import settings
@@ -159,3 +160,85 @@ class Test_EmailNewsletter(TestCase):
         self.assertEqual(first_story.story_feed_id, feed.pk)
         self.assertEqual(second_story.story_feed_id, feed.pk)
         self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 2)
+
+    def test_thunderbird_forwarded_html_uses_original_newsletter_headers(self):
+        story = self.receive(
+            "thunderbird-html",
+            **{
+                "from": "Cassandra Granade <cgranade@cgranade.com>",
+                "subject": "Fwd: May the 4th Be With You!",
+                "body-html": """
+                    <br/><br/>-------- Forwarded Message --------
+                    <table border="0" class="moz-email-headers-table">
+                        <tbody>
+                            <tr><th align="RIGHT">Subject: </th><td>May the 4th Be With You!</td></tr>
+                            <tr><th align="RIGHT">Date: </th><td>Mon, 04 May 2026 17:31:42 +0000</td></tr>
+                            <tr>
+                                <th align="RIGHT">From: </th>
+                                <td>Clarion West &lt;helpdesk@clarionwest.org&gt;</td>
+                            </tr>
+                            <tr>
+                                <th align="RIGHT">Reply-To: </th>
+                                <td>Clarion West &lt;helpdesk@clarionwest.org&gt;</td>
+                            </tr>
+                            <tr>
+                                <th align="RIGHT">To: </th>
+                                <td>Cassandra Granade &lt;cgranade@cgranade.com&gt;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/><br/><div class="newsletter"><p>Original newsletter body</p></div>
+                """,
+                "body-plain": """
+                    -------- Forwarded Message --------
+                    Subject: May the 4th Be With You!
+                    Date: Mon, 04 May 2026 17:31:42 +0000
+                    From: Clarion West <helpdesk@clarionwest.org>
+                    Reply-To: Clarion West <helpdesk@clarionwest.org>
+                    To: Cassandra Granade <cgranade@cgranade.com>
+
+                    Original newsletter body
+                """,
+            },
+        )
+
+        feed = Feed.objects.get(feed_address="newsletter:%s:helpdesk@clarionwest.org" % self.user.pk)
+        self.assertEqual(story.story_feed_id, feed.pk)
+        self.assertEqual(feed.feed_title, "Clarion West")
+        self.assertEqual(story.story_title, "May the 4th Be With You!")
+        self.assertEqual(story.story_author_name, "Clarion West <helpdesk@clarionwest.org>")
+        self.assertEqual(story.story_date, datetime(2026, 5, 4, 17, 31, 42))
+        self.assertIn("Original newsletter body", story.story_content_str)
+        self.assertNotIn("Forwarded Message", story.story_content_str)
+        self.assertNotIn("Reply-To:", story.story_content_str)
+
+        stored_story = MStory.objects.get(story_guid="%s-thunderbird-html" % self.guid_prefix)
+        self.assertEqual(stored_story.newsletter_identity, "helpdesk@clarionwest.org")
+        self.assertEqual(stored_story.newsletter_identity_source, "sender")
+        self.assertEqual(
+            stored_story.newsletter_headers["From"][0], "Clarion West <helpdesk@clarionwest.org>"
+        )
+
+    def test_thunderbird_forwarded_plain_text_uses_original_newsletter_headers(self):
+        story = self.receive(
+            "thunderbird-plain",
+            **{
+                "from": "Cassandra Granade <cgranade@cgranade.com>",
+                "subject": "Fwd: May the 4th Be With You!",
+                "body-html": "",
+                "body-plain": """-------- Forwarded Message --------
+Subject: May the 4th Be With You!
+Date: Mon, 04 May 2026 17:31:42 +0000
+From: Clarion West <helpdesk@clarionwest.org>
+To: Cassandra Granade <cgranade@cgranade.com>
+
+Original plain newsletter body""",
+            },
+        )
+
+        feed = Feed.objects.get(feed_address="newsletter:%s:helpdesk@clarionwest.org" % self.user.pk)
+        self.assertEqual(story.story_feed_id, feed.pk)
+        self.assertEqual(feed.feed_title, "Clarion West")
+        self.assertEqual(story.story_title, "May the 4th Be With You!")
+        self.assertIn("Original plain newsletter body", story.story_content_str)
+        self.assertNotIn("Forwarded Message", story.story_content_str)
