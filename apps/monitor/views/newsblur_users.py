@@ -158,6 +158,20 @@ class Users(View):
                 expiration_sec=expiration_sec,
             ),
         }
+
+        # Cancelled subscribers (esp. PayPal non-approvers) who came back with a fresh paid sub,
+        # split by destination provider x tier (e.g. premium_pricing_resubscribed_paypal_premium),
+        # plus a _total. A resubscribe keeps status="cancelled" and never lands in the upgrades_*
+        # metrics above, so this matrix is the only place the cancel-then-return outcome shows up.
+        resubscribed_matrix = MStatistics.get(
+            "munin:users_premium_pricing_resubscribed_matrix",
+            PremiumPricingMigration.resubscribed_matrix,
+            set_default=True,
+            expiration_sec=expiration_sec,
+        )
+        for cell, count in resubscribed_matrix.items():
+            data["premium_pricing_resubscribed_%s" % cell] = count
+
         chart_name = "users"
         chart_type = "counter"
 

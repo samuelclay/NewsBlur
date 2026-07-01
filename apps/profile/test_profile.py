@@ -1231,6 +1231,86 @@ class Test_PremiumPricingMigration(TestCase):
         row.refresh_from_db()
         self.assertEqual(row.status, "upgraded")
 
+    # --- Resubscribes after cancellation (dashboard matrix) ------------------
+
+    def _cancelled_row(self, provider="paypal", canceled_days_ago=2):
+        from apps.profile.models import PremiumPricingMigration
+
+        return PremiumPricingMigration.objects.create(
+            user=self.user,
+            provider=provider,
+            old_amount=24,
+            email_sent_date=datetime.datetime.now() - datetime.timedelta(days=canceled_days_ago + 1),
+            paypal_canceled_date=datetime.datetime.now() - datetime.timedelta(days=canceled_days_ago),
+            status="cancelled",
+        )
+
+    def test_reconcile_records_resubscribe_provider_and_amount(self):
+        row = self._cancelled_row(provider="paypal")
+        self._add_payment(36, days_ago=0, provider="paypal")  # fresh $36 sub after the cancel
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.status, "cancelled")  # a resubscribe never becomes an "upgrade"
+        self.assertIsNotNone(row.resubscribed_date)
+        self.assertEqual(row.resubscribed_provider, "paypal")
+        self.assertEqual(row.resubscribed_amount, 36)
+
+    def test_reconcile_records_pro_monthly_resubscribe_below_36(self):
+        # A pro-monthly resubscribe ($29/mo on iOS) is below the old $36 floor but must still count.
+        row = self._cancelled_row(provider="paypal")
+        self._add_payment(29, days_ago=0, provider="ios-pro-subscription")
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.resubscribed_amount, 29)
+        self.assertEqual(row.resubscribed_provider, "ios-pro-subscription")
+
+    def test_reconcile_ignores_old_grandfathered_charge_as_resubscribe(self):
+        # A stale $24 grandfathered charge after the cancel must not be treated as a resubscribe.
+        row = self._cancelled_row(provider="paypal")
+        self._add_payment(24, days_ago=0, provider="paypal")
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertIsNone(row.resubscribed_date)
+        self.assertIsNone(row.resubscribed_amount)
+
+    def test_resubscribed_matrix_buckets_by_provider_and_tier(self):
+        from apps.profile.models import PremiumPricingMigration
+
+        self.assertEqual(PremiumPricingMigration.resubscribed_matrix()["total"], 0)
+
+        def _resubscribed(username, provider, amount):
+            user = User.objects.create_user(username=username, password="x", email="%s@t.com" % username)
+            PremiumPricingMigration.objects.create(
+                user=user,
+                provider="paypal",
+                old_amount=24,
+                status="cancelled",
+                resubscribed_date=datetime.datetime.now(),
+                resubscribed_provider=provider,
+                resubscribed_amount=amount,
+            )
+
+        _resubscribed("resub_pp_prem", "paypal", 36)
+        _resubscribed("resub_st_prem", "stripe", 36)
+        _resubscribed("resub_pp_arch", "paypal", 99)
+        _resubscribed("resub_ios_pro", "ios-pro-subscription", 29)
+        _resubscribed("resub_and_arch", "android-archive", 99)
+
+        matrix = PremiumPricingMigration.resubscribed_matrix()
+        self.assertEqual(matrix["total"], 5)
+        self.assertEqual(matrix["paypal_premium"], 1)
+        self.assertEqual(matrix["stripe_premium"], 1)
+        self.assertEqual(matrix["paypal_archive"], 1)
+        self.assertEqual(matrix["ios_pro"], 1)
+        self.assertEqual(matrix["android_archive"], 1)
+        self.assertEqual(matrix["paypal_pro"], 0)
+
     # --- Redis lock (single-runner across the 3 beat schedulers) -------------
 
     @patch.object(Profile, "switch_stripe_subscription", return_value=True)

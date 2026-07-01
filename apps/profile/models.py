@@ -4026,7 +4026,9 @@ class Profile(models.Model):
         target_paypal_plan = Profile.plan_to_paypal_plan_id("premium")
 
         rows = list(
-            PremiumPricingMigration.objects.filter(status__in=["emailed", "would_cancel"]).select_related("user")
+            PremiumPricingMigration.objects.filter(status__in=["emailed", "would_cancel"]).select_related(
+                "user"
+            )
         )
         for row in rows:
             # Isolate each row so one failure (PayPal API, email render) can't abort reconciliation.
@@ -4108,7 +4110,9 @@ class Profile(models.Model):
         ).select_related("user")
         for row in cancelled:
             since = row.paypal_canceled_date or row.email_sent_date
-            resub = PaymentHistory.objects.filter(user=row.user, payment_amount__gte=36).exclude(
+            # >= 29 (not 36) so a pro-monthly resubscribe ($29/mo on iOS) still counts; the old
+            # grandfathered rates were $12/$24, so 29 cleanly excludes a stale grandfathered charge.
+            resub = PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29).exclude(
                 refunded=True
             )
             if since:
@@ -4117,6 +4121,7 @@ class Profile(models.Model):
             if resub:
                 row.resubscribed_date = resub.payment_date
                 row.resubscribed_provider = resub.payment_provider
+                row.resubscribed_amount = resub.payment_amount
                 row.save()
 
         if lock and lock != "skip":
@@ -4817,12 +4822,18 @@ class PremiumPricingMigration(models.Model):
     would_cancel_date = models.DateTimeField(
         blank=True, null=True
     )  # shadow mode: staff notified, not canceled
-    resubscribed_date = models.DateTimeField(blank=True, null=True)  # later $36 sub via any provider
+    resubscribed_date = models.DateTimeField(blank=True, null=True)  # later paid sub via any provider
     resubscribed_provider = models.CharField(max_length=24, blank=True, null=True)
+    resubscribed_amount = models.IntegerField(blank=True, null=True)  # tier inferred from amount/provider
     # pending|emailed|upgraded|cancelled|would_cancel (would_cancel = shadow mode, staff notified only)
     status = models.CharField(max_length=16, default="pending")
     status_changed_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
+
+    # Destination provider/tier buckets for the resubscribe dashboard matrix
+    # (apps/monitor/views/newsblur_users.py).
+    RESUB_PROVIDERS = ["paypal", "stripe", "ios", "android"]
+    RESUB_TIERS = ["premium", "archive", "pro"]
 
     class Meta:
         indexes = [models.Index(fields=["status"]), models.Index(fields=["provider"])]
@@ -4835,6 +4846,57 @@ class PremiumPricingMigration(models.Model):
             self.provider,
             self.status,
         )
+
+    @staticmethod
+    def resub_provider_bucket(provider):
+        """Map a resubscribe's PaymentHistory.payment_provider to one of RESUB_PROVIDERS, or None if
+        it isn't a recognized paid subscription provider (apps/profile/models.py)."""
+        provider = provider or ""
+        if provider == "paypal":
+            return "paypal"
+        if provider == "stripe":
+            return "stripe"
+        if provider.startswith("ios"):
+            return "ios"
+        if provider.startswith("android"):
+            return "android"
+        return None
+
+    @staticmethod
+    def resub_tier_bucket(provider, amount):
+        """Map a resubscribe (provider + amount) to premium/archive/pro. Mobile providers encode the
+        tier in their name (e.g. ios-pro-subscription, android-archive); Stripe/PayPal only tell us
+        the amount, so the tier falls out of the price: $36 premium, $99 archive, $299/yr or $29/mo
+        pro (apps/profile/models.py)."""
+        provider = provider or ""
+        amount = amount or 0
+        if "pro" in provider or amount >= 299 or amount == 29:
+            return "pro"
+        if "archive" in provider or amount == 99:
+            return "archive"
+        return "premium"
+
+    @classmethod
+    def resubscribed_matrix(cls):
+        """Count cancelled subscribers who came back with a fresh paid subscription, keyed by
+        '<provider>_<tier>' (e.g. 'paypal_premium') plus an overall 'total'. A resubscribe keeps the
+        row's status="cancelled" (it never becomes an upgrade), so this is the only place the
+        cancel-then-return outcome is surfaced. Powers the resubscribe panel on the ops dashboard
+        (apps/monitor/views/newsblur_users.py)."""
+        matrix = {
+            "%s_%s" % (provider, tier): 0 for provider in cls.RESUB_PROVIDERS for tier in cls.RESUB_TIERS
+        }
+        matrix["total"] = 0
+        rows = cls.objects.filter(status="cancelled", resubscribed_date__isnull=False).only(
+            "resubscribed_provider", "resubscribed_amount"
+        )
+        for row in rows:
+            matrix["total"] += 1
+            provider = cls.resub_provider_bucket(row.resubscribed_provider)
+            tier = cls.resub_tier_bucket(row.resubscribed_provider, row.resubscribed_amount)
+            if provider:
+                matrix["%s_%s" % (provider, tier)] += 1
+        return matrix
 
 
 class PaymentHistory(models.Model):
