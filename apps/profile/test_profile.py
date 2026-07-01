@@ -504,6 +504,72 @@ class Test_SetupPremiumHistoryStripe(TestCase):
         self.assertTrue(self.profile.premium_renewal)
 
 
+class Test_SetupPremiumHistoryPaypal(TestCase):
+    """Tests for PayPal subscription handling in setup_premium_history (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="paypalhisttest", password="password", email="paypalhisttest@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.save()
+        self.user.paypal_ids.create(paypal_sub_id="I-SUB123")
+
+    def _paypal_api(self, transaction_time):
+        api = MagicMock()
+
+        def get(path):
+            if path == "/v1/billing/subscriptions/I-SUB123?fields=plan":
+                return {
+                    "status": "ACTIVE",
+                    "plan_id": Profile.plan_to_paypal_plan_id("premium"),
+                }
+            if path.startswith("/v1/billing/subscriptions/I-SUB123/transactions"):
+                return {
+                    "transactions": [
+                        {
+                            "time": transaction_time,
+                            "status": "COMPLETED",
+                            "amount_with_breakdown": {
+                                "gross_amount": {
+                                    "value": "36.00",
+                                },
+                            },
+                        }
+                    ]
+                }
+            raise AssertionError("Unexpected PayPal API path: %s" % path)
+
+        api.get.side_effect = get
+        return api
+
+    @patch("apps.profile.tasks.EmailNewPremium.delay")
+    @patch("apps.profile.models.SchedulePremiumSetup")
+    @patch("apps.reader.models.UserSubscription.queue_new_feeds")
+    @patch.object(Profile, "paypal_api")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_paypal_payment_converts_trial_to_paid(
+        self, mock_paypal_ids, mock_paypal_api, mock_queue_new, mock_schedule_setup, mock_email
+    ):
+        transaction_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+        mock_paypal_api.return_value = self._paypal_api(transaction_time)
+
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = True
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=30)
+        self.profile.save()
+
+        self.profile.setup_premium_history()
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_premium)
+        self.assertFalse(self.profile.is_premium_trial)
+        self.assertTrue(self.profile.premium_renewal)
+        self.assertEqual(self.profile.active_provider, "paypal")
+        mock_email.assert_called_once_with(user_id=self.user.pk)
+
+
 class Test_StripeIdSync(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

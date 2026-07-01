@@ -1572,11 +1572,12 @@ class Profile(models.Model):
             % (total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire),
         )
 
+        has_current_paid_period = self.premium_expire and self.premium_expire > datetime.datetime.now()
+        has_recent_paid_payment = recent_payments_count > 0
         if (
             set_premium_expire
-            and not self.is_premium
-            and self.premium_expire
-            and self.premium_expire > datetime.datetime.now()
+            and has_current_paid_period
+            and (not self.is_premium or (self.is_premium_trial and has_recent_paid_payment))
         ):
             self.activate_premium()
 
