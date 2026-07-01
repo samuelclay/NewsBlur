@@ -1279,37 +1279,75 @@ class Test_PremiumPricingMigration(TestCase):
         self.assertIsNone(row.resubscribed_date)
         self.assertIsNone(row.resubscribed_amount)
 
-    def test_resubscribed_matrix_buckets_by_provider_and_tier(self):
+    def _resubscribed(self, username, origin, dest_provider, amount):
         from apps.profile.models import PremiumPricingMigration
 
-        self.assertEqual(PremiumPricingMigration.resubscribed_matrix()["total"], 0)
+        user = User.objects.create_user(username=username, password="x", email="%s@t.com" % username)
+        return PremiumPricingMigration.objects.create(
+            user=user,
+            provider=origin,
+            old_amount=24,
+            status="cancelled",
+            resubscribed_date=datetime.datetime.now(),
+            resubscribed_provider=dest_provider,
+            resubscribed_amount=amount,
+        )
 
-        def _resubscribed(username, provider, amount):
+    def test_resubscribed_switches_by_origin_dest_tier(self):
+        from apps.profile.models import PremiumPricingMigration
+
+        self.assertEqual(PremiumPricingMigration.resubscribed_switches(), {})
+
+        self._resubscribed("sw_pp_pp", "paypal", "paypal", 36)
+        self._resubscribed("sw_pp_pp2", "paypal", "paypal", 36)
+        self._resubscribed("sw_pp_st", "paypal", "stripe", 36)
+        self._resubscribed("sw_pp_arch", "paypal", "paypal", 99)
+        self._resubscribed("sw_st_ios_pro", "stripe", "ios-pro-subscription", 29)
+
+        switches = PremiumPricingMigration.resubscribed_switches()
+        self.assertEqual(switches["paypal_to_paypal_premium"], 2)
+        self.assertEqual(switches["paypal_to_stripe_premium"], 1)
+        self.assertEqual(switches["paypal_to_paypal_archive"], 1)
+        self.assertEqual(switches["stripe_to_ios_pro"], 1)
+        # Zero-count combos are omitted entirely, not reported as 0.
+        self.assertNotIn("stripe_to_paypal_premium", switches)
+
+    def test_resubscribe_funnel_counts_returned_vs_still_cancelled(self):
+        from apps.profile.models import PremiumPricingMigration
+
+        # 3 paypal cancelled (2 came back, 1 still gone) + 1 stripe cancelled (still gone).
+        self._resubscribed("fn_pp_back1", "paypal", "paypal", 36)
+        self._resubscribed("fn_pp_back2", "paypal", "stripe", 36)
+        for username, origin in [("fn_pp_gone", "paypal"), ("fn_st_gone", "stripe")]:
             user = User.objects.create_user(username=username, password="x", email="%s@t.com" % username)
             PremiumPricingMigration.objects.create(
-                user=user,
-                provider="paypal",
-                old_amount=24,
-                status="cancelled",
-                resubscribed_date=datetime.datetime.now(),
-                resubscribed_provider=provider,
-                resubscribed_amount=amount,
+                user=user, provider=origin, old_amount=24, status="cancelled"
             )
 
-        _resubscribed("resub_pp_prem", "paypal", 36)
-        _resubscribed("resub_st_prem", "stripe", 36)
-        _resubscribed("resub_pp_arch", "paypal", 99)
-        _resubscribed("resub_ios_pro", "ios-pro-subscription", 29)
-        _resubscribed("resub_and_arch", "android-archive", 99)
+        funnel = PremiumPricingMigration.resubscribe_funnel()
+        self.assertEqual(funnel["resubscribed_paypal"], 2)
+        self.assertEqual(funnel["not_resubscribed_paypal"], 1)
+        self.assertEqual(funnel["resubscribed_stripe"], 0)
+        self.assertEqual(funnel["not_resubscribed_stripe"], 1)
 
-        matrix = PremiumPricingMigration.resubscribed_matrix()
-        self.assertEqual(matrix["total"], 5)
-        self.assertEqual(matrix["paypal_premium"], 1)
-        self.assertEqual(matrix["stripe_premium"], 1)
-        self.assertEqual(matrix["paypal_archive"], 1)
-        self.assertEqual(matrix["ios_pro"], 1)
-        self.assertEqual(matrix["android_archive"], 1)
-        self.assertEqual(matrix["paypal_pro"], 0)
+    def test_upgrades_paypal_counts_paypal_to_paypal_returns(self):
+        # The redefined "PayPal upgrades" = in-place paypal upgrades (legacy IPN => always 0) plus
+        # paypal -> paypal resubscribes. A paypal -> stripe return must NOT count as a PayPal upgrade.
+        from apps.profile.models import PremiumPricingMigration
+
+        self._resubscribed("up_pp_pp", "paypal", "paypal", 36)
+        self._resubscribed("up_pp_st", "paypal", "stripe", 36)
+
+        count = (
+            PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count()
+            + PremiumPricingMigration.objects.filter(
+                status="cancelled",
+                provider="paypal",
+                resubscribed_provider="paypal",
+                resubscribed_date__isnull=False,
+            ).count()
+        )
+        self.assertEqual(count, 1)
 
     # --- Redis lock (single-runner across the 3 beat schedulers) -------------
 
