@@ -1895,6 +1895,23 @@ class Profile(models.Model):
             stripe.Refund.create(charge=stripe_payments[0].id)
             self.cancel_premium_stripe()
             refunded = stripe_payments[0].amount / 100
+            # Flag the original charge's history row as refunded so it stops
+            # extending premium_expire in setup_premium_history (which only skips
+            # rows where refunded=True). The refund itself is recorded as a
+            # separate negative row below. apps/profile/models.py
+            original_payment = (
+                PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_provider="stripe",
+                    payment_amount__gt=0,
+                )
+                .exclude(refunded=True)
+                .order_by("-payment_date")
+                .first()
+            )
+            if original_payment:
+                original_payment.refunded = True
+                original_payment.save()
 
         PaymentHistory.objects.create(
             user=self.user,
