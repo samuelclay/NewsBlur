@@ -17307,6 +17307,203 @@
       ],
       "title": "Premium Pricing Migration ($12/$24 -> $36)",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Cancelled grandfathered subscribers (mostly PayPal non-approvers) who came back with a fresh paid subscription, split by the destination provider and tier they resubscribed at. A resubscribe keeps the migration row's status as 'cancelled', so it never shows up in the upgrades series on the panel to the left; this is the only view of the cancel-then-return outcome.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 661
+      },
+      "id": 320,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_total\"}",
+          "legendFormat": "Total resubscribed",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_paypal_premium\"}",
+          "legendFormat": "PayPal premium",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_paypal_archive\"}",
+          "legendFormat": "PayPal archive",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_paypal_pro\"}",
+          "legendFormat": "PayPal pro",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_stripe_premium\"}",
+          "legendFormat": "Stripe premium",
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_stripe_archive\"}",
+          "legendFormat": "Stripe archive",
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_stripe_pro\"}",
+          "legendFormat": "Stripe pro",
+          "refId": "G"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_ios_premium\"}",
+          "legendFormat": "iOS premium",
+          "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_ios_archive\"}",
+          "legendFormat": "iOS archive",
+          "refId": "I"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_ios_pro\"}",
+          "legendFormat": "iOS pro",
+          "refId": "J"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_android_premium\"}",
+          "legendFormat": "Android premium",
+          "refId": "K"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_android_archive\"}",
+          "legendFormat": "Android archive",
+          "refId": "L"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"premium_pricing_resubscribed_android_pro\"}",
+          "legendFormat": "Android pro",
+          "refId": "M"
+        }
+      ],
+      "title": "Premium Pricing Resubscribes (provider x tier)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",
