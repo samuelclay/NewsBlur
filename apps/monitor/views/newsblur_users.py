@@ -111,9 +111,21 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
+            # Grandfathered PayPal subs are legacy IPN and can't be revised in place, so they never
+            # reach status="upgraded"; a PayPal user who takes the new price does it by resubscribing
+            # on a fresh $36 PayPal sub (recorded as cancelled + resubscribed=paypal). Count both so
+            # this reflects real PayPal upgrades instead of always reading zero.
             "premium_pricing_upgrades_paypal": MStatistics.get(
                 "munin:users_premium_pricing_upgrades_paypal",
-                lambda: PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count(),
+                lambda: (
+                    PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count()
+                    + PremiumPricingMigration.objects.filter(
+                        status="cancelled",
+                        provider="paypal",
+                        resubscribed_provider="paypal",
+                        resubscribed_date__isnull=False,
+                    ).count()
+                ),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
@@ -126,14 +138,6 @@ class Users(View):
             "premium_pricing_cancellations_paypal": MStatistics.get(
                 "munin:users_premium_pricing_cancellations_paypal",
                 lambda: PremiumPricingMigration.objects.filter(status="cancelled", provider="paypal").count(),
-                set_default=True,
-                expiration_sec=expiration_sec,
-            ),
-            "premium_pricing_would_cancel_paypal": MStatistics.get(
-                "munin:users_premium_pricing_would_cancel_paypal",
-                lambda: PremiumPricingMigration.objects.filter(
-                    status="would_cancel", provider="paypal"
-                ).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
@@ -160,17 +164,31 @@ class Users(View):
         }
 
         # Cancelled subscribers (esp. PayPal non-approvers) who came back with a fresh paid sub,
-        # split by destination provider x tier (e.g. premium_pricing_resubscribed_paypal_premium),
-        # plus a _total. A resubscribe keeps status="cancelled" and never lands in the upgrades_*
-        # metrics above, so this matrix is the only place the cancel-then-return outcome shows up.
-        resubscribed_matrix = MStatistics.get(
-            "munin:users_premium_pricing_resubscribed_matrix",
-            PremiumPricingMigration.resubscribed_matrix,
+        # keyed by the actual origin -> destination x tier move (e.g.
+        # premium_pricing_switch_paypal_to_stripe_premium). Only non-zero switches are emitted, so the
+        # panel shows the moves that actually happened rather than a wall of zeros. A resubscribe keeps
+        # status="cancelled" and never lands in the upgrades_* metrics above.
+        resubscribed_switches = MStatistics.get(
+            "munin:users_premium_pricing_resubscribed_switches",
+            PremiumPricingMigration.resubscribed_switches,
             set_default=True,
             expiration_sec=expiration_sec,
         )
-        for cell, count in resubscribed_matrix.items():
-            data["premium_pricing_resubscribed_%s" % cell] = count
+        for switch, count in resubscribed_switches.items():
+            data["premium_pricing_switch_%s" % switch] = count
+        data["premium_pricing_resubscribed_total"] = sum(resubscribed_switches.values())
+
+        # Of the subscribers we cancelled (PayPal non-approvers are forcibly cancelled), how many
+        # have come back vs are still gone -- charts the resubscribe rate against the forced
+        # cancellations (premium_pricing_cancellations_<origin>) on the same panel.
+        resubscribe_funnel = MStatistics.get(
+            "munin:users_premium_pricing_resubscribe_funnel",
+            PremiumPricingMigration.resubscribe_funnel,
+            set_default=True,
+            expiration_sec=expiration_sec,
+        )
+        for key, count in resubscribe_funnel.items():
+            data["premium_pricing_%s" % key] = count
 
         chart_name = "users"
         chart_type = "counter"

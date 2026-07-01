@@ -17273,15 +17273,6 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_would_cancel_paypal\"}",
-          "legendFormat": "PayPal would-cancel (shadow)",
-          "refId": "E"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
           "expr": "users{category=\"premium_pricing_awaiting_charge\"}",
           "legendFormat": "Switched, awaiting charge",
           "refId": "F"
@@ -17313,7 +17304,7 @@
         "type": "prometheus",
         "uid": "U1-fPO3Mk"
       },
-      "description": "Cancelled grandfathered subscribers (mostly PayPal non-approvers) who came back with a fresh paid subscription, split by the destination provider and tier they resubscribed at. A resubscribe keeps the migration row's status as 'cancelled', so it never shows up in the upgrades series on the panel to the left; this is the only view of the cancel-then-return outcome.",
+      "description": "The forced-cancel -> resubscribe funnel for the pricing migration. 'Forcibly cancelled (total)' is everyone we cancelled per origin; 'resubscribed' vs 'not resubscribed' splits them into who came back on a fresh paid sub vs who is still gone, so the resubscribe rate is visible (e.g. PayPal 6 of 21). The origin->destination x tier series (e.g. paypal_to_stripe_premium) break down HOW the returners came back; only switches that actually happened are shown, so there are no zero-count rows. A resubscribe keeps the migration row's status as 'cancelled', so it never shows up in the upgrades series on the panel to the left.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -17389,8 +17380,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_total\"}",
-          "legendFormat": "Total resubscribed",
+          "expr": "users{category=~\"premium_pricing_switch_.+\"}",
+          "legendFormat": "{{category}}",
           "refId": "A"
         },
         {
@@ -17398,8 +17389,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_paypal_premium\"}",
-          "legendFormat": "PayPal premium",
+          "expr": "users{category=\"premium_pricing_resubscribed_total\"}",
+          "legendFormat": "Total resubscribed",
           "refId": "B"
         },
         {
@@ -17407,8 +17398,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_paypal_archive\"}",
-          "legendFormat": "PayPal archive",
+          "expr": "users{category=\"premium_pricing_cancellations_paypal\"}",
+          "legendFormat": "PayPal forcibly cancelled (total)",
           "refId": "C"
         },
         {
@@ -17416,8 +17407,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_paypal_pro\"}",
-          "legendFormat": "PayPal pro",
+          "expr": "users{category=\"premium_pricing_resubscribed_paypal\"}",
+          "legendFormat": "PayPal resubscribed",
           "refId": "D"
         },
         {
@@ -17425,8 +17416,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_stripe_premium\"}",
-          "legendFormat": "Stripe premium",
+          "expr": "users{category=\"premium_pricing_not_resubscribed_paypal\"}",
+          "legendFormat": "PayPal not resubscribed",
           "refId": "E"
         },
         {
@@ -17434,8 +17425,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_stripe_archive\"}",
-          "legendFormat": "Stripe archive",
+          "expr": "users{category=\"premium_pricing_cancellations_stripe\"}",
+          "legendFormat": "Stripe cancelled (total)",
           "refId": "F"
         },
         {
@@ -17443,8 +17434,8 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_stripe_pro\"}",
-          "legendFormat": "Stripe pro",
+          "expr": "users{category=\"premium_pricing_resubscribed_stripe\"}",
+          "legendFormat": "Stripe resubscribed",
           "refId": "G"
         },
         {
@@ -17452,57 +17443,12 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "expr": "users{category=\"premium_pricing_resubscribed_ios_premium\"}",
-          "legendFormat": "iOS premium",
+          "expr": "users{category=\"premium_pricing_not_resubscribed_stripe\"}",
+          "legendFormat": "Stripe not resubscribed",
           "refId": "H"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "expr": "users{category=\"premium_pricing_resubscribed_ios_archive\"}",
-          "legendFormat": "iOS archive",
-          "refId": "I"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "expr": "users{category=\"premium_pricing_resubscribed_ios_pro\"}",
-          "legendFormat": "iOS pro",
-          "refId": "J"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "expr": "users{category=\"premium_pricing_resubscribed_android_premium\"}",
-          "legendFormat": "Android premium",
-          "refId": "K"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "expr": "users{category=\"premium_pricing_resubscribed_android_archive\"}",
-          "legendFormat": "Android archive",
-          "refId": "L"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "expr": "users{category=\"premium_pricing_resubscribed_android_pro\"}",
-          "legendFormat": "Android pro",
-          "refId": "M"
         }
       ],
-      "title": "Premium Pricing Resubscribes (provider x tier)",
+      "title": "Premium Pricing Resubscribes (forced cancels vs returns)",
       "type": "timeseries"
     }
   ],

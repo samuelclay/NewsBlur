@@ -4847,10 +4847,10 @@ class PremiumPricingMigration(models.Model):
     status_changed_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
-    # Destination provider/tier buckets for the resubscribe dashboard matrix
+    # Origin providers for the resubscribe switch breakdown: a grandfathered sub is only ever billed
+    # via Stripe or PayPal, though it can resubscribe on any provider
     # (apps/monitor/views/newsblur_users.py).
-    RESUB_PROVIDERS = ["paypal", "stripe", "ios", "android"]
-    RESUB_TIERS = ["premium", "archive", "pro"]
+    SWITCH_ORIGINS = ["paypal", "stripe"]
 
     class Meta:
         indexes = [models.Index(fields=["status"]), models.Index(fields=["provider"])]
@@ -4866,8 +4866,9 @@ class PremiumPricingMigration(models.Model):
 
     @staticmethod
     def resub_provider_bucket(provider):
-        """Map a resubscribe's PaymentHistory.payment_provider to one of RESUB_PROVIDERS, or None if
-        it isn't a recognized paid subscription provider (apps/profile/models.py)."""
+        """Map a resubscribe's PaymentHistory.payment_provider to a destination bucket
+        (paypal/stripe/ios/android), or None if it isn't a recognized paid subscription provider
+        (apps/profile/models.py)."""
         provider = provider or ""
         if provider == "paypal":
             return "paypal"
@@ -4894,26 +4895,44 @@ class PremiumPricingMigration(models.Model):
         return "premium"
 
     @classmethod
-    def resubscribed_matrix(cls):
-        """Count cancelled subscribers who came back with a fresh paid subscription, keyed by
-        '<provider>_<tier>' (e.g. 'paypal_premium') plus an overall 'total'. A resubscribe keeps the
-        row's status="cancelled" (it never becomes an upgrade), so this is the only place the
-        cancel-then-return outcome is surfaced. Powers the resubscribe panel on the ops dashboard
+    def resubscribed_switches(cls):
+        """Origin-provider -> destination-provider x tier counts for cancelled subscribers who came
+        back with a fresh paid subscription, keyed '<origin>_to_<dest>_<tier>' (e.g.
+        'paypal_to_stripe_premium'). Only switches that actually happened are returned -- zero-count
+        combos are omitted -- so the dashboard shows real moves instead of a wall of zeros. A
+        resubscribe keeps the row's status="cancelled" (it never becomes an upgrade), so this is the
+        only place the cancel-then-return outcome is broken down
         (apps/monitor/views/newsblur_users.py)."""
-        matrix = {
-            "%s_%s" % (provider, tier): 0 for provider in cls.RESUB_PROVIDERS for tier in cls.RESUB_TIERS
-        }
-        matrix["total"] = 0
+        switches = {}
         rows = cls.objects.filter(status="cancelled", resubscribed_date__isnull=False).only(
-            "resubscribed_provider", "resubscribed_amount"
+            "provider", "resubscribed_provider", "resubscribed_amount"
         )
         for row in rows:
-            matrix["total"] += 1
-            provider = cls.resub_provider_bucket(row.resubscribed_provider)
+            origin = row.provider if row.provider in cls.SWITCH_ORIGINS else None
+            dest = cls.resub_provider_bucket(row.resubscribed_provider)
+            if not origin or not dest:
+                continue
             tier = cls.resub_tier_bucket(row.resubscribed_provider, row.resubscribed_amount)
-            if provider:
-                matrix["%s_%s" % (provider, tier)] += 1
-        return matrix
+            key = "%s_to_%s_%s" % (origin, dest, tier)
+            switches[key] = switches.get(key, 0) + 1
+        return switches
+
+    @classmethod
+    def resubscribe_funnel(cls):
+        """Per-origin cancel-then-return funnel: of the subscribers we cancelled (PayPal
+        non-approvers are forcibly cancelled), how many have come back on a fresh paid sub vs are
+        still gone. Keyed 'resubscribed_<origin>' and 'not_resubscribed_<origin>', so the dashboard
+        can chart the resubscribe rate against the forced cancellations -- the total cancelled per
+        origin is already exposed as premium_pricing_cancellations_<origin>
+        (apps/monitor/views/newsblur_users.py)."""
+        funnel = {}
+        for origin in cls.SWITCH_ORIGINS:
+            cancelled = cls.objects.filter(status="cancelled", provider=origin)
+            total = cancelled.count()
+            resubscribed = cancelled.filter(resubscribed_date__isnull=False).count()
+            funnel["resubscribed_%s" % origin] = resubscribed
+            funnel["not_resubscribed_%s" % origin] = total - resubscribed
+        return funnel
 
 
 class PaymentHistory(models.Model):
