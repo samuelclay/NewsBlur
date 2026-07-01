@@ -1392,3 +1392,104 @@ class Test_PremiumPricingMigration(TestCase):
         args, kwargs = classic_api.manage_recurring_payments_profile_status.call_args
         self.assertEqual(args[:2], ("I-LEGACY", "Cancel"))
         self.assertIn("note", kwargs)
+
+
+class Test_RefundLatestStripePayment(TestCase):
+    """A full Stripe refund must flag the original charge's history row as
+    refunded so it stops extending premium_expire in setup_premium_history
+    (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="refundtest", password="password", email="refundtest@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = "cus_refund123"
+        self.profile.save()
+
+    def _charge(self, amount_cents=3600, charge_id="ch_refund_test"):
+        return MagicMock(id=charge_id, amount=amount_cents)
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    def test_full_refund_flags_original_charge_as_refunded(self, mock_customer, mock_charges, mock_refund):
+        mock_customer.return_value = MagicMock(id="cus_refund123")
+        mock_charges.return_value = MagicMock(data=[self._charge(amount_cents=3600)])
+
+        original = PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=30),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+
+        refunded = self.profile.refund_latest_stripe_payment(partial=False)
+
+        self.assertEqual(refunded, 36)
+        mock_refund.assert_called_once()
+        # The original positive charge is now flagged refunded...
+        original.refresh_from_db()
+        self.assertTrue(original.refunded)
+        # ...and the refund is recorded as a separate negative row.
+        refund_row = PaymentHistory.objects.get(user=self.user, payment_amount=-36)
+        self.assertTrue(refund_row.refunded)
+
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    def test_full_refund_does_not_reextend_premium_expire(
+        self, mock_customer, mock_charges, mock_refund, mock_paypal_ids, mock_stripe_ids
+    ):
+        """After a full refund, a setup_premium_history recompute (as the Stripe
+        refund webhook triggers) must not push premium_expire back out to the
+        original charge date + 365 days."""
+        mock_customer.return_value = MagicMock(id="cus_refund123")
+        mock_charges.return_value = MagicMock(data=[self._charge(amount_cents=3600)])
+
+        payment_date = datetime.datetime.now() - datetime.timedelta(days=30)
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=payment_date,
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+        # Premium is currently paid ~11 months into the future.
+        self.profile.premium_expire = payment_date + datetime.timedelta(days=365)
+        self.profile.save()
+
+        self.profile.refund_latest_stripe_payment(partial=False)
+
+        # Support gives a one-month grace period by expiring today.
+        today = datetime.datetime.now()
+        self.profile.premium_expire = today
+        self.profile.save()
+
+        # The refund webhook recompute must leave the grace date in place.
+        self.profile.setup_premium_history()
+
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.premium_expire.date(), today.date())
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    def test_partial_refund_leaves_original_charge_active(self, mock_customer, mock_charges, mock_refund):
+        """A partial refund keeps premium active, so the original charge must
+        stay unrefunded and continue to count toward premium_expire."""
+        mock_customer.return_value = MagicMock(id="cus_refund123")
+        mock_charges.return_value = MagicMock(data=[self._charge(amount_cents=3600)])
+
+        original = PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=30),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+
+        self.profile.refund_latest_stripe_payment(partial=True)
+
+        original.refresh_from_db()
+        self.assertIsNot(original.refunded, True)
