@@ -1245,6 +1245,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             data['feed_id'] = feed_id;
         }
 
+        // assetmodel.js: Piggyback the new-stories peek on the 1-minute feed
+        // refresh so we don't need a second timer. Reader fills in scope +
+        // known hashes if a feed/folder is open; see reader.js
+        // build_new_stories_check_params.
+        var new_stories_params = (NEWSBLUR.reader && _.isFunction(NEWSBLUR.reader.build_new_stories_check_params)) ?
+            NEWSBLUR.reader.build_new_stories_check_params() : null;
+        if (new_stories_params) {
+            _.extend(data, new_stories_params);
+        }
+
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/refresh_feeds', data, pre_callback, error_callback);
         }

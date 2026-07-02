@@ -860,6 +860,40 @@ def refresh_feeds(request):
     social_feed_ids = [feed_id for feed_id in feed_ids if "social:" in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
 
+    # apps/reader/views.py: New-stories peek — let the client ask "are there any
+    # story hashes I don't already have in the currently-open feed/folder?"
+    # The client passes known_story_hashes[] + a scope; we read the ranked-stories
+    # Redis cache without mutating it (see UserSubscription.peek_new_story_hashes).
+    check_new_stories = get_post.get("check_new_stories")
+    new_story_hashes = None
+    if check_new_stories and get_post.get("check_new_stories_order", "newest") == "newest":
+        known_hashes = get_post.getlist("known_story_hashes") or get_post.getlist("known_story_hashes[]")
+        read_filter = get_post.get("check_new_stories_read_filter", "all")
+        peek_feed_ids = []
+        if check_new_stories == "feed":
+            feed_id_raw = get_post.get("check_new_stories_feed_id")
+            if feed_id_raw:
+                try:
+                    peek_feed_ids = [int(feed_id_raw)]
+                except (TypeError, ValueError):
+                    peek_feed_ids = []
+        elif check_new_stories == "river":
+            raw_ids = get_post.getlist("check_new_stories_feed_ids") or get_post.getlist(
+                "check_new_stories_feed_ids[]"
+            )
+            for raw in raw_ids:
+                try:
+                    peek_feed_ids.append(int(raw))
+                except (TypeError, ValueError):
+                    continue
+        if peek_feed_ids:
+            new_story_hashes = UserSubscription.peek_new_story_hashes(
+                user.pk,
+                feed_ids=peek_feed_ids,
+                read_filter=read_filter,
+                known_story_hashes=known_hashes,
+            )
+
     feeds = {}
     if feed_ids or (not social_feed_ids and not feed_ids):
         feeds = UserSubscription.feeds_with_updated_counts(
@@ -922,11 +956,14 @@ def refresh_feeds(request):
 
     MAnalyticsLoader.add(page_load=time.time() - start_time)
 
-    return {
+    response = {
         "feeds": feeds,
         "social_feeds": social_feeds,
         "interactions_count": interactions_count,
     }
+    if new_story_hashes is not None:
+        response["new_story_hashes"] = new_story_hashes
+    return response
 
 
 @json.json_view
