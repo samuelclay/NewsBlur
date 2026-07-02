@@ -530,12 +530,6 @@ class SearchStory:
 
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         if strip:
             query = re.sub(
                 r'([^\s\w_\-"])+', " ", query
@@ -608,13 +602,6 @@ class SearchStory:
         if not feed_ids or not phrase or not phrase.strip():
             return []
 
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError:
-            return []
-        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError):
-            return []
-
         clean_phrase = phrase.strip().replace('"', "")
         if not clean_phrase:
             return []
@@ -659,7 +646,6 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES().indices.flush()
 
         if strip:
             query = re.sub(
@@ -710,12 +696,6 @@ class SearchStory:
 
     @classmethod
     def more_like_this(cls, feed_ids, story_hash, order, offset, limit):
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         body = {
             "query": {
                 "bool": {
@@ -960,12 +940,6 @@ class DiscoverStory:
         feed_ids_to_exclude=None,
         story_hashes_to_exclude=None,
     ):
-        try:
-            cls.ES().indices.flush(index=cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         must_clauses = [
             {
                 "script_score": {
@@ -1019,12 +993,6 @@ class DiscoverStory:
     @classmethod
     def fetch_story_content_vector(cls, story_hash):
         # Fetch the content vector from ES for the specified story_hash
-        try:
-            cls.ES().indices.flush(index=cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         body = {"query": {"ids": {"values": [story_hash]}}}
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
