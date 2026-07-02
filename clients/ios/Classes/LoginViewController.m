@@ -65,8 +65,13 @@ static NSString *const kWaveShaderSource =
 @property (nonatomic, assign) CFTimeInterval startTime;
 @property (nonatomic, strong) NSLayoutConstraint *emailHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *emailTopSpacingConstraint;
+@property (nonatomic, strong) UIButton *advancedButton;
+@property (nonatomic, strong) UIView *advancedContainer;
+@property (nonatomic, strong) UILabel *advancedHelpLabel;
+@property (nonatomic, strong) NSLayoutConstraint *advancedHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *formBottomToButton;
 @property (nonatomic, strong) NSLayoutConstraint *formBottomToForgot;
+@property (nonatomic, assign) BOOL advancedExpanded;
 @end
 
 @implementation LoginViewController
@@ -261,7 +266,6 @@ static NSString *const kWaveShaderSource =
     // === Text fields ===
     self.usernameInput = [self createTextField:@"Username or Email" isSecure:NO];
     self.usernameInput.textContentType = UITextContentTypeUsername;
-    self.usernameInput.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
     [formContentView addSubview:self.usernameInput];
 
@@ -272,7 +276,6 @@ static NSString *const kWaveShaderSource =
     self.emailInput = [self createTextField:@"Email" isSecure:NO];
     self.emailInput.textContentType = UITextContentTypeEmailAddress;
     self.emailInput.keyboardType = UIKeyboardTypeEmailAddress;
-    self.emailInput.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.emailInput.alpha = 0;
     self.emailInput.clipsToBounds = YES;
     [formContentView addSubview:self.emailInput];
@@ -318,9 +321,43 @@ static NSString *const kWaveShaderSource =
     self.onePasswordButton.hidden = ![[OnePasswordExtension sharedExtension] isAppExtensionAvailable];
     [formContentView addSubview:self.onePasswordButton];
 
+    // === Advanced custom server controls ===
+    self.advancedButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.advancedButton setTitle:@"Advanced" forState:UIControlStateNormal];
+    [self.advancedButton setImage:[UIImage systemImageNamed:@"chevron.down"] forState:UIControlStateNormal];
+    self.advancedButton.tintColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
+    self.advancedButton.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14];
+    self.advancedButton.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
+    self.advancedButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.advancedButton addTarget:self action:@selector(toggleAdvancedServerSettings:) forControlEvents:UIControlEventTouchUpInside];
+    [formContentView addSubview:self.advancedButton];
+
+    self.advancedContainer = [[UIView alloc] init];
+    self.advancedContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    self.advancedContainer.clipsToBounds = YES;
+    self.advancedContainer.hidden = YES;
+    self.advancedContainer.alpha = 0.0;
+    [formContentView addSubview:self.advancedContainer];
+
+    self.serverURLInput = [self createTextField:@"www.domain.com" isSecure:NO];
+    self.serverURLInput.textContentType = UITextContentTypeURL;
+    self.serverURLInput.keyboardType = UIKeyboardTypeURL;
+    self.serverURLInput.returnKeyType = UIReturnKeyDone;
+    self.serverURLInput.text = [[NSUserDefaults standardUserDefaults] stringForKey:@"custom_domain"] ?: @"";
+    [self.serverURLInput addTarget:self action:@selector(applyCustomDomainPreference) forControlEvents:UIControlEventEditingChanged];
+    [self.advancedContainer addSubview:self.serverURLInput];
+
+    self.advancedHelpLabel = [[UILabel alloc] init];
+    self.advancedHelpLabel.text = @"Leave blank to use NewsBlur.";
+    self.advancedHelpLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12] ?: [UIFont systemFontOfSize:12];
+    self.advancedHelpLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.45];
+    self.advancedHelpLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.advancedContainer addSubview:self.advancedHelpLabel];
+
     // === Stored constraints for email animation ===
     self.emailTopSpacingConstraint = [self.emailInput.topAnchor constraintEqualToAnchor:self.passwordInput.bottomAnchor constant:0];
     self.emailHeightConstraint = [self.emailInput.heightAnchor constraintEqualToConstant:0];
+    self.advancedHeightConstraint = [self.advancedContainer.heightAnchor constraintEqualToConstant:0];
 
     // === Layout constraints ===
     NSLayoutConstraint *formCardPreferredWidth = [formCard.widthAnchor constraintEqualToAnchor:contentView.widthAnchor constant:-48];
@@ -400,8 +437,24 @@ static NSString *const kWaveShaderSource =
         [submitButton.trailingAnchor constraintEqualToAnchor:formContentView.trailingAnchor constant:-20],
         [submitButton.heightAnchor constraintEqualToConstant:50],
 
+        // Advanced server controls
+        [self.advancedButton.topAnchor constraintEqualToAnchor:submitButton.bottomAnchor constant:8],
+        [self.advancedButton.centerXAnchor constraintEqualToAnchor:formContentView.centerXAnchor],
+        [self.advancedButton.heightAnchor constraintEqualToConstant:30],
+        [self.advancedContainer.topAnchor constraintEqualToAnchor:self.advancedButton.bottomAnchor constant:4],
+        [self.advancedContainer.leadingAnchor constraintEqualToAnchor:formContentView.leadingAnchor constant:20],
+        [self.advancedContainer.trailingAnchor constraintEqualToAnchor:formContentView.trailingAnchor constant:-20],
+        self.advancedHeightConstraint,
+        [self.serverURLInput.topAnchor constraintEqualToAnchor:self.advancedContainer.topAnchor],
+        [self.serverURLInput.leadingAnchor constraintEqualToAnchor:self.advancedContainer.leadingAnchor],
+        [self.serverURLInput.trailingAnchor constraintEqualToAnchor:self.advancedContainer.trailingAnchor],
+        [self.serverURLInput.heightAnchor constraintEqualToConstant:44],
+        [self.advancedHelpLabel.topAnchor constraintEqualToAnchor:self.serverURLInput.bottomAnchor constant:6],
+        [self.advancedHelpLabel.leadingAnchor constraintEqualToAnchor:self.advancedContainer.leadingAnchor constant:4],
+        [self.advancedHelpLabel.trailingAnchor constraintEqualToAnchor:self.advancedContainer.trailingAnchor constant:-4],
+
         // Error label
-        [self.errorLabel.topAnchor constraintEqualToAnchor:submitButton.bottomAnchor constant:12],
+        [self.errorLabel.topAnchor constraintEqualToAnchor:self.advancedContainer.bottomAnchor constant:12],
         [self.errorLabel.leadingAnchor constraintEqualToAnchor:formContentView.leadingAnchor constant:20],
         [self.errorLabel.trailingAnchor constraintEqualToAnchor:formContentView.trailingAnchor constant:-20],
 
@@ -420,7 +473,7 @@ static NSString *const kWaveShaderSource =
     ]];
 
     // Toggleable form card bottom constraints
-    self.formBottomToButton = [formCard.bottomAnchor constraintEqualToAnchor:submitButton.bottomAnchor constant:20];
+    self.formBottomToButton = [formCard.bottomAnchor constraintEqualToAnchor:self.advancedContainer.bottomAnchor constant:20];
     self.formBottomToForgot = [formCard.bottomAnchor constraintEqualToAnchor:self.forgotPasswordButton.bottomAnchor constant:20];
     self.formBottomToButton.active = YES;
     self.formBottomToForgot.active = NO;
@@ -428,6 +481,7 @@ static NSString *const kWaveShaderSource =
     self.usernameInput.delegate = self;
     self.passwordInput.delegate = self;
     self.emailInput.delegate = self;
+    self.serverURLInput.delegate = self;
 }
 
 - (UITextField *)createTextField:(NSString *)placeholder isSecure:(BOOL)isSecure {
@@ -448,6 +502,7 @@ static NSString *const kWaveShaderSource =
     textField.tintColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
     textField.keyboardAppearance = UIKeyboardAppearanceDark;
     textField.autocorrectionType = UITextAutocorrectionTypeNo;
+    textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     textField.returnKeyType = UIReturnKeyNext;
     textField.secureTextEntry = isSecure;
     textField.translatesAutoresizingMaskIntoConstraints = NO;
@@ -467,6 +522,30 @@ static NSString *const kWaveShaderSource =
     } else {
         [self tapSignUpButton];
     }
+}
+
+- (void)toggleAdvancedServerSettings:(id)sender {
+    self.advancedExpanded = !self.advancedExpanded;
+    self.advancedHeightConstraint.constant = self.advancedExpanded ? 70 : 0;
+    NSString *chevronName = self.advancedExpanded ? @"chevron.up" : @"chevron.down";
+    [self.advancedButton setImage:[UIImage systemImageNamed:chevronName] forState:UIControlStateNormal];
+
+    if (self.advancedExpanded) {
+        self.advancedContainer.hidden = NO;
+    }
+
+    [UIView animateWithDuration:0.25 animations:^{
+        self.advancedContainer.alpha = self.advancedExpanded ? 1.0 : 0.0;
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        if (!self.advancedExpanded) {
+            self.advancedContainer.hidden = YES;
+        }
+    }];
+}
+
+- (void)applyCustomDomainPreference {
+    [self.appDelegate setCustomDomainPreference:self.serverURLInput.text];
 }
 
 #pragma mark - View Lifecycle
@@ -594,6 +673,7 @@ static NSString *const kWaveShaderSource =
 }
 
 - (void)checkPassword {
+    [self applyCustomDomainPreference];
     [self showError:nil];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -632,6 +712,7 @@ static NSString *const kWaveShaderSource =
 }
 
 - (void)registerAccount {
+    [self applyCustomDomainPreference];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Registering...";
