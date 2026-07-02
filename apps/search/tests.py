@@ -296,12 +296,12 @@ class Test_SearchStoryMocked(TestCase):
         """Verify the query body is constructed correctly for phrase search."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         SearchStory.query([1, 2, 3], '"test phrase"', "newest", 0, 10)
 
         # Verify search was called
+        mock_es.indices.flush.assert_not_called()
         mock_es.search.assert_called_once()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
@@ -315,11 +315,11 @@ class Test_SearchStoryMocked(TestCase):
         """Verify that strip=True still preserves quotes for phrases."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         SearchStory.query([1], '"test phrase"', "newest", 0, 10, strip=True)
 
+        mock_es.indices.flush.assert_not_called()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
         query_string = body["query"]["bool"]["must"][0]["query_string"]["query"]
@@ -332,11 +332,11 @@ class Test_SearchStoryMocked(TestCase):
         """Verify unbalanced quotes are escaped in the query."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         SearchStory.query([1], 'test "phrase', "newest", 0, 10)
 
+        mock_es.indices.flush.assert_not_called()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
         query_string = body["query"]["bool"]["must"][0]["query_string"]["query"]
@@ -353,13 +353,13 @@ class Test_BriefingCustomQuery(TestCase):
         """Verify the query wraps the phrase in quotes for exact matching."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)
         SearchStory.query_briefing_custom([1, 2], "Trump news", date_start, date_end)
 
+        mock_es.indices.flush.assert_not_called()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
         query_string = body["query"]["bool"]["must"][0]["query_string"]["query"]
@@ -370,13 +370,13 @@ class Test_BriefingCustomQuery(TestCase):
         """Verify the query includes a date range filter."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)
         SearchStory.query_briefing_custom([1], "test phrase", date_start, date_end)
 
+        mock_es.indices.flush.assert_not_called()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
         range_filter = body["query"]["bool"]["must"][2]
@@ -399,13 +399,13 @@ class Test_BriefingCustomQuery(TestCase):
         """User input with quotes should have them stripped before re-wrapping."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": []}}
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)
         SearchStory.query_briefing_custom([1], '"already quoted"', date_start, date_end)
 
+        mock_es.indices.flush.assert_not_called()
         call_kwargs = mock_es.search.call_args[1]
         body = call_kwargs["body"]
         query_string = body["query"]["bool"]["must"][0]["query_string"]["query"]
@@ -418,7 +418,6 @@ class Test_BriefingCustomQuery(TestCase):
 
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.side_effect = elasticsearch.exceptions.ConnectionError(
             "N/A", "test", Exception("test")
         )
@@ -427,16 +426,17 @@ class Test_BriefingCustomQuery(TestCase):
         date_end = datetime.datetime(2025, 1, 2)
         result = SearchStory.query_briefing_custom([1], "test", date_start, date_end)
         self.assertEqual(result, [])
+        mock_es.indices.flush.assert_not_called()
 
     @patch.object(SearchStory, "ES")
     def test_returns_story_hashes(self, mock_es_class):
         """Should return story hashes from ES results."""
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
-        mock_es.indices.flush.return_value = None
         mock_es.search.return_value = {"hits": {"hits": [{"_id": "123:abc"}, {"_id": "456:def"}]}}
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)
         result = SearchStory.query_briefing_custom([1], "test phrase", date_start, date_end)
         self.assertEqual(result, ["123:abc", "456:def"])
+        mock_es.indices.flush.assert_not_called()
