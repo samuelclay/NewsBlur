@@ -141,11 +141,11 @@ def db_check_mongo_analytics():
 
     client = None
     try:
-        # Connect via MONGO_ANALYTICS_DB['host'], which carries the analytics-specific
-        # host:port (27018). The analytics mongo runs alongside the replica-set mongo
-        # (27017) on the configured sidecar host, so the port matters.
+        # db_monitor.py runs on the Mongo host itself. The analytics sidecar
+        # publishes container port 27017 on host port 27018.
+        analytics_host = "127.0.0.1:27018"
         client = pymongo.MongoClient(
-            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin"
+            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{analytics_host}/?authSource=admin"
         )
         db = client.nbanalytics
 
