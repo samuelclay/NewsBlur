@@ -828,6 +828,28 @@ final class AppDelegateHelperTests: XCTestCase {
 }
 
 final class ActivityModulesLayoutTests: XCTestCase {
+    func test_refreshInteractionsLoadsViewBeforeFetching() {
+        let controller = makeActivitiesViewController()
+
+        XCTAssertFalse(controller.isViewLoaded)
+
+        controller.perform(NSSelectorFromString("refreshInteractions"))
+
+        XCTAssertTrue(controller.isViewLoaded)
+        XCTAssertNotNil(activityModule(named: "interactionsModule", tableName: "interactionsTable", on: controller))
+    }
+
+    func test_refreshActivityLoadsViewBeforeFetching() {
+        let controller = makeActivitiesViewController()
+
+        XCTAssertFalse(controller.isViewLoaded)
+
+        controller.perform(NSSelectorFromString("refreshActivity"))
+
+        XCTAssertTrue(controller.isViewLoaded)
+        XCTAssertNotNil(activityModule(named: "activitiesModule", tableName: "activitiesTable", on: controller))
+    }
+
     func test_interactionsModuleReusesTableAcrossLayoutPasses() {
         let module = makeModule(named: "InteractionsModule")
 
@@ -855,6 +877,25 @@ final class ActivityModulesLayoutTests: XCTestCase {
         }
 
         return type.init(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+    }
+
+    private func makeActivitiesViewController() -> UIViewController {
+        let type = NSClassFromString("ActivitiesViewController") as? UIViewController.Type
+            ?? NSClassFromString("NewsBlur.ActivitiesViewController") as? UIViewController.Type
+        guard let type else {
+            XCTFail("Missing ActivitiesViewController")
+            return UIViewController()
+        }
+
+        return type.init(nibName: nil, bundle: nil)
+    }
+
+    private func activityModule(named name: String, tableName: String, on controller: UIViewController) -> UIView? {
+        let module = controller.value(forKey: name) as? UIView
+        let table = module?.value(forKey: tableName) as? UITableView
+        XCTAssertNotNil(table)
+        XCTAssertEqual(module?.subviews.compactMap { $0 as? UITableView }.count, 1)
+        return module
     }
 }
 
