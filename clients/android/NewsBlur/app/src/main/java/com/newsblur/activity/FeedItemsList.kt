@@ -250,8 +250,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED, feed)
                     putExtra(EXTRA_FOLDER_NAME, folderName)
                     putExtra(EXTRA_FEED_SET, feedSet)
-                    putExtra(EXTRA_SESSION_DATA, sessionDataSource)
-                    putExtra(EXTRA_STORY_LIST_SESSION_DATA, storyListSessionDataSource)
+                    putSessionDataKeyExtra(this, sessionDataSource, storyListSessionDataSource)
                 }.also { intent ->
                     context.startActivity(intent)
                 }
