@@ -87,6 +87,12 @@ class TestExtractListingPathAndSort(SimpleTestCase):
     def test_subreddit_top_without_slash(self):
         self.assertEqual(self._parse("https://www.reddit.com/r/python/top.rss"), ("r/python", "top"))
 
+    def test_subreddit_query_sort(self):
+        self.assertEqual(
+            self._parse("https://old.reddit.com/r/technology/.rss?sort=top&t=month"),
+            ("r/technology", "top"),
+        )
+
     def test_multireddit_passthrough(self):
         self.assertEqual(self._parse("https://www.reddit.com/r/a+b+c/.rss"), ("r/a+b+c", "hot"))
 
@@ -213,6 +219,24 @@ class TestFetchListing(SimpleTestCase):
         self.assertEqual(called_url, "https://oauth.reddit.com/r/python/hot")
 
     @patch("utils.reddit_fetcher.requests.get")
+    def test_listing_preserves_time_filter_query_param(self, mock_get):
+        mock_get.return_value = MagicMock(
+            status_code=200,
+            json=MagicMock(return_value={"data": {"children": []}}),
+        )
+        fetcher = RedditFetcher(
+            StubFeed("https://old.reddit.com/r/technology/top/.rss?sort=top&t=month")
+        )
+        fetcher.reserve_rate_limit_slot = MagicMock(return_value=True)
+        fetcher.access_token = MagicMock(return_value="token123")
+        fetcher.fetch()
+
+        self.assertEqual(
+            mock_get.call_args[0][0], "https://oauth.reddit.com/r/technology/top"
+        )
+        self.assertEqual(mock_get.call_args[1]["params"]["t"], "month")
+
+    @patch("utils.reddit_fetcher.requests.get")
     def test_user_listing_uses_sort_param(self, mock_get):
         mock_get.return_value = MagicMock(
             status_code=200, json=MagicMock(return_value={"data": {"children": []}})
@@ -264,6 +288,25 @@ class TestFetchEndToEnd(SimpleTestCase):
         self.assertEqual(len(parsed.entries), 2)
         # The /new sort should be reflected in the requested path.
         self.assertEqual(mock_get.call_args[0][0], "https://oauth.reddit.com/r/python/new")
+
+    @patch("utils.reddit_fetcher.requests.get")
+    def test_tokenized_personalized_rss_fetches_original_url(self, mock_get):
+        rss = """<?xml version="1.0" encoding="UTF-8"?>
+        <rss version="2.0"><channel><title>reddit front page</title>
+        <item><title>Personal post</title><link>https://www.reddit.com/r/example/comments/a/x/</link></item>
+        </channel></rss>"""
+        mock_get.return_value = MagicMock(status_code=200, text=rss)
+        address = "https://www.reddit.com/.rss?feed=secret-token&user=alice"
+        fetcher = RedditFetcher(StubFeed(address))
+        fetcher.reserve_rate_limit_slot = MagicMock(return_value=True)
+        fetcher.access_token = MagicMock(return_value="token123")
+
+        parsed = feedparser.parse(fetcher.fetch())
+
+        self.assertEqual(parsed.feed.title, "reddit front page")
+        self.assertEqual(parsed.entries[0].title, "Personal post")
+        self.assertEqual(mock_get.call_args[0][0], address)
+        fetcher.access_token.assert_not_called()
 
 
 class TestAccessToken(SimpleTestCase):

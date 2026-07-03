@@ -48,6 +48,7 @@ LISTING_LIMIT = 25
 # bare /r/<sub>/.rss feed is "hot", so that is our default.
 VALID_SORTS = {"hot", "new", "top", "rising", "best", "controversial"}
 DEFAULT_SORT = "hot"
+VALID_TIME_FILTERS = {"hour", "day", "week", "month", "year", "all"}
 
 # Individual-post ("comments") feeds: /r/<sub>/comments/<id>/<slug>/.rss. Reddit serves
 # the submission plus its comment thread; we render the post and each comment as entries.
@@ -77,13 +78,16 @@ class RedditFetcher:
         When the shared minute budget is spent, returns None and sets self.rate_limited
         so the caller can record a 429 and back off. See utils/feed_fetcher.py.
         """
+        if self.should_fetch_original_rss():
+            return self.fetch_original_rss()
+
         # Individual-post feeds (/comments/<id>/) render the submission and its thread,
         # so they take a different API endpoint than subreddit/user listings.
         article_id = self.extract_article_id()
         if article_id:
             return self.fetch_comments_feed(article_id)
 
-        listing_path, sort = self.extract_listing_path_and_sort()
+        listing_path, sort, query_params = self.extract_listing_request()
         if not listing_path:
             logging.debug(
                 "   ***> [%-30s] ~FRReddit feed has no subreddit/user: %s"
@@ -91,11 +95,70 @@ class RedditFetcher:
             )
             return None
 
-        children = self.fetch_listing(listing_path, sort)
+        children = self.fetch_listing(listing_path, sort, query_params=query_params)
         if children is None:
             return None
 
         return self.build_feed(listing_path, children)
+
+    def parsed_url(self):
+        """Return a parsed URL, accepting stored Reddit addresses without a scheme."""
+        address = (self.address or "").strip()
+        if address and "://" not in address:
+            address = "https://" + address.lstrip("/")
+        return urllib.parse.urlparse(address)
+
+    def normalized_listing_segments(self):
+        """Return path segments for a Reddit listing URL with feed suffixes removed."""
+        path = self.parsed_url().path
+        path = path.rstrip("/")
+        for suffix in (".rss", ".xml"):
+            if path.endswith(suffix):
+                path = path[: -len(suffix)]
+                break
+        path = path.strip("/")
+        return [seg for seg in path.split("/") if seg]
+
+    def query_params(self):
+        return urllib.parse.parse_qs(self.parsed_url().query)
+
+    def first_query_value(self, params, key):
+        value = params.get(key)
+        if not value:
+            return None
+        return value[0]
+
+    def should_fetch_original_rss(self):
+        """True for Reddit's tokenized personal RSS URLs from /prefs/feeds/.
+
+        The OAuth app-only listing API cannot reproduce these public but personalized
+        feeds, whose identity lives in the ?feed= token. Fetch the original RSS URL
+        instead of rewriting it to r/popular.
+        """
+        return bool(self.first_query_value(self.query_params(), "feed"))
+
+    def fetch_original_rss(self):
+        """Fetch a tokenized Reddit RSS URL without converting it through OAuth."""
+        try:
+            resp = requests.get(self.address, headers={"User-Agent": USER_AGENT}, timeout=15)
+        except requests.RequestException as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit original RSS request failed: %s: %s"
+                % (self.feed.log_title[:30], self.address, e)
+            )
+            return None
+
+        if resp.status_code == 429:
+            self.rate_limited = True
+            return None
+        if resp.status_code != 200:
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit original RSS HTTP %s: %s"
+                % (self.feed.log_title[:30], resp.status_code, self.address)
+            )
+            return None
+
+        return resp.text
 
     def extract_listing_path_and_sort(self):
         """Map a Reddit feed URL to an OAuth API listing path and sort.
@@ -110,39 +173,62 @@ class RedditFetcher:
         Returns (listing_path, sort) or (None, None) when the URL is unrecognized.
         See utils/reddit_fetcher.py.
         """
-        path = self.address.split("?")[0].split("#")[0]
-        # Drop everything up to and including the reddit.com host.
-        if "reddit.com/" in path:
-            path = path.split("reddit.com/", 1)[1]
-        elif "reddit.com" in path:
-            path = path.split("reddit.com", 1)[1]
-        # Strip a trailing .rss (either /r/x/.rss or /r/x/new.rss) and bounding slashes.
-        path = path.rstrip("/")
-        if path.endswith(".rss"):
-            path = path[: -len(".rss")]
-        path = path.strip("/")
+        listing_path, sort, _ = self.extract_listing_request()
+        return listing_path, sort
 
-        segments = [seg for seg in path.split("/") if seg]
+    def extract_listing_request(self):
+        """Map a Reddit feed URL to an OAuth API listing request.
+
+        Returns (listing_path, sort, query_params). query_params contains the small
+        allowlist of Reddit listing filters that survive the RSS-to-API conversion.
+        """
+        segments = self.normalized_listing_segments()
+        query = self.query_params()
+
+        listing_path = None
+        sort = DEFAULT_SORT
+        explicit_sort = False
 
         # Home page (reddit.com/.rss or reddit.com/) -> the "popular" subreddit.
         if not segments or segments[0] in VALID_SORTS:
-            sort = segments[0] if segments and segments[0] in VALID_SORTS else DEFAULT_SORT
-            return "r/popular", sort
-
-        if segments[0] == "r" and len(segments) >= 2:
+            if segments and segments[0] in VALID_SORTS:
+                sort = segments[0]
+                explicit_sort = True
+            listing_path = "r/popular"
+        elif segments[0] == "r" and len(segments) >= 2:
             subreddit = segments[1]
-            sort = segments[2] if len(segments) >= 3 and segments[2] in VALID_SORTS else DEFAULT_SORT
-            return f"r/{subreddit}", sort
-
-        if segments[0] in ("u", "user") and len(segments) >= 2:
+            if len(segments) >= 3 and segments[2] in VALID_SORTS:
+                sort = segments[2]
+                explicit_sort = True
+            listing_path = f"r/{subreddit}"
+        elif segments[0] in ("u", "user") and len(segments) >= 2:
             user = segments[1]
             # A user's posts live under /user/<name>/submitted; default to newest first.
-            sort = segments[2] if len(segments) >= 3 and segments[2] in VALID_SORTS else "new"
-            return f"user/{user}/submitted", sort
+            sort = "new"
+            if len(segments) >= 3 and segments[2] in VALID_SORTS:
+                sort = segments[2]
+                explicit_sort = True
+            listing_path = f"user/{user}/submitted"
+        elif segments:
+            # Fall back to treating the first segment as a subreddit name.
+            if len(segments) >= 2 and segments[1] in VALID_SORTS:
+                sort = segments[1]
+                explicit_sort = True
+            listing_path = f"r/{segments[0]}"
 
-        # Fall back to treating the first segment as a subreddit name.
-        sort = segments[1] if len(segments) >= 2 and segments[1] in VALID_SORTS else DEFAULT_SORT
-        return f"r/{segments[0]}", sort
+        query_sort = self.first_query_value(query, "sort")
+        if query_sort in VALID_SORTS and not explicit_sort:
+            sort = query_sort
+
+        return listing_path, sort, self.listing_query_params(query, sort)
+
+    def listing_query_params(self, query, sort):
+        """Preserve supported Reddit listing query filters through the API rewrite."""
+        params = {}
+        time_filter = self.first_query_value(query, "t")
+        if sort in ("top", "controversial") and time_filter in VALID_TIME_FILTERS:
+            params["t"] = time_filter
+        return params
 
     def extract_article_id(self):
         """Return the base36 post id for an individual-post (comments) feed, else None.
@@ -305,7 +391,7 @@ class RedditFetcher:
             "pubdate": datetime.datetime.utcfromtimestamp(created),
         }
 
-    def fetch_listing(self, listing_path, sort):
+    def fetch_listing(self, listing_path, sort, query_params=None):
         """Fetch a Reddit listing through the OAuth API, returning its children list.
 
         Returns the list of post objects, or None on failure. When throttled (locally
@@ -319,13 +405,16 @@ class RedditFetcher:
         if not token:
             return None
 
+        params = {"limit": LISTING_LIMIT, "raw_json": 1}
+        if query_params:
+            params.update(query_params)
+
         # User listings take the sort as a query param; subreddit listings as a path.
         if listing_path.startswith("user/"):
             url = f"https://oauth.reddit.com/{listing_path}"
-            params = {"limit": LISTING_LIMIT, "sort": sort, "raw_json": 1}
+            params["sort"] = sort
         else:
             url = f"https://oauth.reddit.com/{listing_path}/{sort}"
-            params = {"limit": LISTING_LIMIT, "raw_json": 1}
 
         headers = {"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT}
         try:
