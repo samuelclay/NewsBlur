@@ -118,7 +118,19 @@
 # pragma mark
 # pragma mark Interactions
 
+- (void)loadActivitiesModulesIfNeeded {
+    [self loadViewIfNeeded];
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    [self.interactionsModule setNeedsLayout];
+    [self.interactionsModule layoutIfNeeded];
+    [self.activitiesModule setNeedsLayout];
+    [self.activitiesModule layoutIfNeeded];
+}
+
 - (void)refreshInteractions {
+    [self loadActivitiesModulesIfNeeded];
+
     appDelegate.userInteractionsArray = nil;
     [self.interactionsModule.interactionsTable reloadData];
     [self.interactionsModule.interactionsTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
@@ -129,6 +141,8 @@
 # pragma mark Activities
 
 - (void)refreshActivity {
+    [self loadActivitiesModulesIfNeeded];
+
     appDelegate.userActivitiesArray = nil;
     [self.activitiesModule.activitiesTable reloadData];
     [self.activitiesModule.activitiesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
