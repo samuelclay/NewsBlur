@@ -499,8 +499,7 @@ class RedditFetcher:
 
         author = post.get("author") or "[deleted]"
         permalink = "https://www.reddit.com%s" % post.get("permalink", "")
-        # Link posts point at the external article; self posts point at their permalink.
-        link = post.get("url") or permalink
+        link = permalink
 
         categories = []
         flair = post.get("link_flair_text")

@@ -155,6 +155,24 @@ class TestBuildFeed(SimpleTestCase):
         parsed = feedparser.parse(xml)
         self.assertEqual(len(parsed.entries), 1)
 
+    def test_post_link_points_to_comments_permalink(self):
+        fetcher = RedditFetcher(StubFeed("https://www.reddit.com/r/cincinnati/.rss"))
+        post = make_post(
+            id="photo",
+            title="Photo thread",
+            permalink="/r/cincinnati/comments/photo/photo_thread/",
+            url="https://i.redd.it/photo.jpeg",
+            post_hint="image",
+        )
+        xml = fetcher.build_feed("r/cincinnati", [child(post)])
+        parsed = feedparser.parse(xml)
+
+        self.assertEqual(
+            parsed.entries[0].link,
+            "https://www.reddit.com/r/cincinnati/comments/photo/photo_thread/",
+        )
+        self.assertIn("https://i.redd.it/photo.jpeg", parsed.entries[0].summary)
+
 
 class TestRateLimiter(SimpleTestCase):
     def _fetcher_with_redis(self, redis_mock):
