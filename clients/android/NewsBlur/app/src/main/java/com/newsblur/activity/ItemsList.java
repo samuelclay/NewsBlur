@@ -70,6 +70,7 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
+import com.newsblur.util.SessionDataSourceRegistry;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryHeaderPillAppearanceResolver;
 import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
@@ -105,8 +106,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_WIDGET_STORY = "widget_story";
     public static final String EXTRA_AUTO_OPEN_STORY = "auto_open_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
-    public static final String EXTRA_SESSION_DATA = "session_data";
-    public static final String EXTRA_STORY_LIST_SESSION_DATA = "story_list_session_data";
+    public static final String EXTRA_SESSION_DATA_KEY = "session_data_key";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
@@ -131,6 +131,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private SessionDataSource sessionDataSource;
     @Nullable
     private SessionDataSource storyListSessionDataSource;
+    @Nullable
+    private String sessionDataKey;
     @Nullable
     private ValueAnimator storyStatusBannerAnimator;
     @Nullable
@@ -179,8 +181,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
-        sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
-        storyListSessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_STORY_LIST_SESSION_DATA);
+        sessionDataKey = getIntent().getStringExtra(EXTRA_SESSION_DATA_KEY);
+        SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
+        if (sessionDataEntry != null) {
+            sessionDataSource = sessionDataEntry.getSessionDataSource();
+            storyListSessionDataSource = sessionDataEntry.getStoryListSessionDataSource();
+        }
 
         if (shouldResetReadingSessionOnCreate()) {
             TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
@@ -259,6 +265,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public FeedSet getFeedSet() {
         return this.fs;
+    }
+
+    public static void putSessionDataKeyExtra(@NonNull Intent intent,
+                                              @Nullable SessionDataSource sessionDataSource,
+                                              @Nullable SessionDataSource storyListSessionDataSource) {
+        String sessionDataKey = SessionDataSourceRegistry.register(sessionDataSource, storyListSessionDataSource);
+        if (sessionDataKey != null) {
+            intent.putExtra(EXTRA_SESSION_DATA_KEY, sessionDataKey);
+        }
     }
 
     @Override
@@ -399,8 +414,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             Intent intent = new Intent(this, FolderItemsList.class);
             intent.putExtra(EXTRA_FEED_SET, session.getFeedSet());
             intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, session.getFolderName());
-            intent.putExtra(EXTRA_SESSION_DATA, sessionDataSource);
-            intent.putExtra(EXTRA_STORY_LIST_SESSION_DATA, storyListSessionDataSource);
+            putSessionDataKeyExtra(intent, sessionDataSource, storyListSessionDataSource);
             startActivity(intent);
             finish();
             return true;
@@ -1321,6 +1335,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onDestroy() {
         if (readingLaunchParentRef.get() == this) {
             readingLaunchParentRef.clear();
+        }
+        if (!isChangingConfigurations()) {
+            SessionDataSourceRegistry.remove(sessionDataKey);
         }
         super.onDestroy();
     }

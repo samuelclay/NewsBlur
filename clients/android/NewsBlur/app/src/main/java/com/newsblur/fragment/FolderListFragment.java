@@ -692,10 +692,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             SessionDataSource sessionDataSource = getSessionData(fs, canonicalFolderName, null);
             SessionDataSource storyListSessionDataSource = getStoryListSessionData(fs, canonicalFolderName, null);
             i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
-            if (sessionDataSource != null) {
-                i.putExtra(ItemsList.EXTRA_SESSION_DATA, sessionDataSource);
-            }
-            i.putExtra(ItemsList.EXTRA_STORY_LIST_SESSION_DATA, storyListSessionDataSource);
+            ItemsList.putSessionDataKeyExtra(i, sessionDataSource, storyListSessionDataSource);
             adapter.lastFeedViewedId = null;
             adapter.lastFolderViewed = canonicalFolderName;
         }
