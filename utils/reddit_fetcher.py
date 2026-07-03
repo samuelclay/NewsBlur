@@ -502,8 +502,11 @@ class RedditFetcher:
         link = permalink
 
         categories = []
+        subreddit = post.get("subreddit")
+        if subreddit:
+            categories.append(subreddit)
         flair = post.get("link_flair_text")
-        if flair:
+        if flair and flair not in categories:
             categories.append(flair)
 
         created = post.get("created_utc") or 0

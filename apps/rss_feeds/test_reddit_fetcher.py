@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, patch
 import feedparser
 from django.test import SimpleTestCase
 
+from apps.rss_feeds.models import Feed
 from utils.reddit_fetcher import MAX_COMMENTS, REDDIT_REQUESTS_PER_MINUTE, RedditFetcher
 
 
@@ -34,6 +35,8 @@ def make_post(**overrides):
         "permalink": "/r/python/comments/abc123/hello_world/",
         "url": "https://example.com/article",
         "author": "someuser",
+        "subreddit": "python",
+        "subreddit_name_prefixed": "r/python",
         "is_self": False,
         "stickied": False,
         "created_utc": 1700000000,
@@ -172,6 +175,20 @@ class TestBuildFeed(SimpleTestCase):
             "https://www.reddit.com/r/cincinnati/comments/photo/photo_thread/",
         )
         self.assertIn("https://i.redd.it/photo.jpeg", parsed.entries[0].summary)
+
+    def test_subreddit_category_is_rendered_as_story_tag(self):
+        fetcher = RedditFetcher(StubFeed("https://old.reddit.com/r/worldnews/.rss"))
+        post = make_post(
+            id="world",
+            subreddit="worldnews",
+            subreddit_name_prefixed="r/worldnews",
+            link_flair_text=None,
+        )
+        xml = fetcher.build_feed("r/worldnews", [child(post)])
+        parsed = feedparser.parse(xml)
+
+        tags = Feed().get_tags(parsed.entries[0])
+        self.assertIn("worldnews", tags)
 
 
 class TestRateLimiter(SimpleTestCase):
