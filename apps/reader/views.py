@@ -59,6 +59,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -5580,31 +5581,32 @@ def load_trending_stories(request):
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
 
-    # Load classifiers for feeds the user has trained
-    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
-    found_trained_feed_ids = list(set(trained_feed_ids) & set(story_feed_ids))
+    # apps/reader/views.py: Load classifiers for every returned feed, including unsubscribed feeds.
+    classic_classifier_feed_ids = story_feed_ids
     has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
     folder_feed_ids = None
 
-    if found_trained_feed_ids or has_scoped:
-        if found_trained_feed_ids:
+    if classic_classifier_feed_ids or has_scoped:
+        if classic_classifier_feed_ids:
             classifier_feeds = list(
-                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
+                MClassifierFeed.objects(
+                    user_id=user.pk, feed_id__in=classic_classifier_feed_ids, social_user_id=0
+                )
             )
             classifier_authors = list(
-                MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+                MClassifierAuthor.objects(user_id=user.pk, feed_id__in=classic_classifier_feed_ids)
             )
             classifier_titles = list(
-                MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+                MClassifierTitle.objects(user_id=user.pk, feed_id__in=classic_classifier_feed_ids)
             )
             classifier_tags = list(
-                MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+                MClassifierTag.objects(user_id=user.pk, feed_id__in=classic_classifier_feed_ids)
             )
             classifier_texts = list(
-                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+                MClassifierText.objects(user_id=user.pk, feed_id__in=classic_classifier_feed_ids)
             )
             classifier_urls = list(
-                MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+                MClassifierUrl.objects(user_id=user.pk, feed_id__in=classic_classifier_feed_ids)
             )
         else:
             classifier_feeds = []
@@ -5691,6 +5693,11 @@ def load_trending_stories(request):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (

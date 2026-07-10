@@ -2022,6 +2022,7 @@ class UserSubscription(models.Model):
 
         max_score = max(
             scores["author"],
+            scores.get("author_regex", 0),
             scores["tags"],
             scores["title"],
             scores.get("title_regex", 0),
@@ -2032,6 +2033,7 @@ class UserSubscription(models.Model):
         )
         min_score = min(
             scores["author"],
+            scores.get("author_regex", 0),
             scores["tags"],
             scores["title"],
             scores.get("title_regex", 0),
