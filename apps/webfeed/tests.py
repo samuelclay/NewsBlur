@@ -378,6 +378,24 @@ class Test_FeedParserFormat(TestCase):
         self.assertEqual(fpf.status, 200)
         self.assertEqual(fpf.bozo, 0)
 
+    def test_link_free_story_uses_source_page_permalink(self):
+        fetcher = WebFeedFetcher.__new__(WebFeedFetcher)
+        fetcher.feed = MagicMock()
+        fetcher.url = "https://example.com/releases"
+
+        fpf = fetcher._to_feedparser_format(
+            [
+                {
+                    "title": "Version 1.2.3",
+                    "link": None,
+                    "guid": "release-1.2.3",
+                    "content": "Release notes",
+                }
+            ]
+        )
+
+        self.assertEqual(fpf.entries[0]["link"], "https://example.com/releases")
+
 
 class Test_UrlIsFeed(TestCase):
     """feedfinder_forman.url_is_feed answers the narrow question "is the document
