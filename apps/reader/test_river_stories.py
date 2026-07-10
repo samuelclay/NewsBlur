@@ -17,7 +17,15 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.analyzer.models import MClassifierPrompt, MClassifierTitle
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierPrompt,
+    MClassifierTag,
+    MClassifierText,
+    MClassifierTitle,
+    MClassifierUrl,
+)
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.statistics.rtrending import RTrendingStory
@@ -295,6 +303,159 @@ class Test_RiverStories(TransactionTestCase):
                     }
                 ],
             )
+
+    def test_trending_stories__feed_classifiers_apply_without_subscription(self):
+        """Widely Read and Long Reads should apply feed-scoped classifiers to unsubscribed feeds."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.is_pro = True
+        self.user.profile.has_scoped_classifiers = False
+        self.user.profile.save()
+
+        feed_id = self.test_feeds[0]
+        story_hash = self.test_story_hashes[0]
+        story = MStory.objects.get(story_hash=story_hash)
+        story.story_tags = ["test-tag"]
+        story.save()
+        story_date = int(story.story_date.timestamp())
+
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).delete()
+
+        r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r_stats.delete(RTrendingStory.WELL_READ_KEY)
+        r_stats.delete(RTrendingStory.LONG_READS_KEY)
+        self.addCleanup(lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY))
+        r_stats.zadd(RTrendingStory.WELL_READ_KEY, {story_hash: story_date})
+        r_stats.zadd(RTrendingStory.LONG_READS_KEY, {story_hash: story_date})
+
+        created_classifiers = [
+            MClassifierFeed(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                score=-1,
+            ).save(),
+            MClassifierTitle(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                title="Test Story",
+                score=-2,
+            ).save(),
+            MClassifierTitle(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                title=r"^Test Story",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierAuthor(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                author="Author 0",
+                score=-2,
+            ).save(),
+            MClassifierAuthor(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                author=r"^Author",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierTag(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                tag="test-tag",
+                score=-2,
+            ).save(),
+            MClassifierText(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                text="Content 0",
+                score=-2,
+            ).save(),
+            MClassifierText(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                text=r"Content\s+0",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierUrl(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                url="example.com",
+                score=-2,
+            ).save(),
+            MClassifierUrl(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                url=r"example\.com",
+                score=-2,
+                is_regex=True,
+            ).save(),
+        ]
+        self.addCleanup(lambda: [classifier.delete() for classifier in created_classifiers])
+
+        for trending_type in ["well_read", "long_reads"]:
+            response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "read_filter": "all"},
+            )
+            content = json.decode(response.content)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(content["stories"]), 1)
+            returned_story = content["stories"][0]
+            self.assertEqual(returned_story["story_hash"], story_hash)
+            self.assertEqual(
+                returned_story["intelligence"],
+                {
+                    "feed": -1,
+                    "author": -2,
+                    "author_regex": -2,
+                    "tags": -2,
+                    "title": -2,
+                    "title_regex": -2,
+                    "text": -2,
+                    "text_regex": -2,
+                    "url": -2,
+                    "url_regex": -2,
+                    "prompt": 0,
+                },
+            )
+            self.assertEqual(returned_story["score"], -1)
+
+        author_regex_classifier = next(
+            classifier
+            for classifier in created_classifiers
+            if isinstance(classifier, MClassifierAuthor) and classifier.is_regex
+        )
+        for classifier in created_classifiers:
+            if classifier != author_regex_classifier:
+                classifier.delete()
+
+        for trending_type in ["well_read", "long_reads"]:
+            response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "read_filter": "all"},
+            )
+            content = json.decode(response.content)
+            returned_story = content["stories"][0]
+
+            self.assertEqual(returned_story["intelligence"]["author"], 0)
+            self.assertEqual(returned_story["intelligence"]["author_regex"], -2)
+            self.assertEqual(returned_story["score"], -1)
 
     def test_river_stories__newest_backfills_past_stale_redis_hashes(self):
         """Newest river loads should skip stale Redis hashes that no longer exist in Mongo."""
