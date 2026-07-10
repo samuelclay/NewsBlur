@@ -597,6 +597,11 @@ class Test_ProcessFeedQueries(TestCase):
         queryset.order_by.assert_called_once_with()
 
 
+class Test_CeleryWorkerSettings(TestCase):
+    def test_worker_recycles_children_above_memory_limit(self):
+        self.assertEqual(settings.CELERY_WORKER_MAX_MEMORY_PER_CHILD, 750 * 1024)
+
+
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 
