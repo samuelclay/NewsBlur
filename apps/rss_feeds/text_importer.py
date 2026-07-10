@@ -27,6 +27,8 @@ BROKEN_URLS = [
     "thedailyskip.com",
 ]
 
+INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20)))
+
 
 class TextImporter:
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
@@ -173,6 +175,8 @@ class TextImporter:
         #         pass
 
         if text:
+            # text_importer.py: lxml rejects XML 1.0 control characters while rewriting links.
+            text = text.translate(INVALID_XML_CONTROL_CHARACTERS)
             text = text.replace("\xc2\xa0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
             text = text.replace("\\u00a0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
 
