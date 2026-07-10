@@ -560,6 +560,10 @@ class Test_PublicUrlSafety(TestCase):
         with self.assertRaisesRegex(UnsafeUrlError, "Could not resolve URL hostname"):
             validate_public_url("http://%s.example.com/feed.xml" % ("a" * 64))
 
+    def test_validate_public_url__rejects_malformed_ipv6_url(self):
+        with self.assertRaisesRegex(UnsafeUrlError, "Invalid URL"):
+            validate_public_url("http://[invalid/feed.xml")
+
     @patch("utils.url_safety.requests.request")
     @patch(
         "utils.url_safety.socket.getaddrinfo",
