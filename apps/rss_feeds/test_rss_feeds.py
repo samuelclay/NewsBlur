@@ -1120,6 +1120,25 @@ class Test_YouTubeQuota(TestCase):
     @patch("apps.rss_feeds.models.Feed.save_feed_history")
     @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.YoutubeFetcher")
+    def test_fetch_feed_records_youtube_request_error_in_fetch_history(
+        self, mock_fetcher_cls, mock_validate, mock_history, mock_save
+    ):
+        """Transient YouTube transport failures should not escape the feed fetcher."""
+        from utils import feed_fetcher
+
+        error = requests.ConnectionError("Connection reset by peer")
+        mock_fetcher_cls.return_value.fetch.side_effect = error
+
+        ffeed = feed_fetcher.FetchFeed(self.feed.pk, {})
+        ret_code, _ = ffeed.fetch()
+
+        self.assertEqual(ret_code, feed_fetcher.FEED_ERRHTTP)
+        mock_history.assert_called_once_with(503, "YouTube API request failed", error)
+
+    @patch("apps.rss_feeds.models.Feed.save")
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.YoutubeFetcher")
     def test_fetch_feed_records_failed_youtube_fetch_in_history(
         self, mock_fetcher_cls, mock_validate, mock_history, mock_save
     ):

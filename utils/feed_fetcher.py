@@ -314,6 +314,14 @@ class FetchFeed:
                 self.feed.save_feed_history(429, "YouTube API quota exceeded")
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
+            except requests.RequestException as e:
+                logging.debug(
+                    "   ***> [%-30s] ~FRYouTube API request failed: %s"
+                    % (self.feed.log_title[:30], e)
+                )
+                self.feed.save_feed_history(503, "YouTube API request failed", e)
+                self.feed = self.feed.save()
+                return FEED_ERRHTTP, None
             if not youtube_feed:
                 logging.debug(
                     "   ***> [%-30s] ~FRYouTube fetch failed: %s." % (self.feed.log_title[:30], address)
