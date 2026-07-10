@@ -1393,7 +1393,10 @@ class UserSubscription(models.Model):
                     r.sunionstore(temp_key, *batch)
                 else:
                     r.sunionstore(temp_key, temp_key, *batch)
-            r.rename(temp_key, key)
+            if r.exists(temp_key):
+                r.rename(temp_key, key)
+            else:
+                r.delete(key)
         new_count = r.scard(key)
 
         missing_rs = []
