@@ -161,6 +161,17 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 NO_UNDERSCORE_ADDRESSES = ["jwz"]
 
 
+def feed_image_url(image):
+    if isinstance(image, str):
+        return image.strip()
+    if isinstance(image, dict):
+        for key in ("href", "url"):
+            value = image.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return ""
+
+
 def fetch_url_with_scrapingbee(url):
     """Fetch a URL using ScrapingBee without requiring a Feed object.
     Used for feed discovery when direct requests are blocked.
@@ -1654,8 +1665,8 @@ class FeedFetcherWorker:
             declared_icon_url = ""
             declared_logo_url = ""
             if fetched_feed and hasattr(fetched_feed, "feed"):
-                declared_icon_url = (fetched_feed.feed.get("icon") or "").strip()
-                declared_logo_url = (fetched_feed.feed.get("logo") or "").strip()
+                declared_icon_url = feed_image_url(fetched_feed.feed.get("icon"))
+                declared_logo_url = feed_image_url(fetched_feed.feed.get("logo"))
 
             if (
                 (self.options["force"])
