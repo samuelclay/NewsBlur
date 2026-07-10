@@ -618,6 +618,19 @@ class Test_CeleryWorkerSettings(TestCase):
     def test_worker_recycles_children_above_memory_limit(self):
         self.assertEqual(settings.CELERY_WORKER_MAX_MEMORY_PER_CHILD, 750 * 1024)
 
+    @patch("newsblur_web.settings.os.unlink")
+    @patch("newsblur_web.settings.os.path.isfile", return_value=True)
+    @patch("newsblur_web.settings.os.listdir", return_value=["counter_123.db"])
+    @patch("newsblur_web.settings.os.makedirs")
+    def test_prometheus_startup_preserves_other_process_metrics(
+        self, mock_makedirs, mock_listdir, mock_isfile, mock_unlink
+    ):
+        from newsblur_web.settings import initialize_prometheus_aggregation_stats
+
+        initialize_prometheus_aggregation_stats()
+
+        mock_unlink.assert_not_called()
+
 
 class Test_ProcessFeedRedirects(TestCase):
     def test_redirect_without_href_returns_http_error(self):
