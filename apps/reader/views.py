@@ -2158,12 +2158,17 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         )
         story_content = re.sub(r"[\x00-\x08\x0B-\x0C\x0E-\x1F]", "", story_content)
         story_title = "%s%s" % (("%s: " % feed_title) if feed_title else "", story["story_title"])
+        internal_story_url = "https://%s/site/%s/%s/" % (
+            domain,
+            story["story_feed_id"],
+            story["guid_hash"],
+        )
         story_data = {
             "title": story_title,
-            "link": story["story_permalink"],
+            "link": story["story_permalink"] or internal_story_url,
             "description": story_content,
             "categories": story["story_tags"],
-            "unique_id": "https://%s/site/%s/%s/" % (domain, story["story_feed_id"], story["guid_hash"]),
+            "unique_id": internal_story_url,
             "pubdate": localtime_for_timezone(story["story_date"], user.profile.timezone),
         }
         if story["story_authors"]:

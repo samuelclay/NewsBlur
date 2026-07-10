@@ -252,7 +252,7 @@ class WebFeedFetcher:
                 summary = img_tag + summary if summary else img_tag
             entry = {
                 "title": story.get("title", ""),
-                "link": story.get("link", ""),
+                "link": story.get("link") or self.url,
                 "guid": story.get("guid", ""),
                 "summary": summary,
                 "author": story.get("author", ""),
