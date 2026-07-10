@@ -1,5 +1,6 @@
 """Tests for email newsletter ingestion."""
 
+import json
 import uuid
 from datetime import datetime
 from unittest.mock import patch
@@ -7,7 +8,8 @@ from unittest.mock import patch
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.urls import reverse
 
 from apps.newsletters.models import EmailNewsletter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
@@ -59,6 +61,18 @@ class Test_EmailNewsletter(TestCase):
         }
         params.update(overrides)
         return EmailNewsletter().receive_newsletter(params)
+
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=100)
+    @patch.object(EmailNewsletter, "receive_newsletter")
+    def test_oversized_webhook_returns_payload_too_large(self, mock_receive_newsletter):
+        response = self.client.post(
+            reverse("newsletter-receive"),
+            data=json.dumps({"html": "x" * 200}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 413)
+        mock_receive_newsletter.assert_not_called()
 
     def test_list_id_is_saved_and_used_as_feed_identity(self):
         first_story = self.receive(
