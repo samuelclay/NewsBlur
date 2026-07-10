@@ -580,6 +580,23 @@ class Test_PublicUrlSafety(TestCase):
         mock_request.assert_called_once()
 
 
+class Test_ProcessFeedQueries(TestCase):
+    @patch("utils.feed_fetcher.MStory.objects")
+    def test_existing_story_lookup_disables_default_ordering(self, mock_objects):
+        from utils.feed_fetcher import ProcessFeed
+
+        queryset = MagicMock()
+        queryset.order_by.return_value = []
+        mock_objects.return_value = queryset
+
+        process_feed = ProcessFeed(1, None, {})
+        existing_stories = process_feed.load_existing_stories(["1:abcdef"])
+
+        self.assertEqual(existing_stories, {})
+        mock_objects.assert_called_once_with(story_hash__in=["1:abcdef"])
+        queryset.order_by.assert_called_once_with()
+
+
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 

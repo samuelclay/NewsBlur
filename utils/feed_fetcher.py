@@ -972,6 +972,10 @@ class ProcessFeed:
             self.feed = saved_feed
             self.feed_id = self.feed.pk
 
+    def load_existing_stories(self, story_hashes):
+        stories = MStory.objects(story_hash__in=story_hashes).order_by()
+        return {story.story_hash: story for story in stories}
+
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
@@ -1110,14 +1114,7 @@ class ProcessFeed:
                 )
             )
 
-        existing_stories = dict(
-            (s.story_hash, s)
-            for s in MStory.objects(
-                story_hash__in=story_hashes,
-                # story_date__gte=start_date,
-                # story_feed_id=self.feed.pk
-            )
-        )
+        existing_stories = self.load_existing_stories(story_hashes)
         # if len(existing_stories) == 0:
         #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
         #         story_date__gte=start_date,
