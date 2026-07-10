@@ -600,6 +600,19 @@ class Test_ProcessFeedQueries(TestCase):
         mock_objects.assert_called_once_with(story_hash__in=["1:abcdef"])
         queryset.order_by.assert_called_once_with()
 
+    def test_structured_feed_image_metadata_extracts_href(self):
+        from utils.feed_fetcher import feed_image_url
+
+        self.assertEqual(
+            feed_image_url({"href": " https://example.com/icon.png "}),
+            "https://example.com/icon.png",
+        )
+        self.assertEqual(
+            feed_image_url({"url": "https://example.com/logo.png"}),
+            "https://example.com/logo.png",
+        )
+        self.assertEqual(feed_image_url({"unexpected": "value"}), "")
+
 
 class Test_CeleryWorkerSettings(TestCase):
     def test_worker_recycles_children_above_memory_limit(self):
