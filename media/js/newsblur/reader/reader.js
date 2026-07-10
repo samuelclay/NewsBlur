@@ -50,6 +50,7 @@
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_well_read_header: $('.NB-feeds-header-river-well-read'),
                 $river_long_reads_header: $('.NB-feeds-header-river-long-reads'),
+                $river_good_reads_header: $('.NB-feeds-header-river-good-reads'),
                 $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $river_briefing_admin_header: $('.NB-feeds-header-river-briefing-admin'),
                 $archive_header: $('.NB-feeds-header-archive'),
@@ -1509,6 +1510,7 @@
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_well_read_header.removeClass('NB-selected');
             this.$s.$river_long_reads_header.removeClass('NB-selected');
+            this.$s.$river_good_reads_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$river_briefing_admin_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
@@ -2887,7 +2889,12 @@
         open_trending_stories: function (options) {
             options = options || {};
             var trending_type = options.trending_type || 'well_read';
-            var folder_title = trending_type == 'long_reads' ? 'Long Reads' : 'Widely Read Stories';
+            var folder_titles = {
+                'well_read': 'Widely Read Stories',
+                'long_reads': 'Long Reads',
+                'good_reads': 'Good Reads'
+            };
+            var folder_title = folder_titles[trending_type] || folder_titles['well_read'];
 
             this.reset_feed(options);
             this.hide_splash_page();
@@ -2900,7 +2907,9 @@
                 show_options: true
             });
 
-            if (trending_type == 'long_reads') {
+            if (trending_type == 'good_reads') {
+                this.$s.$river_good_reads_header.addClass('NB-selected');
+            } else if (trending_type == 'long_reads') {
                 this.$s.$river_long_reads_header.addClass('NB-selected');
             } else {
                 this.$s.$river_well_read_header.addClass('NB-selected');
@@ -4032,6 +4041,8 @@
                 feed_title = "Widely Read Stories";
             } else if (feed_id == 'trending:long_reads') {
                 feed_title = "Long Reads";
+            } else if (feed_id == 'trending:good_reads') {
+                feed_title = "Good Reads";
             } else if (feed_id == 'river:blurblogs') {
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {

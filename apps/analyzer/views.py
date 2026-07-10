@@ -25,8 +25,9 @@ from apps.analyzer.models import (
     validate_regex_pattern,
 )
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStory
 from apps.social.models import MSocialSubscription
+from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
@@ -286,6 +287,13 @@ def save_classifier(request):
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % feed_id)
+
+    story_id = post.get("story_id")
+    has_positive_classifier = any(key.startswith("like_") and post.getlist(key) for key in post.keys())
+    if story_id and feed_id and has_positive_classifier:
+        story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+        if story:
+            RTrendingStory.record_quality_action(story.story_hash, request.user.pk)
 
     response = dict(code=code, message=message, payload=payload)
     return response

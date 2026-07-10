@@ -167,6 +167,19 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     </div>
                 </div>
 
+                {% if user.is_staff %}
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-good-reads-container NB-sticky-sidebar-section">
+                        <div class="NB-feeds-header NB-feeds-header-river-good-reads NB-empty" role="link">
+                            <div class="NB-feeds-header-count unread_count"></div>
+                            <img class="NB-feeds-header-icon" src="" />
+                            <div class="NB-feeds-header-title">
+                                Good Reads
+                            </div>
+                            <span class="NB-staff-badge">Staff Only</span>
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-blurblogs-container NB-sticky-sidebar-section">
                     <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
