@@ -31,6 +31,13 @@ QUOTA_ERROR_REASONS = {
 }
 
 UNTITLED_FEED_TITLES = ("", "[Untitled]", "Untitled")
+INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20)))
+
+
+def strip_xml_control_characters(value):
+    if isinstance(value, str):
+        return value.translate(INVALID_XML_CONTROL_CHARACTERS)
+    return value
 
 
 class YoutubeApiError(Exception):
@@ -99,6 +106,7 @@ class YoutubeFetcher:
         data["generator"] = "NewsBlur YouTube API v3 Decrapifier - %s" % settings.NEWSBLUR_URL
         data["docs"] = None
         data["feed_url"] = self.address
+        data = {key: strip_xml_control_characters(value) for key, value in data.items()}
         rss = feedgenerator.Atom1Feed(**data)
 
         for video in videos["items"]:
@@ -157,6 +165,9 @@ class YoutubeFetcher:
                 "categories": ["short video"] if 0 < duration_sec < 180 else [],
                 "unique_id": "tag:youtube.com,2008:video:%s" % video["id"],
                 "pubdate": dateutil.parser.parse(video["snippet"]["publishedAt"]),
+            }
+            story_data = {
+                key: strip_xml_control_characters(value) for key, value in story_data.items()
             }
             rss.add_item(**story_data)
 
