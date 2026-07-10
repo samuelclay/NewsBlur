@@ -1284,6 +1284,28 @@ class Test_StoryImageInjection(TestCase):
         self.assertTrue(content.startswith('<img src="https://example.com/hero.jpg">'))
         self.assertIn("<p>Story body without image.</p>", content)
 
+    @patch("mongoengine.Document.save")
+    @patch.object(MStory, "sync_redis")
+    @patch.object(MStory, "extract_image_urls")
+    def test_save_truncates_story_content_to_ten_megabytes(
+        self, mock_extract_images, mock_sync_redis, mock_document_save
+    ):
+        max_content_bytes = 10 * 1024 * 1024
+        story = MStory(
+            story_feed_id=1,
+            story_guid="oversized-story-content",
+            story_title="Oversized story",
+            story_permalink="https://example.com/oversized",
+            story_date=datetime.datetime.utcnow(),
+            story_content="a" * (max_content_bytes - 1) + "éé",
+        )
+
+        story.save()
+
+        content = story.story_content_str
+        self.assertLessEqual(len(content.encode("utf-8")), max_content_bytes)
+        self.assertTrue(content.endswith("é"))
+
     def test_prepend_image_replaces_previously_prepended_image(self):
         story = MStory(
             story_feed_id=1,

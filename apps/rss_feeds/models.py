@@ -75,6 +75,7 @@ from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_
 from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
+MAX_STORY_CONTENT_BYTES = 10 * 1024 * 1024
 
 
 class Feed(models.Model):
@@ -3636,6 +3637,24 @@ class MStory(mongo.Document):
         story_title_max = MStory._fields["story_title"].max_length
         story_content_type_max = MStory._fields["story_content_type"].max_length
         self.story_hash = self.feed_guid_hash
+
+        if self.story_content:
+            story_content_bytes = smart_bytes(self.story_content)
+            if len(story_content_bytes) > MAX_STORY_CONTENT_BYTES:
+                truncated_bytes = story_content_bytes[:MAX_STORY_CONTENT_BYTES]
+                try:
+                    self.story_content = truncated_bytes.decode("utf-8")
+                except UnicodeDecodeError as error:
+                    boundary_end = MAX_STORY_CONTENT_BYTES
+                    while (
+                        boundary_end < len(story_content_bytes)
+                        and story_content_bytes[boundary_end] & 0xC0 == 0x80
+                    ):
+                        boundary_end += 1
+                    boundary_character = story_content_bytes[error.start:boundary_end]
+                    prefix_bytes = story_content_bytes[: MAX_STORY_CONTENT_BYTES - len(boundary_character)]
+                    self.story_content = prefix_bytes.decode("utf-8", errors="ignore")
+                    self.story_content += boundary_character.decode("utf-8")
 
         self.extract_image_urls()
 
