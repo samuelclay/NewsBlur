@@ -196,3 +196,17 @@
   with_items:
     - /etc/cron.hourly/disk_usage_sanity_checker
     - /etc/cron.d/disk_usage_sanity_checker
+
+- name: Add original page cache cleanup cronjob
+  become: yes
+  cron:
+    name: original_page_cache_cleanup
+    user: root
+    cron_file: original_page_cache_cleanup
+    minute: "37"
+    hour: "3"
+    job: >-
+      find -H /srv/originals -xdev -type f -name '*.zhtml'
+      -atime +180 -mtime +180 -delete;
+      find -H /srv/originals -xdev -depth -mindepth 1 -type d -empty -delete
+  when: '"node-page" in inventory_hostname'
