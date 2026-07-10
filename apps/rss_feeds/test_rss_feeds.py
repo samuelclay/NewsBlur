@@ -639,6 +639,18 @@ class Test_ProcessFeedRedirects(TestCase):
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 
+    @patch("utils.webfeed_fetcher.WebFeedFetcher")
+    def test_update_webfeed_treats_null_archive_subscribers_as_zero(self, mock_fetcher):
+        feed = Feed(
+            feed_address="webfeed:https://example.com",
+            feed_link="https://example.com",
+            feed_title="Example web feed",
+            archive_subscribers=None,
+        )
+
+        self.assertIs(feed.update_webfeed(), feed)
+        mock_fetcher.assert_not_called()
+
     def test_save__force_update_without_pk(self):
         """save(force_update=True) with no pk should not raise ValueError."""
         feed = Feed(feed_address="http://example.com/feed.xml", feed_link="http://example.com")

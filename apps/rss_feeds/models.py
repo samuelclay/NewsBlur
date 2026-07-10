@@ -1712,7 +1712,7 @@ class Feed(models.Model):
         from utils.webfeed_fetcher import WebFeedFetcher
 
         # Only fetch if at least one archive subscriber exists
-        if self.archive_subscribers <= 0:
+        if not self.archive_subscribers or self.archive_subscribers <= 0:
             logging.debug(
                 "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers" % (self.log_title[:30],)
             )
