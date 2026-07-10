@@ -619,6 +619,23 @@ class Test_CeleryWorkerSettings(TestCase):
         self.assertEqual(settings.CELERY_WORKER_MAX_MEMORY_PER_CHILD, 750 * 1024)
 
 
+class Test_ProcessFeedRedirects(TestCase):
+    def test_redirect_without_href_returns_http_error(self):
+        import feedparser
+
+        from utils.feed_fetcher import FEED_ERRHTTP, ProcessFeed
+
+        process_feed = ProcessFeed.__new__(ProcessFeed)
+        process_feed.feed = MagicMock()
+        process_feed.feed_entries = []
+        process_feed.fpf = feedparser.FeedParserDict(status=301, bozo=False)
+        process_feed.options = {"force": False, "verbose": False}
+
+        status, _ = process_feed.verify_feed_integrity()
+
+        self.assertEqual(status, FEED_ERRHTTP)
+
+
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 

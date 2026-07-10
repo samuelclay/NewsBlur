@@ -1230,14 +1230,17 @@ class ProcessFeed:
             # 302 and 307: Temporary redirect: ignore
             # 301 and 308: Permanent redirect: save it (after 10 tries)
             if self.fpf.status == 301 or self.fpf.status == 308:
-                if self.fpf.href.endswith("feedburner.com/atom.xml"):
+                redirect_address = self.fpf.get("href")
+                if not redirect_address:
+                    return FEED_ERRHTTP, ret_values
+                if redirect_address.endswith("feedburner.com/atom.xml"):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history("feed")
                 self.feed.save_feed_history(
                     self.fpf.status, "HTTP Redirect (%d to go)" % (10 - len(redirects))
                 )
                 if len(redirects) >= 10 or len(non_redirects) == 0:
-                    address = self.fpf.href
+                    address = redirect_address
                     if self.options["force"] and address:
                         address = qurl(address, remove=["_"])
                     self.feed.feed_address = strip_underscore_from_feed_address(address)
