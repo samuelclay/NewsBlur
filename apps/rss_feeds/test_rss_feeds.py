@@ -553,6 +553,13 @@ class Test_PublicUrlSafety(TestCase):
         with self.assertRaises(UnsafeUrlError):
             validate_public_url("http://224.0.0.1/feed.xml")
 
+    @patch("utils.url_safety.socket.getaddrinfo")
+    def test_validate_public_url__rejects_invalid_idna_hostname(self, mock_getaddrinfo):
+        mock_getaddrinfo.side_effect = UnicodeError("encoding with 'idna' codec failed")
+
+        with self.assertRaisesRegex(UnsafeUrlError, "Could not resolve URL hostname"):
+            validate_public_url("http://%s.example.com/feed.xml" % ("a" * 64))
+
     @patch("utils.url_safety.requests.request")
     @patch(
         "utils.url_safety.socket.getaddrinfo",

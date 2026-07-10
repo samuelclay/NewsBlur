@@ -116,7 +116,7 @@ def _resolve_hostname(hostname, port):
 
     try:
         infos = socket.getaddrinfo(hostname, port, type=socket.SOCK_STREAM)
-    except socket.gaierror as e:
+    except (socket.gaierror, UnicodeError) as e:
         raise UnsafeUrlError("Could not resolve URL hostname.") from e
 
     addresses = set()
