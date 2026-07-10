@@ -303,6 +303,14 @@ NEWSBLUR.utils = {
             if (selected_folder_title == "trending:long_reads") {
                 $option.attr('selected', true);
             }
+
+            if (NEWSBLUR.Globals.is_staff) {
+                var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
+                $options.append($option);
+                if (selected_folder_title == "trending:good_reads") {
+                    $option.attr('selected', true);
+                }
+            }
         }
 
         // Only show Top Level if not filtering, or if it contains filtered feeds

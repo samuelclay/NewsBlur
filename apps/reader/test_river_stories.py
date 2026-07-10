@@ -304,6 +304,38 @@ class Test_RiverStories(TransactionTestCase):
                 ],
             )
 
+    def test_good_reads_requires_staff_and_loads_for_staff(self):
+        """Good Reads is invisible at the API boundary unless the user is staff."""
+        self.client.login(username="conesus", password="test")
+
+        story_hash = self.test_story_hashes[0]
+        story_date = int(MStory.objects.get(story_hash=story_hash).story_date.timestamp())
+        r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r_stats.delete(RTrendingStory.GOOD_READS_KEY, RTrendingStory.GOOD_READS_DIVERSE_KEY)
+        self.addCleanup(
+            lambda: r_stats.delete(RTrendingStory.GOOD_READS_KEY, RTrendingStory.GOOD_READS_DIVERSE_KEY)
+        )
+        r_stats.zadd(RTrendingStory.GOOD_READS_KEY, {story_hash: story_date})
+
+        self.user.is_staff = False
+        self.user.save(update_fields=["is_staff"])
+        response = self.client.get(
+            reverse("load-trending-stories"),
+            {"trending_type": "good_reads", "read_filter": "all"},
+        )
+        self.assertEqual(response.status_code, 403)
+
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
+        response = self.client.get(
+            reverse("load-trending-stories"),
+            {"trending_type": "good_reads", "read_filter": "all"},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([story["story_hash"] for story in content["stories"]], [story_hash])
+
     def test_trending_stories__feed_classifiers_apply_without_subscription(self):
         """Widely Read and Long Reads should apply feed-scoped classifiers to unsubscribed feeds."""
         self.client.login(username="conesus", password="test")

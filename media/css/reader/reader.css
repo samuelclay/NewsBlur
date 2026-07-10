@@ -40208,9 +40208,10 @@ span.NB-briefing-inline-favicon {
     display: none;
 }
 
-/* reader.css: Well-Read Stories and Long Reads — staff-only trending story feeds */
+/* reader.css: Trending story feeds are revealed by feed_list_view.js */
 .NB-feeds-header-river-well-read-container,
-.NB-feeds-header-river-long-reads-container {
+.NB-feeds-header-river-long-reads-container,
+.NB-feeds-header-river-good-reads-container {
     display: none;
 }
 .NB-briefing-admin-meta {

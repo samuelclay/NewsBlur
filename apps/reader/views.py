@@ -3316,7 +3316,7 @@ def mark_story_hashes_as_read(request):
             try:
                 seconds = int(seconds)
                 if seconds >= RTrendingStory.MIN_READ_TIME_SECONDS:
-                    RTrendingStory.add_read_time(story_hash, seconds)
+                    RTrendingStory.add_read_time(story_hash, seconds, user_id=request.user.pk)
                     # Log read time with feed/story titles
                     try:
                         feed_id = int(story_hash.split(":")[0])
@@ -5031,6 +5031,7 @@ def _mark_story_as_starred(request):
                 continue
 
             created = True
+            RTrendingStory.record_quality_action(story.story_hash, request.user.pk)
             MActivity.new_starred_story(
                 user_id=request.user.pk,
                 story_title=story.story_title,
@@ -5521,10 +5522,10 @@ def trending_feeds(request):
 @json.json_view
 def load_trending_stories(request):
     """
-    Load stories from the permanent trending lists (Well-Read Stories or Long Reads).
+    Load stories from the permanent trending lists.
 
     GET Parameters:
-        trending_type: "well_read" or "long_reads"
+        trending_type: "well_read", "long_reads", or staff-only "good_reads"
         page: Page number (default 1)
         limit: Stories per page (default 12)
         order: "newest" or "oldest" (default "newest")
@@ -5532,6 +5533,10 @@ def load_trending_stories(request):
     """
     user = get_user(request)
     trending_type = request.GET.get("trending_type", "well_read")
+    if trending_type not in ("well_read", "long_reads", "good_reads"):
+        trending_type = "well_read"
+    if trending_type == "good_reads" and not user.is_staff:
+        return HttpResponseForbidden()
     page = max(int(request.GET.get("page", 1)), 1)
     limit = min(int(request.GET.get("limit", 12)), 100)
     order = request.GET.get("order", "newest")
@@ -5542,7 +5547,11 @@ def load_trending_stories(request):
 
     user_id = user.pk if user.is_authenticated else None
 
-    if trending_type == "long_reads":
+    if trending_type == "good_reads":
+        story_hashes = RTrendingStory.get_good_read_story_hashes(
+            offset=offset, limit=limit, order=order, read_filter=read_filter, user_id=user_id
+        )
+    elif trending_type == "long_reads":
         story_hashes = RTrendingStory.get_long_read_story_hashes(
             offset=offset, limit=limit, order=order, read_filter=read_filter, user_id=user_id
         )
@@ -5731,7 +5740,12 @@ def load_trending_stories(request):
         story["prompt_classifiers"] = prompt_data["details"].get(story["story_hash"], [])
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
-    type_label = "long reads" if trending_type == "long_reads" else "widely-read"
+    type_labels = {
+        "well_read": "widely-read",
+        "long_reads": "long reads",
+        "good_reads": "good reads",
+    }
+    type_label = type_labels[trending_type]
     logging.user(request, "~FCLoading ~SB%s~SN %s stories (p. %s)" % (len(stories), type_label, page))
 
     return {

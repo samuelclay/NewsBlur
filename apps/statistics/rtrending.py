@@ -1,6 +1,10 @@
 import datetime
 import logging
-import time
+import math
+import re
+import zlib
+from collections import Counter, defaultdict
+from urllib.parse import urlparse
 
 import redis
 from django.conf import settings
@@ -15,6 +19,8 @@ class RTrendingStory:
     - Feed read time sorted set by day: "fRT:{date}" -> sorted set {feed_id: total_seconds}
     - Story reader count by day: "sRTc:{date}" -> sorted set {story_hash: reader_count}
     - Feed reader count by day: "fRTc:{date}" -> sorted set {feed_id: reader_count}
+    - Exact per-user dwell shards: "sRTud:{date}:{shard}" -> {story_hash|user_id: seconds}
+    - Quality-action shards: "sRTqa:{date}:{shard}" -> set {story_hash|user_id}
     - Running counters: "fRT:total:{date}", "sRTc:total:{date}", "fRTc:total:{date}"
 
     All data is stored in date-partitioned sorted sets for efficient aggregation.
@@ -23,7 +29,22 @@ class RTrendingStory:
     """
 
     MIN_READ_TIME_SECONDS = 3
+    MEANINGFUL_READ_TIME_SECONDS = 10
+    GOOD_READ_TIME_SECONDS = 30
+    MAX_READ_TIME_SECONDS = 20 * 60
     TTL_DAYS = 8
+    USER_EVENT_SHARDS = 16
+    USER_DURATION_PREFIX = "sRTud"
+    QUALITY_ACTION_PREFIX = "sRTqa"
+
+    MIN_DISTINCT_READERS = 2
+    MIN_LONG_READERS = 2
+    MIN_LONG_WORDS = 600
+    MIN_GOOD_READERS = 2
+    MIN_GOOD_WORDS = 250
+    GOOD_READ_FALLBACK_READERS = 4
+    DIVERSITY_BLOCK_SIZE = 12
+    MAX_TOPIC_PER_BLOCK = 3
 
     @classmethod
     def _get_top_merged(cls, r, prefix, days, limit):
@@ -86,7 +107,7 @@ class RTrendingStory:
         return scores
 
     @classmethod
-    def add_read_time(cls, story_hash, read_time_seconds):
+    def add_read_time(cls, story_hash, read_time_seconds, user_id=None):
         """
         Add read time for a story. Filters out reads < 3 seconds.
         Updates story-level, feed-level, and story index aggregates.
@@ -124,7 +145,216 @@ class RTrendingStory:
         pipe.incr(f"fRTc:total:{today}")
         pipe.expire(f"fRTc:total:{today}", ttl_seconds)
 
+        if user_id:
+            duration = min(int(read_time_seconds), cls.MAX_READ_TIME_SECONDS)
+            shard = cls._story_shard(story_hash)
+            member = cls._story_user_member(story_hash, user_id)
+            duration_key = f"{cls.USER_DURATION_PREFIX}:{today}:{shard}"
+            pipe.zadd(duration_key, {member: duration}, gt=True)
+            pipe.expire(duration_key, ttl_seconds)
+
         pipe.execute()
+
+    @classmethod
+    def _story_shard(cls, story_hash):
+        return zlib.crc32(story_hash.encode("utf-8")) % cls.USER_EVENT_SHARDS
+
+    @staticmethod
+    def _story_user_member(story_hash, user_id):
+        return f"{story_hash}|{user_id}"
+
+    @staticmethod
+    def _split_story_user_member(member):
+        if isinstance(member, bytes):
+            member = member.decode()
+        if "|" not in member:
+            return None, None
+        return member.rsplit("|", 1)
+
+    @classmethod
+    def record_quality_action(cls, story_hash, user_id):
+        """Record one unique commitment action per user/story/day.
+
+        Saves, shares, and positive story training intentionally share one
+        dedupe set so repeated actions from the same account cannot amplify a
+        story's Good Reads score.
+        """
+        if not story_hash or not user_id or ":" not in story_hash:
+            return
+
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        ttl_seconds = cls.TTL_DAYS * 24 * 60 * 60
+        shard = cls._story_shard(story_hash)
+        key = f"{cls.QUALITY_ACTION_PREFIX}:{today}:{shard}"
+        pipe = r.pipeline()
+        pipe.sadd(key, cls._story_user_member(story_hash, user_id))
+        pipe.expire(key, ttl_seconds)
+        pipe.execute()
+
+    @classmethod
+    def get_distinct_user_durations(cls, days=7, min_seconds=None):
+        """Return maximum observed dwell for each distinct user/story pair."""
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        min_seconds = min_seconds if min_seconds is not None else cls.MIN_READ_TIME_SECONDS
+
+        pipe = r.pipeline()
+        for i in range(days):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+            for shard in range(cls.USER_EVENT_SHARDS):
+                pipe.zrangebyscore(
+                    f"{cls.USER_DURATION_PREFIX}:{day}:{shard}",
+                    min_seconds,
+                    "+inf",
+                    withscores=True,
+                )
+
+        durations = defaultdict(dict)
+        for entries in pipe.execute():
+            for member, seconds in entries:
+                story_hash, user_id = cls._split_story_user_member(member)
+                if not story_hash or not user_id:
+                    continue
+                seconds = int(seconds)
+                durations[story_hash][user_id] = max(
+                    durations[story_hash].get(user_id, 0),
+                    seconds,
+                )
+        return dict(durations)
+
+    @classmethod
+    def get_quality_action_users(cls, days=7):
+        """Return distinct users who saved, shared, or positively trained each story."""
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        pipe = r.pipeline()
+        for i in range(days):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+            for shard in range(cls.USER_EVENT_SHARDS):
+                pipe.smembers(f"{cls.QUALITY_ACTION_PREFIX}:{day}:{shard}")
+
+        actions = defaultdict(set)
+        for entries in pipe.execute():
+            for member in entries:
+                story_hash, user_id = cls._split_story_user_member(member)
+                if story_hash and user_id:
+                    actions[story_hash].add(user_id)
+        return dict(actions)
+
+    @staticmethod
+    def required_long_read_seconds(word_count):
+        """Require 25% of estimated reading time, bounded to 45s-3m."""
+        estimated_seconds = max(60, (word_count / 240.0) * 60)
+        return int(min(180, max(45, estimated_seconds * 0.25)))
+
+    @classmethod
+    def good_read_qualifies(cls, deep_reader_count, action_count):
+        return deep_reader_count >= cls.MIN_GOOD_READERS and (
+            action_count >= 1 or deep_reader_count >= cls.GOOD_READ_FALLBACK_READERS
+        )
+
+    @classmethod
+    def diversify_candidates(cls, candidates, block_size=None, small_feed_slots=0):
+        """Preserve score order while enforcing source and topic diversity blocks."""
+        block_size = block_size or cls.DIVERSITY_BLOCK_SIZE
+        remaining = list(candidates)
+        diversified = []
+        seen_clusters = set()
+        seen_titles = set()
+
+        while remaining:
+            block = []
+            deferred = []
+            feed_ids = set()
+            domains = set()
+            publishers = set()
+            topic_counts = defaultdict(int)
+
+            prioritized = []
+            if small_feed_slots:
+                prioritized = [
+                    candidate for candidate in remaining if 0 < candidate.get("active_subscribers", 0) <= 50
+                ][:small_feed_slots]
+            prioritized_hashes = {candidate["story_hash"] for candidate in prioritized}
+            ordered_remaining = prioritized + [
+                candidate for candidate in remaining if candidate["story_hash"] not in prioritized_hashes
+            ]
+
+            for candidate in ordered_remaining:
+                cluster_id = candidate.get("cluster_id")
+                title_key = candidate.get("title_key")
+                if cluster_id and cluster_id in seen_clusters:
+                    continue
+                if title_key and title_key in seen_titles:
+                    continue
+                if len(block) >= block_size:
+                    deferred.append(candidate)
+                    continue
+
+                feed_id = candidate.get("feed_id")
+                domain = candidate.get("domain")
+                publisher = candidate.get("publisher")
+                topic = candidate.get("topic")
+                capped_topic = topic and topic != "other"
+                if (
+                    feed_id in feed_ids
+                    or (domain and domain in domains)
+                    or (publisher and publisher in publishers)
+                    or (capped_topic and topic_counts[topic] >= cls.MAX_TOPIC_PER_BLOCK)
+                ):
+                    deferred.append(candidate)
+                    continue
+
+                block.append(candidate)
+                feed_ids.add(feed_id)
+                if domain:
+                    domains.add(domain)
+                if publisher:
+                    publishers.add(publisher)
+                if capped_topic:
+                    topic_counts[topic] += 1
+                if cluster_id:
+                    seen_clusters.add(cluster_id)
+                if title_key:
+                    seen_titles.add(title_key)
+
+            if not block:
+                break
+            diversified.extend(block)
+            remaining = deferred
+
+        return cls.cap_source_share(diversified)
+
+    @staticmethod
+    def cap_source_share(candidates, max_share=0.10):
+        """Remove lowest-ranked repeats until no source exceeds the requested share."""
+        capped = list(candidates)
+        while len(capped) >= 10:
+            source_limit = max(1, math.floor(len(capped) * max_share))
+            source_counts = {
+                field: Counter(candidate.get(field) for candidate in capped if candidate.get(field))
+                for field in ("feed_id", "domain", "publisher")
+            }
+            if all(count <= source_limit for counts in source_counts.values() for count in counts.values()):
+                break
+
+            kept_counts = {field: Counter() for field in source_counts}
+            filtered = []
+            for candidate in capped:
+                if any(
+                    candidate.get(field) and kept_counts[field][candidate[field]] >= source_limit
+                    for field in kept_counts
+                ):
+                    continue
+                filtered.append(candidate)
+                for field in kept_counts:
+                    if candidate.get(field):
+                        kept_counts[field][candidate[field]] += 1
+
+            if len(filtered) == len(capped):
+                break
+            capped = filtered
+
+        return capped
 
     @classmethod
     def get_story_read_time(cls, story_hash, days=7):
@@ -329,160 +559,400 @@ class RTrendingStory:
         return filtered[:limit]
 
     # --- Permanent trending lists ---
-    # These sorted sets accumulate story_hashes over time, scored by story_date timestamp.
-    # Once a story qualifies, it stays on the list permanently (capped at 10,000).
-    # Populated during the Prometheus trending scrape (once per hour).
+    # Base sorted sets preserve the existing transition history. Hourly refreshes
+    # add only stories qualified by exact user telemetry, then materialize a
+    # deterministic diverse order into Redis lists for serving.
 
     WELL_READ_KEY = "trending:well_read"
     LONG_READS_KEY = "trending:long_reads"
+    GOOD_READS_KEY = "trending:good_reads"
+    WELL_READ_DIVERSE_KEY = "trending:well_read:diverse"
+    LONG_READS_DIVERSE_KEY = "trending:long_reads:diverse"
+    GOOD_READS_DIVERSE_KEY = "trending:good_reads:diverse"
+    DIVERSITY_METRICS_KEY = "trending:diversity_metrics"
+    REFRESH_TIMESTAMP_KEY = "trending:refresh_timestamp"
     MAX_LIST_SIZE = 10000
-    WELL_READ_MIN_READERS = 3
+
+    TOPIC_KEYWORDS = {
+        "technology": r"\b(ai|android|code|developer|hack|security|software|technology|windows)\b",
+        "science": r"\b(astronomy|biology|climate|earth|medicine|physics|science|space|weather)\b",
+        "sports & games": r"\b(football|game|gaming|soccer|sport|world cup|xbox)\b",
+        "business & work": r"\b(business|economy|finance|job|labor|money|tax|trade|work)\b",
+        "politics & law": r"\b(court|democracy|election|government|law|politics|senate|trump)\b",
+        "culture & history": r"\b(art|book|culture|film|history|music|reading)\b",
+    }
 
     @classmethod
-    def refresh_trending_lists(cls):
-        """Scan current trending data and add qualifying stories to the permanent lists.
-
-        Called during the Prometheus trending scrape. Stories that qualify:
-        - Well-Read: 3+ readers (any read time)
-        - Long Reads: mirrors Grafana (>=3 readers, sorted by avg read time, top 20)
-        """
-        from apps.rss_feeds.models import MStory
+    def refresh_trending_lists(cls, days=7):
+        """Add exact-reader candidates and rebuild diverse serving orders."""
+        from apps.briefing.scoring import _estimate_word_count
+        from apps.rss_feeds.models import Feed, MStory
 
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        durations = cls.get_distinct_user_durations(days=days, min_seconds=cls.MEANINGFUL_READ_TIME_SECONDS)
+        actions = cls.get_quality_action_users(days=days)
 
-        # Well-Read Stories: all stories with 3+ readers from the last 7 days
-        well_read_stories = cls.get_trending_stories_detailed(days=7, limit=200)
-        well_read_qualifying = [
-            s for s in well_read_stories if s["reader_count"] >= cls.WELL_READ_MIN_READERS
-        ]
+        if not durations:
+            cls.materialize_diverse_lists()
+            return {"well_read": 0, "long_reads": 0, "good_reads": 0}
 
-        # Long Reads: top stories by avg read time with >=3 readers (mirrors Grafana)
-        long_read_stories = cls.get_long_reads(days=7, limit=20, min_readers=3)
+        well_read_ranked = []
+        long_prefilter = []
+        good_prefilter = []
+        for story_hash, user_durations in durations.items():
+            meaningful = [
+                seconds for seconds in user_durations.values() if seconds >= cls.MEANINGFUL_READ_TIME_SECONDS
+            ]
+            if len(meaningful) >= cls.MIN_DISTINCT_READERS:
+                well_read_ranked.append((story_hash, len(meaningful), sum(meaningful)))
 
-        # Collect all story hashes we need to look up dates for
-        all_hashes = set()
-        for s in well_read_qualifying:
-            all_hashes.add(s["story_hash"])
-        for s in long_read_stories:
-            all_hashes.add(s["story_hash"])
+            good_deep = [
+                seconds for seconds in user_durations.values() if seconds >= cls.GOOD_READ_TIME_SECONDS
+            ]
+            if len(good_deep) >= cls.MIN_LONG_READERS:
+                sorted_deep = sorted(good_deep, reverse=True)
+                long_prefilter.append((story_hash, sorted_deep[1], len(sorted_deep)))
+                if cls.good_read_qualifies(len(sorted_deep), len(actions.get(story_hash, set()))):
+                    good_prefilter.append(
+                        (story_hash, bool(actions.get(story_hash)), sorted_deep[1], len(sorted_deep))
+                    )
 
-        if not all_hashes:
-            return
+        well_read_ranked.sort(key=lambda item: (item[1], item[2], item[0]), reverse=True)
+        well_read_hashes = [item[0] for item in well_read_ranked[:200]]
+        long_prefilter.sort(key=lambda item: (item[1], item[2], item[0]), reverse=True)
+        good_prefilter.sort(key=lambda item: (item[1], item[2], item[3], item[0]), reverse=True)
 
-        # Check which hashes are already in the permanent lists to avoid unnecessary DB lookups
+        content_hashes = {item[0] for item in long_prefilter[:2000]}
+        content_hashes.update(item[0] for item in good_prefilter[:2000])
+        content_hashes.update(well_read_hashes)
+        stories = {
+            story.story_hash: story
+            for story in MStory.objects(story_hash__in=list(content_hashes)).only(
+                "story_hash",
+                "story_date",
+                "story_title",
+                "story_feed_id",
+                "story_tags",
+                "story_content",
+                "story_content_z",
+            )
+        }
+
+        long_ranked = []
+        for story_hash, _, _ in long_prefilter[:2000]:
+            story = stories.get(story_hash)
+            if not story:
+                continue
+            word_count = _estimate_word_count(story)
+            if word_count < cls.MIN_LONG_WORDS:
+                continue
+            required_seconds = cls.required_long_read_seconds(word_count)
+            deep_durations = [
+                seconds for seconds in durations[story_hash].values() if seconds >= required_seconds
+            ]
+            if len(deep_durations) < cls.MIN_LONG_READERS:
+                continue
+            estimated_seconds = max(60, (word_count / 240.0) * 60)
+            completion = sum(min(seconds / estimated_seconds, 1.25) for seconds in deep_durations) / len(
+                deep_durations
+            )
+            confidence = 1 - math.exp(-len(deep_durations) / 5.0)
+            score = completion * math.log1p(word_count) * confidence
+            long_ranked.append((story_hash, score))
+        long_ranked.sort(key=lambda item: (item[1], item[0]), reverse=True)
+        long_read_hashes = [item[0] for item in long_ranked[:50]]
+
+        # Good Reads has a distinct quality and novelty score, but may overlap the
+        # other feeds. Excluding Widely Read would remove every two-reader Good Read.
+        good_story_hashes = [item[0] for item in good_prefilter[:2000]]
+        good_feed_ids = {stories[h].story_feed_id for h in good_story_hashes if h in stories}
+        feeds = {
+            feed.pk: feed
+            for feed in Feed.objects.filter(pk__in=good_feed_ids).only(
+                "pk", "active_subscribers", "num_subscribers"
+            )
+        }
+        max_active = max([feed.active_subscribers or 0 for feed in feeds.values()] + [1])
+        good_ranked = []
+        for story_hash in good_story_hashes:
+            story = stories.get(story_hash)
+            if not story:
+                continue
+            word_count = _estimate_word_count(story)
+            if word_count < cls.MIN_GOOD_WORDS:
+                continue
+            deep_durations = [
+                seconds for seconds in durations[story_hash].values() if seconds >= cls.GOOD_READ_TIME_SECONDS
+            ]
+            action_count = len(actions.get(story_hash, set()))
+            if not cls.good_read_qualifies(len(deep_durations), action_count):
+                continue
+
+            estimated_seconds = max(60, (word_count / 240.0) * 60)
+            completion = sum(
+                min(seconds / estimated_seconds, 1.25) / 1.25 for seconds in deep_durations
+            ) / len(deep_durations)
+            confidence = 1 - math.exp(-max(0, len(deep_durations) - 1) / 8.0)
+            action_score = min(math.log1p(action_count) / math.log(4), 1) if action_count else 0
+            substance = min(math.log1p(word_count) / math.log(2001), 1)
+            quality = (0.45 * completion) + (0.25 * confidence) + (0.20 * action_score) + (0.10 * substance)
+            feed = feeds.get(story.story_feed_id)
+            active_subscribers = feed.active_subscribers if feed and feed.active_subscribers else 0
+            novelty = 1 - min(math.log1p(active_subscribers) / math.log1p(max_active), 1)
+            score = quality * (0.65 + (0.35 * novelty))
+            good_ranked.append((story_hash, score))
+        good_ranked.sort(key=lambda item: (item[1], item[0]), reverse=True)
+        selected_good_hashes = [item[0] for item in good_ranked[:100]]
+
+        selected = {
+            cls.WELL_READ_KEY: well_read_hashes,
+            cls.LONG_READS_KEY: long_read_hashes,
+            cls.GOOD_READS_KEY: selected_good_hashes,
+        }
+        all_selected_hashes = set().union(*selected.values())
+        story_dates = {
+            story_hash: stories[story_hash].story_date.timestamp()
+            for story_hash in all_selected_hashes
+            if story_hash in stories and stories[story_hash].story_date
+        }
+
+        existing_by_key = {key: set(cls._decode_members(r.zrange(key, 0, -1))) for key in selected}
+        added = {}
         pipe = r.pipeline()
-        for h in all_hashes:
-            pipe.zscore(cls.WELL_READ_KEY, h)
-        for h in all_hashes:
-            pipe.zscore(cls.LONG_READS_KEY, h)
-        scores = pipe.execute()
-        n = len(all_hashes)
-        hash_list = list(all_hashes)
-        existing_well_read = {hash_list[i] for i in range(n) if scores[i] is not None}
-        existing_long_reads = {hash_list[i] for i in range(n) if scores[n + i] is not None}
-
-        # Find hashes that need story_date lookup
-        new_well_read = {s["story_hash"] for s in well_read_qualifying} - existing_well_read
-        new_long_reads = {s["story_hash"] for s in long_read_stories} - existing_long_reads
-        need_dates = new_well_read | new_long_reads
-
-        # Look up story dates from MongoDB
-        story_dates = {}
-        if need_dates:
-            for story in MStory.objects(story_hash__in=list(need_dates)).only("story_hash", "story_date"):
-                if story.story_date:
-                    story_dates[story.story_hash] = story.story_date.timestamp()
-                else:
-                    story_dates[story.story_hash] = time.time()
-
-        # Add new stories to permanent lists
-        pipe = r.pipeline()
-        added_well_read = 0
-        added_long_reads = 0
-
-        for story_hash in new_well_read:
-            score = story_dates.get(story_hash, time.time())
-            pipe.zadd(cls.WELL_READ_KEY, {story_hash: score}, nx=True)
-            added_well_read += 1
-
-        for story_hash in new_long_reads:
-            score = story_dates.get(story_hash, time.time())
-            pipe.zadd(cls.LONG_READS_KEY, {story_hash: score}, nx=True)
-            added_long_reads += 1
-
-        # Cap the lists at MAX_LIST_SIZE by removing oldest entries
-        pipe.zremrangebyrank(cls.WELL_READ_KEY, 0, -(cls.MAX_LIST_SIZE + 1))
-        pipe.zremrangebyrank(cls.LONG_READS_KEY, 0, -(cls.MAX_LIST_SIZE + 1))
-
+        for key, story_hashes in selected.items():
+            added[key] = 0
+            for story_hash in story_hashes:
+                if story_hash not in story_dates or story_hash in existing_by_key[key]:
+                    continue
+                pipe.zadd(key, {story_hash: story_dates[story_hash]}, nx=True)
+                added[key] += 1
+            pipe.zremrangebyrank(key, 0, -(cls.MAX_LIST_SIZE + 1))
         pipe.execute()
 
-        if added_well_read or added_long_reads:
-            logging.debug(
-                "Trending lists refreshed: +%s well-read, +%s long-reads"
-                % (added_well_read, added_long_reads)
+        cls.materialize_diverse_lists()
+        logging.debug(
+            "Trending lists refreshed from distinct readers: +%s well-read, +%s long-reads, +%s good-reads"
+            % (
+                added[cls.WELL_READ_KEY],
+                added[cls.LONG_READS_KEY],
+                added[cls.GOOD_READS_KEY],
             )
+        )
+        return {
+            "well_read": added[cls.WELL_READ_KEY],
+            "long_reads": added[cls.LONG_READS_KEY],
+            "good_reads": added[cls.GOOD_READS_KEY],
+        }
+
+    @classmethod
+    def materialize_diverse_lists(cls):
+        for base_key, diverse_key in [
+            (cls.WELL_READ_KEY, cls.WELL_READ_DIVERSE_KEY),
+            (cls.LONG_READS_KEY, cls.LONG_READS_DIVERSE_KEY),
+            (cls.GOOD_READS_KEY, cls.GOOD_READS_DIVERSE_KEY),
+        ]:
+            cls._materialize_diverse_list(base_key, diverse_key)
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r.set(cls.REFRESH_TIMESTAMP_KEY, int(datetime.datetime.now().timestamp()))
+
+    @classmethod
+    def _materialize_diverse_list(cls, base_key, diverse_key):
+        from apps.clustering.models import normalize_title
+        from apps.discover.models import PopularFeed
+        from apps.rss_feeds.models import Feed, MStory
+
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        story_hashes = cls._decode_members(r.zrevrange(base_key, 0, cls.MAX_LIST_SIZE - 1))
+        if not story_hashes:
+            r.delete(diverse_key)
+            cls._store_diversity_metrics(base_key, [])
+            return []
+
+        stories = {
+            story.story_hash: story
+            for story in MStory.objects(story_hash__in=story_hashes).only(
+                "story_hash", "story_feed_id", "story_title", "story_tags"
+            )
+        }
+        feed_ids = {story.story_feed_id for story in stories.values()}
+        feeds = {
+            feed.pk: feed
+            for feed in Feed.objects.filter(pk__in=feed_ids).only(
+                "pk",
+                "feed_title",
+                "feed_link",
+                "feed_address",
+                "branch_from_feed",
+                "active_subscribers",
+            )
+        }
+        categories = dict(
+            PopularFeed.objects.filter(feed_id__in=feed_ids, is_active=True)
+            .order_by("feed_id", "sort_order")
+            .values_list("feed_id", "category")
+        )
+
+        cluster_redis = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        pipe = cluster_redis.pipeline()
+        for story_hash in story_hashes:
+            pipe.get(f"sCL:{story_hash}")
+        cluster_values = pipe.execute()
+        clusters = {
+            story_hash: value.decode() if isinstance(value, bytes) else value
+            for story_hash, value in zip(story_hashes, cluster_values)
+            if value
+        }
+
+        candidates = []
+        for story_hash in story_hashes:
+            story = stories.get(story_hash)
+            if not story:
+                continue
+            feed = feeds.get(story.story_feed_id)
+            if not feed:
+                continue
+            domain = cls._feed_domain(feed.feed_link or feed.feed_address)
+            publisher = normalize_title(feed.feed_title or "")
+            candidates.append(
+                {
+                    "story_hash": story_hash,
+                    "feed_id": feed.branch_from_feed_id or feed.pk,
+                    "domain": domain,
+                    "publisher": publisher,
+                    "topic": cls._story_topic(story, categories.get(feed.pk)),
+                    "cluster_id": clusters.get(story_hash),
+                    "title_key": normalize_title(story.story_title or ""),
+                    "active_subscribers": feed.active_subscribers or 0,
+                }
+            )
+
+        small_feed_slots = 4 if base_key == cls.GOOD_READS_KEY else 0
+        diversified = cls.diversify_candidates(candidates, small_feed_slots=small_feed_slots)
+        ordered_hashes = [candidate["story_hash"] for candidate in diversified]
+        temp_key = f"{diverse_key}:building"
+        pipe = r.pipeline()
+        pipe.delete(temp_key)
+        if ordered_hashes:
+            pipe.rpush(temp_key, *ordered_hashes)
+            pipe.rename(temp_key, diverse_key)
+        else:
+            pipe.delete(diverse_key)
+        pipe.execute()
+        cls._store_diversity_metrics(base_key, diversified)
+        return ordered_hashes
+
+    @classmethod
+    def _store_diversity_metrics(cls, base_key, candidates):
+        list_name = base_key.rsplit(":", 1)[-1]
+        sample = candidates[:50]
+        publisher_counts = Counter(
+            candidate.get("publisher") or candidate.get("domain") or str(candidate.get("feed_id"))
+            for candidate in sample
+        )
+        sample_size = len(sample)
+        top_share = max(publisher_counts.values(), default=0) / sample_size if sample_size else 0
+        hhi = sum((count / sample_size) ** 2 for count in publisher_counts.values()) if sample_size else 0
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r.hset(
+            cls.DIVERSITY_METRICS_KEY,
+            mapping={
+                f"{list_name}:size": len(candidates),
+                f"{list_name}:unique_publishers_50": len(publisher_counts),
+                f"{list_name}:top_publisher_share_50": f"{top_share:.4f}",
+                f"{list_name}:publisher_hhi_50": f"{hhi:.4f}",
+            },
+        )
+
+    @staticmethod
+    def _feed_domain(url):
+        if not url:
+            return ""
+        parsed = urlparse(url if "://" in url else f"https://{url}")
+        return (parsed.hostname or "").lower().removeprefix("www.")
+
+    @classmethod
+    def _story_topic(cls, story, popular_category=None):
+        if popular_category:
+            return popular_category.lower()
+        text = " ".join([story.story_title or ""] + list(story.story_tags or [])).lower()
+        for topic, pattern in cls.TOPIC_KEYWORDS.items():
+            if re.search(pattern, text):
+                return topic
+        return "other"
+
+    @staticmethod
+    def _decode_members(members):
+        return [member.decode() if isinstance(member, bytes) else member for member in members]
 
     @classmethod
     def get_well_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
-        """Get paginated story hashes from the permanent well-read list."""
-        return cls._get_permanent_list_hashes(cls.WELL_READ_KEY, offset, limit, order, read_filter, user_id)
+        return cls._get_permanent_list_hashes(
+            cls.WELL_READ_KEY,
+            cls.WELL_READ_DIVERSE_KEY,
+            offset,
+            limit,
+            order,
+            read_filter,
+            user_id,
+        )
 
     @classmethod
     def get_long_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
-        """Get paginated story hashes from the permanent long-reads list."""
-        return cls._get_permanent_list_hashes(cls.LONG_READS_KEY, offset, limit, order, read_filter, user_id)
+        return cls._get_permanent_list_hashes(
+            cls.LONG_READS_KEY,
+            cls.LONG_READS_DIVERSE_KEY,
+            offset,
+            limit,
+            order,
+            read_filter,
+            user_id,
+        )
 
     @classmethod
-    def _get_permanent_list_hashes(cls, key, offset, limit, order, read_filter, user_id):
-        """Fetch story hashes from a permanent trending sorted set with optional read filtering.
+    def get_good_read_story_hashes(cls, offset=0, limit=12, order="newest", read_filter="all", user_id=None):
+        return cls._get_permanent_list_hashes(
+            cls.GOOD_READS_KEY,
+            cls.GOOD_READS_DIVERSE_KEY,
+            offset,
+            limit,
+            order,
+            read_filter,
+            user_id,
+        )
 
-        Overfetches and filters for unread mode since we can't do cross-Redis-instance set ops.
-        """
+    @classmethod
+    def _get_permanent_list_hashes(cls, key, diverse_key, offset, limit, order, read_filter, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        has_diverse_list = bool(r.exists(diverse_key))
 
         if read_filter == "all" or not user_id:
-            # Simple pagination, no read filtering needed
-            if order == "oldest":
+            if has_diverse_list:
+                if order == "oldest":
+                    total = r.llen(diverse_key)
+                    start = max(total - offset - limit, 0)
+                    stop = max(total - offset - 1, -1)
+                    results = list(reversed(r.lrange(diverse_key, start, stop))) if stop >= 0 else []
+                else:
+                    results = r.lrange(diverse_key, offset, offset + limit - 1)
+            elif order == "oldest":
                 results = r.zrange(key, offset, offset + limit - 1)
             else:
                 results = r.zrevrange(key, offset, offset + limit - 1)
-            return [h.decode() if isinstance(h, bytes) else h for h in results]
+            return cls._decode_members(results)
 
-        # For unread filtering, overfetch and check read state
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        read_key = "RS:%s" % user_id
-
-        # Overfetch to account for read stories being filtered out
-        fetch_size = max(limit * 5, 100)
-        batch_offset = 0
-        collected = []
-        skipped = 0
-
-        while len(collected) < offset + limit:
+        if has_diverse_list:
+            candidates = cls._decode_members(r.lrange(diverse_key, 0, -1))
             if order == "oldest":
-                batch = r.zrange(key, batch_offset, batch_offset + fetch_size - 1)
-            else:
-                batch = r.zrevrange(key, batch_offset, batch_offset + fetch_size - 1)
+                candidates.reverse()
+        elif order == "oldest":
+            candidates = cls._decode_members(r.zrange(key, 0, -1))
+        else:
+            candidates = cls._decode_members(r.zrevrange(key, 0, -1))
 
-            if not batch:
-                break
-
-            hashes = [h.decode() if isinstance(h, bytes) else h for h in batch]
-
-            # Batch check read state
-            pipe = r2.pipeline()
-            for h in hashes:
-                pipe.sismember(read_key, h)
-            read_states = pipe.execute()
-
-            for h, is_read in zip(hashes, read_states):
-                if not is_read:
-                    collected.append(h)
-
-            batch_offset += fetch_size
-
-            # Safety valve: don't scan more than the entire list
-            if batch_offset > cls.MAX_LIST_SIZE:
-                break
-
-        return collected[offset : offset + limit]
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        pipe = r2.pipeline()
+        for story_hash in candidates:
+            pipe.sismember(f"RS:{user_id}", story_hash)
+        read_states = pipe.execute()
+        unread = [story_hash for story_hash, is_read in zip(candidates, read_states) if not is_read]
+        return unread[offset : offset + limit]

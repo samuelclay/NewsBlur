@@ -1,5 +1,4 @@
 import datetime
-import re
 import time
 
 import redis
@@ -8,7 +7,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
-from apps.rss_feeds.models import Feed, MStory
 from apps.statistics.rtrending import RTrendingStory
 
 CACHE_KEY = "monitor:trending_feeds:cache"
@@ -22,12 +20,6 @@ class TrendingFeeds(View):
         Results are cached for 1 hour since these Grafana graphs don't need real-time data.
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-
-        # Refresh permanent trending lists on every scrape (not gated by cache)
-        try:
-            RTrendingStory.refresh_trending_lists()
-        except Exception:
-            pass
 
         cached = r.get(CACHE_KEY)
         if cached:
@@ -73,114 +65,30 @@ class TrendingFeeds(View):
             "unique_feeds_read"
         ] = f'{chart_name}{{metric="unique_feeds_read"}} {data["unique_feeds_read"]}'
 
-        # Top stories for both 1-day and 7-day windows
-        for days in [1, 7]:
-            top_stories = RTrendingStory.get_trending_stories_detailed(days=days, limit=20)
+        diversity_metrics = {
+            key.decode()
+            if isinstance(key, bytes)
+            else key: value.decode()
+            if isinstance(value, bytes)
+            else value
+            for key, value in r.hgetall(RTrendingStory.DIVERSITY_METRICS_KEY).items()
+        }
+        for list_name in ("well_read", "long_reads", "good_reads"):
+            for metric_name in (
+                "size",
+                "unique_publishers_50",
+                "top_publisher_share_50",
+                "publisher_hhi_50",
+            ):
+                value = diversity_metrics.get(f"{list_name}:{metric_name}", 0)
+                formatted_data[
+                    f"{list_name}_{metric_name}"
+                ] = f'{chart_name}{{metric="{metric_name}",list="{list_name}"}} {value}'
 
-            if top_stories:
-                # Get story hashes to look up details
-                story_hashes = [s["story_hash"] for s in top_stories]
-
-                # Bulk fetch stories from MongoDB
-                stories_by_hash = {}
-                for story in (
-                    MStory.objects(story_hash__in=story_hashes)
-                    .only("story_hash", "story_title", "story_date", "story_feed_id")
-                    .order_by()
-                ):
-                    stories_by_hash[story.story_hash] = story
-
-                # Get feed titles
-                feed_ids = list(set(s["feed_id"] for s in top_stories))
-                feeds_by_id = {}
-                for feed in Feed.objects.filter(pk__in=feed_ids).values("pk", "feed_title"):
-                    feeds_by_id[feed["pk"]] = feed["feed_title"]
-
-                for rank, story_data in enumerate(top_stories, 1):
-                    story_hash = story_data["story_hash"]
-                    feed_id = story_data["feed_id"]
-                    total_seconds = story_data["total_seconds"]
-                    reader_count = story_data["reader_count"]
-
-                    # Get story details from MongoDB lookup
-                    story = stories_by_hash.get(story_hash)
-                    if story:
-                        story_title = story.story_title or "Unknown"
-                        story_date = (
-                            story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "Unknown"
-                        )
-                    else:
-                        story_title = "Unknown"
-                        story_date = "Unknown"
-
-                    feed_title = feeds_by_id.get(feed_id, "Unknown Feed")
-
-                    # Sanitize strings for Prometheus labels (escape quotes and backslashes)
-                    story_title_safe = self._sanitize_label(story_title)
-                    feed_title_safe = self._sanitize_label(feed_title)
-                    story_hash_safe = self._sanitize_label(story_hash)
-
-                    key = f"top_story_{days}d_{rank}"
-                    formatted_data[key] = (
-                        f'{chart_name}{{metric="top_story",days="{days}",rank="{rank}",'
-                        f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
-                        f'story_hash="{story_hash_safe}",story_title="{story_title_safe}",'
-                        f'story_date="{story_date}",reader_count="{reader_count}"}} {total_seconds}'
-                    )
-
-        # Long Reads (stories with ≥3 readers, sorted by avg read time)
-        for days in [1, 7]:
-            long_reads = RTrendingStory.get_long_reads(days=days, limit=20, min_readers=3)
-
-            if long_reads:
-                story_hashes = [s["story_hash"] for s in long_reads]
-
-                # Bulk fetch stories from MongoDB
-                stories_by_hash = {}
-                for story in (
-                    MStory.objects(story_hash__in=story_hashes)
-                    .only("story_hash", "story_title", "story_date", "story_feed_id")
-                    .order_by()
-                ):
-                    stories_by_hash[story.story_hash] = story
-
-                # Get feed titles
-                feed_ids = list(set(s["feed_id"] for s in long_reads))
-                feeds_by_id = {}
-                for feed in Feed.objects.filter(pk__in=feed_ids).values("pk", "feed_title"):
-                    feeds_by_id[feed["pk"]] = feed["feed_title"]
-
-                for rank, story_data in enumerate(long_reads, 1):
-                    story_hash = story_data["story_hash"]
-                    feed_id = story_data["feed_id"]
-                    total_seconds = story_data["total_seconds"]
-                    reader_count = story_data["reader_count"]
-                    avg_seconds = story_data["avg_seconds_per_reader"]
-
-                    story = stories_by_hash.get(story_hash)
-                    if story:
-                        story_title = story.story_title or "Unknown"
-                        story_date = (
-                            story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "Unknown"
-                        )
-                    else:
-                        story_title = "Unknown"
-                        story_date = "Unknown"
-
-                    feed_title = feeds_by_id.get(feed_id, "Unknown Feed")
-
-                    story_title_safe = self._sanitize_label(story_title)
-                    feed_title_safe = self._sanitize_label(feed_title)
-                    story_hash_safe = self._sanitize_label(story_hash)
-
-                    key = f"long_read_{days}d_{rank}"
-                    formatted_data[key] = (
-                        f'{chart_name}{{metric="long_read",days="{days}",rank="{rank}",'
-                        f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
-                        f'story_hash="{story_hash_safe}",story_title="{story_title_safe}",'
-                        f'story_date="{story_date}",reader_count="{reader_count}",'
-                        f'total_seconds="{total_seconds}"}} {avg_seconds:.1f}'
-                    )
+        refresh_timestamp = r.get(RTrendingStory.REFRESH_TIMESTAMP_KEY)
+        refresh_timestamp = int(refresh_timestamp) if refresh_timestamp else 0
+        refresh_age = max(int(time.time()) - refresh_timestamp, 0) if refresh_timestamp else 0
+        formatted_data["trending_refresh_age"] = f'{chart_name}{{metric="refresh_age_seconds"}} {refresh_age}'
 
         # Read time distribution buckets (0-15, 15-30, 30-60, 60-120, 120+)
         # Using ZCOUNT for O(log N) per bucket instead of fetching all stories
@@ -249,17 +157,3 @@ class TrendingFeeds(View):
         response = render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
         r.set(CACHE_KEY, response.content, ex=CACHE_TTL)
         return response
-
-    def _sanitize_label(self, value):
-        """Sanitize a string for use as a Prometheus label value."""
-        if not value:
-            return "Unknown"
-        # Escape backslashes first, then quotes, then newlines
-        value = str(value)[:100]  # Truncate to 100 chars
-        value = value.replace("\\", "\\\\")
-        value = value.replace('"', '\\"')
-        value = value.replace("\n", " ")
-        value = value.replace("\r", " ")
-        # Remove any other problematic characters
-        value = re.sub(r"[^\x20-\x7E]", "", value)
-        return value

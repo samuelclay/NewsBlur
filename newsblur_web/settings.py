@@ -562,6 +562,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(minutes=10),
         "options": {"queue": "cron_queue"},
     },
+    "refresh-trending-stories": {
+        "task": "refresh-trending-stories",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
+    },
     "clean-analytics": {
         "task": "clean-analytics",
         "schedule": datetime.timedelta(hours=12),

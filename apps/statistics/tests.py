@@ -3,12 +3,14 @@ Tests for the statistics app, including load time and trending feed functionalit
 """
 
 import datetime
+from collections import Counter
 from unittest.mock import patch
 
 import redis
 from django.conf import settings
 from django.test import TestCase
 
+from apps.rss_feeds.models import MStory
 from apps.statistics.models import MStatistics
 from apps.statistics.rmcp_usage import RMCPUsage
 from apps.statistics.rstats import RStats
@@ -80,12 +82,28 @@ class Test_RTrendingStory(TestCase):
 
     def setUp(self):
         self.r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in [
+            "fRT:*",
+            "sRTi:*",
+            "sRTc:*",
+            "fRTc:*",
+            "sRTud:*",
+            "sRTqa:*",
+            "trending:*",
+        ]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
     def tearDown(self):
-        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in [
+            "fRT:*",
+            "sRTi:*",
+            "sRTc:*",
+            "fRTc:*",
+            "sRTud:*",
+            "sRTqa:*",
+            "trending:*",
+        ]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
@@ -149,6 +167,160 @@ class Test_RTrendingStory(TestCase):
         self.assertEqual(detailed[1]["total_seconds"], 100)
         self.assertEqual(detailed[1]["reader_count"], 20)
         self.assertEqual(detailed[1]["avg_seconds_per_reader"], 5.0)
+
+    def test_distinct_user_durations_keep_longest_session_per_user(self):
+        """Repeated sessions from one account count as one reader with its longest dwell."""
+        RTrendingStory.add_read_time("100:story", 20, user_id=1)
+        RTrendingStory.add_read_time("100:story", 45, user_id=1)
+        RTrendingStory.add_read_time("100:story", 30, user_id=2)
+
+        durations = RTrendingStory.get_distinct_user_durations(days=1)
+
+        self.assertEqual(sorted(durations["100:story"].values()), [30, 45])
+
+    def test_distinct_user_duration_is_capped(self):
+        """A foreground session cannot dominate rankings with an implausibly long duration."""
+        RTrendingStory.add_read_time("100:story", 5000, user_id=1)
+
+        durations = RTrendingStory.get_distinct_user_durations(days=1)
+
+        self.assertEqual(durations["100:story"]["1"], RTrendingStory.MAX_READ_TIME_SECONDS)
+
+    def test_quality_actions_are_unique_per_user(self):
+        """Saving and sharing the same story still represents one committed reader."""
+        RTrendingStory.record_quality_action("100:story", user_id=1)
+        RTrendingStory.record_quality_action("100:story", user_id=1)
+        RTrendingStory.record_quality_action("100:story", user_id=2)
+
+        actions = RTrendingStory.get_quality_action_users(days=1)
+
+        self.assertEqual(actions["100:story"], {"1", "2"})
+
+    def test_length_aware_long_read_threshold(self):
+        """Required dwell scales with article length and remains within sensible bounds."""
+        self.assertEqual(RTrendingStory.required_long_read_seconds(600), 45)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(1200), 75)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(3000), 180)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(10000), 180)
+
+    def test_good_read_quality_gate(self):
+        """Good Reads needs a commitment action unless four people read deeply."""
+        self.assertTrue(RTrendingStory.good_read_qualifies(deep_reader_count=2, action_count=1))
+        self.assertTrue(RTrendingStory.good_read_qualifies(deep_reader_count=4, action_count=0))
+        self.assertFalse(RTrendingStory.good_read_qualifies(deep_reader_count=3, action_count=0))
+
+    def test_diversity_blocks_cap_sources_topics_and_clusters(self):
+        """A 12-story block contains one canonical source, one cluster, and at most three topics."""
+        candidates = []
+        for i in range(16):
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": i,
+                    "domain": f"source-{i}.example.com",
+                    "publisher": f"Source {i}",
+                    "topic": "technology" if i < 6 else f"topic-{i}",
+                    "cluster_id": "duplicate-cluster" if i in (0, 1) else None,
+                    "title_key": f"story {i}",
+                }
+            )
+        candidates.insert(
+            2,
+            {
+                "story_hash": "99:second-source-story",
+                "feed_id": 0,
+                "domain": "source-0.example.com",
+                "publisher": "Source 0",
+                "topic": "other",
+                "cluster_id": None,
+                "title_key": "second source story",
+            },
+        )
+
+        diversified = RTrendingStory.diversify_candidates(candidates, block_size=12)
+        first_block = diversified[:12]
+
+        self.assertEqual(len(first_block), 12)
+        self.assertEqual(len({story["feed_id"] for story in first_block}), 12)
+        self.assertEqual(len({story["domain"] for story in first_block}), 12)
+        self.assertLessEqual(sum(story["topic"] == "technology" for story in first_block), 3)
+        self.assertEqual(
+            sum(story["cluster_id"] == "duplicate-cluster" for story in diversified),
+            1,
+        )
+
+    def test_good_reads_reserves_small_feed_slots(self):
+        """Good Reads gives four first-page positions to qualified small feeds."""
+        candidates = []
+        for i in range(16):
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": i,
+                    "domain": f"source-{i}.example.com",
+                    "publisher": f"Source {i}",
+                    "topic": f"topic-{i}",
+                    "cluster_id": None,
+                    "title_key": f"story {i}",
+                    "active_subscribers": 500 if i < 12 else 25,
+                }
+            )
+
+        diversified = RTrendingStory.diversify_candidates(candidates, small_feed_slots=4)
+
+        self.assertEqual(
+            sum(story["active_subscribers"] <= 50 for story in diversified[:12]),
+            4,
+        )
+
+    def test_diversity_caps_canonical_sources_at_ten_percent(self):
+        """Repeated feeds, domains, and publishers never exceed 10% of a diverse list."""
+        candidates = []
+        for i in range(20):
+            source = 0 if i < 10 else i
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": source,
+                    "domain": f"source-{source}.example.com",
+                    "publisher": f"Source {source}",
+                    "topic": f"topic-{i}",
+                    "cluster_id": None,
+                    "title_key": f"story {i}",
+                }
+            )
+
+        diversified = RTrendingStory.diversify_candidates(candidates)
+        counts = Counter(story["feed_id"] for story in diversified)
+
+        self.assertLessEqual(max(counts.values()) / len(diversified), 0.10)
+
+    @patch.object(RTrendingStory, "materialize_diverse_lists")
+    def test_refresh_qualifies_two_distinct_length_aware_readers(self, mock_materialize):
+        """Hourly refresh adds a text story when two people clear its length-aware dwell."""
+        story = MStory(
+            story_feed_id=100,
+            story_date=datetime.datetime.now(),
+            story_title="A substantial test essay",
+            story_content="word " * 1200,
+            story_guid="distinct-reader-long-read",
+            story_permalink="https://example.com/long-read",
+        )
+        story.save()
+        self.addCleanup(lambda: MStory.objects(story_hash=story.story_hash).delete())
+        RTrendingStory.add_read_time(story.story_hash, 80, user_id=1)
+        RTrendingStory.add_read_time(story.story_hash, 90, user_id=2)
+        RTrendingStory.record_quality_action(story.story_hash, user_id=1)
+
+        result = RTrendingStory.refresh_trending_lists(days=1)
+
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.WELL_READ_KEY, story.story_hash))
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.LONG_READS_KEY, story.story_hash))
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.GOOD_READS_KEY, story.story_hash))
+        self.assertEqual(result["well_read"], 1)
+        self.assertEqual(result["long_reads"], 1)
+        self.assertEqual(result["good_reads"], 1)
+        mock_materialize.assert_called_once_with()
 
 
 class Test_RTrendingSubscription(TestCase):

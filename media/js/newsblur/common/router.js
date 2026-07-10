@@ -165,6 +165,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
         } else if (folder_name == "long reads") {
             options['trending_type'] = 'long_reads';
             NEWSBLUR.reader.open_trending_stories(options);
+        } else if (folder_name == "good reads" && NEWSBLUR.Globals.is_staff) {
+            options['trending_type'] = 'good_reads';
+            NEWSBLUR.reader.open_trending_stories(options);
         } else {
             var folder = NEWSBLUR.assets.get_folder(folder_name);
             if (folder) {

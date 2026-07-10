@@ -64,6 +64,7 @@ from apps.social.tasks import (
     PostToService,
     UpdateRecalcForSubscription,
 )
+from apps.statistics.rtrending import RTrendingStory
 from utils import jennyholzer
 from utils import json_functions as json
 from utils import log as logging
@@ -911,6 +912,7 @@ def mark_story_as_shared(request):
             )
         return json.json_response(request, {"code": -1, "message": message})
 
+    created_share = False
     shared_story = (
         MSharedStory.objects.filter(
             user_id=request.user.pk, story_feed_id=feed_id, story_hash=story["story_hash"]
@@ -936,6 +938,7 @@ def mark_story_as_shared(request):
         }
         try:
             shared_story = MSharedStory.objects.create(**story_db)
+            created_share = True
             shared_story.publish_to_subscribers()
         except NotUniqueError:
             shared_story = MSharedStory.objects.get(
@@ -962,6 +965,9 @@ def mark_story_as_shared(request):
         logging.user(
             request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30])
         )
+
+    if created_share:
+        RTrendingStory.record_quality_action(story.story_hash, request.user.pk)
 
     if original_story_found:
         story.count_comments()
