@@ -1043,6 +1043,11 @@ class Test_YouTubeQuota(TestCase):
         ' "publishedAt": "2026-06-10T17:00:22Z", "thumbnails": {}},'
         ' "contentDetails": {"duration": "PT3M20S"}}]}'
     )
+    CONTROL_CHARACTER_VIDEOS_JSON = (
+        '{"items": [{"id": "vid1", "snippet": {"title": "Video One",'
+        ' "description": "A\\u0001video", "publishedAt": "2026-06-10T17:00:22Z",'
+        ' "thumbnails": {}}, "contentDetails": {"duration": "PT3M20S"}}]}'
+    )
     CHANNELS_JSON = (
         '{"items": [{"snippet": {"title": "Resolved Channel", "description": "Channel description"},'
         ' "contentDetails": {"relatedPlaylists": {"uploads": "UUresolved"}}}]}'
@@ -1092,6 +1097,22 @@ class Test_YouTubeQuota(TestCase):
         urls = [call.args[0] for call in mock_get.call_args_list]
         self.assertTrue(all("/channels?" not in url for url in urls), urls)
         self.assertIn("playlistId=UUabc123", urls[0])
+
+    @patch("utils.youtube_fetcher.requests.get")
+    def test_video_metadata_strips_xml_control_characters(self, mock_get):
+        from utils.youtube_fetcher import YoutubeFetcher
+
+        mock_get.side_effect = self._route(
+            [
+                ("/playlistItems?", self.PLAYLIST_ITEMS_JSON),
+                ("/videos?", self.CONTROL_CHARACTER_VIDEOS_JSON),
+            ]
+        )
+
+        rss = YoutubeFetcher(self.feed).fetch()
+
+        self.assertIn("Avideo", rss)
+        self.assertNotIn("\x01", rss)
 
     @patch("utils.youtube_fetcher.requests.get")
     def test_channel_feed_resolves_channel_when_no_cached_title(self, mock_get):
