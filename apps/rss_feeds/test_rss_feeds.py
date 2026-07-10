@@ -823,6 +823,28 @@ class Test_TextImporterEncoding(TestCase):
         self.assertIsNotNone(result)
         self.assertIn("développe", result["content"])
 
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_fetch_manually_strips_invalid_xml_characters(self, mock_get):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        html_bytes = (
+            b"<html><head><title>Test</title></head><body><article>"
+            b'<p><a href="/invalid\x01path">Readable article link</a></p>'
+            b"</article></body></html>"
+        )
+        mock_get.return_value = self._make_mock_response(html_bytes, "utf-8")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+        story.story_content_z = None
+        story.image_urls = []
+
+        importer = TextImporter(story=story, story_url="http://example.com/article")
+        result = importer.fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertNotIn("\x01", result["content"])
+
 
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
