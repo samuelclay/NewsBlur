@@ -1821,6 +1821,9 @@ class Feed(models.Model):
                     s.save()
                     ret_values["new"] += 1
                     s.publish_to_subscribers()
+                except NotUniqueError:
+                    ret_values["same"] += 1
+                    continue
                 except (IntegrityError, OperationError) as e:
                     ret_values["error"] += 1
                     if settings.DEBUG:

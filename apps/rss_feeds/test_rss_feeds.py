@@ -652,6 +652,34 @@ class Test_ProcessFeedRedirects(TestCase):
 class Test_FeedSave(TestCase):
     """Tests for Feed.save edge cases."""
 
+    @patch("apps.rss_feeds.models.MStory")
+    def test_duplicate_new_story_insert_is_treated_as_concurrent_success(self, mock_story_class):
+        from mongoengine.queryset import NotUniqueError
+
+        feed = Feed(
+            pk=1,
+            feed_address="https://news.google.com/rss/search?q=example",
+            feed_title="Example Google News feed",
+        )
+        story = {
+            "story_hash": "1:abcdef",
+            "story_content": "<p>Story content</p>",
+            "published": datetime.datetime.utcnow(),
+            "title": "Concurrent story",
+            "author": "Author",
+            "guid": "concurrent-story-guid",
+        }
+        saved_story = mock_story_class.return_value
+        saved_story.save.side_effect = NotUniqueError("duplicate story hash")
+
+        with patch.object(feed, "_exists_story", return_value=(None, False)), patch.object(
+            feed, "get_tags", return_value=[]
+        ), patch.object(feed, "get_permalink", return_value="https://example.com/story"):
+            result = feed.add_update_stories([story], {})
+
+        self.assertEqual(result, {"new": 0, "updated": 0, "same": 1, "error": 0})
+        saved_story.publish_to_subscribers.assert_not_called()
+
     @patch("utils.webfeed_fetcher.WebFeedFetcher")
     def test_update_webfeed_treats_null_archive_subscribers_as_zero(self, mock_fetcher):
         feed = Feed(
