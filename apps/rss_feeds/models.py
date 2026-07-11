@@ -1831,6 +1831,7 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
+                    continue
                 if self.is_google_news_feed and s:
                     s.fetch_og_image()
                     if s.image_urls:
