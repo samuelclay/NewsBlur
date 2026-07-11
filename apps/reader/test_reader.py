@@ -494,6 +494,28 @@ class Test_TrimUserReadStories(TestCase):
     @patch("apps.reader.models.User.objects.get")
     @patch("apps.reader.models.UserSubscription.objects.filter")
     @patch("apps.reader.models.redis.Redis")
+    def test_concurrent_cleanups_use_distinct_temp_keys(
+        self, mock_redis_class, mock_filter, mock_get_user
+    ):
+        user_id = 123
+        mock_get_user.return_value = MagicMock(username="reader")
+        mock_filter.return_value.only.return_value = [MagicMock(feed_id=i) for i in range(101)]
+
+        mock_redis = mock_redis_class.return_value
+        mock_redis.smembers.return_value = {"999:abcdef"}
+        mock_redis.exists.return_value = True
+        mock_redis.scard.return_value = 0
+
+        UserSubscription.trim_user_read_stories(user_id)
+        UserSubscription.trim_user_read_stories(user_id)
+
+        first_temp_key = mock_redis.sunionstore.call_args_list[0].args[0]
+        second_temp_key = mock_redis.sunionstore.call_args_list[2].args[0]
+        self.assertNotEqual(first_temp_key, second_temp_key)
+
+    @patch("apps.reader.models.User.objects.get")
+    @patch("apps.reader.models.UserSubscription.objects.filter")
+    @patch("apps.reader.models.redis.Redis")
     def test_missing_union_temp_key_clears_stale_aggregate(
         self, mock_redis_class, mock_filter, mock_get_user
     ):
