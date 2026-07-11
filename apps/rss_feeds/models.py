@@ -4932,6 +4932,8 @@ class MFetchHistory(mongo.Document):
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
+        if message is not None:
+            message = smart_str(message)[:4096]
         primary_objects = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)
         try:
             fetch_history = primary_objects.get(feed_id=feed_id)

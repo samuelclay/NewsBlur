@@ -732,6 +732,24 @@ class Test_FeedSave(TestCase):
 
 class Test_FetchHistoryRaces(TestCase):
     @patch("apps.rss_feeds.models.MFetchHistory.objects")
+    def test_add_caps_oversized_history_messages(self, mock_objects):
+        from apps.rss_feeds.models import MFetchHistory
+
+        history = MagicMock(
+            feed_fetch_history=[],
+            page_fetch_history=[],
+            push_history=[],
+            raw_feed_history=[],
+        )
+        mock_objects.read_preference.return_value.get.return_value = history
+
+        with patch.object(MFetchHistory, "feed", return_value={}):
+            MFetchHistory.add(123, "feed", code=500, message="x" * 10000)
+
+        self.assertEqual(len(history.feed_fetch_history[0][2]), 4096)
+        history.save.assert_called_once_with()
+
+    @patch("apps.rss_feeds.models.MFetchHistory.objects")
     def test_add_reloads_history_after_concurrent_creation(self, mock_objects):
         from mongoengine.queryset import NotUniqueError
 
