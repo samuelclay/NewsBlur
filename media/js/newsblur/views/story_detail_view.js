@@ -557,8 +557,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var self = this;
 
         _.each(feed_titles, function (score, title_classifier) {
-            if (!title_classifier || title.toLowerCase().indexOf(title_classifier.toLowerCase()) != -1) {
-                var pos = title.toLowerCase().indexOf(title_classifier.toLowerCase());
+            var pos = NEWSBLUR.title_classifier_utils.find_match_position(title, title_classifier);
+            if (pos != -1) {
                 var icon = self.score_icon_html(score);
                 title = title.substr(0, pos) + '<span class="NB-score-' + score + '">' + title.substr(pos, title_classifier.length) + icon + '</span>' + title.substr(pos + title_classifier.length);
             }

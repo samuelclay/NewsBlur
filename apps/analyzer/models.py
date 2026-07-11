@@ -9,6 +9,7 @@ classifiers.
 import datetime
 import re
 import threading
+import unicodedata
 from collections import defaultdict
 
 import mongoengine as mongo
@@ -550,6 +551,10 @@ def compute_story_score(
     return score
 
 
+def _is_unicode_word_character(character):
+    return character == "_" or character.isalnum() or unicodedata.category(character).startswith("M")
+
+
 def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
     """
     Apply title classifiers to a story (non-regex only).
@@ -574,8 +579,20 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
         if getattr(classifier, "is_regex", False):
             continue
 
-        # Standard substring matching (case-insensitive)
-        if classifier.title.lower() in story_title_lower:
+        classifier_title_lower = classifier.title.lower()
+        if not classifier_title_lower:
+            continue
+
+        match_index = story_title_lower.find(classifier_title_lower)
+        classifier_starts_with_word = _is_unicode_word_character(classifier_title_lower[0])
+        while (
+            classifier_starts_with_word
+            and match_index > 0
+            and _is_unicode_word_character(story_title_lower[match_index - 1])
+        ):
+            match_index = story_title_lower.find(classifier_title_lower, match_index + 1)
+
+        if match_index >= 0:
             if classifier.score <= -2:
                 return classifier.score  # super downvote beats everything
             if classifier.score > 0:

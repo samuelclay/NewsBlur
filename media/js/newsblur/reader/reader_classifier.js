@@ -2001,8 +2001,9 @@ var classifier_prototype = {
         var titles = _.keys(this.user_classifiers.titles);
 
         _.each(titles, _.bind(function (title) {
-            // Check if title text is in the story title
-            if (!existing_title || existing_title.toLowerCase().indexOf(title.toLowerCase()) != -1) {
+            // media/js/newsblur/reader/reader_classifier.js: Use scoring semantics when deciding
+            // which title classifiers match the current story.
+            if (!existing_title || NEWSBLUR.title_classifier_utils.find_match_position(existing_title, title) != -1) {
                 var $title = this.make_classifier(title, title, 'title');
                 $titles.push($title);
             }
@@ -2101,8 +2102,9 @@ var classifier_prototype = {
         var titles = _.keys(this.user_classifiers.titles);
 
         _.each(titles, _.bind(function (title) {
-            // Only include titles that DON'T match the story title
-            if (story_title && story_title.toLowerCase().indexOf(title.toLowerCase()) === -1) {
+            // media/js/newsblur/reader/reader_classifier.js: Keep the non-matching list inverse
+            // to the word-start matcher used for story scoring.
+            if (story_title && NEWSBLUR.title_classifier_utils.find_match_position(story_title, title) === -1) {
                 var $title = this.make_classifier(title, title, 'title');
                 $titles.push($title);
             }
@@ -3202,8 +3204,9 @@ var classifier_prototype = {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                     }
                 } else {
-                    // Exact phrase - only show badge when NOT found (since selected text is usually found)
-                    if (story_title.toLowerCase().indexOf(text.toLowerCase()) === -1) {
+                    // media/js/newsblur/reader/reader_classifier.js: Validate exact title phrases
+                    // with the same word-start semantics used when the classifier is applied.
+                    if (NEWSBLUR.title_classifier_utils.find_match_position(story_title, text) === -1) {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in title'));
                     }
                 }

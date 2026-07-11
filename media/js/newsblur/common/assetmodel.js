@@ -2600,8 +2600,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
                 if (classifier_score <= -2 || (intelligence.title > -2 && intelligence.title <= 0)) {
-                    // Standard substring matching
-                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                    // media/js/newsblur/common/assetmodel.js: Match title classifiers at word starts,
+                    // while allowing trained stems to continue through the end of a word.
+                    if (NEWSBLUR.title_classifier_utils.find_match_position(
+                        story.get('story_title', ''), classifier_title
+                    ) != -1) {
                         intelligence.title = classifier_score;
                     }
                 }

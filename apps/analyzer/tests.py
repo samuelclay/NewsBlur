@@ -138,6 +138,124 @@ class Test_Classifiers(TransactionTestCase):
 
         self.assertEqual(score, 0)
 
+    def test_apply_classifier_titles_does_not_match_inside_word(self):
+        classifiers = [
+            MClassifierTitle.objects.create(
+                user_id=self.user.pk,
+                feed_id=self.feed.pk,
+                social_user_id=0,
+                title="USP",
+                score=1,
+                creation_date=datetime.datetime.now(),
+            ),
+            MClassifierTitle.objects.create(
+                user_id=self.user.pk,
+                feed_id=self.feed.pk,
+                social_user_id=0,
+                title="Fifa",
+                score=-1,
+                creation_date=datetime.datetime.now(),
+            ),
+        ]
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Por dentro do comitê sigiloso da Fifa que suspendeu o cartão vermelho dos EUA",
+        }
+
+        score = apply_classifier_titles(classifiers, story)
+
+        self.assertEqual(score, -1)
+
+    def test_apply_classifier_titles_matches_word_prefix(self):
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="assassinad",
+            score=-1,
+            creation_date=datetime.datetime.now(),
+        )
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Polícia investiga mulher assassinada",
+        }
+
+        score = apply_classifier_titles([classifier], story)
+
+        self.assertEqual(score, -1)
+
+    def test_apply_classifier_titles_finds_later_word_start(self):
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="USP",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "suspendeu USP",
+        }
+
+        score = apply_classifier_titles([classifier], story)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_titles_preserves_punctuation_leading_match(self):
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title=".NET",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Learn.NET development",
+        }
+
+        score = apply_classifier_titles([classifier], story)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_titles_does_not_match_after_combining_mark(self):
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="USP",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "pre\u0301USP",
+        }
+
+        score = apply_classifier_titles([classifier], story)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_titles_skips_empty_title(self):
+        classifier = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "Any story title",
+        }
+
+        score = apply_classifier_titles([classifier], story)
+
+        self.assertEqual(score, 0)
+
     def test_apply_classifier_texts(self):
         MClassifierText.objects.create(
             user_id=self.user.pk,
