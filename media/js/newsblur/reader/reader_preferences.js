@@ -250,6 +250,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-showlongreads-1' }, [
                                     'Show Long Reads'
                                 ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showgoodreads-1', type: 'checkbox', name: 'show_good_reads', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showgoodreads-1' }, [
+                                    'Show Good Reads'
+                                ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -1229,6 +1235,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_good_reads]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_good_reads) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
         $('input[name=youtube_captions]', $modal).each(function () {
             if (NEWSBLUR.Preferences.youtube_captions) {
                 $(this).prop('checked', true);
@@ -1719,6 +1731,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
                 self.original_preferences['show_widely_read_stories'] != form['show_widely_read_stories'] ||
                 self.original_preferences['show_long_reads'] != form['show_long_reads'] ||
+                self.original_preferences['show_good_reads'] != form['show_good_reads'] ||
                 self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }

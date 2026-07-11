@@ -304,12 +304,10 @@ NEWSBLUR.utils = {
                 $option.attr('selected', true);
             }
 
-            if (NEWSBLUR.Globals.is_staff) {
-                var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
-                $options.append($option);
-                if (selected_folder_title == "trending:good_reads") {
-                    $option.attr('selected', true);
-                }
+            var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
+            $options.append($option);
+            if (selected_folder_title == "trending:good_reads") {
+                $option.attr('selected', true);
             }
         }
 

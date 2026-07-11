@@ -107,9 +107,11 @@ class Test_RiverStories(TransactionTestCase):
                 story_guid = story_guid_base
                 suffix = 0
 
-                while MStory.objects(
-                    story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
-                ).only("story_hash").first():
+                while (
+                    MStory.objects(story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid))
+                    .only("story_hash")
+                    .first()
+                ):
                     suffix += 1
                     story_guid = f"{story_guid_base}-{suffix}"
 
@@ -230,9 +232,7 @@ class Test_RiverStories(TransactionTestCase):
 
         feed_id = self.test_feeds[0]
         story_hash = self.test_story_hashes[0]
-        story_date = int(
-            MStory.objects.get(story_hash=story_hash).story_date.timestamp()
-        )
+        story_date = int(MStory.objects.get(story_hash=story_hash).story_date.timestamp())
         MClassifierTitle.objects(user_id=self.user.pk, feed_id=feed_id, title="Test Story").delete()
         MClassifierPrompt.objects(
             user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
@@ -247,16 +247,12 @@ class Test_RiverStories(TransactionTestCase):
                 user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
             ).delete()
         )
-        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(
-            is_trained=True
-        )
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(is_trained=True)
 
         r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         r_stats.delete(RTrendingStory.WELL_READ_KEY)
         r_stats.delete(RTrendingStory.LONG_READS_KEY)
-        self.addCleanup(
-            lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY)
-        )
+        self.addCleanup(lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY))
         r_stats.zadd(RTrendingStory.WELL_READ_KEY, {story_hash: story_date})
         r_stats.zadd(RTrendingStory.LONG_READS_KEY, {story_hash: story_date})
 
@@ -304,8 +300,8 @@ class Test_RiverStories(TransactionTestCase):
                 ],
             )
 
-    def test_good_reads_requires_staff_and_loads_for_staff(self):
-        """Good Reads is invisible at the API boundary unless the user is staff."""
+    def test_good_reads_loads_for_everyone(self):
+        """Good Reads is open to every reader, not just staff."""
         self.client.login(username="conesus", password="test")
 
         story_hash = self.test_story_hashes[0]
@@ -318,14 +314,6 @@ class Test_RiverStories(TransactionTestCase):
         r_stats.zadd(RTrendingStory.GOOD_READS_KEY, {story_hash: story_date})
 
         self.user.is_staff = False
-        self.user.save(update_fields=["is_staff"])
-        response = self.client.get(
-            reverse("load-trending-stories"),
-            {"trending_type": "good_reads", "read_filter": "all"},
-        )
-        self.assertEqual(response.status_code, 403)
-
-        self.user.is_staff = True
         self.user.save(update_fields=["is_staff"])
         response = self.client.get(
             reverse("load-trending-stories"),
@@ -573,9 +561,11 @@ class Test_RiverStories(TransactionTestCase):
             story_guid_base = f"river-all-read-status-{feed_id}-{i}"
             story_guid = story_guid_base
             suffix = 0
-            while MStory.objects(
-                story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
-            ).only("story_hash").first():
+            while (
+                MStory.objects(story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid))
+                .only("story_hash")
+                .first()
+            ):
                 suffix += 1
                 story_guid = f"{story_guid_base}-{suffix}"
 
@@ -1733,7 +1723,8 @@ class Test_RiverStories(TransactionTestCase):
 
         truth = story_hashes[: test_limit * 2]
         page1 = [
-            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+            story["story_hash"]
+            for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
         ]
         self.assertEqual(page1, truth[:test_limit])
 
@@ -1807,7 +1798,8 @@ class Test_RiverStories(TransactionTestCase):
 
         truth = story_hashes[: test_limit * 2]
         page1 = [
-            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+            story["story_hash"]
+            for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
         ]
         self.assertEqual(page1, truth[:test_limit])
         self.assertTrue(r.exists(f"zU:{self.user.pk}:{feed_id}"))
@@ -1859,9 +1851,7 @@ class Test_RiverStories(TransactionTestCase):
             def zrange(self, key, *args, **kwargs):
                 values = self.redis_client.zrange(key, *args, **kwargs)
                 if key == f"zUP:{usersub.user_id}:{usersub.feed_id}":
-                    return [
-                        v.decode("utf-8") if isinstance(v, bytes) else v for v in values
-                    ]
+                    return [v.decode("utf-8") if isinstance(v, bytes) else v for v in values]
                 return values
 
         r.delete(f"RS:{self.user.pk}")
