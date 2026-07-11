@@ -1303,7 +1303,6 @@ class MSocialSubscription(mongo.Document):
         cutoff_date=None,
         date_filter_start=None,
         date_filter_end=None,
-        dashboard_global=False,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
 
@@ -1320,12 +1319,7 @@ class MSocialSubscription(mongo.Document):
 
         ranked_stories_keys = "zU:%s:social" % (user_id)
         unread_ranked_stories_keys = "zhU:%s:social" % (user_id)
-        if (
-            (offset or dashboard_global)
-            and cache
-            and rt.exists(ranked_stories_keys)
-            and rt.exists(unread_ranked_stories_keys)
-        ):
+        if offset and cache and rt.exists(ranked_stories_keys) and rt.exists(unread_ranked_stories_keys):
             story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
             if not story_hashes_and_dates:
                 return [], [], []
