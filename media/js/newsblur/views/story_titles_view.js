@@ -7,7 +7,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     explainers: {
         'river:global': {
             label: 'Global Shared Stories',
-            explanation: 'A fresh handful, chosen every hour from the stories NewsBlur readers shared and had something to say about.'
+            explanation: 'A fresh handful of the stories NewsBlur readers shared, chosen every hour.'
         },
         'trending:well_read': {
             label: 'Widely Read Stories',
