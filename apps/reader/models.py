@@ -10,6 +10,7 @@ import hashlib
 import heapq
 import re
 import time
+import uuid
 from operator import itemgetter
 from pprint import pprint
 
@@ -1386,7 +1387,7 @@ class UserSubscription(models.Model):
         if len(feed_keys) <= batch_size:
             r.sunionstore(key, *feed_keys)
         else:
-            temp_key = "%s:trim_temp" % key
+            temp_key = "%s:trim_temp:%s" % (key, uuid.uuid4().hex)
             for i in range(0, len(feed_keys), batch_size):
                 batch = feed_keys[i : i + batch_size]
                 if i == 0:
