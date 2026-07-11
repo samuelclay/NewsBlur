@@ -730,6 +730,30 @@ class Test_FeedSave(TestCase):
         self.assertIsNone(feed.pk)
 
 
+class Test_FetchHistoryRaces(TestCase):
+    @patch("apps.rss_feeds.models.MFetchHistory.objects")
+    def test_add_reloads_history_after_concurrent_creation(self, mock_objects):
+        from mongoengine.queryset import NotUniqueError
+
+        from apps.rss_feeds.models import MFetchHistory
+
+        history = MagicMock(
+            feed_fetch_history=[],
+            page_fetch_history=[],
+            push_history=[],
+            raw_feed_history=[],
+        )
+        primary_objects = mock_objects.read_preference.return_value
+        primary_objects.get.side_effect = [MFetchHistory.DoesNotExist, history]
+        mock_objects.create.side_effect = NotUniqueError("concurrent fetch history")
+
+        with patch.object(MFetchHistory, "feed", return_value={}):
+            MFetchHistory.add(123, "feed", code=200, message="OK")
+
+        self.assertEqual(primary_objects.get.call_count, 2)
+        history.save.assert_called_once_with()
+
+
 class Test_PremiumSetupResyncPassthrough(TestCase):
     """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
 
