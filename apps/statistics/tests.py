@@ -4,7 +4,7 @@ Tests for the statistics app, including load time and trending feed functionalit
 
 import datetime
 from collections import Counter
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import redis
 from django.conf import settings
@@ -272,6 +272,25 @@ class Test_RTrendingStory(TestCase):
             sum(story["active_subscribers"] <= 50 for story in diversified[:12]),
             4,
         )
+
+    @patch("apps.discover.models.PopularFeed.objects")
+    @patch("apps.rss_feeds.models.Feed.objects")
+    @patch("apps.rss_feeds.models.MStory.objects")
+    @patch("apps.statistics.rtrending.redis.Redis")
+    def test_materialize_diverse_list_disables_default_story_ordering(
+        self, mock_redis_class, mock_story_objects, mock_feed_objects, mock_popular_objects
+    ):
+        mock_redis = mock_redis_class.return_value
+        mock_redis.zrevrange.return_value = [b"1:abcdef"]
+        mock_redis.pipeline.return_value.execute.return_value = []
+        mock_story_objects.return_value.order_by.return_value.only.return_value = []
+        mock_feed_objects.filter.return_value.only.return_value = []
+        mock_popular_objects.filter.return_value.order_by.return_value.values_list.return_value = []
+
+        result = RTrendingStory._materialize_diverse_list("trending:test", "trending:test:diverse")
+
+        self.assertEqual(result, [])
+        mock_story_objects.return_value.order_by.assert_called_once_with()
 
     def test_diversity_caps_canonical_sources_at_ten_percent(self):
         """Repeated feeds, domains, and publishers never exceed 10% of a diverse list."""
