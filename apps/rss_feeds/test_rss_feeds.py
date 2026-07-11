@@ -754,6 +754,29 @@ class Test_FetchHistoryRaces(TestCase):
         history.save.assert_called_once_with()
 
 
+class Test_FeedParserFailures(TestCase):
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.safe_requests_get")
+    @patch("utils.feed_fetcher.feedparser.parse")
+    def test_malformed_xml_index_error_becomes_feed_error(self, mock_parse, mock_get, mock_validate):
+        from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+
+        feed = Feed.objects.create(
+            feed_address="https://my.atlassian.com/download/feeds/jira-servicedesk.rss",
+            feed_link="https://my.atlassian.com/",
+            feed_title="Atlassian downloads",
+        )
+        mock_get.side_effect = requests.ConnectionError("feed request failed")
+        mock_parse.side_effect = IndexError("string index out of range")
+        fetcher = FetchFeed(feed.pk, {})
+
+        with patch.object(fetcher, "fetch_scrapingbee", return_value=(None, None)):
+            result, parsed_feed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed_feed)
+
+
 class Test_PremiumSetupResyncPassthrough(TestCase):
     """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
 
