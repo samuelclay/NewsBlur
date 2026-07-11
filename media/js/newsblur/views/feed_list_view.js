@@ -258,7 +258,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        if (NEWSBLUR.Globals.is_staff) {
+        if (NEWSBLUR.assets.preference('show_good_reads')) {
             $('.NB-feeds-header-river-good-reads-container').css({
                 'display': 'block',
                 'opacity': 0

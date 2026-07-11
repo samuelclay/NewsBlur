@@ -5525,7 +5525,7 @@ def load_trending_stories(request):
     Load stories from the permanent trending lists.
 
     GET Parameters:
-        trending_type: "well_read", "long_reads", or staff-only "good_reads"
+        trending_type: "well_read", "long_reads", or "good_reads"
         page: Page number (default 1)
         limit: Stories per page (default 12)
         order: "newest" or "oldest" (default "newest")
@@ -5535,8 +5535,6 @@ def load_trending_stories(request):
     trending_type = request.GET.get("trending_type", "well_read")
     if trending_type not in ("well_read", "long_reads", "good_reads"):
         trending_type = "well_read"
-    if trending_type == "good_reads" and not user.is_staff:
-        return HttpResponseForbidden()
     page = max(int(request.GET.get("page", 1)), 1)
     limit = min(int(request.GET.get("limit", 12)), 100)
     order = request.GET.get("order", "newest")
