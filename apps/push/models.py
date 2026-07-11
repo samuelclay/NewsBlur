@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import feedparser
 import requests
 from django.conf import settings
-from django.db import models
+from django.db import IntegrityError, models
 from django.urls import reverse
 
 from apps.push import signals
@@ -42,7 +42,14 @@ class PushSubscriptionManager(models.Manager):
         if lease_seconds is None:
             lease_seconds = getattr(settings, "PUBSUBHUBBUB_LEASE_SECONDS", DEFAULT_LEASE_SECONDS)
         feed = Feed.get_by_id(feed.id)
-        subscription, created = self.get_or_create(feed=feed)
+        if not feed:
+            return None
+        try:
+            subscription, created = self.get_or_create(feed=feed)
+        except IntegrityError:
+            if not Feed.get_by_id(feed.id):
+                return None
+            raise
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
         if len(topic) < 200:
