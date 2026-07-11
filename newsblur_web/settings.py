@@ -568,6 +568,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=1),
         "options": {"queue": "cron_queue"},
     },
+    "curate-global-shared-stories": {
+        "task": "curate-global-shared-stories",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
+    },
     "clean-analytics": {
         "task": "clean-analytics",
         "schedule": datetime.timedelta(hours=12),
