@@ -41116,3 +41116,63 @@ span.NB-briefing-inline-favicon {
     color: #A04040;
     margin-bottom: 8px;
 }
+
+/* ================================= */
+/* = Curated River Explainer Banner = */
+/* ================================= */
+
+/* reader.css: Non-sticky note above the first story title on the four curated rivers
+   (Global Shared, Widely Read, Long Reads, Good Reads) explaining how each is assembled. */
+.NB-story-titles-explainer {
+    margin: 8px 8px 4px;
+    padding: 8px 12px 10px;
+    border: 1px solid #E8E8DF;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #F8F8F3 0%, #F3F3EC 100%);
+    box-sizing: border-box;
+}
+
+.NB-layout-grid .NB-story-titles-explainer {
+    margin: 0;
+    grid-column-start: 1;
+    grid-column-end: -1;
+}
+
+.NB-story-titles-explainer-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-story-titles-explainer-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.NB-story-titles-explainer-label {
+    flex-shrink: 0;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8F9089;
+}
+
+/* reader.css: Hairline that runs from the label to the right edge, like a masthead rule. */
+.NB-story-titles-explainer-rule {
+    flex: 1;
+    height: 1px;
+    min-width: 12px;
+    background-color: #E3E3D9;
+}
+
+.NB-story-titles-explainer-body {
+    margin-top: 5px;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6E7068;
+}

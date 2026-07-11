@@ -5997,3 +5997,24 @@ a.mention, a.mention-group {
 .NB-dark .NB-feed-story-content .NB-briefing-section-icon {
     filter: grayscale(1) invert(1);
 }
+
+/* ================================= */
+/* = Curated River Explainer Banner = */
+/* ================================= */
+
+.NB-dark .NB-story-titles-explainer {
+    border-color: #35383A;
+    background: linear-gradient(180deg, #2E3133 0%, #292B2C 100%);
+}
+
+.NB-dark .NB-story-titles-explainer-label {
+    color: #8A8C85;
+}
+
+.NB-dark .NB-story-titles-explainer-rule {
+    background-color: #3A3D3F;
+}
+
+.NB-dark .NB-story-titles-explainer-body {
+    color: #A0A29B;
+}

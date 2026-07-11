@@ -1,6 +1,27 @@
+// story_titles_view.js: One-sentence explanations of how the four curated rivers are
+// assembled, shown as a non-sticky banner above the first story title.
 NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     el: '.NB-story-titles',
+
+    explainers: {
+        'river:global': {
+            label: 'Global Shared Stories',
+            explanation: 'Stories shared to blurblogs by the readers that NewsBlur\'s popular account follows.'
+        },
+        'trending:well_read': {
+            label: 'Widely Read Stories',
+            explanation: 'Stories that held the most attention across NewsBlur.'
+        },
+        'trending:long_reads': {
+            label: 'Long Reads',
+            explanation: 'Features and essays that readers gave real time to.'
+        },
+        'trending:good_reads': {
+            label: 'Good Reads',
+            explanation: 'Not the most read, but the best received, and tilted toward small sites over big ones.'
+        }
+    },
 
     events: {
         "click .NB-feed-story-premium-only a": function (e) {
@@ -79,6 +100,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return story.el;
         });
         this.$el.html($stories);
+        this.render_explainer();
         // console.log(['Rendered story titles', this.$el, $stories]);
         this.end_loading();
         this.fill_out();
@@ -87,6 +109,34 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.scroll_to_selected_story(null, options);
 
         return this;
+    },
+
+    render_explainer: function () {
+        // story_titles_view.js: The explainer only belongs above the full story list, not in
+        // the dashboard rivers, discover popovers, or add site previews that reuse this view.
+        if (this.options.on_dashboard || this.options.on_discover_feed ||
+            this.options.on_discover_story || this.options.on_trending_feed ||
+            this.options.in_trending_view || this.options.in_popover ||
+            this.options.in_add_site_view) {
+            return;
+        }
+
+        var explainer = this.explainers[NEWSBLUR.reader.active_feed];
+        if (!explainer) return;
+
+        var $explainer = $.make('div', { className: 'NB-story-titles-explainer' }, [
+            $.make('div', { className: 'NB-story-titles-explainer-header' }, [
+                $.make('img', {
+                    className: 'NB-story-titles-explainer-icon',
+                    src: $.favicon(NEWSBLUR.reader.active_feed)
+                }),
+                $.make('div', { className: 'NB-story-titles-explainer-label' }, explainer.label),
+                $.make('div', { className: 'NB-story-titles-explainer-rule' })
+            ]),
+            $.make('div', { className: 'NB-story-titles-explainer-body' }, explainer.explanation)
+        ]);
+
+        this.$el.prepend($explainer);
     },
 
     render_briefing: function (options) {
