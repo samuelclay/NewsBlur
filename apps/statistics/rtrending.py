@@ -770,7 +770,7 @@ class RTrendingStory:
 
         stories = {
             story.story_hash: story
-            for story in MStory.objects(story_hash__in=story_hashes).only(
+            for story in MStory.objects(story_hash__in=story_hashes).order_by().only(
                 "story_hash", "story_feed_id", "story_title", "story_tags"
             )
         }
