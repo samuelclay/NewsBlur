@@ -1250,46 +1250,178 @@
       "type": "timeseries"
     },
     {
+      "id": 101,
+      "type": "timeseries",
+      "title": "Request volume by endpoint \u2014 top 8 + other",
       "datasource": {
         "type": "prometheus",
         "uid": "U1-fPO3Mk"
       },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__rate_interval])) and topk(8, sum by (method, view) (increase(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__range] @ end())))",
+          "legendFormat": "{{method}} {{view}}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "sum(rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__rate_interval])) - sum(sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__rate_interval])) and topk(8, sum by (method, view) (increase(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__range] @ end()))))",
+          "legendFormat": "other",
+          "refId": "B"
+        }
+      ],
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
+          "unit": "reqps",
+          "min": 0,
           "custom": {
-            "axisLabel": "",
-            "axisPlacement": "hidden",
-            "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 0,
+            "lineWidth": 1,
+            "fillOpacity": 35,
             "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 4,
+            "spanNulls": true,
+            "lineInterpolation": "linear",
+            "axisPlacement": "auto",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "log": 2,
-              "type": "log"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
             }
           },
-          "mappings": [],
-          "min": 0.0001,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "other"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5a5a5a"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 323,
+      "type": "timeseries",
+      "title": "Endpoint deviation from own baseline \u2014 15m vs trailing 6h",
+      "description": "Each line is an endpoint's request rate relative to its own trailing 6h average. 1 = normal; dashed lines mark 2x and 5x. Shows the 8 endpoints with the highest peak deviation anywhere in the selected range, so a spike stays visible after it ends.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 45
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[15m])) / (sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[6h])) + 0.005) and topk(8, max_over_time((sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[15m])) / (sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[6h])) + 0.005) and sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[15m])) > 0.02)[$__range:5m] @ end()))",
+          "legendFormat": "{{method}} {{view}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "none",
+          "decimals": 2,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 4,
+            "spanNulls": true,
+            "lineInterpolation": "linear",
+            "axisPlacement": "auto",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1298,32 +1430,50 @@
                 "value": null
               },
               {
+                "color": "yellow",
+                "value": 2
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 5
               }
             ]
           },
-          "unit": "reqps"
+          "mappings": []
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 36
-      },
-      "id": 101,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right"
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
+      }
+    },
+    {
+      "id": 324,
+      "type": "timeseries",
+      "title": "Historically quiet endpoints \u2014 volume over time",
+      "description": "Request rate for endpoints that are active now (>10 requests in the last 3h) but were nearly silent in the preceding day (<200 requests). Probes against dormant endpoints appear as lines rising from nothing. Top 10 by recent volume.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 45
       },
       "targets": [
         {
@@ -1331,25 +1481,162 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "exemplar": true,
-          "expr": "topk(12, sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{}[$__rate_interval])))",
-          "interval": "",
-          "intervalFactor": 1,
+          "expr": "sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[$__rate_interval])) and topk(10, sum by (method, view) (increase(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[3h] @ end())) > 10 unless sum by (method, view) (increase(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\"}[24h] offset 3h @ end())) > 200)",
           "legendFormat": "{{method}} {{view}}",
           "refId": "A"
         }
       ],
-      "title": "Top request volume by endpoint",
-      "transformations": [
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "reqps",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 8,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 4,
+            "spanNulls": true,
+            "lineInterpolation": "linear",
+            "axisPlacement": "auto",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 325,
+      "type": "timeseries",
+      "title": "Error responses by endpoint \u2014 4xx/5xx (top 8)",
+      "description": "Probing and abuse usually show up here first: 403/404/405 bursts against specific endpoints. Top 8 error streams over the selected range, membership stable.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "targets": [
         {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.{1,30}).*",
-            "renamePattern": "$1"
-          }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "sum by (status, method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\", status=~\"4..|5..\"}[$__rate_interval])) and topk(8, sum by (status, method, view) (increase(django_http_responses_total_by_status_view_method_total{view!~\"apps\\\\.static\\\\.views\\\\.haproxy_check|<unnamed view>|utils\\\\.view_functions\\\\.wrapper|utils\\\\.user_functions\\\\.wrap\", status=~\"4..|5..\"}[$__range] @ end())))",
+          "legendFormat": "{{status}} {{method}} {{view}}",
+          "refId": "A"
         }
       ],
-      "type": "timeseries"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "reqps",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 4,
+            "spanNulls": true,
+            "lineInterpolation": "linear",
+            "axisPlacement": "auto",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
     },
     {
       "datasource": {
@@ -1411,7 +1698,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 44
+        "y": 62
       },
       "id": 99,
       "options": {
@@ -1540,7 +1827,7 @@
         "h": 5,
         "w": 8,
         "x": 8,
-        "y": 44
+        "y": 62
       },
       "id": 86,
       "options": {
@@ -1678,7 +1965,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 67
       },
       "id": 90,
       "panels": [],
@@ -1780,7 +2067,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 50
+        "y": 68
       },
       "id": 88,
       "options": {
@@ -1977,7 +2264,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 50
+        "y": 68
       },
       "id": 93,
       "options": {
@@ -2173,7 +2460,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 57
+        "y": 75
       },
       "id": 91,
       "options": {
@@ -2370,7 +2657,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 57
+        "y": 75
       },
       "id": 92,
       "options": {
@@ -2490,7 +2777,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 82
       },
       "id": 20,
       "panels": [],
@@ -2568,7 +2855,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 65
+        "y": 83
       },
       "id": 2,
       "options": {
@@ -2668,7 +2955,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 65
+        "y": 83
       },
       "id": 6,
       "options": {
@@ -2812,7 +3099,7 @@
         "h": 26,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 91
       },
       "id": 84,
       "options": {
@@ -2950,7 +3237,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 115
       },
       "id": 85,
       "options": {
@@ -2996,7 +3283,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 107
+        "y": 125
       },
       "id": 4,
       "panels": [],
@@ -3045,7 +3332,7 @@
         "h": 21,
         "w": 24,
         "x": 0,
-        "y": 100
+        "y": 118
       },
       "id": 10,
       "options": {
@@ -3143,7 +3430,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 121
+        "y": 139
       },
       "id": 48,
       "options": {
@@ -3241,7 +3528,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 128
+        "y": 146
       },
       "id": 272,
       "options": {
@@ -3339,7 +3626,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 128
+        "y": 146
       },
       "id": 273,
       "options": {
@@ -3437,7 +3724,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 136
+        "y": 154
       },
       "id": 274,
       "options": {
@@ -3535,7 +3822,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 136
+        "y": 154
       },
       "id": 275,
       "options": {
@@ -3634,7 +3921,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 136
+        "y": 154
       },
       "id": 321,
       "options": {
@@ -3680,7 +3967,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 144
+        "y": 162
       },
       "id": 42,
       "panels": [],
@@ -3757,7 +4044,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 145
+        "y": 163
       },
       "id": 33,
       "options": {
@@ -3853,7 +4140,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 145
+        "y": 163
       },
       "id": 28,
       "options": {
@@ -3966,7 +4253,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 153
+        "y": 171
       },
       "id": 30,
       "options": {
@@ -4064,7 +4351,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 153
+        "y": 171
       },
       "id": 32,
       "options": {
@@ -4160,7 +4447,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 161
+        "y": 179
       },
       "id": 12,
       "options": {
@@ -4256,7 +4543,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 161
+        "y": 179
       },
       "id": 26,
       "options": {
@@ -4298,7 +4585,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 169
+        "y": 187
       },
       "id": 16,
       "panels": [],
@@ -4374,7 +4661,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 170
+        "y": 188
       },
       "id": 8,
       "options": {
@@ -4466,7 +4753,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 170
+        "y": 188
       },
       "id": 232,
       "options": {
@@ -4558,7 +4845,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 170
+        "y": 188
       },
       "id": 233,
       "options": {
@@ -4675,7 +4962,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 178
+        "y": 196
       },
       "id": 35,
       "options": {
@@ -4767,7 +5054,7 @@
         "h": 7,
         "w": 5,
         "x": 5,
-        "y": 178
+        "y": 196
       },
       "id": 18,
       "options": {
@@ -4859,7 +5146,7 @@
         "h": 7,
         "w": 5,
         "x": 10,
-        "y": 178
+        "y": 196
       },
       "id": 14,
       "options": {
@@ -4951,7 +5238,7 @@
         "h": 7,
         "w": 5,
         "x": 15,
-        "y": 178
+        "y": 196
       },
       "id": 24,
       "options": {
@@ -5044,7 +5331,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 178
+        "y": 196
       },
       "id": 148,
       "options": {
@@ -5084,7 +5371,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 185
+        "y": 203
       },
       "id": 50,
       "panels": [],
@@ -5160,7 +5447,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 186
+        "y": 204
       },
       "id": 52,
       "options": {
@@ -5252,7 +5539,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 186
+        "y": 204
       },
       "id": 54,
       "options": {
@@ -5344,7 +5631,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 194
+        "y": 212
       },
       "id": 60,
       "options": {
@@ -5436,7 +5723,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 194
+        "y": 212
       },
       "id": 56,
       "options": {
@@ -5528,7 +5815,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 194
+        "y": 212
       },
       "id": 134,
       "options": {
@@ -5564,7 +5851,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 202
+        "y": 220
       },
       "id": 248,
       "panels": [],
@@ -5618,7 +5905,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 203
+        "y": 221
       },
       "id": 262,
       "options": {
@@ -5682,7 +5969,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 203
+        "y": 221
       },
       "id": 222,
       "options": {
@@ -5746,7 +6033,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 203
+        "y": 221
       },
       "id": 223,
       "options": {
@@ -5837,7 +6124,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 209
+        "y": 227
       },
       "id": 224,
       "options": {
@@ -5886,7 +6173,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 217
+        "y": 235
       },
       "id": 62,
       "panels": [],
@@ -5962,7 +6249,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 218
+        "y": 236
       },
       "id": 80,
       "options": {
@@ -6054,7 +6341,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 218
+        "y": 236
       },
       "id": 116,
       "options": {
@@ -6143,7 +6430,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 226
+        "y": 244
       },
       "id": 75,
       "options": {
@@ -6239,7 +6526,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 226
+        "y": 244
       },
       "id": 136,
       "options": {
@@ -6329,7 +6616,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 234
+        "y": 252
       },
       "id": 114,
       "options": {
@@ -6421,7 +6708,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 234
+        "y": 252
       },
       "id": 78,
       "options": {
@@ -6513,7 +6800,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 234
+        "y": 252
       },
       "id": 120,
       "options": {
@@ -6602,7 +6889,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 234
+        "y": 252
       },
       "id": 118,
       "options": {
@@ -6692,7 +6979,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 241
+        "y": 259
       },
       "id": 130,
       "options": {
@@ -6781,7 +7068,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 241
+        "y": 259
       },
       "id": 128,
       "options": {
@@ -6872,7 +7159,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 241
+        "y": 259
       },
       "id": 126,
       "options": {
@@ -6961,7 +7248,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 241
+        "y": 259
       },
       "id": 122,
       "options": {
@@ -7054,7 +7341,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 249
+        "y": 267
       },
       "id": 66,
       "options": {
@@ -7217,7 +7504,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 249
+        "y": 267
       },
       "id": 110,
       "options": {
@@ -7365,7 +7652,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 257
+        "y": 275
       },
       "id": 71,
       "options": {
@@ -7513,7 +7800,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 257
+        "y": 275
       },
       "id": 111,
       "options": {
@@ -7661,7 +7948,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 265
+        "y": 283
       },
       "id": 72,
       "options": {
@@ -7795,7 +8082,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 265
+        "y": 283
       },
       "id": 112,
       "options": {
@@ -7940,7 +8227,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 273
+        "y": 291
       },
       "id": 73,
       "options": {
@@ -8039,7 +8326,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 273
+        "y": 291
       },
       "id": 64,
       "options": {
@@ -8130,7 +8417,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 279
+        "y": 297
       },
       "id": 138,
       "options": {
@@ -8169,7 +8456,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 287
+        "y": 305
       },
       "id": 68,
       "panels": [],
@@ -8246,7 +8533,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 288
+        "y": 306
       },
       "id": 70,
       "options": {
@@ -8339,7 +8626,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 288
+        "y": 306
       },
       "id": 76,
       "options": {
@@ -8431,7 +8718,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 293
+        "y": 311
       },
       "id": 146,
       "options": {
@@ -8521,7 +8808,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 293
+        "y": 311
       },
       "id": 144,
       "options": {
@@ -8610,7 +8897,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 301
+        "y": 319
       },
       "id": 142,
       "options": {
@@ -8699,7 +8986,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 309
+        "y": 327
       },
       "id": 140,
       "options": {
@@ -8739,7 +9026,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 325
+        "y": 343
       },
       "id": 40,
       "panels": [],
@@ -8816,7 +9103,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 326
+        "y": 344
       },
       "id": 108,
       "options": {
@@ -8907,7 +9194,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 326
+        "y": 344
       },
       "id": 95,
       "options": {
@@ -9000,7 +9287,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 326
+        "y": 344
       },
       "id": 322,
       "options": {
@@ -9070,7 +9357,7 @@
         "h": 43,
         "w": 24,
         "x": 0,
-        "y": 334
+        "y": 352
       },
       "id": 37,
       "options": {
@@ -9115,7 +9402,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 378
+        "y": 396
       },
       "id": 149,
       "panels": [],
@@ -9192,7 +9479,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 379
+        "y": 397
       },
       "id": 150,
       "options": {
@@ -9285,7 +9572,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 379
+        "y": 397
       },
       "id": 151,
       "options": {
@@ -9378,7 +9665,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 379
+        "y": 397
       },
       "id": 152,
       "options": {
@@ -9471,7 +9758,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 387
+        "y": 405
       },
       "id": 153,
       "options": {
@@ -9564,7 +9851,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 387
+        "y": 405
       },
       "id": 154,
       "options": {
@@ -9657,7 +9944,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 387
+        "y": 405
       },
       "id": 155,
       "options": {
@@ -9750,7 +10037,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 395
+        "y": 413
       },
       "id": 156,
       "options": {
@@ -9843,7 +10130,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 395
+        "y": 413
       },
       "id": 157,
       "options": {
@@ -9936,7 +10223,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 395
+        "y": 413
       },
       "id": 158,
       "options": {
@@ -10029,7 +10316,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 403
+        "y": 421
       },
       "id": 159,
       "options": {
@@ -10122,7 +10409,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 403
+        "y": 421
       },
       "id": 160,
       "options": {
@@ -10164,7 +10451,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 411
+        "y": 429
       },
       "id": 234,
       "panels": [],
@@ -10241,7 +10528,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 412
+        "y": 430
       },
       "id": 235,
       "options": {
@@ -10370,7 +10657,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 412
+        "y": 430
       },
       "id": 236,
       "options": {
@@ -10499,7 +10786,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 420
+        "y": 438
       },
       "id": 237,
       "options": {
@@ -10628,7 +10915,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 420
+        "y": 438
       },
       "id": 238,
       "options": {
@@ -10702,7 +10989,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 429
+        "y": 447
       },
       "id": 294,
       "panels": [],
@@ -10770,7 +11057,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 430
+        "y": 448
       },
       "id": 295,
       "options": {
@@ -10866,7 +11153,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 430
+        "y": 448
       },
       "id": 296,
       "options": {
@@ -10907,7 +11194,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 438
+        "y": 456
       },
       "id": 244,
       "panels": [],
@@ -10984,7 +11271,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 439
+        "y": 457
       },
       "id": 245,
       "options": {
@@ -11101,7 +11388,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 439
+        "y": 457
       },
       "id": 246,
       "options": {
@@ -11218,7 +11505,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 439
+        "y": 457
       },
       "id": 247,
       "options": {
@@ -11292,7 +11579,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 447
+        "y": 465
       },
       "id": 200,
       "panels": [],
@@ -11341,7 +11628,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 448
+        "y": 466
       },
       "id": 201,
       "options": {
@@ -11423,7 +11710,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 448
+        "y": 466
       },
       "id": 202,
       "options": {
@@ -11505,7 +11792,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 448
+        "y": 466
       },
       "id": 203,
       "options": {
@@ -11574,7 +11861,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 448
+        "y": 466
       },
       "id": 204,
       "options": {
@@ -11643,7 +11930,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 448
+        "y": 466
       },
       "id": 209,
       "options": {
@@ -11743,7 +12030,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 453
+        "y": 471
       },
       "id": 205,
       "options": {
@@ -11830,7 +12117,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 453
+        "y": 471
       },
       "id": 206,
       "options": {
@@ -11917,7 +12204,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 453
+        "y": 471
       },
       "id": 210,
       "options": {
@@ -12003,7 +12290,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 453
+        "y": 471
       },
       "id": 207,
       "options": {
@@ -12036,7 +12323,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 461
+        "y": 479
       },
       "id": 283,
       "panels": [],
@@ -12134,7 +12421,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 462
+        "y": 480
       },
       "id": 290,
       "options": {
@@ -12225,7 +12512,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 462
+        "y": 480
       },
       "id": 291,
       "options": {
@@ -12327,7 +12614,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 462
+        "y": 480
       },
       "id": 292,
       "options": {
@@ -12424,7 +12711,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 470
+        "y": 488
       },
       "id": 293,
       "options": {
@@ -12572,7 +12859,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 478
+        "y": 496
       },
       "id": 161,
       "panels": [],
@@ -12615,7 +12902,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 479
+        "y": 497
       },
       "id": 163,
       "options": {
@@ -12685,7 +12972,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 479
+        "y": 497
       },
       "id": 164,
       "options": {
@@ -12755,7 +13042,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 479
+        "y": 497
       },
       "id": 165,
       "options": {
@@ -12846,7 +13133,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 487
+        "y": 505
       },
       "id": 166,
       "options": {
@@ -12934,7 +13221,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 487
+        "y": 505
       },
       "id": 167,
       "options": {
@@ -13001,7 +13288,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 495
+        "y": 513
       },
       "id": 168,
       "options": {
@@ -13071,7 +13358,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 495
+        "y": 513
       },
       "id": 169,
       "options": {
@@ -13111,7 +13398,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 503
+        "y": 521
       },
       "id": 171,
       "panels": [],
@@ -13154,7 +13441,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 504
+        "y": 522
       },
       "id": 173,
       "options": {
@@ -13224,7 +13511,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 504
+        "y": 522
       },
       "id": 174,
       "options": {
@@ -13316,7 +13603,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 504
+        "y": 522
       },
       "id": 175,
       "options": {
@@ -13357,7 +13644,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 555
+        "y": 573
       },
       "id": 176,
       "panels": [],
@@ -13434,7 +13721,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 556
+        "y": 574
       },
       "id": 177,
       "options": {
@@ -13526,7 +13813,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 556
+        "y": 574
       },
       "id": 178,
       "options": {
@@ -13814,7 +14101,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 564
+        "y": 582
       },
       "id": 211,
       "options": {
@@ -13892,7 +14179,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 576
+        "y": 594
       },
       "id": 212,
       "panels": [],
@@ -13961,7 +14248,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 577
+        "y": 595
       },
       "id": 213,
       "options": {
@@ -14060,7 +14347,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 585
+        "y": 603
       },
       "id": 216,
       "options": {
@@ -14097,7 +14384,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 593
+        "y": 611
       },
       "id": 218,
       "panels": [],
@@ -14162,7 +14449,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 594
+        "y": 612
       },
       "id": 219,
       "options": {
@@ -14199,7 +14486,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 602
+        "y": 620
       },
       "id": 266,
       "panels": [],
@@ -14268,7 +14555,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 603
+        "y": 621
       },
       "id": 267,
       "options": {
@@ -14362,7 +14649,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 603
+        "y": 621
       },
       "id": 268,
       "options": {
@@ -14400,7 +14687,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 611
+        "y": 629
       },
       "id": 239,
       "panels": [],
@@ -14468,7 +14755,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 612
+        "y": 630
       },
       "id": 240,
       "options": {
@@ -14597,7 +14884,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 612
+        "y": 630
       },
       "id": 241,
       "options": {
@@ -14726,7 +15013,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 612
+        "y": 630
       },
       "id": 242,
       "options": {
@@ -14855,7 +15142,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 620
+        "y": 638
       },
       "id": 243,
       "options": {
@@ -14984,7 +15271,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 620
+        "y": 638
       },
       "id": 270,
       "options": {
@@ -15101,7 +15388,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 620
+        "y": 638
       },
       "id": 271,
       "options": {
@@ -15151,7 +15438,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 522
+        "y": 540
       },
       "id": 249,
       "panels": [],
@@ -15186,7 +15473,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 523
+        "y": 541
       },
       "id": 250,
       "options": {
@@ -15248,7 +15535,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 523
+        "y": 541
       },
       "id": 251,
       "options": {
@@ -15310,7 +15597,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 523
+        "y": 541
       },
       "id": 252,
       "options": {
@@ -15372,7 +15659,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 531
+        "y": 549
       },
       "id": 253,
       "options": {
@@ -15434,7 +15721,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 531
+        "y": 549
       },
       "id": 254,
       "options": {
@@ -15496,7 +15783,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 531
+        "y": 549
       },
       "id": 255,
       "options": {
@@ -15588,7 +15875,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 539
+        "y": 557
       },
       "id": 256,
       "options": {
@@ -15699,7 +15986,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 539
+        "y": 557
       },
       "id": 257,
       "options": {
@@ -15758,7 +16045,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 547
+        "y": 565
       },
       "id": 258,
       "options": {
@@ -15820,7 +16107,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 547
+        "y": 565
       },
       "id": 259,
       "options": {
@@ -15882,7 +16169,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 547
+        "y": 565
       },
       "id": 260,
       "options": {
@@ -15944,7 +16231,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 547
+        "y": 565
       },
       "id": 261,
       "options": {
@@ -15988,7 +16275,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 621
+        "y": 639
       },
       "id": 276,
       "panels": [],
@@ -16031,7 +16318,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 622
+        "y": 640
       },
       "id": 277,
       "options": {
@@ -16095,7 +16382,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 622
+        "y": 640
       },
       "id": 278,
       "options": {
@@ -16147,7 +16434,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 630
+        "y": 648
       },
       "id": 279,
       "panels": [],
@@ -16224,7 +16511,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 631
+        "y": 649
       },
       "id": 280,
       "options": {
@@ -16377,7 +16664,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 631
+        "y": 649
       },
       "id": 281,
       "options": {
@@ -16506,7 +16793,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 631
+        "y": 649
       },
       "id": 282,
       "options": {
