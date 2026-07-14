@@ -59,8 +59,32 @@ for filename in os.listdir(prom_folder):
     except Exception as e:
         print("Failed to delete %s. Reason: %s" % (file_path, e))
 
-from prometheus_client import multiprocess
+# Prometheus selects multiprocess mode at import time, after the directory is configured above.
+from utils.prometheus_worker_slots import (  # noqa: E402
+    lowest_free_slot,
+    use_worker_slot,
+)
 
 
-def child_exit(server, worker):
-    multiprocess.mark_process_dead(worker.pid)
+def pre_fork(server, worker):
+    """Assign the worker a Prometheus slot, in the master, before it forks.
+
+    server.WORKERS holds exactly the live workers, so the slots it reports are the
+    ones still in use and a reaped worker's slot frees itself. The child inherits
+    this worker object through the fork and reads the slot back in post_fork.
+    """
+    live_slots = [
+        live.prometheus_slot for live in server.WORKERS.values() if hasattr(live, "prometheus_slot")
+    ]
+    worker.prometheus_slot = lowest_free_slot(live_slots)
+
+
+def post_fork(server, worker):
+    """Bind the worker to its slot before Django constructs any metric."""
+    slot = getattr(worker, "prometheus_slot", None)
+    if slot is None:
+        # Falling back to pid-named files keeps metrics working, but they
+        # accumulate, so say so loudly rather than degrade in silence.
+        server.log.error("Worker %s has no Prometheus slot; its metric files will accumulate", worker.pid)
+        return
+    use_worker_slot(prom_folder, slot)
