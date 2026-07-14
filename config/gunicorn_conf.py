@@ -31,7 +31,11 @@ limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
 reload = False
 
-workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
+# 1.5 workers per GB: measured worker RSS averages ~400MB and grows toward
+# 600MB over a max_requests lifetime, so 2/GB oversubscribed the host (15
+# workers x ~500MB on 7.7GB with no swap) and the kernel OOM killer made up
+# the difference by killing workers mid-request.
+workers = max(int(math.floor(GIGS_OF_MEMORY * 1.5)), 3)
 
 if workers > 16:
     workers = 16
@@ -69,13 +73,24 @@ from utils.prometheus_worker_slots import (  # noqa: E402
 # Gunicorn has no max_memory_per_child, so recycle memory-heavy workers by hand.
 # Mirrors CELERY_WORKER_MAX_MEMORY_PER_CHILD in newsblur_web/settings.py. Reusing
 # slots means the extra churn no longer leaves metric files behind.
-max_worker_memory_bytes = 750 * 1024 * 1024
+#
+# The budget is derived from what the host can actually sustain, so worker count
+# and per-worker budget can never contradict each other: a fixed 750MB budget
+# once let 15 workers hold 11GB of permission on a 7.6GB host, and the kernel
+# OOM killer collected the debt from workers that were all under budget.
+# Reserve 1GB for the OS, Consul, dnsmasq, and Docker; split the rest. The
+# 1.15 divisor keeps the reserve intact even if every worker draws maximum
+# jitter, since the jitter below is +/-15% of this base.
+max_worker_memory_bytes = max(
+    int((psutil.virtual_memory().total - 1024**3) / workers / 1.15),
+    256 * 1024 * 1024,
+)
 
 # Workers serving the same traffic grow at the same rate, so a single shared
 # threshold would retire them all at once and leave nothing to serve requests.
 # Each worker takes a slightly different limit, for the same reason
 # max_requests_jitter exists.
-max_worker_memory_jitter_bytes = 150 * 1024 * 1024
+max_worker_memory_jitter_bytes = int(max_worker_memory_bytes * 0.15)
 
 # psutil.Process() binds to whichever pid is alive when it is built, so a worker
 # has to build its own after forking. The master's would report the master.
@@ -100,7 +115,9 @@ def post_fork(server, worker):
     """Bind the worker to its slot before Django constructs any metric."""
     global worker_process, worker_memory_limit
     worker_process = psutil.Process()
-    worker_memory_limit = max_worker_memory_bytes + random.randint(0, max_worker_memory_jitter_bytes)
+    worker_memory_limit = max_worker_memory_bytes + random.randint(
+        -max_worker_memory_jitter_bytes, max_worker_memory_jitter_bytes
+    )
 
     slot = getattr(worker, "prometheus_slot", None)
     if slot is None:
