@@ -2,7 +2,10 @@
 import logging
 import os
 
-from django_prometheus.middleware import PrometheusAfterMiddleware, PrometheusBeforeMiddleware
+from django_prometheus.middleware import (
+    PrometheusAfterMiddleware,
+    PrometheusBeforeMiddleware,
+)
 from prometheus_client import values
 
 logger = logging.getLogger(__name__)

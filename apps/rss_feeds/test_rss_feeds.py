@@ -709,7 +709,6 @@ class Test_FeedSave(TestCase):
         saved_story.save.assert_called_once_with()
         saved_story.fetch_og_image.assert_not_called()
 
-
     @patch("utils.webfeed_fetcher.WebFeedFetcher")
     def test_update_webfeed_treats_null_archive_subscribers_as_zero(self, mock_fetcher):
         feed = Feed(

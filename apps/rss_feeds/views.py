@@ -41,7 +41,11 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince, relative_timeuntil
 from utils.ratelimit import ratelimit
-from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
+from utils.url_safety import (
+    BLOCKED_PRIVATE_URL_MESSAGE,
+    UnsafeUrlError,
+    validate_public_url,
+)
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone

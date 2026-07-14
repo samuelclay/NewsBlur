@@ -166,9 +166,7 @@ class YoutubeFetcher:
                 "unique_id": "tag:youtube.com,2008:video:%s" % video["id"],
                 "pubdate": dateutil.parser.parse(video["snippet"]["publishedAt"]),
             }
-            story_data = {
-                key: strip_xml_control_characters(value) for key, value in story_data.items()
-            }
+            story_data = {key: strip_xml_control_characters(value) for key, value in story_data.items()}
             rss.add_item(**story_data)
 
         return rss.writeString("utf-8")

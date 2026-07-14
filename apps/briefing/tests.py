@@ -1163,9 +1163,7 @@ class Test_Scoring(BriefingTestCase):
     @patch("apps.briefing.scoring._get_feed_trending_times")
     @patch("apps.briefing.scoring._get_trending_scores")
     @patch("apps.briefing.scoring.redis.Redis")
-    def test_select_excludes_super_disliked_title(
-        self, mock_redis_cls, mock_trending, mock_feed_trending
-    ):
+    def test_select_excludes_super_disliked_title(self, mock_redis_cls, mock_trending, mock_feed_trending):
         """Stories matching a super-disliked title classifier (score <= -2) must be
         excluded from the briefing even when their trending signals are high."""
         from apps.briefing.scoring import select_briefing_stories
@@ -1694,7 +1692,7 @@ class Test_Views(BriefingTestCase):
         mock_pipe.execute.return_value = [False]
 
         story = self.make_story(self.feed, "Story With Changes", content="<p>Old content.</p>")
-        story.story_content = '<p>Updated <ins>new</ins><del>old</del> content.</p>'
+        story.story_content = "<p>Updated <ins>new</ins><del>old</del> content.</p>"
         story.story_latest_content = "<p>Updated new content.</p>"
         story.save()
         self.make_briefing(curated_hashes=[story.story_hash])

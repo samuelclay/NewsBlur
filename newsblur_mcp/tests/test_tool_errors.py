@@ -1,11 +1,10 @@
 """Tests for MCP tool error handling."""
 
-import pytest
 import httpx
+import pytest
 
 from newsblur_mcp.client import ArchiveRequiredError
-from newsblur_mcp.tools import feeds
-from newsblur_mcp.tools import stories
+from newsblur_mcp.tools import feeds, stories
 
 
 class ArchiveRequiredClient:

@@ -51,9 +51,7 @@ async def saved_tags_resource(context: Context) -> ResourceResult:
     client = get_client()
     try:
         resp = await client.get("/reader/starred_counts")
-        return _json_resource(
-            {"tags": resp.get("starred_counts", []), "total": resp.get("starred_count", 0)}
-        )
+        return _json_resource({"tags": resp.get("starred_counts", []), "total": resp.get("starred_count", 0)})
     finally:
         await client.close()
 

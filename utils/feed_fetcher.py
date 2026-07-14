@@ -73,7 +73,12 @@ from utils.feed_functions import (
 )
 from utils.json_fetcher import JSONFetcher
 from utils.reddit_fetcher import RedditFetcher
-from utils.story_functions import extract_story_date, linkify, pre_process_story, strip_tags
+from utils.story_functions import (
+    extract_story_date,
+    linkify,
+    pre_process_story,
+    strip_tags,
+)
 from utils.twitter_fetcher import TwitterFetcher
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 from utils.youtube_fetcher import YoutubeFetcher, YoutubeQuotaError
@@ -327,8 +332,7 @@ class FetchFeed:
                 return FEED_ERRHTTP, None
             except requests.RequestException as e:
                 logging.debug(
-                    "   ***> [%-30s] ~FRYouTube API request failed: %s"
-                    % (self.feed.log_title[:30], e)
+                    "   ***> [%-30s] ~FRYouTube API request failed: %s" % (self.feed.log_title[:30], e)
                 )
                 self.feed.save_feed_history(503, "YouTube API request failed", e)
                 self.feed = self.feed.save()
