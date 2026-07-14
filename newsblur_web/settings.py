@@ -797,13 +797,13 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
 
 
-def initialize_prometheus_aggregation_stats():
-    prom_folder = "/srv/newsblur/.prom_cache"
-    os.makedirs(prom_folder, mode=0o777, exist_ok=True)
-    os.environ["PROMETHEUS_MULTIPROC_DIR"] = prom_folder
-
-
-initialize_prometheus_aggregation_stats()
+# Prometheus multiprocess mode is enabled only under Gunicorn, which sets
+# PROMETHEUS_MULTIPROC_DIR in config/gunicorn_conf.py before Django loads.
+# Setting it here would enable it for every Django process: Celery children
+# (recycled by CELERY_WORKER_MAX_MEMORY_PER_CHILD) each wrote a counter and
+# histogram file into .prom_cache that nothing ever scraped or deleted, which
+# grew to 162,000 files on a task server. Without the env var,
+# prometheus_client keeps metrics in memory and writes no files.
 
 if DEBUG:
     template_loaders = [
