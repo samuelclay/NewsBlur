@@ -141,7 +141,11 @@ from utils.story_functions import (
     strip_tags,
     strip_tags_preserve_blockquote,
 )
-from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
+from utils.url_safety import (
+    BLOCKED_PRIVATE_URL_MESSAGE,
+    UnsafeUrlError,
+    validate_public_url,
+)
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
     RequestDeduplicator,

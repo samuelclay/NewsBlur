@@ -3,7 +3,10 @@ from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
-from utils.prometheus_middleware import PrometheusBeforeMiddleware, PrometheusBeforeMiddlewareWrapper
+from utils.prometheus_middleware import (
+    PrometheusBeforeMiddleware,
+    PrometheusBeforeMiddlewareWrapper,
+)
 
 
 class Test_PrometheusMiddleware(SimpleTestCase):

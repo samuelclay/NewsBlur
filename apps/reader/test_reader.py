@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import redis
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
@@ -401,7 +400,6 @@ class Test_Reader(TransactionTestCase):
         # Clean up
         MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
 
-
     def test_move_folder_updates_subfolder_classifiers(self):
         """Moving a folder should also update classifiers on its subfolders."""
         from apps.analyzer.models import MClassifierTag
@@ -494,9 +492,7 @@ class Test_TrimUserReadStories(TestCase):
     @patch("apps.reader.models.User.objects.get")
     @patch("apps.reader.models.UserSubscription.objects.filter")
     @patch("apps.reader.models.redis.Redis")
-    def test_concurrent_cleanups_use_distinct_temp_keys(
-        self, mock_redis_class, mock_filter, mock_get_user
-    ):
+    def test_concurrent_cleanups_use_distinct_temp_keys(self, mock_redis_class, mock_filter, mock_get_user):
         user_id = 123
         mock_get_user.return_value = MagicMock(username="reader")
         mock_filter.return_value.only.return_value = [MagicMock(feed_id=i) for i in range(101)]

@@ -52,15 +52,9 @@ class Test_FolderRssFeed(SimpleTestCase):
         with ExitStack() as stack:
             stack.enter_context(patch.object(views.cache, "get", return_value=None))
             stack.enter_context(patch.object(views.cache, "set"))
-            stack.enter_context(
-                patch.object(views.User.objects, "get", return_value=user)
-            )
-            stack.enter_context(
-                patch.object(views, "get_object_or_404", return_value=folders)
-            )
-            stack.enter_context(
-                patch.object(views.UserSubscription, "subs_for_feeds", return_value=[])
-            )
+            stack.enter_context(patch.object(views.User.objects, "get", return_value=user))
+            stack.enter_context(patch.object(views, "get_object_or_404", return_value=folders))
+            stack.enter_context(patch.object(views.UserSubscription, "subs_for_feeds", return_value=[]))
             stack.enter_context(
                 patch.object(
                     views.UserSubscription,
@@ -68,20 +62,12 @@ class Test_FolderRssFeed(SimpleTestCase):
                     return_value=(["1:abc123"], set()),
                 )
             )
+            stack.enter_context(patch.object(views.UserSubscription, "score_story", return_value=0))
             stack.enter_context(
-                patch.object(views.UserSubscription, "score_story", return_value=0)
+                patch.object(views.UserSubscription.objects, "get", return_value=subscription)
             )
-            stack.enter_context(
-                patch.object(
-                    views.UserSubscription.objects, "get", return_value=subscription
-                )
-            )
-            stack.enter_context(
-                patch.object(views.MStory, "objects", return_value=story_query)
-            )
-            stack.enter_context(
-                patch.object(views.Feed, "format_stories", return_value=[story])
-            )
+            stack.enter_context(patch.object(views.MStory, "objects", return_value=story_query))
+            stack.enter_context(patch.object(views.Feed, "format_stories", return_value=[story]))
             stack.enter_context(
                 patch.object(
                     views.Feed,

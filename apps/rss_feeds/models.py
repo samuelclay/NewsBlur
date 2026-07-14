@@ -43,7 +43,12 @@ from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_s
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
 
-from apps.rss_feeds.tasks import IndexDiscoverStories, PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
+from apps.rss_feeds.tasks import (
+    IndexDiscoverStories,
+    PushFeeds,
+    ScheduleCountTagsForUser,
+    UpdateFeeds,
+)
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
@@ -3655,7 +3660,7 @@ class MStory(mongo.Document):
                         and story_content_bytes[boundary_end] & 0xC0 == 0x80
                     ):
                         boundary_end += 1
-                    boundary_character = story_content_bytes[error.start:boundary_end]
+                    boundary_character = story_content_bytes[error.start : boundary_end]
                     prefix_bytes = story_content_bytes[: MAX_STORY_CONTENT_BYTES - len(boundary_character)]
                     self.story_content = prefix_bytes.decode("utf-8", errors="ignore")
                     self.story_content += boundary_character.decode("utf-8")

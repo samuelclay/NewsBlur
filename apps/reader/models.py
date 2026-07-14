@@ -536,9 +536,7 @@ class UserSubscription(models.Model):
             cached_count = r.zcard(unread_page_cache_key)
 
             if cached_count < page_end:
-                cached_hashes = {
-                    story_hash_cache_member(h) for h in r.zrange(unread_page_cache_key, 0, -1)
-                }
+                cached_hashes = {story_hash_cache_member(h) for h in r.zrange(unread_page_cache_key, 0, -1)}
                 needed_count = page_end - cached_count
                 candidate_limit = page_end
                 candidate_hashes = []

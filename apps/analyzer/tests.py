@@ -1781,9 +1781,7 @@ class Test_ScopedClassifiersParity(TransactionTestCase):
         folder_feed_ids = {"Tech": {self.feed.pk}}
         self.assertEqual(
             apply_classifier_titles([fc], self.story_self, folder_feed_ids=folder_feed_ids),
-            apply_classifier_titles(
-                ScopedClassifiers([fc], folder_feed_ids), self.story_self
-            ),
+            apply_classifier_titles(ScopedClassifiers([fc], folder_feed_ids), self.story_self),
         )
         # Folder does not contain other_feed — no match there.
         self.assertEqual(

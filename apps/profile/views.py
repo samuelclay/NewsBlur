@@ -525,9 +525,7 @@ def paypal_webhooks(request):
             # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
             resource_status = data["resource"].get("status")
             is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
-            user.profile.store_paypal_sub_id(
-                data["resource"]["id"], skip_save_primary=not is_active_status
-            )
+            user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=not is_active_status)
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
             #     user.profile.activate_premium()
@@ -541,9 +539,7 @@ def paypal_webhooks(request):
             # guard (active_provider != "stripe") backfired for long-term Stripe
             # users switching to PayPal — their active_provider was already "stripe",
             # so the cancel was skipped and the old Stripe sub kept auto-renewing.
-            is_fresh_activation = (
-                data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
-            )
+            is_fresh_activation = data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
             if is_fresh_activation:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()

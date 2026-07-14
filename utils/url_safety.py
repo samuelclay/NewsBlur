@@ -4,10 +4,7 @@ from urllib.parse import urljoin, urlparse
 
 import requests
 
-
-BLOCKED_PRIVATE_URL_MESSAGE = (
-    "This address points to a private or reserved network."
-)
+BLOCKED_PRIVATE_URL_MESSAGE = "This address points to a private or reserved network."
 HTTP_SCHEMES = ("http", "https")
 MAX_REDIRECTS = 5
 
@@ -67,12 +64,7 @@ def safe_requests_request(method, url, **kwargs):
     request_kwargs = dict(kwargs)
 
     for _ in range(max_redirects + 1):
-        response = requests.request(
-            current_method,
-            current_url,
-            allow_redirects=False,
-            **request_kwargs
-        )
+        response = requests.request(current_method, current_url, allow_redirects=False, **request_kwargs)
         if not response.is_redirect:
             response.history = history
             return response
@@ -84,13 +76,9 @@ def safe_requests_request(method, url, **kwargs):
 
         if len(history) >= max_redirects:
             response.close()
-            raise requests.TooManyRedirects(
-                "Exceeded %s redirects for %s" % (max_redirects, url)
-            )
+            raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
 
-        next_url = validate_public_url(
-            urljoin(response.url or current_url, location)
-        )
+        next_url = validate_public_url(urljoin(response.url or current_url, location))
         history.append(response)
         current_url = next_url
 
@@ -99,9 +87,7 @@ def safe_requests_request(method, url, **kwargs):
             request_kwargs.pop("data", None)
             request_kwargs.pop("json", None)
 
-    raise requests.TooManyRedirects(
-        "Exceeded %s redirects for %s" % (max_redirects, url)
-    )
+    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
 
 
 def _port_or_default(parsed):
@@ -127,9 +113,7 @@ def _resolve_hostname(hostname, port):
         try:
             addresses.add(ipaddress.ip_address(info[4][0]))
         except ValueError as e:
-            raise UnsafeUrlError(
-                "URL resolved to an invalid IP address."
-            ) from e
+            raise UnsafeUrlError("URL resolved to an invalid IP address.") from e
     if not addresses:
         raise UnsafeUrlError("Could not resolve URL hostname.")
     return addresses

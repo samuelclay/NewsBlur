@@ -259,16 +259,12 @@ class TestFetchListing(SimpleTestCase):
             status_code=200,
             json=MagicMock(return_value={"data": {"children": []}}),
         )
-        fetcher = RedditFetcher(
-            StubFeed("https://old.reddit.com/r/technology/top/.rss?sort=top&t=month")
-        )
+        fetcher = RedditFetcher(StubFeed("https://old.reddit.com/r/technology/top/.rss?sort=top&t=month"))
         fetcher.reserve_rate_limit_slot = MagicMock(return_value=True)
         fetcher.access_token = MagicMock(return_value="token123")
         fetcher.fetch()
 
-        self.assertEqual(
-            mock_get.call_args[0][0], "https://oauth.reddit.com/r/technology/top"
-        )
+        self.assertEqual(mock_get.call_args[0][0], "https://oauth.reddit.com/r/technology/top")
         self.assertEqual(mock_get.call_args[1]["params"]["t"], "month")
 
     @patch("utils.reddit_fetcher.requests.get")
