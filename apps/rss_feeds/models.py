@@ -1674,6 +1674,27 @@ class Feed(models.Model):
             if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
                 self.save(update_fields=["feed_address", "feed_link"])
 
+        # Per-domain fetch budget shared across all task servers, modeled on the
+        # Reddit API budget in utils/reddit_fetcher.py. When a domain's per-minute
+        # budget is spent, silently defer this fetch (no fetch history, no exception)
+        # instead of hammering the site: one Pro user's 1,100 abebooks.com web feeds
+        # at Pro speed added up to ~175,000 fetches/day against a single domain.
+        # Forced fetches (user-initiated refresh) still count against the budget but
+        # are never deferred. See utils/domain_fetch_limiter.py.
+        if not self.is_newsletter:
+            from utils import domain_fetch_limiter
+
+            allowed, defer_sec = domain_fetch_limiter.reserve_fetch_slot(self.feed_address)
+            if not allowed and not options.get("force"):
+                logging.debug(
+                    "   ---> [%-30s] ~FY~SBDomain fetch budget spent~SN~FY, deferring %s min: %s"
+                    % (self.log_title[:30], defer_sec // 60, self.feed_address)
+                )
+                self.set_next_scheduled_update(delay_fetch_sec=defer_sec)
+                r.zrem("tasked_feeds", original_feed_id)
+                r.zrem("error_feeds", original_feed_id)
+                return self
+
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
             if not feed.fetched_once:

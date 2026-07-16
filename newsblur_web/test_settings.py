@@ -75,6 +75,11 @@ DAYS_OF_UNREAD_FREE = 9999
 TEST_DEBUG = True
 DEBUG = True
 
+# Tests share Redis with the dev server, so keep the per-domain fetch budget from
+# ever throttling test fetches. The limiter's own unit tests mock Redis and override
+# this setting. See utils/domain_fetch_limiter.py.
+DOMAIN_FETCHES_PER_MINUTE = 10000
+
 # Fix subdomain middleware warning in tests
 PARENT_HOST = "testserver"
 SESSION_COOKIE_DOMAIN = "testserver"

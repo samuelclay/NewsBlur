@@ -304,6 +304,34 @@ SUBSCRIBER_EXPIRE = 7
 # servers. On your local, you should probably set this to 10-15 minutes
 PRO_MINUTES_BETWEEN_FETCHES = 5
 
+# DOMAIN_FETCHES_PER_MINUTE caps how many feeds on a single domain can be fetched
+# per minute across ALL task servers combined; feeds over budget are silently
+# deferred, not errored. See utils/domain_fetch_limiter.py. Production data
+# (July 2026) shows 99.75% of hosts stay under 1 fetch/minute, so this only
+# touches the ~28 hottest domains. 6/minute is one fetch every 10 seconds,
+# gentle for any single site.
+DOMAIN_FETCHES_PER_MINUTE = 6
+
+# Multi-tenant hosts that serve thousands of distinct legitimate feeds get raised
+# budgets: their volume is breadth, not hammering. Values chosen from measured
+# production rates (utils/domain_fetch_limiter.py has the methodology).
+DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
+    # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API
+    # at googleapis.com (utils/youtube_fetcher.py), which has its own quota.
+    "youtube.com": 500,
+    # Google's feed CDN, 6,900+ distinct feeds/hour, built to be crawled.
+    "feeds.feedburner.com": 200,
+    "feeds2.feedburner.com": 60,
+    # Mostly Pro users' 5-minute search feeds (measured 293/min); 60/min still
+    # cycles every search roughly every 45 minutes.
+    "news.google.com": 60,
+    # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
+    # budget there remains the true gate on API calls; this just converts overflow
+    # into silent deferral instead of 429s in fetch history.
+    "reddit.com": 95,
+    "old.reddit.com": 95,
+}
+
 ROOT_URLCONF = "newsblur_web.urls"
 INTERNAL_IPS = ("127.0.0.1",)
 LOGGING_LOG_SQL = True
