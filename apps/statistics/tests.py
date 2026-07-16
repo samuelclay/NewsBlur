@@ -315,6 +315,28 @@ class Test_RTrendingStory(TestCase):
         self.assertLessEqual(max(counts.values()) / len(diversified), 0.10)
 
     @patch.object(RTrendingStory, "materialize_diverse_lists")
+    @patch.object(RTrendingStory, "get_quality_action_users", return_value={})
+    @patch.object(
+        RTrendingStory,
+        "get_distinct_user_durations",
+        return_value={"1:abcdef": {1: 60, 2: 60, 3: 60, 4: 60}},
+    )
+    @patch("apps.rss_feeds.models.Feed.objects")
+    @patch("apps.rss_feeds.models.MStory.objects")
+    def test_refresh_disables_default_story_ordering(
+        self, mock_story_objects, mock_feed_objects, mock_durations, mock_actions, mock_materialize
+    ):
+        """The content lookup must clear MStory's -story_date sort. Without it, Mongo runs a
+        blocking in-memory sort over story_hash__in with no supporting index, which blew past
+        its 32MB limit once the accumulated lists grew and stalled every refresh."""
+        mock_story_objects.return_value.order_by.return_value.only.return_value = []
+        mock_feed_objects.filter.return_value.only.return_value = []
+
+        RTrendingStory.refresh_trending_lists(days=1)
+
+        mock_story_objects.return_value.order_by.assert_called_once_with()
+
+    @patch.object(RTrendingStory, "materialize_diverse_lists")
     def test_refresh_qualifies_two_distinct_length_aware_readers(self, mock_materialize):
         """Hourly refresh adds a text story when two people clear its length-aware dwell."""
         story = MStory(
