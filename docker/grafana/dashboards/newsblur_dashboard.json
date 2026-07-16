@@ -13393,12 +13393,173 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Stories in each curated feed with a publish date in the last 24 hours, sampled hourly.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Widely Read"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Long Reads"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good Reads"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 521
+      },
+      "id": 326,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "trending{metric=\"stories_24h\",list=\"well_read\"}",
+          "interval": "",
+          "legendFormat": "Widely Read",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "trending{metric=\"stories_24h\",list=\"long_reads\"}",
+          "interval": "",
+          "legendFormat": "Long Reads",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "trending{metric=\"stories_24h\",list=\"good_reads\"}",
+          "interval": "",
+          "legendFormat": "Good Reads",
+          "refId": "C"
+        }
+      ],
+      "title": "Stories Posted to Curated Feeds (last 24h)",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 521
+        "y": 529
       },
       "id": 171,
       "panels": [],
@@ -13441,7 +13602,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 522
+        "y": 530
       },
       "id": 173,
       "options": {
@@ -13511,7 +13672,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 522
+        "y": 530
       },
       "id": 174,
       "options": {
@@ -13603,7 +13764,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 522
+        "y": 530
       },
       "id": 175,
       "options": {
@@ -13644,7 +13805,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 573
+        "y": 581
       },
       "id": 176,
       "panels": [],
@@ -13721,7 +13882,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 574
+        "y": 582
       },
       "id": 177,
       "options": {
@@ -13813,7 +13974,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 574
+        "y": 582
       },
       "id": 178,
       "options": {
@@ -14101,7 +14262,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 582
+        "y": 590
       },
       "id": 211,
       "options": {
@@ -14179,7 +14340,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 594
+        "y": 602
       },
       "id": 212,
       "panels": [],
@@ -14248,7 +14409,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 595
+        "y": 603
       },
       "id": 213,
       "options": {
@@ -14347,7 +14508,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 603
+        "y": 611
       },
       "id": 216,
       "options": {
@@ -14384,7 +14545,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 611
+        "y": 619
       },
       "id": 218,
       "panels": [],
@@ -14449,7 +14610,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 612
+        "y": 620
       },
       "id": 219,
       "options": {
@@ -14486,7 +14647,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 620
+        "y": 628
       },
       "id": 266,
       "panels": [],
@@ -14555,7 +14716,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 621
+        "y": 629
       },
       "id": 267,
       "options": {
@@ -14649,7 +14810,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 621
+        "y": 629
       },
       "id": 268,
       "options": {
@@ -14687,7 +14848,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 629
+        "y": 637
       },
       "id": 239,
       "panels": [],
@@ -14755,7 +14916,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 630
+        "y": 638
       },
       "id": 240,
       "options": {
@@ -14884,7 +15045,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 630
+        "y": 638
       },
       "id": 241,
       "options": {
@@ -15013,7 +15174,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 630
+        "y": 638
       },
       "id": 242,
       "options": {
@@ -15142,7 +15303,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 638
+        "y": 646
       },
       "id": 243,
       "options": {
@@ -15271,7 +15432,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 638
+        "y": 646
       },
       "id": 270,
       "options": {
@@ -15388,7 +15549,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 638
+        "y": 646
       },
       "id": 271,
       "options": {
@@ -15438,7 +15599,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 540
+        "y": 548
       },
       "id": 249,
       "panels": [],
@@ -15473,7 +15634,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 541
+        "y": 549
       },
       "id": 250,
       "options": {
@@ -15535,7 +15696,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 541
+        "y": 549
       },
       "id": 251,
       "options": {
@@ -15597,7 +15758,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 541
+        "y": 549
       },
       "id": 252,
       "options": {
@@ -15659,7 +15820,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 549
+        "y": 557
       },
       "id": 253,
       "options": {
@@ -15721,7 +15882,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 549
+        "y": 557
       },
       "id": 254,
       "options": {
@@ -15783,7 +15944,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 549
+        "y": 557
       },
       "id": 255,
       "options": {
@@ -15875,7 +16036,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 557
+        "y": 565
       },
       "id": 256,
       "options": {
@@ -15986,7 +16147,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 557
+        "y": 565
       },
       "id": 257,
       "options": {
@@ -16045,7 +16206,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 565
+        "y": 573
       },
       "id": 258,
       "options": {
@@ -16107,7 +16268,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 565
+        "y": 573
       },
       "id": 259,
       "options": {
@@ -16169,7 +16330,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 565
+        "y": 573
       },
       "id": 260,
       "options": {
@@ -16231,7 +16392,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 565
+        "y": 573
       },
       "id": 261,
       "options": {
@@ -16275,7 +16436,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 639
+        "y": 647
       },
       "id": 276,
       "panels": [],
@@ -16318,7 +16479,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 640
+        "y": 648
       },
       "id": 277,
       "options": {
@@ -16382,7 +16543,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 640
+        "y": 648
       },
       "id": 278,
       "options": {
@@ -16434,7 +16595,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 648
+        "y": 656
       },
       "id": 279,
       "panels": [],
@@ -16511,7 +16672,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 649
+        "y": 657
       },
       "id": 280,
       "options": {
@@ -16664,7 +16825,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 649
+        "y": 657
       },
       "id": 281,
       "options": {
@@ -16793,7 +16954,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 649
+        "y": 657
       },
       "id": 282,
       "options": {
