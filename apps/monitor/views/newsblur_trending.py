@@ -73,6 +73,11 @@ class TrendingFeeds(View):
             else value
             for key, value in r.hgetall(RTrendingStory.DIVERSITY_METRICS_KEY).items()
         }
+        list_keys = {
+            "well_read": RTrendingStory.WELL_READ_KEY,
+            "long_reads": RTrendingStory.LONG_READS_KEY,
+            "good_reads": RTrendingStory.GOOD_READS_KEY,
+        }
         for list_name in ("well_read", "long_reads", "good_reads"):
             for metric_name in (
                 "size",
@@ -84,6 +89,18 @@ class TrendingFeeds(View):
                 formatted_data[
                     f"{list_name}_{metric_name}"
                 ] = f'{chart_name}{{metric="{metric_name}",list="{list_name}"}} {value}'
+
+        # Stories posted to each curated feed in the last 24 hours. The lists are sorted sets
+        # scored by story_date, so ZCOUNT over the last day's timestamps is O(log N) per list.
+        day_ago = time.time() - 24 * 60 * 60
+        pipe = r.pipeline()
+        for list_name in ("well_read", "long_reads", "good_reads"):
+            pipe.zcount(list_keys[list_name], day_ago, "+inf")
+        stories_24h = pipe.execute()
+        for list_name, count in zip(("well_read", "long_reads", "good_reads"), stories_24h):
+            formatted_data[
+                f"{list_name}_stories_24h"
+            ] = f'{chart_name}{{metric="stories_24h",list="{list_name}"}} {count or 0}'
 
         refresh_timestamp = r.get(RTrendingStory.REFRESH_TIMESTAMP_KEY)
         refresh_timestamp = int(refresh_timestamp) if refresh_timestamp else 0
