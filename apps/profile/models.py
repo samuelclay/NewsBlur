@@ -3863,6 +3863,22 @@ class Profile(models.Model):
         if not preview:
             MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
 
+    def is_dormant_for_paypal_cancel(self, now=None):
+        """True when this subscriber has been inactive long enough that force-cancelling their
+        PayPal subscription would almost certainly not lead to a resubscribe. Grandfathered payers
+        who have not logged in for PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS resubscribed at
+        ~0% in the first cohort, so cancelling them only converts a silent renewal into $0. A
+        missing last_seen_on counts as dormant. A falsy threshold (0/None) disables the guard so
+        everyone is cancelled regardless of activity (apps/profile/models.py)."""
+        max_dormant_days = getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS", 30)
+        if not max_dormant_days:
+            return False
+        if not self.last_seen_on:
+            return True
+        if now is None:
+            now = datetime.datetime.now()
+        return self.last_seen_on < now - datetime.timedelta(days=max_dormant_days)
+
     @staticmethod
     def _acquire_pricing_lock(name):
         """Acquire a short-lived redis lock so only one beat scheduler runs a pricing-migration
@@ -3967,6 +3983,15 @@ class Profile(models.Model):
                         if not approval_url:
                             if not getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
                                 logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
+                                continue
+                            if profile.is_dormant_for_paypal_cancel(now=now):
+                                logging.user(
+                                    profile.user,
+                                    "~FBSkipping PayPal cancel (dormant, last seen %s); leaving grandfathered"
+                                    % profile.last_seen_on,
+                                )
+                                row.status = "skipped_dormant"
+                                row.save()
                                 continue
                             cancelled_paypal_sub_id = profile.cancel_premium_paypal()
                             if not isinstance(cancelled_paypal_sub_id, str):
@@ -4088,6 +4113,21 @@ class Profile(models.Model):
                         ):
                             row_changed = False
                             if getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
+                                if profile.is_dormant_for_paypal_cancel(now=now):
+                                    # Dormant non-approver: never resubscribes, so cancelling only
+                                    # forfeits their grandfathered payment. Leave the old sub to
+                                    # renew at the old rate and mark the row skipped_dormant so it
+                                    # leaves the reconcile working set instead of being retried
+                                    # nightly. (A later $36 approval by a dormant user is vanishingly
+                                    # rare and would simply not be re-counted as an upgrade.)
+                                    logging.user(
+                                        row.user,
+                                        "~FBSkipping PayPal cancel on reconcile (dormant, last seen %s); leaving grandfathered"
+                                        % profile.last_seen_on,
+                                    )
+                                    row.status = "skipped_dormant"
+                                    row.save()
+                                    continue
                                 profile.cancel_premium_paypal()
                                 row.paypal_canceled_date = now
                                 row.status = "cancelled"
@@ -4842,7 +4882,10 @@ class PremiumPricingMigration(models.Model):
     resubscribed_date = models.DateTimeField(blank=True, null=True)  # later paid sub via any provider
     resubscribed_provider = models.CharField(max_length=24, blank=True, null=True)
     resubscribed_amount = models.IntegerField(blank=True, null=True)  # tier inferred from amount/provider
-    # pending|emailed|upgraded|cancelled|would_cancel (would_cancel = shadow mode, staff notified only)
+    # pending|emailed|upgraded|cancelled|would_cancel|skipped_dormant
+    # (would_cancel = shadow mode, staff notified only; skipped_dormant = PayPal payer left on the
+    # old plan because they were too inactive to be worth force-cancelling -- see
+    # Profile.is_dormant_for_paypal_cancel)
     status = models.CharField(max_length=16, default="pending")
     status_changed_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)

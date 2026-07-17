@@ -560,6 +560,8 @@ PREMIUM_PRICING_MIGRATION_ENABLED = True
 # renewal and the subscriber receives the PayPal pricing migration email.
 PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED = True
 
+PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS = 30
+
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
         "task": "task-feeds",
