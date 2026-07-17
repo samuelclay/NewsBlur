@@ -6,12 +6,13 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.webfeed.models import MWebFeedConfig
+from apps.webfeed.models import MWebFeedConfig, is_degenerate_container_xpath
 from apps.webfeed.prompts import get_analysis_messages
 from apps.webfeed.tasks import (
     choose_better_attempt,
     extract_image_url,
     extract_preview_stories,
+    filter_degenerate_variants,
     parse_variants_json,
     rank_variants_by_previews,
 )
@@ -487,3 +488,104 @@ class Test_WebFeedAnalyzeRedirectsRealFeeds(TestCase):
         self.assertEqual(data["code"], 1)
         # A real web page keeps the page-monitoring flow.
         mock_task.assert_called_once()
+
+
+class Test_DegenerateContainerXPaths(TestCase):
+    """A container XPath pinned to specific item ids can only ever re-match the
+    analysis-time items, so the feed never finds a new story. See
+    is_degenerate_container_xpath in apps/webfeed/models.py."""
+
+    def test_hardcoded_item_ids_are_degenerate(self):
+        # The exact pattern that froze a production AbeBooks web feed.
+        xpath = (
+            "//li[@data-test-id='listing-item-32438580283' or "
+            "@data-test-id='listing-item-32414887644' or "
+            "@data-test-id='listing-item-32297928829' or "
+            "@data-test-id='listing-item-32283704996']"
+        )
+        self.assertTrue(is_degenerate_container_xpath(xpath))
+
+    def test_single_item_id_is_degenerate(self):
+        self.assertTrue(is_degenerate_container_xpath("//div[@id='post-84721']"))
+
+    def test_long_or_chain_is_degenerate(self):
+        xpath = "//li[@data-name='alpha' or @data-name='beta' or " "@data-name='gamma' or @data-name='delta']"
+        self.assertTrue(is_degenerate_container_xpath(xpath))
+
+    def test_generic_containers_are_fine(self):
+        for xpath in [
+            "//li[contains(@class, 'result-item')]",
+            "//div[contains(@class, 'post')]",
+            "//li[contains(@class, 'result-item') or @data-srp-item-role='listing']"
+            " | //ul[@id='srp-search-results-list']/li",
+            "//li[starts-with(@data-test-id, 'listing-item-')]",
+            "//article",
+        ]:
+            self.assertFalse(is_degenerate_container_xpath(xpath), xpath)
+
+    def test_empty_is_not_degenerate(self):
+        self.assertFalse(is_degenerate_container_xpath(""))
+        self.assertFalse(is_degenerate_container_xpath(None))
+
+    def test_filter_drops_only_degenerate_variants(self):
+        variants = [
+            {"story_container": "//li[contains(@class, 'result-item')]", "title": ".//a/text()"},
+            {"story_container": "//li[@data-test-id='listing-item-32438580283']", "title": ".//a/text()"},
+        ]
+        kept = filter_degenerate_variants(variants)
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["story_container"], "//li[contains(@class, 'result-item')]")
+
+
+class Test_WebFeedNotifiesSubscribers(TestCase):
+    """New webfeed stories must run the same subscriber notification steps as the
+    regular fetch pipeline, or unread counts never update until the user opens the
+    feed by hand. See Feed.update_webfeed in apps/rss_feeds/models.py."""
+
+    def make_feed(self):
+        from apps.rss_feeds.models import Feed
+
+        return Feed(
+            pk=101,
+            feed_title="AbeBooks search",
+            feed_address="webfeed:https://example.com/search",
+            archive_subscribers=1,
+        )
+
+    @patch("utils.feed_fetcher.FeedFetcherWorker")
+    @patch("utils.feed_fetcher.ProcessFeed")
+    @patch("utils.webfeed_fetcher.WebFeedFetcher")
+    def test_new_stories_notify_subscribers(self, MockFetcher, MockProcess, MockWorker):
+        feed = self.make_feed()
+        MockFetcher.return_value.fetch.return_value = MagicMock()
+        MockProcess.return_value.process.return_value = (0, {"new": 3, "updated": 0, "same": 9})
+
+        feed.update_webfeed()
+
+        worker = MockWorker.return_value
+        worker.publish_to_subscribers.assert_called_once_with(feed, 3)
+        worker.count_unreads_for_subscribers.assert_called_once_with(feed, new_story_count=3)
+
+    @patch("utils.feed_fetcher.FeedFetcherWorker")
+    @patch("utils.feed_fetcher.ProcessFeed")
+    @patch("utils.webfeed_fetcher.WebFeedFetcher")
+    def test_no_new_stories_skips_notification(self, MockFetcher, MockProcess, MockWorker):
+        feed = self.make_feed()
+        MockFetcher.return_value.fetch.return_value = MagicMock()
+        MockProcess.return_value.process.return_value = (0, {"new": 0, "updated": 2, "same": 10})
+
+        feed.update_webfeed()
+
+        MockWorker.assert_not_called()
+
+    @patch("utils.feed_fetcher.FeedFetcherWorker")
+    @patch("utils.feed_fetcher.ProcessFeed")
+    @patch("utils.webfeed_fetcher.WebFeedFetcher")
+    def test_failed_fetch_skips_processing(self, MockFetcher, MockProcess, MockWorker):
+        feed = self.make_feed()
+        MockFetcher.return_value.fetch.return_value = None
+
+        feed.update_webfeed()
+
+        MockProcess.assert_not_called()
+        MockWorker.assert_not_called()

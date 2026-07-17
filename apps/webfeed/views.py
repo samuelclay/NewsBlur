@@ -16,7 +16,7 @@ from utils.url_safety import (
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
-from .models import MWebFeedConfig
+from .models import MWebFeedConfig, is_degenerate_container_xpath
 from .tasks import AnalyzeWebFeedPage
 
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{8,64}$")
@@ -127,6 +127,20 @@ def subscribe(request):
             % (repr(story_container_xpath), repr(title_xpath), repr(link_xpath), list(request.POST.keys())),
         )
         return {"code": -1, "message": "Missing XPath expressions for story extraction"}
+
+    if is_degenerate_container_xpath(story_container_xpath):
+        logging.user(
+            request.user,
+            "~BB~FWWeb Feed: ~FR~SBRejected degenerate container XPath~SN~FW - %s"
+            % repr(story_container_xpath[:200]),
+        )
+        return {
+            "code": -1,
+            "message": (
+                "That story pattern is tied to the exact items on the page right now, "
+                "so it would never find new stories. Please analyze the page again."
+            ),
+        }
 
     feed_address = f"webfeed:{url}"
 
