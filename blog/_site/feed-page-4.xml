@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-05-15T21:57:02-04:00</updated>
+  <updated>2026-07-17T18:38:40-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,40 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Even the folders have RSS feeds</title>
+    <link href="https://blog.newsblur.com/2015/08/25/even-the-folders-have-rss-feeds/" rel="alternate" type="text/html" title="Even the folders have RSS feeds" />
+    <published>2015-08-25T07:00:14-04:00</published>
+    <updated>2015-08-25T07:00:14-04:00</updated>
+    <id>https://blog.newsblur.com/2015/08/25/even-the-folders-have-rss-feeds</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/08/25/even-the-folders-have-rss-feeds/">
+      <![CDATA[<p>What would an RSS news reader be without its own RSS feeds? It’s be a pretty lonely reader is what.</p>
+
+<p>NewsBlur now supports RSS feeds for each of your folders. Just right-click on the folder, go to Folder Settings, and behold:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/folder_rss.png" alt="" /></p>
+
+<p>These folders keep track of sites you add and remove from them. They also allow you to filter out stories you don’t want to read or even choose to only show the stories you have in focus.</p>
+
+<p>All of your feed subscriptions in the folder, including subfolders, are merged into a single river of news in RSS format. Technically we use Atom 1.0 format for NewsBlur’s many RSS feeds, but I’m not choosing a side here.</p>
+
+<p>The Folder RSS feeds join the Shared Stories RSS feeds and the Saved Story Tag RSS feeds that you can already use if you are a premium subscriber.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[What would an RSS news reader be without its own RSS feeds? It’s be a pretty lonely reader is what.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Read Stories feed and a rewritten networking stack on v4.3.0 of the NewsBlur Android App</title>
@@ -1017,52 +1051,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[A few small new features to get your first full week of the new year started off right.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Faster parallel network requests for version 3.5 of the NewsBlur Android app</title>
-    <link href="https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35/" rel="alternate" type="text/html" title="Faster parallel network requests for version 3.5 of the NewsBlur Android app" />
-    <published>2014-01-03T11:35:00-05:00</published>
-    <updated>2014-01-03T11:35:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/03/faster-parallel-network-requests-for-version-35/">
-      <![CDATA[<p>The single biggest criticism I’ve heard of the Android app is that it can be slow when loading feeds and then loading stories. That changes today with the release of version 3.5 of the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Android%20v3.5.png" alt="" /></p>
-
-<p>Here’s what’s new:</p>
-
-<ul>
-  <li>Completely rewritten parallel network stack</li>
-  <li>All network requests are now much, much faster</li>
-  <li>Bugs fixed when marking as read and saved</li>
-</ul>
-
-<p>And remember that only a month and a half ago, version 3.0 hit the Play Store and the Kindle Store with these great features:</p>
-
-<ul>
-  <li>New story traversal buttons make it easy to flip between stories.</li>
-  <li>New text view fetches and parses the story from the original site.</li>
-  <li>New logo.</li>
-  <li>Public comments are now be hidden in preferences.</li>
-  <li>Ability to unsave stories.</li>
-</ul>
-
-<p>There’s more coming to the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>, now that it’s reached speed parity with the iOS app. Look forward to lots of updates, improvements, and new features.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[The single biggest criticism I’ve heard of the Android app is that it can be slow when loading feeds and then loading stories. That changes today with the release of version 3.5 of the NewsBlur Android app.
 ]]>
     </summary>
     

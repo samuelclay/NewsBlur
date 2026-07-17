@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-05-15T21:57:02-04:00</updated>
+  <updated>2026-07-17T18:38:40-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,43 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Filter stories by date range</title>
+    <link href="https://blog.newsblur.com/2025/10/15/filter-stories-by-date/" rel="alternate" type="text/html" title="Filter stories by date range" />
+    <published>2025-10-15T00:00:00-04:00</published>
+    <updated>2025-10-15T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2025/10/15/filter-stories-by-date</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2025/10/15/filter-stories-by-date/">
+      <![CDATA[<p>A few days ago was my five year wedding anniversary. I wanted to see the news from exactly five years ago, which I had clearly missed because I was not checking my phone that day. That’s where the new date filter feature comes in handy.</p>
+
+<p>You can now filter stories by date range, filtering stories down to only those newer or older than some date or between some timespan. This works on individual feeds and as well as on folders, saved stories, and read stories.</p>
+
+<p><img src="/assets/date-filter-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The date filter lives in the feed options popover, right where you’d expect it next to other feed filtering and ordering options. You’ll see the new “Filter by date range” section with two sections: “Newer” and “Older”.</p>
+
+<p>Each column has a date input field where you can manually enter a date, or use the quick duration buttons for common time ranges. Want to see the past week? Click “1w” under “Newer”. Want to see stories from a specific month? Set the “Newer” and “Older” dates to bracket that month.</p>
+
+<p>This feature is particularly useful when you’re catching up after being away, or when you want to research how some event in the past was covered. Combined with NewsBlur’s full-text search, you can now both search for topics and filter by when they were published. And of course the <a href="/2025/02/02/discover-related-stories-and-sites/">recently launched Discover feature</a> lets you see related stories and related feeds to follow interesting bunny trails.</p>
+
+<p>The date filters work across all of NewsBlur’s views - individual feeds, folders, saved stories, and the river of news. The filters don’t persist between feeds, so you can set different date ranges for different feeds without the settings interfering with each other.</p>
+
+<p>If you have any feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[A few days ago was my five year wedding anniversary. I wanted to see the news from exactly five years ago, which I had clearly missed because I was not checking my phone that day. That’s where the new date filter feature comes in handy.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Discover related stories and sites</title>
@@ -1272,42 +1309,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Improved Text view story extraction</title>
-    <link href="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/" rel="alternate" type="text/html" title="Improved Text view story extraction" />
-    <published>2017-10-24T16:17:25-04:00</published>
-    <updated>2017-10-24T16:17:25-04:00</updated>
-    <id>https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/">
-      <![CDATA[<p>The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.</p>
-
-<p>Starting today, all stories will be run through <a href="https://mercury.postlight.com/web-parser/">Postlight Labs’ Mercury Parser</a>. That means that not only will the full text be more likely to correctly pull the entire article, but it will also do a much better job with extracting full size images in stories.</p>
-
-<p>Take a look:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png" alt="" /></p>
-
-<p>A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.
 ]]>
     </summary>
     
