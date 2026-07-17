@@ -80,7 +80,7 @@ def host_budget_per_minute(host):
     override them. See newsblur_web/settings.py for the tuned values.
     """
     overrides = getattr(settings, "DOMAIN_FETCHES_PER_MINUTE_OVERRIDES", {})
-    default = getattr(settings, "DOMAIN_FETCHES_PER_MINUTE", 6)
+    default = getattr(settings, "DOMAIN_FETCHES_PER_MINUTE", 30)
     return overrides.get(host, default)
 
 
