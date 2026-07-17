@@ -314,6 +314,85 @@ class Test_Reader(TransactionTestCase):
         deep_tech = [f for f in tech_folder["Tech"] if isinstance(f, dict) and "Deep Tech" in f][0]
         self.assertIn(1, deep_tech["Deep Tech"])
 
+    def test_delete_feed__stale_in_folder(self):
+        """A stale/mismatched in_folder must still delete the feed, not silently no-op."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Tech": [4, 5]}, 2, 3])
+        usf.save()
+
+        # Feed 5 lives in "Tech", but the client sends a folder it is not in.
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=5).exists())
+        response = self.client.post(reverse("delete-feed"), {"feed_id": 5, "in_folder": "Nonexistent Folder"})
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # The feed is removed from the tree entirely...
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(json.decode(usf.folders), [2, 3, {"Tech": [4]}])
+        # ...and the subscription is gone, so the delete actually "stuck".
+        self.assertFalse(UserSubscription.objects.filter(user=user, feed=5).exists())
+
+    def test_delete_feed__stale_in_folder_keeps_multiples(self):
+        """A stale in_folder removes one placement but keeps the sub if others remain."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Tech": [5]}, {"Blogs": [5]}, 2, 3])
+        usf.save()
+
+        response = self.client.post(reverse("delete-feed"), {"feed_id": 5, "in_folder": "Nonexistent Folder"})
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # One placement removed, one remains, subscription preserved.
+        usf = UserSubscriptionFolders.objects.get(user=user)
+
+        def _count(items, target):
+            n = 0
+            for item in items:
+                if isinstance(item, int):
+                    n += 1 if item == target else 0
+                elif isinstance(item, dict):
+                    for _, kids in item.items():
+                        n += _count(kids, target)
+            return n
+
+        self.assertEqual(_count(json.decode(usf.folders), 5), 1)
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=5).exists())
+
+    def test_save_feed_order__rejects_stale_shrink(self):
+        """A reorder tree missing most subscribed feeds is rejected, not saved."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        original = usf.folders
+
+        response = self.client.post(reverse("save-feed-order"), {"folders": json.encode([1, 2, 3])})
+        result = json.decode(response.content)
+        self.assertEqual(result["code"], -1)
+
+        # The stored organization is left untouched.
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(usf.folders, original)
+
+    def test_save_feed_order__accepts_full_reorder(self):
+        """A reorder that preserves all subscribed feeds is saved normally."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        subscribed = sorted(UserSubscription.objects.filter(user=user).values_list("feed_id", flat=True))
+        new_tree = [{"All": subscribed}]
+
+        response = self.client.post(reverse("save-feed-order"), {"folders": json.encode(new_tree)})
+        result = json.decode(response.content)
+        self.assertNotEqual(result.get("code"), -1)
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(json.decode(usf.folders), new_tree)
+
     def test_add_url__missing_url_param(self):
         """POST to add_url without 'url' should return error, not crash."""
         self.client.login(username="conesus", password="test")

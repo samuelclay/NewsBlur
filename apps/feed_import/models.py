@@ -189,7 +189,66 @@ class OPMLImporter(Importer):
 
         return folders
 
+    # apps/feed_import/models.py
+    # NewsBlur-internal feed addresses that must never be re-created as new feeds on
+    # import. Email newsletters (newsletter:<user_id>:...) are user-specific, and web
+    # feeds (webfeed:...) are scraped internally. A NewsBlur OPML export writes these
+    # addresses out verbatim, so re-importing that export would otherwise mint a
+    # duplicate feed for every newsletter/web feed the user already subscribes to.
+    INTERNAL_ADDRESS_PREFIXES = (
+        "newsletter:",
+        "http://newsletter:",
+        "https://newsletter:",
+        "webfeed:",
+    )
+
+    def existing_feed_match(self, feed_address, feed_link, feed_title):
+        # Return the feed_id of a subscription the user already had (before this import)
+        # that represents the same source, matched by normalized address, then normalized
+        # link, then case-insensitive title. Built once and cached; not updated during the
+        # import so a fresh account (no prior subs) never de-dupes against itself.
+        if getattr(self, "_existing_feed_index", None) is None:
+            by_address, by_link, by_title = {}, {}, {}
+            subs = UserSubscription.objects.filter(user=self.user).select_related("feed")
+            for us in subs:
+                feed = us.feed
+                if not feed:
+                    continue
+                address = urlnorm.normalize(feed.feed_address or "")
+                link = urlnorm.normalize(feed.feed_link or "")
+                title = (feed.feed_title or "").strip().lower()
+                if address:
+                    by_address.setdefault(address, feed.pk)
+                if link:
+                    by_link.setdefault(link, feed.pk)
+                if title:
+                    by_title.setdefault(title, feed.pk)
+            self._existing_feed_index = (by_address, by_link, by_title)
+
+        by_address, by_link, by_title = self._existing_feed_index
+        if feed_address and feed_address in by_address:
+            return by_address[feed_address]
+        if feed_link and feed_link in by_link:
+            return by_link[feed_link]
+        title = (feed_title or "").strip().lower()
+        if title and title in by_title:
+            return by_title[title]
+        return None
+
     def process_feed(self, xml_url, html_url, feed_title, user_feed_title, folders, in_folder):
+        raw_url = (xml_url or "").strip()
+        if raw_url.startswith(self.INTERNAL_ADDRESS_PREFIXES):
+            # Reuse the user's existing subscription for this internal address rather than
+            # creating a duplicate feed; skip entirely if they aren't already subscribed.
+            existing = UserSubscription.objects.filter(user=self.user, feed__feed_address=raw_url).first()
+            if existing:
+                folders = add_object_to_folder(existing.feed_id, in_folder, folders)
+            else:
+                logging.info(
+                    " ---> [%s] ~FROPML import skipping internal feed address: %s" % (self.user, raw_url[:80])
+                )
+            return folders
+
         feed_address = urlnorm.normalize(xml_url)
         feed_link = urlnorm.normalize(html_url)
         if not feed_address:
@@ -198,6 +257,16 @@ class OPMLImporter(Importer):
             return folders
         if feed_link and len(feed_link) > Feed._meta.get_field("feed_link").max_length:
             return folders
+
+        # Auto de-dupe on merge: if the user already subscribes to a feed for this same
+        # source under a drifted address/link/title, reuse it instead of minting a
+        # duplicate. Matching is limited to subscriptions that existed before this import
+        # began, so a fresh import (empty account) is never affected.
+        existing_feed_id = self.existing_feed_match(feed_address, feed_link, feed_title)
+        if existing_feed_id:
+            folders = add_object_to_folder(existing_feed_id, in_folder, folders)
+            return folders
+
         # logging.info(' ---> \t~FR%s - %s - %s' % (feed_title, feed_link, feed_address,))
         feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
         # feeds.append(feed_data)

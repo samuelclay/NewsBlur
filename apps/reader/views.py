@@ -4493,6 +4493,40 @@ def save_feed_order(request):
         assert folders_list is not None
         logging.user(request, "~FBFeed re-ordering: ~SB%s folders/feeds" % (len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
+
+        # Guard against a stale or truncated client blindly overwriting the whole tree.
+        # Re-ordering must preserve feeds; deletions go through delete_feed, not here. If
+        # the incoming tree is missing a large share of the feeds the user still
+        # subscribes to, reject it rather than silently drop that organization.
+        # apps/reader/views.py
+        def _feed_ids_in_tree(items):
+            ids = set()
+            for item in items:
+                if isinstance(item, int):
+                    ids.add(item)
+                elif isinstance(item, dict):
+                    for _, children in item.items():
+                        ids |= _feed_ids_in_tree(children)
+            return ids
+
+        incoming_ids = _feed_ids_in_tree(folders_list)
+        subscribed_ids = set(
+            UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True)
+        )
+        missing = subscribed_ids - incoming_ids
+        threshold = max(5, int(len(subscribed_ids) * 0.15))
+        if subscribed_ids and len(missing) > threshold:
+            logging.user(
+                request,
+                "~FR~SBRejected feed re-order: incoming tree missing ~SB%s~SN of %s subscribed feeds"
+                % (len(missing), len(subscribed_ids)),
+            )
+            return dict(
+                code=-1,
+                message="Feed order not saved: the update was missing %s of your %s feeds. "
+                "Please reload the page and try again." % (len(missing), len(subscribed_ids)),
+            )
+
         user_sub_folders.folders = folders
         user_sub_folders.save()
 
