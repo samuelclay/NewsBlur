@@ -137,6 +137,79 @@ class Test_Import(TransactionTestCase):
         self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=feed).count(), 1)
         self.assertEqual(folders, [{"bsky": [feed.pk]}])
 
+    def test_opml_import_skips_internal_addresses(self):
+        """Newsletter/webfeed internal addresses reuse existing subs, never mint duplicate feeds.
+
+        A NewsBlur OPML export writes these user-specific/internal addresses out verbatim,
+        so re-importing that export must not create a brand-new duplicate feed for every
+        newsletter or web feed the user already subscribes to.
+        """
+        newsletter_address = "newsletter:%s:sender@example.com" % self.user.pk
+        newsletter_feed = Feed.objects.create(
+            feed_address=newsletter_address,
+            feed_link="http://example.com/",
+            feed_title="Example Newsletter",
+        )
+        UserSubscription.objects.create(feed=newsletter_feed, user=self.user)
+        feeds_before = Feed.objects.count()
+
+        opml_xml = (
+            """
+            <opml version="1.0">
+                <body>
+                    <outline text="Newsletters">
+                        <outline title="Example Newsletter" type="rss" version="RSS"
+                                 xmlUrl="%s" htmlUrl="http://example.com/" />
+                        <outline title="Some Web Feed" type="rss" version="RSS"
+                                 xmlUrl="webfeed:99:http://nowhere.example/page"
+                                 htmlUrl="http://nowhere.example/" />
+                    </outline>
+                </body>
+            </opml>
+        """
+            % newsletter_address
+        )
+
+        folders = OPMLImporter(opml_xml, self.user).process()
+
+        # No new feeds minted for the internal (newsletter/webfeed) addresses.
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        # The existing newsletter subscription is reused, not duplicated...
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=newsletter_feed).count(), 1)
+        # ...and it lands in the imported "Newsletters" folder; the web feed (no existing
+        # subscription) is skipped rather than re-created.
+        self.assertEqual(folders, [{"Newsletters": [newsletter_feed.pk]}])
+
+    def test_opml_import_dedupes_against_existing_subscription(self):
+        """Re-importing a feed under a drifted URL reuses the existing sub, not a new feed."""
+        existing_feed = Feed.objects.create(
+            feed_address="https://example.com/feed/canonical.xml",
+            feed_link="https://example.com/",
+            feed_title="Drifted Blog",
+        )
+        UserSubscription.objects.create(feed=existing_feed, user=self.user)
+        feeds_before = Feed.objects.count()
+
+        # Same title, but a stale xmlUrl/htmlUrl that won't match by address or link.
+        opml_xml = """
+            <opml version="1.0">
+                <body>
+                    <outline text="Imported">
+                        <outline title="Drifted Blog" type="rss" version="RSS"
+                                 xmlUrl="https://example.com/2013/10/25/old-path/"
+                                 htmlUrl="https://example.com/old/" />
+                    </outline>
+                </body>
+            </opml>
+        """
+
+        folders = OPMLImporter(opml_xml, self.user).process()
+
+        # Matched the existing subscription by title; no new feed minted.
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=existing_feed).count(), 1)
+        self.assertEqual(folders, [{"Imported": [existing_feed.pk]}])
+
     def test_opml_import_skips_single_feed_failure(self):
         opml_xml = """
             <opml version="1.0">

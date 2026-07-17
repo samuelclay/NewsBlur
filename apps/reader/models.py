@@ -2780,41 +2780,65 @@ class UserSubscriptionFolders(models.Model):
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
 
-        def _find_feed_in_folders(old_folders, folder_name="", multiples_found=False, deleted=False):
+        # apps/reader/models.py
+        # Count every placement of the feed and note whether any sits directly in the
+        # folder the client asked us to delete from. A stale, renamed, or duplicated
+        # in_folder used to make this a silent no-op: the feed was neither removed from
+        # the tree nor unsubscribed, so it "came back" on the next load. Instead we
+        # always remove exactly one placement (falling back to the first one found when
+        # the requested folder doesn't match), and only unsubscribe when that was the
+        # feed's last remaining placement.
+        def _count_feed(old_folders, folder_name=""):
+            total = 0
+            in_requested = False
+            for folder in old_folders:
+                if isinstance(folder, int):
+                    if folder == feed_id:
+                        total += 1
+                        if in_folder is not None and in_folder == folder_name:
+                            in_requested = True
+                elif isinstance(folder, dict):
+                    for f_k, f_v in list(folder.items()):
+                        sub_total, sub_in = _count_feed(f_v, f_k)
+                        total += sub_total
+                        in_requested = in_requested or sub_in
+            return total, in_requested
+
+        arranged = self.arranged_folders()
+        total_occurrences, occurrence_in_requested = _count_feed(arranged)
+
+        # Honor the requested folder only when the feed actually lives there; otherwise
+        # remove the first placement anywhere so a mismatched in_folder can't leave the
+        # feed stuck and subscribed.
+        target_folder = in_folder if (in_folder is not None and occurrence_in_requested) else None
+        removal = {"deleted": False}
+
+        def _remove_one(old_folders, folder_name=""):
             new_folders = []
-            for k, folder in enumerate(old_folders):
+            for folder in old_folders:
                 if isinstance(folder, int):
                     if (
                         folder == feed_id
-                        and in_folder is not None
-                        and ((in_folder != folder_name) or (in_folder == folder_name and deleted))
+                        and not removal["deleted"]
+                        and (target_folder is None or target_folder == folder_name)
                     ):
-                        multiples_found = True
+                        removal["deleted"] = True
                         logging.user(
-                            self.user,
-                            "~FB~SBDeleting feed, and a multiple has been found in '%s' / '%s' %s"
-                            % (folder_name, in_folder, "(deleted)" if deleted else ""),
+                            self.user, "~FBDelete feed: %s from folder '%s'" % (feed_id, folder_name)
                         )
-                    if folder == feed_id and (in_folder is None or in_folder == folder_name) and not deleted:
-                        logging.user(
-                            self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (k, len(old_folders))
-                        )
-                        deleted = True
-                    else:
-                        new_folders.append(folder)
+                        continue
+                    new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        nf, multiples_found, deleted = _find_feed_in_folders(
-                            f_v, f_k, multiples_found, deleted
-                        )
-                        new_folders.append({f_k: nf})
+                        new_folders.append({f_k: _remove_one(f_v, f_k)})
+            return new_folders
 
-            return new_folders, multiples_found, deleted
-
-        user_sub_folders = self.arranged_folders()
-        user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
+        user_sub_folders = _remove_one(arranged)
         self.folders = json.encode(user_sub_folders)
         self.save()
+
+        deleted = removal["deleted"]
+        multiples_found = total_occurrences > 1
 
         if not multiples_found and deleted and commit_delete:
             user_sub = None
