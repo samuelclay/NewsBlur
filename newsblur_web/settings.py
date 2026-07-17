@@ -308,9 +308,9 @@ PRO_MINUTES_BETWEEN_FETCHES = 5
 # per minute across ALL task servers combined; feeds over budget are silently
 # deferred, not errored. See utils/domain_fetch_limiter.py. Production data
 # (July 2026) shows 99.75% of hosts stay under 1 fetch/minute, so this only
-# touches the ~28 hottest domains. 6/minute is one fetch every 10 seconds,
-# gentle for any single site.
-DOMAIN_FETCHES_PER_MINUTE = 6
+# touches the handful of hottest domains. 30/minute is one fetch every 2
+# seconds, gentle for any single site.
+DOMAIN_FETCHES_PER_MINUTE = 30
 
 # Multi-tenant hosts that serve thousands of distinct legitimate feeds get raised
 # budgets: their volume is breadth, not hammering. Values chosen from measured
