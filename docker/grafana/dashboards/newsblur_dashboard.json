@@ -17184,6 +17184,15 @@
      "expr": "users{category=\"premium_pricing_upgrades_24\"}",
      "legendFormat": "Upgrades ($24 -> $36)",
      "refId": "H"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_skipped_dormant_paypal\"}",
+     "legendFormat": "PayPal skipped (dormant)",
+     "refId": "I"
     }
    ],
    "title": "Premium Pricing Migration ($12/$24 -> $36)",

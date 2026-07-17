@@ -141,6 +141,18 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
+            # Dormant PayPal payers we chose NOT to force-cancel: they'd almost never resubscribe,
+            # so leaving them on the grandfathered plan preserves revenue we would otherwise forfeit.
+            # Only PayPal reaches the dormancy guard (Stripe is switched silently), so this is the
+            # full skipped_dormant count.
+            "premium_pricing_skipped_dormant_paypal": MStatistics.get(
+                "munin:users_premium_pricing_skipped_dormant_paypal",
+                lambda: PremiumPricingMigration.objects.filter(
+                    status="skipped_dormant", provider="paypal"
+                ).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
             # Switched to $36 and emailed, but the renewal charge hasn't landed yet (in-flight).
             "premium_pricing_awaiting_charge": MStatistics.get(
                 "munin:users_premium_pricing_awaiting_charge",

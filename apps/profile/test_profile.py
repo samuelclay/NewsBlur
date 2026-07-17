@@ -1093,6 +1093,58 @@ class Test_PremiumPricingMigration(TestCase):
         self.assertIn("I cancelled the old PayPal subscription", mail.outbox[0].body)
         self.assertIn("https://newsblur.com/?next=premium", mail.outbox[0].body)
 
+    @override_settings(
+        PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True,
+        PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS=30,
+    )
+    @patch.object(Profile, "cancel_premium_paypal", return_value="I-SUB123")
+    @patch.object(Profile, "paypal_price_change_approval_url", return_value=None)
+    def test_dormant_legacy_paypal_is_not_cancelled(self, mock_approval_url, mock_cancel):
+        # A dormant grandfathered PayPal payer almost never resubscribes, so we leave their old
+        # subscription alone rather than converting a silent renewal into $0.
+        from django.core import mail
+
+        from apps.profile.models import PremiumPricingMigration
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.last_seen_on = datetime.datetime.now() - datetime.timedelta(days=90)
+        self.profile.save()
+        self._add_payment(24, provider="paypal")
+
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        mock_cancel.assert_not_called()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.premium_renewal)  # left grandfathered, untouched
+        self.assertEqual(len(mail.outbox), 0)
+        row = PremiumPricingMigration.objects.get(user=self.user)
+        self.assertEqual(row.status, "skipped_dormant")
+        self.assertEqual(row.provider, "paypal")
+        self.assertIsNone(row.paypal_canceled_date)
+
+    @override_settings(
+        PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True,
+        PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS=30,
+    )
+    @patch.object(Profile, "cancel_premium_paypal", return_value="I-SUB123")
+    @patch.object(Profile, "paypal_price_change_approval_url", return_value=None)
+    def test_active_legacy_paypal_still_cancelled_with_guard(self, mock_approval_url, mock_cancel):
+        # The dormancy guard must not block a recently-active subscriber from being cancelled.
+        from apps.profile.models import PremiumPricingMigration
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.last_seen_on = datetime.datetime.now() - datetime.timedelta(days=5)
+        self.profile.save()
+        self._add_payment(24, provider="paypal")
+
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        mock_cancel.assert_called_once()
+        row = PremiumPricingMigration.objects.get(user=self.user)
+        self.assertEqual(row.status, "cancelled")
+
     # --- Reconciliation ------------------------------------------------------
 
     def _emailed_row(self, provider="stripe", renewal_offset_days=-1):
@@ -1188,6 +1240,29 @@ class Test_PremiumPricingMigration(TestCase):
         row.refresh_from_db()
         self.assertEqual(row.status, "cancelled")
         self.assertIsNotNone(row.paypal_canceled_date)
+
+    @override_settings(
+        PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=True,
+        PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS=30,
+    )
+    @patch.object(Profile, "send_staff_pricing_would_cancel_email")
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_subscription_detail")
+    def test_reconcile_does_not_cancel_dormant_paypal(self, mock_detail, mock_cancel, mock_staff):
+        # Imminent non-approver, but dormant: cancelling forfeits their grandfathered payment for
+        # ~0% resubscribe chance, so leave the row parked at "emailed" and never touch PayPal.
+        row = self._emailed_row(provider="paypal")
+        self.profile.last_seen_on = datetime.datetime.now() - datetime.timedelta(days=90)
+        self.profile.save()
+        mock_detail.return_value = self._paypal_detail(plan_id="P-OLD-24", hours_until_billing=5)
+
+        Profile.reconcile_premium_pricing_migration()
+
+        mock_cancel.assert_not_called()
+        mock_staff.assert_not_called()
+        row.refresh_from_db()
+        self.assertEqual(row.status, "skipped_dormant")
+        self.assertIsNone(row.paypal_canceled_date)
 
     @patch.object(Profile, "send_staff_pricing_would_cancel_email")
     @patch.object(Profile, "cancel_premium_paypal")
