@@ -1748,10 +1748,27 @@ class Feed(models.Model):
         fpf = fetcher.fetch()
 
         if fpf:
-            from utils.feed_fetcher import ProcessFeed
+            from utils.feed_fetcher import FeedFetcherWorker, ProcessFeed
+            from utils.feed_functions import TimeoutError
 
-            processor = ProcessFeed(self.pk, fpf, {"verbose": False, "updates_off": False, "force": True})
-            processor.process()
+            options = {"verbose": False, "updates_off": False, "force": True, "compute_scores": True}
+            processor = ProcessFeed(self.pk, fpf, options)
+            ret_feed, ret_entries = processor.process()
+
+            # The regular fetch pipeline notifies subscribers after processing
+            # (process_feed_wrapper in utils/feed_fetcher.py); web feeds bypass that
+            # dispatcher, so without these calls new webfeed stories never set
+            # needs_unread_recalc (sidebar counts stay stale until the user opens
+            # the feed by hand) and never publish to the real-time pubsub.
+            if ret_entries and ret_entries.get("new"):
+                worker = FeedFetcherWorker(options)
+                worker.publish_to_subscribers(self, ret_entries["new"])
+                try:
+                    worker.count_unreads_for_subscribers(self, new_story_count=ret_entries["new"])
+                except TimeoutError:
+                    logging.debug(
+                        "   ---> [%-30s] ~FRWeb Feed: unread count took too long" % (self.log_title[:30],)
+                    )
 
         return self
 

@@ -8,6 +8,7 @@ Rules:
 - When matching on class, ALWAYS use contains(@class, 'token') with a SINGLE distinctive, content-describing token (e.g. contains(@class, 'post') or contains(@class, 'story-card')). NEVER match the whole class attribute with @class='a b c' -- modern sites (Tailwind, etc.) attach many utility classes, so the full string is brittle and breaks every time the site is rebuilt or the class order changes.
 - Pick the most semantic token and IGNORE layout/utility classes such as flex, grid, relative, container, row, col, mb-4, w-full, text-lg, and responsive prefixes like 'lg:', 'md:' or '@' -- those churn constantly and must never appear in your XPaths.
 - If no meaningful class exists, fall back to a stable id, a data-* attribute, or a semantic tag (article/section/li). Positional XPaths (e.g. div[3]) are a last resort.
+- NEVER pin selectors to the specific items on the page right now: no numeric item ids (e.g. @data-test-id='listing-item-32438580283' or @id='post-84721'), and no chains of or'd tests enumerating individual items. The story_container must match the items that will appear on this page NEXT WEEK, not just today's -- a selector that hardcodes item ids extracts the same items forever and the feed never finds a new story. If a data-* attribute embeds an item id, match its stable prefix with starts-with() or use a different attribute entirely.
 - Every variant MUST include a link (href) extraction
 - story_container must be an absolute XPath to the repeating element
 - title, link, content, image, author, date are relative XPaths within the container
@@ -52,7 +53,8 @@ WEBFEED_ANALYSIS_RETRY = """
 RETRY NOTE: A previous attempt produced selectors that matched ZERO items on this page, so it was discarded. The usual cause is over-specific element matching. This time:
 - Use contains(@class, 'token') with a SINGLE distinctive class token -- never match the full class attribute with @class='...'.
 - Choose the most semantic/stable token and ignore layout/utility tokens (flex, grid, relative, container, mb-4, w-full, and responsive prefixes like 'lg:' or '@').
-- Verify that each story_container token actually appears verbatim on an element in the HTML above before returning it."""
+- Verify that each story_container token actually appears verbatim on an element in the HTML above before returning it.
+- Never enumerate specific items (numeric item ids, or'd chains of individual elements) -- describe the repeating structure so future items match too."""
 
 
 WEBFEED_ANALYSIS_HINT = """

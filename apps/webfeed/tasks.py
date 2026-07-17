@@ -276,6 +276,18 @@ def parse_variants_json(response_text):
     return variants
 
 
+def filter_degenerate_variants(variants):
+    """Drop variants whose container XPath is pinned to specific items.
+
+    A container that enumerates item ids extracts the analysis-time items forever and
+    never finds a new story, which defeats the entire point of a web feed. See
+    is_degenerate_container_xpath in apps/webfeed/models.py.
+    """
+    from apps.webfeed.models import is_degenerate_container_xpath
+
+    return [v for v in variants if not is_degenerate_container_xpath(v.get("story_container"))]
+
+
 def rank_variants_by_previews(variants):
     """Order variants best-first by how many preview stories they extracted.
 
@@ -461,9 +473,16 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             parsed = parse_variants_json(text)
             if not parsed:
                 return parsed, 0, text
-            for variant in parsed:
+            usable_variants = filter_degenerate_variants(parsed)
+            if len(usable_variants) < len(parsed):
+                logging.user(
+                    user,
+                    "~BB~FWWeb Feed: ~FR~SBDropped %s degenerate variant(s)~SN~FW pinned to "
+                    "analysis-time items for ~SB%s~SN" % (len(parsed) - len(usable_variants), url),
+                )
+            for variant in usable_variants:
                 variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
-            ranked, usable = rank_variants_by_previews(parsed)
+            ranked, usable = rank_variants_by_previews(usable_variants)
             return ranked, usable, text
 
         # Step 3: First analysis pass, plus a single retry when nothing matched.
