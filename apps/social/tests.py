@@ -5,8 +5,36 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.social.models import MInteraction, MSocialProfile
+from apps.social.models import MInteraction, MSocialProfile, MSocialSubscription
 from utils import json_functions as json
+
+
+class Test_SocialSubscriptionFeeds(TestCase):
+    """Tests for MSocialSubscription.feeds (apps/social/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="socialsub-owner", password="password")
+        self.ghost_user = User.objects.create_user(username="socialsub-ghost", password="password")
+
+    def tearDown(self):
+        user_ids = [self.user.pk, self.ghost_user.pk]
+        MSocialSubscription.objects.filter(user_id__in=user_ids).delete()
+        MSocialSubscription.objects.filter(subscription_user_id__in=user_ids).delete()
+        MSocialProfile.objects.filter(user_id__in=user_ids).delete()
+
+    def test_feeds_skips_subscription_with_missing_profile(self):
+        """A social subscription pointing to a user with no MSocialProfile should be
+        skipped rather than raising KeyError. (Guards apps/reader load_feeds against a
+        500 when a subscribed blurblog's profile no longer exists.)"""
+        MSocialSubscription.objects.create(
+            user_id=self.user.pk, subscription_user_id=self.ghost_user.pk
+        )
+        # No MSocialProfile exists for ghost_user, so profile_feeds returns nothing for it.
+        self.assertEqual(MSocialProfile.objects.filter(user_id=self.ghost_user.pk).count(), 0)
+
+        feeds = MSocialSubscription.feeds(user_id=self.user.pk)
+
+        self.assertEqual(feeds, [])
 
 
 class Test_Interactions(TestCase):
