@@ -1,5 +1,6 @@
 import datetime
 import re
+import threading
 import time
 from unittest.mock import MagicMock, call, patch
 
@@ -13,6 +14,13 @@ from apps.briefing.models import MBriefingPreferences
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts, MStory
 from utils import json_functions as json
+
+# Real time.sleep captured before any test patches apps.reader.models.time.sleep.
+# Because apps.reader.models does `import time`, patching apps.reader.models.time.sleep
+# replaces sleep on the shared global time module, which would send background daemon
+# threads (e.g. pymongo's PeriodicExecutor busy-wait loop) into a full-speed spin. Tests
+# route those threads' sleeps back to the real implementation to keep them well-behaved.
+_REAL_SLEEP = time.sleep
 
 
 class Test_ReaderPreferencesBootstrap(TestCase):
@@ -523,18 +531,36 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
         mock_redis_cls.return_value = MagicMock()
         mock_mstory_objects.return_value.count.return_value = 0
 
+        # Patching apps.reader.models.time.sleep neutralizes sleep on the global time
+        # module. Background daemon threads (e.g. pymongo's PeriodicExecutor, whose
+        # busy-wait loop calls time.sleep(0.5)) would then spin at full speed, both
+        # polluting the call list with tens of thousands of unrelated sleep(0.5) calls
+        # and flooding the mock with enough recorded calls to hang the test (an 8-minute
+        # CI timeout was observed). So: sleeps from this test's own thread (where the
+        # synchronous finish_fetch_archive_feeds runs) are recorded and skipped; sleeps
+        # from any other thread run the real sleep so those threads stay well-behaved.
+        test_thread = threading.current_thread()
+        sleep_calls = []
+
+        def record_sleep(*args, **kwargs):
+            if threading.current_thread() is test_thread:
+                sleep_calls.append(call(*args, **kwargs))
+            else:
+                _REAL_SLEEP(*args, **kwargs)
+
+        mock_sleep.side_effect = record_sleep
+
         start_time = time.time()
         UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
 
         # sleep(0.5) should be called between feeds (n-1 times for n feeds).
-        # Filter to only our 0.5s calls since the mock patches time.sleep globally
-        # and other code (Django internals, DB ops) may also call time.sleep.
         expected_sleeps = len(self.feeds) - 1
-        sleep_half_calls = [c for c in mock_sleep.call_args_list if c == call(0.5)]
+        sleep_half_calls = [c for c in sleep_calls if c == call(0.5)]
         self.assertEqual(
             len(sleep_half_calls),
             expected_sleeps,
-            f"time.sleep(0.5) should be called {expected_sleeps} times (between feeds), got {len(sleep_half_calls)}",
+            f"time.sleep(0.5) should be called {expected_sleeps} times (between feeds), "
+            f"got {len(sleep_half_calls)}",
         )
 
     @patch("apps.reader.models.MStory.objects")
