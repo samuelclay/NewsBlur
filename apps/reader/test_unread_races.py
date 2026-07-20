@@ -136,3 +136,13 @@ class Test_UnreadRaces(TestCase):
         fresh = UserSubscription.objects.get(pk=self.sub.pk)
         self.assertTrue(fresh.needs_unread_recalc)
         self.assertEqual(fresh.mark_read_date, mark_read)
+
+    def test_social_mark_feed_read_accepts_force(self):
+        # mark_all_as_read and mark_feed_as_read pass force=True to every
+        # subscription type; MSocialSubscription must accept the argument or
+        # every user with a blurblog sub gets a TypeError marking all as read.
+        import inspect
+
+        from apps.social.models import MSocialSubscription
+
+        self.assertIn("force", inspect.signature(MSocialSubscription.mark_feed_read).parameters)
