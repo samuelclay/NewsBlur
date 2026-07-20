@@ -56,14 +56,14 @@ TransactionTestCase._fixture_setup = _fixture_setup_with_site
 if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
-        "name": "newsblur_test",
+        "name": "nb_test",
         "host": "newsblur_db_mongo:29019",
     }
 
 else:
     MONGO_PORT = 27017
     MONGO_DB = {
-        "name": "newsblur_test",
+        "name": "nb_test",
         "host": "127.0.0.1:27017",
     }
 
