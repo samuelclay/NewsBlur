@@ -353,7 +353,11 @@ def FetchWebFeed(feed_id, user_id):
         feed.count_subscribers()
 
         publish("processing")
-        feed.update()
+        # Force the first fetch: the user just subscribed and is looking at the
+        # feed. A non-forced update can be silently deferred for an hour or more
+        # by the per-domain fetch budget (utils/domain_fetch_limiter.py) when the
+        # domain is saturated, leaving a brand-new feed empty.
+        feed.update(force=True)
 
         feed = Feed.get_by_id(feed_id)
         publish("complete", {"feed": feed.canonical() if feed else None})

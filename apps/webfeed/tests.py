@@ -589,3 +589,82 @@ class Test_WebFeedNotifiesSubscribers(TestCase):
 
         MockProcess.assert_not_called()
         MockWorker.assert_not_called()
+
+
+class Test_HashedUtilityClassXPaths(TestCase):
+    """AbeBooks' hashed atomic-CSS classes (d_fc, d_fa, d_hr) churn on every site
+    rebuild, so containers matched on them die at the next deploy. The July 19
+    analyses produced d_hr containers that never extracted a story."""
+
+    def test_hashed_atomic_class_is_degenerate(self):
+        self.assertTrue(is_degenerate_container_xpath("//li[contains(@class, 'd_hr')]"))
+        self.assertTrue(is_degenerate_container_xpath("//li[contains(@class, 'd_fc')]"))
+        self.assertTrue(is_degenerate_container_xpath("//ul[@id='srp-results']/li[contains(@class, 'a_b1')]"))
+
+    def test_semantic_tokens_are_fine(self):
+        for xpath in [
+            "//li[contains(@class, 'result-item')]",
+            "//div[contains(@class, 'story_card')]",
+            "//article[contains(@class, 'post')]",
+        ]:
+            self.assertFalse(is_degenerate_container_xpath(xpath), xpath)
+
+
+class Test_EmptySearchResults(TestCase):
+    """A results page that says the search matched nothing is a healthy feed with
+    zero stories: it must not count toward reanalysis or flag exception 590."""
+
+    def make_fetcher(self, html):
+        from apps.rss_feeds.models import Feed
+
+        feed = Feed(
+            pk=202,
+            feed_title="Empty search",
+            feed_address="webfeed:https://example.com/search?q=rare",
+            archive_subscribers=1,
+        )
+        config = MagicMock()
+        config.story_container_xpath = "//li[contains(@class, 'result-item')]"
+        with patch.object(MWebFeedConfig, "get_config", return_value=config):
+            fetcher = WebFeedFetcher(feed)
+        fetcher.config = config
+        fetcher._fetch_html = lambda: html
+        return fetcher, config, feed
+
+    def test_no_results_page_records_success_not_failure(self):
+        html = "<html><body><h2>No exact matches</h2><p>Try a new search.</p></body></html>"
+        fetcher, config, feed = self.make_fetcher(html)
+        feed.has_feed_exception = True
+        feed.exception_code = 590
+        with patch.object(type(feed), "save") as mock_save:
+            result = fetcher.fetch()
+        self.assertIsNone(result)
+        config.record_success.assert_called_once()
+        config.record_failure.assert_not_called()
+        self.assertFalse(feed.has_feed_exception)
+        mock_save.assert_called_once()
+
+    def test_zero_extraction_without_marker_still_counts_as_failure(self):
+        html = "<html><body><div class='totally-different-markup'>listings here</div></body></html>"
+        fetcher, config, feed = self.make_fetcher(html)
+        config.needs_reanalysis = False
+        result = fetcher.fetch()
+        self.assertIsNone(result)
+        config.record_failure.assert_called_once()
+        config.record_success.assert_not_called()
+
+
+class Test_InitialFetchIsForced(TestCase):
+    """The first fetch after subscribing must bypass the per-domain fetch budget:
+    a deferred initial fetch leaves a brand-new feed empty for an hour or more on
+    a saturated domain, which reads as a broken subscription."""
+
+    @patch("apps.webfeed.tasks.redis.Redis")
+    @patch("apps.webfeed.tasks.User")
+    def test_fetch_webfeed_forces_update(self, MockUser, MockRedis):
+        from apps.webfeed.tasks import FetchWebFeed
+
+        feed = MagicMock()
+        with patch("apps.rss_feeds.models.Feed.get_by_id", return_value=feed):
+            FetchWebFeed(feed_id=101, user_id=1)
+        feed.update.assert_called_once_with(force=True)
