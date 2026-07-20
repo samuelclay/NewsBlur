@@ -1512,7 +1512,11 @@ class MSocialSubscription(mongo.Document):
                 # XXX TODO: Real-time notification, just for this user
         return data
 
-    def mark_feed_read(self, cutoff_date=None):
+    def mark_feed_read(self, cutoff_date=None, force=False):
+        # force exists for signature parity with UserSubscription.mark_feed_read in
+        # apps/reader/models.py: mark_all_as_read and mark_feed_as_read pass
+        # force=True to both subscription types. Social subs have no zero-badge
+        # early return to bypass, so the flag changes nothing here.
         user_profile = Profile.objects.get(user_id=self.user_id)
         recount = True
 
