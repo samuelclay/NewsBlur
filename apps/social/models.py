@@ -1004,13 +1004,19 @@ class MSocialSubscription(mongo.Document):
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for social_sub in social_subs:
                 user_id = social_sub.subscription_user_id
-                if social_profiles[user_id]["shared_stories_count"] <= 0:
+                # A subscription can outlive the blurblog's profile (deleted/never created),
+                # in which case profile_feeds returns nothing for it. Skip it rather than
+                # 500 the whole feed load. (apps/social/models.py)
+                profile = social_profiles.get(user_id)
+                if not profile:
+                    continue
+                if profile["shared_stories_count"] <= 0:
                     continue
                 if update_counts and social_sub.needs_unread_recalc:
                     social_sub.calculate_feed_scores()
 
                 # Combine subscription read counts with feed/user info
-                feed = dict(list(social_sub.canonical().items()) + list(social_profiles[user_id].items()))
+                feed = dict(list(social_sub.canonical().items()) + list(profile.items()))
                 social_feeds.append(feed)
 
         return social_feeds
