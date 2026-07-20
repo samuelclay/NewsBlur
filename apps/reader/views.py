@@ -3185,7 +3185,7 @@ def mark_all_as_read(request):
     for subtype in [feeds, socialsubs]:
         for sub in subtype:
             if days == 0:
-                sub.mark_feed_read()
+                sub.mark_feed_read(force=True)
             else:
                 if sub.mark_read_date < read_date:
                     sub.needs_unread_recalc = True
@@ -3736,7 +3736,7 @@ def mark_feed_as_read(request):
 
         try:
             if direction == "older":
-                marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+                marked_read = sub.mark_feed_read(cutoff_date=cutoff_date, force=True)
             else:
                 marked_read = sub.mark_newer_stories_read(cutoff_date=cutoff_date)
             if marked_read and not multiple:

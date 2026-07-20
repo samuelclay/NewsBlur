@@ -2002,10 +2002,13 @@ class FeedFetcherWorker:
         if not user_subs.count():
             return
 
-        for sub in user_subs:
-            if not sub.needs_unread_recalc:
-                sub.needs_unread_recalc = True
-                sub.save()
+        # Set the recalc flag with an atomic UPDATE instead of full-model saves: a
+        # save() writes back every field from an instance read moments earlier, so
+        # one landing just after a user's mark_feed_read (apps/reader/models.py)
+        # reverts their mark_read_date wholesale and resurrects read stories as
+        # unread. The queryset stays unevaluated here, so calculate_feed_scores
+        # below also runs on instances fetched after the flag update, not before.
+        user_subs.filter(needs_unread_recalc=False).update(needs_unread_recalc=True)
 
         if self.options["compute_scores"]:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

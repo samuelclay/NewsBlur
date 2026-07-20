@@ -12,6 +12,11 @@ import mongoengine as mongo
 ITEM_ID_DIGIT_RUN_RE = re.compile(r"\d{5,}")
 MAX_CONTAINER_OR_CHAIN = 2
 
+# Hashed atomic-CSS class tokens (d_fc, d_hr, a_b1) churn on every site rebuild, so a
+# container matched on one dies at the next deploy even though it extracts fine today.
+# Real semantic tokens (result-item, story-card, post) never look like this.
+ATOMIC_CSS_CLASS_RE = re.compile(r"contains\(@class,\s*'[A-Za-z]{1,2}_[A-Za-z0-9]{1,4}'\s*\)")
+
 
 def is_degenerate_container_xpath(xpath):
     """True when a container XPath is pinned to specific items instead of structure."""
@@ -20,6 +25,8 @@ def is_degenerate_container_xpath(xpath):
     if ITEM_ID_DIGIT_RUN_RE.search(xpath):
         return True
     if xpath.count(" or ") > MAX_CONTAINER_OR_CHAIN:
+        return True
+    if ATOMIC_CSS_CLASS_RE.search(xpath):
         return True
     return False
 

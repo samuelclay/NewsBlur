@@ -1425,9 +1425,20 @@ class UserSubscription(models.Model):
             % (old_count - new_total, old_count, new_count, missing_count),
         )
 
-    def mark_feed_read(self, cutoff_date=None):
+    def mark_feed_read(self, cutoff_date=None, force=False):
+        # Zero badge counts can't always be trusted: they go stale whenever a
+        # recount is missed (the webfeed notify bug left thousands of subs with
+        # zero badges over weeks of unread stories), and skipping on stale zeros
+        # makes an explicit mark-read a silent no-op -- the un-advanced cutoff
+        # then resurfaces all those stories as unread at the next recount. User
+        # actions (mark_all_as_read, mark_feed_as_read in apps/reader/views.py)
+        # pass force=True to advance the cutoff regardless of what the badges
+        # claim. Internal recount-driven calls (calculate_feed_scores) keep the
+        # skip: they run right after computing a zero, and forcing there would
+        # cement a wrong zero from a racing recount by marking everything read.
         if (
-            self.unread_count_negative == 0
+            not force
+            and self.unread_count_negative == 0
             and self.unread_count_neutral == 0
             and self.unread_count_positive == 0
             and not self.needs_unread_recalc
@@ -1985,8 +1996,16 @@ class UserSubscription(models.Model):
             update_fields.append("is_trained")
         if len(update_fields):
             update_dict = {field: getattr(self, field) for field in update_fields}
-            if not UserSubscription.objects.filter(pk=self.pk).update(**update_dict):
-                return None
+            # Write the counts only if no story was marked read while we were
+            # recomputing: mark_story_ids_as_read and mark_feed_read both advance
+            # last_read_date, and counts computed against the pre-read snapshot
+            # would overwrite the mark-read's zeros with stale numbers -- a badge
+            # with no unread stories behind it. When the write is rejected, leave
+            # the recalc flag set so the next recount runs from fresh state.
+            if not UserSubscription.objects.filter(pk=self.pk, last_read_date=olrd).update(**update_dict):
+                UserSubscription.objects.filter(pk=self.pk).update(needs_unread_recalc=True)
+                self.needs_unread_recalc = True
+                return self
 
         # Clear needs_unread_recalc only if no story was marked read while we were
         # recomputing. mark_story_ids_as_read advances last_read_date (and sets the
