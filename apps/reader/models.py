@@ -2065,7 +2065,7 @@ class UserSubscription(models.Model):
         )
 
         if min_score <= -2:
-            return -1  # super downvote → negative bucket
+            return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
         elif max_score > 0:
             return 1
         elif min_score < 0:

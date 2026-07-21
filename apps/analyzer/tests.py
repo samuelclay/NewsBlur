@@ -1647,10 +1647,20 @@ class Test_SuperDownvote(TransactionTestCase):
         self.assertGreater(score, 0)
 
     def test_score_story_super_downvote_returns_negative_bucket(self):
-        """UserSubscription.score_story() puts super-downvoted stories in negative bucket."""
+        """UserSubscription.score_story() keeps the super-downvote score (-2), which is
+        still negative, so it beats a competing positive classifier."""
         scores = {"author": -2, "tags": 1, "title": 0, "feed": 0}
         result = UserSubscription.score_story(scores)
-        self.assertEqual(result, -1)
+        self.assertEqual(result, -2)
+
+    def test_score_story_distinguishes_dislike_from_super_dislike(self):
+        """score_story() must ship -2 for a super-dislike and -1 for a normal dislike so
+        clients that trust the API score field (mobile, briefing) can tell them apart.
+        Regression test for the API collapsing -2 down to -1."""
+        dislike = {"author": -1, "tags": 0, "title": 0, "feed": 0}
+        super_dislike = {"author": -2, "tags": 0, "title": 0, "feed": 0}
+        self.assertEqual(UserSubscription.score_story(dislike), -1)
+        self.assertEqual(UserSubscription.score_story(super_dislike), -2)
 
     def test_save_classifier_super_dislike(self):
         """API endpoint accepts super_dislike_title and saves score=-2."""
