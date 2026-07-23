@@ -179,10 +179,13 @@ RIVER_SLOWDOWN_USERS = []
 
 
 def get_subdomain(request):
+    if hasattr(request, "subdomain"):
+        return request.subdomain
     host = request.META.get("HTTP_HOST")
     if host and host.count(".") >= 2:
         return host.split(".")[0]
     else:
+        return None
         return None
 
 
