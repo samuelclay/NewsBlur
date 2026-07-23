@@ -33,6 +33,12 @@ interface NetworkClient {
         valueMap: ValueMultimap,
     ): APIResponse
 
+    suspend fun postWithoutRetry(
+        urlString: String,
+        valueMap: ValueMultimap,
+        readTimeoutSeconds: Long,
+    ): APIResponse
+
     fun updateCustomUserAgent(customUserAgent: String)
 
     fun addCookieHeader(requestBuilder: Request.Builder)

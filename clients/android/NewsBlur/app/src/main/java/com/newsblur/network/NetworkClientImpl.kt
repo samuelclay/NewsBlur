@@ -9,10 +9,14 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
+import kotlinx.coroutines.CompletableDeferred
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okio.ByteString
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -24,6 +28,7 @@ class NetworkClientImpl(
     prefsRepo: PrefsRepo,
 ) : NetworkClient {
     private var customUserAgent: String = initialUserAgent
+    private val inFlightPosts = ConcurrentHashMap<InFlightPostKey, CompletableDeferred<APIResponse>>()
 
     init {
         APIConstants.setCustomServer(prefsRepo.getCustomServer())
@@ -78,6 +83,42 @@ class NetworkClientImpl(
         valueMap: ValueMultimap,
     ): APIResponse = post(urlString, valueMap.asFormEncodedRequestBody())
 
+    override suspend fun postWithoutRetry(
+        urlString: String,
+        valueMap: ValueMultimap,
+        readTimeoutSeconds: Long,
+    ): APIResponse {
+        val formBody = valueMap.asFormEncodedRequestBody()
+        val key =
+            InFlightPostKey(
+                urlString = urlString,
+                formBody = formBody.toByteString(),
+                readTimeoutSeconds = readTimeoutSeconds,
+            )
+        val ownedResponse = CompletableDeferred<APIResponse>()
+        val inFlightResponse = inFlightPosts.putIfAbsent(key, ownedResponse)
+        if (inFlightResponse != null) {
+            return inFlightResponse.await()
+        }
+
+        try {
+            val requestClient =
+                client
+                    .newBuilder()
+                    .readTimeout(readTimeoutSeconds, TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(false)
+                    .build()
+            val response = postSingle(urlString, formBody, requestClient)
+            ownedResponse.complete(response)
+            return response
+        } catch (throwable: Throwable) {
+            ownedResponse.completeExceptionally(throwable)
+            throw throwable
+        } finally {
+            inFlightPosts.remove(key, ownedResponse)
+        }
+    }
+
     override fun updateCustomUserAgent(customUserAgent: String) {
         this.customUserAgent = customUserAgent
     }
@@ -117,6 +158,7 @@ class NetworkClientImpl(
     private fun postSingle(
         urlString: String,
         formBody: RequestBody,
+        requestClient: OkHttpClient = client,
     ): APIResponse {
         if (!NetworkUtils.isOnline(context)) {
             return APIResponse()
@@ -139,7 +181,13 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
 
-        return APIResponse(client, requestBuilder.build())
+        return APIResponse(requestClient, requestBuilder.build())
+    }
+
+    private fun RequestBody.toByteString(): ByteString {
+        val buffer = okio.Buffer()
+        writeTo(buffer)
+        return buffer.readByteString()
     }
 
     /**
@@ -157,4 +205,10 @@ class NetworkClientImpl(
             Log.w(this.javaClass.name, "Abandoning API backoff due to interrupt.")
         }
     }
+
+    private data class InFlightPostKey(
+        val urlString: String,
+        val formBody: ByteString,
+        val readTimeoutSeconds: Long,
+    )
 }
