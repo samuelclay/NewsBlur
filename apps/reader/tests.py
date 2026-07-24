@@ -580,3 +580,109 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
 
         # Verify fetch_archive:done was published
         mock_r.publish.assert_called_with(self.user.username, "fetch_archive:done")
+
+
+class Test_PeekNewStoryHashes(TestCase):
+    """Tests for UserSubscription.peek_new_story_hashes — the new-stories
+    indicator's ranked-stories peek. Must return the diff between server-side
+    top hashes and the client's known hashes, without touching the paging
+    cache keys that infinite scroll relies on."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="peekuser", password="testpass", email="peek@test.com")
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_returns_empty_when_no_feed_ids(self, mock_redis_cls):
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[], known_story_hashes=[]
+        )
+        self.assertEqual(result, [])
+        mock_redis_cls.assert_not_called()
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_returns_empty_for_starred_filter(self, mock_redis_cls):
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[42], read_filter="starred", known_story_hashes=[]
+        )
+        self.assertEqual(result, [])
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_single_feed_peek_reads_zF_key(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_r.exists.return_value = True
+        mock_r.zrevrange.return_value = [b"42:aaa", b"42:bbb", b"42:ccc"]
+
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[42], read_filter="all", known_story_hashes=["42:bbb"]
+        )
+
+        # Only unseen hashes, in server order, normalized to str
+        self.assertEqual(result, ["42:aaa", "42:ccc"])
+        mock_r.exists.assert_called_once_with("zF:42")
+        mock_r.zrevrange.assert_called_once_with("zF:42", 0, 24)
+        # Critical: peek must NOT delete, zadd, or expire the paging cache
+        mock_r.delete.assert_not_called()
+        mock_r.zadd.assert_not_called()
+        mock_r.expire.assert_not_called()
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_single_feed_unread_reads_zU_key(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_r.exists.return_value = True
+        mock_r.zrevrange.return_value = [b"42:aaa"]
+
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[42], read_filter="unread", known_story_hashes=[]
+        )
+
+        self.assertEqual(result, ["42:aaa"])
+        mock_r.exists.assert_called_once_with("zU:%s:42" % self.user.pk)
+        mock_r.delete.assert_not_called()
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_river_peek_uses_shared_cache_key(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_r.exists.return_value = True
+        mock_r.zrevrange.return_value = [b"7:abc", b"11:def"]
+
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[7, 11], read_filter="unread", known_story_hashes=["11:def"]
+        )
+
+        self.assertEqual(result, ["7:abc"])
+        # River peek targets the user's merged ranked-stories key, not zF:
+        called_key = mock_r.exists.call_args[0][0]
+        self.assertTrue(called_key.startswith("zhU:") or called_key.startswith("zU:"))
+        # And does not disturb that cache
+        mock_r.delete.assert_not_called()
+        mock_r.zadd.assert_not_called()
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_returns_empty_when_cache_missing(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_r.exists.return_value = False
+
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[42], read_filter="all", known_story_hashes=[]
+        )
+
+        self.assertEqual(result, [])
+        mock_r.zrevrange.assert_not_called()
+        mock_r.delete.assert_not_called()
+
+    @patch("apps.reader.models.redis.Redis")
+    def test_drops_known_hashes_preserving_order(self, mock_redis_cls):
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_r.exists.return_value = True
+        mock_r.zrevrange.return_value = [b"42:a", b"42:b", b"42:c", b"42:d"]
+
+        result = UserSubscription.peek_new_story_hashes(
+            self.user.pk, feed_ids=[42], read_filter="all", known_story_hashes=["42:b", "42:c"]
+        )
+
+        self.assertEqual(result, ["42:a", "42:d"])

@@ -375,7 +375,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var pane_anchor = this.options.pane_anchor;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function (story) {
+            // story_titles_view.js: When prepending (new-stories indicator click),
+            // the freshly-inserted models live at the START of the collection.
+            var prepending = options.prepend;
+            var source_models = prepending ?
+                this.collection.models.slice(0, options.added) :
+                this.collection.models.slice(-1 * options.added);
+            var stories = _.compact(_.map(source_models, function (story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
@@ -394,18 +400,25 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     in_add_site_view: in_add_site_view
                 }).render();
             }));
-            this.stories = this.stories.concat(stories);
             var $stories = _.map(stories, function (story) {
                 return story.el;
             });
-            this.$el.append($stories);
+            if (prepending) {
+                this.stories = stories.concat(this.stories);
+                this.$el.prepend($stories);
+            } else {
+                this.stories = this.stories.concat(stories);
+                this.$el.append($stories);
+            }
             if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || this.options.on_trending_feed) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
             }
         }
         this.end_loading();
-        this.fill_out();
+        if (!options.prepend) {
+            this.fill_out();
+        }
     },
 
     clear: function () {
