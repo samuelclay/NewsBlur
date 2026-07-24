@@ -32,6 +32,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-url": "save_url_classifier",
+        "mouseenter .NB-feed-story-tag": "show_pill_filter_menu",
+        "mouseenter .NB-feed-story-author": "show_pill_filter_menu",
+        "mouseenter .NB-feed-story-url": "show_pill_filter_menu",
+        "click .NB-pill-view-classifier": "open_classifier_filter_from_pill",
         "click .NB-feed-story-ai-classifier": "open_trainer_from_ai_pill",
         "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "open_email",
@@ -1974,6 +1978,73 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Open the Intelligence Trainer instead of toggling inline
         // URL classifiers are complex and benefit from the full trainer interface
         this.open_story_trainer();
+    },
+
+    show_pill_filter_menu: function (e) {
+        var $pill = $(e.currentTarget);
+        if ($pill.data('NB-pill-tippy-initialized')) return;
+        $pill.data('NB-pill-tippy-initialized', true);
+
+        var type;
+        if ($pill.hasClass('NB-feed-story-tag')) type = 'tag';
+        else if ($pill.hasClass('NB-feed-story-author')) type = 'author';
+        else if ($pill.hasClass('NB-feed-story-url')) type = 'url';
+        if (!type) return;
+
+        // URL pills display highlighted segments; fall back to the full
+        // permalink so the filter matches a real URL substring.
+        var value;
+        if (type === 'url') {
+            value = this.model.get('story_permalink') || '';
+        } else {
+            var $clean = $pill.clone();
+            $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+            value = _.string.trim($clean.text());
+        }
+        if (!value) return;
+
+        // Embed type+value as data attributes on the tippy content itself
+        // so the click handler can read them straight off e.currentTarget
+        // without tracing back to the originating pill.
+        var escaped_value = $('<div/>').text(value).html().replace(/"/g, '&quot;');
+        var title_html =
+            '<span class="NB-pill-view-classifier" data-classifier-type="' + type +
+            '" data-classifier-value="' + escaped_value + '">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>' +
+            ' View matching stories' +
+            '</span>';
+        $pill.attr('title', title_html);
+
+        var $t = tippy($pill.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'small',
+            duration: 200,
+            animation: 'scale',
+            trigger: 'mouseenter focus',
+            interactive: true,
+            performance: true,
+            delay: [300, 100]
+        });
+
+        // Tippy normally waits for the next mouseenter after init; nudge
+        // the first show so the popup appears on the initial hover.
+        _.defer(function () {
+            if ($t && $t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
+    open_classifier_filter_from_pill: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        var $trigger = $(e.currentTarget);
+        var type = $trigger.attr('data-classifier-type');
+        var value = $trigger.attr('data-classifier-value');
+        if (!type || !value) return;
+        NEWSBLUR.reader.open_classifier_filter(type, value, {
+            scope: 'feed',
+            origin: 'pill'
+        });
     },
 
     open_trainer_from_ai_pill: function () {

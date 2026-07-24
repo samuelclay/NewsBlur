@@ -77,6 +77,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
                 }
             });
         }
+        this.apply_classifier_filter_from_url();
     },
 
     read: function () {
@@ -133,6 +134,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
         console.log(["starred", options, tag]);
         NEWSBLUR.reader.open_starred_stories(options);
+        this.apply_classifier_filter_from_url();
     },
 
     folder: function (folder_name) {
@@ -174,6 +176,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
                 NEWSBLUR.reader.open_river_stories(folder.folder_view.$el, folder, options);
             }
         }
+        this.apply_classifier_filter_from_url();
     },
 
     social: function (user_id, slug) {
@@ -199,6 +202,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
                 }
             });
         }
+        this.apply_classifier_filter_from_url();
     },
 
     extract_query: function () {
@@ -209,6 +213,30 @@ NEWSBLUR.Router = Backbone.Router.extend({
         // console.log('extract_query', search, sanitized);
 
         return sanitized;
+    },
+
+    // media/js/newsblur/common/router.js — reads classifier_<type> from
+    // the URL query string and re-applies the filter. Called by every
+    // route handler that opens a story list (site, folder, starred,
+    // social). `from_router: true` prevents open_classifier_filter from
+    // pushing a new history entry on top of the one that just arrived.
+    // Delegates parsing to reader.read_classifier_filter_from_url so the
+    // URL shape (classifier_tag, classifier_author, ...) stays owned by
+    // one file.
+    apply_classifier_filter_from_url: function () {
+        var parsed = NEWSBLUR.reader.read_classifier_filter_from_url &&
+            NEWSBLUR.reader.read_classifier_filter_from_url();
+        if (!parsed) return;
+        // Defer so the underlying feed has a chance to load first; the
+        // filter re-issues reload_feed with the classifier params anyway.
+        _.defer(function () {
+            NEWSBLUR.reader.open_classifier_filter(parsed.type, parsed.value, {
+                scope: parsed.scope,
+                folder_name: parsed.folder_name || null,
+                origin: 'url',
+                from_router: true
+            });
+        });
     },
 
     user: function (user) {
