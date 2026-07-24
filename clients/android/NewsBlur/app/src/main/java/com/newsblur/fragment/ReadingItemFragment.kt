@@ -172,6 +172,7 @@ class ReadingItemFragment :
     private var isWebViewReleasedForBackground = false
     private var isRestoringReleasedWebView = false
     private var readingWebview: NewsblurWebview? = null
+    private var hasWebViewContent = false
     private var readingWebviewParent: ViewGroup? = null
     private var readingWebviewLayoutParams: ViewGroup.LayoutParams? = null
     private var readingWebviewIndex = -1
@@ -289,11 +290,12 @@ class ReadingItemFragment :
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = isWebViewReleasedForBackground,
                 hasCompletedInitialStoryRender = hasCompletedInitialStoryRender,
+                hasWebViewContent = hasWebViewContent,
             )
         logReaderRestore(
             "onResume released=$isWebViewReleasedForBackground completed=$hasCompletedInitialStoryRender " +
-                "reload=$shouldReloadStoryContent savedPx=$savedScrollPosPx savedRel=$savedScrollPosRel " +
-                "hasSaved=$hasSavedScrollPosition preferAbs=$preferAbsoluteScrollRestore",
+                "hasContent=$hasWebViewContent reload=$shouldReloadStoryContent savedPx=$savedScrollPosPx " +
+                "savedRel=$savedScrollPosRel hasSaved=$hasSavedScrollPosition preferAbs=$preferAbsoluteScrollRestore",
         )
         isRestoringReleasedWebView = isWebViewReleasedForBackground
         if (shouldReloadStoryContent) {
@@ -318,6 +320,7 @@ class ReadingItemFragment :
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
         readingWebview = binding.readingWebview
+        hasWebViewContent = false
         readingWebviewParent = binding.readingWebview.parent as? ViewGroup
         readingWebviewLayoutParams = binding.readingWebview.layoutParams
         readingWebviewIndex = readingWebviewParent?.indexOfChild(binding.readingWebview) ?: -1
@@ -1479,6 +1482,7 @@ class ReadingItemFragment :
 
                 isWebLoadFinished.set(false)
                 ensureReadingWebview().loadDataWithBaseURL(READING_BASE_URL, html, "text/html", "UTF-8", null)
+                hasWebViewContent = true
                 onContentLoadFinished()
             }
         }
@@ -1777,6 +1781,7 @@ class ReadingItemFragment :
         parent.addView(recreatedWebview, insertIndex, layoutParams)
         configureReadingWebview(recreatedWebview, readingActivity)
         readingWebview = recreatedWebview
+        hasWebViewContent = false
         return recreatedWebview
     }
 
@@ -1804,6 +1809,7 @@ class ReadingItemFragment :
         webview.removeAllViews()
         webview.destroy()
         readingWebview = null
+        hasWebViewContent = false
     }
 
     companion object {
@@ -1878,7 +1884,8 @@ class ReadingItemFragment :
 internal fun shouldReloadStoryContentOnResume(
     isWebViewReleasedForBackground: Boolean,
     hasCompletedInitialStoryRender: Boolean,
-): Boolean = isWebViewReleasedForBackground || !hasCompletedInitialStoryRender
+    hasWebViewContent: Boolean,
+): Boolean = isWebViewReleasedForBackground || !hasCompletedInitialStoryRender || !hasWebViewContent
 
 internal fun shouldCaptureScrollPositionBeforeWebViewRelease(
     isViewStarted: Boolean,

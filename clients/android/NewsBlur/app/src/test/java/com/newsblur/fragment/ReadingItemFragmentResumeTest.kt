@@ -12,6 +12,18 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = false,
                 hasCompletedInitialStoryRender = true,
+                hasWebViewContent = true,
+            ),
+        )
+    }
+
+    @Test
+    fun recreatedEmptyWebViewReloadsCompletedStoryOnResume() {
+        assertTrue(
+            shouldReloadStoryContentOnResume(
+                isWebViewReleasedForBackground = false,
+                hasCompletedInitialStoryRender = true,
+                hasWebViewContent = false,
             ),
         )
     }
@@ -22,6 +34,7 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = true,
                 hasCompletedInitialStoryRender = true,
+                hasWebViewContent = true,
             ),
         )
     }
@@ -32,6 +45,7 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = false,
                 hasCompletedInitialStoryRender = false,
+                hasWebViewContent = true,
             ),
         )
     }
