@@ -20,6 +20,7 @@ from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
+from apps.social.models import MSharedStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required
@@ -191,6 +192,27 @@ def load_briefing_stories(request):
         }
         briefing_list.append(briefing_data)
 
+    # views.py: Attach friend/public shares and comments to every briefing story so
+    # the story detail view can render the social teaser. _story_to_dict only sets the
+    # denormalized share_count/comment_count; without the social arrays (shared_by_friends,
+    # friend_shares, friend_comments, ...) the client's comment renderer has counts but no
+    # data to back them. stories_with_comments_and_profiles mutates the dicts in place and
+    # returns the profiles the client needs to resolve those user_ids into avatars.
+    all_briefing_stories = []
+    for briefing_data in briefing_list:
+        if briefing_data.get("summary_story"):
+            all_briefing_stories.append(briefing_data["summary_story"])
+        all_briefing_stories.extend(briefing_data.get("curated_stories") or [])
+
+    user_profiles = []
+    if all_briefing_stories:
+        try:
+            all_briefing_stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(
+                all_briefing_stories, user.pk
+            )
+        except redis.ConnectionError:
+            logging.user(request, "~BR~FK~SBRedis is unavailable for briefing shared stories.")
+
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     section_definitions = {s["key"]: s["name"] for s in BRIEFING_SECTION_DEFINITIONS}
@@ -235,6 +257,7 @@ def load_briefing_stories(request):
         "briefing_feed_id": prefs.briefing_feed_id,
         "enabled": prefs.enabled,
         "section_definitions": section_definitions,
+        "user_profiles": user_profiles,
         "has_next_page": has_next_page,
         "page": page,
     }
