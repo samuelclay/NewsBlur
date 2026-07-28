@@ -1742,6 +1742,55 @@ class Test_Views(BriefingTestCase):
         self.assertIn("preferences", data)
         self.assertIn("frequency", data["preferences"])
 
+    @patch("apps.briefing.views.redis.Redis")
+    def test_load_includes_user_profiles_key(self, mock_redis_cls):
+        # tests.py: The client reads data.user_profiles to resolve briefing sharers
+        # and commenters into avatars. The key must always be present (empty is fine).
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+        mock_pipe.execute.return_value = [False]
+
+        story = self.make_story(self.feed, "Plain Story")
+        self.make_briefing(curated_hashes=[story.story_hash])
+
+        response = self.client.get(reverse("load-briefing-stories"))
+        data = json.decode(response.content)
+        self.assertIn("user_profiles", data)
+        self.assertIsInstance(data["user_profiles"], list)
+
+    @patch("apps.briefing.views.MSharedStory.stories_with_comments_and_profiles")
+    @patch("apps.briefing.views.redis.Redis")
+    def test_load_attaches_social_arrays_to_stories(self, mock_redis_cls, mock_social):
+        # tests.py: Reproduces the render_shares_friends crash. _story_to_dict/format_story
+        # sets the denormalized share_count but never shared_by_friends, so the client read
+        # undefined.length. The endpoint must run stories_with_comments_and_profiles so the
+        # story dict carries shared_by_friends and the response carries the sharer profile.
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+        mock_pipe.execute.return_value = [False]
+
+        def fake_attach(stories, user_id, check_all=False):
+            for s in stories:
+                s["shared_by_friends"] = [42]
+                s["friend_shares"] = []
+            return stories, [{"user_id": 42, "username": "sharer"}]
+
+        mock_social.side_effect = fake_attach
+
+        story = self.make_story(self.feed, "Shared Story")
+        self.make_briefing(curated_hashes=[story.story_hash])
+
+        response = self.client.get(reverse("load-briefing-stories"))
+        data = json.decode(response.content)
+
+        rendered_story = data["briefings"][0]["curated_stories"][0]
+        self.assertEqual(rendered_story["shared_by_friends"], [42])
+        self.assertEqual(data["user_profiles"], [{"user_id": 42, "username": "sharer"}])
+
     # --- briefing_preferences ---
 
     def test_get_returns_defaults(self):

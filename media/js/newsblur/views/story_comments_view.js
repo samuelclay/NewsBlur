@@ -89,7 +89,11 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     },
 
     render_shares_friends: function () {
-        var shares_without_comments = this.model.get('shared_by_friends');
+        // story_comments_view.js: Briefing stories carry share_count/comment_count
+        // from the denormalized MStory counts but never get the social arrays
+        // (shared_by_friends, friend_shares, ...) attached, so default to an empty
+        // list rather than crashing on undefined.length.
+        var shares_without_comments = this.model.get('shared_by_friends') || [];
         if (shares_without_comments.length <= 0) return;
 
         var $header = $.make('div', {
