@@ -56,6 +56,7 @@ from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
+from utils.analytics_degradation import skip_when_analytics_down
 from utils.feed_functions import (
     TimeoutError,
     is_openrss_feed_address,
@@ -4934,6 +4935,19 @@ class MSavedSearch(mongo.Document):
             cls.objects(**params).delete()
 
 
+def empty_fetch_history():
+    """Fetch history shaped like MFetchHistory.feed() returns, but with no entries.
+
+    Used when the analytics DB is unavailable: callers index these keys
+    directly, so they need every key present rather than an empty dict.
+    """
+    return {
+        "feed_fetch_history": [],
+        "page_fetch_history": [],
+        "push_history": [],
+    }
+
+
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
@@ -4948,6 +4962,7 @@ class MFetchHistory(mongo.Document):
     }
 
     @classmethod
+    @skip_when_analytics_down(default=empty_fetch_history)
     def feed(cls, feed_id, timezone=None, fetch_history=None):
         if not fetch_history:
             try:
@@ -4972,6 +4987,7 @@ class MFetchHistory(mongo.Document):
         return history
 
     @classmethod
+    @skip_when_analytics_down(default=empty_fetch_history)
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()

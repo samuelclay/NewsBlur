@@ -1466,17 +1466,21 @@ class FeedFetcherWorker:
         connection._connection_settings = {}
         connection._dbs = {}
         settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
+        # Same fail-fast timeouts as newsblur_web/settings.py: analytics is
+        # optional, so it must never hold up a feed fetch when it's unreachable.
         if "username" in settings.MONGO_ANALYTICS_DB:
             settings.MONGOANALYTICSDB = connect(
                 db=settings.MONGO_ANALYTICS_DB["name"],
                 host=f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin",
                 alias="nbanalytics",
+                **settings.MONGO_ANALYTICS_TIMEOUTS,
             )
         else:
             settings.MONGOANALYTICSDB = connect(
                 db=settings.MONGO_ANALYTICS_DB["name"],
                 host=f"mongodb://{settings.MONGO_ANALYTICS_DB['host']}/",
                 alias="nbanalytics",
+                **settings.MONGO_ANALYTICS_TIMEOUTS,
             )
 
     def process_feed_wrapper(self, feed_queue):
