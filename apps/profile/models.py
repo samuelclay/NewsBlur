@@ -132,6 +132,10 @@ class Profile(models.Model):
 
         current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
         limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
+        if current_spend is None:
+            # Analytics is down, so spend is unknown. Fail closed rather than
+            # let usage billing run uncapped.
+            return (None, limit, limit is not None)
         is_reached = limit is not None and current_spend >= limit
         return (current_spend, limit, is_reached)
 
@@ -158,6 +162,10 @@ class Profile(models.Model):
         from apps.monitor.models import MLLMCost
 
         current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
+        if current_spend is None:
+            # Analytics is down, so spend is unknown. Fail closed, and don't
+            # cache the guess: the next call should retry once analytics is back.
+            return True
         is_reached = current_spend >= float(self.usage_billing_limit)
         r.setex(cache_key, 300, "1" if is_reached else "0")
         return is_reached

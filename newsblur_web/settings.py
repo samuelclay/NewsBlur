@@ -921,17 +921,29 @@ MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 
+# Analytics is optional data, so it fails fast rather than holding a request
+# open for pymongo's 30 second default while the server is unreachable. Callers
+# guard these operations with utils/analytics_degradation.py, which trips a
+# circuit breaker after the first timeout.
+MONGO_ANALYTICS_TIMEOUTS = {
+    "serverSelectionTimeoutMS": 2000,
+    "connectTimeoutMS": 2000,
+    "socketTimeoutMS": 5000,
+}
+
 if "username" in MONGO_ANALYTICS_DB:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 else:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['host']}/",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 
 

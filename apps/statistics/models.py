@@ -22,6 +22,7 @@ from apps.statistics.rstats import RStats, round_time
 from utils import db_functions
 from utils import json_functions as json
 from utils import log as logging
+from utils.analytics_degradation import skip_when_analytics_down
 from utils.story_functions import relative_date
 
 
@@ -400,6 +401,7 @@ class MAnalyticsFetcher(mongo.Document):
         )
 
     @classmethod
+    @skip_when_analytics_down()
     def add(cls, feed_id, feed_fetch, feed_process, page, icon, total, feed_code):
         server_name = settings.SERVER_NAME
         if "app" in server_name:
@@ -447,6 +449,7 @@ class MAnalyticsLoader(mongo.Document):
         return "%s: %.4ss" % (self.server, self.page_load)
 
     @classmethod
+    @skip_when_analytics_down()
     def add(cls, page_load):
         server_name = settings.SERVER_NAME
 
