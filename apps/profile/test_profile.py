@@ -1606,3 +1606,119 @@ class Test_RefundLatestStripePayment(TestCase):
 
         original.refresh_from_db()
         self.assertIsNot(original.refunded, True)
+
+
+class Test_PremiumExpireBillingPeriod(TestCase):
+    """A payment buys one billing period, not a flat year. Granting 365 days per
+    charge pushed monthly Premium Pro subscribers out to expirations in the 2030s
+    (apps/profile/test_profile.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="periodtest", password="password", email="period@test.com"
+        )
+        self.profile = self.user.profile
+
+    def _pay(self, days_ago, amount=29, provider="stripe"):
+        return PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=days_ago),
+            payment_amount=amount,
+            payment_provider=provider,
+        )
+
+    def test_monthly_subscriber_expires_about_a_month_out(self):
+        """Twelve monthly charges must buy about a month past the last one, not twelve years."""
+        for month in range(12):
+            self._pay(days_ago=30 * month)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+
+        self.assertEqual(count, 12)
+        days_out = (expiration - datetime.datetime.now()).days
+        self.assertGreater(days_out, 0, "a paid-up monthly subscriber must not be expired")
+        self.assertLess(days_out, 60, "expiration ran away: %s" % expiration)
+
+    def test_annual_subscriber_still_gets_a_year(self):
+        """The common case must be untouched by the fix."""
+        self._pay(days_ago=10, amount=36)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+
+        self.assertEqual(count, 1)
+        self.assertEqual(expiration.date(), (datetime.datetime.now() + datetime.timedelta(days=355)).date())
+
+    def test_annual_subscriber_paying_twice_stacks_two_years(self):
+        """Two annual charges a year apart still stack, as they did before the fix."""
+        self._pay(days_ago=360, amount=36)
+        self._pay(days_ago=1, amount=36)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        days_out = (expiration - datetime.datetime.now()).days
+        self.assertGreater(days_out, 300)
+        self.assertLess(days_out, 400)
+
+    def test_annual_switching_to_monthly_reads_as_monthly(self):
+        """Régis's case: a $36 annual charge that has since aged out of the trailing year, the
+        prorated $8.39 that the mid-cycle switch to Premium Pro billed, then monthly $29
+        charges. The odd gap left by the switch must not drag the read back to annual."""
+        self._pay(days_ago=366, amount=36)
+        self._pay(days_ago=210, amount=8)
+        for month in range(6):
+            self._pay(days_ago=179 - (30 * month))
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        days_out = (expiration - datetime.datetime.now()).days
+        self.assertGreater(days_out, 0)
+        self.assertLess(days_out, 90, "prorated switch misread as annual: %s" % expiration)
+
+    def test_refunded_and_gift_payments_are_excluded(self):
+        """Refunds and $0 gifts keep their existing meaning under the new calculation."""
+        self._pay(days_ago=10, amount=0, provider="newsblur-gift")
+        refunded = self._pay(days_ago=5, amount=36)
+        refunded.refunded = True
+        refunded.save()
+
+        expiration, free_lifetime, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+
+        self.assertTrue(free_lifetime)
+        self.assertEqual(count, 0)
+        self.assertIsNone(expiration)
+
+    def test_single_payment_defaults_to_annual(self):
+        """With one payment there is no cadence to read, so it must not shrink to a month."""
+        self._pay(days_ago=5, amount=36)
+
+        self.assertEqual(Profile.billing_period_days([datetime.datetime.now()]), Profile.ANNUAL_PERIOD_DAYS)
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+        self.assertGreater((expiration - datetime.datetime.now()).days, 300)
+
+    def test_monthly_switching_back_to_annual_gets_a_full_year(self):
+        """Moving monthly Pro -> annual Premium must grant a year immediately. Cadence alone
+        still reads monthly here, since the old monthly gaps dominate the median for a year."""
+        for month in range(6):
+            self._pay(days_ago=190 - (30 * month))
+        self._pay(days_ago=1, amount=36)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        days_out = (expiration - datetime.datetime.now()).days
+        self.assertGreater(days_out, 350, "annual charge did not buy a year: %s" % expiration)
+
+    def test_annual_price_alone_does_not_inflate_a_monthly_subscriber(self):
+        """The annual-price floor must not resurrect the bug: a run of $29 charges with no
+        annual-priced charge among them stays on the monthly reading."""
+        for month in range(12):
+            self._pay(days_ago=30 * month)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        self.assertLess((expiration - datetime.datetime.now()).days, 60)

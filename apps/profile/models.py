@@ -102,6 +102,22 @@ class Profile(models.Model):
         help_text="Optional monthly spending limit in USD for AI classifiers",
     )
 
+    # How much premium time one payment buys. NewsBlur bills annually for Premium and
+    # Premium Archive and monthly for Premium Pro, so these are the only two periods.
+    # The monthly figure runs a day long on purpose: expirations are compared against
+    # the clock constantly, and 31 keeps a monthly subscriber covered through the gap
+    # between two charges instead of lapsing for a day each month.
+    MONTHLY_PERIOD_DAYS = 31
+    ANNUAL_PERIOD_DAYS = 365
+    # Gaps shorter than this read as a monthly cadence. Set well above 31 so a skipped
+    # or retried charge doesn't misread a monthly subscriber as annual, and well below
+    # 365 so an annual subscriber never reads as monthly.
+    MONTHLY_GAP_CEILING_DAYS = 180
+    # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
+    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
+    # price absent here, which is what makes a charge at any of these mean a full year.
+    ANNUAL_PRICES = {12, 24, 36, 99, 299}
+
     @property
     def is_self_hosted_ai(self):
         """True when Stripe billing is not configured but AI provider keys are.
@@ -1280,6 +1296,84 @@ class Profile(models.Model):
         )
         logging.user(self.user, f"~FBGoogle Play purchase token ~SBadded~SN: product={product_id}")
 
+    @classmethod
+    def billing_period_days(cls, payment_dates):
+        """How many days of premium a single payment buys, inferred from how far apart the
+        user's own recent payments fall. Cadence carries this rather than the amount because a
+        prorated tier switch bills an odd figure (Premium Pro's $29/month invoiced at $8.39 once
+        an unused annual credit is applied), so no amount-to-plan table gets every payment right.
+        The median gap absorbs the one odd interval left by a mid-cycle switch, so a subscriber
+        who moved from annual to monthly still reads as monthly (apps/profile/models.py)."""
+        if len(payment_dates) < 2:
+            return cls.ANNUAL_PERIOD_DAYS
+
+        ordered = sorted(payment_dates)
+        gaps = sorted(
+            (later - earlier).days
+            for earlier, later in zip(ordered, ordered[1:])
+            if (later - earlier).days > 0
+        )
+        if not gaps:
+            return cls.ANNUAL_PERIOD_DAYS
+
+        median_gap = gaps[len(gaps) // 2]
+        return (
+            cls.MONTHLY_PERIOD_DAYS if median_gap < cls.MONTHLY_GAP_CEILING_DAYS else cls.ANNUAL_PERIOD_DAYS
+        )
+
+    @classmethod
+    def premium_expire_from_payments(cls, payments):
+        """The premium_expire implied by the payments in the trailing year, as
+        (expiration, free_lifetime_premium, recent_payment_count). Returns a null expiration
+        when nothing recent was paid.
+
+        Each payment buys one billing period, not a flat year: NewsBlur sells annual Premium
+        and Premium Archive alongside a monthly $29 Premium Pro, and charging a monthly
+        subscriber a year of access per charge is what pushed expirations out to 2033.
+
+        Two readings are taken and the longer wins, because the failure that actually hurts is
+        cutting off someone who has paid. Cadence covers the steady case, but it lags for a year
+        after a subscriber moves monthly-to-annual: the old monthly gaps still dominate the
+        median, so cadence alone would expire them weeks after they bought a full year. A charge
+        at one of the annual price points is unambiguous on its own, so it independently holds
+        the account open for a year from the day it landed (apps/profile/models.py)."""
+        last_year = datetime.datetime.now() - datetime.timedelta(days=364)
+        recent_payment_dates = []
+        latest_annual_payment_date = None
+        free_lifetime_premium = False
+
+        for payment in payments:
+            # Don't use free gift premiums in calculation for expiration
+            if payment.payment_amount == 0:
+                free_lifetime_premium = True
+                continue
+            # Skip refund records (negative amounts) and refunded payments so
+            # a charge that was later refunded doesn't continue to extend the
+            # user's premium expiration.
+            if payment.payment_amount < 0 or payment.refunded:
+                continue
+            # Only update expiration if payment in the last year
+            if payment.payment_date > last_year:
+                recent_payment_dates.append(payment.payment_date)
+                if payment.payment_amount in cls.ANNUAL_PRICES and (
+                    not latest_annual_payment_date or payment.payment_date > latest_annual_payment_date
+                ):
+                    latest_annual_payment_date = payment.payment_date
+
+        if not recent_payment_dates:
+            return None, free_lifetime_premium, 0
+
+        period_days = cls.billing_period_days(recent_payment_dates)
+        expiration = min(recent_payment_dates) + datetime.timedelta(
+            days=period_days * len(recent_payment_dates)
+        )
+        if latest_annual_payment_date:
+            expiration = max(
+                expiration,
+                latest_annual_payment_date + datetime.timedelta(days=cls.ANNUAL_PERIOD_DAYS),
+            )
+        return expiration, free_lifetime_premium, len(recent_payment_dates)
+
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
         # Refund rows are never deduped — a charge and its same-day refund are distinct
@@ -1526,32 +1620,15 @@ class Profile(models.Model):
 
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
-        last_year = datetime.datetime.now() - datetime.timedelta(days=364)
-        recent_payments_count = 0
-        oldest_recent_payment_date = None
-        free_lifetime_premium = False
-        for payment in payment_history:
-            # Don't use free gift premiums in calculation for expiration
-            if payment.payment_amount == 0:
-                logging.user(self.user, "~BY~SN~FWFree lifetime premium")
-                free_lifetime_premium = True
-                continue
-            # Skip refund records (negative amounts) and refunded payments so
-            # a charge that was later refunded doesn't continue to extend the
-            # user's premium expiration.
-            if payment.payment_amount < 0 or payment.refunded:
-                continue
+        (
+            new_premium_expire,
+            free_lifetime_premium,
+            recent_payments_count,
+        ) = Profile.premium_expire_from_payments(payment_history)
+        if free_lifetime_premium:
+            logging.user(self.user, "~BY~SN~FWFree lifetime premium")
 
-            # Only update exiration if payment in the last year
-            if payment.payment_date > last_year:
-                recent_payments_count += 1
-                if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
-                    oldest_recent_payment_date = payment.payment_date
-
-        if oldest_recent_payment_date:
-            new_premium_expire = oldest_recent_payment_date + datetime.timedelta(
-                days=365 * recent_payments_count
-            )
+        if new_premium_expire:
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
             if (
                 force_expiration
