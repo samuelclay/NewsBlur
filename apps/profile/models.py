@@ -4980,6 +4980,12 @@ class PremiumPricingMigration(models.Model):
     # (apps/monitor/views/newsblur_users.py).
     SWITCH_ORIGINS = ["paypal", "stripe"]
 
+    # The only plan we can see in a resubscribe that isn't already billed yearly. Premium ($36),
+    # archive ($99) and yearly pro ($299) charges are annual figures as-is, so this is the one
+    # amount that has to be multiplied out to compare against a yearly grandfathered rate
+    # (apps/profile/models.py annualized_resubscribe_amount).
+    PRO_MONTHLY_AMOUNT = 29
+
     class Meta:
         indexes = [models.Index(fields=["status"]), models.Index(fields=["provider"])]
 
@@ -5061,6 +5067,70 @@ class PremiumPricingMigration(models.Model):
             funnel["resubscribed_%s" % origin] = resubscribed
             funnel["not_resubscribed_%s" % origin] = total - resubscribed
         return funnel
+
+    @classmethod
+    def annualized_resubscribe_amount(cls, provider, amount):
+        """Yearly run rate of a resubscribe. Every plan that can show up here already bills yearly
+        ($36 premium, $99 archive, $299 pro) except the $29/month pro plan, which has to be
+        multiplied out before it can be compared against the yearly grandfathered rate it replaced
+        (apps/profile/models.py revenue_delta)."""
+        amount = amount or 0
+        if cls.resub_tier_bucket(provider, amount) == "pro" and amount == cls.PRO_MONTHLY_AMOUNT:
+            return amount * 12
+        return amount
+
+    @classmethod
+    def revenue_delta(cls):
+        """Yearly dollar impact of the whole migration, measured against what these subscribers were
+        paying before it started -- the bottom line for whether forcing grandfathered subscribers off
+        $12/$24 was worth doing.
+
+        An upgraded subscriber earns (new rate - old rate). A cancelled subscriber who came back
+        earns (their new tier's yearly rate - old rate), which is why the ones who return on archive
+        are worth six times a plain premium return. A cancelled subscriber who never came back costs
+        their entire old rate, because that is revenue we used to collect and no longer do.
+
+        Rows still in flight are worth $0: 'pending' and 'emailed' subscribers haven't been charged
+        the new price yet, and 'skipped_dormant' subscribers were deliberately left alone and keep
+        paying exactly what they always did.
+
+        Returns 'revenue_gain', 'revenue_loss' (both positive) and 'revenue_net', plus a
+        'revenue_net_<origin>' per origin provider so Stripe's near-total success can be told apart
+        from PayPal's losses (apps/monitor/views/newsblur_users.py)."""
+        gain = 0
+        loss = 0
+        per_origin = dict((origin, 0) for origin in cls.SWITCH_ORIGINS)
+        rows = cls.objects.filter(status__in=["upgraded", "cancelled"]).only(
+            "provider",
+            "old_amount",
+            "new_amount",
+            "status",
+            "resubscribed_provider",
+            "resubscribed_amount",
+            "resubscribed_date",
+        )
+        for row in rows:
+            old_amount = row.old_amount or 0
+            if row.status == "upgraded":
+                delta = (row.new_amount or 0) - old_amount
+            elif row.resubscribed_date:
+                delta = (
+                    cls.annualized_resubscribe_amount(row.resubscribed_provider, row.resubscribed_amount)
+                    - old_amount
+                )
+            else:
+                delta = -old_amount
+            if delta < 0:
+                loss += -delta
+            else:
+                gain += delta
+            if row.provider in per_origin:
+                per_origin[row.provider] += delta
+
+        revenue = {"revenue_gain": gain, "revenue_loss": loss, "revenue_net": gain - loss}
+        for origin, delta in per_origin.items():
+            revenue["revenue_net_%s" % origin] = delta
+        return revenue
 
 
 class PaymentHistory(models.Model):

@@ -111,24 +111,10 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
-            # Grandfathered PayPal subs are legacy IPN and can't be revised in place, so they never
-            # reach status="upgraded"; a PayPal user who takes the new price does it by resubscribing
-            # on a fresh $36 PayPal sub (recorded as cancelled + resubscribed=paypal). Count both so
-            # this reflects real PayPal upgrades instead of always reading zero.
-            "premium_pricing_upgrades_paypal": MStatistics.get(
-                "munin:users_premium_pricing_upgrades_paypal",
-                lambda: (
-                    PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count()
-                    + PremiumPricingMigration.objects.filter(
-                        status="cancelled",
-                        provider="paypal",
-                        resubscribed_provider="paypal",
-                        resubscribed_date__isnull=False,
-                    ).count()
-                ),
-                set_default=True,
-                expiration_sec=expiration_sec,
-            ),
+            # There is deliberately no premium_pricing_upgrades_paypal counterpart. Grandfathered
+            # PayPal subs are legacy IPN and can't be revised in place, so they can never reach
+            # status="upgraded" -- a PayPal subscriber who takes the new price does it by
+            # resubscribing, which is already counted by premium_pricing_resubscribed_paypal below.
             "premium_pricing_cancellations_stripe": MStatistics.get(
                 "munin:users_premium_pricing_cancellations_stripe",
                 lambda: PremiumPricingMigration.objects.filter(status="cancelled", provider="stripe").count(),
@@ -160,20 +146,21 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
-            # Confirmed upgrades split by the old grandfathered rate.
-            "premium_pricing_upgrades_12": MStatistics.get(
-                "munin:users_premium_pricing_upgrades_12",
-                lambda: PremiumPricingMigration.objects.filter(status="upgraded", old_amount=12).count(),
-                set_default=True,
-                expiration_sec=expiration_sec,
-            ),
-            "premium_pricing_upgrades_24": MStatistics.get(
-                "munin:users_premium_pricing_upgrades_24",
-                lambda: PremiumPricingMigration.objects.filter(status="upgraded", old_amount=24).count(),
+            # PayPal subscribers we opened a row for but never reached: no approval link could be
+            # created and cancelling was off at the time, so they were left on the grandfathered
+            # rate. They only get retried when their renewal comes back around a year later, so this
+            # is the backlog the migration has quietly skipped rather than work in progress.
+            "premium_pricing_pending_paypal": MStatistics.get(
+                "munin:users_premium_pricing_pending_paypal",
+                lambda: PremiumPricingMigration.objects.filter(status="pending", provider="paypal").count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
         }
+        # There are no upgrades_12/upgrades_24 splits: every Stripe subscription in this campaign was
+        # grandfathered at $24, and the $12 rows are all PayPal, which can never reach
+        # status="upgraded" (see above). The split was zero on one side and a duplicate of
+        # premium_pricing_upgrades_stripe on the other.
 
         # Cancelled subscribers (esp. PayPal non-approvers) who came back with a fresh paid sub,
         # keyed by the actual origin -> destination x tier move (e.g.
@@ -201,6 +188,19 @@ class Users(View):
         )
         for key, count in resubscribe_funnel.items():
             data["premium_pricing_%s" % key] = count
+
+        # Bottom line: yearly dollars gained and lost by the migration versus what these subscribers
+        # used to pay. Emitted here rather than derived in Grafana because the arithmetic needs each
+        # row's own old rate ($12 or $24) and destination tier, which the counter metrics flatten
+        # away (apps/profile/models.py revenue_delta).
+        revenue = MStatistics.get(
+            "munin:users_premium_pricing_revenue",
+            PremiumPricingMigration.revenue_delta,
+            set_default=True,
+            expiration_sec=expiration_sec,
+        )
+        for key, amount in revenue.items():
+            data["premium_pricing_%s" % key] = amount
 
         chart_name = "users"
         chart_type = "counter"

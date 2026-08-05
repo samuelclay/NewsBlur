@@ -17047,11 +17047,240 @@
    "type": "timeseries"
   },
   {
+   "id": 342,
+   "type": "row",
+   "title": "Premium Pricing Migration ($12/$24 -> $36)",
+   "collapsed": false,
+   "datasource": {
+    "type": "datasource",
+    "uid": "grafana"
+   },
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 665
+   },
+   "panels": []
+  },
+  {
+   "id": 337,
+   "type": "stat",
+   "title": "Net revenue change (per year)",
+   "description": "Bottom line of the whole $12/$24 -> $36 migration, in yearly dollars, measured against what these subscribers were paying before it started. Upgraded subscribers earn (new rate - old rate); subscribers who were cancelled and came back earn (their new tier's yearly rate - old rate); subscribers who never came back cost their entire old rate. Subscribers still in flight (pending, emailed, skipped as dormant) count as $0 because their price hasn't changed.",
    "datasource": {
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "Outcomes of the grandfathered $12/$24 -> $36 premium pricing migration, split by payment provider so Stripe and PayPal upgrade vs cancellation rates can be compared.",
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 0,
+    "y": 666
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "unit": "currencyUSD",
+     "decimals": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 0.01
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "auto",
+    "textMode": "auto",
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_revenue_net\"}",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 338,
+   "type": "stat",
+   "title": "Stripe: took the new price",
+   "description": "Share of resolved Stripe subscribers who are now paying $36: upgraded / (upgraded + cancelled). Stripe subscriptions are switched silently, so almost nobody objects. The subscribers still awaiting their first $36 charge are excluded until they resolve, which keeps this from dipping every time a new batch is emailed.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 8,
+    "y": 666
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "unit": "percent",
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 40
+       },
+       {
+        "color": "green",
+        "value": 75
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "auto",
+    "textMode": "auto",
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "100 * sum(users{category=\"premium_pricing_upgrades_stripe\"}) / clamp_min(sum(users{category=\"premium_pricing_upgrades_stripe\"}) + sum(users{category=\"premium_pricing_cancellations_stripe\"}), 1)",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 339,
+   "type": "stat",
+   "title": "PayPal: came back after cancelling",
+   "description": "Share of force-cancelled PayPal subscribers who returned on a fresh paid subscription: resubscribed / cancelled. Grandfathered PayPal subs are legacy IPN and can't be repriced in place, so the only way back is to resubscribe. This climbs for weeks after each batch as subscribers run out their remaining paid time and decide whether to return.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 16,
+    "y": 666
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "unit": "percent",
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 40
+       },
+       {
+        "color": "green",
+        "value": 75
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "auto",
+    "textMode": "auto",
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "100 * sum(users{category=\"premium_pricing_resubscribed_paypal\"}) / clamp_min(sum(users{category=\"premium_pricing_cancellations_paypal\"}), 1)",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 340,
+   "type": "timeseries",
+   "title": "Premium Pricing: Bottom Line",
+   "description": "Is the $12/$24 -> $36 migration making or losing money, and how well is each provider converting? The two rates are on the left axis; the yearly dollar impact is on the right. Stripe and PayPal net out separately because they behave nothing alike: Stripe subs are repriced silently, while PayPal subs have to be cancelled and win back. Dollars only move once a subscriber resolves, so in-flight batches sit at $0 until they upgrade or lapse.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 24,
+    "x": 0,
+    "y": 670
+   },
    "fieldConfig": {
     "defaults": {
      "color": {
@@ -17062,7 +17291,7 @@
       "axisPlacement": "auto",
       "barAlignment": 0,
       "drawStyle": "line",
-      "fillOpacity": 10,
+      "fillOpacity": 0,
       "gradientMode": "none",
       "hideFrom": {
        "legend": false,
@@ -17070,13 +17299,13 @@
        "viz": false
       },
       "lineInterpolation": "linear",
-      "lineWidth": 1,
+      "lineWidth": 2,
       "pointSize": 5,
       "scaleDistribution": {
        "type": "linear"
       },
       "showPoints": "never",
-      "spanNulls": false,
+      "spanNulls": true,
       "stacking": {
        "group": "A",
        "mode": "none"
@@ -17090,22 +17319,87 @@
       "mode": "absolute",
       "steps": [
        {
-        "color": "green",
+        "color": "text",
         "value": null
        }
       ]
      },
      "unit": "short"
     },
-    "overrides": []
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": ".*%$"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percent"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       },
+       {
+        "id": "custom.axisPlacement",
+        "value": "left"
+       },
+       {
+        "id": "max",
+        "value": 100
+       },
+       {
+        "id": "min",
+        "value": 0
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": ".*\\$/yr$"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "currencyUSD"
+       },
+       {
+        "id": "decimals",
+        "value": 0
+       },
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       },
+       {
+        "id": "custom.fillOpacity",
+        "value": 8
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Net $/yr"
+      },
+      "properties": [
+       {
+        "id": "custom.lineWidth",
+        "value": 3
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "green"
+        }
+       }
+      ]
+     }
+    ]
    },
-   "gridPos": {
-    "h": 8,
-    "w": 12,
-    "x": 0,
-    "y": 17
-   },
-   "id": 297,
    "options": {
     "legend": {
      "calcs": [
@@ -17117,18 +17411,17 @@
     },
     "tooltip": {
      "mode": "multi",
-     "sort": "none"
+     "sort": "desc"
     }
    },
-   "pluginVersion": "9.0.0",
    "targets": [
     {
      "datasource": {
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_upgrades_stripe\"}",
-     "legendFormat": "Stripe upgrades",
+     "expr": "100 * sum(users{category=\"premium_pricing_upgrades_stripe\"}) / clamp_min(sum(users{category=\"premium_pricing_upgrades_stripe\"}) + sum(users{category=\"premium_pricing_cancellations_stripe\"}), 1)",
+     "legendFormat": "Stripe took the new price %",
      "refId": "A"
     },
     {
@@ -17136,8 +17429,8 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_upgrades_paypal\"}",
-     "legendFormat": "PayPal upgrades",
+     "expr": "100 * sum(users{category=\"premium_pricing_resubscribed_paypal\"}) / clamp_min(sum(users{category=\"premium_pricing_cancellations_paypal\"}), 1)",
+     "legendFormat": "PayPal came back %",
      "refId": "B"
     },
     {
@@ -17145,8 +17438,8 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_cancellations_stripe\"}",
-     "legendFormat": "Stripe cancellations",
+     "expr": "users{category=\"premium_pricing_revenue_net\"}",
+     "legendFormat": "Net $/yr",
      "refId": "C"
     },
     {
@@ -17154,9 +17447,147 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_cancellations_paypal\"}",
-     "legendFormat": "PayPal cancellations",
+     "expr": "users{category=\"premium_pricing_revenue_net_stripe\"}",
+     "legendFormat": "Stripe net $/yr",
      "refId": "D"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_revenue_net_paypal\"}",
+     "legendFormat": "PayPal net $/yr",
+     "refId": "E"
+    }
+   ]
+  },
+  {
+   "id": 341,
+   "type": "timeseries",
+   "title": "Premium Pricing: Numbers",
+   "description": "Every subscriber count behind the bottom line, so any figure above can be traced back to people. 'PayPal untouched' are subscribers we opened a row for but never reached (no approval link could be created and cancelling was off at the time), so they are still on the old rate and won't be retried until their renewal comes around again. 'PayPal skipped (dormant)' were left alone on purpose: too inactive to win back, so cancelling them would only forfeit revenue. The switch series show how the returners came back; only moves that actually happened appear, so there are no zero rows.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 24,
+    "x": 0,
+    "y": 679
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 0,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 2,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^premium_pricing_switch_.*"
+      },
+      "properties": [
+       {
+        "id": "custom.lineWidth",
+        "value": 1
+       },
+       {
+        "id": "custom.lineStyle",
+        "value": {
+         "fill": "dash",
+         "dash": [
+          8,
+          4
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "table",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_upgrades_stripe\"}",
+     "legendFormat": "Stripe upgraded",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_cancellations_stripe\"}",
+     "legendFormat": "Stripe cancelled",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_resubscribed_stripe\"}",
+     "legendFormat": "Stripe came back",
+     "refId": "C"
     },
     {
      "datasource": {
@@ -17165,6 +17596,24 @@
      },
      "expr": "users{category=\"premium_pricing_awaiting_charge\"}",
      "legendFormat": "Switched, awaiting charge",
+     "refId": "D"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_cancellations_paypal\"}",
+     "legendFormat": "PayPal cancelled",
+     "refId": "E"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"premium_pricing_resubscribed_paypal\"}",
+     "legendFormat": "PayPal came back",
      "refId": "F"
     },
     {
@@ -17172,8 +17621,8 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_upgrades_12\"}",
-     "legendFormat": "Upgrades ($12 -> $36)",
+     "expr": "users{category=\"premium_pricing_not_resubscribed_paypal\"}",
+     "legendFormat": "PayPal still gone",
      "refId": "G"
     },
     {
@@ -17181,8 +17630,8 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_upgrades_24\"}",
-     "legendFormat": "Upgrades ($24 -> $36)",
+     "expr": "users{category=\"premium_pricing_pending_paypal\"}",
+     "legendFormat": "PayPal untouched",
      "refId": "H"
     },
     {
@@ -17193,95 +17642,6 @@
      "expr": "users{category=\"premium_pricing_skipped_dormant_paypal\"}",
      "legendFormat": "PayPal skipped (dormant)",
      "refId": "I"
-    }
-   ],
-   "title": "Premium Pricing Migration ($12/$24 -> $36)",
-   "type": "timeseries"
-  },
-  {
-   "datasource": {
-    "type": "prometheus",
-    "uid": "U1-fPO3Mk"
-   },
-   "description": "The forced-cancel -> resubscribe funnel for the pricing migration. 'Forcibly cancelled (total)' is everyone we cancelled per origin; 'resubscribed' vs 'not resubscribed' splits them into who came back on a fresh paid sub vs who is still gone, so the resubscribe rate is visible (e.g. PayPal 6 of 21). The origin->destination x tier series (e.g. paypal_to_stripe_premium) break down HOW the returners came back; only switches that actually happened are shown, so there are no zero-count rows. A resubscribe keeps the migration row's status as 'cancelled', so it never shows up in the upgrades series on the panel to the left.",
-   "fieldConfig": {
-    "defaults": {
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "axisLabel": "",
-      "axisPlacement": "auto",
-      "barAlignment": 0,
-      "drawStyle": "line",
-      "fillOpacity": 10,
-      "gradientMode": "none",
-      "hideFrom": {
-       "legend": false,
-       "tooltip": false,
-       "viz": false
-      },
-      "lineInterpolation": "linear",
-      "lineWidth": 1,
-      "pointSize": 5,
-      "scaleDistribution": {
-       "type": "linear"
-      },
-      "showPoints": "never",
-      "spanNulls": false,
-      "stacking": {
-       "group": "A",
-       "mode": "none"
-      },
-      "thresholdsStyle": {
-       "mode": "off"
-      }
-     },
-     "mappings": [],
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "green",
-        "value": null
-       }
-      ]
-     },
-     "unit": "short"
-    },
-    "overrides": []
-   },
-   "gridPos": {
-    "h": 8,
-    "w": 12,
-    "x": 12,
-    "y": 17
-   },
-   "id": 320,
-   "options": {
-    "legend": {
-     "calcs": [
-      "lastNotNull"
-     ],
-     "displayMode": "list",
-     "placement": "bottom",
-     "showLegend": true
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "none"
-    }
-   },
-   "pluginVersion": "9.0.0",
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=~\"premium_pricing_switch_.+\"}",
-     "legendFormat": "{{category}}",
-     "refId": "A"
     },
     {
      "datasource": {
@@ -17289,66 +17649,19 @@
       "uid": "U1-fPO3Mk"
      },
      "expr": "users{category=\"premium_pricing_resubscribed_total\"}",
-     "legendFormat": "Total resubscribed",
-     "refId": "B"
+     "legendFormat": "Came back (total)",
+     "refId": "J"
     },
     {
      "datasource": {
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "users{category=\"premium_pricing_cancellations_paypal\"}",
-     "legendFormat": "PayPal forcibly cancelled (total)",
-     "refId": "C"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"premium_pricing_resubscribed_paypal\"}",
-     "legendFormat": "PayPal resubscribed",
-     "refId": "D"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"premium_pricing_not_resubscribed_paypal\"}",
-     "legendFormat": "PayPal not resubscribed",
-     "refId": "E"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"premium_pricing_cancellations_stripe\"}",
-     "legendFormat": "Stripe cancelled (total)",
-     "refId": "F"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"premium_pricing_resubscribed_stripe\"}",
-     "legendFormat": "Stripe resubscribed",
-     "refId": "G"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"premium_pricing_not_resubscribed_stripe\"}",
-     "legendFormat": "Stripe not resubscribed",
-     "refId": "H"
+     "expr": "users{category=~\"premium_pricing_switch_.+\"}",
+     "legendFormat": "{{category}}",
+     "refId": "K"
     }
-   ],
-   "title": "Premium Pricing Resubscribes (forced cancels vs returns)",
-   "type": "timeseries"
+   ]
   },
   {
    "collapsed": false,
@@ -17360,7 +17673,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 665
+    "y": 688
    },
    "id": 327,
    "targets": [
@@ -17387,7 +17700,7 @@
     "h": 4,
     "w": 6,
     "x": 0,
-    "y": 666
+    "y": 689
    },
    "fieldConfig": {
     "defaults": {
@@ -17446,7 +17759,7 @@
     "h": 4,
     "w": 6,
     "x": 6,
-    "y": 666
+    "y": 689
    },
    "fieldConfig": {
     "defaults": {
@@ -17505,7 +17818,7 @@
     "h": 4,
     "w": 6,
     "x": 12,
-    "y": 666
+    "y": 689
    },
    "fieldConfig": {
     "defaults": {
@@ -17564,7 +17877,7 @@
     "h": 4,
     "w": 6,
     "x": 18,
-    "y": 666
+    "y": 689
    },
    "fieldConfig": {
     "defaults": {
@@ -17623,7 +17936,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 670
+    "y": 693
    },
    "fieldConfig": {
     "defaults": {
@@ -17809,7 +18122,7 @@
     "h": 9,
     "w": 12,
     "x": 12,
-    "y": 670
+    "y": 693
    },
    "fieldConfig": {
     "defaults": {
@@ -17995,7 +18308,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 679
+    "y": 702
    },
    "fieldConfig": {
     "defaults": {
@@ -18185,7 +18498,7 @@
     "h": 9,
     "w": 12,
     "x": 12,
-    "y": 679
+    "y": 702
    },
    "fieldConfig": {
     "defaults": {
@@ -18313,7 +18626,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 688
+    "y": 711
    },
    "fieldConfig": {
     "defaults": {
