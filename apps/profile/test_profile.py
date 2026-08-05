@@ -1145,6 +1145,54 @@ class Test_PremiumPricingMigration(TestCase):
         row = PremiumPricingMigration.objects.get(user=self.user)
         self.assertEqual(row.status, "cancelled")
 
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=False)
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "paypal_price_change_approval_url", return_value=None)
+    def test_shadow_mode_records_would_cancel_instead_of_dropping_silently(
+        self, mock_approval_url, mock_cancel
+    ):
+        # A legacy PayPal sub gives us no approval link. In shadow mode we must leave the
+        # subscription alone but still record the row and tell staff -- leaving it "pending" is what
+        # stranded 74 subscribers on the old rate for a full renewal cycle.
+        from django.core import mail
+
+        from apps.profile.models import PremiumPricingMigration
+
+        self.profile.active_provider = "paypal"
+        self.profile.paypal_sub_id = "I-SUB123"
+        self.profile.last_seen_on = datetime.datetime.now() - datetime.timedelta(days=5)
+        self.profile.save()
+        self._add_payment(24, provider="paypal")
+
+        Profile.run_premium_pricing_migration(only_username="pricingmig")
+
+        mock_cancel.assert_not_called()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.premium_renewal)  # subscription untouched
+        row = PremiumPricingMigration.objects.get(user=self.user)
+        self.assertEqual(row.status, "would_cancel")
+        self.assertIsNotNone(row.would_cancel_date)
+        self.assertIsNone(row.paypal_canceled_date)
+        self.assertTrue(len(mail.outbox))  # staff were told
+
+    @override_settings(PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED=False)
+    def test_reconcile_handles_a_would_cancel_row_that_was_never_emailed(self):
+        # The shadow-mode row above has no email_sent_date. Reconciliation has to fall back to the
+        # row's creation date rather than filtering on payment_date__gt=None, which would drop the
+        # row out of reconciliation permanently.
+        from apps.profile.models import PremiumPricingMigration
+
+        row = PremiumPricingMigration.objects.create(
+            user=self.user, provider="paypal", old_amount=24, status="would_cancel"
+        )
+        self.assertIsNone(row.email_sent_date)
+        self._add_payment(36, days_ago=0, provider="paypal")
+
+        Profile.reconcile_premium_pricing_migration()
+
+        row.refresh_from_db()
+        self.assertEqual(row.status, "upgraded")
+
     # --- Reconciliation ------------------------------------------------------
 
     def _emailed_row(self, provider="stripe", renewal_offset_days=-1):
