@@ -1405,24 +1405,63 @@ class Test_PremiumPricingMigration(TestCase):
         self.assertEqual(funnel["resubscribed_stripe"], 0)
         self.assertEqual(funnel["not_resubscribed_stripe"], 1)
 
-    def test_upgrades_paypal_counts_paypal_to_paypal_returns(self):
-        # The redefined "PayPal upgrades" = in-place paypal upgrades (legacy IPN => always 0) plus
-        # paypal -> paypal resubscribes. A paypal -> stripe return must NOT count as a PayPal upgrade.
+    def _migration_row(self, username, provider, status, old_amount=24):
         from apps.profile.models import PremiumPricingMigration
 
-        self._resubscribed("up_pp_pp", "paypal", "paypal", 36)
-        self._resubscribed("up_pp_st", "paypal", "stripe", 36)
-
-        count = (
-            PremiumPricingMigration.objects.filter(status="upgraded", provider="paypal").count()
-            + PremiumPricingMigration.objects.filter(
-                status="cancelled",
-                provider="paypal",
-                resubscribed_provider="paypal",
-                resubscribed_date__isnull=False,
-            ).count()
+        user = User.objects.create_user(username=username, password="x", email="%s@t.com" % username)
+        return PremiumPricingMigration.objects.create(
+            user=user, provider=provider, old_amount=old_amount, status=status
         )
-        self.assertEqual(count, 1)
+
+    def test_revenue_delta_prices_upgrades_returns_and_losses(self):
+        from apps.profile.models import PremiumPricingMigration
+
+        self.assertEqual(
+            PremiumPricingMigration.revenue_delta(),
+            {
+                "revenue_gain": 0,
+                "revenue_loss": 0,
+                "revenue_net": 0,
+                "revenue_net_paypal": 0,
+                "revenue_net_stripe": 0,
+            },
+        )
+
+        self._migration_row("rev_st_up", "stripe", "upgraded")  # $24 -> $36 = +12
+        self._migration_row("rev_st_gone", "stripe", "cancelled")  # lost a $24/yr sub = -24
+        self._resubscribed("rev_pp_back", "paypal", "paypal", 36)  # $24 -> $36 = +12
+        self._resubscribed("rev_pp_archive", "paypal", "stripe", 99)  # $24 -> $99 = +75
+        self._migration_row("rev_pp_gone", "paypal", "cancelled", old_amount=12)  # -12
+
+        revenue = PremiumPricingMigration.revenue_delta()
+        self.assertEqual(revenue["revenue_gain"], 12 + 12 + 75)
+        self.assertEqual(revenue["revenue_loss"], 24 + 12)
+        self.assertEqual(revenue["revenue_net"], 99 - 36)
+        self.assertEqual(revenue["revenue_net_stripe"], 12 - 24)
+        self.assertEqual(revenue["revenue_net_paypal"], 12 + 75 - 12)
+
+    def test_revenue_delta_ignores_rows_whose_price_has_not_changed(self):
+        # pending/emailed subscribers haven't been charged the new price and skipped_dormant
+        # subscribers were deliberately left on the old rate, so none of them move the bottom line.
+        from apps.profile.models import PremiumPricingMigration
+
+        self._migration_row("rev_pending", "paypal", "pending")
+        self._migration_row("rev_emailed", "stripe", "emailed")
+        self._migration_row("rev_dormant", "paypal", "skipped_dormant")
+        self._migration_row("rev_shadow", "paypal", "would_cancel")
+
+        revenue = PremiumPricingMigration.revenue_delta()
+        self.assertEqual(revenue["revenue_gain"], 0)
+        self.assertEqual(revenue["revenue_loss"], 0)
+        self.assertEqual(revenue["revenue_net"], 0)
+
+    def test_revenue_delta_annualizes_a_monthly_pro_resubscribe(self):
+        # $29 is the monthly pro price, so it is worth $348/yr, not $29/yr.
+        from apps.profile.models import PremiumPricingMigration
+
+        self._resubscribed("rev_pro_monthly", "paypal", "ios-pro-subscription", 29)
+
+        self.assertEqual(PremiumPricingMigration.revenue_delta()["revenue_net"], 29 * 12 - 24)
 
     # --- Redis lock (single-runner across the 3 beat schedulers) -------------
 
