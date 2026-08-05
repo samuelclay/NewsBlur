@@ -6,7 +6,6 @@ import pickle
 from xml.etree.ElementTree import Comment, Element, SubElement, tostring
 
 import mongoengine as mongo
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from lxml import etree
@@ -19,7 +18,7 @@ from apps.rss_feeds.models import DuplicateFeed, Feed
 from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
-from utils.feed_functions import add_object_to_folder, timelimit
+from utils.feed_functions import add_object_to_folder
 
 
 class OAuthToken(models.Model):
@@ -128,19 +127,6 @@ class OPMLImporter(Importer):
             except AttributeError:
                 continue
         return None
-
-    def try_processing(self):
-        # Disable timeout in test environment
-        if getattr(settings, "TEST_DEBUG", False):
-            folders = self.process()
-            return folders
-
-        @timelimit(10)
-        def _timed_process():
-            return self.process()
-
-        folders = _timed_process()
-        return folders
 
     def process(self):
         # self.clear_feeds()
@@ -329,6 +315,6 @@ class UploadedOPML(mongo.Document):
     meta = {
         "collection": "uploaded_opml",
         "allow_inheritance": False,
-        "order": "-upload_date",
+        "ordering": ["-upload_date"],
         "indexes": ["user_id", "-upload_date"],
     }
