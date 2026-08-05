@@ -1197,7 +1197,17 @@ class Profile(models.Model):
         the given plan's price (e.g. the $36 premium plan). PayPal requires the subscriber to
         approve any price increase, so we use the revise endpoint, which keeps the same
         subscription id (so existing dedup/webhook plumbing stays coherent). Returns None on
-        failure (apps/profile/models.py)."""
+        failure (apps/profile/models.py).
+
+        This only works for subscriptions created through the REST Subscriptions API, which carry a
+        plan_id. Subscribers who signed up before that (Website Payments Standard subscribe buttons,
+        ids like I-CTEJRJP477HW created in 2014) have no plan for revise to move them toward, and
+        every route to repricing them is closed: GET on the subscription succeeds and reports ACTIVE,
+        but POST .../revise answers 404 INVALID_RESOURCE_ID on that same id, and the Classic API
+        refuses them outright with error 11592, "Subscription Profiles not supported by Recurring
+        Payment APIs." They can only be cancelled and won back on a fresh subscription, which is what
+        run_premium_pricing_migration does. Anything created today is plan-based and revisable, so a
+        future price change can offer these subscribers an approval link instead."""
         self.retrieve_paypal_ids()
         if not self.paypal_sub_id:
             logging.user(self.user, "~FRNo PayPal subscription to revise for price change")
@@ -4067,7 +4077,23 @@ class Profile(models.Model):
                         approval_url = profile.paypal_price_change_approval_url("premium")
                         if not approval_url:
                             if not getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
-                                logging.user(profile.user, "~FRPayPal approval URL failed; not emailing")
+                                # Shadow mode: leave their subscription alone, but never drop them
+                                # without a trace. Recording would_cancel hands the row to
+                                # reconcile_premium_pricing_migration, which rechecks it nightly and
+                                # acts once cancelling is switched on. Leaving it "pending" here is
+                                # what stranded 74 subscribers on the grandfathered rate for a whole
+                                # renewal cycle in June 2026: no email, no staff notification, and
+                                # nothing to look at until the dashboard started counting them.
+                                logging.user(
+                                    profile.user,
+                                    "~FRPayPal approval URL failed and cancelling is off; marking would_cancel",
+                                )
+                                profile.send_staff_pricing_would_cancel_email(
+                                    old_amount=old_amount, next_billing=profile.premium_expire
+                                )
+                                row.would_cancel_date = now
+                                row.status = "would_cancel"
+                                row.save()
                                 continue
                             if profile.is_dormant_for_paypal_cancel(now=now):
                                 logging.user(
@@ -4162,9 +4188,14 @@ class Profile(models.Model):
             try:
                 profile = row.user.profile
 
+                # A would_cancel row can reach here without an email ever going out (PayPal gave us
+                # no approval link while cancelling was switched off), so fall back to when the row
+                # was opened. Passing None here would filter on payment_date__gt=None and drop the
+                # row out of reconciliation for good.
+                charged_since = row.email_sent_date or row.created_date
                 upgraded = (
                     PaymentHistory.objects.filter(
-                        user=row.user, payment_amount__gte=36, payment_date__gt=row.email_sent_date
+                        user=row.user, payment_amount__gte=36, payment_date__gt=charged_since
                     )
                     .exclude(refunded=True)
                     .exists()
