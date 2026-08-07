@@ -98,6 +98,7 @@ ALLOWED_HOSTS = ["*"]
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
+USE_LICENSED_FONTS = True  # Load Whitney/Gotham/etc. from cloud.typography.com (paid, domain-locked)
 ENABLE_PUSH = True
 PAYPAL_TEST = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5 MB
