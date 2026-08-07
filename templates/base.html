@@ -176,14 +176,12 @@
     NEWSBLUR.app = {};
       </script>
       {% include_stylesheets "common" %}
-      {% if debug_assets %}
-        <link rel="stylesheet"
-              type="text/css"
-              href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
-      {% else %}
-        <link rel="stylesheet"
-              type="text/css"
-              href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+      {% if USE_LICENSED_FONTS %}
+        {% if debug_assets %}
+          <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
+        {% else %}
+          <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+        {% endif %}
       {% endif %}
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
