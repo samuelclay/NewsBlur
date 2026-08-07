@@ -160,6 +160,32 @@ class SessionDataSourceTest {
         } ?: Assert.fail("Next unread folder session was null")
     }
 
+    /**
+     * When every folder has no unread under the intelligence filter, peeking the next
+     * session must return null instead of wrapping the folder list forever.
+     */
+    @Test
+    fun `next unread session is null when no folder has unread feeds`() {
+        val feed20 = createFeed("20")
+        val session = Session(FeedSet.singleFeed("20"), "F2", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, createFeed("21"), createFeed("22")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50"), createFeed("51")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        Assert.assertNull(sessionDs.peekNextSession())
+    }
+
     @Test
     fun `next unread feed session falls through to next unread folder`() {
         val feed20 = createFeed("20", neutralCount = 1)
