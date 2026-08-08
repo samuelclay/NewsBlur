@@ -34,8 +34,14 @@ class Test_GlobalSharedStories(TestCase):
     def setUp(self):
         self.client = Client(HTTP_USER_AGENT="Mozilla/5.0")
         self.r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        self.r.delete(RGlobalSharedStory.CURATED_KEY)
-        self.addCleanup(lambda: self.r.delete(RGlobalSharedStory.CURATED_KEY))
+        self.redis_keys = [
+            RGlobalSharedStory.CURATED_KEY,
+            RGlobalSharedStory.CONSIDERED_KEY,
+            RGlobalSharedStory.MUTED_KEY,
+            RGlobalSharedStory.CURATION_LOCK_KEY,
+        ]
+        self.r.delete(*self.redis_keys)
+        self.addCleanup(lambda: self.r.delete(*self.redis_keys))
 
         self.sharer = User.objects.create_user(username="global-sharer", password="password")
         self.other_sharer = User.objects.create_user(username="global-other", password="password")
@@ -195,6 +201,93 @@ class Test_GlobalSharedStories(TestCase):
 
         self.assertEqual(result["added"], 0)
         self.assertEqual(RGlobalSharedStory.get_story_hashes(), [])
+
+    def test_a_rejected_story_is_not_judged_again(self):
+        """
+        A story the curator passes over is out, not back next hour. Re-judging the same
+        story every run let borderline shares retry until one run finally let them in.
+        """
+        story = self.make_story(title="Rejected story")
+        self.share_story(self.sharer, story, comments="Read this")
+
+        with patch("apps.social.curation.select_with_llm", return_value=[]):
+            curate_global_shared_stories()
+
+        self.assertEqual(collect_candidates(), [])
+
+    def test_a_second_curation_run_in_the_same_hour_is_skipped(self):
+        """
+        Three celery beats fire the hourly curation task. Only the first run judges the
+        pool; the copycats must not triple the hour's picks.
+        """
+        story = self.make_story(title="Only picked once")
+        self.share_story(self.sharer, story, comments="Great piece")
+        picks = [{"index": 0, "reason": "good"}]
+
+        with patch("apps.social.curation.select_with_llm", return_value=picks) as select:
+            first = curate_global_shared_stories()
+            second = curate_global_shared_stories()
+
+        self.assertFalse(first["skipped"])
+        self.assertTrue(second["skipped"])
+        self.assertEqual(second["candidates"], 0)
+        self.assertEqual(select.call_count, 1)
+
+    def test_muted_users_never_reach_the_candidate_pool(self):
+        """A muted spammer's shares stay out of the river no matter what they share."""
+        RGlobalSharedStory.mute_user(self.sharer.pk)
+        self.share_story(self.sharer, self.make_story(title="Muted share"), comments="Look at me")
+        self.share_story(self.other_sharer, self.make_story(title="Real share"), comments="Read this")
+
+        candidates = collect_candidates()
+
+        self.assertEqual([c["story_title"] for c in candidates], ["Real share"])
+
+    def test_follower_less_accounts_sharing_their_own_feed_are_filtered(self):
+        """
+        firesafepeopletv sharing firesafepeopletv.tumblr.com with no followers is an
+        advertiser. Their shares never even reach the model.
+        """
+        from apps.rss_feeds.models import Feed
+
+        spammer = User.objects.create_user(username="selfpromotv", password="password")
+        self.user_ids.append(spammer.pk)
+        MSocialProfile.get_user(spammer.pk)
+        feed = Feed.objects.create(
+            feed_address="http://selfpromotv.tumblr.com/rss",
+            feed_link="http://selfpromotv.tumblr.com/",
+            feed_title="Self Promo TV",
+        )
+        self.addCleanup(feed.delete)
+        self.addCleanup(lambda: MStory.objects.filter(story_feed_id=feed.pk).delete())
+        self.share_story(spammer, self.make_story(feed_id=feed.pk, title="My own video"))
+        self.share_story(self.sharer, self.make_story(title="Legit share"), comments="Worth it")
+
+        candidates = collect_candidates()
+
+        self.assertEqual([c["story_title"] for c in candidates], ["Legit share"])
+
+    def test_follower_less_uncommented_single_feed_dump_is_filtered(self):
+        """Three wordless shares of one feed from a follower-less account is a bot, not a reader."""
+        for i in range(3):
+            self.share_story(self.other_sharer, self.make_story(feed_id=2, title="Dump %s" % i))
+        self.share_story(self.sharer, self.make_story(title="Human share"), comments="Interesting")
+
+        candidates = collect_candidates()
+
+        self.assertEqual([c["story_title"] for c in candidates], ["Human share"])
+
+    def test_a_commented_share_survives_the_feed_dump_filter(self):
+        """Writing an actual comment is what separates a reader from a feed-dumping bot."""
+        for i in range(2):
+            self.share_story(self.other_sharer, self.make_story(feed_id=2, title="Dump %s" % i))
+        self.share_story(
+            self.other_sharer, self.make_story(feed_id=2, title="Considered share"), comments="Loved this"
+        )
+
+        candidates = collect_candidates()
+
+        self.assertEqual(len(candidates), 3)
 
     def test_river_blurblog_serves_the_curated_river(self):
         """river:global reads the curated list, not anybody's social subscriptions."""
