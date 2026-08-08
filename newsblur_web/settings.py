@@ -974,6 +974,10 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
     CELERY_REDIS_DB_NUM,
 )
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+# newsblur_web/settings.py: Each htask-work server runs its own celery beat for redundancy.
+# This scheduler takes a redis lock per task interval so a scheduled task only runs once,
+# instead of once per beat process. See newsblur_web/celery_beat.py.
+CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
 BROKER_TRANSPORT_OPTIONS = {
