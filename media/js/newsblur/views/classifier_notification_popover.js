@@ -138,6 +138,11 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
             if (this.options.trainer) {
                 this.options.trainer.update_save_button();
             }
+
+            // Banner mode: no save button, persist immediately via callback
+            if (_.isFunction(this.options.on_change)) {
+                this.options.on_change(notification_types);
+            }
         }
     },
 
