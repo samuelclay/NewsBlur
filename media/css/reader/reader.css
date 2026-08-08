@@ -4183,6 +4183,94 @@ img.feed_favicon {
     }
 }
 
+/* reader.css: Floating "N new stories" pill shown while the user is reading
+   a feed or folder and new stories arrive on the poll. Fixed to viewport so
+   it stays visible regardless of scroll; appended into #story_titles, but
+   position: fixed takes it out of the scroll container's flow so nothing
+   below it shifts when it appears. Paired with
+   media/js/newsblur/views/new_stories_indicator_view.js. */
+.NB-new-stories-indicator {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 12px;
+    background: #ffffff;
+    color: #2b2b2b;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 17, 20, 0.08);
+    box-shadow:
+        0 1px 2px rgba(15, 17, 20, 0.06),
+        0 6px 16px rgba(15, 17, 20, 0.10);
+    cursor: pointer;
+    user-select: none;
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    pointer-events: none;
+    transition:
+        opacity 180ms ease-out,
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 180ms ease-out,
+        background-color 120ms ease-out;
+}
+
+.NB-new-stories-indicator.NB-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+}
+
+.NB-new-stories-indicator:hover {
+    background: #fafafa;
+    box-shadow:
+        0 1px 2px rgba(15, 17, 20, 0.08),
+        0 8px 20px rgba(15, 17, 20, 0.12);
+    transform: translate(-50%, -1px);
+}
+
+.NB-new-stories-indicator:active {
+    transform: translate(-50%, 0);
+    box-shadow:
+        0 1px 2px rgba(15, 17, 20, 0.10),
+        0 4px 10px rgba(15, 17, 20, 0.10);
+}
+
+.NB-new-stories-indicator:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: 2px;
+}
+
+.NB-new-stories-indicator.NB-loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.NB-new-stories-indicator-icon {
+    display: inline-flex;
+    color: #5C89C9;
+}
+
+.NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-indicator-count {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    margin-right: 2px;
+}
+
+.NB-new-stories-indicator-text {
+    font-weight: 500;
+}
+
 .NB-feed-fetching-indicator {
     display: flex;
     flex-direction: column;
