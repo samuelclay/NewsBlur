@@ -100,6 +100,24 @@ def readonly(
         console.print("  Run [bold]newsblur auth login[/bold] to log back in.")
 
 
+def _tier_line(info: dict) -> str:
+    """Render the tier line, showing Free only when the server actually said so.
+
+    When the user info fetch failed, the tier is unknown — reporting Free here
+    would misreport paying subscribers whose fetch hit a network error.
+    """
+    if info.get("is_pro"):
+        return "  Tier:     [magenta]Pro[/magenta]"
+    if info.get("is_archive"):
+        return "  Tier:     [blue]Archive[/blue]"
+    if info.get("is_premium"):
+        return "  Tier:     [green]Premium[/green]"
+    if "is_premium" in info:
+        return "  Tier:     [dim]Free[/dim]"
+    reason = info.get("profile_error", "no account info returned")
+    return f"  Tier:     [yellow]Unknown[/yellow] [dim](couldn't fetch account info: {reason})[/dim]"
+
+
 @app.command("status")
 def status():
     """Show current authentication status."""
@@ -111,15 +129,7 @@ def status():
             console.print(f"  Username: [bold]{info['username']}[/bold]")
         if info.get("email"):
             console.print(f"  Email:    {info['email']}")
-        # Premium tier
-        if info.get("is_pro"):
-            console.print("  Tier:     [magenta]Pro[/magenta]")
-        elif info.get("is_archive"):
-            console.print("  Tier:     [blue]Archive[/blue]")
-        elif info.get("is_premium"):
-            console.print("  Tier:     [green]Premium[/green]")
-        else:
-            console.print("  Tier:     [dim]Free[/dim]")
+        console.print(_tier_line(info))
         if "feed_count" in info:
             console.print(f"  Feeds:    {info['feed_count']}")
         if get_readonly():

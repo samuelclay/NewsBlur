@@ -354,7 +354,9 @@ def get_auth_status() -> dict:
                     "expired": True,
                 }
 
-    # Verify the token is valid by calling the user info endpoint
+    # Verify the token is valid by calling the user info endpoint. A failed
+    # fetch is recorded in profile_error rather than swallowed, so the status
+    # display can show "Unknown" instead of misreporting the tier as Free.
     username = None
     profile = {}
     try:
@@ -377,8 +379,10 @@ def get_auth_status() -> dict:
                     "is_pro": info_data.get("is_pro", False),
                     "feed_count": info_data.get("feed_count", 0),
                 }
-    except Exception:
-        pass
+        else:
+            profile = {"profile_error": f"HTTP {resp.status_code} from /oauth/user/info/"}
+    except Exception as e:
+        profile = {"profile_error": f"{type(e).__name__}: {e}"}
 
     return {
         "authenticated": True,
