@@ -1809,3 +1809,139 @@ class Test_PremiumExpireBillingPeriod(TestCase):
         expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
 
         self.assertLess((expiration - datetime.datetime.now()).days, 60)
+
+
+class Test_StoreReceiptRenewals(TestCase):
+    """Old iOS clients (pre-14.4, March 2026) re-send the same identifier for every
+    auto-renewal: Apple's original_transaction_id, or the literal "missing" when
+    StoreKit gave them nothing. A renewal is distinguishable from a duplicate
+    submission only by time, so identifier rejection must be scoped to the billing
+    period, not all-time. An all-time check silently expired paying subscribers when
+    their yearly renewals were rejected as duplicates (forum #13799)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="iosrenewal", password="password", email="iosrenewal@test.com"
+        )
+        self.profile = self.user.profile
+
+    def _backdate(self, days, provider="ios-subscription"):
+        PaymentHistory.objects.filter(user=self.user, payment_provider=provider).update(
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=days)
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_premium")
+    def test_annual_renewal_reusing_original_transaction_id_registers(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_premium("90001641336864"))
+        self._backdate(366)
+
+        self.assertTrue(self.profile.activate_ios_premium("90001641336864"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 2
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_premium")
+    def test_annual_renewal_with_missing_identifier_registers(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_premium("missing"))
+        self._backdate(366)
+
+        self.assertTrue(self.profile.activate_ios_premium("missing"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 2
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_premium")
+    def test_same_transaction_id_within_billing_period_is_a_duplicate(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_premium("90001641336864"))
+        self._backdate(30)
+
+        self.assertFalse(self.profile.activate_ios_premium("90001641336864"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 1
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_premium")
+    def test_missing_identifier_within_three_days_is_a_duplicate(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_premium("missing"))
+
+        self.assertFalse(self.profile.activate_ios_premium("missing"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 1
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_pro")
+    def test_monthly_pro_renewal_reusing_transaction_id_registers(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_pro("70001234567890"))
+        self._backdate(30, provider="ios-pro-subscription")
+
+        self.assertTrue(self.profile.activate_ios_pro("70001234567890"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-pro-subscription").count(),
+            2,
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_pro")
+    def test_monthly_pro_same_transaction_id_within_month_is_a_duplicate(self, *mocks):
+        self.assertTrue(self.profile.activate_ios_pro("70001234567890"))
+        self._backdate(10, provider="ios-pro-subscription")
+
+        self.assertFalse(self.profile.activate_ios_pro("70001234567890"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-pro-subscription").count(),
+            1,
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_premium")
+    def test_android_renewal_reusing_order_id_registers(self, *mocks):
+        self.assertTrue(self.profile.activate_android_premium(order_id="GPA.1000-0000-0000-00009"))
+        self._backdate(366, provider="android-subscription")
+
+        self.assertTrue(self.profile.activate_android_premium(order_id="GPA.1000-0000-0000-00009"))
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="android-subscription").count(),
+            2,
+        )
+
+    @patch.object(Profile, "activate_premium")
+    def test_setup_premium_history_keeps_same_identifier_annual_renewals(self, *mocks):
+        now = datetime.datetime.now()
+        for years_ago in (2, 1, 0):
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=now - datetime.timedelta(days=365 * years_ago),
+                payment_amount=36,
+                payment_provider="ios-subscription",
+                payment_identifier="90001641336864",
+            )
+
+        self.profile.setup_premium_history()
+
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 3
+        )
+        self.assertGreater(self.profile.premium_expire, now + datetime.timedelta(days=360))
+
+    @patch.object(Profile, "activate_premium")
+    def test_setup_premium_history_still_removes_same_identifier_duplicates(self, *mocks):
+        now = datetime.datetime.now()
+        for days_ago in (40, 30):
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=now - datetime.timedelta(days=days_ago),
+                payment_amount=36,
+                payment_provider="ios-subscription",
+                payment_identifier="90001641336864",
+            )
+
+        self.profile.setup_premium_history()
+
+        self.assertEqual(
+            PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 1
+        )
