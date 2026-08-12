@@ -117,6 +117,20 @@ class Profile(models.Model):
     # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
     # price absent here, which is what makes a charge at any of these mean a full year.
     ANNUAL_PRICES = {12, 24, 36, 99, 299}
+    # A same-identifier store receipt arriving within this window is a duplicate
+    # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
+    # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
+    # identical for every renewal of a subscription, so an identifier match can't
+    # be rejected forever — that silently expired paying subscribers whose yearly
+    # renewals were dropped as duplicates (apps/profile/models.py, forum #13799).
+    # 292 (80% of a year) and 24 (80% of a month) leave slack for renewals that
+    # register early or rows that were recorded late.
+    ANNUAL_RENEWAL_WINDOW_DAYS = 292
+    MONTHLY_RENEWAL_WINDOW_DAYS = 24
+    # Placeholder identifiers old iOS clients send when StoreKit gave them no
+    # transaction id. They carry no uniqueness, so only the 3-day recent-payment
+    # check can dedupe them.
+    STORE_PLACEHOLDER_IDENTIFIERS = ("missing", "in-progress")
 
     @property
     def is_self_hosted_ai(self):
@@ -1397,20 +1411,34 @@ class Profile(models.Model):
             "android-subscription",
         ]:
             deleted_count = 0
-            # First pass: dedup by payment_identifier (same receipt sent on different days)
-            seen_identifiers = set()
+            # First pass: dedup by payment_identifier (same receipt re-sent). Store
+            # providers reuse identifiers legitimately: old iOS clients send Apple's
+            # original_transaction_id for every renewal, so a same-identifier row a
+            # billing period after the kept one is the next renewal and must survive.
+            # PayPal/Stripe identifiers are unique per charge, so any reuse there is
+            # a duplicate regardless of age.
+            if provider in ("paypal", "stripe"):
+                renewal_window = None
+            elif provider == "ios-pro-subscription":
+                renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
+            else:
+                renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
+            last_kept_identifier_dates = {}
             for payment in list(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
-                .exclude(payment_identifier__in=["missing", "in-progress"])
+                .exclude(payment_identifier__in=list(self.STORE_PLACEHOLDER_IDENTIFIERS))
                 .exclude(refunded=True)
                 .order_by("payment_date")
             ):
-                if payment.payment_identifier in seen_identifiers:
+                last_kept_date = last_kept_identifier_dates.get(payment.payment_identifier)
+                if last_kept_date and (
+                    renewal_window is None or payment.payment_date - last_kept_date < renewal_window
+                ):
                     payment.delete()
                     deleted_count += 1
                 else:
-                    seen_identifiers.add(payment.payment_identifier)
+                    last_kept_identifier_dates[payment.payment_identifier] = payment.payment_date
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
             for payment in list(
@@ -2626,31 +2654,50 @@ class Profile(models.Model):
             )
             return api
 
+    def _duplicate_store_receipt_reason(self, payment_provider, payment_identifier, renewal_window_days):
+        """Why this store receipt should not create a payment, or None when it should.
+
+        Store clients re-submit the same identifier in two situations that only time
+        can tell apart: within days it's a duplicate (relaunch, restore, race); a
+        billing period later it's the subscription's next auto-renewal. Old iOS
+        clients re-send Apple's original_transaction_id for every renewal — or a
+        placeholder when StoreKit gave them nothing — so a matching identifier only
+        counts as a duplicate inside the renewal window (apps/profile/models.py).
+        """
+        now = datetime.datetime.now()
+        real_identifier = payment_identifier and payment_identifier not in self.STORE_PLACEHOLDER_IDENTIFIERS
+        if real_identifier:
+            same_txn = PaymentHistory.objects.filter(
+                user=self.user,
+                payment_identifier=payment_identifier,
+                payment_provider=payment_provider,
+                payment_date__gte=now - datetime.timedelta(days=renewal_window_days),
+            ).exists()
+            if same_txn:
+                return "same txn"
+
+        recently_paid = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_provider=payment_provider,
+            payment_date__gte=now - datetime.timedelta(days=3),
+        ).exists()
+        if recently_paid:
+            return "recent"
+
+        return None
+
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS premium subscription (same txn): $%s~FW"
-                        % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-subscription", transaction_identifier, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS premium subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS premium subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2674,27 +2721,14 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-archive-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS archive subscription (same txn): $%s~FW"
-                        % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-archive-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-archive-subscription", transaction_identifier, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS archive subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS archive subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2716,26 +2750,15 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-pro-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS pro subscription (same txn): $%s~FW" % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-pro-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            # iOS Premium Pro bills monthly, so its renewal window is the short one.
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-pro-subscription", transaction_identifier, self.MONTHLY_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS pro subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS pro subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2767,26 +2790,14 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if order_id:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=order_id,
-                    payment_provider=payment_provider,
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % payment_amount,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider=payment_provider,
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                payment_provider, order_id, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % payment_amount,
+                    "~FG~BBAlready paid Android premium subscription (%s): $%s~FW"
+                    % (duplicate_reason, payment_amount),
                 )
                 return False
 
