@@ -52,8 +52,12 @@ def _build_section_order(prefs):
     """Build complete section_order list from prefs, falling back to default order."""
     custom_keys = ["custom_%d" % (i + 1) for i in range(len(prefs.custom_section_prompts or []))]
     if prefs.section_order:
-        # views.py: Return stored order, but ensure any new custom keys are appended
+        # views.py: Return stored order, but ensure built-in sections added after the
+        # order was saved (e.g. the global rivers) and any new custom keys are appended
         order = list(prefs.section_order)
+        for key in DEFAULT_SECTION_ORDER:
+            if key not in order:
+                order.append(key)
         for key in custom_keys:
             if key not in order:
                 order.append(key)
