@@ -16,7 +16,11 @@ from apps.analyzer.models import (
     ScopedClassifiers,
     compute_story_score,
 )
-from apps.briefing.models import DEFAULT_SECTION_ORDER, DEFAULT_SECTIONS
+from apps.briefing.models import (
+    DEFAULT_SECTION_ORDER,
+    DEFAULT_SECTIONS,
+    GLOBAL_SECTION_KEYS,
+)
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils import log as logging
@@ -485,6 +489,115 @@ def select_briefing_stories(
                 logging.debug(" ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt))
 
     return result
+
+
+def select_global_section_stories(
+    user_id,
+    active_sections=None,
+    exclude_hashes=None,
+    stories_per_section=3,
+    section_order=None,
+):
+    """
+    Select stories for the global briefing sections — the site-wide curated rivers
+    (Widely Read, Long Reads, Good Reads, Global Shared Stories) — as opposed to
+    the personal sections scored from the user's own subscriptions.
+
+    These stories are additive: they do not count against the user's story_count
+    budget. Each enabled global section contributes up to stories_per_section
+    unread stories, deduped against exclude_hashes (previous briefings and this
+    briefing's personal picks) and against the other global sections, with
+    dedupe priority following the user's section order.
+
+    Returns a list of dicts shaped like select_briefing_stories results:
+        story_hash, score, is_read, category, content_word_count, classifier_matches
+    """
+    # scoring.py: Import here — rtrending imports this module's _estimate_word_count
+    # inside a method, so a top-level import would be a circular-import hazard.
+    from apps.social.rglobal import RGlobalSharedStory
+    from apps.statistics.rtrending import RTrendingStory
+
+    fetchers = {
+        "widely_read": RTrendingStory.get_well_read_story_hashes,
+        "long_reads": RTrendingStory.get_long_read_story_hashes,
+        "good_reads": RTrendingStory.get_good_read_story_hashes,
+        "global_shared": RGlobalSharedStory.get_story_hashes,
+    }
+
+    effective_sections = active_sections or DEFAULT_SECTIONS
+    order = section_order or DEFAULT_SECTION_ORDER
+    ordered_keys = [k for k in order if k in GLOBAL_SECTION_KEYS]
+    ordered_keys += [k for k in GLOBAL_SECTION_KEYS if k not in ordered_keys]
+
+    seen_hashes = set(exclude_hashes or [])
+    selected = []
+    for section_key in ordered_keys:
+        if not effective_sections.get(section_key, True):
+            continue
+        fetcher = fetchers.get(section_key)
+        if not fetcher:
+            continue
+
+        # scoring.py: Overfetch so dedupe against previous briefings and the other
+        # global sections still leaves enough stories to fill the section.
+        try:
+            story_hashes = fetcher(
+                offset=0,
+                limit=stories_per_section * 4,
+                order="newest",
+                read_filter="unread",
+                user_id=user_id,
+            )
+        except redis.RedisError as e:
+            logging.debug(" ---> Briefing scoring: global section %s fetch failed: %s" % (section_key, e))
+            continue
+
+        picked = 0
+        for story_hash in story_hashes:
+            if picked >= stories_per_section:
+                break
+            if story_hash in seen_hashes:
+                continue
+            seen_hashes.add(story_hash)
+            selected.append({"story_hash": story_hash, "category": section_key})
+            picked += 1
+
+    if not selected:
+        return []
+
+    # scoring.py: Batch-fetch the selected stories once for word counts, and drop
+    # any hash whose story has been purged from Mongo since the Redis list was built.
+    stories_by_hash = {
+        story.story_hash: story
+        for story in MStory.objects(story_hash__in=[s["story_hash"] for s in selected]).order_by()
+    }
+
+    results = []
+    for s in selected:
+        story = stories_by_hash.get(s["story_hash"])
+        if not story:
+            continue
+        results.append(
+            {
+                "story_hash": s["story_hash"],
+                "score": 0.0,
+                "is_read": False,
+                "category": s["category"],
+                "content_word_count": _estimate_word_count(story),
+                "classifier_matches": [],
+            }
+        )
+
+    logging.debug(
+        " ---> Briefing scoring: %s global section stories for user %s (%s)"
+        % (
+            len(results),
+            user_id,
+            ", ".join(sorted({s["category"] for s in results})) or "none",
+        )
+    )
+
+    return results
 
 
 def _find_clustered_stories(candidates, stories_by_hash, user_feed_ids=None):

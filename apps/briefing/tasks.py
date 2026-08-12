@@ -176,12 +176,16 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     from django.conf import settings
 
     from apps.briefing.models import (
+        DEFAULT_SECTIONS,
         MBriefing,
         MBriefingPreferences,
         create_briefing_story,
         ensure_briefing_feed,
     )
-    from apps.briefing.scoring import select_briefing_stories
+    from apps.briefing.scoring import (
+        select_briefing_stories,
+        select_global_section_stories,
+    )
     from apps.briefing.summary import (
         embed_briefing_icons,
         enforce_exclusive_sections,
@@ -239,6 +243,10 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
 
     prefs = MBriefingPreferences.get_or_create(user_id)
     section_order = prefs.section_order  # May be None (default order)
+    # tasks.py: Merge saved section prefs over defaults so sections added after the
+    # user last saved (e.g. the global rivers) take their default-enabled state.
+    # Matches the frontend popover, which treats keys missing from saved prefs as enabled.
+    merged_sections = dict(DEFAULT_SECTIONS, **(prefs.sections or {}))
     now = datetime.datetime.utcnow()
 
     if prefs.frequency == "weekly":
@@ -270,7 +278,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         read_filter=prefs.read_filter or "unread",
         include_read=prefs.include_read,
         custom_section_prompts=prefs.custom_section_prompts,
-        active_sections=prefs.sections,
+        active_sections=merged_sections,
         exclude_hashes=exclude_hashes,
         section_order=section_order,
     )
@@ -291,6 +299,20 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         )
         return
 
+    # tasks.py: Append stories from the site-wide curated rivers (Widely Read, Long
+    # Reads, Good Reads, Global Shared Stories). These are additive on top of the
+    # personal story_count budget and are excluded from the min_stories check above
+    # so a briefing still requires stories from the user's own feeds.
+    publish("progress", {"step": "global", "message": "Adding stories from across NewsBlur..."})
+    global_stories = select_global_section_stories(
+        user_id,
+        active_sections=merged_sections,
+        exclude_hashes=exclude_hashes | {s["story_hash"] for s in scored_stories},
+        section_order=section_order,
+    )
+    if global_stories:
+        scored_stories = scored_stories + global_stories
+
     # tasks.py: Disable custom sections that have no matching stories so the LLM
     # doesn't force-fit unrelated stories to a custom prompt (e.g. "Trump news" in a gaming folder).
     matched_custom_sections = set()
@@ -299,7 +321,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         if cat.startswith("custom_"):
             matched_custom_sections.add(cat)
 
-    filtered_sections = dict(prefs.sections) if prefs.sections else {}
+    filtered_sections = dict(merged_sections)
     if prefs.custom_section_prompts:
         for i, prompt in enumerate(prefs.custom_section_prompts):
             custom_key = "custom_%d" % (i + 1)
@@ -316,7 +338,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
         now,
         summary_length=prefs.summary_length or "medium",
         summary_style=prefs.summary_style or "bullets",
-        sections=filtered_sections or prefs.sections,
+        sections=filtered_sections,
         custom_section_prompts=prefs.custom_section_prompts,
         model=prefs.briefing_model,
         section_order=section_order,
@@ -331,7 +353,7 @@ def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     # tasks.py: Strip sections from output that the user has disabled. The LLM may
     # occasionally create sections it wasn't instructed to because it sees category
     # annotations in the story data.
-    active_sections = filtered_sections or prefs.sections
+    active_sections = filtered_sections
     if active_sections:
         summary_html = filter_disabled_sections(summary_html, active_sections, section_order)
 

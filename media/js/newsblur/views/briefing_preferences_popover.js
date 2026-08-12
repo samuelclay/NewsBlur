@@ -4,7 +4,11 @@ NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"}
+    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"},
+    {key: "widely_read", name: "Widely Read on NewsBlur", subtitle: "What the NewsBlur community is reading"},
+    {key: "long_reads", name: "Long Reads on NewsBlur", subtitle: "Deep reads the community gave real time to"},
+    {key: "good_reads", name: "Good Reads on NewsBlur", subtitle: "Stories readers finished, saved, and shared"},
+    {key: "global_shared", name: "Global Shared Stories", subtitle: "Hand-picked shares from across NewsBlur"}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;

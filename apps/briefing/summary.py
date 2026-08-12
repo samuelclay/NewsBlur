@@ -116,6 +116,31 @@ SECTION_PROMPTS = {
         "Write a brief editorial description of each story's significance. "
         "Do NOT list individual sources or feed names — source links will be added automatically."
     ),
+    # summary.py: Global sections — stories from site-wide curated rivers, not the
+    # reader's own subscriptions. Selected in scoring.py:select_global_section_stories.
+    "widely_read": (
+        '"Widely Read on NewsBlur" — CATEGORY: widely_read. '
+        "Stories the wider NewsBlur community is spending real reading time with right now. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with widely_covered — only include stories whose CATEGORY is widely_read."
+    ),
+    "long_reads": (
+        '"Long Reads on NewsBlur" — CATEGORY: long_reads. '
+        "In-depth articles that NewsBlur readers across the site gave sustained attention to. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with long_read (the reader's own long articles) — only include stories "
+        "whose CATEGORY is long_reads."
+    ),
+    "good_reads": (
+        '"Good Reads on NewsBlur" — CATEGORY: good_reads. '
+        "Stories NewsBlur readers finished and then saved, shared, or trained up, often from "
+        "smaller sites. These come from across all of NewsBlur, not the reader's subscriptions."
+    ),
+    "global_shared": (
+        '"Global Shared Stories" — CATEGORY: global_shared. '
+        "Stories shared by NewsBlur users across the whole site, curated hourly. "
+        "These come from across all of NewsBlur, not the reader's subscriptions."
+    ),
 }
 
 
@@ -472,6 +497,12 @@ BRIEFING_SECTION_ICONS = {
     "classifier_match": "train.svg",
     "follow_up": "boomerang.svg",
     "widely_covered": "growth-rocket-gray.svg",
+    # summary.py: Global sections use the same icons as their sidebar rivers
+    # (see $.favicon in media/js/vendor/jquery.newsblur.js)
+    "widely_read": "blaze.svg",
+    "long_reads": "moon.svg",
+    "good_reads": "star.svg",
+    "global_shared": "global-shares.svg",
     "custom_1": "prompt.svg",
     "custom_2": "prompt.svg",
     "custom_3": "prompt.svg",

@@ -1381,6 +1381,161 @@ class Test_Scoring(BriefingTestCase):
             self.assertGreater(weight, 0)
 
 
+class Test_GlobalSections(BriefingTestCase):
+    """Tests for apps/briefing/scoring.py:select_global_section_stories."""
+
+    def _patch_fetchers(self, well_read=None, long_reads=None, good_reads=None, global_shared=None):
+        """Patch the four global river fetchers to return fixed story hash lists."""
+        from apps.social.rglobal import RGlobalSharedStory
+        from apps.statistics.rtrending import RTrendingStory
+
+        return (
+            patch.object(RTrendingStory, "get_well_read_story_hashes", return_value=well_read or []),
+            patch.object(RTrendingStory, "get_long_read_story_hashes", return_value=long_reads or []),
+            patch.object(RTrendingStory, "get_good_read_story_hashes", return_value=good_reads or []),
+            patch.object(RGlobalSharedStory, "get_story_hashes", return_value=global_shared or []),
+        )
+
+    def test_selects_from_all_enabled_sections(self):
+        from apps.briefing.scoring import select_global_section_stories
+
+        p1, p2, p3, p4 = self._patch_fetchers(
+            well_read=[self.stories[0].story_hash],
+            long_reads=[self.stories[1].story_hash],
+            good_reads=[self.stories[2].story_hash],
+            global_shared=[self.stories[3].story_hash],
+        )
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk)
+
+        categories = {s["category"] for s in result}
+        self.assertEqual(categories, {"widely_read", "long_reads", "good_reads", "global_shared"})
+        for s in result:
+            self.assertFalse(s["is_read"])
+            self.assertEqual(s["classifier_matches"], [])
+            self.assertGreater(s["content_word_count"], 0)
+
+    def test_respects_stories_per_section_cap(self):
+        from apps.briefing.scoring import select_global_section_stories
+
+        p1, p2, p3, p4 = self._patch_fetchers(well_read=[s.story_hash for s in self.stories])
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk, stories_per_section=2)
+
+        self.assertEqual(len(result), 2)
+        self.assertTrue(all(s["category"] == "widely_read" for s in result))
+
+    def test_excludes_previous_briefing_hashes(self):
+        from apps.briefing.scoring import select_global_section_stories
+
+        p1, p2, p3, p4 = self._patch_fetchers(
+            well_read=[self.stories[0].story_hash, self.stories[1].story_hash]
+        )
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk, exclude_hashes={self.stories[0].story_hash})
+
+        hashes = [s["story_hash"] for s in result]
+        self.assertNotIn(self.stories[0].story_hash, hashes)
+        self.assertIn(self.stories[1].story_hash, hashes)
+
+    def test_dedupes_across_sections_by_order(self):
+        # tests.py: A story in both Widely Read and Good Reads should land only in
+        # the section that comes first in the user's section order.
+        from apps.briefing.scoring import select_global_section_stories
+
+        shared_hash = self.stories[0].story_hash
+        p1, p2, p3, p4 = self._patch_fetchers(well_read=[shared_hash], good_reads=[shared_hash])
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk)
+
+        matching = [s for s in result if s["story_hash"] == shared_hash]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0]["category"], "widely_read")
+
+        # tests.py: Reversed section order flips ownership to good_reads
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(
+                self.user.pk,
+                section_order=["good_reads", "widely_read"],
+            )
+        matching = [s for s in result if s["story_hash"] == shared_hash]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0]["category"], "good_reads")
+
+    def test_disabled_sections_skipped(self):
+        from apps.briefing.scoring import select_global_section_stories
+
+        p1, p2, p3, p4 = self._patch_fetchers(
+            well_read=[self.stories[0].story_hash],
+            good_reads=[self.stories[1].story_hash],
+        )
+        sections = dict(DEFAULT_SECTIONS)
+        sections["widely_read"] = False
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk, active_sections=sections)
+
+        categories = {s["category"] for s in result}
+        self.assertNotIn("widely_read", categories)
+        self.assertIn("good_reads", categories)
+
+    def test_sections_missing_from_saved_prefs_default_enabled(self):
+        # tests.py: A sections dict saved before the global sections existed has no
+        # global keys — they should be treated as enabled, matching the frontend.
+        from apps.briefing.scoring import select_global_section_stories
+
+        legacy_sections = {"top_stories": True, "long_read": False}
+        p1, p2, p3, p4 = self._patch_fetchers(well_read=[self.stories[0].story_hash])
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk, active_sections=legacy_sections)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["category"], "widely_read")
+
+    def test_missing_story_dropped(self):
+        from apps.briefing.scoring import select_global_section_stories
+
+        p1, p2, p3, p4 = self._patch_fetchers(well_read=["999999:deadbeef", self.stories[0].story_hash])
+        with p1, p2, p3, p4:
+            result = select_global_section_stories(self.user.pk)
+
+        hashes = [s["story_hash"] for s in result]
+        self.assertNotIn("999999:deadbeef", hashes)
+        self.assertIn(self.stories[0].story_hash, hashes)
+
+    def test_build_section_order_appends_new_builtin_keys(self):
+        # tests.py: A section_order saved before the global sections existed should
+        # still surface the new keys so they can be toggled and rendered.
+        from apps.briefing.models import GLOBAL_SECTION_KEYS
+        from apps.briefing.views import _build_section_order
+
+        prefs = self.make_prefs(
+            section_order=[
+                "widely_covered",
+                "top_stories",
+                "infrequent",
+                "long_read",
+                "classifier_match",
+                "follow_up",
+            ]
+        )
+        order = _build_section_order(prefs)
+        for key in GLOBAL_SECTION_KEYS:
+            self.assertIn(key, order)
+        # tests.py: Saved ordering is preserved ahead of the appended keys
+        self.assertEqual(order[0], "widely_covered")
+
+    def test_global_section_prompts_in_system_prompt(self):
+        prompt = _build_system_prompt()
+        self.assertIn("widely_read", prompt)
+        self.assertIn("long_reads", prompt)
+        self.assertIn("good_reads", prompt)
+        self.assertIn("global_shared", prompt)
+        self.assertIn("Widely Read on NewsBlur", prompt)
+        self.assertIn("Long Reads on NewsBlur", prompt)
+        self.assertIn("Good Reads on NewsBlur", prompt)
+        self.assertIn("Global Shared Stories", prompt)
+
+
 # ---------------------------------------------------------------------------
 # 3. Test_Models — apps/briefing/models.py
 # ---------------------------------------------------------------------------
@@ -1392,8 +1547,8 @@ class Test_Models(BriefingTestCase):
     # --- Constants ---
 
     def test_valid_section_keys_count(self):
-        # 6 built-in sections + 5 custom sections = 11
-        self.assertEqual(len(VALID_SECTION_KEYS), 11)
+        # 6 built-in personal sections + 4 global sections + 5 custom sections = 15
+        self.assertEqual(len(VALID_SECTION_KEYS), 15)
 
     def test_default_sections_values(self):
         self.assertTrue(DEFAULT_SECTIONS["top_stories"])
@@ -1401,6 +1556,11 @@ class Test_Models(BriefingTestCase):
         self.assertTrue(DEFAULT_SECTIONS["classifier_match"])
         self.assertTrue(DEFAULT_SECTIONS["follow_up"])
         self.assertTrue(DEFAULT_SECTIONS["widely_covered"])
+        # tests.py: Global sections are enabled by default
+        self.assertTrue(DEFAULT_SECTIONS["widely_read"])
+        self.assertTrue(DEFAULT_SECTIONS["long_reads"])
+        self.assertTrue(DEFAULT_SECTIONS["good_reads"])
+        self.assertTrue(DEFAULT_SECTIONS["global_shared"])
         self.assertNotIn("quick_catchup", DEFAULT_SECTIONS)
         self.assertNotIn("contrarian_views", DEFAULT_SECTIONS)
         self.assertNotIn("emerging_topics", DEFAULT_SECTIONS)
