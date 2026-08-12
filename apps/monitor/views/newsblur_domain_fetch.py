@@ -36,6 +36,14 @@ class DomainFetch(View):
         def decoded(value):
             return value.decode() if isinstance(value, bytes) else value
 
+        # Today's deferrals per host. These reset to zero at midnight UTC, which
+        # PromQL rate()/increase() treat as a counter reset.
+        today = datetime.datetime.utcnow().strftime("%Y%m%d")
+        throttled = {
+            decoded(k): int(v)
+            for k, v in r.hgetall(THROTTLE_STATS_KEY_PREFIX + today).items()
+        }
+
         # Current one-minute window: attempts per host, hottest first
         attempts = []
         for key in r.scan_iter(match=RATE_LIMIT_KEY_PREFIX + "*", count=1000):
@@ -44,16 +52,25 @@ class DomainFetch(View):
             attempts.append((count, host))
         attempts.sort(reverse=True)
 
-        for count, host in attempts[:TOP_HOSTS]:
-            formatted_data[f"attempts_{host}"] = f'{chart_name}{{metric="attempts",host="{host}"}} {count}'
+        # Only export per-host series for hosts that matter today: already throttled
+        # today, or currently burning at least half their per-minute budget. A plain
+        # top-30-by-attempts rotated through thousands of one-off hosts a day, and
+        # every host that ever grazed the top 30 minted a permanent Prometheus series
+        # (and a $host dropdown entry in newsblur_dashboard.json).
+        exported_hosts = 0
+        for count, host in attempts:
+            if exported_hosts >= TOP_HOSTS:
+                break
+            budget = host_budget_per_minute(host)
+            if host not in throttled and count < budget / 2.0:
+                continue
+            formatted_data[
+                f"attempts_{host}"
+            ] = f'{chart_name}{{metric="attempts",host="{host}"}} {count}'
             formatted_data[
                 f"budget_{host}"
-            ] = f'{chart_name}{{metric="budget",host="{host}"}} {host_budget_per_minute(host)}'
-
-        # Today's deferrals per host. These reset to zero at midnight UTC, which
-        # PromQL rate()/increase() treat as a counter reset.
-        today = datetime.datetime.utcnow().strftime("%Y%m%d")
-        throttled = {decoded(k): int(v) for k, v in r.hgetall(THROTTLE_STATS_KEY_PREFIX + today).items()}
+            ] = f'{chart_name}{{metric="budget",host="{host}"}} {budget}'
+            exported_hosts += 1
         ranked = sorted(throttled.items(), key=lambda kv: kv[1], reverse=True)
         for host, count in ranked[:TOP_HOSTS]:
             formatted_data[
@@ -70,14 +87,20 @@ class DomainFetch(View):
         formatted_data[
             "hosts_throttled_today"
         ] = f'{chart_name}{{metric="hosts_throttled_today"}} {len(throttled)}'
-        formatted_data["active_domains"] = f'{chart_name}{{metric="active_domains"}} {len(attempts)}'
+        formatted_data[
+            "active_domains"
+        ] = f'{chart_name}{{metric="active_domains"}} {len(attempts)}'
 
         elapsed_ms = (time.time() - start_time) * 1000
-        formatted_data["scrape_duration"] = f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
+        formatted_data[
+            "scrape_duration"
+        ] = f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
 
         context = {
             "data": formatted_data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+        return render(
+            request, "monitor/prometheus_data.html", context, content_type="text/plain"
+        )
