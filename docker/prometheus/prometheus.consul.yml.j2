@@ -1,14 +1,26 @@
 global:
     scrape_interval: 30s
+rule_files:
+    - /etc/prometheus/rules.yml
 scrape_configs:
     - job_name: 'node_exporter'
+      # Node metrics are for big trends only (CPU, memory, disk, network, load), so
+      # scrape at 60s and keep just those families. The full exporter emits ~900
+      # series per host across ~56 hosts; the keep list below plus the slower
+      # cadence cuts node ingest ~13x. Short-zoom rate() panels on the stock
+      # node-exporter dashboard get patchier; multi-day trends are unaffected.
+      scrape_interval: 60s
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
         services: ['node-exporter']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-    
+      metric_relabel_configs:
+      - source_labels: ['__name__']
+        regex: node_cpu_seconds_total|node_memory_(MemTotal|MemAvailable|MemFree|Buffers|Cached|SwapTotal|SwapFree|Committed_AS)_bytes|node_filesystem_(size|avail|free)_bytes|node_filesystem_readonly|node_disk_(read_bytes|written_bytes|io_time_seconds)_total|node_disk_(reads|writes)_completed_total|node_network_(receive|transmit)_(bytes|errs)_total|node_load1|node_load5|node_load15|node_boot_time_seconds|node_time_seconds|node_uname_info
+        action: keep
+
 
     - job_name: 'mongo_exporter'
       consul_sd_configs:
@@ -297,6 +309,26 @@ scrape_configs:
           target_label: instance
 {% endif %}
       metrics_path: /metrics
+      # The per-view latency histogram is the single biggest series family in the
+      # TSDB (~40% of all series: view x method x le x app server). Only two views
+      # are ever charted with quantiles (newsblur_dashboard.json panels 97 and 106),
+      # so keep _bucket series for those views alone. _sum and _count survive for
+      # every view, which is all the average-latency panels need. RE2 has no
+      # negative lookahead, hence the mark-then-drop dance with a temp label.
+      metric_relabel_configs:
+        - source_labels: ['__name__']
+          regex: django_http_requests_latency_seconds_by_view_method_bucket
+          target_label: __tmp_view_bucket
+          replacement: bucket
+        - source_labels: ['__tmp_view_bucket', 'view']
+          regex: bucket;(load-single-feed|load-river-stories)
+          target_label: __tmp_view_bucket
+          replacement: charted
+        - source_labels: ['__tmp_view_bucket']
+          regex: bucket
+          action: drop
+        - regex: __tmp_view_bucket
+          action: labeldrop
 
     #- job_name: 'mongo heap usage'
     #  consul_sd_configs:
