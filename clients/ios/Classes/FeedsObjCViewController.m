@@ -1892,6 +1892,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         NSString *clusterMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"cluster_mode"] ?: @"related";
         [self saveProfilePreferenceWithKey:@"cluster_mode" value:clusterMode];
         [self.appDelegate.feedDetailViewController reload];
+    } else if ([identifier isEqual:@"custom_domain"]) {
+        NSString *customDomain = [[NSUserDefaults standardUserDefaults] stringForKey:@"custom_domain"];
+        [self.appDelegate setCustomDomainPreference:customDomain];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
