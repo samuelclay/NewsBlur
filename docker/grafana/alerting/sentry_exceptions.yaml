@@ -64,7 +64,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 30m
         annotations:
           __dashboardUid__: T86VjXrG2
@@ -134,7 +134,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 30m
         annotations:
           __dashboardUid__: T86VjXrG2
@@ -204,7 +204,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 30m
         annotations:
           __dashboardUid__: T86VjXrG2
@@ -274,7 +274,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 30m
         annotations:
           __dashboardUid__: T86VjXrG2
