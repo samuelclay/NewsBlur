@@ -123,20 +123,52 @@ services:
   #     - ./docker/volumes/redis_prod:/data
   #   command: redis-server /etc/redis/redis.conf --port 6579
 
+  # One-shot init step: chowns the bind-mounted data dir to the image's
+  # built-in elasticsearch user (uid 1000, gid 0) before Elasticsearch starts.
+  # Docker auto-creates a missing bind-mount host directory as root, and this
+  # image's entrypoint never chowns its own data dir on boot - it always execs
+  # directly as its non-root user. Docker Desktop's bind-mount layer papers
+  # over the resulting ownership mismatch; native Linux Docker Engine enforces
+  # real UID permissions, so a genuinely fresh clone fails there with an
+  # AccessDeniedException obtaining the node lock. Idempotent and harmless on
+  # every host, including Desktop, so it doesn't need an OS check.
+  newsblur_db_elasticsearch_permissions:
+    container_name: newsblur_db_elasticsearch_permissions
+    image: alpine:latest
+    command: chown -R 1000:0 /usr/share/elasticsearch/data
+    volumes:
+      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+    restart: "no"
+
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
-    # Matches the image's built-in "elasticsearch" user (uid 1000, gid 0). Without this,
-    # Docker auto-creates the bind-mounted data dir as root on first run, and the
-    # non-root elasticsearch process can't obtain its node lock inside it.
-    user: "1000:0"
+    user: "1000:0" # the image's own built-in user; not host-dependent
+    depends_on:
+      newsblur_db_elasticsearch_permissions:
+        condition: service_completed_successfully
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
+    # -XX:UseSVE=0 disables an ARM SVE optimization and is only a valid JVM
+    # flag on arm64; passing it unconditionally crashes Elasticsearch's
+    # startup on x86_64 with "Unrecognized VM option". Detect the running
+    # container's actual architecture at boot (covers QEMU-emulated
+    # containers too, not just the host's reported arch) and only add the
+    # flag where it applies, instead of blanket-suppressing all unrecognized
+    # JVM options as a workaround.
+    entrypoint: >
+      /bin/bash -c '
+        arch="$$(uname -m)";
+        if [[ "$$arch" == "aarch64" || "$$arch" == "arm64" ]]; then
+          export ES_JAVA_OPTS="$$ES_JAVA_OPTS -XX:UseSVE=0";
+          export CLI_JAVA_OPTS="$$CLI_JAVA_OPTS -XX:UseSVE=0";
+        fi;
+        exec /bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper
+      '
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
