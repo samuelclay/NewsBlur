@@ -1223,6 +1223,7 @@ var classifier_prototype = {
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
                 include_images: 'false',
+                classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
                 $btn.text('Test on this story').removeClass('NB-disabled');
@@ -1480,6 +1481,7 @@ var classifier_prototype = {
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
                 include_images: 'true',
+                classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
                 $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');

@@ -1123,17 +1123,28 @@ class MClassifierPrompt(mongo.Document):
         new_results = {}
         if uncached_stories:
             if prompt.include_images:
-                new_results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
+                results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
             else:
-                new_results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
+                results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
 
-            # Write new results to cache keyed by story_hash
-            if user_id and feed_id and new_results:
-                cache_scores = {}
-                for s in uncached_stories:
-                    score = new_results.get(s["story_id"], 0)
-                    cache_scores[s["story_hash"]] = score
-                cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
+            if results is None:
+                # The classifier failed outright (API error, unparseable tool call).
+                # Leave these stories uncached so the next fetch retries them. Caching
+                # a neutral score here would stick for the full TTL, so one transient
+                # failure would permanently mark a batch of stories as "not a match".
+                logging.debug(
+                    "~BR~FKAI classifier failed for ~SB%s~SN stories, leaving them uncached"
+                    % len(uncached_stories)
+                )
+            else:
+                new_results = results
+                # Write new results to cache keyed by story_hash
+                if user_id and feed_id and new_results:
+                    cache_scores = {}
+                    for s in uncached_stories:
+                        score = new_results.get(s["story_id"], 0)
+                        cache_scores[s["story_hash"]] = score
+                    cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
 
         # Merge cached + new results, keyed by story_hash
         all_results = {}
