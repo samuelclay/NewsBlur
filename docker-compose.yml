@@ -150,22 +150,11 @@ services:
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
-    # -XX:UseSVE=0 disables an ARM SVE optimization and is only a valid JVM
-    # flag on arm64; passing it unconditionally crashes Elasticsearch's
-    # startup on x86_64 with "Unrecognized VM option". Detect the running
-    # container's actual architecture at boot (covers QEMU-emulated
-    # containers too, not just the host's reported arch) and only add the
-    # flag where it applies, instead of blanket-suppressing all unrecognized
-    # JVM options as a workaround.
-    entrypoint: >
-      /bin/bash -c '
-        arch="$$(uname -m)";
-        if [[ "$$arch" == "aarch64" || "$$arch" == "arm64" ]]; then
-          export ES_JAVA_OPTS="$$ES_JAVA_OPTS -XX:UseSVE=0";
-          export CLI_JAVA_OPTS="$$CLI_JAVA_OPTS -XX:UseSVE=0";
-        fi;
-        exec /bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper
-      '
+    # See docker/elasticsearch/entrypoint.sh: only adds the ARM-only
+    # -XX:UseSVE=0 JVM flag when actually running on arm64, instead of
+    # hardcoding it (crashes on x86_64) or blanket-suppressing all
+    # unrecognized JVM options as a workaround.
+    entrypoint: ["/bin/bash", "/entrypoint.sh"]
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
@@ -177,6 +166,7 @@ services:
       - 9200:9200
       - 9300:9300
     volumes:
+      - ./docker/elasticsearch/entrypoint.sh:/entrypoint.sh:ro
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
