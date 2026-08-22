@@ -416,6 +416,9 @@ def test_prompt_classifier(request):
 
     temp_prompt = TempPrompt()
     temp_prompt.prompt = prompt_text
+    # Preview the direction the user is actually editing, so a hidden classifier
+    # is previewed with the same instructions it will run with.
+    temp_prompt.classifier_type = "hidden" if post.get("classifier_type") == "hidden" else "focus"
 
     if include_images:
         # VLM mode: classify each image individually so the frontend
@@ -436,6 +439,8 @@ def test_prompt_classifier(request):
                 }
             )
         results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
+        if results is None:
+            return {"code": -1, "message": "Classification failed, please try again"}
 
         # Build per-image results list (ordered by image index)
         image_results = []
@@ -456,6 +461,8 @@ def test_prompt_classifier(request):
             "story_content": story_content,
         }
         results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
+        if results is None:
+            return {"code": -1, "message": "Classification failed, please try again"}
 
     if not include_images:
         classification = results.get(story_hash, 0)

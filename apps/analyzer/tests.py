@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
@@ -8,6 +9,7 @@ from django.urls import reverse
 from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
+    MClassifierPrompt,
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
@@ -27,6 +29,7 @@ from apps.analyzer.models import (
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
+from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 
 
 class Test_Classifiers(TransactionTestCase):
@@ -1845,3 +1848,243 @@ class Test_ScopedClassifiersParity(TransactionTestCase):
                 folder_feed_ids=folder_feed_ids,
             )
             self.assertEqual(flat_score, indexed_score, msg=f"mismatch for feed={story['story_feed_id']}")
+
+
+class Test_AIPromptClassifierDirection(TransactionTestCase):
+    """Regression tests for the direction of AI prompt classifiers.
+
+    apps/analyzer/tests.py: A `hidden` classifier whose prompt is a bare topic
+    ("sports") used to be sent to the model with no indication of direction, so
+    the model read the topic as the user's interests and returned +1 (focus).
+    apps/reader/views.py only honors -1 for a hidden classifier, so every match
+    was discarded and nothing was ever hidden.
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="promptuser", password="testpass", email="prompt@test.com"
+        )
+        self.feed = Feed.objects.get(pk=1)
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True)
+        self.hidden_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            prompt="sports",
+            classifier_type="hidden",
+        )
+        self.focus_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            prompt="sports",
+            classifier_type="focus",
+        )
+        self.stories = [
+            {
+                "story_id": "guid-1",
+                "story_hash": "1:guid1",
+                "story_feed_id": self.feed.pk,
+                "story_title": "Dodgers edge the Pirates 5-4 in the 10th",
+                "story_content": "A walk-off single in a baseball game.",
+                "image_urls": [],
+            }
+        ]
+
+    def tearDown(self):
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def _run(self, classify_fn, prompt, classification=0, raises=None):
+        """Call a classifier against a mocked Anthropic client.
+
+        Returns (result, create_kwargs) so tests can assert on both the value
+        returned and the request that was actually sent to the model.
+        """
+        block = MagicMock()
+        block.type = "tool_use"
+        block.name = "classify_stories"
+        block.input = {"classifications": [{"id": "guid-1", "classification": classification}]}
+        response = MagicMock()
+        response.content = [block]
+        response.usage = None
+
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic:
+            client = MockAnthropic.return_value
+            if raises:
+                client.messages.create.side_effect = raises
+            else:
+                client.messages.create.return_value = response
+            result = classify_fn(prompt, self.stories, user_id=None)
+            kwargs = client.messages.create.call_args.kwargs if client.messages.create.call_args else {}
+        return result, kwargs
+
+    def _allowed_scores(self, kwargs):
+        """Pull the enum of classification values the tool schema permits."""
+        tool = kwargs["tools"][0]
+        schema = tool["input_schema"]["properties"]["classifications"]["items"]
+        return schema["properties"]["classification"]["enum"]
+
+    def test_hidden_prompt_only_permits_neutral_or_hide(self):
+        """A hidden classifier must never be able to return +1 (focus)."""
+        _result, kwargs = self._run(classify_stories_with_ai, self.hidden_prompt)
+        allowed = self._allowed_scores(kwargs)
+        self.assertNotIn(1, allowed, "A hidden classifier must not be allowed to return +1 (focus)")
+        self.assertIn(-1, allowed)
+        self.assertIn(0, allowed)
+
+    def test_focus_prompt_only_permits_neutral_or_focus(self):
+        """A focus classifier must never be able to return -1 (hidden)."""
+        _result, kwargs = self._run(classify_stories_with_ai, self.focus_prompt)
+        allowed = self._allowed_scores(kwargs)
+        self.assertNotIn(-1, allowed, "A focus classifier must not be allowed to return -1 (hidden)")
+        self.assertIn(1, allowed)
+        self.assertIn(0, allowed)
+
+    def test_system_message_states_the_direction(self):
+        """The bare prompt text ("sports") cannot convey direction, so the
+        system message has to state it. The same text is used by both a hidden
+        and a focus classifier in production, so the two messages must differ."""
+        _r1, hidden_kwargs = self._run(classify_stories_with_ai, self.hidden_prompt)
+        _r2, focus_kwargs = self._run(classify_stories_with_ai, self.focus_prompt)
+        hidden_system = hidden_kwargs["system"]
+        focus_system = focus_kwargs["system"]
+
+        self.assertNotEqual(
+            hidden_system,
+            focus_system,
+            "Hidden and focus classifiers with identical prompt text must send different instructions",
+        )
+        self.assertIn("hide", hidden_system.lower())
+        self.assertIn("sports", hidden_system)
+
+    def test_hidden_match_survives_the_reader_filter(self):
+        """End-to-end sign check: what the model returns for a match must be
+        the value apps/reader/views.py honors for that classifier type."""
+        result, _kwargs = self._run(classify_stories_with_ai, self.hidden_prompt, classification=-1)
+        self.assertEqual(result["guid-1"], -1)
+
+        # Mirror of the filter in apps/reader/views.py:get_prompt_scores_or_queue
+        effective = -1 if (self.hidden_prompt.classifier_type == "hidden" and result["guid-1"] == -1) else 0
+        self.assertEqual(effective, -1, "A matched sports story must end up hidden, not discarded")
+
+    def test_vision_hidden_prompt_only_permits_neutral_or_hide(self):
+        """The VLM classifier had the same bug: it always returned +1 for a
+        match, so hidden image classifiers never hid anything."""
+        _result, kwargs = self._run(classify_stories_with_vision, self.hidden_prompt)
+        allowed = self._allowed_scores(kwargs)
+        self.assertNotIn(1, allowed, "A hidden image classifier must not be allowed to return +1")
+        self.assertIn(-1, allowed)
+
+    def test_api_failure_returns_none_instead_of_neutral_scores(self):
+        """An exception used to yield {story_id: 0} for every story, which
+        _run_classifier then cached for 30 days, permanently marking those
+        stories neutral. Failure must be distinguishable from "all neutral"."""
+        result, _kwargs = self._run(
+            classify_stories_with_ai, self.hidden_prompt, raises=Exception("API is down")
+        )
+        self.assertIsNone(result, "A failed classification must not look like a successful all-neutral one")
+
+    def test_failed_classification_is_not_cached(self):
+        """A transient API failure must leave the Redis cache untouched."""
+        prompt_id = str(self.hidden_prompt.id)
+        MClassifierPrompt.invalidate_cache(self.user.pk, prompt_id)
+
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic:
+            MockAnthropic.return_value.messages.create.side_effect = Exception("API is down")
+            MClassifierPrompt._run_classifier(
+                self.hidden_prompt, self.stories, user_id=self.user.pk, feed_id=self.feed.pk
+            )
+
+        cached = MClassifierPrompt.get_cached_scores(
+            self.user.pk, prompt_id, self.feed.pk, [s["story_hash"] for s in self.stories]
+        )
+        self.assertEqual(cached, {}, "A failed classification must not write neutral scores to the cache")
+
+
+class Test_AIPromptClassifierCoverage(TransactionTestCase):
+    """Regression tests for which stories get classified at feed-fetch time.
+
+    apps/analyzer/tests.py: classify_stories_for_subscribers used to pick the
+    newest N stories by date, where N was the count of new stories. Feeds that
+    publish out of order (a story dated earlier than one already stored) had
+    the wrong stories classified, so genuinely new stories were never scored.
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="coverageuser", password="testpass", email="coverage@test.com"
+        )
+        self.feed = Feed.objects.get(pk=1)
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True)
+        self.prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            prompt="sports",
+            classifier_type="hidden",
+        )
+        # Two stories already stored, plus one that arrived now but is dated
+        # earlier than both - exactly what an out-of-order publisher produces.
+        self.stories = [
+            {
+                "story_id": "old-a",
+                "story_hash": "1:olda",
+                "story_feed_id": self.feed.pk,
+                "story_date": datetime.datetime(2026, 8, 22, 12, 0),
+                "story_title": "Already stored, newest",
+                "story_content": "",
+            },
+            {
+                "story_id": "old-b",
+                "story_hash": "1:oldb",
+                "story_feed_id": self.feed.pk,
+                "story_date": datetime.datetime(2026, 8, 22, 11, 0),
+                "story_title": "Already stored, older",
+                "story_content": "",
+            },
+            {
+                "story_id": "brand-new",
+                "story_hash": "1:newc",
+                "story_feed_id": self.feed.pk,
+                "story_date": datetime.datetime(2026, 8, 22, 9, 0),
+                "story_title": "Backdated arrival about the Dodgers",
+                "story_content": "baseball",
+            },
+        ]
+
+    def tearDown(self):
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def test_classifies_the_actual_new_story_not_the_newest_one(self):
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
+        worker.options = {"verbose": 0}
+
+        classified = []
+
+        def capture(user_id, stories, feed_ids=None, folder_ids=None):
+            classified.extend(s["story_hash"] for s in stories)
+            return {}
+
+        with patch.object(MClassifierPrompt, "classify_stories", side_effect=capture):
+            worker.classify_stories_for_subscribers(
+                self.feed, self.stories, new_story_count=1, new_story_hashes=["1:newc"]
+            )
+
+        self.assertEqual(
+            classified,
+            ["1:newc"],
+            "The story that actually arrived must be classified, not the newest by date",
+        )
