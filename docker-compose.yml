@@ -52,8 +52,8 @@ services:
 
   imageproxy:
     container_name: newsblur_imageproxy
-    # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
-    image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
+    image: ghcr.io/willnorris/imageproxy:latest # Multi-arch (amd64/arm64); use this unless it breaks on your platform
+    # image: yusukeito/imageproxy:v0.11.2 # arm64-only fork; use if the image above doesn't work for you
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
@@ -126,13 +126,17 @@ services:
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    # Matches the image's built-in "elasticsearch" user (uid 1000, gid 0). Without this,
+    # Docker auto-creates the bind-mounted data dir as root on first run, and the
+    # non-root elasticsearch process can't obtain its node lock inside it.
+    user: "1000:0"
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
+      - "CLI_JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
@@ -198,6 +202,11 @@ services:
     container_name: newsblur_haproxy
     image: haproxy:latest
     restart: unless-stopped
+    # host.docker.internal is provided automatically on Docker Desktop (Mac/Windows) but
+    # not on native Linux Docker Engine. This makes the camera_monitor backend resolvable
+    # on Linux too, instead of just failing its health check.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - nginx
       - newsblur_web
