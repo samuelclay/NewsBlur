@@ -1989,6 +1989,43 @@ class Test_AIPromptClassifierDirection(TransactionTestCase):
         )
         self.assertIsNone(result, "A failed classification must not look like a successful all-neutral one")
 
+    def test_invalidate_cache_deletes_without_scanning(self):
+        """invalidate_cache used to SCAN with MATCH. This Redis holds millions of
+        keys and SCAN walks the whole keyspace regardless of how few can match, so
+        it never reached the keys it was deleting. It must address them directly."""
+        prompt_id = str(self.hidden_prompt.id)
+        story_hashes = [s["story_hash"] for s in self.stories]
+        MClassifierPrompt.set_cached_scores(self.user.pk, prompt_id, self.feed.pk, {story_hashes[0]: -1})
+        self.assertEqual(
+            MClassifierPrompt.get_cached_scores(self.user.pk, prompt_id, self.feed.pk, story_hashes),
+            {story_hashes[0]: -1},
+        )
+
+        with patch("redis.Redis.scan") as mock_scan:
+            MClassifierPrompt.invalidate_cache(self.user.pk, prompt_id)
+            mock_scan.assert_not_called()
+
+        self.assertEqual(
+            MClassifierPrompt.get_cached_scores(self.user.pk, prompt_id, self.feed.pk, story_hashes),
+            {},
+            "invalidate_cache must actually remove the cached verdicts",
+        )
+
+    def test_invalidate_cache_covers_a_feed_the_user_unsubscribed_from(self):
+        """A feed-scoped prompt can outlive the subscription it points at, so the
+        prompt's own feed has to be covered even when it isn't subscribed."""
+        prompt_id = str(self.hidden_prompt.id)
+        story_hashes = [s["story_hash"] for s in self.stories]
+        MClassifierPrompt.set_cached_scores(self.user.pk, prompt_id, self.feed.pk, {story_hashes[0]: -1})
+        UserSubscription.objects.filter(user=self.user, feed=self.feed).delete()
+
+        MClassifierPrompt.invalidate_cache(self.user.pk, prompt_id)
+
+        self.assertEqual(
+            MClassifierPrompt.get_cached_scores(self.user.pk, prompt_id, self.feed.pk, story_hashes),
+            {},
+        )
+
     def test_failed_classification_is_not_cached(self):
         """A transient API failure must leave the Redis cache untouched."""
         prompt_id = str(self.hidden_prompt.id)

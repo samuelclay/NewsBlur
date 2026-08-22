@@ -928,18 +928,36 @@ class MClassifierPrompt(mongo.Document):
             logging.debug("~BR~FK~SBRedis unavailable for AI classifier cache write")
 
     @classmethod
-    def invalidate_cache(cls, user_id, prompt_id):
-        """Delete all cached scores for a prompt across all feeds."""
+    def invalidate_cache(cls, user_id, prompt_id, feed_ids=None):
+        """Delete cached scores for a prompt across the user's feeds.
+
+        Builds the exact keys rather than scanning for them. SCAN with MATCH
+        walks the entire keyspace no matter how few keys can match, and this
+        Redis holds millions of keys, so the old scan never reached the handful
+        of keys it was looking for: stale verdicts survived, and every prompt
+        delete spent a web request grinding through the keyspace.
+        """
+        if feed_ids is None:
+            from apps.reader.models import UserSubscription
+
+            feed_ids = set(UserSubscription.objects.filter(user_id=user_id).values_list("feed_id", flat=True))
+            # A global prompt caches under each feed it ran against, which the
+            # subscriptions above cover. A feed-scoped prompt may point at a feed
+            # the user has since unsubscribed from, so add its own feed as well.
+            try:
+                prompt = cls.objects.filter(id=prompt_id).first()
+            except (mongo.errors.ValidationError, ValueError):
+                prompt = None
+            if prompt and prompt.feed_id:
+                feed_ids.add(prompt.feed_id)
+
+        keys = [cls._cache_key(user_id, prompt_id, feed_id) for feed_id in set(feed_ids)]
+        if not keys:
+            return
+
         try:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
-            pattern = f"{cls.CACHE_KEY_PREFIX}:{user_id}:{prompt_id}:*"
-            cursor = 0
-            while True:
-                cursor, keys = r.scan(cursor, match=pattern, count=100)
-                if keys:
-                    r.delete(*keys)
-                if cursor == 0:
-                    break
+            r.delete(*keys)
         except redis.ConnectionError:
             pass
 
