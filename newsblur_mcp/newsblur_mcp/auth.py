@@ -32,6 +32,10 @@ from newsblur_mcp.ui import patch_fastmcp_ui
 # Replace FastMCP's generic OAuth pages with NewsBlur-branded ones
 patch_fastmcp_ui()
 
+# The scopes advertised in /.well-known/oauth-authorization-server. Kept in one
+# place because DCR defaults, valid_scopes, and issued tokens must all agree.
+MCP_SCOPES = ["read", "write", "mcp"]
+
 
 class NewsBlurTokenVerifier(TokenVerifier):
     """Validates upstream Django OAuth tokens by calling NewsBlur's API."""
@@ -70,7 +74,7 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 return AccessToken(
                     token=token,
                     client_id=MCP_OAUTH_CLIENT_ID,
-                    scopes=["read", "write", "mcp"],
+                    scopes=MCP_SCOPES,
                     expires_at=int(time.time()) + (60 * 60 * 24 * 365 * 10),
                     claims={
                         "sub": str(data.get("user_id") or data.get("id", "")),
@@ -120,6 +124,31 @@ class NewsBlurOAuthProvider(OAuthProxy):
             issuer_url=base_url,
             require_authorization_consent="external",
             forward_pkce=False,
-            valid_scopes=["read", "write", "mcp"],
+            valid_scopes=MCP_SCOPES,
             client_storage=redis_store,
         )
+
+        # RFC 7591 makes `scope` optional at registration, and FastMCP leaves the
+        # DCR default unset. A client that omits it is then stored with scope=""
+        # and mcp.shared.auth.OAuthClientMetadata.validate_scope rejects every
+        # scope it later asks for at /authorize ("Client was not registered with
+        # scope read"). ChatGPT registers exactly that way, so it could never
+        # connect. Default omitted registrations to everything we advertise.
+        # See forum #13806 and newsblur_mcp/tests/test_oauth_scopes.py.
+        if self.client_registration_options is not None:
+            self.client_registration_options.default_scopes = MCP_SCOPES
+        self._default_scope_str = " ".join(MCP_SCOPES)
+
+    async def get_client(self, client_id: str):
+        """Look up a registered client, healing ones stored without any scope.
+
+        Registrations live in shared Redis and outlive deploys, so clients that
+        registered before the default above existed would stay permanently
+        unable to authorize. Backfill them the first time they come back.
+        """
+        client = await super().get_client(client_id)
+        if client is not None and not client.scope:
+            client.scope = self._default_scope_str
+            await self._client_store.put(key=client_id, value=client)
+            logger.info("Backfilled missing DCR scopes for client %s", client_id)
+        return client
