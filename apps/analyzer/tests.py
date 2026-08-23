@@ -2103,6 +2103,45 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
     def tearDown(self):
         MClassifierPrompt.objects(user_id=self.user.pk).delete()
 
+    def test_scoring_timeout_does_not_cancel_classification(self):
+        """calculate_feed_scores_with_stories has its own 10s limit and blows it
+        routinely on feeds with many subscribers. Its TimeoutError used to unwind
+        count_unreads_for_subscribers before the classification block ran, so the
+        busiest feeds — the ones most likely to have new stories — never got
+        classified at all."""
+        from utils.feed_fetcher import FeedFetcherWorker
+        from utils.feed_functions import TimeoutError as FetcherTimeoutError
+
+        worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
+        worker.options = {"verbose": 0, "compute_scores": True}
+
+        classified = []
+        with patch.object(
+            FeedFetcherWorker, "calculate_feed_scores_with_stories", side_effect=FetcherTimeoutError()
+        ), patch.object(
+            FeedFetcherWorker,
+            "classify_stories_for_subscribers",
+            side_effect=lambda *a, **kw: classified.append(True),
+        ), patch(
+            "utils.feed_fetcher.UserSubscription"
+        ) as mock_us, patch(
+            "utils.feed_fetcher.MStory"
+        ), patch(
+            "utils.feed_fetcher.Feed"
+        ) as mock_feed, patch(
+            "utils.feed_fetcher.cache"
+        ), patch(
+            "utils.feed_fetcher.redis"
+        ):
+            mock_us.objects.filter.return_value.order_by.return_value.count.return_value = 1
+            mock_feed.format_stories.return_value = []
+            worker.count_unreads_for_subscribers(self.feed, new_story_count=1, new_story_hashes=["1:newc"])
+
+        self.assertTrue(
+            classified,
+            "classification must still run when the scoring pass times out",
+        )
+
     def test_classifies_the_actual_new_story_not_the_newest_one(self):
         from utils.feed_fetcher import FeedFetcherWorker
 

@@ -2053,7 +2053,18 @@ class FeedFetcherWorker:
                     feed.premium_subscribers,
                 )
             )
-            self.calculate_feed_scores_with_stories(user_subs, stories)
+            # Scoring and AI classification are independent of each other, so a slow
+            # scoring pass must not cancel classification. calculate_feed_scores_with_stories
+            # carries its own 10 second limit and blows it routinely on feeds with many
+            # subscribers and many stories. That TimeoutError used to unwind this whole
+            # method, so the classification below was skipped on exactly the busiest
+            # feeds — the ones most likely to have new stories to classify.
+            try:
+                self.calculate_feed_scores_with_stories(user_subs, stories)
+            except TimeoutError:
+                logging.debug(
+                    "   ---> [%-30s] ~BR~FRScoring took too long, still classifying" % (feed.log_title[:30],)
+                )
 
             # AI prompt classifiers: classify only new stories for subscribers with prompts
             if new_story_count > 0:
