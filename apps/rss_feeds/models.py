@@ -2005,6 +2005,12 @@ class Feed(models.Model):
                         queue="update_feeds",
                     )
 
+        # Hand back the hashes of the stories actually created this run. AI prompt
+        # classifiers need to know precisely which stories are new: inferring them
+        # by taking the newest N by date silently picks the wrong stories whenever
+        # a feed publishes out of order. See utils/feed_fetcher.py.
+        ret_values["new_story_hashes"] = discover_story_ids
+
         return ret_values
 
     def update_story_with_new_guid(self, existing_story, new_story_guid):

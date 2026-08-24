@@ -698,7 +698,7 @@ class Test_FeedSave(TestCase):
         ), patch.object(feed, "get_permalink", return_value="https://example.com/story"):
             result = feed.add_update_stories([story], {})
 
-        self.assertEqual(result, {"new": 0, "updated": 0, "same": 1, "error": 0})
+        self.assertEqual(result, {"new": 0, "updated": 0, "same": 1, "error": 0, "new_story_hashes": []})
         saved_story.publish_to_subscribers.assert_not_called()
 
     @patch("apps.rss_feeds.models.MStory")
@@ -726,7 +726,7 @@ class Test_FeedSave(TestCase):
         ), patch.object(feed, "get_permalink", return_value="https://example.com/story"):
             result = feed.add_update_stories([story], {})
 
-        self.assertEqual(result, {"new": 0, "updated": 0, "same": 0, "error": 1})
+        self.assertEqual(result, {"new": 0, "updated": 0, "same": 0, "error": 1, "new_story_hashes": []})
         saved_story.save.assert_called_once_with()
         saved_story.fetch_og_image.assert_not_called()
 

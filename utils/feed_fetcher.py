@@ -1605,7 +1605,9 @@ class FeedFetcherWorker:
                             )
                         try:
                             self.count_unreads_for_subscribers(
-                                feed, new_story_count=ret_entries.get("new", 0)
+                                feed,
+                                new_story_count=ret_entries.get("new", 0),
+                                new_story_hashes=ret_entries.get("new_story_hashes"),
                             )
                         except TimeoutError:
                             logging.debug(
@@ -1996,7 +1998,7 @@ class FeedFetcherWorker:
         except redis.ConnectionError:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
 
-    def count_unreads_for_subscribers(self, feed, new_story_count=0):
+    def count_unreads_for_subscribers(self, feed, new_story_count=0, new_story_hashes=None):
         subscriber_expire = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
 
         user_subs = UserSubscription.objects.filter(
@@ -2051,12 +2053,25 @@ class FeedFetcherWorker:
                     feed.premium_subscribers,
                 )
             )
-            self.calculate_feed_scores_with_stories(user_subs, stories)
+            # Scoring and AI classification are independent of each other, so a slow
+            # scoring pass must not cancel classification. calculate_feed_scores_with_stories
+            # carries its own 10 second limit and blows it routinely on feeds with many
+            # subscribers and many stories. That TimeoutError used to unwind this whole
+            # method, so the classification below was skipped on exactly the busiest
+            # feeds — the ones most likely to have new stories to classify.
+            try:
+                self.calculate_feed_scores_with_stories(user_subs, stories)
+            except TimeoutError:
+                logging.debug(
+                    "   ---> [%-30s] ~BR~FRScoring took too long, still classifying" % (feed.log_title[:30],)
+                )
 
             # AI prompt classifiers: classify only new stories for subscribers with prompts
             if new_story_count > 0:
                 try:
-                    self.classify_stories_for_subscribers(feed, stories, new_story_count)
+                    self.classify_stories_for_subscribers(
+                        feed, stories, new_story_count, new_story_hashes=new_story_hashes
+                    )
                 except TimeoutError:
                     logging.debug(
                         "   ---> [%-30s] ~BR~FRAI classification took too long, skipping"
@@ -2075,7 +2090,7 @@ class FeedFetcherWorker:
             sub.calculate_feed_scores(silent=silent, stories=stories)
 
     @timelimit(30)
-    def classify_stories_for_subscribers(self, feed, stories, new_story_count):
+    def classify_stories_for_subscribers(self, feed, stories, new_story_count, new_story_hashes=None):
         """Classify only new stories with AI prompt classifiers for applicable subscribers.
 
         Only classifies stories that arrived in this fetch (no backlog).
@@ -2088,8 +2103,21 @@ class FeedFetcherWorker:
             return
 
         # Only classify stories that are new from this fetch, not the backlog.
-        # Stories are unsorted from MongoDB, so sort by date and take the newest N.
-        new_stories = sorted(stories, key=lambda s: s.get("story_date", ""), reverse=True)[:new_story_count]
+        # add_update_stories reports exactly which hashes it created; prefer those.
+        # Picking the newest N by date instead misses genuinely new stories whenever
+        # a feed publishes out of order (a story dated behind ones already stored),
+        # which left a large share of stories permanently unclassified.
+        if new_story_hashes:
+            wanted = set(new_story_hashes)
+            new_stories = [story for story in stories if story.get("story_hash") in wanted]
+        else:
+            # Older callers don't report hashes, so fall back to the newest N.
+            new_stories = sorted(stories, key=lambda s: s.get("story_date", ""), reverse=True)[
+                :new_story_count
+            ]
+
+        if not new_stories:
+            return
 
         logging.debug(
             "   ---> [%-30s] ~FC~SBClassifying ~SB%s~SN new stories for ~SB%s~SN prompt users"
