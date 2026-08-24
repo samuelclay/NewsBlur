@@ -1727,7 +1727,7 @@ class UserSubscription(models.Model):
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
 
-    def calculate_feed_scores(self, silent=False, stories=None, force=False):
+    def calculate_feed_scores(self, silent=False, stories=None, stories_cutoff=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         oldest_unread_story_date = now
@@ -1773,7 +1773,22 @@ class UserSubscription(models.Model):
         has_scoped = self.user.profile.is_archive and self.user.profile.has_scoped_classifiers
         if self.is_trained or has_scoped:
             if not stories:
-                stories = cache.get("S:v3:%s" % self.feed_id)
+                # The fetch-time prefetch is cached as {"stories": [...], "cutoff": dt}.
+                # The cutoff records how far back the prefetch reaches (see
+                # utils/feed_fetcher.py: it is bounded to DAYS_OF_UNREAD rather than
+                # the feed's archive-wide unread_cutoff).
+                cached_stories = cache.get("S:v4:%s" % self.feed_id)
+                if isinstance(cached_stories, dict):
+                    stories = cached_stories.get("stories")
+                    stories_cutoff = cached_stories.get("cutoff")
+
+            if stories and stories_cutoff and date_delta < stories_cutoff:
+                # This subscriber's unread window reaches further back than the
+                # prefetch covers (an archive user with a long days_of_unread and an
+                # old mark_read_date). Using the truncated list would undercount, so
+                # discard it and fall through to the targeted per-user query below.
+                stories = None
+                stories_cutoff = None
 
             unread_story_hashes = self.story_hashes(
                 user_id=self.user_id,
