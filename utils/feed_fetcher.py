@@ -2018,11 +2018,26 @@ class FeedFetcherWorker:
 
         if self.options["compute_scores"]:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-            stories = MStory.objects(story_feed_id=feed.pk, story_date__gte=feed.unread_cutoff)
+            # Bound the prefetch window to DAYS_OF_UNREAD instead of the feed's own
+            # unread_cutoff. A single archive subscriber drags feed.unread_cutoff back
+            # to DAYS_OF_UNREAD_ARCHIVE (27 years), which made this format the feed's
+            # entire archive on every fetch with new stories — ~18s for a 10k story
+            # feed — when a subscriber's *effective* window (profile unread_cutoff
+            # clamped by mark_read_date) almost never reaches past 30 days. The rare
+            # subscriber whose window is older falls back to a targeted per-user
+            # query inside calculate_feed_scores; see stories_cutoff there.
+            stories_cutoff = max(
+                feed.unread_cutoff,
+                datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD),
+            )
+            stories = MStory.objects(story_feed_id=feed.pk, story_date__gte=stories_cutoff)
             stories = Feed.format_stories(stories, feed.pk)
+            # The zF reconciliation must use the same bound: on archive feeds the zF
+            # zset never expires, so an unbounded range would flag every archived
+            # story as "missing" and re-fetch the whole archive from the primary.
             story_hashes = r.zrangebyscore(
                 "zF:%s" % feed.pk,
-                int(feed.unread_cutoff.strftime("%s")),
+                int(stories_cutoff.strftime("%s")),
                 int(time.time() + 60 * 60 * 24),
             )
             missing_story_hashes = set(story_hashes) - set([s["story_hash"] for s in stories])
@@ -2041,7 +2056,13 @@ class FeedFetcherWorker:
                         len(stories),
                     )
                 )
-            cache.set("S:v3:%s" % feed.pk, stories, 60)
+            # S:v4 carries the coverage cutoff alongside the stories so readers can
+            # tell whether the prefetch covers their window. The key is versioned
+            # (v3 -> v4) because the payload changed shape from a bare list to a
+            # dict: during a deploy, old readers keep reading S:v3 (which simply
+            # goes cold and falls back to a targeted query) instead of crashing on
+            # an unexpected dict.
+            cache.set("S:v4:%s" % feed.pk, {"stories": stories, "cutoff": stories_cutoff}, 60)
             logging.debug(
                 "   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)"
                 % (
@@ -2060,7 +2081,7 @@ class FeedFetcherWorker:
             # method, so the classification below was skipped on exactly the busiest
             # feeds — the ones most likely to have new stories to classify.
             try:
-                self.calculate_feed_scores_with_stories(user_subs, stories)
+                self.calculate_feed_scores_with_stories(user_subs, stories, stories_cutoff)
             except TimeoutError:
                 logging.debug(
                     "   ---> [%-30s] ~BR~FRScoring took too long, still classifying" % (feed.log_title[:30],)
@@ -2084,10 +2105,10 @@ class FeedFetcherWorker:
             )
 
     @timelimit(10)
-    def calculate_feed_scores_with_stories(self, user_subs, stories):
+    def calculate_feed_scores_with_stories(self, user_subs, stories, stories_cutoff=None):
         for sub in user_subs:
             silent = False if getattr(self.options, "verbose", 0) >= 2 else True
-            sub.calculate_feed_scores(silent=silent, stories=stories)
+            sub.calculate_feed_scores(silent=silent, stories=stories, stories_cutoff=stories_cutoff)
 
     @timelimit(30)
     def classify_stories_for_subscribers(self, feed, stories, new_story_count, new_story_hashes=None):
