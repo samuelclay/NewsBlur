@@ -454,7 +454,9 @@ class Test_RiverStories(TransactionTestCase):
                     "prompt": 0,
                 },
             )
-            self.assertEqual(returned_story["score"], -1)
+            # Super dislikes ship their real -2 in the API (so clients can tell
+            # them apart from a -1 dislike) instead of collapsing to -1.
+            self.assertEqual(returned_story["score"], -2)
 
         author_regex_classifier = next(
             classifier
@@ -475,7 +477,7 @@ class Test_RiverStories(TransactionTestCase):
 
             self.assertEqual(returned_story["intelligence"]["author"], 0)
             self.assertEqual(returned_story["intelligence"]["author_regex"], -2)
-            self.assertEqual(returned_story["score"], -1)
+            self.assertEqual(returned_story["score"], -2)
 
     def test_river_stories__newest_backfills_past_stale_redis_hashes(self):
         """Newest river loads should skip stale Redis hashes that no longer exist in Mongo."""
