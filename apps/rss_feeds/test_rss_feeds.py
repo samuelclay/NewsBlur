@@ -59,6 +59,16 @@ class Test_Feed(TransactionTestCase):
             else settings.REDIS_SESSIONS.get("port", 6579)
         )
 
+        # Swap the redis pools to db 10 for isolation, and restore the originals
+        # afterwards: this mutation used to leak to every test that ran after
+        # this module. The production pools in newsblur_web/settings.py use
+        # decode_responses=True while these sandbox pools do not, so leaked
+        # pools handed later tests bytes hashes whose Mongo story_hash__in
+        # lookups silently matched nothing. (The sandbox pools are left as
+        # bytes on purpose: this module's expected story counts are calibrated
+        # to the dedup behavior that follows from it.)
+        self._original_story_hash_pool = settings.REDIS_STORY_HASH_POOL
+        self._original_feed_read_pool = settings.REDIS_FEED_READ_POOL
         settings.REDIS_STORY_HASH_POOL = redis.ConnectionPool(
             host=settings.REDIS_STORY["host"], port=redis_story_port, db=10
         )
@@ -85,9 +95,14 @@ class Test_Feed(TransactionTestCase):
 
         self.client = Client()
 
+    def _restore_redis_pools(self):
+        settings.REDIS_STORY_HASH_POOL = self._original_story_hash_pool
+        settings.REDIS_FEED_READ_POOL = self._original_feed_read_pool
+
     def tearDown(self):
         # Clear Redis keys for test feeds to prevent test contamination
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        self.addCleanup(self._restore_redis_pools)
         test_feed_ids = [1, 4, 7, 10, 11, 16, 766]
         for user_id in [1, 3]:  # Clear for both possible user IDs
             r.delete(f"RS:{user_id}")
