@@ -1614,13 +1614,23 @@ def forgot_password(request):
     if request.method == "POST":
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
-            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % request.POST["email"])
+            # Use the cleaned email, since the form strips the surrounding whitespace
+            # that the raw POST value still carries. Looking the raw value up instead
+            # misses the account the form just validated.
+            email = form.cleaned_data["email"]
+            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % email)
             try:
-                user = User.objects.get(email__iexact=request.POST["email"])
+                user = User.objects.get(email__iexact=email)
             except User.MultipleObjectsReturned:
-                user = User.objects.filter(email__iexact=request.POST["email"])[0]
-            user.profile.send_forgot_password_email()
-            return HttpResponseRedirect(reverse("index"))
+                user = User.objects.filter(email__iexact=email)[0]
+            except User.DoesNotExist:
+                # The account went away between form validation and this lookup.
+                logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % email)
+                form.add_error("email", "No user has that email address.")
+                user = None
+            if user:
+                user.profile.send_forgot_password_email()
+                return HttpResponseRedirect(reverse("index"))
         else:
             logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % request.POST.get("email"))
     else:
