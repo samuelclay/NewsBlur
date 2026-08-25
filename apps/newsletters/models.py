@@ -2,6 +2,7 @@
 
 import datetime
 import email.utils
+import hashlib
 import html as html_module
 import json
 import re
@@ -13,7 +14,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.html import linebreaks
+from django.utils.html import linebreaks, strip_tags
 
 from apps.notifications.models import MUserFeedNotification
 from apps.notifications.tasks import QueueNotifications
@@ -66,7 +67,7 @@ class EmailNewsletter:
 
         logging.debug(f" ---> receive_newsletter: Processing for user {user.username}")
         sender_name, sender_username, sender_domain = self._split_sender(params["from"])
-        sender_email = "%s@%s" % (sender_username, sender_domain)
+        sender_email = "%s@%s" % (sender_username, sender_domain) if sender_domain else sender_username
         newsletter_headers = self._extract_headers(params)
         if forwarded_newsletter:
             merged_headers = {}
@@ -122,7 +123,8 @@ class EmailNewsletter:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, "reload:feeds")
 
-        story_hash = MStory.ensure_story_hash(params["signature"], feed.pk)
+        story_guid = params.get("signature") or self._fallback_story_guid(params)
+        story_hash = MStory.ensure_story_hash(story_guid, feed.pk)
         story_content = self._get_content(params)
         story_content = self._maybe_unescape_html(story_content)
         plain_story_content = self._get_content(params, force_plain=True)
@@ -144,7 +146,7 @@ class EmailNewsletter:
                 Site.objects.get_current().domain,
                 reverse("newsletter-story", kwargs={"story_hash": story_hash}),
             ),
-            "story_guid": params["signature"],
+            "story_guid": story_guid,
             "newsletter_headers": newsletter_headers,
             "newsletter_identity": newsletter_identity,
             "newsletter_identity_source": newsletter_identity_source,
@@ -176,6 +178,19 @@ class EmailNewsletter:
         logging.user(user, "~FCNewsletter feed story: ~SB%s~SN / ~SB%s" % (story.story_title, feed))
 
         return story
+
+    def _fallback_story_guid(self, params):
+        """A guid for newsletters that arrive without a signature or message-id.
+
+        Providers sometimes send a null message-id, which left story_guid empty and
+        crashed MStory.save(). Derive one from the fields that identify the message
+        instead, so a redelivery of the same email still lands on the same story.
+        apps/newsletters/models.py
+        """
+        seed = "|".join(
+            str(params.get(key) or "") for key in ["recipient", "from", "subject", "date", "timestamp"]
+        )
+        return "newsletter:%s" % hashlib.sha1(seed.encode("utf-8")).hexdigest()
 
     def _check_if_first_newsletter(self, user, force=False):
         if not user.email:
@@ -245,13 +260,23 @@ class EmailNewsletter:
             source = source.rsplit("@", 1)[1]
         if "." not in source:
             source = sender_domain
+        if not source:
+            # A sender with no resolvable domain gets no link at all, rather than a
+            # bare "http://".
+            return ""
         return "http://" + source
 
     def _split_sender(self, sender):
         tokens = re.search("(.*?) <(.*?)@(.*?)>", sender)
 
         if not tokens:
-            name, domain = sender.split("@")
+            # Senders that skip the "Name <user@domain>" form: split on the last @ so
+            # addresses carrying more than one don't blow up, and treat a sender with
+            # no address at all (just a display name) as having no domain.
+            sender = (sender or "").strip()
+            if "@" not in sender:
+                return sender, sender, ""
+            name, domain = sender.rsplit("@", 1)
             return name, sender, domain
 
         sender_name, sender_username, sender_domain = tokens.group(1), tokens.group(2), tokens.group(3)
@@ -696,7 +721,15 @@ class EmailNewsletter:
         # Disable autolink since newsletter HTML already has proper anchor tags
         # apps/newsletters/models.py
         scrubber = Scrubber(autolink=False)
-        content = scrubber.scrub(content)
+        try:
+            content = scrubber.scrub(content)
+        except RecursionError:
+            # Pathologically nested newsletter HTML overruns BeautifulSoup's recursion
+            # limit. Return plain text rather than losing the newsletter, and return it
+            # directly so the short-content check below can't restore the unscrubbed HTML.
+            # apps/newsletters/models.py
+            logging.debug(" ***> Newsletter HTML too deeply nested to scrub, stripping tags instead")
+            return strip_tags(original)
         if len(content) < len(original) * 0.01:
             content = original
         content = content.replace("!important", "")
