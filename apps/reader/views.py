@@ -5125,7 +5125,19 @@ def _mark_story_as_starred(request):
             starred_story.user_tags = user_tags
             starred_story.highlights = highlights
             starred_story.user_notes = user_notes
-            starred_story.save()
+            try:
+                starred_story.save()
+            except NotUniqueError as e:
+                # A double click or a retried request can unsave the story between the
+                # lookup above and this save, which turns the update into an upsert that
+                # collides on the unique user_id/story_guid index.
+                logging.user(
+                    request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e)
+                )
+                datas.append(
+                    {"code": -1, "message": "Could not save story due to: %s" % e, "story_hash": story_hash}
+                )
+                continue
 
         if len(highlights) == 1 and len(new_highlights) == 1:
             MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
@@ -5214,7 +5226,17 @@ def _mark_story_as_unstarred(request):
             )
             continue
 
-        starred_story = starred_story[0]
+        try:
+            starred_story = starred_story[0]
+        except IndexError:
+            # Two unsaves racing each other (double click, retried request) can delete the
+            # story between the check above and this fetch, leaving an empty cursor.
+            logging.user(request, "~FCUnstarring ~FRfailed~FC: %s not found" % (story_hash))
+            datas.append(
+                {"code": -1, "message": "Could not unsave story, not found", "story_hash": story_hash}
+            )
+            continue
+
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
         feed_id = starred_story.story_feed_id
