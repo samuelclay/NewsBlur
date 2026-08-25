@@ -888,6 +888,7 @@ def story_public_comments(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_shared(request):
     code = 1
     feed_id = int(request.POST["feed_id"])
@@ -1067,6 +1068,7 @@ def mark_story_as_shared(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_unshared(request):
     feed_id = int(request.POST["feed_id"])
     story_id = request.POST["story_id"]
@@ -1124,6 +1126,7 @@ def mark_story_as_unshared(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", method="POST")
 def save_comment_reply(request):
     code = 1
     story_feed_id = request.POST.get("story_feed_id")
@@ -1266,6 +1269,7 @@ def save_comment_reply(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_comment_reply(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1444,6 +1448,7 @@ def load_user_profile(request):
 
 
 @ajax_login_required
+@required_params("website", "location", "bio", "photo_service", method="POST")
 @json.json_view
 def save_user_profile(request):
     data = request.POST
@@ -1471,7 +1476,11 @@ def save_user_profile(request):
 @ajax_login_required
 @json.json_view
 def upload_avatar(request):
-    photo = request.FILES["photo"]
+    # required_params can't reach request.FILES, so check the upload by hand.
+    photo = request.FILES.get("photo")
+    if not photo:
+        return {"code": -1, "message": "Missing parameter: photo"}
+
     profile = MSocialProfile.get_user(request.user.pk)
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
 
@@ -1554,6 +1563,7 @@ def load_user_friends(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def follow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1597,6 +1607,7 @@ def follow(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def unfollow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1627,6 +1638,7 @@ def unfollow(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def approve_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1644,6 +1656,7 @@ def approve_follower(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def ignore_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1731,6 +1744,7 @@ def find_friends(request):
 
 
 @ajax_login_required
+@required_params("story_id", story_feed_id=int, comment_user_id=int, method="POST")
 def like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1801,6 +1815,7 @@ def like_comment(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
