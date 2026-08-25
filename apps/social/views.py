@@ -101,7 +101,11 @@ def sanitize_for_xml(text):
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     user = get_user(request)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
@@ -332,7 +336,12 @@ def load_social_stories(request, user_id, username=None):
     if socialsub:
         socialsub.feed_opens += 1
         socialsub.needs_unread_recalc = True
-        socialsub.save()
+        try:
+            socialsub.save()
+        except NotUniqueError:
+            # A concurrent request already wrote this subscription. All that's
+            # lost is the feed_opens bump, so serve the stories anyway.
+            logging.user(request, "~FR~SBCouldn't save social subscription, continuing")
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(
@@ -638,7 +647,11 @@ def load_river_blurblog(request):
 
 def load_social_page(request, user_id, username=None, **kwargs):
     user = get_user(request.user)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
