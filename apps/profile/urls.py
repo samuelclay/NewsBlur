@@ -55,7 +55,9 @@ urlpatterns = [
     url(r"^delete_classifiers/?", views.delete_classifiers, name="profile-delete-classifiers"),
     url(r"^delete_all_sites/?", views.delete_all_sites, name="profile-delete-all-sites"),
     url(
-        r"^email_optout/(?P<username>\w+)/(?P<secret>\w+)/?$",
+        # Usernames can hold spaces and punctuation that \w+ won't match, which made
+        # reverse() raise NoReverseMatch while building unsubscribe links for emails.
+        r"^email_optout/(?P<username>[^/]+)/(?P<secret>\w+)/?$",
         views.email_optout_token,
         name="profile-email-optout-token",
     ),
