@@ -186,6 +186,35 @@ def get_subdomain(request):
         return None
 
 
+def int_or_default(value, default):
+    """
+    Parse an integer request parameter, falling back to the default when it doesn't parse.
+
+    Bots and broken clients regularly mangle querystrings, sending values like
+    page="6&feed_address=https://444.hu/feed&order=newest" or limit="abc". Those are
+    garbage rather than a real request, so silently using the default beats a 500.
+    """
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def int_feed_ids(feed_ids):
+    """
+    Convert a list of feed id parameters to integers, dropping anything that isn't numeric.
+
+    Same mangled-querystring problem as int_or_default: feed ids arrive as
+    "Entrepreneuriat" or as an entire querystring crammed into one value.
+    """
+    parsed_feed_ids = []
+    for feed_id in feed_ids:
+        parsed_feed_id = int_or_default(feed_id, None)
+        if parsed_feed_id is not None:
+            parsed_feed_ids.append(parsed_feed_id)
+    return parsed_feed_ids
+
+
 def adjust_read_filter_for_date_range(
     read_filter, date_filter_start_utc, date_filter_end_start_utc, unread_cutoff
 ):
@@ -1082,8 +1111,8 @@ def load_single_feed(request, feed_id):
     # offset                  = int(request.GET.get('offset', 0))
     # limit                   = int(request.GET.get('limit', 6))
     limit = 6
-    page = int(request.GET.get("page", 1))
-    delay = int(request.GET.get("delay", 0))
+    page = int_or_default(request.GET.get("page", 1), 1)
+    delay = int_or_default(request.GET.get("delay", 0), 0)
     offset = limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
@@ -2425,20 +2454,20 @@ def load_river_stories__redis(request):
     # GET or POST requests, since the parameters for this endpoint can be
     # very long, at which point the max size of a GET url request is exceeded.
     get_post = getattr(request, request.method)
-    limit = int(get_post.get("limit", 12))
+    limit = int_or_default(get_post.get("limit", 12), 12)
     start = time.time()
     user = get_user(request)
     message = None
     feed_ids = get_post.getlist("feeds") or get_post.getlist("feeds[]")
-    feed_ids = [int(feed_id) for feed_id in feed_ids if feed_id]
+    feed_ids = int_feed_ids(feed_ids)
     if not feed_ids:
         feed_ids = get_post.getlist("f") or get_post.getlist("f[]")
-        feed_ids = [int(feed_id) for feed_id in get_post.getlist("f") if feed_id]
+        feed_ids = int_feed_ids(get_post.getlist("f"))
     story_hashes = get_post.getlist("h") or get_post.getlist("h[]")
     story_hashes = story_hashes[:100]
     requested_hashes = len(story_hashes)
     original_feed_ids = list(feed_ids)
-    page = int(get_post.get("page", 1))
+    page = int_or_default(get_post.get("page", 1), 1)
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
     if page > 400 and not story_hashes:
@@ -4414,7 +4443,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = max(int(request.GET.get("page", 0)), 0)
+    page = max(int_or_default(request.GET.get("page", 0), 0), 0)
     if page > 1:
         logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page + 1))
     features = list(Feature.objects.all()[page * 3 : (page + 1) * 3 + 1].values())
