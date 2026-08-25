@@ -510,7 +510,17 @@ def paypal_webhooks(request):
         # Kick it over to paypal ipn
         return paypal_standard_ipn(request)
 
-    logging.user(request, f" ---> Paypal webhooks {data.get('event_type', '<no event_type>')} data: {data}")
+    # json.decode hands an empty body straight back, and a well-formed JSON body can
+    # still be a list or a string, so anything but a dict has no webhook to dispatch.
+    if not isinstance(data, dict):
+        logging.user(request, f" ---> Paypal webhooks unparseable body, ignoring: {request.body[:200]}")
+        return HttpResponse("OK")
+
+    if not data.get("event_type"):
+        logging.user(request, f" ---> Paypal webhooks missing event_type, ignoring: {data}")
+        return HttpResponse("OK")
+
+    logging.user(request, f" ---> Paypal webhooks {data['event_type']} data: {data}")
 
     if data["event_type"] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
