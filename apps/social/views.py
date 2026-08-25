@@ -1396,7 +1396,10 @@ def profile(request):
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 
-    social_profile = MSocialProfile.get_user(user_id)
+    try:
+        social_profile = MSocialProfile.get_user(user_id)
+    except User.DoesNotExist:
+        return json.json_response(request, {"code": -1, "message": "User not found."})
     social_profile.count_follows()
 
     activities = []

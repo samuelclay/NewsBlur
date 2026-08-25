@@ -199,6 +199,12 @@ class MSocialProfile(mongo.Document):
         try:
             profile = cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:
+            # Don't conjure a profile for a user_id with no django User behind
+            # it. create() runs save() -> import_user_fields(), which raises
+            # User.DoesNotExist from deep inside mongoengine; raise it here
+            # instead so callers can see what actually went wrong.
+            if not User.objects.filter(pk=user_id).exists():
+                raise User.DoesNotExist("No user with id %s" % user_id)
             profile = cls.objects.create(user_id=user_id)
             profile.save()
 
