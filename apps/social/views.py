@@ -1915,7 +1915,13 @@ def shared_stories_rss_feed(request, user_id, username=None):
         raise Http404
 
     limit = 25
-    offset = request.GET.get("page", 0) * limit
+    # ?page= arrives as a string, which turned this multiplication into string
+    # repetition and crashed the slice below with a TypeError.
+    try:
+        page = int(request.GET.get("page", 0))
+    except (TypeError, ValueError):
+        page = 0
+    offset = page * limit
     username = username and username.lower()
     profile = MSocialProfile.get_user(user.pk)
     params = {"username": profile.username_slug, "user_id": user.pk}
