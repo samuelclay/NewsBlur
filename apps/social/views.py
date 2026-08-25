@@ -779,10 +779,20 @@ def load_social_page(request, user_id, username=None, **kwargs):
         for story in stories:
             if user.pk in story["share_user_ids"]:
                 story["shared_by_user"] = True
-                shared_story = MSharedStory.objects.hint([("story_hash", 1)]).get(
-                    user_id=user.pk, story_feed_id=story["story_feed_id"], story_hash=story["story_hash"]
+                # A user can end up with duplicate shares of the same story, so
+                # take the first match rather than blowing up on either count.
+                shared_story = (
+                    MSharedStory.objects.hint([("story_hash", 1)])
+                    .filter(
+                        user_id=user.pk,
+                        story_feed_id=story["story_feed_id"],
+                        story_hash=story["story_hash"],
+                    )
+                    .limit(1)
+                    .first()
                 )
-                story["user_comments"] = shared_story.comments
+                if shared_story:
+                    story["user_comments"] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
