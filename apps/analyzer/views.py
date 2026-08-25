@@ -6,7 +6,7 @@ and populating the trainer modal with current classifier state.
 
 import redis
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from mongoengine.queryset import NotUniqueError
 
@@ -33,8 +33,9 @@ from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
 
 
-def index(requst):
-    pass
+def index(request):
+    # /classifier/ has no page of its own, the trainer lives inside the reader.
+    return redirect("index")
 
 
 @require_POST
@@ -42,18 +43,28 @@ def index(requst):
 @json.json_view
 def save_classifier(request):
     post = request.POST
-    feed_id = post["feed_id"]
+    feed_id = post.get("feed_id")
+    if not feed_id:
+        return dict(code=-1, message="Missing feed_id")
     feed = None
     social_user_id = None
 
     # Scope controls: 'feed' (default), 'folder', or 'global'
     scope = post.get("scope", "feed")
 
+    # Feed ids arrive as either a numeric feed id or a 'social:<user id>' blurblog id,
+    # so reject anything else instead of blowing up on int().
     if feed_id.startswith("social:"):
-        social_user_id = int(feed_id.replace("social:", ""))
+        try:
+            social_user_id = int(feed_id.replace("social:", ""))
+        except ValueError:
+            return dict(code=-1, message="Invalid feed_id: %s" % feed_id)
         feed_id = None
     else:
-        feed_id = int(feed_id)
+        try:
+            feed_id = int(feed_id)
+        except ValueError:
+            return dict(code=-1, message="Invalid feed_id: %s" % feed_id)
         if feed_id:
             feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
