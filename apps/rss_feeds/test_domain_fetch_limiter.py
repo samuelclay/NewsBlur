@@ -29,6 +29,14 @@ class Test_FeedHost(SimpleTestCase):
         self.assertEqual(feed_host("https://feeds.feedburner.com/blog"), "feeds.feedburner.com")
         self.assertEqual(feed_host("https://author.substack.com/feed"), "author.substack.com")
 
+    def test_youtube_subdomains_collapse_into_youtube(self):
+        # Legacy gdata.youtube.com addresses are fetched via the YouTube Data API,
+        # never against youtube.com, so every youtube subdomain shares the raised
+        # youtube.com budget instead of falling to the default.
+        self.assertEqual(feed_host("http://gdata.youtube.com/feeds/base/users/nasa/uploads"), "youtube.com")
+        self.assertEqual(feed_host("https://m.youtube.com/feeds/videos.xml?channel_id=UC1"), "youtube.com")
+        self.assertEqual(feed_host("https://www.youtube.com/feeds/videos.xml?channel_id=UC1"), "youtube.com")
+
     def test_scheme_optional(self):
         self.assertEqual(feed_host("reddit.com/r/python/.rss"), "reddit.com")
 
@@ -91,13 +99,13 @@ class Test_ReserveFetchSlot(SimpleTestCase):
         self.assertEqual(defer_seconds, MIN_DEFER_SECONDS)
 
     def test_deep_overage_defers_by_position(self):
-        # The 600th feed past a budget of 6 waits 100 minutes, its place in line
+        # The 300th feed past a budget of 6 waits 50 minutes, its place in line
         # at the domain's sustainable drain rate.
-        mock_r = self.mock_redis(incr_result=606)
+        mock_r = self.mock_redis(incr_result=306)
         with patch("utils.domain_fetch_limiter.redis.Redis", return_value=mock_r):
             allowed, defer_seconds = reserve_fetch_slot("https://example.com/feed.xml")
         self.assertFalse(allowed)
-        self.assertEqual(defer_seconds, 6000)
+        self.assertEqual(defer_seconds, 3000)
 
     def test_deferral_is_capped(self):
         mock_r = self.mock_redis(incr_result=100000)

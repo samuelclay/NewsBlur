@@ -315,19 +315,26 @@ PRO_MINUTES_BETWEEN_FETCHES = 5
 # seconds, gentle for any single site.
 DOMAIN_FETCHES_PER_MINUTE = 30
 
-# Multi-tenant hosts that serve thousands of distinct legitimate feeds get raised
-# budgets: their volume is breadth, not hammering. Values chosen from measured
+# Hosts that can take more than the default get raised budgets: multi-tenant hosts
+# whose volume is breadth, not hammering, plus large single sites with power users
+# whose many feeds deserve better than the default. Values chosen from measured
 # production rates (utils/domain_fetch_limiter.py has the methodology).
 DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API
-    # at googleapis.com (utils/youtube_fetcher.py), which has its own quota.
-    "youtube.com": 500,
+    # at googleapis.com (utils/youtube_fetcher.py), which has its own quota. All
+    # youtube subdomains (gdata.youtube.com legacy addresses) collapse into this
+    # budget in feed_host(); combined demand measured ~425/min in August 2026.
+    "youtube.com": 600,
     # Google's feed CDN, 6,900+ distinct feeds/hour, built to be crawled.
     "feeds.feedburner.com": 200,
     "feeds2.feedburner.com": 60,
-    # Mostly Pro users' 5-minute search feeds (measured 293/min); 60/min still
-    # cycles every search roughly every 45 minutes.
-    "news.google.com": 60,
+    # Mostly Pro users' 5-minute search feeds (measured ~250/min demand in August
+    # 2026); 120/min cycles every search roughly every 15-20 minutes.
+    "news.google.com": 120,
+    # Amazon-owned book marketplace with a Pro bookseller watching 1,700 search
+    # feeds. 120/min (2 fetches/sec) cycles their feeds every 15-20 minutes
+    # instead of the 3-4 hours the default budget was stretching them to.
+    "abebooks.com": 120,
     # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
     # budget there remains the true gate on API calls; this just converts overflow
     # into silent deferral instead of 429s in fetch history.
