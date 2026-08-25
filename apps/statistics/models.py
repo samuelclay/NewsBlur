@@ -331,10 +331,13 @@ class MFeedback(mongo.Document):
         seen_posts = set()
         try:
             data = requests.get("https://forum.newsblur.com/posts.json", timeout=3).content
-        except (urllib.error.HTTPError, requests.exceptions.ConnectTimeout) as e:
+            # An empty body decodes back to itself, so fall back to an empty dict.
+            data = (json.decode(data) or {}).get("latest_posts", "")
+        except (urllib.error.HTTPError, requests.exceptions.RequestException, ValueError) as e:
+            # The forum times out and serves error pages often enough that it isn't worth
+            # raising. The feedback already stored just stays stale until the next run.
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
-        data = json.decode(data).get("latest_posts", "")
 
         if not len(data):
             print("No data!")
