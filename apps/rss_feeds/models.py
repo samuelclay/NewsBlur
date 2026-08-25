@@ -761,14 +761,11 @@ class Feed(models.Model):
         if not feed and fetch and create:
             try:
                 r = safe_requests_get(url, timeout=10)
-            except (
-                UnsafeUrlError,
-                requests.ConnectionError,
-                requests.models.InvalidURL,
-                requests.ReadTimeout,
-                requests.exceptions.MissingSchema,
-                requests.exceptions.InvalidSchema,
-            ):
+            except (UnsafeUrlError, requests.RequestException):
+                # RequestException covers everything a hostile or broken site can throw
+                # at a URL the user is trying to add (redirect loops, undecodable
+                # content-encoding, bad schemes, timeouts). None of it makes this a
+                # feed, so fall through and let the caller report "not a feed".
                 r = None
             if r and "application/json" in (r.headers.get("Content-Type") or ""):
                 try:
