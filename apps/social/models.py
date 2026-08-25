@@ -224,9 +224,9 @@ class MSocialProfile(mongo.Document):
         if self.bio:
             self.bio = strip_tags(self.bio)
         if self.website:
-            self.website = strip_tags(self.website)
+            self.website = strip_tags(self.website)[: MSocialProfile.website.max_length]
         if self.location:
-            self.location = strip_tags(self.location)
+            self.location = strip_tags(self.location)[: MSocialProfile.location.max_length]
         if self.custom_css:
             self.custom_css = strip_tags(self.custom_css)
 
