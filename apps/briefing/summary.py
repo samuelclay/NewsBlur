@@ -1,5 +1,6 @@
 import html as html_mod
 import re
+import time
 import zlib
 
 from django.conf import settings
@@ -8,6 +9,32 @@ from django.utils.encoding import smart_str
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+
+# summary.py: A briefing is generated once a day per user, so a single dropped
+# connection or 5xx from the LLM costs that user the whole day's briefing. Retry
+# transient failures a couple of times before giving up. Backoff is linear, so the
+# three attempts add at most 4 + 8 = 12 seconds inside the celery task.
+BRIEFING_RETRY_ATTEMPTS = 3
+BRIEFING_RETRY_BACKOFF_SECONDS = 4
+
+
+def is_transient_llm_error(error):
+    """
+    Is this LLM error worth retrying?
+
+    Connection drops and timeouts carry no status code and are always transient.
+    Status errors are only retried for 5xx (including Anthropic's 529 overloaded),
+    since a 4xx means a bad key, a bad request, or a rate limit that a retry seconds
+    later won't fix. apps/briefing/summary.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # summary.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    if not isinstance(status_code, int):
+        return True
+
+    return status_code >= 500
 
 
 def normalize_section_key(key):
@@ -384,7 +411,23 @@ def generate_briefing_summary(
             {"role": "user", "content": user_prompt},
         ]
 
-        summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
+        # summary.py: Retry transient LLM failures so a momentary outage doesn't cost
+        # the user their briefing for the day. The final failure falls through to the
+        # LLM_EXCEPTIONS handler below.
+        for attempt in range(BRIEFING_RETRY_ATTEMPTS):
+            try:
+                summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
+                break
+            except LLM_EXCEPTIONS as e:
+                last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
+                if last_attempt or not is_transient_llm_error(e):
+                    raise
+                backoff = BRIEFING_RETRY_BACKOFF_SECONDS * (attempt + 1)
+                logging.debug(
+                    " ---> Briefing summary retrying for user %s in %ss (attempt %s of %s): %s"
+                    % (user_id, backoff, attempt + 1, BRIEFING_RETRY_ATTEMPTS, str(e))
+                )
+                time.sleep(backoff)
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
