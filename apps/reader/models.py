@@ -1364,7 +1364,13 @@ class UserSubscription(models.Model):
 
     @classmethod
     def trim_user_read_stories(self, user_id):
-        user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            # The cleanup task can run after the user has been deleted
+            logging.debug(" ---> ~FRCan't trim read stories, no user for user_id: ~SB%s" % user_id)
+            return
+
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only("feed")
         if not subs:
