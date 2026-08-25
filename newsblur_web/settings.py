@@ -35,10 +35,13 @@ import django.http
 import paypalrestsdk
 import redis
 import sentry_sdk
+from django.core.exceptions import RequestDataTooBig
+from django.http import UnreadablePostError
 from mongoengine import connect
 from pymongo import monitoring
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from utils.mongo_command_monitor import MongoCommandLogger
@@ -812,8 +815,14 @@ if not DEBUG:
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
-        ignore_errors=[SystemExit],
+        # UnreadablePostError is a client hanging up in the middle of a POST and
+        # RequestDataTooBig is a bot posting an oversized body, mostly at the /push/
+        # callbacks. Both come from the outside world, so there is nothing to fix.
+        ignore_errors=[SystemExit, UnreadablePostError, RequestDataTooBig],
     )
+    # Bots probing the servers by IP address send a bad Host header, which Django
+    # reports as an error through this logger. It is noise, not a broken request.
+    ignore_logger("django.security.DisallowedHost")
     sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 
 COMPRESS = not DEBUG
