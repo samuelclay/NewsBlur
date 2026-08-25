@@ -23,6 +23,7 @@ See utils/reddit_fetcher.py.
 
 import datetime
 import html
+import re
 import urllib.parse
 
 import redis
@@ -59,6 +60,28 @@ DEFAULT_COMMENT_SORT = "new"
 MAX_COMMENTS = 100
 
 USER_AGENT = "NewsBlur/1.0 (+https://www.newsblur.com)"
+
+# XML 1.0 forbids the C0/C1 control characters below (tab, newline, and carriage
+# return stay legal), plus the noncharacters. Reddit titles and comment bodies carry
+# them now and then. Matches the same scrub in utils/twitter_fetcher.py.
+INVALID_XML_CHARS = re.compile(r"[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]")
+
+
+def scrub_control_chars(value):
+    """Strip XML-unserializable control characters out of feed strings.
+
+    feedgenerator's writeString raises UnserializableContentError on these, which
+    took down the whole feed fetch. Applied to the feed and item kwargs, so lists
+    (categories) are scrubbed element by element and everything else, including the
+    pubdate datetimes, passes through untouched. See utils/reddit_fetcher.py.
+    """
+    if isinstance(value, str):
+        return INVALID_XML_CHARS.sub("", value)
+    if isinstance(value, list):
+        return [scrub_control_chars(item) for item in value]
+    if isinstance(value, dict):
+        return {key: scrub_control_chars(item) for key, item in value.items()}
+    return value
 
 
 class RedditFetcher:
@@ -328,20 +351,20 @@ class RedditFetcher:
             "docs": None,
             "feed_url": self.address,
         }
-        rss = feedgenerator.Atom1Feed(**data)
+        rss = feedgenerator.Atom1Feed(**scrub_control_chars(data))
 
         # Lead with the submission itself so the feed always carries the OP for context,
         # even before any comments arrive.
         op = self.story_data(post, skip_stickied=False)
         if op:
-            rss.add_item(**op)
+            rss.add_item(**scrub_control_chars(op))
 
         comments = []
         self.flatten_comments(comment_children, comments)
         for comment in comments:
             item = self.comment_story_data(comment)
             if item:
-                rss.add_item(**item)
+                rss.add_item(**scrub_control_chars(item))
 
         return rss.writeString("utf-8")
 
@@ -466,14 +489,14 @@ class RedditFetcher:
             "docs": None,
             "feed_url": self.address,
         }
-        rss = feedgenerator.Atom1Feed(**data)
+        rss = feedgenerator.Atom1Feed(**scrub_control_chars(data))
 
         for child in children:
             if child.get("kind") != "t3":
                 continue
             story = self.story_data(child.get("data") or {})
             if story:
-                rss.add_item(**story)
+                rss.add_item(**scrub_control_chars(story))
 
         return rss.writeString("utf-8")
 
