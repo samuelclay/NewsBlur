@@ -25,7 +25,9 @@ http.client._MAXHEADERS = 10000
 
 import random
 import re
+import ssl
 import xml.sax
+import zlib
 
 import feedparser
 import pymongo
@@ -164,6 +166,28 @@ HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
 NO_UNDERSCORE_ADDRESSES = ["jwz"]
+
+# Everything a broken or hostile server can make feedparser (and the urllib/http/ssl
+# stack underneath it) raise while downloading and parsing a feed. These are feed
+# problems, not NewsBlur bugs, so they're logged and recorded in fetch history rather
+# than escalated to the generic handler in FetchFeed's caller, which reports to Sentry.
+# http.client.HTTPException covers InvalidURL, BadStatusLine, IncompleteRead, and
+# LineTooLong; ValueError covers the UnicodeEncodeError feedparser raises on lone
+# surrogates in charrefs and the "Invalid IPv6 URL" from urlsplit. utils/feed_fetcher.py
+FEEDPARSER_FETCH_ERRORS = (
+    UnsafeUrlError,
+    TypeError,
+    ValueError,
+    IndexError,
+    KeyError,
+    EOFError,
+    MemoryError,
+    urllib.error.URLError,
+    http.client.HTTPException,
+    ConnectionResetError,
+    ssl.SSLError,
+    zlib.error,
+)
 
 
 def feed_image_url(image):
@@ -441,7 +465,12 @@ class FetchFeed:
                         "   ---> [%-30s] ~FGApplied encoding correction to forbidden feed"
                         % (self.feed.log_title[:30])
                     )
-                self.fpf = feedparser.parse(processed_forbidden_feed)
+                try:
+                    self.fpf = feedparser.parse(processed_forbidden_feed)
+                except FEEDPARSER_FETCH_ERRORS as e:
+                    logging.debug(
+                        "   ***> [%-30s] ~FRForbidden feed parse error: %s" % (self.feed.log_title[:30], e)
+                    )
 
         if not self.fpf:
             try:
@@ -647,21 +676,7 @@ class FetchFeed:
                 # When feedparser fetches the URL itself, we cannot preprocess the content first
                 # We'll have to rely on feedparser's built-in handling here
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent, etag=etag, modified=modified)
-            except (
-                UnsafeUrlError,
-                TypeError,
-                ValueError,
-                IndexError,
-                KeyError,
-                EOFError,
-                MemoryError,
-                urllib.error.URLError,
-                http.client.InvalidURL,
-                http.client.BadStatusLine,
-                http.client.IncompleteRead,
-                ConnectionResetError,
-                TimeoutError,
-            ) as e:
+            except FEEDPARSER_FETCH_ERRORS + (TimeoutError,) as e:
                 logging.debug("   ***> [%-30s] ~FRFeed fetch error: %s" % (self.feed.log_title[:30], e))
                 pass
 
@@ -677,20 +692,7 @@ class FetchFeed:
                     validate_public_url(address)
                 # Another direct URL fetch that bypasses our preprocessing
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
-            except (
-                UnsafeUrlError,
-                TypeError,
-                ValueError,
-                IndexError,
-                KeyError,
-                EOFError,
-                MemoryError,
-                urllib.error.URLError,
-                http.client.InvalidURL,
-                http.client.BadStatusLine,
-                http.client.IncompleteRead,
-                ConnectionResetError,
-            ) as e:
+            except FEEDPARSER_FETCH_ERRORS as e:
                 logging.debug("   ***> [%-30s] ~FRFetch failed: %s." % (self.feed.log_title[:30], e))
 
         # ScrapingBee fallback: all normal fetch methods exhausted
@@ -702,7 +704,13 @@ class FetchFeed:
             sb_status, sb_body = self.fetch_scrapingbee()
             if sb_status == 200 and sb_body:
                 processed_body = preprocess_feed_encoding(sb_body)
-                self.fpf = feedparser.parse(processed_body)
+                try:
+                    self.fpf = feedparser.parse(processed_body)
+                except FEEDPARSER_FETCH_ERRORS as e:
+                    logging.debug(
+                        "   ***> [%-30s] ~FRScrapingBee parse error: %s" % (self.feed.log_title[:30], e)
+                    )
+                    self.fpf = None
                 if self.fpf and (
                     self.fpf.entries or getattr(self.fpf.feed, "title", None) or self.fpf.version
                 ):
