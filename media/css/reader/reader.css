@@ -3264,7 +3264,8 @@ img.feed_favicon {
 }
 
 /* Fade the tier badge on read siblings to match the rest of the row. */
-.NB-story-cluster-source.read .NB-cluster-tier-badge {
+.NB-story-cluster-source.read .NB-cluster-tier-badge,
+.NB-story-title.NB-story-title-cluster.read .NB-cluster-tier-badge {
     opacity: 0.4;
 }
 
@@ -3306,7 +3307,8 @@ img.feed_favicon {
     color: #d2a76b;
 }
 
-.NB-dark .NB-story-cluster-source.read .NB-cluster-tier-badge {
+.NB-dark .NB-story-cluster-source.read .NB-cluster-tier-badge,
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-cluster-tier-badge {
     opacity: 0.4;
 }
 
@@ -3521,44 +3523,10 @@ img.feed_favicon {
     margin-top: 2px;
 }
 
-/* Remove ALL read-state dimming on cluster rows — size differentiates, not color */
-.NB-story-title.NB-story-title-cluster.read a.story_title {
-    color: #272727;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-story-image {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-sentiment {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .feed_favicon {
-    opacity: .65;
-}
-
-.NB-story-title.NB-story-title-cluster.read .story_date {
-    color: #888785;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
-    color: inherit;
-    font-weight: inherit;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-middot {
-    color: inherit;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
-    color: #888785;
-}
+/* reader.css: Read cluster rows dim like regular story titles — the generic
+   .NB-story-title.read rules (faded feed borders, gray title/date/preview,
+   dimmed favicon) cascade here, matching the parent story and the
+   single-line .NB-story-cluster-source.read fade. */
 
 /* Hover state - subtle, no transform */
 .NB-story-title.NB-story-title-cluster:hover {
@@ -3591,28 +3559,9 @@ img.feed_favicon {
     background-color: rgba(255, 255, 255, 0.04);
 }
 
-/* Remove ALL read-state dimming on cluster rows in dark mode */
-.NB-dark .NB-story-title.NB-story-title-cluster.read a.story_title {
-    color: #ddd;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
-    opacity: 1;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
-    color: inherit;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .story_date {
-    color: inherit;
-}
-
-.NB-dark .read .NB-story-title-cluster .NB-storytitles-content-preview,
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
-    color: inherit;
-}
+/* reader.css: Dark-mode read cluster rows also inherit the standard read
+   dimming from darkmode.css (.NB-dark .read .NB-storytitles-title, author,
+   date, content preview) — no cluster-specific overrides needed. */
 
 /* Story detail cluster section (uses StoryTitleView) */
 .NB-story-cluster-detail {
