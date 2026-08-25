@@ -190,9 +190,12 @@ def facebook_disconnect(request):
 @ajax_login_required
 @json.json_view
 def follow_twitter_account(request):
-    username = request.POST["username"]
+    username = request.POST.get("username")
     code = 1
     message = "OK"
+
+    if not username:
+        return {"code": -1, "message": "Missing username."}
 
     logging.user(request, "~BB~FR~SKFollowing Twitter: %s" % username)
 
@@ -213,9 +216,12 @@ def follow_twitter_account(request):
 @ajax_login_required
 @json.json_view
 def unfollow_twitter_account(request):
-    username = request.POST["username"]
+    username = request.POST.get("username")
     code = 1
     message = "OK"
+
+    if not username:
+        return {"code": -1, "message": "Missing username."}
 
     logging.user(request, "~BB~FRUnfollowing Twitter: %s" % username)
 
