@@ -1442,7 +1442,11 @@ class SearchFeed:
 
         # Part 2: Semantic search (generate embedding for query)
         try:
-            client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            # Hybrid search backs the interactive autocomplete endpoint, and the semantic
+            # half only refines the text results gathered above. Cap the embedding call
+            # instead of using the client defaults (600s read timeout, two retries), which
+            # leave a typeahead request hanging when OpenAI is slow or unreachable.
+            client = OpenAI(api_key=settings.OPENAI_API_KEY, timeout=5.0, max_retries=1)
             response = client.embeddings.create(model="text-embedding-3-small", input=text.lower())
 
             # Track embedding cost
