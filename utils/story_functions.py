@@ -178,7 +178,12 @@ def extract_story_date(entry):
     # Do not switch to published_parsed or every story will be dated the fetch time
     publish_date = entry.get("g_parsed") or entry.get("updated_parsed")
     if publish_date:
-        publish_date = datetime.datetime(*publish_date[:6])
+        try:
+            publish_date = datetime.datetime(*publish_date[:6])
+        except (ValueError, TypeError, OverflowError):
+            # Garbage feed dates (year 0, month 13) can't build a datetime, so fall
+            # through to the published string below and then to now().
+            publish_date = None
 
     if not publish_date and entry.get("published"):
         try:
