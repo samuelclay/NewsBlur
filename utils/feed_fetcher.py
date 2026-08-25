@@ -1384,7 +1384,13 @@ class ProcessFeed:
         if not self.feed.feed_link_locked:
             new_feed_link = self.fpf.feed.get("link") or self.fpf.feed.get("id") or self.feed.feed_link
             if self.options["force"] and new_feed_link:
-                new_feed_link = qurl(new_feed_link, remove=["_"])
+                try:
+                    new_feed_link = qurl(new_feed_link, remove=["_"])
+                except ValueError:
+                    # Malformed bracketed hosts (an empty or non-IP [...] netloc) make
+                    # urlparse raise, so keep the link exactly as the feed published it,
+                    # matching the clean_address fallback in FetchFeed.fetch.
+                    pass
             if new_feed_link != self.feed.feed_link:
                 logging.debug(
                     "   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s"
