@@ -1017,8 +1017,14 @@ def refresh_feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
 
     feed = feed.update(force=True, compute_scores=False)
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
-    usersub.calculate_feed_scores(silent=False)
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        # An unsubscribed user can still refresh a feed, there are just no scores to
+        # recalculate. load_single_feed below already handles a missing subscription.
+        usersub = None
+    if usersub:
+        usersub.calculate_feed_scores(silent=False)
 
     logging.user(request, "~FBRefreshing feed: %s" % feed)
     MAnalyticsLoader.add(page_load=time.time() - start)
