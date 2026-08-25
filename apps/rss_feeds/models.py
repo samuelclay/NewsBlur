@@ -81,7 +81,33 @@ from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_
 from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
-MAX_STORY_CONTENT_BYTES = 10 * 1024 * 1024
+# Mongo rejects any document over 16MB, and a single story carries up to five of these
+# text blobs, so no one of them may exceed 2MB. A multi-megabyte story is broken scraped
+# content and not an article, so cutting it down is safe. apps/rss_feeds/models.py
+MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
+
+
+def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
+    """
+    Cut UTF-8 encoded `content_bytes` down to at most `max_bytes` and decode it.
+
+    The character straddling the cut is kept whole rather than left half-encoded, so
+    the result can run a byte or two short of the cap. apps/rss_feeds/models.py
+    """
+    if len(content_bytes) <= max_bytes:
+        return smart_str(content_bytes)
+
+    truncated_bytes = content_bytes[:max_bytes]
+    try:
+        return truncated_bytes.decode("utf-8")
+    except UnicodeDecodeError as error:
+        boundary_end = max_bytes
+        while boundary_end < len(content_bytes) and content_bytes[boundary_end] & 0xC0 == 0x80:
+            boundary_end += 1
+        boundary_character = content_bytes[error.start : boundary_end]
+        prefix_bytes = content_bytes[: max_bytes - len(boundary_character)]
+
+        return prefix_bytes.decode("utf-8", errors="ignore") + boundary_character.decode("utf-8")
 
 
 class Feed(models.Model):
@@ -3693,28 +3719,46 @@ class MStory(mongo.Document):
             return smart_str(zlib.decompress(self.original_text_z))
         return self.story_content_str
 
+    def truncate_oversized_content(self):
+        """
+        Cap every large text field at MAX_STORY_CONTENT_BYTES so the story can't grow
+        past Mongo's 16MB document limit.
+
+        The plain fields are capped here, before save() compresses them. The page and
+        text importers hand their fields over already compressed, so those are only
+        unpacked when the stored blob is itself over the cap — a page that compresses
+        down small is left alone no matter how large it started.
+        """
+        for field_name in ("story_content", "story_original_content", "story_latest_content"):
+            content = getattr(self, field_name)
+            if not content:
+                continue
+            content_bytes = smart_bytes(content)
+            if len(content_bytes) <= MAX_STORY_CONTENT_BYTES:
+                continue
+            logging.debug(
+                "   ---> ~SN~FRTruncating oversized %s on story %s: %s bytes"
+                % (field_name, self.story_hash, len(content_bytes))
+            )
+            setattr(self, field_name, truncate_story_content(content_bytes))
+
+        for field_name in ("original_text_z", "original_page_z"):
+            compressed = getattr(self, field_name)
+            if not compressed or len(compressed) <= MAX_STORY_CONTENT_BYTES:
+                continue
+            logging.debug(
+                "   ---> ~SN~FRTruncating oversized %s on story %s: %s compressed bytes"
+                % (field_name, self.story_hash, len(compressed))
+            )
+            truncated = truncate_story_content(zlib.decompress(compressed))
+            setattr(self, field_name, zlib.compress(smart_bytes(truncated)))
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields["story_title"].max_length
         story_content_type_max = MStory._fields["story_content_type"].max_length
         self.story_hash = self.feed_guid_hash
 
-        if self.story_content:
-            story_content_bytes = smart_bytes(self.story_content)
-            if len(story_content_bytes) > MAX_STORY_CONTENT_BYTES:
-                truncated_bytes = story_content_bytes[:MAX_STORY_CONTENT_BYTES]
-                try:
-                    self.story_content = truncated_bytes.decode("utf-8")
-                except UnicodeDecodeError as error:
-                    boundary_end = MAX_STORY_CONTENT_BYTES
-                    while (
-                        boundary_end < len(story_content_bytes)
-                        and story_content_bytes[boundary_end] & 0xC0 == 0x80
-                    ):
-                        boundary_end += 1
-                    boundary_character = story_content_bytes[error.start : boundary_end]
-                    prefix_bytes = story_content_bytes[: MAX_STORY_CONTENT_BYTES - len(boundary_character)]
-                    self.story_content = prefix_bytes.decode("utf-8", errors="ignore")
-                    self.story_content += boundary_character.decode("utf-8")
+        self.truncate_oversized_content()
 
         self.extract_image_urls()
 
@@ -4353,7 +4397,14 @@ class MStory(mongo.Document):
                 has_broken_proto = "http://" in lead_image[1:] or "https://" in lead_image[1:]
                 if len(lead_image) < 1024 and not has_broken_proto:
                     self.image_urls = [lead_image]
-            self.save()
+            try:
+                self.save()
+            except NotUniqueError:
+                # A racing fetcher re-created this story between the lookup that loaded it
+                # and this save, so the story_hash now belongs to the copy that won. The
+                # text we just fetched is still good, so hand it back rather than 500ing;
+                # only the cached copy is lost. apps/rss_feeds/models.py
+                logging.debug("   ---> ~SN~FRNotUniqueError caching original text: %s" % (self.story_hash,))
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)
