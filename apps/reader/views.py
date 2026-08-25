@@ -5481,9 +5481,14 @@ def remove_dashboard_river(request):
 
 
 def print_story(request):
-    story_hash = request.GET["story_hash"]
+    story_hash = request.GET.get("story_hash")
+    if not story_hash:
+        raise Http404
     text_view = request.GET.get("text", False)
-    timezone = request.user.profile.timezone
+    # apps/reader/views.py: get_user falls back to the homepage user, so logged out
+    # readers hitting a print link still get a sane timezone instead of an AttributeError.
+    user = get_user(request)
+    timezone = user.profile.timezone
     try:
         story = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
