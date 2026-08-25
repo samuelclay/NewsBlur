@@ -91,9 +91,20 @@ class MCategory(mongo.Document):
     def subscribe(cls, user_id, category_title):
         category = cls.objects.get(title=category_title)
 
+        # Categories can still name feeds that have since been deleted from postgres,
+        # and subscribing to one violates the usersubscription feed_id foreign key.
+        # Resolve every feed up front so the missing ones are skipped in both loops.
+        feeds = []
         for feed_id in category.feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if not feed:
+                logging.info(" ***> Skipping missing feed in category %s: %s" % (category.title, feed_id))
+                continue
+            feeds.append(feed)
+
+        for feed in feeds:
             us, _ = UserSubscription.objects.get_or_create(
-                feed_id=feed_id,
+                feed_id=feed.pk,
                 user_id=user_id,
                 defaults={
                     "needs_unread_recalc": True,
@@ -107,10 +118,7 @@ class MCategory(mongo.Document):
 
         usf.add_folder("", category.title)
         folders = json.decode(usf.folders)
-        for feed_id in category.feed_ids:
-            feed = Feed.get_by_id(feed_id)
-            if not feed:
-                continue
+        for feed in feeds:
             folders = add_object_to_folder(feed.pk, category.title, folders)
         usf.folders = json.encode(folders)
         usf.save()
