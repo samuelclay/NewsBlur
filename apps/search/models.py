@@ -20,6 +20,7 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
+from mongoengine.queryset import NotUniqueError
 from openai import APITimeoutError, OpenAI
 
 from apps.search.projection_matrix import project_vector
@@ -67,7 +68,13 @@ class MUserSearch(mongo.Document):
             user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(user_id=user_id)
         except cls.DoesNotExist:
             if create:
-                user_search = cls.objects.create(user_id=user_id)
+                try:
+                    user_search = cls.objects.create(user_id=user_id)
+                except NotUniqueError:
+                    # A concurrent request created it between the get and the create
+                    user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(
+                        user_id=user_id
+                    )
             else:
                 user_search = None
 
