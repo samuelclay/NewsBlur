@@ -45,6 +45,11 @@ class IconImporter(object):
         self.declared_icon_url = declared_icon_url
         self.declared_logo_url = declared_logo_url
         self.feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
+        if not self.feed_icon:
+            # MFeedIcon.save() swallows the duplicate key error that two fetchers
+            # racing on the same feed hit, so get_feed can hand back None. Carry on
+            # with an unsaved icon instead of crashing on every attribute below.
+            self.feed_icon = MFeedIcon(feed_id=self.feed.pk)
 
     def save(self):
         # Honor a freshly-declared <icon> even for feeds that already have a cached
@@ -103,7 +108,9 @@ class IconImporter(object):
         image = self.normalize_image(image)
         try:
             color = self.determine_dominant_color_in_image(image)
-        except (IndexError, ValueError, MemoryError):
+        except (IndexError, ValueError, MemoryError, IOError, struct.error):
+            # numpy.array() forces PIL to finish decoding, so a corrupt or truncated
+            # favicon only blows up here, not at fetch time.
             logging.debug("   ---> [%-30s] ~SN~FRFailed to measure icon" % self.feed.log_title[:30])
             return
         try:
