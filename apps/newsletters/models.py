@@ -15,6 +15,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.html import linebreaks, strip_tags
+from mongoengine.queryset import NotUniqueError
 
 from apps.notifications.models import MUserFeedNotification
 from apps.notifications.tasks import QueueNotifications
@@ -156,7 +157,13 @@ class EmailNewsletter:
             story = MStory.objects.get(story_hash=story_hash)
         except MStory.DoesNotExist:
             story = MStory(**story_params)
-            story.save()
+            try:
+                story.save()
+            except NotUniqueError:
+                # Mail providers redeliver the same email, and two concurrent deliveries
+                # can both miss the lookup above before one of them saves. The story is
+                # already stored, so use the copy that won. apps/newsletters/models.py
+                story = MStory.objects.get(story_hash=story_hash)
         else:
             updated = False
             if newsletter_headers and not story.newsletter_headers:
