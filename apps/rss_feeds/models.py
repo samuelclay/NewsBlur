@@ -1879,7 +1879,16 @@ class Feed(models.Model):
                 if self.is_google_news_feed and s:
                     s.fetch_og_image()
                     if s.image_urls:
-                        s.save()
+                        try:
+                            s.save()
+                        except NotUniqueError as e:
+                            # A racing fetcher won this story_hash between the save above
+                            # and here. The story is already stored and counted as new, so
+                            # only the og:image URLs are lost.
+                            logging.debug(
+                                "   ---> [%-30s] ~SN~FRNotUniqueError on og:image save: %s - %s"
+                                % (self.feed_title[:30], story.get("guid"), e)
+                            )
                 if self.search_indexed and s:
                     s.index_story_for_search()
                 if s and s.story_hash:
