@@ -51,6 +51,20 @@ from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
 
 
+def normalize_feed_id(feed_id):
+    """Clients sometimes send the DOM element id ('feed:123') instead of the bare feed id."""
+    if not feed_id:
+        return None
+
+    feed_id = str(feed_id)
+    if feed_id.startswith("feed:"):
+        feed_id = feed_id[len("feed:") :]
+    if not feed_id.isdigit():
+        return None
+
+    return int(feed_id)
+
+
 @json.json_view
 def load_single_feed(request, feed_id):
     user = get_user(request)
@@ -365,7 +379,10 @@ def exception_retry(request):
 @ajax_login_required
 @json.json_view
 def exception_change_feed_address(request):
-    feed_id = request.POST["feed_id"]
+    feed_id = normalize_feed_id(request.POST.get("feed_id"))
+    if not feed_id:
+        return {"code": -1, "message": "Missing or invalid feed id."}
+
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_address = request.POST["feed_address"]
@@ -468,7 +485,10 @@ def exception_change_feed_address(request):
 @ajax_login_required
 @json.json_view
 def exception_change_feed_link(request):
-    feed_id = request.POST["feed_id"]
+    feed_id = normalize_feed_id(request.POST.get("feed_id"))
+    if not feed_id:
+        return {"code": -1, "message": "Missing or invalid feed id."}
+
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_link = request.POST["feed_link"]
