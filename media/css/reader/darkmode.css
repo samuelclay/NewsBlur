@@ -157,6 +157,15 @@ color: #a85b40;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* darkmode.css: "Reason to upgrade" icons are dark line art (e.g. direction_black.svg)
+   that disappears on the dark card. Normalize to black, then invert to light gray —
+   same treatment as the premium tier modal's bullet icons. !important overrides the
+   per-icon filters in reader.css (e.g. the archive NB-5 train icon). */
+.NB-dark .NB-module-premium-icon,
+.NB-dark .NB-module-premium-archive-icon {
+    filter: brightness(0) invert(0.85) brightness(1.2) !important;
+}
+
 .NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
     color: rgba(216, 216, 216, 0.5);
 }
