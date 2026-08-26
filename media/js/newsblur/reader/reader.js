@@ -4135,8 +4135,8 @@
             NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed(feed_id);
         },
 
-        open_tutorial_modal: function () {
-            NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
+        open_features_modal: function (options) {
+            NEWSBLUR.features = new NEWSBLUR.ReaderFeatures(options);
         },
 
         open_intro_modal: function (options) {
@@ -4850,9 +4850,9 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-tutorial', role: "button" }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-features', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Features &amp; Tips')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -8421,11 +8421,11 @@
                     });
                 }
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-tutorial' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-features' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_tutorial_modal();
+                        self.open_features_modal();
                     });
                 }
             });
@@ -8938,7 +8938,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-launch-tutorial' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_tutorial_modal();
+                    self.open_features_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-launch-intro' }, function ($t, $p) {
