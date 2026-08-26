@@ -1220,7 +1220,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             // stories per briefing, so the rest of the briefing's links have no story
             // to select. Show the Premium Archive upgrade instead of a dead new tab.
             if (NEWSBLUR.utils.is_briefing_preview()) {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
                 return false;
             }
         }

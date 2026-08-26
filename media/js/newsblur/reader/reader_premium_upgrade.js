@@ -30,9 +30,18 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
 
     runner: function () {
         this.make_modal();
+        this.highlight_feature();
         this.make_paypal_button();
         this.open_modal();
         this.$modal.bind('mousedown', $.rescope(this.handle_mousedown, this));
+    },
+
+    // reader_premium_upgrade.js: Highlight the feature line that prompted this
+    // upgrade (e.g. options.highlight_feature = 'briefing' from a briefing callout).
+    highlight_feature: function () {
+        if (!this.options.highlight_feature) return;
+        this.$modal.find('li.NB-feature-' + this.options.highlight_feature)
+            .addClass('NB-premium-feature-highlighted');
     },
 
     make_modal: function () {
@@ -137,7 +146,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Cluster duplicate stories across all your feeds'
                         ]),
-                        $.make('li', { className: 'NB-4' }, [
+                        $.make('li', { className: 'NB-4 NB-feature-briefing' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Daily briefing with your top stories and keywords'
                         ]),

@@ -94,21 +94,6 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
             $container.append(story_view.el);
         }, this);
 
-        // briefing_group_view.js: Show preview upsell for free users
-        if (briefing.is_preview) {
-            var $upsell = $.make('div', { className: 'NB-briefing-upsell' }, [
-                $.make('a', { href: '#', className: 'NB-briefing-upsell-link' }, [
-                    $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
-                    $.make('span', { className: 'NB-briefing-upsell-text' }, 'Get daily briefings with all your top stories')
-                ])
-            ]);
-            $upsell.on('click', '.NB-briefing-upsell-link', function (e) {
-                e.preventDefault();
-                NEWSBLUR.reader.open_premium_upgrade_modal();
-            });
-            $container.append($upsell);
-        }
-
         return $container;
     },
 

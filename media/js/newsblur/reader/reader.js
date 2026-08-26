@@ -2370,7 +2370,7 @@
                     // non-archive users receive, so there's nothing to select. Show
                     // the Premium Archive upgrade instead of silently doing nothing.
                     _.delay(function () {
-                        NEWSBLUR.reader.open_premium_upgrade_modal();
+                        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
                     }, 100);
                 }
             }

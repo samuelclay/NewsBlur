@@ -172,8 +172,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         // of each briefing are unlocked.
         if (data.is_preview) {
             $groups.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
-                "You're previewing Daily Briefings with the first 3 stories of each briefing. " +
-                "Upgrade to Premium Archive to unlock every story and automatic briefings on your schedule."
+                "You're previewing the first 3 stories of each briefing. " +
+                "Upgrade to unlock every story and automatic briefings on your schedule."
             ));
         }
 
@@ -273,7 +273,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $groups = [];
         var group_index = 0;
         _.each(briefings, function (briefing) {
-            briefing.is_preview = data.is_preview;
             var display_briefing = briefing;
             if (active_section) {
                 var section_hashes = (briefing.curated_sections || {})[active_section] || [];
