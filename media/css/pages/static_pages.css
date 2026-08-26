@@ -4900,3 +4900,74 @@ body.NB-dark.NB-static .NB-module-title-prefix {
 .NB-dark .NB-static-form-alttext a {
     color: #FBDB9B;
 }
+
+/* OAuth authorize buttons (templates/oauth2_provider/authorize.html).
+   payments.css paints every `.NB-static-form input` translucent white with white text,
+   which left the Authorize/Deny buttons nearly invisible on the cream background.
+   These higher-specificity rules restore explicit high-contrast colors in both themes.
+   Preview locally at /oauth/dev/authorize/ (DEBUG only). */
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-button {
+    width: auto;
+    min-width: 140px;
+    padding: 10px 24px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green {
+    background: #217412 linear-gradient(to top, #216200, #217412);
+    color: #FFFFFF;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:hover {
+    background: #1E5000 linear-gradient(to top, #1E5000, #216200);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:active {
+    background: #1B3F00 linear-gradient(to top, #1B3F00, #1E5000);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey {
+    background: #d5d4dB linear-gradient(to top, #CBCAD3, #d5d4dB);
+    color: #404040;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    text-shadow: none;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:hover {
+    background: #CBCAD3 linear-gradient(to top, #BDBCC7, #CBCAD3);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:active {
+    background: #BDBCC7 linear-gradient(to top, #ADACBB, #BDBCC7);
+}
+
+/* Dark mode: same buttons, inverted — dark surfaces with light text */
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green {
+    background: #2B8E1A;
+    color: #FFFFFF;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:hover {
+    background: #35A322;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:active {
+    background: #217412;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey {
+    background: #404040;
+    color: #d5d4db;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:hover {
+    background: #4C4C4C;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:active {
+    background: #383838;
+}

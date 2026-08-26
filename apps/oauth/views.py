@@ -1215,3 +1215,39 @@ def extension_oauth_callback(request):
 </html>"""
 
     return HttpResponse(html, content_type="text/html")
+
+
+def dev_authorize_preview(request):
+    """
+    Development-only preview of the OAuth authorize page (templates/oauth2_provider/authorize.html).
+    Renders the page with a fake application so the styling can be checked without a real OAuth flow.
+    Mirrors the guard in apps/reader/views.py:dev_autologin - requires DEBUG and localhost.
+
+    Usage:
+        /oauth/dev/authorize/           - Preview as "The NewsBlur Forum" requesting read/email scopes
+        /oauth/dev/authorize/?error=1   - Preview the error state
+        /oauth/dev/authorize/?name=Foo  - Preview with a different application name
+    """
+    from django.shortcuts import render
+    from oauth2_provider.forms import AllowForm
+
+    is_local_dev = settings.DEBUG and "localhost" in getattr(settings, "NEWSBLUR_URL", "")
+    if not is_local_dev:
+        return HttpResponseForbidden("Dev authorize preview only available in local development")
+
+    class FakeApplication:
+        name = request.GET.get("name", "The NewsBlur Forum")
+
+    scopes = settings.OAUTH2_PROVIDER["SCOPES"]
+    context = {
+        "application": FakeApplication,
+        "scopes_descriptions": [scopes["read"], scopes["email"]],
+        "form": AllowForm(),
+    }
+    if request.GET.get("error"):
+        context["error"] = {
+            "error": "access_denied",
+            "description": "Preview of the OAuth authorize error state.",
+        }
+
+    return render(request, "oauth2_provider/authorize.html", context)
