@@ -825,8 +825,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     open_premium_modal: function (e) {
         e.preventDefault();
         e.stopPropagation();
+        // feed_options_popover.js: Highlight the archive feature line that matches
+        // the upgrade notice that was clicked (auto-read, date filter, or clustering).
+        var $notice = $(e.currentTarget);
+        var highlight_feature = null;
+        if ($notice.hasClass('NB-auto-mark-read-upgrade-notice')) {
+            highlight_feature = 'auto-mark-read';
+        } else if ($notice.hasClass('NB-date-filter-upgrade-notice')) {
+            highlight_feature = 'date-filter';
+        } else if ($notice.hasClass('NB-clustering-upgrade-notice')) {
+            highlight_feature = 'clustering';
+        }
         this.close(_.bind(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
         }, this));
     },
 

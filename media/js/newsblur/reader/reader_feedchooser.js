@@ -489,7 +489,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     open_premium_upgrade: function () {
         var self = this;
         $.modal.close(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'site-limit' });
         });
     },
 
