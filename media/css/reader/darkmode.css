@@ -3364,17 +3364,12 @@ a.mention, a.mention-group {
 /* ======================== */
 
 .NB-dark .NB-story-ask-ai-inline {
-    background: linear-gradient(135deg, #1a1f2e 0%, #2a1f1e 100%);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.NB-dark .NB-story-ask-ai-inline::before {
-    background: linear-gradient(90deg, rgba(74, 144, 226, 0.6) 0%, rgba(226, 74, 144, 0.6) 50%, rgba(226, 144, 74, 0.6) 100%);
+    background-color: #2B2B2B;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-question {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: transparent;
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -3384,20 +3379,20 @@ a.mention, a.mention-group {
 
 @keyframes borderPulseDark {
     0% {
-        border-color: rgba(92, 137, 201, 0.4);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 
     38% {
-        border-color: rgba(92, 137, 201, 0.8);
+        border-color: rgba(255, 255, 255, 0.35);
     }
 
     100% {
-        border-color: rgba(92, 137, 201, 0.4);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-question-text {
-    color: #E0E6ED;
+    color: #B8BCB0;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-close {
@@ -3421,60 +3416,39 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error {
-    background-color: rgba(226, 144, 74, 0.15);
-    border-color: rgba(139, 90, 43, 0.4);
-    border-left-color: rgba(226, 144, 74, 0.6);
-    color: #FFB870;
+    background-color: rgba(226, 144, 74, 0.1);
+    border-color: rgba(226, 144, 74, 0.3);
+    color: #E0A878;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error strong {
-    color: #FFC890;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message {
-    background-color: rgba(74, 144, 226, 0.15);
-    border-color: rgba(74, 144, 226, 0.3);
-    border-left-color: rgba(74, 144, 226, 0.6);
-    color: #6BA3E0;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message a {
-    color: #8BC5FF;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message a:hover {
-    color: #A8D4FF;
+    color: #F0BC90;
 }
 
 /* Model Pills - Dark Mode */
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #8B4D35 0%, #6B3A28 100%);
-    color: #F5C4B0;
-    border: 1px solid #A35845;
+    background-color: rgba(217, 120, 87, 0.2);
+    color: #E8A88E;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #1A4D44 0%, #0F3830 100%);
-    color: #A8E6CF;
-    border: 1px solid #2D6A5A;
+    background-color: rgba(116, 170, 156, 0.18);
+    color: #8ECDB8;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-google {
-    background: linear-gradient(135deg, #1A3A5C 0%, #0F2840 100%);
-    color: #8AB4F8;
-    border: 1px solid #3D6A9F;
+    background-color: rgba(138, 180, 248, 0.18);
+    color: #9CBCF0;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
-    color: #FFFFFF;
-    border: 1px solid #444444;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #E0E0E0;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-unknown {
-    background: linear-gradient(135deg, #424242 0%, #303030 100%);
-    color: #BDBDBD;
-    border: 1px solid #616161;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #B0B0B0;
 }
 
 /* Error state for model pill - Dark Mode */
@@ -3484,9 +3458,9 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #D0D8E0;
+    background-color: transparent;
+    border-color: transparent;
+    color: #C8C8C4;
 }
 
 .NB-dark .NB-story-ask-ai-answer h1,
@@ -3509,8 +3483,8 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input:focus {
-    border-color: rgba(74, 144, 226, 0.6);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input::placeholder {
@@ -3625,28 +3599,52 @@ a.mention, a.mention-group {
     background-color: rgba(74, 144, 226, 0.3);
 }
 
+/* Fast/Thinking segmented control at the bottom of the model dropdown - dark mode */
+.NB-dark .NB-thinking-toggle-wrapper {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-thinking-toggle-segmented {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-thinking-toggle-option {
+    color: #909690;
+}
+
+.NB-dark .NB-thinking-toggle-option:hover {
+    color: #C0C6C0;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-thinking-toggle-option.NB-selected {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #E8E8E4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-thinking-toggle-option.NB-selected .NB-thinking-toggle-icon {
+    filter: brightness(1.4);
+}
+
 .NB-dark .NB-provider-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #8B4D35 0%, #6B3A28 100%);
-    color: #F5C4B0;
-    border: 1px solid #A35845;
+    background-color: rgba(217, 120, 87, 0.2);
+    color: #E8A88E;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #2A5A4A 0%, #1A4A3A 100%);
-    color: #90D0C0;
-    border: 1px solid #3A6A5A;
+    background-color: rgba(116, 170, 156, 0.18);
+    color: #8ECDB8;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-google {
-    background: linear-gradient(135deg, #2A4A7A 0%, #1A3A6A 100%);
-    color: #90B0E0;
-    border: 1px solid #3A5A8A;
+    background-color: rgba(138, 180, 248, 0.18);
+    color: #9CBCF0;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #3A3A3A 0%, #2A2A2A 100%);
+    background-color: rgba(255, 255, 255, 0.12);
     color: #E0E0E0;
-    border: 1px solid #5A5A5A;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input {
@@ -3656,12 +3654,12 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input:focus {
-    border-color: rgba(74, 144, 226, 0.6);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input::placeholder {
-    color: #6B7A92;
+    color: #808680;
 }
 
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
