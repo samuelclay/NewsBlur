@@ -1650,6 +1650,40 @@ class Test_PreProcessStoryContentSelection(TestCase):
         self.assertIn("Real article body.", out["story_content"])
         self.assertGreater(len(out["story_content"]), 1000)
 
+    def test_adds_media_content_image_without_declared_type(self):
+        # apps/rss_feeds/test_rss_feeds.py: mirrors the Le Figaro RSS shape where
+        # media:content has a URL plus dimensions, but no type or medium attribute.
+        from utils.story_functions import pre_process_story
+
+        image_url = "https://i.f1g.fr/media/cms/orig/2026/08/26/photo.JPG"
+        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
+  <channel>
+    <title>Test Feed</title>
+    <link>https://example.com/</link>
+    <description>Test</description>
+    <item>
+      <title>Story with untyped media content</title>
+      <description>Short article summary.</description>
+      <link>https://example.com/story/</link>
+      <guid>story-1</guid>
+      <pubDate>Wed, 26 Aug 2026 07:28:46 +0200</pubDate>
+      <media:content url="{image_url}" width="3000" height="2000">
+        <media:description type="plain">Caption</media:description>
+      </media:content>
+    </item>
+  </channel>
+</rss>
+"""
+        fp, entry = self._parse_first_entry(xml)
+        media_content = entry.get("media_content")[0]
+        self.assertEqual(media_content.get("url"), image_url)
+        self.assertIsNone(media_content.get("type"))
+        self.assertIsNone(media_content.get("medium"))
+
+        out = pre_process_story(entry, fp.encoding)
+        self.assertIn(f'<img src="{image_url}" />', out["story_content"])
+
 
 class Test_IconImporter(TestCase):
     """

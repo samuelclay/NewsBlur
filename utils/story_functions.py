@@ -38,6 +38,7 @@ COMMENTS_RE = re.compile("\<!--.*?--\>")
 _IMG_SRC_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
 _CDN_PROXY_HOSTS = {"i0.wp.com", "i1.wp.com", "i2.wp.com", "i3.wp.com"}
 _SIZE_PREFIX_RE = re.compile(r"^[lsm]-")
+_IMAGE_MEDIA_EXTENSIONS = (".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp")
 
 
 def _normalize_image_url_for_dedup(url):
@@ -97,6 +98,18 @@ def _image_url_matches_content(media_url, story_content):
             return True
 
     return False
+
+
+def _media_url_looks_like_image(media_url):
+    if not media_url:
+        return False
+
+    try:
+        path = urllib.parse.urlparse(media_url).path
+    except Exception:
+        path = media_url
+
+    return urllib.parse.unquote(path).lower().endswith(_IMAGE_MEDIA_EXTENSIONS)
 
 
 def midnight_today(now=None):
@@ -291,9 +304,14 @@ def pre_process_story(entry, encoding):
             pass
 
     # Add each media enclosure as a Download link
-    for media_content in chain(entry.get("media_content", [])[:15], entry.get("links", [])[:15]):
+    for media_content, is_media_content in chain(
+        ((media, True) for media in entry.get("media_content", [])[:15]),
+        ((link, False) for link in entry.get("links", [])[:15]),
+    ):
         media_url = media_content.get("url", media_content.get("href", ""))
         media_type = media_content.get("type", media_content.get("medium", ""))
+        if not media_type and is_media_content and _media_url_looks_like_image(media_url):
+            media_type = "image"
         if media_url and media_type and media_url not in entry["story_content"]:
             media_type_name = media_type.split("/")[0]
             if "audio" in media_type and media_url:
