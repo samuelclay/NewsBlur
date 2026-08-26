@@ -16673,7 +16673,7 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(139deg) saturate(10);
 }
 
-.NB-menu-manage .NB-menu-manage-tutorial .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-features .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 18px;
     filter: hue-rotate(321deg) saturate(18);
@@ -20294,190 +20294,446 @@ h5.NB-classifier-section-header {
     margin-top: 8px;
 }
 
-/* ================== */
-/* = Tutorial Modal = */
-/* ================== */
+/* ========================== */
+/* = Features & Tips Modal  = */
+/* ========================== */
 
+/* Prevent double scrollbars - the detail pane scrolls internally */
+#simplemodal-container:has(.NB-modal-features) .simplemodal-wrap {
+    overflow: visible !important;
+}
 
-.NB-modal-tutorial .NB-modal-title .NB-icon {
+.NB-modal-features {
+    padding: 0;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f4 100%);
+}
+
+.NB-modal-features .NB-features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-modal-features .NB-modal-title {
+    margin-bottom: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+}
+
+.NB-modal-features .NB-modal-title .NB-icon {
     background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 28px;
     filter: hue-rotate(321deg) saturate(18);
 }
 
-.NB-modal-tutorial h4 {
-    clear: both;
+.NB-features-header-subtitle {
+    font-size: 13px;
+    color: #6b7280;
 }
 
-.NB-modal-tutorial .NB-page {
-    display: none;
+.NB-features-body {
+    display: flex;
+    height: min(80vh, 780px);
 }
 
-.NB-modal-tutorial .NB-modal-page {
-    float: right;
-    margin-top: 7px;
+/* Left rail: the nine features */
+.NB-features-rail {
+    flex: 0 0 250px;
+    box-sizing: border-box;
+    padding: 14px 10px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.NB-modal-tutorial .NB-page {
-    /*  height: 446px;*/
-    overflow: hidden;
-}
-
-.NB-modal-tutorial .NB-page.NB-page-1 {
-    display: block;
-}
-
-.NB-modal-tutorial .NB-modal-submit .NB-modal-submit-button {
-    float: right;
-}
-
-.NB-modal-tutorial ul {
-    clear: both;
-    list-style: none;
-    padding: 0;
-}
-
-.NB-modal-tutorial li {
-    margin: 0 0 12px;
-    padding: 0;
-    padding-left: 20px;
-    background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 2px;
-}
-
-.NB-modal-tutorial .NB-page-1 .NB-right {
-    padding-right: 12px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view {
-    float: left;
-    width: 33%;
-    text-align: center;
-    margin: 0 0 18px 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0 0 2px 0;
-    padding-right: 16px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title img {
-    vertical-align: middle;
-    margin: -2px 4px 0 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-image {
-    border: 1px solid #303030;
-    width: 180px;
-    height: 150px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view span {
-    font-size: 11px;
-    color: #808080;
-}
-
-.NB-modal-tutorial .NB-page-2 ul {
-    margin-bottom: 0;
-}
-
-.NB-modal-tutorial .NB-page-3 b {
-    display: block;
-    margin: 0 0 8px 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-slider-demo {
-    position: relative;
-}
-
-.NB-modal-tutorial .NB-taskbar-intelligence {
-    left: 64px;
-    right: auto;
-    top: 24px;
-    position: relative;
-}
-
-.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
-    margin-bottom: 12px;
-}
-
-.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
-    margin-right: 24px;
-    border: 1px solid #505050;
-}
-
-.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
-    width: 8px;
-    margin: 0px 8px 2px 0;
-}
-
-.NB-modal-tutorial .NB-page-4 ul li {
-    clear: both;
-    padding: 0 224px 0 20px;
-    margin: 0 0 18px 0;
-}
-
-.NB-modal-tutorial .NB-page-4 img {
-    border: 1px solid #303030;
-    float: right;
-    clear: right;
-    margin: 0 -212px 18px 12px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-group {
-    width: 510px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut {
-    margin: 0 20px 0 0;
-    width: 235px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut:last-child {
-    margin-bottom: 0;
-    margin-right: 0;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter {
-    overflow: hidden;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a {
-    background-color: #E9F4FD;
-    float: left;
-    font-size: 20px;
-    margin: 0px 16px;
-    padding: 12px;
-    text-align: center;
-    width: 40%;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a:hover {
-    background-color: #FAE3DB;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter img {
-    margin: 0 12px 0 0;
-    vertical-align: middle;
+.NB-features-rail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
     border: 1px solid transparent;
-    width: 64px;
-    height: 64px;
+    cursor: pointer;
+    transition: background 0.15s ease;
 }
 
-.NB-modal-tutorial .NB-page-5 h4.NB-tutorial-feedback-header {
-    margin: 24px 0px 12px;
+.NB-features-rail-item:hover {
+    background: rgba(0, 0, 0, 0.04);
 }
 
-.NB-modal-tutorial .NB-page-5 ul,
-.NB-modal-tutorial .NB-page-5 h4 {
-    clear: none;
+.NB-features-rail-item.NB-active {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.NB-features-rail-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
 
-/* ================== */
-/* = Tutorial Modal = */
-/* ================== */
+.NB-features-rail-item.NB-active .NB-features-rail-name {
+    color: #111827;
+    font-weight: 600;
+}
+
+/* Divider between the nine flagship features and the secondary list */
+.NB-features-rail-divider {
+    margin: 12px 10px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+}
+
+/* Secondary rail items are more compact */
+.NB-features-rail-item-secondary {
+    padding: 5px 10px;
+}
+
+.NB-features-rail-item-secondary .NB-features-icon-chip {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+}
+
+.NB-features-rail-item-secondary .NB-features-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.NB-features-rail-item-secondary .NB-features-rail-name {
+    font-size: 12.5px;
+}
+
+/* Each feature owns a color: the active item's border picks it up */
+.NB-features-rail-item-training.NB-active { border-color: #0a7aff; }
+.NB-features-rail-item-ask-ai.NB-active { border-color: #ff6247; }
+.NB-features-rail-item-web-feeds.NB-active { border-color: #9d4de0; }
+.NB-features-rail-item-newsletters.NB-active { border-color: #ec4899; }
+.NB-features-rail-item-search.NB-active { border-color: #14b8a6; }
+.NB-features-rail-item-archive.NB-active { border-color: #f08c00; }
+.NB-features-rail-item-saved.NB-active { border-color: #34a853; }
+.NB-features-rail-item-native-apps.NB-active { border-color: #d9a514; }
+.NB-features-rail-item-clustering.NB-active { border-color: #5a55d2; }
+.NB-features-rail-item-river.NB-active { border-color: #0a7aff; }
+.NB-features-rail-item-notifications.NB-active { border-color: #ff6247; }
+.NB-features-rail-item-text-view.NB-active { border-color: #9d4de0; }
+.NB-features-rail-item-changes.NB-active { border-color: #34a853; }
+.NB-features-rail-item-themes.NB-active { border-color: #d9a514; }
+.NB-features-rail-item-shortcuts.NB-active { border-color: #f08c00; }
+.NB-features-rail-item-integrations.NB-active { border-color: #14b8a6; }
+.NB-features-rail-item-blurblog.NB-active { border-color: #ec4899; }
+.NB-features-rail-item-mcp.NB-active { border-color: #5a55d2; }
+.NB-features-rail-item-cli.NB-active { border-color: #0891b2; }
+
+/* Icon chips: soft tinted squares holding the feature icon */
+.NB-features-icon-chip {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-features-icon-chip-large {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+}
+
+.NB-features-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-features-icon-chip-large .NB-features-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.NB-features-chip-blue { background: rgba(10, 122, 255, 0.12); }
+.NB-features-chip-coral { background: rgba(255, 98, 71, 0.12); }
+.NB-features-chip-purple { background: rgba(157, 77, 224, 0.12); }
+.NB-features-chip-pink { background: rgba(236, 72, 153, 0.12); }
+.NB-features-chip-teal { background: rgba(20, 184, 166, 0.12); }
+.NB-features-chip-orange { background: rgba(240, 140, 0, 0.12); }
+.NB-features-chip-green { background: rgba(52, 168, 83, 0.12); }
+.NB-features-chip-gold { background: rgba(217, 165, 20, 0.14); }
+.NB-features-chip-indigo { background: rgba(90, 85, 210, 0.12); }
+.NB-features-chip-cyan { background: rgba(8, 145, 178, 0.12); }
+
+/* Icon tints match the splash nav Features dropdown (static_pages.css) */
+.NB-features-icon-blue { filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(1.1); }
+.NB-features-icon-coral { filter: invert(50%) sepia(80%) saturate(1200%) hue-rotate(340deg) brightness(1.1); }
+.NB-features-icon-purple { filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(1.1); }
+.NB-features-icon-pink { filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(310deg) brightness(1.1); }
+.NB-features-icon-teal { filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(1.1); }
+.NB-features-icon-orange { filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(1.1); }
+.NB-features-icon-green { filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(90deg) brightness(1.1); }
+.NB-features-icon-gold { filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1); }
+.NB-features-icon-indigo { filter: invert(25%) sepia(90%) saturate(2500%) hue-rotate(235deg) brightness(0.9); }
+.NB-features-icon-cyan { filter: invert(55%) sepia(85%) saturate(1800%) hue-rotate(160deg) brightness(1.1); }
+
+/* Detail pane */
+.NB-features-detail {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px 20px;
+    box-sizing: border-box;
+}
+
+.NB-features-detail-inner {
+    max-width: 700px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.NB-features-detail-inner.NB-features-detail-entering {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-features-detail-inner {
+        transition: none;
+    }
+}
+
+.NB-features-detail-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.NB-features-detail-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.NB-features-detail-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: #111827;
+}
+
+/* The tier badge reuses the features page badge classes (static_pages.css) */
+.NB-features-detail-name-row .NB-feature-section-badge {
+    margin: 0;
+}
+
+.NB-features-detail-subtitle {
+    margin-top: 4px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Screenshots */
+.NB-features-shots {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.NB-features-shots-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.NB-features-shot img {
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+
+.NB-features-shot-caption {
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+/* Sections: How it works, Tips, Questions */
+.NB-features-section {
+    margin-bottom: 20px;
+}
+
+.NB-features-section-title {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+}
+
+.NB-features-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.NB-features-step {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.NB-features-step-number {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transform: translateY(4px);
+}
+
+.NB-features-step-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #374151;
+}
+
+/* Step numerals carry the feature's color */
+.NB-features-accent-blue { color: #0a7aff; background: rgba(10, 122, 255, 0.12); }
+.NB-features-accent-coral { color: #ff6247; background: rgba(255, 98, 71, 0.12); }
+.NB-features-accent-purple { color: #9d4de0; background: rgba(157, 77, 224, 0.12); }
+.NB-features-accent-pink { color: #ec4899; background: rgba(236, 72, 153, 0.12); }
+.NB-features-accent-teal { color: #0d9488; background: rgba(20, 184, 166, 0.12); }
+.NB-features-accent-orange { color: #f08c00; background: rgba(240, 140, 0, 0.12); }
+.NB-features-accent-green { color: #34a853; background: rgba(52, 168, 83, 0.12); }
+.NB-features-accent-gold { color: #b8860b; background: rgba(217, 165, 20, 0.14); }
+.NB-features-accent-indigo { color: #5a55d2; background: rgba(90, 85, 210, 0.12); }
+.NB-features-accent-cyan { color: #0891b2; background: rgba(8, 145, 178, 0.12); }
+
+.NB-features-tips {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.NB-features-tip {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.NB-features-tip-marker {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transform: translateY(-2px);
+}
+
+.NB-features-accent-bg-blue { background: #0a7aff; }
+.NB-features-accent-bg-coral { background: #ff6247; }
+.NB-features-accent-bg-purple { background: #9d4de0; }
+.NB-features-accent-bg-pink { background: #ec4899; }
+.NB-features-accent-bg-teal { background: #14b8a6; }
+.NB-features-accent-bg-orange { background: #f08c00; }
+.NB-features-accent-bg-green { background: #34a853; }
+.NB-features-accent-bg-gold { background: #d9a514; }
+.NB-features-accent-bg-indigo { background: #5a55d2; }
+.NB-features-accent-bg-cyan { background: #0891b2; }
+
+.NB-features-tip-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #374151;
+}
+
+/* Questions */
+.NB-features-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.NB-features-faq-item {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.NB-features-faq-q {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 3px;
+}
+
+.NB-features-faq-a {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Try it */
+.NB-features-try {
+    padding: 4px 0 8px;
+}
+
+.NB-features-try .NB-features-try-button {
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Narrow windows: rail collapses to a horizontal strip of chips */
+@media (max-width: 900px) {
+    .NB-features-body {
+        flex-direction: column;
+        height: min(78vh, 700px);
+    }
+
+    .NB-features-rail {
+        flex: 0 0 auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 10px 14px;
+    }
+
+    .NB-features-rail-item {
+        flex-shrink: 0;
+    }
+
+    .NB-features-rail-name {
+        white-space: nowrap;
+    }
+}
+
+/* =============== */
+/* = Intro Modal = */
+/* =============== */
 
 .NB-modal-intro {}
 

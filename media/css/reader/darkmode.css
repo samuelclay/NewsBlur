@@ -1050,9 +1050,97 @@ color: #a85b40;
     color: #909090;
 }
 
-/* Tips & Tricks: Text color */
-.NB-dark .NB-modal-tutorial {
-    color: #c0c0c0;
+/* Features & Tips modal */
+.NB-dark #simplemodal-container:has(.NB-modal-features) {
+    background-color: #1a1f24;
+    border-color: #374151;
+}
+
+.NB-dark #simplemodal-container:has(.NB-modal-features) .simplemodal-data {
+    background-color: #1a1f24;
+}
+
+.NB-dark .NB-modal-features {
+    background: linear-gradient(180deg, #1a1f24 0%, #151a1e 100%);
+}
+
+.NB-dark .NB-modal-features .NB-features-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-modal-features .NB-modal-title {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-header-subtitle {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-features-rail {
+    border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-features-rail-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Border color comes from the feature's accent (reader.css), same in both themes */
+.NB-dark .NB-features-rail-item.NB-active {
+    background: #252d33;
+}
+
+.NB-dark .NB-features-rail-name {
+    color: #c0c8d0;
+}
+
+.NB-dark .NB-features-rail-item.NB-active .NB-features-rail-name {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-rail-divider {
+    color: #6b7280;
+}
+
+.NB-dark .NB-features-detail-name {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-detail-subtitle,
+.NB-dark .NB-features-faq-a {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-features-step-text,
+.NB-dark .NB-features-tip-text {
+    color: #c0c8d0;
+}
+
+.NB-dark .NB-features-shot img {
+    border-color: #374151;
+}
+
+.NB-dark .NB-features-shot-caption,
+.NB-dark .NB-features-section-title {
+    color: #6b7280;
+}
+
+.NB-dark .NB-features-faq-item {
+    background: #252d33;
+    border-color: #374151;
+}
+
+.NB-dark .NB-features-faq-q {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-rail {
+    scrollbar-color: #374151 transparent;
+}
+
+@media (max-width: 900px) {
+    .NB-dark .NB-features-rail {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
 }
 
 /* Import or upload sites: Text color */
