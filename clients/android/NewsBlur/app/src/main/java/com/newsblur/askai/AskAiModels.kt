@@ -12,8 +12,8 @@ enum class AskAiProvider(
 ) {
     ANTHROPIC(
         rawValue = "anthropic",
-        displayName = "Anthropic Claude Haiku 4.5",
-        shortName = "Haiku 4.5",
+        displayName = "Anthropic Claude Sonnet 5",
+        shortName = "Sonnet 5",
         providerName = "anthropic",
         colorHex = 0xFFD9735F,
     ),
