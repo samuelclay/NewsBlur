@@ -20058,92 +20058,262 @@ h5.NB-classifier-section-header {
     margin: 6px 8px 0;
 }
 
-.NB-modal-email label {
-    float: left;
-    padding-top: 4px;
-    font-weight: bold;
+/* Staggered entrance: title, story card, then each form section rises in turn. */
+@keyframes NB-email-modal-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.NB-modal-email .NB-input,
+.NB-modal-email .NB-modal-title,
+.NB-modal-email .NB-modal-email-story,
+.NB-modal-email>.NB-modal-email-field,
+.NB-modal-email .NB-modal-email-from-container,
+.NB-modal-email .NB-modal-email-cc-wrapper,
+.NB-modal-email .NB-recommend-form {
+    animation: NB-email-modal-enter 0.3s cubic-bezier(0.2, 0, 0, 1) backwards;
+}
+
+.NB-modal-email .NB-modal-email-story {
+    animation-delay: 0.05s;
+}
+
+.NB-modal-email .NB-modal-email-to-container {
+    animation-delay: 0.1s;
+}
+
+.NB-modal-email .NB-modal-email-comments-container {
+    animation-delay: 0.15s;
+}
+
+.NB-modal-email .NB-modal-email-from-container {
+    animation-delay: 0.2s;
+}
+
 .NB-modal-email .NB-modal-email-cc-wrapper {
-    width: 430px;
-    margin-left: 120px;
-    display: block;
-    overflow: hidden;
+    animation-delay: 0.25s;
+}
+
+.NB-modal-email .NB-recommend-form {
+    animation-delay: 0.3s;
+}
+
+/* Story preview card */
+.NB-modal-email .NB-modal-email-story {
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    background-color: #F8F8F6;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .NB-modal-email .NB-modal-email-feed {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
     margin: 0 0 6px;
-    line-height: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #606060;
 }
 
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-image {
-    height: 12px;
-    width: 12px;
+    width: 14px;
+    height: 14px;
+    margin: 0 6px 0 0;
+    border-radius: 3px;
+    float: none;
+    flex-shrink: 0;
 }
 
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-title {
-    margin-left: 0;
+    margin: 0;
     float: none;
-    overflow: visible;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .NB-modal-email .NB-modal-email-story-title {
-    clear: both;
-    margin: 8px 0 4px;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 1.35;
+    color: #303030;
+    text-wrap: balance;
 }
 
 .NB-modal-email .NB-modal-email-story-permalink {
-    color: #808080;
+    display: block;
+    margin: 4px 0 0;
+    color: #909090;
     font-size: 11px;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.NB-modal.NB-modal-email .NB-modal-email-comments-container {
-    padding: 6px 0 0;
+.NB-modal-email .NB-modal-email-story-permalink:hover {
+    color: #607D9C;
+    text-decoration: underline;
+}
+
+/* Form fields: label above input, full-width */
+.NB-modal-email .NB-modal-email-field {
+    margin: 14px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-field label {
+    display: block;
+    margin: 0 0 4px 2px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #808080;
+}
+
+.NB-modal-email .NB-modal-email-label-hint {
+    margin-left: 6px;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #A8A8A8;
+}
+
+.NB-modal-email .NB-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0;
 }
 
 .NB-modal-email .NB-modal-email-comments {
-    width: 550px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     height: 80px;
-    font-size: 14px;
-    color: #404040;
-    line-height: 20px;
-    padding: 8px 0 0 8px;
     margin: 0;
-    border: 1px solid #808080;
-    /* font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; */
+    padding: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    color: #404040;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    resize: vertical;
 }
 
-.NB-modal-email .NB-modal-email-to-container,
+.NB-modal-email .NB-modal-email-comments:focus {
+    border-color: rgba(0, 0, 0, .3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(66, 133, 244, 0.15);
+    outline: none;
+}
+
+/* From name and email sit side-by-side */
 .NB-modal-email .NB-modal-email-from-container {
+    display: flex;
+    gap: 12px;
+    margin: 14px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-from-container .NB-modal-email-field {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+/* CC me: the whole label row is clickable for a generous hit area */
+.NB-modal-email .NB-modal-email-cc-wrapper {
+    margin: 8px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-cc-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 8px 6px 2px;
+    font-size: 13px;
     color: #505050;
-    font-size: 12px;
-    padding: 12px 0 0;
-}
-
-.NB-modal-email .NB-modal-email-to-container {
-    margin: 4px 0;
-}
-
-.NB-modal-email .NB-modal-email-from-container {}
-
-.NB-modal-email form {
-    margin: 24px 0 0;
+    cursor: pointer;
 }
 
 .NB-modal-email .NB-modal-email-cc {
-    float: left;
-    margin: 4px 6px 0 0;
+    margin: 0 8px 0 0;
+    cursor: pointer;
 }
 
-.NB-modal-email .NB-modal-email-explanation {
-    clear: both;
-    color: #505050;
-    font-size: 12px;
+/* Footer: send button and keyboard hint on the left, email client escape hatch on the right */
+.NB-modal-email .NB-recommend-form {
+    margin: 12px 0 0;
+}
+
+.NB-modal-email .NB-modal-submit {
+    display: flex;
+    align-items: center;
     margin: 0;
-    padding: 14px 1px 0;
+    padding: 14px 0 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.NB-modal-email .NB-modal-submit .NB-modal-submit-button {
+    margin: 0;
+    padding: 9px 16px;
+    font-size: 13px;
+}
+
+.NB-modal-email .NB-modal-email-shortcut-hint {
+    margin: 0 0 0 10px;
+    font-size: 11px;
+    color: #B0B0B0;
+}
+
+.NB-modal-email .NB-modal-emailclient {
+    margin-left: auto;
+    padding: 8px 2px;
+    font-size: 12px;
+    color: #607D9C;
+    text-decoration: none;
+}
+
+.NB-modal-email .NB-modal-emailclient:hover {
+    text-decoration: underline;
+}
+
+.NB-modal-email .NB-modal-emailclient::after {
+    content: ' ↗';
+    font-size: 11px;
+}
+
+/* Sent confirmation: keep the button green through its disabled state and give it a soft pop */
+@keyframes NB-email-sent-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.04);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent,
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent.NB-disabled,
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent.NB-disabled:hover {
+    background-color: #217412;
+    background-image: linear-gradient(to top, #216200, #217412);
+    color: #FCFCFC;
+    text-shadow: none;
+    animation: NB-email-sent-pop 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .NB-modal.NB-modal-email .NB-error {

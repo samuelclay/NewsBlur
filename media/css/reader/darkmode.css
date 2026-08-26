@@ -6023,3 +6023,52 @@ a.mention, a.mention-group {
 .NB-dark .NB-story-titles-explainer-body {
     color: #A0A29B;
 }
+
+/* =========================== */
+/* = Send Story by Email Modal = */
+/* =========================== */
+
+.NB-dark .NB-modal-email .NB-modal-email-story {
+    background-color: #252D30;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-feed {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-permalink {
+    color: #808080;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-permalink:hover {
+    color: #8DAAC6;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-field label {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-label-hint {
+    color: #707070;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-cc-label {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-modal-email .NB-modal-submit {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-shortcut-hint {
+    color: #707070;
+}
+
+.NB-dark .NB-modal-email .NB-modal-emailclient {
+    color: #8DAAC6;
+}

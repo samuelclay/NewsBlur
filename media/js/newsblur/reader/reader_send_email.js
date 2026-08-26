@@ -17,7 +17,7 @@ NEWSBLUR.ReaderSendEmail.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
 
     runner: function () {
-        _.bindAll(this, 'save');
+        _.bindAll(this, 'save', 'update_send_button');
         this.options.onOpen = _.bind(function () {
             $('input[name=to]', this.$modal).focus();
         }, this);
@@ -25,6 +25,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         this.open_modal();
         this.existing_emails = $.evalJSON($.cookie('NB:email:addresses')) || [];
         this.autocomplete_emails();
+        this.update_send_button();
 
         if (!NEWSBLUR.Globals.is_authenticated) {
             this.save_callback({ 'code': -1, 'message': 'You must be logged in to send a story over email.' });
@@ -33,16 +34,18 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         $('input, textarea', this.$modal).bind('keydown', 'ctrl+return', this.save);
         $('input, textarea', this.$modal).bind('keydown', 'meta+return', this.save);
+        $('input[name=to]', this.$modal).bind('input keyup change', this.update_send_button);
     },
 
     make_modal: function () {
         var self = this;
+        var is_mac = /Mac|iPhone|iPad/.test(navigator.platform);
 
         this.$modal = $.make('div', { className: 'NB-modal-email NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner' }),
             $.make('div', { className: 'NB-modal-error' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
-            $.make('h2', { className: 'NB-modal-subtitle' }, [
+            $.make('div', { className: 'NB-modal-email-story' }, [
                 (this.feed && $.make('div', { className: 'NB-modal-email-feed' }, [
                     $.favicon_el(this.feed, {
                         image_class: 'NB-modal-feed-image feed_favicon',
@@ -52,57 +55,66 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
                     $.make('div', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title'))
                 ])),
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),
-                $.make('div', { className: 'NB-modal-email-story-permalink' }, this.story.story_permalink)
+                $.make('a', {
+                    className: 'NB-modal-email-story-permalink',
+                    href: this.story.story_permalink,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    title: this.story.story_permalink
+                }, this.story.story_permalink)
             ]),
-            $.make('div', { className: 'NB-modal-email-to-container' }, [
+            $.make('div', { className: 'NB-modal-email-field NB-modal-email-to-container' }, [
                 $.make('label', { 'for': 'NB-send-email-to' }, [
-                    ' Recipient emails: '
+                    'To',
+                    $.make('span', { className: 'NB-modal-email-label-hint' }, 'separate multiple addresses with commas')
                 ]),
                 $.make('input', {
-                    className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value:
-                        ($.cookie('NB:email:to') || "")
+                    className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to',
+                    placeholder: 'recipient@example.com',
+                    value: ($.cookie('NB:email:to') || "")
                 })
             ]),
-            $.make('div', { className: 'NB-modal-email-explanation' }, [
-                "Add an optional comment to send with the story. The story will be sent below your comment."
-            ]),
-            $.make('div', { className: 'NB-modal-email-comments-container' }, [
-                $.make('textarea', { className: 'NB-modal-email-comments' })
+            $.make('div', { className: 'NB-modal-email-field NB-modal-email-comments-container' }, [
+                $.make('label', { 'for': 'NB-send-email-comments' }, [
+                    'Comment',
+                    $.make('span', { className: 'NB-modal-email-label-hint' }, 'optional, appears above the story')
+                ]),
+                $.make('textarea', {
+                    className: 'NB-modal-email-comments', id: 'NB-send-email-comments',
+                    placeholder: 'Add a note to send along with the story…'
+                })
             ]),
             $.make('div', { className: 'NB-modal-email-from-container' }, [
-                $.make('div', [
-                    $.make('label', { 'for': 'NB-send-email-from-name' }, [
-                        ' Your name: '
-                    ]),
+                $.make('div', { className: 'NB-modal-email-field' }, [
+                    $.make('label', { 'for': 'NB-send-email-from-name' }, 'Your name'),
                     $.make('input', { className: 'NB-input NB-modal-email-from', name: 'from_name', id: 'NB-send-email-from-name', value: this.model.preference('full_name') || NEWSBLUR.Globals.username || '' })
                 ]),
-                $.make('div', { style: 'margin-top: 8px' }, [
-                    $.make('label', { 'for': 'NB-send-email-from-email' }, [
-                        ' Your email: '
-                    ]),
+                $.make('div', { className: 'NB-modal-email-field' }, [
+                    $.make('label', { 'for': 'NB-send-email-from-email' }, 'Your email'),
                     $.make('input', { className: 'NB-input NB-modal-email-from', name: 'from_email', id: 'NB-send-email-from-email', value: NEWSBLUR.Globals.email || this.model.preference('email') || '' })
-                ]),
-                $.make('div', { style: 'margin-top: 8px' }, [
-                    $.make('label', { 'for': 'NB-send-email-cc' }, [
-                        ' CC me: '
-                    ]),
-                    $.make('div', { className: 'NB-modal-email-cc-wrapper' }, [
-                        $.make('input', { className: 'NB-modal-email-cc', name: 'email_cc', id: 'NB-send-email-cc', type: "checkbox", checked: this.model.preference('email_cc') }),
-                        $.make('label', { 'for': 'NB-send-email-cc' }, [
-                            "Yes, send me a copy of this email"
-                        ])
-                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-modal-email-cc-wrapper' }, [
+                $.make('label', { className: 'NB-modal-email-cc-label', 'for': 'NB-send-email-cc' }, [
+                    $.make('input', { className: 'NB-modal-email-cc', name: 'email_cc', id: 'NB-send-email-cc', type: "checkbox", checked: this.model.preference('email_cc') }),
+                    "Send me a copy of this email"
                 ])
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Send this story' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
+                    $.make('span', { className: 'NB-modal-email-shortcut-hint' }, (is_mac ? '⌘↩' : 'Ctrl+↩') + ' to send'),
+                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'Open in email client')
                 ]),
                 $.make('div', { className: 'NB-error' })
             ])
         ]);
+    },
+
+    update_send_button: function () {
+        var to = $('input[name=to]', this.$modal).val() || '';
+        var has_recipient = /\S+@\S+\.\S+/.test(to);
+        $('input[type=submit]', this.$modal).toggleClass('NB-disabled', !has_recipient);
     },
 
     save: function (e) {
@@ -114,8 +126,14 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         var $save = $('input[type=submit]', this.$modal);
         var $error = $('.NB-modal-error', this.$modal);
 
+        // Blocked while the recipient field is empty/invalid or a send is already in flight.
+        if ($save.hasClass('NB-disabled')) {
+            $('input[name=to]', this.$modal).focus();
+            return;
+        }
+
         $error.hide();
-        $save.addClass('NB-disabled').val('Sending...');
+        $save.addClass('NB-disabled').val('Sending…');
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         this.model.preference('full_name', from_name);
         this.model.preference('email', from_email);
@@ -139,8 +157,10 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $('.NB-error', this.$modal).html(data.message).fadeIn(500);
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
             $save.removeClass('NB-disabled').val('Send this story');
+            this.update_send_button();
         } else {
-            $save.val('Sent!');
+            $('.NB-modal-loading', this.$modal).removeClass('NB-active');
+            $save.val('✓ Sent').addClass('NB-modal-email-sent');
             $.cookie('NB:email:to', $('input[name=to]', this.$modal).val());
             var emails = $('input[name=to]', this.$modal).val();
             emails = emails.replace(/[, ]+/g, ' ').split(' ');
@@ -148,7 +168,8 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             emails = _.map(emails, function (e) { return _.string.trim(e); });
             emails = _.compact(emails);
             $.cookie('NB:email:addresses', $.toJSON(emails), { expires: 365 * 10 });
-            this.close();
+            // Let the sent state land for a beat before dismissing the modal.
+            _.delay(this.close, 750);
         }
     },
 
@@ -163,6 +184,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $error.html(data.message).fadeIn(500);
         }
         $save.removeClass('NB-disabled').val('Send this story');
+        this.update_send_button();
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
 
         this.resize();
@@ -196,6 +218,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
     },
 
     autocomplete_emails: function () {
+        var self = this;
         var $to = $('input[name=to]', this.$modal);
         var existing_emails = this.existing_emails;
 
@@ -237,6 +260,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
                     // add placeholder to get the comma-and-space at the end
                     terms.push("");
                     this.value = terms.join(", ");
+                    self.update_send_button();
                     return false;
                 }
             });
