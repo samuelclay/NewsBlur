@@ -11,8 +11,8 @@ from google.genai import types as genai_types
 
 from utils import log as logging
 from utils.llm_models import (
-    ANTHROPIC_MODEL,
-    ANTHROPIC_MODEL_DISPLAY,
+    ANTHROPIC_CHAT_MODEL,
+    ANTHROPIC_CHAT_MODEL_DISPLAY,
     GOOGLE_MODEL,
     GOOGLE_MODEL_DISPLAY,
     OPENAI_MODEL,
@@ -388,8 +388,8 @@ PROVIDER_CLASSES = {
 _DEFAULT_MODELS = {
     "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": ANTHROPIC_MODEL,
-        "display_name": ANTHROPIC_MODEL_DISPLAY,
+        "model_id": ANTHROPIC_CHAT_MODEL,
+        "display_name": ANTHROPIC_CHAT_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
@@ -557,14 +557,14 @@ def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, 
     return model["provider_class"](), model_id, thinking_config
 
 
-# Briefing model registry: cheap models optimized for daily briefing generation.
-# Keys are the same stable vendor slugs as the Ask AI registry, and both tiers
-# now point at the same cheap models from utils/llm_models.py.
+# Briefing model registry: keys are the same stable vendor slugs as the Ask AI
+# registry. Anthropic uses the chat tier (Sonnet-class) from utils/llm_models.py
+# to match Ask AI; the other vendors stay on their cheap models.
 _DEFAULT_BRIEFING_MODELS = {
     "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": ANTHROPIC_MODEL,
-        "display_name": ANTHROPIC_MODEL_DISPLAY,
+        "model_id": ANTHROPIC_CHAT_MODEL,
+        "display_name": ANTHROPIC_CHAT_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
