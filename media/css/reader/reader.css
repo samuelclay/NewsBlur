@@ -40236,6 +40236,46 @@ span.NB-briefing-inline-favicon {
     text-align: center;
 }
 
+/* reader.css: Premium Archive callout for non-archive users — shown at the top of
+   the briefing list, in the onboarding pane, and in the preferences popover */
+.NB-briefing-archive-callout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 14px;
+    padding: 10px 14px;
+    border: 1px solid #c4b5fd;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.06);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.NB-briefing-archive-callout:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: #8b5cf6;
+}
+
+.NB-briefing-archive-callout .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-briefing-archive-callout-text {
+    font-size: 12px;
+    color: #505050;
+    line-height: 1.4;
+}
+
 /* reader.css: Upsell banner for free users */
 .NB-briefing-upsell {
     padding: 10px 14px;

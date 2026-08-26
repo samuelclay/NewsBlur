@@ -1,5 +1,27 @@
 NEWSBLUR.utils = {
 
+    // reader_utils.js: True when the user's tier is below Premium Archive, which
+    // means briefings are preview-only: no scheduled auto-generation and only the
+    // first few curated stories per briefing.
+    is_briefing_preview: function () {
+        return !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro;
+    },
+
+    // reader_utils.js: Shared Premium Archive callout shown across the briefing
+    // views (story list banner, onboarding pane, preferences popover) so preview
+    // users know why scheduling and most story links are locked.
+    make_briefing_archive_callout: function (message) {
+        var $callout = $.make('div', { className: 'NB-briefing-archive-callout', role: 'button' }, [
+            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
+            $.make('span', { className: 'NB-briefing-archive-callout-text' }, message)
+        ]);
+        $callout.on('click', function (e) {
+            e.preventDefault();
+            NEWSBLUR.reader.open_premium_upgrade_modal();
+        });
+        return $callout;
+    },
+
     service_name: function (service) {
         switch (service) {
             case 'twitter':
