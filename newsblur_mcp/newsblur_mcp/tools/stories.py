@@ -72,13 +72,10 @@ async def newsblur_get_stories(
 
     Args:
         feed_ids: Specific feed IDs to load stories from. Omit for all feeds.
-        feed_id: Single feed ID to load stories from. Alias for feed_ids.
+        feed_id: Single feed ID. Alias for feed_ids.
         folder: Folder name to load all stories from (e.g. "Tech").
-        read_filter: Filter stories by read/intelligence state. Options:
-            "unread" (default) - only unread stories,
-            "all" - include already-read stories,
-            "focus" - only stories with positive intelligence scores,
-            "starred" - only saved/starred stories.
+        read_filter: "unread" (default), "all", "focus" (positive intelligence
+            scores only), or "starred" (saved stories only).
         include_hidden: Include stories scored negatively by classifiers (default: False).
         query: Full-text search query to filter stories.
         order: Sort order - "newest" or "oldest".
@@ -117,7 +114,13 @@ async def _get_saved_stories(
 
     if page == 1:
         counts_resp = await client.get("/reader/starred_counts")
-        result["tags"] = counts_resp.get("starred_counts", [])
+        # Only surface named tags: the raw starred_counts also carry one row per
+        # feed (with feed_address URLs), which bloats responses without helping agents.
+        result["tags"] = [
+            {"tag": c["tag"], "count": c.get("count", 0)}
+            for c in counts_resp.get("starred_counts", [])
+            if c.get("tag")
+        ]
 
     return result
 
@@ -200,18 +203,17 @@ async def newsblur_get_read_stories(
     """Browse your reading history -- stories you've already read.
 
     Use this to find a story you read recently but can't quite remember.
-    Describe what you recall and use the query parameter, or browse
-    chronologically. Combine with feed or folder filters to narrow scope.
+    Note: query search only covers your ~1000 most recent reads; for older
+    pages try newsblur_search_archive or newsblur_search_stories.
 
     Args:
         feed_ids: Limit to stories from specific feed IDs.
         folder: Limit to stories from feeds in this folder (e.g. "Tech").
-        query: Full-text search within read stories (premium feature).
+        query: Full-text search within recent read stories (premium feature).
         order: Sort order - "newest" (default) or "oldest".
         page: Page number for pagination (starts at 1).
         limit: Stories per page (default 12, max 50).
-        date_filter_start: Start date for date range filter (YYYY-MM-DD, Archive tier).
-        date_filter_end: End date for date range filter (YYYY-MM-DD, Archive tier).
+        date_filter_start / date_filter_end: Date range (YYYY-MM-DD, Archive tier).
     """
     client = get_client()
     try:

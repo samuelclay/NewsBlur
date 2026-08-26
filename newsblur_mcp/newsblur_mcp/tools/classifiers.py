@@ -80,27 +80,17 @@ async def newsblur_train_classifier(
 ) -> dict:
     """Train the intelligence classifier to like, dislike, or super-dislike stories.
 
-    Training affects how future stories are scored: liked attributes
-    boost stories (green/focus), disliked attributes suppress them (red/hidden).
-    Super-dislike is the strongest filter — it overrides all positive classifiers,
-    guaranteeing the story is hidden regardless of how many likes match.
+    Liked attributes boost future stories (green/focus), disliked attributes
+    suppress them (red/hidden), and super-dislike always hides a story,
+    overriding every like.
 
     Args:
         feed_id: Feed ID to train on.
-        like_title: Title keywords to like (boost stories containing these).
-        dislike_title: Title keywords to dislike (suppress stories containing these).
-        super_dislike_title: Title keywords to super-dislike (always hide, overrides all likes).
-        like_author: Author names to like.
-        dislike_author: Author names to dislike.
-        super_dislike_author: Author names to super-dislike (always hide, overrides all likes).
-        like_tag: Story tags to like.
-        dislike_tag: Story tags to dislike.
-        super_dislike_tag: Story tags to super-dislike (always hide, overrides all likes).
-        like_text: Content keywords to like (boost stories containing these in body text).
-        dislike_text: Content keywords to dislike (suppress stories containing these in body text).
-        super_dislike_text: Content keywords to super-dislike (always hide, overrides all likes).
-        like_feed: Like the entire feed (boost all its stories).
-        dislike_feed: Dislike the entire feed (suppress all its stories).
+        like_title / dislike_title / super_dislike_title: Title keywords.
+        like_author / dislike_author / super_dislike_author: Author names.
+        like_tag / dislike_tag / super_dislike_tag: Story tags.
+        like_text / dislike_text / super_dislike_text: Body text keywords.
+        like_feed / dislike_feed: Like or dislike the entire feed.
     """
     client = get_client()
     try:
