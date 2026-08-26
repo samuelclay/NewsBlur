@@ -152,7 +152,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
-        this.$el.html($.make('div', [
+        var sections = [
             this.make_section('Auto-generate', 'Automatically generate briefings on schedule', [
                 this.make_control('enabled', [
                     ['true', 'On'],
@@ -220,7 +220,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             this.make_keywords_ui(),
             this.make_model_section(),
             this.make_notification_section()
-        ]));
+        ];
+
+        // briefing_preferences_popover.js: Non-archive users can set a schedule here,
+        // but the generation task only runs for Premium Archive/Pro accounts. Make
+        // that explicit at the top so the settings don't look silently broken.
+        if (NEWSBLUR.utils.is_briefing_preview()) {
+            sections.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
+                "Scheduled briefings require a Premium Archive subscription. On your plan, " +
+                "briefings are only generated when you use the Generate button."
+            ));
+        }
+
+        this.$el.html($.make('div', sections));
 
         this.update_schedule_controls();
         this.update_story_count_labels();

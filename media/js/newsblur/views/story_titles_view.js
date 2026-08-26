@@ -167,6 +167,16 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         $groups = this._render_briefing_groups(briefings, data);
 
+        // story_titles_view.js: Banner for non-archive users explaining that briefings
+        // are preview-only on their plan — no schedule, and only the first few stories
+        // of each briefing are unlocked.
+        if (data.is_preview) {
+            $groups.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
+                "You're previewing Daily Briefings with the first 3 stories of each briefing. " +
+                "Upgrade to Premium Archive to unlock every story and automatic briefings on your schedule."
+            ));
+        }
+
         if (!briefings.length) {
             var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
                 $.make('div', { className: 'NB-briefing-empty-icon' }),

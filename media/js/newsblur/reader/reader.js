@@ -2365,6 +2365,13 @@
                     _.delay(function () {
                         story.set('selected', true);
                     }, 100);
+                } else if (data.is_preview) {
+                    // reader.js: The linked story is beyond the 3-story preview that
+                    // non-archive users receive, so there's nothing to select. Show
+                    // the Premium Archive upgrade instead of silently doing nothing.
+                    _.delay(function () {
+                        NEWSBLUR.reader.open_premium_upgrade_modal();
+                    }, 100);
                 }
             }
         },

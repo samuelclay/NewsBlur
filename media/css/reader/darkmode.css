@@ -5817,6 +5817,21 @@ a.mention, a.mention-group {
 }
 
 /* darkmode.css: Upsell banner */
+/* darkmode.css: Premium Archive callout for non-archive users */
+.NB-dark .NB-briefing-archive-callout {
+    border-color: #4c4380;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.NB-dark .NB-briefing-archive-callout:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: #6366f1;
+}
+
+.NB-dark .NB-briefing-archive-callout-text {
+    color: #b0b0b0;
+}
+
 .NB-dark .NB-briefing-upsell {
     border-top-color: #303030;
 }

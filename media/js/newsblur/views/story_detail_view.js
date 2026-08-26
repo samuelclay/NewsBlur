@@ -1216,6 +1216,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     return false;
                 }
             }
+            // story_detail_view.js: Non-archive users only receive the first 3 curated
+            // stories per briefing, so the rest of the briefing's links have no story
+            // to select. Show the Premium Archive upgrade instead of a dead new tab.
+            if (NEWSBLUR.utils.is_briefing_preview()) {
+                NEWSBLUR.reader.open_premium_upgrade_modal();
+                return false;
+            }
         }
 
         var href = $target.attr('href');
