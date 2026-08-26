@@ -7741,6 +7741,7 @@ body {
 
 .NB-discover-load-more.NB-modal-submit-button {
     margin: 12px 0 0;
+    text-align: center;
 }
 
 .NB-discover-retry.NB-modal-submit-button,
@@ -40263,11 +40264,11 @@ span.NB-briefing-inline-favicon {
     text-align: center;
 }
 
-/* reader.css: Premium Archive callout for non-archive users — shown at the top of
-   the briefing list, in the onboarding pane, and in the preferences popover. The
-   badge sits on the first line of left-aligned text so the strip stays light and
-   wraps cleanly instead of centering into ragged lines. */
-.NB-briefing-archive-callout {
+/* reader.css: Premium Archive callout for non-archive users — used by the briefing
+   views and the related stories upsell. The badge sits on the first line of
+   left-aligned text so the strip stays light and wraps cleanly instead of
+   centering into ragged lines. */
+.NB-archive-callout {
     display: flex;
     align-items: baseline;
     gap: 8px;
@@ -40280,12 +40281,12 @@ span.NB-briefing-inline-favicon {
     transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.NB-briefing-archive-callout:hover {
+.NB-archive-callout:hover {
     background: rgba(99, 102, 241, 0.1);
     border-color: #8b5cf6;
 }
 
-.NB-briefing-archive-callout .NB-archive-badge {
+.NB-archive-callout .NB-archive-badge {
     display: inline-block;
     flex-shrink: 0;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -40299,7 +40300,7 @@ span.NB-briefing-inline-favicon {
     white-space: nowrap;
 }
 
-.NB-briefing-archive-callout-text {
+.NB-archive-callout-text {
     font-size: 11px;
     line-height: 1.45;
     color: #606060;

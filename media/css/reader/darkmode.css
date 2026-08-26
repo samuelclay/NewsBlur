@@ -5826,17 +5826,17 @@ a.mention, a.mention-group {
 }
 
 /* darkmode.css: Premium Archive callout for non-archive users */
-.NB-dark .NB-briefing-archive-callout {
+.NB-dark .NB-archive-callout {
     border-color: rgba(99, 102, 241, 0.4);
     background: rgba(99, 102, 241, 0.08);
 }
 
-.NB-dark .NB-briefing-archive-callout:hover {
+.NB-dark .NB-archive-callout:hover {
     background: rgba(99, 102, 241, 0.16);
     border-color: #6366f1;
 }
 
-.NB-dark .NB-briefing-archive-callout-text {
+.NB-dark .NB-archive-callout-text {
     color: #a0a0a0;
 }
 
