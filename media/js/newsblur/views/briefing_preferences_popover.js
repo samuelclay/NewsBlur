@@ -225,10 +225,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // briefing_preferences_popover.js: Non-archive users can set a schedule here,
         // but the generation task only runs for Premium Archive/Pro accounts. Make
         // that explicit at the top so the settings don't look silently broken.
+        // Close the popover before opening the upgrade modal so it isn't hidden
+        // behind the popover overlay.
         if (NEWSBLUR.utils.is_briefing_preview()) {
             sections.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
                 "Scheduled briefings require a Premium Archive subscription. On your plan, " +
-                "briefings are only generated when you use the Generate button."
+                "briefings are only generated when you use the Generate button.",
+                {
+                    on_upgrade: _.bind(function () {
+                        this.close(function () {
+                            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
+                        });
+                    }, this)
+                }
             ));
         }
 

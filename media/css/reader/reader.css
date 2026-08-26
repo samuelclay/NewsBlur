@@ -22804,6 +22804,27 @@ h5.NB-classifier-section-header {
     border-bottom: none;
 }
 
+/* reader.css: Highlight the feature that prompted the upgrade modal (e.g. opening
+   it from a briefing callout highlights the Daily Briefing line). The box-shadow
+   spread acts as horizontal padding so the pill doesn't shift the text or icon. */
+.NB-premium-tier-features li.NB-premium-feature-highlighted {
+    background: rgba(139, 92, 246, 0.16);
+    border-radius: 6px;
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.16);
+    animation: NB-premium-feature-pulse 1.6s ease-in-out 2;
+}
+
+@keyframes NB-premium-feature-pulse {
+    0%, 100% {
+        background: rgba(139, 92, 246, 0.16);
+        box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.16);
+    }
+    50% {
+        background: rgba(139, 92, 246, 0.32);
+        box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.32);
+    }
+}
+
 /* Feature bullet icons */
 .NB-premium-tier-features li .NB-premium-bullet-image {
     position: absolute;
@@ -22984,6 +23005,12 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/nouns/world.svg');
     filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
     /* red */
+}
+
+.NB-premium-tier-features-archive li.NB-18 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
+    filter: invert(25%) sepia(70%) saturate(2500%) hue-rotate(230deg) brightness(90%) contrast(105%);
+    /* indigo */
 }
 
 /* Pro tier icons with individual vivid colors */
@@ -40237,90 +40264,46 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css: Premium Archive callout for non-archive users — shown at the top of
-   the briefing list, in the onboarding pane, and in the preferences popover */
+   the briefing list, in the onboarding pane, and in the preferences popover. The
+   badge sits on the first line of left-aligned text so the strip stays light and
+   wraps cleanly instead of centering into ragged lines. */
 .NB-briefing-archive-callout {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 12px 14px;
-    padding: 10px 14px;
-    border: 1px solid #c4b5fd;
-    border-radius: 8px;
-    background: rgba(99, 102, 241, 0.06);
+    align-items: baseline;
+    gap: 8px;
+    margin: 8px 14px;
+    padding: 8px 12px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 6px;
+    background: rgba(99, 102, 241, 0.04);
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .NB-briefing-archive-callout:hover {
-    background: rgba(99, 102, 241, 0.12);
+    background: rgba(99, 102, 241, 0.1);
     border-color: #8b5cf6;
 }
 
 .NB-briefing-archive-callout .NB-archive-badge {
     display: inline-block;
+    flex-shrink: 0;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: 4px;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .NB-briefing-archive-callout-text {
-    font-size: 12px;
-    color: #505050;
-    line-height: 1.4;
-}
-
-/* reader.css: Upsell banner for free users */
-.NB-briefing-upsell {
-    padding: 10px 14px;
-    border-top: 1px solid #E0DDD4;
-    display: flex;
-    justify-content: center;
-}
-
-.NB-briefing-upsell-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    padding: 4px 10px 4px 4px;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    background: #fafafa;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
-    flex: 0 0 auto;
-}
-
-.NB-briefing-upsell-link:hover {
-    background: rgba(99, 102, 241, 0.06);
-    border-color: #c4b5fd;
-}
-
-.NB-briefing-upsell-link .NB-archive-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    color: white;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.NB-briefing-upsell-text {
     font-size: 11px;
+    line-height: 1.45;
     color: #606060;
-    line-height: 1.3;
+    text-align: left;
 }
 
 /* reader.css: Briefing summary story — the AI-generated overview at the top */

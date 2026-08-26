@@ -9,15 +9,22 @@ NEWSBLUR.utils = {
 
     // reader_utils.js: Shared Premium Archive callout shown across the briefing
     // views (story list banner, onboarding pane, preferences popover) so preview
-    // users know why scheduling and most story links are locked.
-    make_briefing_archive_callout: function (message) {
+    // users know why scheduling and most story links are locked. Pass
+    // options.on_upgrade to run custom logic (e.g. closing a popover) before
+    // showing the upgrade modal.
+    make_briefing_archive_callout: function (message, options) {
+        options = options || {};
         var $callout = $.make('div', { className: 'NB-briefing-archive-callout', role: 'button' }, [
             $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
             $.make('span', { className: 'NB-briefing-archive-callout-text' }, message)
         ]);
         $callout.on('click', function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            if (options.on_upgrade) {
+                options.on_upgrade();
+            } else {
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
+            }
         });
         return $callout;
     },
