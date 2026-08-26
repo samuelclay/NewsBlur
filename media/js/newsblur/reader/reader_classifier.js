@@ -3702,8 +3702,20 @@ var classifier_prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-classifier-premium-link' }, function ($t, $p) {
             e.preventDefault();
+            // reader_classifier.js: Highlight the tier feature line matching the
+            // notice this link sits in (regex, scope, notifications, or full-text).
+            var highlight_feature = null;
+            if ($t.closest('.NB-classifier-pro-notice').length) {
+                highlight_feature = 'regex';
+            } else if ($t.closest('.NB-classifier-scope-notice').length) {
+                highlight_feature = 'training-scope';
+            } else if ($t.closest('.NB-classifier-notif-notice').length) {
+                highlight_feature = 'notifications';
+            } else if ($t.closest('.NB-classifier-archive-notice').length) {
+                highlight_feature = 'text-training';
+            }
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
             });
         });
 
@@ -3832,7 +3844,7 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-manage-scope-pro-banner a' }, function ($t) {
             e.preventDefault();
             $.modal.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'training-scope' });
             });
         });
 

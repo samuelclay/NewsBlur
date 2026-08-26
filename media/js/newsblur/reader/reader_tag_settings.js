@@ -323,7 +323,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         $.targetIs(e, { tagSelector: '.NB-premium-only-link' }, function ($t, $p) {
             e.preventDefault();
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'saved-rss' });
             });
         });
     }

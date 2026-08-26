@@ -697,7 +697,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     open_clustering_upgrade: function (e) {
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.reader.open_premium_upgrade_modal();
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'clustering' });
     },
 
     show_clustering_tooltip: function (e) {

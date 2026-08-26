@@ -153,23 +153,26 @@ def render_account_module(context):
 def render_premium_archive_module(context):
     user = get_user(context["user"])
 
+    # utils_tags.py: Each reason pairs with the NB-feature-<slug> line in the premium
+    # upgrade modal's archive tier so the button can highlight the matching feature.
     reasons = [
-        "Stories can stay unread for however long you choose",
-        "Every story from every site is archived and searchable forever",
-        "Feeds that support paging are back-filled in for a complete archive",
-        "Train stories on full text content, not just titles and tags",
-        "Export trained stories from folders as RSS feeds",
-        "Choose when stories are automatically marked as read",
-        "Ask AI questions about stories",
-        "Customize auto-read settings by site or folder",
-        "Filter stories by date range to find exactly what you need",
+        ("Stories can stay unread for however long you choose", "stay-unread"),
+        ("Every story from every site is archived and searchable forever", "archive-forever"),
+        ("Feeds that support paging are back-filled in for a complete archive", "backfill"),
+        ("Train stories on full text content, not just titles and tags", "text-training"),
+        ("Export trained stories from folders as RSS feeds", "export-folders"),
+        ("Choose when stories are automatically marked as read", "choose-mark-read"),
+        ("Ask AI questions about stories", "ask-ai"),
+        ("Customize auto-read settings by site or folder", "auto-mark-read"),
+        ("Filter stories by date range to find exactly what you need", "date-filter"),
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 
     return {
         "user": user,
         "user_profile": user.profile,
-        "reason": reasons[rand_int],
+        "reason": reasons[rand_int][0],
+        "feature": reasons[rand_int][1],
         "rand_int": rand_int + 1 + 1,
     }
 

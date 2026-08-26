@@ -8950,7 +8950,10 @@
             $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_premium_upgrade_modal();
+                    // reader.js: The "Reason to upgrade" module button carries the
+                    // feature slug for its rotating reason, so the upgrade modal
+                    // highlights the matching archive tier line.
+                    self.open_premium_upgrade_modal({ highlight_feature: $t.data('highlight-feature') });
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-trial-offer-button' }, function ($t, $p) {
