@@ -393,8 +393,11 @@ _DEFAULT_MODELS = {
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
+        # Claude 5 models reject the old {"type": "enabled", "budget_tokens": N}
+        # shape with a 400 — adaptive is the only on-mode, with depth controlled
+        # by output_config.effort (defaults to "high" when omitted).
         "thinking_config": {
-            "thinking": {"type": "enabled", "budget_tokens": 10000},
+            "thinking": {"type": "adaptive"},
             "max_tokens": 16384,
         },
     },
