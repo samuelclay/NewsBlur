@@ -16,15 +16,12 @@ from celery import shared_task
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from apps.archive_assistant.models import (
-    MArchiveAssistantUsage,
-    MArchiveConversation,
-    MArchiveQuery,
-)
+from apps.archive_assistant.models import MArchiveAssistantUsage, MArchiveConversation, MArchiveQuery
 from apps.archive_assistant.prompts import get_system_prompt
 from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_ARCHIVE_MODEL
 
 # Character limit for non-premium users before truncation
 FREE_RESPONSE_CHAR_LIMIT = 300
@@ -37,7 +34,7 @@ def get_redis_pubsub_connection():
 
 @shared_task(name="archive-assistant-query")
 def process_archive_query(
-    user_id, conversation_id, query_id, query_text, model="claude-sonnet-4-5", is_premium_archive=True
+    user_id, conversation_id, query_id, query_text, model=ANTHROPIC_ARCHIVE_MODEL, is_premium_archive=True
 ):
     """
     Process an Archive Assistant query using Claude with tools.

@@ -926,7 +926,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     make_model_section: function () {
-        var current_model = this.prefs.briefing_model || 'haiku';
+        var current_model = this.prefs.briefing_model || 'anthropic';
         var models = this.prefs.briefing_models || [];
 
         var items = _.map(models, function (m) {

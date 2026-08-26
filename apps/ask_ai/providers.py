@@ -10,6 +10,16 @@ from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 
 from utils import log as logging
+from utils.llm_models import (
+    ANTHROPIC_MODEL,
+    ANTHROPIC_MODEL_DISPLAY,
+    GOOGLE_MODEL,
+    GOOGLE_MODEL_DISPLAY,
+    OPENAI_MODEL,
+    OPENAI_MODEL_DISPLAY,
+    XAI_MODEL,
+    XAI_MODEL_DISPLAY,
+)
 
 
 def _is_placeholder(key):
@@ -372,13 +382,14 @@ PROVIDER_CLASSES = {
 }
 
 # Model registry: single source of truth for all model configuration.
-# Each entry contains everything needed by both backend and frontend.
-# To add/update a model, only change this dict — frontend dropdowns are populated from it.
+# Registry keys are stable vendor slugs so model upgrades never rename keys —
+# to upgrade a model, only change the IDs/display names in utils/llm_models.py.
+# Frontend dropdowns are populated from this dict.
 _DEFAULT_MODELS = {
-    "opus": {
+    "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": "claude-opus-4-6",
-        "display_name": "Claude Opus 4.6",
+        "model_id": ANTHROPIC_MODEL,
+        "display_name": ANTHROPIC_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
@@ -387,10 +398,10 @@ _DEFAULT_MODELS = {
             "max_tokens": 16384,
         },
     },
-    "gpt-5.2": {
+    "openai": {
         "provider_class": OpenAIProvider,
-        "model_id": "gpt-5.2",
-        "display_name": "GPT 5.2",
+        "model_id": OPENAI_MODEL,
+        "display_name": OPENAI_MODEL_DISPLAY,
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
@@ -398,10 +409,10 @@ _DEFAULT_MODELS = {
             "reasoning_effort": "high",
         },
     },
-    "gemini-3": {
+    "google": {
         "provider_class": GeminiProvider,
-        "model_id": "gemini-3-pro-preview",
-        "display_name": "Gemini 3 Pro",
+        "model_id": GOOGLE_MODEL,
+        "display_name": GOOGLE_MODEL_DISPLAY,
         "vendor": "google",
         "vendor_display": "Google",
         "order": 3,
@@ -409,16 +420,38 @@ _DEFAULT_MODELS = {
             "thinking_budget": -1,
         },
     },
-    "grok-4.1": {
+    "xai": {
         "provider_class": XAIProvider,
-        "model_id": "grok-4-1-fast-non-reasoning",
-        "display_name": "Grok 4.1 Fast",
+        "model_id": XAI_MODEL,
+        "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
         "vendor_display": "xAI",
         "order": 4,
-        "thinking_model_id": "grok-4-1-fast-reasoning",
     },
 }
+
+# Legacy registry keys from before keys became vendor slugs (Aug 2026). Old
+# mobile clients and stored user preferences still send these — resolve them
+# instead of falling back to the default model. Never reuse these as new keys.
+MODEL_ALIASES = {
+    # Legacy Ask AI keys
+    "opus": "anthropic",
+    "gpt-5.2": "openai",
+    "gemini-3": "google",
+    "grok-4.1": "xai",
+    # Legacy briefing keys
+    "haiku": "anthropic",
+    "gpt-5-mini": "openai",
+    "gemini-flash-lite": "google",
+    "grok-4.1-fast": "xai",
+}
+
+
+def _resolve_key(model_name, registry):
+    """Resolve a model key against a registry, mapping legacy keys via MODEL_ALIASES."""
+    if model_name in registry:
+        return model_name
+    return MODEL_ALIASES.get(model_name, model_name)
 
 
 def _load_models():
@@ -462,15 +495,23 @@ def _load_models():
 
 MODELS = _load_models()
 VALID_MODELS = list(MODELS.keys())
-DEFAULT_MODEL = getattr(settings, "ASK_AI_MODEL", "opus")
+DEFAULT_MODEL = _resolve_key(getattr(settings, "ASK_AI_MODEL", "anthropic"), MODELS)
 
 # MODEL_VENDORS includes both current and historical models for metrics tracking.
 # When retiring a model, remove it from MODELS above but keep it here.
 MODEL_VENDORS = {
     **{key: m["vendor"] for key, m in MODELS.items()},
     # Historical models (kept for metrics)
+    "opus": "anthropic",
+    "haiku": "anthropic",
+    "gpt-5.2": "openai",
+    "gpt-5-mini": "openai",
     "gpt-5.1": "openai",
     "gpt-4.1": "openai",
+    "gemini-3": "google",
+    "gemini-flash-lite": "google",
+    "grok-4.1": "xai",
+    "grok-4.1-fast": "xai",
     "grok-4": "xai",
 }
 
@@ -502,6 +543,7 @@ def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, 
     Returns:
         Tuple of (provider_instance, model_id, thinking_config)
     """
+    model_name = _resolve_key(model_name, MODELS)
     if model_name not in MODELS:
         model_name = DEFAULT_MODEL
 
@@ -516,36 +558,37 @@ def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, 
 
 
 # Briefing model registry: cheap models optimized for daily briefing generation.
-# Separate from the Ask AI models (which use flagship models).
+# Keys are the same stable vendor slugs as the Ask AI registry, and both tiers
+# now point at the same cheap models from utils/llm_models.py.
 _DEFAULT_BRIEFING_MODELS = {
-    "haiku": {
+    "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": "claude-haiku-4-5",
-        "display_name": "Claude Haiku",
+        "model_id": ANTHROPIC_MODEL,
+        "display_name": ANTHROPIC_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
     },
-    "gpt-5-mini": {
+    "openai": {
         "provider_class": OpenAIProvider,
-        "model_id": "gpt-5-mini",
-        "display_name": "GPT 5 Mini",
+        "model_id": OPENAI_MODEL,
+        "display_name": OPENAI_MODEL_DISPLAY,
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
     },
-    "gemini-flash-lite": {
+    "google": {
         "provider_class": GeminiProvider,
-        "model_id": "gemini-2.5-flash-lite",
-        "display_name": "Gemini Flash Lite",
+        "model_id": GOOGLE_MODEL,
+        "display_name": GOOGLE_MODEL_DISPLAY,
         "vendor": "google",
         "vendor_display": "Google",
         "order": 3,
     },
-    "grok-4.1-fast": {
+    "xai": {
         "provider_class": XAIProvider,
-        "model_id": "grok-4-1-fast-non-reasoning",
-        "display_name": "Grok 4.1 Fast",
+        "model_id": XAI_MODEL,
+        "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
         "vendor_display": "xAI",
         "order": 4,
@@ -589,7 +632,19 @@ def _load_briefing_models():
 
 BRIEFING_MODELS = _load_briefing_models()
 VALID_BRIEFING_MODELS = list(BRIEFING_MODELS.keys())
-DEFAULT_BRIEFING_MODEL = getattr(settings, "BRIEFING_MODEL", "haiku")
+DEFAULT_BRIEFING_MODEL = _resolve_key(getattr(settings, "BRIEFING_MODEL", "anthropic"), BRIEFING_MODELS)
+
+
+def resolve_briefing_model_key(model_name: Optional[str]) -> Optional[str]:
+    """Resolve a stored/POSTed briefing model key to a current registry key.
+
+    Maps legacy keys ("haiku") to vendor keys ("anthropic"). Returns None when
+    the key isn't recognized so callers can fall back to the server default.
+    """
+    if not model_name:
+        return None
+    model_name = _resolve_key(model_name, BRIEFING_MODELS)
+    return model_name if model_name in BRIEFING_MODELS else None
 
 
 def get_briefing_models_for_frontend() -> list:
@@ -613,7 +668,6 @@ def get_briefing_models_for_frontend() -> list:
 
 def get_briefing_provider(model_name: str) -> tuple[LLMProvider, str]:
     """Get a provider instance and model ID for the given briefing model name."""
-    if not model_name or model_name not in BRIEFING_MODELS:
-        model_name = DEFAULT_BRIEFING_MODEL
+    model_name = resolve_briefing_model_key(model_name) or DEFAULT_BRIEFING_MODEL
     model = BRIEFING_MODELS[model_name]
     return model["provider_class"](), model["model_id"]

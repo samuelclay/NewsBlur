@@ -26,7 +26,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.question_id = options.question_id;
         this.custom_question = options.custom_question;
         this.transcription_error = options.transcription_error;
-        this.model = options.model || 'opus';  // Default to opus
+        this.model = this.normalize_model_key(options.model) || 'anthropic';  // Default to the server's default model key
         this.thinking = options.thinking || false;
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
@@ -908,13 +908,35 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
     },
 
+    // Legacy model keys from before keys became vendor slugs (Aug 2026).
+    // Cached responses and saved preferences may still carry them.
+    LEGACY_MODEL_KEYS: {
+        'opus': 'anthropic',
+        'haiku': 'anthropic',
+        'gpt-5.2': 'openai',
+        'gpt-5-mini': 'openai',
+        'gemini-3': 'google',
+        'gemini-flash-lite': 'google',
+        'grok-4.1': 'xai',
+        'grok-4.1-fast': 'xai'
+    },
+
+    normalize_model_key: function (model) {
+        if (!model) return model;
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        if (_.find(models, function (m) { return m.key === model; })) return model;
+        return this.LEGACY_MODEL_KEYS[model] || model;
+    },
+
     get_model_display_name: function (model) {
+        model = this.normalize_model_key(model);
         var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
         var match = _.find(models, function (m) { return m.key === model; });
         return (match && match.display_name) || model;
     },
 
     get_model_provider: function (model) {
+        model = this.normalize_model_key(model);
         var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
         var match = _.find(models, function (m) { return m.key === model; });
         return (match && match.vendor) || 'unknown';

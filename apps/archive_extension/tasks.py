@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 from utils import json_functions as json
 from utils import log as logging
+from utils.llm_models import ANTHROPIC_MODEL
 
 
 def _publish_category_update(user_id, archive_id, categories):
@@ -212,7 +213,7 @@ def _categorize_single_archive(archive, user_categories=None):
         )
 
         response = client.messages.create(
-            model="claude-haiku-4-5",
+            model=ANTHROPIC_MODEL,
             max_tokens=100,
             messages=[{"role": "user", "content": prompt}],
         )
