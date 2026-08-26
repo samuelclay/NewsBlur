@@ -211,17 +211,14 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 $.make('div', { className: 'NB-fleuron' })
                             ]) : '')
                     ])),
+                    // discover_stories_view.js: Compact archive callout instead of a second
+                    // heavyweight green button under "Show more related stories".
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
-                        $.make('div', { className: 'NB-discover-empty' }, [
-                            this.render_discover_indexed_non_premium_message(),
-                            $.make('br'),
-                            'All related stories are available to Premium Archive subscribers.',
-                            $.make('div', {
-                                className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
-                            }, [
-                                'Upgrade to Premium Archive'
-                            ])
-                        ])
+                        NEWSBLUR.utils.make_archive_callout(
+                            this.render_discover_indexed_non_premium_message() +
+                            ' Upgrade to see related stories from your entire archive.',
+                            { highlight_feature: 'discover' }
+                        )
                     )
                 ])
             ])
@@ -444,7 +441,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     show_premium_upgrade_modal: function (e) {
         e.preventDefault();
-        NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'discover' });
     },
 
     show_error: function () {

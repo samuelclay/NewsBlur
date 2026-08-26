@@ -228,7 +228,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // Close the popover before opening the upgrade modal so it isn't hidden
         // behind the popover overlay.
         if (NEWSBLUR.utils.is_briefing_preview()) {
-            sections.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
+            sections.unshift(NEWSBLUR.utils.make_archive_callout(
                 "Scheduled briefings require a Premium Archive subscription. On your plan, " +
                 "briefings are only generated when you use the Generate button.",
                 {

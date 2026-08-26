@@ -173,9 +173,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         // are preview-only on their plan — no schedule, and only the first few stories
         // of each briefing are unlocked.
         if (data.is_preview) {
-            $groups.unshift(NEWSBLUR.utils.make_briefing_archive_callout(
+            $groups.unshift(NEWSBLUR.utils.make_archive_callout(
                 "You're previewing the first 3 stories of each briefing. " +
-                "Upgrade to unlock every story and automatic briefings on your schedule."
+                "Upgrade to unlock every story and automatic briefings on your schedule.",
+                { highlight_feature: 'briefing' }
             ));
         }
 
