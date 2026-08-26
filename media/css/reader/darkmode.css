@@ -832,17 +832,34 @@ color: #a85b40;
     border-color: #444;
 }
 
-/* Goodies & Extras: Section "blobs" */
-.NB-dark .NB-goodies-group,
-.NB-dark .NB-modal-goodies .NB-goodies-title {
-    color: #c0c0c0;
-    text-shadow: none;
+/* Goodies & Extras: official app hero card */
+.NB-dark .NB-modal-goodies .NB-goodies-hero {
     background-color: #303739;
+    border-color: #3E4649;
 }
 
-/* Goodies & Extras: Section subtitle text*/
-.NB-dark .NB-modal-goodies .NB-goodies-subtitle {
-    color: gray;
+.NB-dark .NB-modal-goodies .NB-goodies-hero-name,
+.NB-dark .NB-modal-goodies .NB-goodies-app-name {
+    color: #c0c0c0;
+    text-shadow: none;
+}
+
+.NB-dark .NB-modal-goodies .NB-goodies-hero-meta,
+.NB-dark .NB-modal-goodies .NB-goodies-app-meta,
+.NB-dark .NB-modal-goodies .NB-goodies-section-title {
+    color: #8a9294;
+}
+
+/* Goodies & Extras: app cards and screenshot borders */
+.NB-dark .NB-modal-goodies .NB-goodies-app,
+.NB-dark .NB-modal-goodies .NB-goodies-tip {
+    background-color: #2A3133;
+    border-color: #3E4649;
+}
+
+.NB-dark .NB-modal-goodies .NB-goodies-hero-shots img,
+.NB-dark .NB-modal-goodies .NB-goodies-app-thumbs img {
+    border-color: #3E4649;
 }
 
 /* Goodies & Extras: Custom URLs input field */
