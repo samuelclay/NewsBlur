@@ -18418,27 +18418,23 @@ h5.NB-classifier-section-header {
 }
 
 .NB-provider-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #D97857 0%, #C56B4A 100%);
-    color: #4A2218;
-    border: 1px solid #C5684A;
+    background-color: #F0DDD3;
+    color: #8A4A32;
 }
 
 .NB-provider-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #74AA9C 0%, #5A9A8A 100%);
-    color: #1A3D36;
-    border: 1px solid #4A8A7A;
+    background-color: #D9EAE4;
+    color: #2F6457;
 }
 
 .NB-provider-pill.NB-provider-google {
-    background: linear-gradient(135deg, #8AB4F8 0%, #669DF6 100%);
-    color: #1A3A5C;
-    border: 1px solid #5B8EE6;
+    background-color: #DEE9FB;
+    color: #2F5A94;
 }
 
 .NB-provider-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
-    color: #FFFFFF;
-    border: 1px solid #333333;
+    background-color: #E2E2E2;
+    color: #303030;
 }
 
 .NB-story-ask-ai-voice-button {
@@ -18629,27 +18625,20 @@ h5.NB-classifier-section-header {
     color: #666;
 }
 
+/* reader.css: The usage/limit message renders the shared .NB-archive-callout
+   strip (see reader_utils.js make_archive_callout), so this wrapper stays
+   unstyled and only positions it. */
 .NB-story-ask-ai-usage-message {
-    padding: 12px;
     margin-top: 16px;
-    background-color: #F7F9FC;
-    border: 1px solid #D4E0F7;
-    border-left: 3px solid #4A90E2;
-    border-radius: 6px;
-    color: #2C5282;
-    font-size: 13px;
-    line-height: 1.5;
 }
 
-.NB-story-ask-ai-usage-message a {
-    color: #4A90E2;
-    text-decoration: none;
-    font-weight: 600;
+.NB-story-ask-ai-inline .NB-story-ask-ai-usage-message {
+    margin: 0 16px 16px;
 }
 
-.NB-story-ask-ai-usage-message a:hover {
-    text-decoration: underline;
-    color: #2E5F8F;
+/* When the limit message arrives without an answer above it, keep it off the header. */
+.NB-story-ask-ai-inline .NB-story-ask-ai-answer[style*="display: none"]~.NB-story-ask-ai-usage-message {
+    margin-top: 16px;
 }
 
 /* Model Pills */
@@ -18665,33 +18654,28 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #D97857 0%, #C56B4A 100%);
-    color: #4A2218;
-    border: 1px solid #C5684A;
+    background-color: #F0DDD3;
+    color: #8A4A32;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #74AA9C 0%, #5A9A8A 100%);
-    color: #1A3D36;
-    border: 1px solid #4A8A7A;
+    background-color: #D9EAE4;
+    color: #2F6457;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-google {
-    background: linear-gradient(135deg, #8AB4F8 0%, #669DF6 100%);
-    color: #1A3A5C;
-    border: 1px solid #5B8EE6;
+    background-color: #DEE9FB;
+    color: #2F5A94;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
-    color: #FFFFFF;
-    border: 1px solid #333333;
+    background-color: #E2E2E2;
+    color: #303030;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-unknown {
-    background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
-    color: #424242;
-    border: 1px solid #9E9E9E;
+    background-color: #E8E8E6;
+    color: #555555;
 }
 
 /* Pulsating border animation for loading state */
@@ -18778,17 +18762,18 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline {
     margin: 24px 0;
-    padding: 20px;
-    background: linear-gradient(135deg, #F0F4FF 0%, #FFF5F0 100%);
-    border: 1px solid #D4E0F7;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 0;
+    background-color: #FAFBF8;
+    border: 1px solid #DCDED6;
+    border-radius: 6px;
     position: relative;
     box-sizing: border-box;
     opacity: 0;
     transform: translateY(-10px) scale(0.98);
     animation: askAiUnfurl 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    overflow: hidden;
+    /* No overflow: hidden here — the Re-ask/Send model dropdown opens upward and
+       must escape the container when the module is short. Clipping only applies
+       while collapsing (see .NB-closing below). */
 }
 
 /* Story font themes */
@@ -18963,7 +18948,6 @@ h5.NB-classifier-section-header {
     0% {
         opacity: 1;
         transform: translateY(0) scale(1);
-        padding: 20px;
         margin-top: 24px;
         margin-bottom: 0;
         border-width: 1px;
@@ -18977,7 +18961,6 @@ h5.NB-classifier-section-header {
     100% {
         opacity: 0;
         transform: translateY(-10px) scale(0.98);
-        padding: 0;
         margin-top: 0;
         margin-bottom: 0;
         border-width: 0;
@@ -18986,16 +18969,7 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline.NB-closing {
     animation: askAiCollapse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.NB-story-ask-ai-inline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #4A90E2 0%, #E24A90 50%, #E2904A 100%);
+    overflow: hidden;
 }
 
 @keyframes slideInFade {
@@ -19054,7 +19028,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 0;
     position: relative;
     opacity: 0;
     animation: questionFadeIn 0.5s ease-out 0.15s forwards;
@@ -19065,10 +19039,11 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question {
-    padding: 14px 16px;
-    background-color: rgba(255, 255, 255, 0.85);
-    border: 2px solid #D4E0F7;
-    border-radius: 4px;
+    padding: 12px 16px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #E4E6DE;
+    border-radius: 0;
     position: relative;
     transition: border-color 0.3s ease;
 }
@@ -19079,15 +19054,15 @@ h5.NB-classifier-section-header {
 
 @keyframes borderPulse {
     0% {
-        border-color: #E1EBFF;
+        border-color: #E4E6DE;
     }
 
     38% {
-        border-color: #5C89C9;
+        border-color: #A0A499;
     }
 
     100% {
-        border-color: #E1EBFF;
+        border-color: #E4E6DE;
     }
 }
 
@@ -19130,12 +19105,12 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question-text {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
-    color: #2C3E50;
+    color: #59604E;
     font-weight: 500;
     font-style: italic;
-    padding-right: 90px;
+    padding-right: 36px;
 }
 
 /* Model pill wrapper for inline pills in answer content */
@@ -19163,7 +19138,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input-wrapper {
-    margin-bottom: 16px;
+    margin: 16px;
     display: flex;
     gap: 8px;
 }
@@ -19171,32 +19146,31 @@ h5.NB-classifier-section-header {
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input {
     flex: 1;
     padding: 10px 14px;
-    border: 1px solid #D4E0F7;
-    border-radius: 6px;
+    border: 1px solid #D0D2CC;
+    border-radius: 4px;
     font-size: 13px;
     background-color: #FFFFFF;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input:focus {
     outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #90928B;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-submit {
     padding: 10px 20px;
     font-size: 13px;
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    background-color: #4A90A4;
     border: none;
     color: white;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.15s ease;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-submit:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    background-color: #3A7A8A;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-response {
@@ -19257,32 +19231,31 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
     padding: 16px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #D4E0F7;
-    border-radius: 8px;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
     line-height: 1.7;
-    color: #333;
+    color: #404040;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-followup-wrapper {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #D4E0F7;
+    margin-top: 0;
+    padding: 12px 16px;
+    border-top: 1px solid #E4E6DE;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-error {
-    margin-top: 16px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #E2A04A;
-    border-left: 3px solid #E2904A;
-    border-radius: 8px;
+    margin: 16px;
+    padding: 12px 14px;
+    background-color: rgba(196, 90, 71, 0.05);
+    border: 1px solid #E0CFC0;
+    border-radius: 4px;
     font-size: 13px;
     line-height: 1.6;
-    color: #8B4513;
+    color: #8B5A3C;
     display: none;
     opacity: 0;
     transform: scale(0.95);
