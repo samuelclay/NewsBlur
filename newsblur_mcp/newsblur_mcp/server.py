@@ -206,11 +206,13 @@ import newsblur_mcp.prompts.prompts  # noqa: F401, E402
 import newsblur_mcp.resources.resources  # noqa: F401, E402
 import newsblur_mcp.tools.account  # noqa: F401, E402
 import newsblur_mcp.tools.actions  # noqa: F401, E402
+import newsblur_mcp.tools.archive  # noqa: F401, E402
 import newsblur_mcp.tools.briefing  # noqa: F401, E402
 import newsblur_mcp.tools.classifiers  # noqa: F401, E402
 import newsblur_mcp.tools.discovery  # noqa: F401, E402
 import newsblur_mcp.tools.feeds  # noqa: F401, E402
 import newsblur_mcp.tools.notifications  # noqa: F401, E402
+import newsblur_mcp.tools.social  # noqa: F401, E402
 
 # Import tools to register them with the mcp instance
 import newsblur_mcp.tools.stories  # noqa: F401, E402
