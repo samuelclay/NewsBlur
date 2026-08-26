@@ -23605,39 +23605,179 @@ h5.NB-classifier-section-header {
 /* = Goodies Modal = */
 /* ================= */
 
-.NB-modal-goodies fieldset {
-    margin: 32px 0 32px;
-}
-
 .NB-modal-goodies .NB-modal-title .NB-icon {
     background: transparent url("/media/embed/icons/nouns/dialog-goodies.svg") no-repeat center center;
     background-size: 28px;
     filter: hue-rotate(186deg) saturate(18);
 }
 
-.NB-modal-goodies .NB-goodies-group {
-    clear: both;
-    margin: 16px 0 0 0;
-    overflow: hidden;
-    background-color: #F7F7F5;
-    padding: 8px;
+/* Doubled class beats modals.css's later .NB-modal .NB-modal-title text-wrap: balance */
+.NB-modal.NB-modal-goodies .NB-modal-title {
+    white-space: nowrap;
+    text-wrap: nowrap;
 }
 
-.NB-modal-goodies .NB-goodies-title {
-    font-size: 14px;
+.NB-modal-goodies .NB-modal-tab {
+    padding: 8px 12px 10px;
+}
+
+.NB-modal.NB-modal-goodies .NB-tab {
+    height: 800px;
+    max-height: calc(100vh - 220px);
+    padding: 14px 6px 20px;
+}
+
+/* Official app hero card */
+.NB-modal-goodies .NB-goodies-hero {
+    background-color: #F7F7F5;
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 2px 0 8px;
+}
+
+.NB-modal-goodies .NB-goodies-hero-header {
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-goodies .NB-goodies-hero-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    margin: 0 12px 0 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+}
+
+.NB-modal-goodies .NB-goodies-hero-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-modal-goodies .NB-goodies-hero-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #404030;
+}
+
+.NB-modal-goodies .NB-goodies-hero-meta {
+    font-size: 12px;
+    color: #808070;
+    margin-top: 4px;
+}
+
+/* Screenshots share the strip equally and keep their aspect ratio */
+.NB-modal-goodies .NB-goodies-hero-shots {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.NB-modal-goodies .NB-goodies-hero-shots img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    align-self: flex-start;
+    border-radius: 6px;
+    border: 1px solid #D8D8D2;
+}
+
+/* Section headings between app groups */
+.NB-modal-goodies .NB-goodies-section-title {
+    font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
-    margin: 8px;
-    color: #404030;
-    text-shadow: 1px 1px 0 #E0E0E0;
+    letter-spacing: .05em;
+    color: #A0A090;
+    margin: 20px 4px 4px;
 }
 
+/* Third-party app cards, two per row */
+.NB-modal-goodies .NB-goodies-apps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 8px 0 4px;
+}
+
+.NB-modal-goodies .NB-goodies-apps-full {
+    grid-template-columns: 1fr;
+}
+
+.NB-modal-goodies .NB-goodies-app {
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #FCFCFA;
+}
+
+.NB-modal-goodies .NB-goodies-app-header {
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-goodies .NB-goodies-app-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    margin: 0 12px 0 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+    flex-shrink: 0;
+}
+
+.NB-modal-goodies .NB-goodies-app-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 12px;
+}
+
+.NB-modal-goodies .NB-goodies-app-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #404030;
+}
+
+.NB-modal-goodies .NB-goodies-app-meta {
+    font-size: 11px;
+    color: #808070;
+    margin-top: 2px;
+    line-height: 15px;
+}
+
+.NB-modal-goodies .NB-goodies-app-thumbs {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.NB-modal-goodies .NB-goodies-app-thumbs img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    align-self: flex-start;
+    border-radius: 4px;
+    border: 1px solid #D8D8D2;
+}
+
+.NB-modal-goodies .NB-goodies-app-button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Firefox about:config tip: a card with no store button */
+.NB-modal-goodies .NB-goodies-tip {
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #FCFCFA;
+}
+
+/* Bookmarklet button, shared with the intro modal */
 .NB-modal-goodies .NB-goodies-bookmarklet-button,
-.NB-modal-intro .NB-goodies-bookmarklet-button,
-.NB-modal-goodies .NB-goodies-contenthandler-button {
+.NB-modal-intro .NB-goodies-bookmarklet-button {
     display: inline-block;
-    float: right;
-    /* font-family: 'Lucida Grande', Verdana, sans-serif; */
     font-weight: bold;
     font-size: 11px;
     border-radius: 8px;
@@ -23649,170 +23789,21 @@ h5.NB-classifier-section-header {
     min-width: 62px;
     text-align: center;
     vertical-align: 2px;
-    color: #fff;
     text-decoration: none;
     outline: none;
     margin: 8px 8px;
 }
 
-.NB-modal-goodies .NB-goodies-firefox-link {
+.NB-modal-intro .NB-goodies-bookmarklet-button {
     float: right;
-}
-
-.NB-modal-goodies .NB-goodies-firefox {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/firefox.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-modal-submit-button {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-safari {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/safari.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-chrome-link {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-chrome {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/chrome.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-readkit {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/readkit.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-tafiti {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/tafiti.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-reeder-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_reeder_ios.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-reeder-mac {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_reeder_mac.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-leaf {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_leaf.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-unread-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_unread.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-bluree {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/bluree.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-subtitle {
-    margin: 14px 8px 4px;
-    line-height: 18px;
-    color: #707070;
 }
 
 .NB-modal-goodies .NB-goodies-custom-input {
-    float: right;
-    width: 320px;
+    width: 380px;
     border: 1px solid #909090;
+    border-radius: 4px;
     padding: 4px;
-    margin: 6px 0 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-mobile-link {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/apple.png') no-repeat 0 0;
-    background-size: 28px 28px;
-}
-
-.NB-modal-goodies .NB-goodies-android {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/android.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-nokia {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/nokia.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-sailfish {
-    float: right;
-    width: 64px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/sailfish.png') no-repeat 0 0;
-    background-size: auto 28px;
-}
-
-.NB-modal-goodies .NB-goodies-windows {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/windows_phone_icon.png') no-repeat 0 0;
-    background-size: 28px;
+    flex-shrink: 0;
 }
 
 /* ========================== */
