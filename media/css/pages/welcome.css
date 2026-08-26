@@ -1234,30 +1234,55 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     gap: 36px 48px;
 }
 
-.NB-feature-group {
-    border-left: 3px solid transparent;
-    padding-left: 20px;
+/* Group headers styled like the reader's folder rows (templates/reader/welcome.xhtml) */
+.NB-feature-group-folder {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 12px;
+    margin: 0 0 10px;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #e8dcc0, #ddceac);
+    border: 1px solid rgba(58, 46, 30, 0.14);
 }
 
-.NB-feature-group-read  { border-left-color: #c0a06a; }
-.NB-feature-group-smart { border-left-color: #7a9a5a; }
-.NB-feature-group-share { border-left-color: #8a6a9a; }
-.NB-feature-group-everywhere { border-left-color: #5a8aaa; }
+.NB-folder-caret {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #8a7a6a;
+}
 
-.NB-feature-group-label {
+.NB-folder-icon {
+    display: block;
+    flex-shrink: 0;
+}
+
+.NB-feature-group-read  .NB-folder-icon { color: #c0a06a; }
+.NB-feature-group-smart .NB-folder-icon { color: #7a9a5a; }
+.NB-feature-group-share .NB-folder-icon { color: #8a6a9a; }
+.NB-feature-group-everywhere .NB-folder-icon { color: #5a8aaa; }
+
+.NB-folder-name {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 14px;
-    padding: 0;
+    color: #3a2e1e;
+    flex: 1;
 }
 
-.NB-feature-group-read  .NB-feature-group-label { color: #b0903a; }
-.NB-feature-group-smart .NB-feature-group-label { color: #5a7a3a; }
-.NB-feature-group-share .NB-feature-group-label { color: #7a5a8a; }
-.NB-feature-group-everywhere .NB-feature-group-label { color: #4a7a9a; }
+/* Count badge matching .unread_count_neutral in media/css/reader/reader.css */
+.NB-folder-count {
+    background-color: #B3B6AD;
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+}
 
 .NB-feature-group-items {
     display: flex;
@@ -1265,26 +1290,27 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     gap: 0;
 }
 
-/* Individual feature item */
+/* Individual feature item, styled like a story row in the reader */
 a.NB-fgi {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 10px 12px 10px 0;
+    padding: 9px 12px;
     text-decoration: none;
     color: inherit;
     border-radius: 8px;
     transition: background-color 0.15s ease;
 }
 
+/* Hover matches the reader's selected-story gold highlight */
 a.NB-fgi:hover {
-    background-color: rgba(0, 0, 0, 0.035);
+    background-color: rgba(192, 160, 90, 0.16);
     text-decoration: none;
 }
 
 a.NB-fgi img {
-    width: 128px;
-    height: 128px;
+    width: 96px;
+    height: 96px;
     border-radius: 6px;
     object-fit: cover;
     object-position: left top;
@@ -1299,16 +1325,16 @@ a.NB-fgi img {
 .NB-fgi-caption {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-weight: 700;
-    font-size: 22px;
+    font-size: 18px;
     color: #3a2e1e;
     line-height: 1.2;
 }
 
 .NB-fgi-desc {
     color: #8a7a6a;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.45;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 /* =========== */
@@ -3022,9 +3048,6 @@ a.NB-fgi img {
 
 @media (max-width: 500px) {
     /* Feature groups: tighten on small screens */
-    .NB-feature-group {
-        padding-left: 14px;
-    }
     a.NB-fgi img {
         width: 72px;
         height: 72px;
@@ -3221,14 +3244,34 @@ a.NB-fgi img {
     color: rgba(255, 255, 255, 0.45);
 }
 
+/* Hover matches the reader's selected-story gold highlight, dark mode */
 .NB-dark a.NB-fgi:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(212, 184, 122, 0.14);
 }
 
-.NB-dark .NB-feature-group-read  .NB-feature-group-label { color: #d4b87a; }
-.NB-dark .NB-feature-group-smart .NB-feature-group-label { color: #8ab06a; }
-.NB-dark .NB-feature-group-share .NB-feature-group-label { color: #a07ab0; }
-.NB-dark .NB-feature-group-everywhere .NB-feature-group-label { color: #6a9aba; }
+.NB-dark .NB-feature-group-folder {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-folder-caret {
+    border-top-color: rgba(255, 255, 255, 0.4);
+}
+
+.NB-dark .NB-folder-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Matches .NB-dark .unread_count_neutral in media/css/reader/darkmode.css */
+.NB-dark .NB-folder-count {
+    background-color: #7a7e77;
+    color: #FDFEFE;
+}
+
+.NB-dark .NB-feature-group-read  .NB-folder-icon { color: #d4b87a; }
+.NB-dark .NB-feature-group-smart .NB-folder-icon { color: #8ab06a; }
+.NB-dark .NB-feature-group-share .NB-folder-icon { color: #a07ab0; }
+.NB-dark .NB-feature-group-everywhere .NB-folder-icon { color: #6a9aba; }
 
 .NB-dark .NB-welcome-activity {
     background: linear-gradient(180deg, #2a524e 0%, #284442 100%);
