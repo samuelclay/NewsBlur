@@ -191,6 +191,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         thumbs: ['current-1.jpg', 'current-2.jpg']
         }),
         this.make_app_row({
+        key: 'feedler',
+        name: 'Feedler',
+        meta: 'Free beta · iPhone, iPad &amp; Mac',
+        url: 'https://feedlerapp.com/',
+        button: 'TestFlight',
+        thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
+        }),
+        this.make_app_row({
         key: 'feedit',
         name: 'Feedit',
         meta: 'Free · iPhone &amp; iPad',
@@ -210,6 +218,13 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         meta: 'Free · iPhone, iPad, Mac &amp; Android',
         url: 'https://apps.apple.com/us/app/smartrss-rss-reader-podcast/id6749771900',
         thumbs: ['smartrss-1.jpg', 'smartrss-2.jpg']
+        }),
+        this.make_app_row({
+        key: 'web-subscriber',
+        name: 'Web Subscriber',
+        meta: 'Free · iPhone &amp; iPad',
+        url: 'https://apps.apple.com/us/app/web-subscriber/id511900080',
+        thumbs: ['web-subscriber-1.jpg', 'web-subscriber-2.jpg']
         })
       ])
     ]);
@@ -296,6 +311,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         meta: 'Free + subscription · Mac, iPhone &amp; iPad',
         url: 'https://apps.apple.com/us/app/fiery-feeds-news-reader/id1158763303',
         thumbs: ['fiery-feeds-1.jpg', 'fiery-feeds-2.jpg']
+        }),
+        this.make_app_row({
+        key: 'feedler',
+        name: 'Feedler',
+        meta: 'Free beta · Mac, iPhone &amp; iPad',
+        url: 'https://feedlerapp.com/',
+        button: 'TestFlight',
+        thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
         }),
         this.make_app_row({
         key: 'newsflow',
