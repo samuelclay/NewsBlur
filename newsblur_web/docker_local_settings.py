@@ -152,7 +152,8 @@ ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 XAI_GROK_API_KEY = "xai-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ASK_AI_MODEL = "anthropic"  # Options: anthropic, openai, google, xai
-BRIEFING_MODEL = "anthropic"  # Options: anthropic, openai, google, xai
+BRIEFING_MODEL = "openai"  # Options: anthropic, openai, google, xai
+WEBFEED_MODEL = "openai"  # Options: anthropic, openai, google, xai
 
 # ===========
 # = Logging =

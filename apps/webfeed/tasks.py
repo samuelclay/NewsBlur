@@ -419,11 +419,6 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         html_hash = hashlib.sha256(page_html[:10000].encode("utf-8", errors="replace")).hexdigest()[:16]
 
-        logging.user(
-            user,
-            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
-        )
-
         publish_event("progress", {"message": "Preparing page..."})
 
         # Pre-process HTML to strip navigation elements for LLM analysis
@@ -437,17 +432,32 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event("progress", {"message": "Finding story patterns..."})
 
-        # Step 2: Call Claude for XPath analysis. The model is non-deterministic
+        # Step 2: Call the configured LLM for XPath analysis. The model is non-deterministic
         # and sometimes returns selectors that match nothing (especially on
         # utility-class-heavy sites like Tailwind), so wrap the call in a helper
         # we can retry, and judge each pass by what its selectors actually
         # extract rather than by the model's self-reported confidence order.
-        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
+        from apps.ask_ai.providers import (
+            DEFAULT_WEBFEED_MODEL,
+            LLM_EXCEPTIONS,
+            get_briefing_model_config,
+            get_briefing_provider,
+        )
 
-        provider, model_id = get_briefing_provider("anthropic")
+        webfeed_model_name, webfeed_model_config = get_briefing_model_config(DEFAULT_WEBFEED_MODEL)
+        provider, model_id = get_briefing_provider(webfeed_model_name)
+        thinking_config = webfeed_model_config.get("thinking_config")
+        vendor = webfeed_model_config.get("vendor", "unknown")
+        vendor_display = webfeed_model_config.get("vendor_display", vendor.title())
+        model_display = webfeed_model_config.get("display_name", model_id)
+
+        logging.user(
+            user,
+            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with ~SB{model_display}~SN",
+        )
 
         if not provider.is_configured():
-            error_msg = "Anthropic API key not configured"
+            error_msg = "%s API key not configured" % vendor_display
             publish_event("error", {"error": error_msg})
             return {"code": -1, "message": error_msg}
 
@@ -458,13 +468,13 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             number of variants that extracted at least one story."""
             messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint, retry=retry)
             response_chunks = []
-            for chunk in provider.stream_response(messages, model_id):
+            for chunk in provider.stream_response(messages, model_id, thinking_config=thinking_config):
                 response_chunks.append(chunk)
             text = "".join(response_chunks)
 
             input_tokens, output_tokens = provider.get_last_usage()
             LLMCostTracker.record_usage(
-                provider="anthropic",
+                provider=vendor,
                 model=model_id,
                 feature="webfeed",
                 input_tokens=input_tokens,
@@ -512,6 +522,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             return {"code": -1, "message": error_msg}
 
         # Extract page title
+        doc = None
         page_title = ""
         try:
             doc = lxml_html.fromstring(page_html)
@@ -526,7 +537,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         # Extract favicon URL
         favicon_url = ""
         try:
-            if not doc:
+            if doc is None:
                 doc = lxml_html.fromstring(page_html)
             for xpath in [
                 '//link[@rel="icon"]/@href',
