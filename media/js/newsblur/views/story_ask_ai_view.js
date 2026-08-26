@@ -609,32 +609,20 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     show_usage_message: function (message) {
-        // Display usage message below the answer
-        // Convert "Upgrade to Premium/Premium Archive" text to a clickable link
-        var html_message = _.escape(message);
-
-        // Replace "Upgrade to Premium Archive" with a link (do this first, more specific)
-        html_message = html_message.replace(
-            /Upgrade to Premium Archive/g,
-            '<a href="#" class="NB-story-ask-ai-upgrade-link">Upgrade to Premium Archive</a>'
-        );
-
-        // Replace "Upgrade to Premium" with a link (for free users)
-        // Use negative lookahead to not match "Upgrade to Premium Archive"
-        html_message = html_message.replace(
-            /Upgrade to Premium(?! Archive)/g,
-            '<a href="#" class="NB-story-ask-ai-upgrade-link">Upgrade to Premium</a>'
-        );
-
-        // Convert newlines to <br> tags
-        html_message = html_message.replace(/\n/g, '<br>');
-
-        this.$('.NB-story-ask-ai-usage-message').html(html_message).show();
+        // story_ask_ai_view.js: Display the usage/limit message below the answer as the
+        // shared Premium Archive callout strip (reader_utils.js make_archive_callout).
+        // The callout's badge already says "Premium Archive", so trim the backend's
+        // "Upgrade to Premium Archive ..." sentence down to just "Upgrade ...".
+        var text = message.replace(/\n+/g, ' ')
+            .replace(/Upgrade to Premium Archive/g, 'Upgrade')
+            .replace(/Upgrade to Premium(?! Archive)/g, 'Upgrade');
+        var $callout = NEWSBLUR.utils.make_archive_callout(text, { highlight_feature: 'ask-ai' });
+        this.$('.NB-story-ask-ai-usage-message').empty().append($callout).show();
     },
 
     open_premium_modal: function (e) {
         e.preventDefault();
-        NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'ask-ai' });
     },
 
     handle_followup_keypress: function (e) {

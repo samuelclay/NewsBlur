@@ -418,7 +418,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
 
     close_and_load_premium: function () {
         this.close(function () {
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'update-frequency' });
         });
     },
 

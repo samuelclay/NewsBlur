@@ -3004,7 +3004,7 @@
 
             // Check if user has archive access (Premium Archive tier)
             if (!NEWSBLUR.Globals.is_archive) {
-                this.open_feedchooser_modal({ premium_only: true });
+                this.open_premium_upgrade_modal({ highlight_feature: 'ask-ai' });
                 return;
             }
 
