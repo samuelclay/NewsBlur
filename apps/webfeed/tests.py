@@ -490,6 +490,67 @@ class Test_WebFeedAnalyzeRedirectsRealFeeds(TestCase):
         mock_task.assert_called_once()
 
 
+class Test_AnalyzeWebFeedPageModel(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("webfeed_model_tester", "wf-model@example.com", "test")
+
+    @patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result")
+    @patch("apps.webfeed.tasks.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch("apps.webfeed.tasks.fetch_page_html")
+    @patch("apps.webfeed.tasks.redis.Redis")
+    def test_analysis_uses_luna_medium_thinking_and_openai_cost_labels(
+        self, mock_redis, mock_fetch, mock_get_provider, mock_cost, mock_record_result
+    ):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        mock_fetch.return_value = """
+        <html><head><title>Example</title></head><body><main>
+        <article class="post">
+            <h2><a href="/one">First Story</a></h2>
+            <p class="summary">One summary.</p>
+        </article>
+        </main></body></html>
+        """
+
+        mock_provider = MagicMock()
+        mock_provider.is_configured.return_value = True
+        mock_provider.stream_response.return_value = [
+            json.encode(
+                [
+                    {
+                        "label": "Main stories",
+                        "description": "Primary article list",
+                        "story_container": "//article[contains(@class, 'post')]",
+                        "title": ".//h2/a/text()",
+                        "link": ".//h2/a/@href",
+                        "content": ".//p[contains(@class, 'summary')]/text()",
+                        "image": None,
+                        "author": None,
+                        "date": None,
+                    }
+                ]
+            )
+        ]
+        mock_provider.get_last_usage.return_value = (100, 25)
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+
+        result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/")
+
+        self.assertEqual(result["code"], 1)
+        mock_get_provider.assert_called_once_with("openai")
+        mock_provider.stream_response.assert_called_once()
+        self.assertEqual(
+            mock_provider.stream_response.call_args.kwargs["thinking_config"],
+            {"reasoning_effort": "medium"},
+        )
+        mock_cost.record_usage.assert_called_once()
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "webfeed")
+        mock_record_result.assert_called_once_with(success=True)
+
+
 class Test_DegenerateContainerXPaths(TestCase):
     """A container XPath pinned to specific item ids can only ever re-match the
     analysis-time items, so the feed never finds a new story. See

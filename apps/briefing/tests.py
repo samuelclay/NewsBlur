@@ -479,6 +479,18 @@ class Test_Summary(TestCase):
             "classifier_matches": [],
         }
 
+    def test_default_briefing_model_is_luna_with_medium_thinking(self):
+        from apps.ask_ai.providers import (
+            DEFAULT_BRIEFING_MODEL,
+            get_briefing_model_config,
+        )
+
+        model_name, model_config = get_briefing_model_config(None)
+        self.assertEqual(DEFAULT_BRIEFING_MODEL, "openai")
+        self.assertEqual(model_name, "openai")
+        self.assertEqual(model_config["model_id"], "gpt-5.6-luna")
+        self.assertEqual(model_config["thinking_config"], {"reasoning_effort": "medium"})
+
     @patch("apps.briefing.summary.LLMCostTracker")
     @patch("apps.ask_ai.providers.get_briefing_provider")
     def test_summary_returns_html_and_metadata(self, mock_get_provider, mock_cost):
@@ -488,7 +500,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = '<div class="NB-briefing-summary"><h3 data-section="top_stories">Trending</h3><p>Content</p></div>'
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "claude-haiku")
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://summary-test.com/rss",
@@ -505,6 +517,15 @@ class Test_Summary(TestCase):
             self.assertIn("NB-briefing-summary", html)
             self.assertEqual(metadata["input_tokens"], 100)
             self.assertEqual(metadata["output_tokens"], 50)
+            mock_provider.generate.assert_called_once()
+            self.assertEqual(
+                mock_provider.generate.call_args.kwargs["thinking_config"],
+                {"reasoning_effort": "medium"},
+            )
+            mock_cost.record_usage.assert_called_once()
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "daily_briefing")
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
@@ -520,7 +541,7 @@ class Test_Summary(TestCase):
             '```html\n<div class="NB-briefing-summary"><p>Content</p></div>\n```'
         )
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "claude-haiku")
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://fence-test.com/rss",
@@ -550,6 +571,7 @@ class Test_Summary(TestCase):
         "apps.ask_ai.providers.BRIEFING_MODELS",
         {"nondefault": {"vendor": "test"}, "haiku": {"vendor": "anthropic"}},
     )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
     def test_summary_provider_fallback(self, mock_get_provider, mock_cost):
         from apps.briefing.summary import generate_briefing_summary
 
@@ -615,7 +637,7 @@ class Test_Summary(TestCase):
         mock_provider = MagicMock()
         mock_provider.is_configured.return_value = True
         mock_provider.generate.side_effect = anthropic.APIConnectionError(request=MagicMock())
-        mock_get_provider.return_value = (mock_provider, "claude-haiku")
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://err-test.com/rss",
@@ -644,7 +666,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = "<div>Result</div>"
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "claude-haiku")
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://remap-test.com/rss",

@@ -381,26 +381,32 @@ def generate_briefing_summary(
 
     try:
         from apps.ask_ai.providers import (
-            BRIEFING_MODELS,
             DEFAULT_BRIEFING_MODEL,
             LLM_EXCEPTIONS,
+            get_briefing_model_config,
             get_briefing_provider,
         )
 
-        model_name = model if model and model in BRIEFING_MODELS else DEFAULT_BRIEFING_MODEL
+        model_name, model_config = get_briefing_model_config(model)
         provider, model_id = get_briefing_provider(model_name)
+        thinking_config = model_config.get("thinking_config")
 
         # summary.py: Fall back to default if the chosen provider's API key isn't configured
         if not provider.is_configured():
             if model_name != DEFAULT_BRIEFING_MODEL:
-                provider, model_id = get_briefing_provider(DEFAULT_BRIEFING_MODEL)
-                model_name = DEFAULT_BRIEFING_MODEL
+                model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
+                provider, model_id = get_briefing_provider(model_name)
+                thinking_config = model_config.get("thinking_config")
             if not provider.is_configured():
                 logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
                 return None
 
         system_prompt = _build_system_prompt(
-            summary_length, summary_style, sections, custom_section_prompts, section_order
+            summary_length,
+            summary_style,
+            sections,
+            custom_section_prompts,
+            section_order,
         )
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
@@ -416,7 +422,12 @@ def generate_briefing_summary(
         # LLM_EXCEPTIONS handler below.
         for attempt in range(BRIEFING_RETRY_ATTEMPTS):
             try:
-                summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
+                summary_html = provider.generate(
+                    messages,
+                    model_id,
+                    max_tokens=max_tokens,
+                    thinking_config=thinking_config,
+                )
                 break
             except LLM_EXCEPTIONS as e:
                 last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
@@ -436,7 +447,6 @@ def generate_briefing_summary(
             summary_html = summary_html.strip()
 
         input_tokens, output_tokens = provider.get_last_usage()
-        model_config = BRIEFING_MODELS.get(model_name, {})
         vendor = model_config.get("vendor", "unknown")
         LLMCostTracker.record_usage(
             provider=vendor,

@@ -48,7 +48,13 @@ class LLMProvider(ABC):
         pass
 
     @abstractmethod
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         """Generate a complete (non-streaming) response from the LLM.
 
         Returns the full response text. Updates self._last_input_tokens
@@ -112,17 +118,28 @@ class AnthropicProvider(LLMProvider):
                 self._last_input_tokens = final_message.usage.input_tokens
                 self._last_output_tokens = final_message.usage.output_tokens
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
         user_messages = [m for m in messages if m["role"] != "system"]
 
-        response = client.messages.create(
-            model=model_id,
-            max_tokens=max_tokens,
-            system=system_msg,
-            messages=user_messages,
-        )
+        kwargs = {
+            "model": model_id,
+            "max_tokens": max_tokens,
+            "system": system_msg,
+            "messages": user_messages,
+        }
+        if thinking_config:
+            kwargs["thinking"] = thinking_config["thinking"]
+            kwargs["max_tokens"] = thinking_config.get("max_tokens", max_tokens)
+
+        response = client.messages.create(**kwargs)
 
         if response.usage:
             self._last_input_tokens = response.usage.input_tokens
@@ -178,17 +195,27 @@ class OpenAIProvider(LLMProvider):
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
         # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
         # tokens in max_completion_tokens, so we need a much higher limit to leave
         # room for actual content output after reasoning.
         effective_max = max(max_tokens * 5, 16384)
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=messages,
-            max_completion_tokens=effective_max,
-        )
+        kwargs = {
+            "model": model_id,
+            "messages": messages,
+            "max_completion_tokens": effective_max,
+        }
+        if thinking_config and "reasoning_effort" in thinking_config:
+            kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
+
+        response = client.chat.completions.create(**kwargs)
 
         if response.usage:
             self._last_input_tokens = response.usage.prompt_tokens
@@ -242,7 +269,13 @@ class XAIProvider(LLMProvider):
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = openai.OpenAI(
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
@@ -325,7 +358,13 @@ class GeminiProvider(LLMProvider):
             self._last_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
             self._last_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
 
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
@@ -333,6 +372,10 @@ class GeminiProvider(LLMProvider):
         if system_msg:
             config_kwargs["system_instruction"] = system_msg
         config_kwargs["max_output_tokens"] = max_tokens
+        if thinking_config:
+            config_kwargs["thinking_config"] = genai_types.ThinkingConfig(
+                thinking_budget=thinking_config.get("thinking_budget", -1)
+            )
         config = genai_types.GenerateContentConfig(**config_kwargs)
 
         contents = []
@@ -579,6 +622,9 @@ _DEFAULT_BRIEFING_MODELS = {
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
+        "thinking_config": {
+            "reasoning_effort": "medium",
+        },
     },
     "google": {
         "provider_class": GeminiProvider,
@@ -622,7 +668,7 @@ def _load_briefing_models():
         provider_class = PROVIDER_CLASSES.get(provider_slug)
         if not provider_class:
             continue
-        models[key] = {
+        entry = {
             "provider_class": provider_class,
             "model_id": cfg["model_id"],
             "display_name": cfg.get("display_name", key),
@@ -630,12 +676,31 @@ def _load_briefing_models():
             "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
+        if "thinking_config" in cfg:
+            entry["thinking_config"] = cfg["thinking_config"]
+        if "thinking_model_id" in cfg:
+            entry["thinking_model_id"] = cfg["thinking_model_id"]
+        models[key] = entry
     return models if models else _DEFAULT_BRIEFING_MODELS
 
 
 BRIEFING_MODELS = _load_briefing_models()
 VALID_BRIEFING_MODELS = list(BRIEFING_MODELS.keys())
-DEFAULT_BRIEFING_MODEL = _resolve_key(getattr(settings, "BRIEFING_MODEL", "anthropic"), BRIEFING_MODELS)
+
+
+def _valid_registry_default(model_name, registry, fallback="openai"):
+    model_name = _resolve_key(model_name, registry)
+    if model_name in registry:
+        return model_name
+    if fallback in registry:
+        return fallback
+    return next(iter(registry))
+
+
+DEFAULT_BRIEFING_MODEL = _valid_registry_default(
+    getattr(settings, "BRIEFING_MODEL", "openai"), BRIEFING_MODELS
+)
+DEFAULT_WEBFEED_MODEL = _valid_registry_default(getattr(settings, "WEBFEED_MODEL", "openai"), BRIEFING_MODELS)
 
 
 def resolve_briefing_model_key(model_name: Optional[str]) -> Optional[str]:
@@ -669,8 +734,15 @@ def get_briefing_models_for_frontend() -> list:
     )
 
 
+def get_briefing_model_config(model_name: Optional[str]) -> tuple[str, dict]:
+    """Return the resolved briefing model key and config, falling back to the server default."""
+    model_name = resolve_briefing_model_key(model_name) or DEFAULT_BRIEFING_MODEL
+    if model_name not in BRIEFING_MODELS:
+        model_name = _valid_registry_default(model_name, BRIEFING_MODELS)
+    return model_name, BRIEFING_MODELS[model_name]
+
+
 def get_briefing_provider(model_name: str) -> tuple[LLMProvider, str]:
     """Get a provider instance and model ID for the given briefing model name."""
-    model_name = resolve_briefing_model_key(model_name) or DEFAULT_BRIEFING_MODEL
-    model = BRIEFING_MODELS[model_name]
+    _, model = get_briefing_model_config(model_name)
     return model["provider_class"](), model["model_id"]
