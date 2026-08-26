@@ -24,7 +24,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .anthropic: return "Anthropic Claude Haiku 4.5"
+        case .anthropic: return "Anthropic Claude Sonnet 5"
         case .openai: return "OpenAI GPT-5.6 Luna"
         case .google: return "Google Gemini 3.6 Flash"
         case .xai: return "xAI Grok 4.6"
@@ -33,7 +33,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
 
     var shortName: String {
         switch self {
-        case .anthropic: return "Haiku 4.5"
+        case .anthropic: return "Sonnet 5"
         case .openai: return "GPT-5.6 Luna"
         case .google: return "Gemini 3.6"
         case .xai: return "Grok 4.6"
