@@ -20,6 +20,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 
 class Command(BaseCommand):
@@ -29,7 +30,7 @@ class Command(BaseCommand):
 
     VALID_TYPES = ["rss", "youtube", "reddit", "newsletter", "podcast"]
 
-    MODEL = "claude-haiku-4-5"
+    MODEL = ANTHROPIC_MODEL
 
     # Type-specific prompt context
     TYPE_CONFIGS = {

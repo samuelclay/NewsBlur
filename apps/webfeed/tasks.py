@@ -444,7 +444,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         # extract rather than by the model's self-reported confidence order.
         from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
 
-        provider, model_id = get_briefing_provider("haiku")
+        provider, model_id = get_briefing_provider("anthropic")
 
         if not provider.is_configured():
             error_msg = "Anthropic API key not configured"

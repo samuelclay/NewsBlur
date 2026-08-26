@@ -2061,12 +2061,18 @@ class Test_Views(BriefingTestCase):
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
         self.assertEqual(len(prefs.custom_section_prompts), 2)
 
-    @patch("apps.ask_ai.providers.VALID_BRIEFING_MODELS", ["haiku", "sonnet", "gemini"])
     def test_post_briefing_model_valid(self):
+        self.make_prefs()
+        response = self.client.post(reverse("briefing-preferences"), {"briefing_model": "anthropic"})
+        prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
+        self.assertEqual(prefs.briefing_model, "anthropic")
+
+    def test_post_briefing_model_legacy_key_resolves(self):
+        # Legacy keys ("haiku") from older clients resolve to vendor keys ("anthropic")
         self.make_prefs()
         response = self.client.post(reverse("briefing-preferences"), {"briefing_model": "haiku"})
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
-        self.assertEqual(prefs.briefing_model, "haiku")
+        self.assertEqual(prefs.briefing_model, "anthropic")
 
     def test_post_briefing_model_default_clears(self):
         self.make_prefs(briefing_model="haiku")

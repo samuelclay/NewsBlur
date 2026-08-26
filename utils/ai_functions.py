@@ -17,6 +17,7 @@ import tiktoken
 from django.conf import settings
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 
 def setup_openai_model(openai_model):
@@ -46,7 +47,7 @@ def _classifier_direction(prompt_classifier):
     return 1, "FOCUS ON"
 
 
-def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
+def classify_stories_with_ai(prompt_classifier, stories, model=ANTHROPIC_MODEL, user_id=None):
     """
     Classify a list of stories using Claude's tool use.
 
@@ -230,7 +231,7 @@ def _fetch_image_as_base64(url, timeout=10, max_size_bytes=5 * 1024 * 1024):
         return None, None
 
 
-def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
+def classify_stories_with_vision(prompt_classifier, stories, model=ANTHROPIC_MODEL, user_id=None):
     """Classify stories using Claude Vision (VLM) — analyzes both text AND images.
 
     This is the VLM version of classify_stories_with_ai(). The key difference:

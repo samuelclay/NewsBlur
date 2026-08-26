@@ -12,11 +12,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.archive_assistant.models import (
-    MArchiveAssistantUsage,
-    MArchiveConversation,
-    MArchiveQuery,
-)
+from apps.archive_assistant.models import MArchiveAssistantUsage, MArchiveConversation, MArchiveQuery
 from apps.archive_assistant.prompts import get_suggested_questions
 from apps.archive_assistant.tasks import process_archive_query
 from apps.archive_extension.models import MArchivedStory
@@ -24,6 +20,7 @@ from apps.archive_extension.utils import format_datetime_utc
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
+from utils.llm_models import ANTHROPIC_ARCHIVE_MODEL
 from utils.user_functions import ajax_login_required, get_user
 
 
@@ -51,7 +48,7 @@ def submit_query(request):
     POST params:
         query: The question to ask (required)
         conversation_id: Existing conversation ID (optional, creates new if not provided)
-        model: Model to use (optional, defaults to claude-sonnet-4-5)
+        model: Model to use (optional, defaults to ANTHROPIC_ARCHIVE_MODEL in utils/llm_models.py)
 
     Returns:
         {
@@ -72,7 +69,7 @@ def submit_query(request):
 
     query_text = request.POST.get("query", "").strip()
     conversation_id = request.POST.get("conversation_id", "").strip()
-    model = request.POST.get("model", "claude-sonnet-4-5")
+    model = request.POST.get("model", ANTHROPIC_ARCHIVE_MODEL)
 
     # Check if user has premium archive for full responses
     profile = Profile.objects.get(user=user)
