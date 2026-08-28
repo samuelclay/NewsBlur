@@ -486,7 +486,11 @@ MODEL_ALIASES = {
     "gemini-3": "google",
     "grok-4.1": "xai",
     # Legacy briefing keys
-    "haiku": "anthropic",
+    # providers.py: "haiku" users picked the cheap Anthropic tier back when the
+    # briefing's Claude option was Haiku. The "anthropic" registry entry is now
+    # Sonnet-class (chat tier), so route them to the cheap default (Luna)
+    # instead of silently upgrading them to a ~40x more expensive model.
+    "haiku": "openai",
     "gpt-5-mini": "openai",
     "gemini-flash-lite": "google",
     "grok-4.1-fast": "xai",
@@ -706,8 +710,9 @@ DEFAULT_WEBFEED_MODEL = _valid_registry_default(getattr(settings, "WEBFEED_MODEL
 def resolve_briefing_model_key(model_name: Optional[str]) -> Optional[str]:
     """Resolve a stored/POSTed briefing model key to a current registry key.
 
-    Maps legacy keys ("haiku") to vendor keys ("anthropic"). Returns None when
-    the key isn't recognized so callers can fall back to the server default.
+    Maps legacy keys via MODEL_ALIASES (e.g. "haiku" -> "openai", the cheap
+    tier its users originally chose; "gpt-5-mini" -> "openai"). Returns None
+    when the key isn't recognized so callers can fall back to the server default.
     """
     if not model_name:
         return None
