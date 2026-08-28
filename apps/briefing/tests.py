@@ -2090,11 +2090,12 @@ class Test_Views(BriefingTestCase):
         self.assertEqual(prefs.briefing_model, "anthropic")
 
     def test_post_briefing_model_legacy_key_resolves(self):
-        # Legacy keys ("haiku") from older clients resolve to vendor keys ("anthropic")
+        # Legacy keys ("haiku") from older clients resolve to the cheap tier
+        # ("openai"/Luna), not the Sonnet-class "anthropic" chat tier
         self.make_prefs()
         response = self.client.post(reverse("briefing-preferences"), {"briefing_model": "haiku"})
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
-        self.assertEqual(prefs.briefing_model, "anthropic")
+        self.assertEqual(prefs.briefing_model, "openai")
 
     def test_post_briefing_model_default_clears(self):
         self.make_prefs(briefing_model="haiku")
