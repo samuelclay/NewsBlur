@@ -1118,6 +1118,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     [allFolders setValue:@[] forKey:@"trending:well_read"];
     [allFolders setValue:@[] forKey:@"trending:long_reads"];
+    [allFolders setValue:@[] forKey:@"trending:good_reads"];
     
     NSArray *savedSearches = [appDelegate updateSavedSearches:results];
     [allFolders setValue:savedSearches forKey:@"saved_searches"];
@@ -1232,6 +1233,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     [appDelegate.dictFoldersArray addObject:@"trending:well_read"];
     [appDelegate.dictFoldersArray removeObject:@"trending:long_reads"];
     [appDelegate.dictFoldersArray addObject:@"trending:long_reads"];
+    [appDelegate.dictFoldersArray removeObject:@"trending:good_reads"];
+    [appDelegate.dictFoldersArray addObject:@"trending:good_reads"];
     
     // Add All Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
@@ -2473,6 +2476,11 @@ heightForHeaderInSection:(NSInteger)section {
         ![prefs boolForKey:@"show_long_reads"]) {
         return 0;
     }
+
+    if ([folderName isEqualToString:@"trending:good_reads"] &&
+        ![prefs boolForKey:@"show_good_reads"]) {
+        return 0;
+    }
     
     for (NSString *parentName in [self parentTitlesForFolderTitle:folderName]) {
         if ([appDelegate isFolderCollapsed:parentName]) {
@@ -2760,6 +2768,8 @@ heightForHeaderInSection:(NSInteger)section {
         return @"Widely Read Stories";
     } else if ([folderName isEqualToString:@"trending:long_reads"]) {
         return @"Long Reads";
+    } else if ([folderName isEqualToString:@"trending:good_reads"]) {
+        return @"Good Reads";
     } else if ([folderName isEqualToString:@"river_blurblogs"]) {
         return @"All Shared Stories";
     } else if ([folderName isEqualToString:@"saved_stories"]) {

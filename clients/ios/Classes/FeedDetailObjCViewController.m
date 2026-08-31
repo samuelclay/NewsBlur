@@ -3386,6 +3386,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 feedTitle = @"Widely Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
                 feedTitle = @"Long Reads";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
+                feedTitle = @"Good Reads";
             } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
                 feedTitle = @"NewsBlur Dashboard";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {

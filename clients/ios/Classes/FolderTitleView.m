@@ -157,6 +157,8 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         folderTitle = @"Widely Read Stories";
     } else if ([folderName isEqual:@"trending:long_reads"]) {
         folderTitle = @"Long Reads";
+    } else if ([folderName isEqual:@"trending:good_reads"]) {
+        folderTitle = @"Good Reads";
     } else if ([folderName isEqual:@"river_blurblogs"]) {
         folderTitle = @"All Shared Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
@@ -324,6 +326,13 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         }
     } else if ([folderName isEqual:@"trending:long_reads"]) {
         folderImage = [UIImage imageNamed:@"trending-long-reads"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if ([folderName isEqual:@"trending:good_reads"]) {
+        folderImage = [UIImage systemImageNamed:@"star.fill"];
         if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {

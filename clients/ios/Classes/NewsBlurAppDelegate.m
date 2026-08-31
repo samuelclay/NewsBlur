@@ -2575,6 +2575,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                           @"river_blurblogs",
                                           @"trending:well_read",
                                           @"trending:long_reads",
+                                          @"trending:good_reads",
                                           @"widget_stories",
                                           nil];
 
@@ -3329,6 +3330,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         activity.title = @"Read Widely Read Stories";
     } else if ([folder isEqualToString:@"trending:long_reads"]) {
         activity.title = @"Read Long Reads";
+    } else if ([folder isEqualToString:@"trending:good_reads"]) {
+        activity.title = @"Read Good Reads";
     } else if ([folder isEqualToString:@"dashboard"]) {
         activity.title = @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
@@ -4602,6 +4605,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Long Reads"];
     } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Good Reads"];
+    } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
         titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
     } else if (storiesCollection.isRiverView &&
@@ -4662,6 +4668,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
             titleImage = [UIImage imageNamed:@"trending-long-reads"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
+            titleImage = [UIImage systemImageNamed:@"star.fill"];
         } else if (storiesCollection.isSocialRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"all-shares"];
@@ -4723,6 +4732,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return @"Widely Read Stories";
     } else if ([folder isEqualToString:@"trending:long_reads"]) {
         return @"Long Reads";
+    } else if ([folder isEqualToString:@"trending:good_reads"]) {
+        return @"Good Reads";
     } else if ([folder isEqualToString:@"dashboard"]) {
         return @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
@@ -4751,6 +4762,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return [UIImage imageNamed:@"trending-well-read"];
     } else if ([folder isEqualToString:@"trending:long_reads"]) {
         return [UIImage imageNamed:@"trending-long-reads"];
+    } else if ([folder isEqualToString:@"trending:good_reads"]) {
+        return [UIImage systemImageNamed:@"star.fill"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         return [UIImage imageNamed:@"all-shares"];
     } else if ([folder isEqualToString:@"dashboard"]) {

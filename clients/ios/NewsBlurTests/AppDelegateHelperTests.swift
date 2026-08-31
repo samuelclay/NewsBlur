@@ -79,6 +79,14 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
     }
 
+    func test_storiesCollectionTitlesGoodReadsRiver() {
+        let storiesCollection = StoriesCollection()
+        storiesCollection.isRiverView = true
+        storiesCollection.activeFolder = "trending:good_reads"
+
+        XCTAssertEqual(storiesCollection.activeTitle, "Good Reads")
+    }
+
     func test_upgradeSettings_doesNotMigrateWhenAlreadyPastMigrationRelease() {
         defaults.set(false, forKey: "default_scroll_read_filter")
 

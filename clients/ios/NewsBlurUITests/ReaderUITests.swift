@@ -21,6 +21,22 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_goodReadsAppearsAtBottomAndLoadsTrendingStories() {
+        launch(on: "reader-good-reads")
+
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
+
+        let goodReadsFolder = folderButton(named: "Good Reads")
+        XCTAssertTrue(reveal(goodReadsFolder, in: feedsList))
+        attachScreenshot(named: "good-reads-feed-list")
+        tapElementCenter(goodReadsFolder)
+
+        let storyList = app.tables["story-titles-list"]
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+        XCTAssertTrue(storyRow("ui-story-good-reads-1").waitForExistence(timeout: 10))
+    }
+
     func test_selectingFolderLoadsRiverStories() {
         launch(on: "reader")
 

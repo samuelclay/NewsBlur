@@ -385,6 +385,8 @@
             return @"Widely Read Stories";
         } else if ([activeFolder isEqualToString:@"trending:long_reads"]) {
             return @"Long Reads";
+        } else if ([activeFolder isEqualToString:@"trending:good_reads"]) {
+            return @"Good Reads";
         } else if ([activeFolder isEqualToString:@"daily_briefing"]) {
             return @"Daily Briefing";
         } else if (isSavedView && activeSavedStoryTag) {

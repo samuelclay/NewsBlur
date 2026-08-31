@@ -688,6 +688,12 @@ class PreferencesViewModel: ObservableObject {
                         icon: "moon",
                         iconColor: .indigo,
                         type: .toggle(key: "show_long_reads", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: "Show Good Reads",
+                        icon: "star.fill",
+                        iconColor: .yellow,
+                        type: .toggle(key: "show_good_reads", defaultValue: true)
                     )
                 ]
             ),
