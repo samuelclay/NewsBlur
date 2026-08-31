@@ -54,6 +54,7 @@ public class PrefConstants {
     public static final String INFREQUENT_FOLDER_NAME = "infrequent_stories";
     public static final String WIDELY_READ_STORIES_FOLDER_NAME = "widely_read_stories";
     public static final String LONG_READS_FOLDER_NAME = "long_reads";
+    public static final String GOOD_READS_FOLDER_NAME = "good_reads";
 
     public static final String DEFAULT_STORY_ORDER = "default_story_order";
     public static final String DEFAULT_READ_FILTER = "default_read_filter";
