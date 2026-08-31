@@ -20,6 +20,7 @@ final class NewsBlurUITestHarness {
 
     private enum ReaderScenario {
         case list
+        case goodReadsList
         case techFolder
         case cultureFolder
         case swiftFeed
@@ -273,6 +274,10 @@ final class NewsBlurUITestHarness {
         switch scenario {
         case .list:
             return
+        case .goodReadsList:
+            UserDefaults.standard.set(true, forKey: "show_good_reads")
+            appDelegate.feedsViewController.reloadFeedTitlesTable()
+            appDelegate.feedsViewController.view.layoutIfNeeded()
         case .techFolder:
             appDelegate.feedsViewController.selectFolder("Tech")
         case .cultureFolder:
@@ -296,6 +301,8 @@ final class NewsBlurUITestHarness {
         switch screen {
         case "reader":
             return .list
+        case "reader-good-reads":
+            return .goodReadsList
         case "reader-folder-tech":
             return .techFolder
         case "reader-folder-culture":
@@ -351,6 +358,7 @@ private enum ReaderUITestFixtures {
         defaults.set(false, forKey: "show_global_shared_stories")
         defaults.set(false, forKey: "show_widely_read_stories")
         defaults.set(false, forKey: "show_long_reads")
+        defaults.set(false, forKey: "show_good_reads")
         defaults.set(true, forKey: "story_clustering")
         defaults.set("related", forKey: "cluster_mode")
 
@@ -460,6 +468,8 @@ private enum ReaderUITestFixtures {
             ]
         } else if url.path == "/reader/favicons" {
             payload = faviconsResponse(for: url)
+        } else if url.path.hasPrefix("/reader/trending_stories") {
+            payload = trendingStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/river_stories") {
             payload = riverStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/feed/") {
@@ -525,6 +535,28 @@ private enum ReaderUITestFixtures {
             "feed_authors": [],
             "user_profiles": [],
         ]
+    }
+
+    private static func trendingStoriesResponse(for url: URL) -> [String: Any] {
+        let trendingType = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?
+            .first(where: { $0.name == "trending_type" })?
+            .value
+
+        return feedStoriesResponse(
+            feedID: "trending:good_reads",
+            stories: trendingType == "good_reads" ? [
+                story(
+                    hash: "ui-story-good-reads-1",
+                    feedID: techFeedId,
+                    title: "Good Reads Fixture Story",
+                    content: "<p>This deterministic story verifies the Good Reads trending river.</p>",
+                    date: "2m",
+                    timestamp: 1_700_001_250,
+                    author: "Reader Fixtures"
+                ),
+            ] : []
+        )
     }
 
     private static func faviconsResponse(for url: URL) -> [String: Any] {
