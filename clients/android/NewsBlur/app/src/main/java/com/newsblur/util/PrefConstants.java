@@ -102,6 +102,7 @@ public class PrefConstants {
     public static final String ENABLE_ROW_DAILY_BRIEFING = "enable_row_daily_briefing";
     public static final String ENABLE_ROW_WIDELY_READ_STORIES = "enable_row_widely_read_stories";
     public static final String ENABLE_ROW_LONG_READS = "enable_row_long_reads";
+    public static final String ENABLE_ROW_GOOD_READS = "enable_row_good_reads";
 
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";

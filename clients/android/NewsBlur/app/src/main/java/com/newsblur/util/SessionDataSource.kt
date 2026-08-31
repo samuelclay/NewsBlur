@@ -14,6 +14,7 @@ private val invalidMarkAllReadFolderKeys by lazy {
         AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY,
         AppConstants.WIDELY_READ_STORIES_GROUP_KEY,
         AppConstants.LONG_READS_GROUP_KEY,
+        AppConstants.GOOD_READS_GROUP_KEY,
         AppConstants.READ_STORIES_GROUP_KEY,
         AppConstants.SAVED_STORIES_GROUP_KEY,
         AppConstants.SAVED_SEARCHES_GROUP_KEY,

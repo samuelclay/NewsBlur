@@ -717,6 +717,10 @@
             android:theme="@style/Theme.Translucent" />
 
         <activity
+            android:name=".activity.GoodReadsItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
             android:name=".activity.ReadStoriesItemsList"
             android:theme="@style/Theme.Translucent" />
 
@@ -767,6 +771,11 @@
 
         <activity
             android:name=".activity.LongReadsReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.GoodReadsReading"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
