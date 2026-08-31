@@ -145,6 +145,12 @@ class SessionDataSource private constructor(
      * until it finds a non empty folder or it will get to the end of the folder list.
      */
     private fun getNextNonEmptyFolder(folderName: String): Pair<String, List<Feed>>? =
+        getNextNonEmptyFolder(folderName, startFolderName = folderName)
+
+    private fun getNextNonEmptyFolder(
+        folderName: String,
+        startFolderName: String,
+    ): Pair<String, List<Feed>>? =
         with(folders.indexOf(folderName)) {
             val nextIndex =
                 if (this == folders.size - 1) {
@@ -162,14 +168,19 @@ class SessionDataSource private constructor(
                     null
                 }
 
-            if (nextFolderName == null || nextFolderName == folderName) {
+            // Stop on a full wrap back to the folder we started from, otherwise an all-empty
+            // unread filter walks forever.
+            if (nextFolderName == null ||
+                nextFolderName == folderName ||
+                nextFolderName == startFolderName
+            ) {
                 return null
             }
 
             val feeds = foldersChildrenMap[nextFolderName]
             if (feeds.isNullOrEmpty() || !feeds.hasNextUnreadTarget()) {
                 // try and get the next non empty folder name
-                getNextNonEmptyFolder(nextFolderName)
+                getNextNonEmptyFolder(nextFolderName, startFolderName)
             } else {
                 nextFolderName to feeds
             }
