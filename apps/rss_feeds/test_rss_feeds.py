@@ -1989,6 +1989,25 @@ class Test_OpenRSSFeedRewrite(TestCase):
         url = "https://example.com/www.youtube.com/@JudgeJudy/videos"
         self.assertEqual(rewrite_openrss_to_feed_address(url), url)
 
+    def test_rewrite_leaves_openrss_first_party_feeds_untouched(self):
+        """Open RSS's own feeds live at the bare path, not under /feed/.
+
+        Regression for the Open RSS Changelog feed (reported by openrss.org,
+        Aug 2026): https://openrss.org/changelog.rss was being rewritten to
+        https://openrss.org/feed/changelog.rss, which 404s, so subscribers
+        silently stopped receiving updates. Only paths whose first segment is a
+        proxied hostname (e.g. www.youtube.com, reddit.com) get the /feed/ prefix.
+        """
+        for url in [
+            "https://openrss.org/changelog.rss",
+            "https://openrss.org/changelog/rss",  # legacy URL, 301s to changelog.rss
+            "https://openrss.org/changelog",
+            "https://openrss.org/blog/feed.xml",
+            "https://openrss.org/feed.atom",
+            "https://openrss.org/changelog.json",
+        ]:
+            self.assertEqual(rewrite_openrss_to_feed_address(url), url, url)
+
     def test_get_feed_from_url_resolves_preview_to_feed_address(self):
         """Adding an openrss preview URL must resolve to the /feed/ feed, not the preview."""
         from utils import urlnorm
