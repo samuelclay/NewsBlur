@@ -44,6 +44,7 @@ import com.newsblur.activity.DailyBriefingActivity;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
+import com.newsblur.activity.GoodReadsItemsList;
 import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.LongReadsItemsList;
@@ -682,6 +683,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), WidelyReadStoriesItemsList.class);
         } else if (adapter.isRowLongReads(groupPosition)) {
             i = new Intent(getActivity(), LongReadsItemsList.class);
+        } else if (adapter.isRowGoodReads(groupPosition)) {
+            i = new Intent(getActivity(), GoodReadsItemsList.class);
         } else if (adapter.isRowReadStories(groupPosition)) {
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
         } else if (adapter.isRowSavedStories(groupPosition)) {
@@ -810,6 +813,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (feedId.equals("trending:long_reads")) {
             intent = new Intent(getActivity(), LongReadsItemsList.class);
             fs = FeedSet.longReads();
+        } else if (feedId.equals("trending:good_reads")) {
+            intent = new Intent(getActivity(), GoodReadsItemsList.class);
+            fs = FeedSet.goodReads();
         } else if (feedId.startsWith("river:")) {
             intent = new Intent(getActivity(), FolderItemsList.class);
             String folderName = feedId.replace("river:", "");

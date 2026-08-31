@@ -58,6 +58,7 @@ people together to talk about the world.</string>
     <string name="infrequent_title">Infrequent Site Stories</string>
     <string name="widely_read_stories_title">Widely Read Stories</string>
     <string name="long_reads_title">Long Reads</string>
+    <string name="good_reads_title">Good Reads</string>
     <string name="all_shared_stories_title">All Shared Stories</string>
     <string name="global_shared_stories_title">Global Shared Stories</string>
     <string name="read_stories_title">Read Stories</string>
@@ -487,6 +488,8 @@ people together to talk about the world.</string>
     <string name="settings_enable_row_widely_read_stories_sum">Show the Widely Read Stories folder</string>
     <string name="settings_enable_row_long_reads">Show Long Reads</string>
     <string name="settings_enable_row_long_reads_sum">Show the Long Reads folder</string>
+    <string name="settings_enable_row_good_reads">Show Good Reads</string>
+    <string name="settings_enable_row_good_reads_sum">Show the Good Reads folder</string>
 
     <string name="settings_cat_story_list">Story List</string>
     <string name="settings_cat_story_layout">Story Layout</string>

@@ -278,6 +278,8 @@ public class UIUtils {
             activityClass = WidelyReadStoriesReading.class;
         } else if (fs.isLongReads()) {
             activityClass = LongReadsReading.class;
+        } else if (fs.isGoodReads()) {
+            activityClass = GoodReadsReading.class;
         } else if (fs.isDailyBriefing()) {
             activityClass = DailyBriefingReading.class;
         } else {

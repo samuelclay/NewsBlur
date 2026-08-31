@@ -447,6 +447,8 @@ class PrefsRepo(
 
     fun isEnableRowLongReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_LONG_READS, true)
 
+    fun isEnableRowGoodReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_GOOD_READS, true)
+
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
 
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)

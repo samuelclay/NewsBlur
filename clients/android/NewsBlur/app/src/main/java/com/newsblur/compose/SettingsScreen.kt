@@ -59,6 +59,7 @@ import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.ShortText
 import androidx.compose.material.icons.rounded.SortByAlpha
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.SwipeRightAlt
 import androidx.compose.material.icons.rounded.TextFields
@@ -133,6 +134,7 @@ data class SettingsUiState(
     val enableRowDailyBriefing: Boolean = true,
     val enableRowWidelyReadStories: Boolean = true,
     val enableRowLongReads: Boolean = true,
+    val enableRowGoodReads: Boolean = true,
     val defaultStoryOrder: String = StoryOrder.NEWEST.name,
     val defaultReadFilter: String = ReadFilter.ALL.name,
     val markAllReadConfirmation: String = MarkAllReadConfirmation.FOLDER_ONLY.name,
@@ -185,6 +187,7 @@ fun buildSettingsUiState(
         enableRowDailyBriefing = prefsRepo.isEnableRowDailyBriefing(),
         enableRowWidelyReadStories = prefsRepo.isEnableRowWidelyReadStories(),
         enableRowLongReads = prefsRepo.isEnableRowLongReads(),
+        enableRowGoodReads = prefsRepo.isEnableRowGoodReads(),
         defaultStoryOrder = prefsRepo.getDefaultStoryOrder().name,
         defaultReadFilter =
             sharedPreferences.getString(
@@ -690,6 +693,16 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.settings_enable_row_long_reads_sum),
                 palette = palette,
                 onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_LONG_READS, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_enable_row_good_reads),
+                icon = Icons.Rounded.Star,
+                iconColor = NewsblurGreen,
+                checked = state.enableRowGoodReads,
+                subtitle = stringResource(R.string.settings_enable_row_good_reads_sum),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.ENABLE_ROW_GOOD_READS, it) },
             )
         }
 

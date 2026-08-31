@@ -69,6 +69,10 @@
             android:defaultValue="true"
             android:key="enable_row_long_reads"
             android:title="@string/settings_enable_row_long_reads" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_good_reads"
+            android:title="@string/settings_enable_row_good_reads" />
     </PreferenceCategory>
 
     <PreferenceCategory 
