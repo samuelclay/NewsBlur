@@ -49,4 +49,14 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
 
+    <com.newsblur.view.BottomNextFeedControl
+        android:id="@+id/bottom_next_feed_control"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="22dp"
+        android:visibility="gone" />
+
 </RelativeLayout>

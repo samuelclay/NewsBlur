@@ -15,7 +15,7 @@ from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
 from .prompts import get_prompt
-from .providers import VALID_MODELS
+from .providers import MODEL_ALIASES, VALID_MODELS
 from .tasks import AskAIQuestion
 from .usage import AskAIUsageTracker, TranscriptionUsageTracker
 
@@ -37,7 +37,7 @@ def ask_ai_question(request):
         question_id: ID of the question template (e.g., "sentence", "bullets", "custom")
         custom_question: Optional custom question text (required if question_id is "custom")
         conversation_history: Optional JSON string of conversation history for follow-ups
-        model: Optional model to use (opus, gpt-5.2, gemini-3, grok-4.1). Defaults to server setting.
+        model: Optional model to use (anthropic, openai, google, xai). Defaults to server setting.
         thinking: Optional "true"/"false" to enable reasoning/thinking mode.
 
     Returns:
@@ -58,9 +58,12 @@ def ask_ai_question(request):
     else:
         request_id = str(uuid.uuid4())
 
-    # Validate model (optional, defaults to server setting if not provided)
-    if model and model not in VALID_MODELS:
-        return {"code": -1, "message": f"Invalid model. Valid options: {', '.join(VALID_MODELS)}"}
+    # Validate model (optional, defaults to server setting if not provided).
+    # Older mobile clients still send legacy keys ("opus") — map them to vendor keys.
+    if model:
+        model = MODEL_ALIASES.get(model, model)
+        if model not in VALID_MODELS:
+            return {"code": -1, "message": f"Invalid model. Valid options: {', '.join(VALID_MODELS)}"}
 
     # Parse conversation history if provided
     conversation_history = None

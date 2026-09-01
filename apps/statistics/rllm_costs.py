@@ -181,6 +181,7 @@ class RLLMCosts:
         "backfill_llm_suggest",
         "backfill_underpopulated_feeds",
         "generate_popular_feeds_taxonomy",
+        "global_shared",
     ]
     CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
     METRICS = ["tokens", "cost", "requests"]

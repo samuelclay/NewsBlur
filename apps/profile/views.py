@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -152,7 +152,14 @@ def get_preference(request):
 
     payload = preferences
     if preference_name:
-        payload = preferences.get(preference_name)
+        if preference_name in SINGLE_FIELD_PREFS:
+            # These live on the Profile model, not in the preferences JSON blob
+            # (see set_preference above), so read the field for a fresh value.
+            payload = getattr(request.user.profile, preference_name)
+            if not isinstance(payload, (bool, int, str, type(None))):
+                payload = str(payload)
+        else:
+            payload = preferences.get(preference_name)
 
     response = dict(code=code, payload=payload)
     return response
@@ -447,14 +454,26 @@ def find_paypal_user(data, custom_field="custom_id"):
         except (User.DoesNotExist, ValueError):
             pass
 
-    # Fallback 1: Look up by subscription ID in PaypalIds
+    # Fallback 1: Look up by subscription ID in PaypalIds.
+    # Use filter() rather than get() because duplicate PaypalIds rows can share
+    # a paypal_sub_id (e.g. retried webhooks). If duplicates all belong to the
+    # same user we can safely return that user; if they span multiple users the
+    # match is ambiguous and we fall through rather than risk applying a webhook
+    # to the wrong account.
     sub_id = resource.get("id") or resource.get("billing_agreement_id")
     if sub_id:
-        try:
-            paypal_id = PaypalIds.objects.get(paypal_sub_id=sub_id)
-            return paypal_id.user
-        except PaypalIds.DoesNotExist:
-            pass
+        paypal_ids = list(PaypalIds.objects.filter(paypal_sub_id=sub_id).select_related("user"))
+        distinct_user_ids = {p.user_id for p in paypal_ids if p.user_id}
+        if len(distinct_user_ids) > 1:
+            logging.user(
+                None,
+                f" ~FR~SBPayPal webhook: multiple users share paypal_sub_id={sub_id} "
+                f"users={sorted(distinct_user_ids)} - skipping PaypalIds lookup",
+            )
+        elif paypal_ids:
+            paypal_id = max(paypal_ids, key=lambda p: p.id)
+            if paypal_id.user:
+                return paypal_id.user
 
     # Fallback 2: Look up by subscriber email
     subscriber = resource.get("subscriber", {})
@@ -491,7 +510,17 @@ def paypal_webhooks(request):
         # Kick it over to paypal ipn
         return paypal_standard_ipn(request)
 
-    logging.user(request, f" ---> Paypal webhooks {data.get('event_type', '<no event_type>')} data: {data}")
+    # json.decode hands an empty body straight back, and a well-formed JSON body can
+    # still be a list or a string, so anything but a dict has no webhook to dispatch.
+    if not isinstance(data, dict):
+        logging.user(request, f" ---> Paypal webhooks unparseable body, ignoring: {request.body[:200]}")
+        return HttpResponse("OK")
+
+    if not data.get("event_type"):
+        logging.user(request, f" ---> Paypal webhooks missing event_type, ignoring: {data}")
+        return HttpResponse("OK")
+
+    logging.user(request, f" ---> Paypal webhooks {data['event_type']} data: {data}")
 
     if data["event_type"] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
@@ -506,9 +535,7 @@ def paypal_webhooks(request):
             # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
             resource_status = data["resource"].get("status")
             is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
-            user.profile.store_paypal_sub_id(
-                data["resource"]["id"], skip_save_primary=not is_active_status
-            )
+            user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=not is_active_status)
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
             #     user.profile.activate_premium()
@@ -522,9 +549,7 @@ def paypal_webhooks(request):
             # guard (active_provider != "stripe") backfired for long-term Stripe
             # users switching to PayPal — their active_provider was already "stripe",
             # so the cancel was skipped and the old Stripe sub kept auto-renewing.
-            is_fresh_activation = (
-                data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
-            )
+            is_fresh_activation = data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
             if is_fresh_activation:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()
@@ -1599,13 +1624,23 @@ def forgot_password(request):
     if request.method == "POST":
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
-            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % request.POST["email"])
+            # Use the cleaned email, since the form strips the surrounding whitespace
+            # that the raw POST value still carries. Looking the raw value up instead
+            # misses the account the form just validated.
+            email = form.cleaned_data["email"]
+            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % email)
             try:
-                user = User.objects.get(email__iexact=request.POST["email"])
+                user = User.objects.get(email__iexact=email)
             except User.MultipleObjectsReturned:
-                user = User.objects.filter(email__iexact=request.POST["email"])[0]
-            user.profile.send_forgot_password_email()
-            return HttpResponseRedirect(reverse("index"))
+                user = User.objects.filter(email__iexact=email)[0]
+            except User.DoesNotExist:
+                # The account went away between form validation and this lookup.
+                logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % email)
+                form.add_error("email", "No user has that email address.")
+                user = None
+            if user:
+                user.profile.send_forgot_password_email()
+                return HttpResponseRedirect(reverse("index"))
         else:
             logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % request.POST.get("email"))
     else:
@@ -1808,12 +1843,53 @@ def delete_all_sites(request):
 @login_required
 @render_to("profile/email_optout.xhtml")
 def email_optout(request):
+    """Unsubscribe from all NewsBlur emails. GET shows a confirmation button so that
+    mail clients pre-loading links don't unsubscribe anybody; only the POST from the
+    button on templates/profile/email_optout.xhtml actually unsubscribes."""
     user = request.user
-    user.profile.send_emails = False
-    user.profile.save()
+    unsubscribed = False
+
+    if request.method == "POST":
+        user.profile.send_emails = False
+        user.profile.save()
+        unsubscribed = True
+        logging.user(user, "~BB~FM~SBUnsubscribed from all NewsBlur emails")
 
     return {
         "user": user,
+        "unsubscribed": unsubscribed,
+    }
+
+
+@csrf_exempt
+@render_to("profile/email_optout.xhtml")
+def email_optout_token(request, username, secret):
+    """Tokened unsubscribe link used in email footers (templates/mail/email_base.xhtml).
+    Validates the same secret_token as the autologin links in emails and logs the user
+    in, so no login is required to unsubscribe. GET shows a confirmation button; POST
+    unsubscribes. POST also serves RFC 8058 List-Unsubscribe one-click requests from
+    mail providers, which is why this view is csrf_exempt: the secret token in the URL
+    authorizes the action."""
+    profile = Profile.objects.filter(user__username=username, secret_token=secret).first()
+    if not profile:
+        return HttpResponseForbidden()
+
+    user = profile.user
+    if request.user.pk != user.pk:
+        user.backend = settings.AUTHENTICATION_BACKENDS[0]
+        login_user(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        logging.user(user, "~FG~BB~SKAuto-Login via email unsubscribe link~FW")
+
+    unsubscribed = False
+    if request.method == "POST":
+        profile.send_emails = False
+        profile.save()
+        unsubscribed = True
+        logging.user(user, "~BB~FM~SBUnsubscribed from all NewsBlur emails via email link")
+
+    return {
+        "user": user,
+        "unsubscribed": unsubscribed,
     }
 
 

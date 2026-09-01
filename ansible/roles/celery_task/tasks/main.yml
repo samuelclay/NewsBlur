@@ -93,7 +93,7 @@
       MAILTO=""
       SHELL=/bin/sh
       PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_task_fetches.py >> /var/log/sanity_checker.log
+      0 * * * *    nb    sudo docker run --rm -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_task_fetches.py >> /var/log/sanity_checker.log
 
   when: "'task-work' in inventory_hostname"
   tags:
@@ -109,7 +109,7 @@
       MAILTO=""
       SHELL=/bin/sh
       PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py >> /var/log/sanity_checker.log
+      0 * * * *    nb    sudo docker run --rm -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py >> /var/log/sanity_checker.log
 
   when: "'task-work' in inventory_hostname"
   tags:
@@ -125,7 +125,7 @@
       MAILTO=""
       SHELL=/bin/sh
       PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py >> /var/log/sanity_checker.log
+      0 * * * *    nb    sudo docker run --rm -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py >> /var/log/sanity_checker.log
 
   when: "'task-work' in inventory_hostname"
   tags:

@@ -4,8 +4,11 @@ import com.newsblur.domain.Feed
 import com.newsblur.util.FeedSet
 import com.newsblur.util.Session
 import com.newsblur.util.SessionDataSource
+import com.newsblur.util.StateFilter
 import org.junit.Assert
 import org.junit.Test
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 
 class SessionDataSourceTest {
     private val folders =
@@ -93,6 +96,139 @@ class SessionDataSourceTest {
         } ?: Assert.fail("Next session was null")
     }
 
+    @Test
+    fun `peek next session does not advance current session`() {
+        val feedSet = FeedSet.singleFeed("20")
+        val feed = createFeed("20")
+        val session = Session(feedSet, "F2", feed)
+        val sessionDs = SessionDataSource(session, folders, folderChildren)
+
+        Assert.assertEquals("21", sessionDs.peekNextSession()?.feed?.feedId)
+        Assert.assertEquals("21", sessionDs.peekNextSession()?.feed?.feedId)
+        Assert.assertEquals("21", sessionDs.getNextSession()?.feed?.feedId)
+        Assert.assertEquals("22", sessionDs.peekNextSession()?.feed?.feedId)
+    }
+
+    @Test
+    fun `next unread session in all mode skips read feeds`() {
+        val feed20 = createFeed("20")
+        val feed21 = createFeed("21")
+        val feed22 = createFeed("22", neutralCount = 2)
+        val session = Session(FeedSet.singleFeed("20"), "F2", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, feed21, feed22),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertEquals("22", it.feed?.feedId)
+        } ?: Assert.fail("Next unread session was null")
+    }
+
+    @Test
+    fun `next unread folder in all mode skips folders without unread feeds`() {
+        val session = Session(FeedSet.folder("F2", setOf("20")), "F2")
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(createFeed("20")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50", positiveCount = 1), createFeed("51")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertNull(it.feed)
+            Assert.assertEquals("F5", it.folderName)
+            Assert.assertEquals(setOf("50", "51"), it.feedSet.flatFeedIds)
+        } ?: Assert.fail("Next unread folder session was null")
+    }
+
+    @Test
+    fun `next unread feed session falls through to next unread folder`() {
+        val feed20 = createFeed("20", neutralCount = 1)
+        val session = Session(FeedSet.singleFeed("20"), "F2", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, createFeed("21"), createFeed("22")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50", neutralCount = 1), createFeed("51")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertNull(it.feed)
+            Assert.assertEquals("F5", it.folderName)
+            Assert.assertEquals(setOf("50", "51"), it.feedSet.flatFeedIds)
+        } ?: Assert.fail("Next unread folder session was null")
+    }
+
+    @Test
+    fun `next unread feed session recovers from stale folder name`() {
+        val feed20 = createFeed("20", neutralCount = 1)
+        val session = Session(FeedSet.singleFeed("20"), "Stale Folder", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, createFeed("21", neutralCount = 1), createFeed("22")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertEquals("F2", it.folderName)
+            Assert.assertEquals("21", it.feed?.feedId)
+        } ?: Assert.fail("Next unread feed session was null")
+    }
+
+    @Test
+    fun `next unread data source snapshots serializable saved feed ids`() {
+        val session = Session(FeedSet.singleFeed("20"), "F2", createFeed("20"))
+        val savedFeedIds = linkedMapOf("21" to true).keys
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                folderChildren,
+                StateFilter.SAVED,
+                savedFeedIds,
+            )
+
+        ObjectOutputStream(ByteArrayOutputStream()).use { stream ->
+            stream.writeObject(sessionDs)
+        }
+    }
+
     /**
      * Expected to return a null [Session] because feed id 12
      * is the last feed id in folder F2
@@ -159,9 +295,17 @@ class SessionDataSourceTest {
         } ?: Assert.fail("Next session is null for F5 feedSetFolder")
     }
 
-    private fun createFeed(id: String) =
+    private fun createFeed(
+        id: String,
+        positiveCount: Int = 0,
+        neutralCount: Int = 0,
+        negativeCount: Int = 0,
+    ) =
         Feed().apply {
             feedId = id
             title = "Feed #$id"
+            this.positiveCount = positiveCount
+            this.neutralCount = neutralCount
+            this.negativeCount = negativeCount
         }
 }

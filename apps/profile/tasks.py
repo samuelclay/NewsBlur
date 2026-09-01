@@ -195,6 +195,26 @@ def EmailPremiumRenewalNotice():
         profile.send_premium_renewal_notice_email()
 
 
+@app.task(name="premium-pricing-migration")
+def PremiumPricingMigration():
+    """Nightly: move grandfathered $12/$24 premium subscribers to $36 as they approach renewal.
+    No-op until settings.PREMIUM_PRICING_MIGRATION_ENABLED is flipped on for the rollout."""
+    if not getattr(settings, "PREMIUM_PRICING_MIGRATION_ENABLED", False):
+        logging.debug(" ---> Premium pricing migration disabled (PREMIUM_PRICING_MIGRATION_ENABLED)")
+        return
+    Profile.run_premium_pricing_migration()
+
+
+@app.task(name="reconcile-premium-pricing-migration")
+def ReconcilePremiumPricingMigration():
+    """Nightly: record upgrade/cancel outcomes for the pricing migration and cancel non-approving
+    PayPal subscriptions. No-op until settings.PREMIUM_PRICING_MIGRATION_ENABLED is flipped on."""
+    if not getattr(settings, "PREMIUM_PRICING_MIGRATION_ENABLED", False):
+        logging.debug(" ---> Premium pricing reconciliation disabled (PREMIUM_PRICING_MIGRATION_ENABLED)")
+        return
+    Profile.reconcile_premium_pricing_migration()
+
+
 @app.task(name="email-feed-limit-notifications")
 def EmailFeedLimitNotifications():
     """
@@ -267,6 +287,7 @@ def EmailFeedLimitNotifications():
             text,
             from_email=f"NewsBlur <{settings.HELLO_EMAIL}>",
             to=[f"{user.username} <{user.email}>"],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -339,6 +360,7 @@ def EmailReferralCredit(referrer_user_id, referred_username, credit_days, referr
         text,
         from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
         to=["%s <%s>" % (profile.user.username, profile.user.email)],
+        headers=profile.email_unsubscribe_headers(),
     )
     msg.attach_alternative(html, "text/html")
     msg.send()
@@ -384,6 +406,7 @@ def EmailGiftCreated(gifter_user_id, gift_url, gift_tier):
         text,
         from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
         to=["%s <%s>" % (profile.user.username, profile.user.email)],
+        headers=profile.email_unsubscribe_headers(),
     )
     msg.send()
     logging.user(profile.user, "~BB~FM~SBSent gift created email: %s for %s" % (gift_url, tier_name))

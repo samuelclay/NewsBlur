@@ -38,10 +38,15 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 ## Bug Fixing Workflow
 When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
 
+## Git Branching
+- **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+  - **Reuse the existing booted simulator**: before any iOS build/install/launch/screenshot flow, run `python3 clients/ios/run_ios.py list` and use the already booted simulator UDID. Build, install, and launch onto that same simulator. Do not create, clone, boot, or switch to a new simulator unless no usable simulator is booted or a clean device state is explicitly needed.
   - **All new iOS files must be written in Swift** (not Objective-C)
 - **Android**: Use the adb/emulator workflow below for emulator testing and screenshots
+  - **Reuse the existing running emulator**: before any Android build/install/launch/screenshot flow, run `adb devices -l` and use the already attached emulator/device. Install and launch onto that same target. Do not start a new emulator unless no usable emulator/device is attached or a clean device state is explicitly needed.
   - **Commit early and often for Android work**: make frequent commits throughout implementation so there is a clear trail of changes; commit freely rather than batching large edits.
   - **Theme coverage is required for Android UI work**: any Android UI change must be checked against all supported NewsBlur themes, not just the current device theme.
   - Current required Android theme coverage: `light`, `dark`, and `black`.
@@ -51,6 +56,7 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 ## Android Emulator Testing
 - Prefer reusing an already running emulator instead of booting a new one
 - Check attached devices with `adb devices -l`
+- If no emulator is attached, start one from the repo root with `make android-emulator`
 - The current app package is `com.newsblur`
 - The launcher activity resolves to `com.newsblur/.activity.InitActivity`
 - Do not rely on `emulator -list-avds` being available on `PATH`; in this repo it was not
@@ -143,10 +149,19 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - Example (worktree): `docker exec -t newsblur_web_search-by-phrase python manage.py test apps`
 
 ## Deployment Commands
-- `aps` - Alias for `ansible-playbook ansible/setup.yml` - Used only for setting up new servers or making global config changes (e.g., installing new packages). While it does deploy code changes, use apd for deployment
-- `apd` - Alias for `ansible-playbook ansible/deploy.yml` - Used for regular code deployments. This is the command to run after merging a PR to main. It deploys code changes and restarts services without making global config changes. 
+**Standard code deploys (use these):**
+- `make deploy` - Deploy to the web/app servers. Runs `ansible-playbook ansible/deploy.yml -l app`. This is the command for regular web code changes (views, models, settings served by web).
+- `make celery` - Deploy to the task/Celery servers. Runs `ansible-playbook ansible/deploy.yml -l task`. Required whenever the change touches code that runs inside a Celery task (tasks, models called by tasks, scoring, etc.).
+- A change spanning both web and task code needs **both** `make deploy` and `make celery`.
 
-Unless asked, don't run either of these. Assume I will deploy or ask you to deploy when ready.
+**Do NOT run the full `apd`/`ansible-playbook ansible/deploy.yml` (no `-l`) for routine deploys.** A full apd can strand prod web servers in HAProxy MAINT if the hstaging disable step fails. Prefer the scoped `make deploy` / `make celery` targets above.
+
+**Reference (rarely needed directly):**
+- `aps` - Alias for `ansible-playbook ansible/setup.yml` - Used only for setting up new servers or making global config changes (e.g., installing new packages).
+- `apd` - Alias for `ansible-playbook ansible/deploy.yml` - The full unscoped deploy; see the HAProxy caveat above.
+- Grafana dashboard changes deploy separately via `aps -l hdb-metrics -t prometheus,grafana`.
+
+Unless asked, don't run any of these. Assume I will deploy or ask you to deploy when ready.
 
 ## SSH Access to Servers
 To SSH into NewsBlur servers non-interactively:

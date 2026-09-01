@@ -112,6 +112,7 @@
 - (void)setToolbarOffset:(CGFloat)offset;
 - (BOOL)isCustomToolbarActive;
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
+- (void)updateUITestTraverseFadeProbe;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;

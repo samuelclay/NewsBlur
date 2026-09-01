@@ -7,6 +7,7 @@ import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Trace;
 import android.view.KeyEvent;
@@ -41,6 +42,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,6 +56,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
+    private static WeakReference<Main> visibleMainRef = new WeakReference<>(null);
 
     private enum SyncStatusAccessory {
         NONE,
@@ -87,6 +90,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         Trace.beginSection("MainOnCreate");
 
         super.onCreate(savedInstanceState);
+        visibleMainRef = new WeakReference<>(this);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         contextMenuDelegate = new MainContextMenuDelegateImpl(this, prefsRepo);
@@ -151,6 +155,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             com.newsblur.util.Log.e(getClass().getName(), "error resuming Main", e);
             finish();
         }
+        visibleMainRef = new WeakReference<>(this);
 
         String forceShowFeedId = getIntent().getStringExtra(EXTRA_FORCE_SHOW_FEED_ID);
         if (forceShowFeedId != null) {
@@ -190,7 +195,34 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onDestroy() {
         cancelPendingSyncStatusHide();
+        if (visibleMainRef.get() == this) {
+            visibleMainRef.clear();
+        }
         super.onDestroy();
+    }
+
+    public static Bitmap createVisibleFeedListSnapshot() {
+        Main main = visibleMainRef.get();
+        if (main == null || main.isDestroyed()) {
+            return null;
+        }
+
+        View decorView = main.getWindow().getDecorView();
+        int width = decorView.getWidth();
+        int height = decorView.getHeight();
+        if (width <= 0 || height <= 0) {
+            return null;
+        }
+
+        try {
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            decorView.draw(canvas);
+            return bitmap;
+        } catch (RuntimeException e) {
+            com.newsblur.util.Log.e(Main.class.getName(), "Unable to snapshot feed list", e);
+            return null;
+        }
     }
 
     @Override

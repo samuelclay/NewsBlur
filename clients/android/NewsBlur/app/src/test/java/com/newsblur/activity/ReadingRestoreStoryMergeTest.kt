@@ -3,6 +3,8 @@ package com.newsblur.activity
 import com.newsblur.domain.Story
 import com.newsblur.util.StoryOrder
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Test
 
@@ -71,6 +73,33 @@ class ReadingRestoreStoryMergeTest {
             )
 
         assertSame(stories, mergedStories)
+    }
+
+    @Test
+    fun keepsRestoredStoryPinnedAfterInitialPagerRestore() {
+        val restoredStory = story(hash = "restored", timestamp = 200L)
+
+        val state = readingStateAfterPagerTargetFound(restoredStory)
+
+        assertNull(state.storyHash)
+        assertSame(restoredStory, state.restoredCurrentStory)
+        assertFalse(state.isRestoringState)
+    }
+
+    @Test
+    fun pinnedRestoredStoryCanMergeAfterTargetHashWasCleared() {
+        val restoredStory = story(hash = "restored", timestamp = 200L)
+        val state = readingStateAfterPagerTargetFound(restoredStory)
+
+        val mergedStories =
+            mergeRestoredStoryIntoStories(
+                stories = emptyList(),
+                targetStoryHash = state.restoredCurrentStory?.storyHash,
+                restoredStory = state.restoredCurrentStory,
+                storyOrder = StoryOrder.NEWEST,
+            )
+
+        assertEquals(listOf(restoredStory), mergedStories)
     }
 
     private fun story(

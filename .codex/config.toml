@@ -1,0 +1,5 @@
+[mcp_servers.newsblur]
+url = "https://newsblur.com/mcp/"
+
+[mcp_servers.newsblur-dev]
+url = "http://localhost:9117/mcp"

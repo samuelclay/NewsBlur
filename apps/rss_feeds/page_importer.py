@@ -5,7 +5,6 @@ import time
 import traceback
 import urllib.error
 import urllib.parse
-import urllib.request
 import zlib
 from socket import error as SocketError
 
@@ -23,6 +22,7 @@ from sentry_sdk import capture_exception, flush
 from apps.rss_feeds.models import MFeedPage
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -95,17 +95,18 @@ class PageImporter(object):
                 return
             elif feed_link.startswith("http"):
                 if urllib_fallback:
-                    request = urllib.request.Request(feed_link, headers=self.headers)
-                    response = urllib.request.urlopen(request)
+                    response = safe_requests_get(feed_link, headers=self.headers, timeout=10)
                     time.sleep(0.01)  # Grrr, GIL.
-                    data = response.read().decode(response.headers.get_content_charset() or "utf-8")
+                    data = self._decode_response(response)
                 else:
                     try:
-                        response = requests.get(feed_link, headers=self.headers, timeout=10)
-                        response.connection.close()
+                        response = safe_requests_get(feed_link, headers=self.headers, timeout=10)
+                        if getattr(response, "connection", None):
+                            response.connection.close()
                     except requests.exceptions.TooManyRedirects:
-                        response = requests.get(feed_link, timeout=10)
+                        response = safe_requests_get(feed_link, timeout=10)
                     except (
+                        UnsafeUrlError,
                         AttributeError,
                         SocketError,
                         OpenSSLError,
@@ -162,12 +163,14 @@ class PageImporter(object):
             http.client.BadStatusLine,
             http.client.InvalidURL,
             requests.exceptions.ConnectionError,
+            UnsafeUrlError,
         ) as e:
             logging.debug("   ***> [%-30s] Page fetch failed: %s" % (self.feed.log_title[:30], e))
             self.feed.save_page_history(401, "Bad URL", e)
             try:
+                validate_public_url(self.feed.feed_address)
                 fp = feedparser.parse(self.feed.feed_address)
-            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            except (UnsafeUrlError, urllib.error.HTTPError, urllib.error.URLError) as e:
                 return html
             feed_link = fp.feed.get("link", "")
             self.feed.save()
@@ -223,9 +226,11 @@ class PageImporter(object):
             return
 
         try:
-            response = requests.get(story_permalink, headers=self.headers, timeout=10)
-            response.connection.close()
+            response = safe_requests_get(story_permalink, headers=self.headers, timeout=10)
+            if getattr(response, "connection", None):
+                response.connection.close()
         except (
+            UnsafeUrlError,
             AttributeError,
             SocketError,
             OpenSSLError,
@@ -235,8 +240,9 @@ class PageImporter(object):
             requests.adapters.ReadTimeout,
         ) as e:
             try:
-                response = requests.get(story_permalink, timeout=10)
+                response = safe_requests_get(story_permalink, timeout=10)
             except (
+                UnsafeUrlError,
                 AttributeError,
                 SocketError,
                 OpenSSLError,
@@ -320,6 +326,11 @@ class PageImporter(object):
         api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
         if not api_key:
             logging.user(self.request, "~SN~FRScrapingBee API key not configured")
+            return None
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.user(self.request, "~SN~FRScrapingBee original story URL rejected: %s" % e)
             return None
 
         params = {

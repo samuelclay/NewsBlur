@@ -26,6 +26,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "../../fixtures")
 FIXTURE_PATH = os.path.join(FIXTURE_DIR, "popular_feeds.json")
@@ -80,7 +81,7 @@ FEEDLY_SEARCH_URL = "https://cloud.feedly.com/v3/search/feeds"
 FEEDLY_DELAY = 2.0  # seconds between API calls
 FEEDLY_RATE_LIMIT_WAIT = 60  # seconds to wait on 429
 
-CLAUDE_MODEL = "claude-haiku-4-5"
+CLAUDE_MODEL = ANTHROPIC_MODEL
 CATEGORIZE_BATCH_SIZE = 100  # feeds per Claude categorization call
 
 # URL domains to skip (these have their own feed types in PopularFeed)

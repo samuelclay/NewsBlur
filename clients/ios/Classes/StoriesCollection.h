@@ -63,6 +63,7 @@
 @property (nonatomic, readonly) BOOL isDashboardOrFromDashboardStory;
 @property (nonatomic, readonly) BOOL isEverything;
 @property (nonatomic, readonly) BOOL isInfrequent;
+@property (nonatomic, readonly) BOOL isTrending;
 @property (nonatomic, readonly) BOOL isRiverOrSocial;
 @property (nonatomic, readonly) BOOL isCustomFolder;
 @property (nonatomic, readonly) BOOL isCustomFolderOrFeed;

@@ -1,14 +1,18 @@
 import json
 import os
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
+from celery.exceptions import Retry
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.feed_import.models import OPMLImporter
+from apps.feed_import.models import OPMLImporter, UploadedOPML
+from apps.feed_import.tasks import ProcessOPML
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import DuplicateFeed, Feed, merge_feeds
 from utils import json_functions as json_functions
@@ -24,7 +28,131 @@ class Test_Import(TransactionTestCase):
         self.user.set_password("test")
         self.user.save()
 
-    def test_opml_import(self):
+    def tearDown(self):
+        UploadedOPML.objects.filter(user_id=self.user.pk).delete()
+        super().tearDown()
+
+    def test_uploaded_opml_defaults_to_newest_first(self):
+        old_upload = UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body /></opml>",
+            upload_date=datetime.utcnow() - timedelta(days=1),
+        )
+        new_upload = UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body /></opml>",
+            upload_date=datetime.utcnow(),
+        )
+
+        selected_upload = UploadedOPML.objects.filter(user_id=self.user.pk).first()
+
+        self.assertNotEqual(old_upload.pk, new_upload.pk)
+        self.assertEqual(selected_upload.pk, new_upload.pk)
+
+    @patch("apps.feed_import.views.ProcessOPML.delay")
+    @patch.object(OPMLImporter, "process")
+    def test_opml_upload_queues_exact_document_without_inline_processing(
+        self, mock_process, mock_process_opml_delay
+    ):
+        self.client.login(username="conesus", password="test")
+        mock_process.return_value = []
+        opml_xml = b"""
+            <opml version="1.0">
+                <body>
+                    <outline text="Current">
+                        <outline title="Current Feed" type="rss"
+                                 xmlUrl="https://example.com/current.xml" />
+                    </outline>
+                </body>
+            </opml>
+        """
+
+        response = self.client.post(
+            reverse("opml-upload"),
+            {"file": SimpleUploadedFile("current.opml", opml_xml, content_type="text/xml")},
+        )
+
+        data = json_functions.decode(response.content)
+        uploaded_opml = UploadedOPML.objects.filter(user_id=self.user.pk).first()
+        self.assertEqual(data["code"], 2)
+        self.assertTrue(data["payload"]["delayed"])
+        mock_process.assert_not_called()
+        mock_process_opml_delay.assert_called_once_with(self.user.pk, str(uploaded_opml.pk))
+
+    @patch("apps.feed_import.tasks._release_opml_import_lock")
+    @patch("apps.feed_import.tasks._acquire_opml_import_lock", return_value=True)
+    @patch("apps.feed_import.tasks._process_uploaded_opml")
+    def test_process_opml_task_processes_its_exact_document(
+        self, mock_process_uploaded_opml, mock_acquire_lock, mock_release_lock
+    ):
+        old_upload = UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body><outline text='Old' /></body></opml>",
+            upload_date=datetime.utcnow() - timedelta(days=1),
+        )
+        UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body><outline text='New' /></body></opml>",
+            upload_date=datetime.utcnow(),
+        )
+
+        ProcessOPML.run(self.user.pk, str(old_upload.pk))
+
+        processed_user, processed_upload = mock_process_uploaded_opml.call_args.args
+        self.assertEqual(processed_user.pk, self.user.pk)
+        self.assertEqual(processed_upload.pk, old_upload.pk)
+        mock_acquire_lock.assert_called_once_with(self.user.pk)
+        mock_release_lock.assert_called_once_with(self.user.pk)
+
+    @patch("apps.feed_import.tasks._release_opml_import_lock")
+    @patch("apps.feed_import.tasks._acquire_opml_import_lock", return_value=True)
+    @patch("apps.feed_import.tasks._process_uploaded_opml")
+    def test_legacy_process_opml_task_processes_newest_document(
+        self, mock_process_uploaded_opml, mock_acquire_lock, mock_release_lock
+    ):
+        UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body><outline text='Old' /></body></opml>",
+            upload_date=datetime.utcnow() - timedelta(days=1),
+        )
+        new_upload = UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body><outline text='New' /></body></opml>",
+            upload_date=datetime.utcnow(),
+        )
+
+        ProcessOPML.run(self.user.pk)
+
+        processed_user, processed_upload = mock_process_uploaded_opml.call_args.args
+        self.assertEqual(processed_user.pk, self.user.pk)
+        self.assertEqual(processed_upload.pk, new_upload.pk)
+        mock_acquire_lock.assert_called_once_with(self.user.pk)
+        mock_release_lock.assert_called_once_with(self.user.pk)
+
+    @patch("apps.feed_import.tasks._release_opml_import_lock")
+    @patch("apps.feed_import.tasks._acquire_opml_import_lock", return_value=False)
+    @patch("apps.feed_import.tasks._process_uploaded_opml")
+    def test_process_opml_task_retries_while_user_import_is_locked(
+        self, mock_process_uploaded_opml, mock_acquire_lock, mock_release_lock
+    ):
+        uploaded_opml = UploadedOPML.objects.create(
+            user_id=self.user.pk,
+            opml_file="<opml><body /></opml>",
+        )
+
+        with patch.object(ProcessOPML, "retry", side_effect=Retry()) as mock_retry:
+            with self.assertRaises(Retry):
+                ProcessOPML.run(self.user.pk, str(uploaded_opml.pk))
+
+        mock_retry.assert_called_once_with(countdown=30)
+        mock_process_uploaded_opml.assert_not_called()
+        mock_release_lock.assert_not_called()
+
+    @patch("apps.feed_import.views.ProcessOPML.delay")
+    def test_opml_import(self, mock_process_opml_delay):
+        mock_process_opml_delay.side_effect = lambda user_id, uploaded_opml_id: ProcessOPML.run(
+            user_id, uploaded_opml_id
+        )
         # Reset Feed ID sequence to ensure predictable feed IDs starting at 1
         # This is necessary because TransactionTestCase doesn't reset sequences between tests
         from django.db import connection
@@ -136,6 +264,79 @@ class Test_Import(TransactionTestCase):
         self.assertEqual(feed.feed_address, "https://bsky.app/profile/108.bsky.social/rss")
         self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=feed).count(), 1)
         self.assertEqual(folders, [{"bsky": [feed.pk]}])
+
+    def test_opml_import_skips_internal_addresses(self):
+        """Newsletter/webfeed internal addresses reuse existing subs, never mint duplicate feeds.
+
+        A NewsBlur OPML export writes these user-specific/internal addresses out verbatim,
+        so re-importing that export must not create a brand-new duplicate feed for every
+        newsletter or web feed the user already subscribes to.
+        """
+        newsletter_address = "newsletter:%s:sender@example.com" % self.user.pk
+        newsletter_feed = Feed.objects.create(
+            feed_address=newsletter_address,
+            feed_link="http://example.com/",
+            feed_title="Example Newsletter",
+        )
+        UserSubscription.objects.create(feed=newsletter_feed, user=self.user)
+        feeds_before = Feed.objects.count()
+
+        opml_xml = (
+            """
+            <opml version="1.0">
+                <body>
+                    <outline text="Newsletters">
+                        <outline title="Example Newsletter" type="rss" version="RSS"
+                                 xmlUrl="%s" htmlUrl="http://example.com/" />
+                        <outline title="Some Web Feed" type="rss" version="RSS"
+                                 xmlUrl="webfeed:99:http://nowhere.example/page"
+                                 htmlUrl="http://nowhere.example/" />
+                    </outline>
+                </body>
+            </opml>
+        """
+            % newsletter_address
+        )
+
+        folders = OPMLImporter(opml_xml, self.user).process()
+
+        # No new feeds minted for the internal (newsletter/webfeed) addresses.
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        # The existing newsletter subscription is reused, not duplicated...
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=newsletter_feed).count(), 1)
+        # ...and it lands in the imported "Newsletters" folder; the web feed (no existing
+        # subscription) is skipped rather than re-created.
+        self.assertEqual(folders, [{"Newsletters": [newsletter_feed.pk]}])
+
+    def test_opml_import_dedupes_against_existing_subscription(self):
+        """Re-importing a feed under a drifted URL reuses the existing sub, not a new feed."""
+        existing_feed = Feed.objects.create(
+            feed_address="https://example.com/feed/canonical.xml",
+            feed_link="https://example.com/",
+            feed_title="Drifted Blog",
+        )
+        UserSubscription.objects.create(feed=existing_feed, user=self.user)
+        feeds_before = Feed.objects.count()
+
+        # Same title, but a stale xmlUrl/htmlUrl that won't match by address or link.
+        opml_xml = """
+            <opml version="1.0">
+                <body>
+                    <outline text="Imported">
+                        <outline title="Drifted Blog" type="rss" version="RSS"
+                                 xmlUrl="https://example.com/2013/10/25/old-path/"
+                                 htmlUrl="https://example.com/old/" />
+                    </outline>
+                </body>
+            </opml>
+        """
+
+        folders = OPMLImporter(opml_xml, self.user).process()
+
+        # Matched the existing subscription by title; no new feed minted.
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        self.assertEqual(UserSubscription.objects.filter(user=self.user, feed=existing_feed).count(), 1)
+        self.assertEqual(folders, [{"Imported": [existing_feed.pk]}])
 
     def test_opml_import_skips_single_feed_failure(self):
         opml_xml = """

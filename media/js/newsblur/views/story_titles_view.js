@@ -1,11 +1,34 @@
+// story_titles_view.js: One-sentence explanations of how the four curated rivers are
+// assembled, shown as a non-sticky banner above the first story title.
 NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     el: '.NB-story-titles',
 
+    explainers: {
+        'river:global': {
+            label: 'Global Shared Stories',
+            explanation: 'A fresh handful of the stories NewsBlur readers shared, chosen every hour.'
+        },
+        'trending:well_read': {
+            label: 'Widely Read Stories',
+            explanation: 'Stories that held the most attention across NewsBlur.'
+        },
+        'trending:long_reads': {
+            label: 'Long Reads',
+            explanation: 'Features and essays that readers gave real time to.'
+        },
+        'trending:good_reads': {
+            label: 'Good Reads',
+            explanation: 'Not the most read, but the best received, and tilted toward small sites over big ones.'
+        }
+    },
+
     events: {
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            // story_titles_view.js: The notice link's data-feature names the tier
+            // line to highlight (river, saved-tags, or search).
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: $(e.currentTarget).data('feature') });
         },
         "click .NB-briefing-generate-btn": function (e) {
             e.preventDefault();
@@ -79,6 +102,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return story.el;
         });
         this.$el.html($stories);
+        this.render_explainer();
         // console.log(['Rendered story titles', this.$el, $stories]);
         this.end_loading();
         this.fill_out();
@@ -87,6 +111,34 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.scroll_to_selected_story(null, options);
 
         return this;
+    },
+
+    render_explainer: function () {
+        // story_titles_view.js: The explainer only belongs above the full story list, not in
+        // the dashboard rivers, discover popovers, or add site previews that reuse this view.
+        if (this.options.on_dashboard || this.options.on_discover_feed ||
+            this.options.on_discover_story || this.options.on_trending_feed ||
+            this.options.in_trending_view || this.options.in_popover ||
+            this.options.in_add_site_view) {
+            return;
+        }
+
+        var explainer = this.explainers[NEWSBLUR.reader.active_feed];
+        if (!explainer) return;
+
+        var $explainer = $.make('div', { className: 'NB-story-titles-explainer' }, [
+            $.make('div', { className: 'NB-story-titles-explainer-header' }, [
+                $.make('img', {
+                    className: 'NB-story-titles-explainer-icon',
+                    src: $.favicon(NEWSBLUR.reader.active_feed)
+                }),
+                $.make('div', { className: 'NB-story-titles-explainer-label' }, explainer.label),
+                $.make('div', { className: 'NB-story-titles-explainer-rule' })
+            ]),
+            $.make('div', { className: 'NB-story-titles-explainer-body' }, explainer.explanation)
+        ]);
+
+        this.$el.prepend($explainer);
     },
 
     render_briefing: function (options) {
@@ -116,6 +168,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.collection.no_more_stories = !data.has_next_page;
 
         $groups = this._render_briefing_groups(briefings, data);
+
+        // story_titles_view.js: Banner for non-archive users explaining that briefings
+        // are preview-only on their plan — no schedule, and only the first few stories
+        // of each briefing are unlocked.
+        if (data.is_preview) {
+            $groups.unshift(NEWSBLUR.utils.make_archive_callout(
+                "You're previewing the first 3 stories of each briefing. " +
+                "Upgrade to unlock every story and automatic briefings on your schedule.",
+                { highlight_feature: 'briefing' }
+            ));
+        }
 
         if (!briefings.length) {
             var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
@@ -213,7 +276,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $groups = [];
         var group_index = 0;
         _.each(briefings, function (briefing) {
-            briefing.is_preview = data.is_preview;
             var display_briefing = briefing;
             if (active_section) {
                 var section_hashes = (briefing.curated_sections || {})[active_section] || [];
@@ -396,13 +458,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_river_premium_only_notification: function () {
         var message = [
             'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, 'premium feature'),
             '.'
         ];
         if (NEWSBLUR.reader.flags['starred_view']) {
             message = [
                 'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, 'premium feature'),
                 '.'
             ];
         }
@@ -424,7 +486,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
                 'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, 'premium feature'),
                 '.'
             ])
         ]);

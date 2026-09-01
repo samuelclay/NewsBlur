@@ -11,11 +11,25 @@ from apps.rss_feeds.models import Feed
 from apps.webfeed.models import MWebFeedConfig
 from apps.webfeed.tasks import decode_response_text, extract_image_url
 from utils import log as logging
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
 
 # Custom exception code for web feed XPath extraction failure
 WEBFEED_EXCEPTION_CODE = 590
+
+# Phrases a results page shows when a search legitimately has no items right now. A
+# page carrying one of these is a healthy feed with zero stories, not a broken one:
+# it must not count toward reanalysis or flag exception 590 (very specific rare-book
+# searches sit empty for weeks until a matching listing appears).
+NO_RESULTS_MARKERS = [
+    "no results",
+    "no matches",
+    "no exact matches",
+    "0 results",
+    "nothing found",
+    "did not match any",
+]
 
 
 class WebFeedFetcher:
@@ -50,6 +64,15 @@ class WebFeedFetcher:
         stories = self._extract_stories(page_html)
 
         if not stories:
+            if self._page_shows_no_results(page_html):
+                logging.debug(
+                    "   ---> [%-30s] ~FYWeb Feed: search has no current results, healthy but empty"
+                    % (self.feed.log_title[:30],)
+                )
+                self.config.record_success()
+                self._clear_webfeed_exception()
+                return None
+
             self.config.record_failure()
             logging.debug(
                 "   ***> [%-30s] ~FRWeb Feed: 0 stories extracted (failure %d)"
@@ -62,12 +85,7 @@ class WebFeedFetcher:
             return None
 
         self.config.record_success()
-
-        # Clear any previous exception
-        if self.feed.has_feed_exception and self.feed.exception_code == WEBFEED_EXCEPTION_CODE:
-            self.feed.has_feed_exception = False
-            self.feed.exception_code = 0
-            self.feed.save()
+        self._clear_webfeed_exception()
 
         fpf = self._to_feedparser_format(stories)
 
@@ -78,13 +96,29 @@ class WebFeedFetcher:
 
         return fpf
 
+    def _page_shows_no_results(self, html_text):
+        """True when the page says the search matched nothing right now."""
+        lowered = html_text.lower()
+        return any(marker in lowered for marker in NO_RESULTS_MARKERS)
+
+    def _clear_webfeed_exception(self):
+        """Clear a previous extraction-failure exception after a healthy fetch."""
+        if self.feed.has_feed_exception and self.feed.exception_code == WEBFEED_EXCEPTION_CODE:
+            self.feed.has_feed_exception = False
+            self.feed.exception_code = 0
+            self.feed.save()
+
     def _fetch_html(self):
         """Fetch page HTML with proxy fallbacks for forbidden feeds."""
         headers = {"User-Agent": USER_AGENT}
+        try:
+            validate_public_url(self.url)
+        except UnsafeUrlError:
+            return None
 
         # Try direct fetch first
         try:
-            response = requests.get(self.url, headers=headers, timeout=15, allow_redirects=True)
+            response = safe_requests_get(self.url, headers=headers, timeout=15, allow_redirects=True)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
                 return text
@@ -247,7 +281,7 @@ class WebFeedFetcher:
                 summary = img_tag + summary if summary else img_tag
             entry = {
                 "title": story.get("title", ""),
-                "link": story.get("link", ""),
+                "link": story.get("link") or self.url,
                 "guid": story.get("guid", ""),
                 "summary": summary,
                 "author": story.get("author", ""),

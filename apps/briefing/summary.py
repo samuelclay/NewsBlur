@@ -1,5 +1,6 @@
 import html as html_mod
 import re
+import time
 import zlib
 
 from django.conf import settings
@@ -8,6 +9,32 @@ from django.utils.encoding import smart_str
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+
+# summary.py: A briefing is generated once a day per user, so a single dropped
+# connection or 5xx from the LLM costs that user the whole day's briefing. Retry
+# transient failures a couple of times before giving up. Backoff is linear, so the
+# three attempts add at most 4 + 8 = 12 seconds inside the celery task.
+BRIEFING_RETRY_ATTEMPTS = 3
+BRIEFING_RETRY_BACKOFF_SECONDS = 4
+
+
+def is_transient_llm_error(error):
+    """
+    Is this LLM error worth retrying?
+
+    Connection drops and timeouts carry no status code and are always transient.
+    Status errors are only retried for 5xx (including Anthropic's 529 overloaded),
+    since a 4xx means a bad key, a bad request, or a rate limit that a retry seconds
+    later won't fix. apps/briefing/summary.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # summary.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    if not isinstance(status_code, int):
+        return True
+
+    return status_code >= 500
 
 
 def normalize_section_key(key):
@@ -115,6 +142,31 @@ SECTION_PROMPTS = {
         "Check the CLUSTER annotation for pre-identified groupings. "
         "Write a brief editorial description of each story's significance. "
         "Do NOT list individual sources or feed names — source links will be added automatically."
+    ),
+    # summary.py: Global sections — stories from site-wide curated rivers, not the
+    # reader's own subscriptions. Selected in scoring.py:select_global_section_stories.
+    "widely_read": (
+        '"Widely Read on NewsBlur" — CATEGORY: widely_read. '
+        "Stories the wider NewsBlur community is spending real reading time with right now. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with widely_covered — only include stories whose CATEGORY is widely_read."
+    ),
+    "long_reads": (
+        '"Long Reads on NewsBlur" — CATEGORY: long_reads. '
+        "In-depth articles that NewsBlur readers across the site gave sustained attention to. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with long_read (the reader's own long articles) — only include stories "
+        "whose CATEGORY is long_reads."
+    ),
+    "good_reads": (
+        '"Good Reads on NewsBlur" — CATEGORY: good_reads. '
+        "Stories NewsBlur readers finished and then saved, shared, or trained up, often from "
+        "smaller sites. These come from across all of NewsBlur, not the reader's subscriptions."
+    ),
+    "global_shared": (
+        '"Global Shared Stories" — CATEGORY: global_shared. '
+        "Stories shared by NewsBlur users across the whole site, curated hourly. "
+        "These come from across all of NewsBlur, not the reader's subscriptions."
     ),
 }
 
@@ -329,26 +381,32 @@ def generate_briefing_summary(
 
     try:
         from apps.ask_ai.providers import (
-            BRIEFING_MODELS,
             DEFAULT_BRIEFING_MODEL,
             LLM_EXCEPTIONS,
+            get_briefing_model_config,
             get_briefing_provider,
         )
 
-        model_name = model if model and model in BRIEFING_MODELS else DEFAULT_BRIEFING_MODEL
+        model_name, model_config = get_briefing_model_config(model)
         provider, model_id = get_briefing_provider(model_name)
+        thinking_config = model_config.get("thinking_config")
 
         # summary.py: Fall back to default if the chosen provider's API key isn't configured
         if not provider.is_configured():
             if model_name != DEFAULT_BRIEFING_MODEL:
-                provider, model_id = get_briefing_provider(DEFAULT_BRIEFING_MODEL)
-                model_name = DEFAULT_BRIEFING_MODEL
+                model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
+                provider, model_id = get_briefing_provider(model_name)
+                thinking_config = model_config.get("thinking_config")
             if not provider.is_configured():
                 logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
                 return None
 
         system_prompt = _build_system_prompt(
-            summary_length, summary_style, sections, custom_section_prompts, section_order
+            summary_length,
+            summary_style,
+            sections,
+            custom_section_prompts,
+            section_order,
         )
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
@@ -359,7 +417,28 @@ def generate_briefing_summary(
             {"role": "user", "content": user_prompt},
         ]
 
-        summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
+        # summary.py: Retry transient LLM failures so a momentary outage doesn't cost
+        # the user their briefing for the day. The final failure falls through to the
+        # LLM_EXCEPTIONS handler below.
+        for attempt in range(BRIEFING_RETRY_ATTEMPTS):
+            try:
+                summary_html = provider.generate(
+                    messages,
+                    model_id,
+                    max_tokens=max_tokens,
+                    thinking_config=thinking_config,
+                )
+                break
+            except LLM_EXCEPTIONS as e:
+                last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
+                if last_attempt or not is_transient_llm_error(e):
+                    raise
+                backoff = BRIEFING_RETRY_BACKOFF_SECONDS * (attempt + 1)
+                logging.debug(
+                    " ---> Briefing summary retrying for user %s in %ss (attempt %s of %s): %s"
+                    % (user_id, backoff, attempt + 1, BRIEFING_RETRY_ATTEMPTS, str(e))
+                )
+                time.sleep(backoff)
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
@@ -368,7 +447,6 @@ def generate_briefing_summary(
             summary_html = summary_html.strip()
 
         input_tokens, output_tokens = provider.get_last_usage()
-        model_config = BRIEFING_MODELS.get(model_name, {})
         vendor = model_config.get("vendor", "unknown")
         LLMCostTracker.record_usage(
             provider=vendor,
@@ -472,6 +550,12 @@ BRIEFING_SECTION_ICONS = {
     "classifier_match": "train.svg",
     "follow_up": "boomerang.svg",
     "widely_covered": "growth-rocket-gray.svg",
+    # summary.py: Global sections use the same icons as their sidebar rivers
+    # (see $.favicon in media/js/vendor/jquery.newsblur.js)
+    "widely_read": "blaze.svg",
+    "long_reads": "moon.svg",
+    "good_reads": "star.svg",
+    "global_shared": "global-shares.svg",
     "custom_1": "prompt.svg",
     "custom_2": "prompt.svg",
     "custom_3": "prompt.svg",
@@ -547,6 +631,11 @@ def embed_briefing_icons(summary_html, scored_stories):
         title = feeds_by_id.get(story.story_feed_id)
         if title:
             feed_title_map[story_hash] = title
+    story_permalink_map = {
+        story_hash: story.story_permalink
+        for story_hash, story in stories_by_hash.items()
+        if story.story_permalink
+    }
 
     # --- Phase 2: Style wrapper div ---
 
@@ -619,6 +708,48 @@ def embed_briefing_icons(summary_html, scored_stories):
         r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>',
         _replace_story_link,
         summary_html,
+    )
+
+    # --- Phase 5a: Add a compact direct link to the original publisher article ---
+
+    direct_link_icon_url = _get_icon_data_uri("external-link.svg") or (
+        "%s/media/img/icons/nouns/external-link.svg" % settings.NEWSBLUR_URL
+    )
+    direct_link_style = (
+        "display:inline-block;width:18px;height:18px;margin:0 0 0 4px;"
+        "vertical-align:-3px;text-decoration:none;border:0;"
+    )
+    direct_link_icon_style = (
+        "display:block;width:14px;height:14px;margin:2px;border:0;vertical-align:top;"
+        "max-width:14px;max-height:14px;"
+    )
+
+    def _append_direct_story_link(match):
+        story_hash = match.group("hash")
+        permalink = story_permalink_map.get(story_hash)
+        if not permalink:
+            return match.group("link")
+        return (
+            '%s<a href="%s" class="NB-briefing-direct-link" '
+            'title="Open original article" aria-label="Open original article" '
+            'target="_blank" rel="noopener noreferrer" style="%s">'
+            '<img src="%s" class="NB-briefing-direct-link-icon" alt="" style="%s"></a>'
+        ) % (
+            match.group("link"),
+            html_mod.escape(permalink, quote=True),
+            direct_link_style,
+            direct_link_icon_url,
+            direct_link_icon_style,
+        )
+
+    summary_html = re.sub(
+        (
+            r'(?P<link><a\s(?=[^>]*\bdata-story-hash="(?P<hash>[^"]+)")'
+            r'(?=[^>]*\bclass="[^"]*\bNB-briefing-story-link\b[^"]*")[^>]*>.*?</a>)'
+        ),
+        _append_direct_story_link,
+        summary_html,
+        flags=re.DOTALL,
     )
 
     # --- Phase 5b: Wrap favicon + text in table layout for email alignment ---
@@ -872,6 +1003,7 @@ def _strip_duplicate_story_links(html, hashes_to_strip):
     pattern = (
         r"(?:<img\s[^>]*NB-briefing-inline-favicon[^>]*>\s*)?"
         r'<a\s[^>]*data-story-hash="(?P<hash>[^"]+)"[^>]*>(?P<title>.*?)</a>'
+        r'(?:\s*<a\s(?=[^>]*\bclass="[^"]*\bNB-briefing-direct-link\b[^"]*")[^>]*>.*?</a>)?'
     )
     return re.sub(pattern, _replace, html, flags=re.DOTALL)
 

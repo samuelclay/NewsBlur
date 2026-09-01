@@ -12,6 +12,8 @@ import httpx
 import sentry_sdk
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
@@ -51,6 +53,19 @@ mcp = FastMCP(
         "training classifiers, and organizing subscriptions."
     ),
 )
+
+
+def mcp_http_middleware():
+    """Return HTTP middleware for browser-hosted MCP clients."""
+    return [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+            allow_headers=["*"],
+            expose_headers=["WWW-Authenticate", "Mcp-Session-Id"],
+        )
+    ]
 
 
 def _get_user_info():
@@ -191,11 +206,13 @@ import newsblur_mcp.prompts.prompts  # noqa: F401, E402
 import newsblur_mcp.resources.resources  # noqa: F401, E402
 import newsblur_mcp.tools.account  # noqa: F401, E402
 import newsblur_mcp.tools.actions  # noqa: F401, E402
+import newsblur_mcp.tools.archive  # noqa: F401, E402
 import newsblur_mcp.tools.briefing  # noqa: F401, E402
 import newsblur_mcp.tools.classifiers  # noqa: F401, E402
 import newsblur_mcp.tools.discovery  # noqa: F401, E402
 import newsblur_mcp.tools.feeds  # noqa: F401, E402
 import newsblur_mcp.tools.notifications  # noqa: F401, E402
+import newsblur_mcp.tools.social  # noqa: F401, E402
 
 # Import tools to register them with the mcp instance
 import newsblur_mcp.tools.stories  # noqa: F401, E402
@@ -208,4 +225,5 @@ def main():
         host=MCP_HOST,
         port=MCP_PORT,
         path="/",
+        middleware=mcp_http_middleware(),
     )

@@ -25,13 +25,14 @@ Usage:
 from utils import log as logging
 
 # Model pricing per 1M tokens (USD)
-# Sources (Jan 2026):
+# Sources (updated Aug 2026):
 # - Anthropic: https://platform.claude.com/docs/en/about-claude/pricing
 # - OpenAI: https://openai.com/api/pricing/
 # - Google: https://ai.google.dev/gemini-api/docs/pricing
 # - xAI: https://docs.x.ai/docs/models
 MODEL_PRICING = {
     # Anthropic Claude models (full IDs and short aliases)
+    "claude-sonnet-5": {"input": 3.00, "output": 15.00},
     "claude-opus-4-6": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5-20251101": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5": {"input": 5.00, "output": 25.00},
@@ -42,6 +43,7 @@ MODEL_PRICING = {
     "claude-haiku-4-5-20251022": {"input": 1.00, "output": 5.00},
     "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
     # OpenAI GPT models
+    "gpt-5.6-luna": {"input": 0.10, "output": 0.60},
     "gpt-5.2": {"input": 2.00, "output": 8.00},
     "gpt-5-mini": {"input": 0.30, "output": 1.20},
     "gpt-5-nano": {"input": 0.05, "output": 0.40},
@@ -58,18 +60,22 @@ MODEL_PRICING = {
     "text-embedding-3-large": {"input": 0.13, "output": 0.0},
     "text-embedding-ada-002": {"input": 0.10, "output": 0.0},
     # Google Gemini models
+    "gemini-3.6-flash": {"input": 1.50, "output": 7.50},
     "gemini-3-pro-preview": {"input": 2.00, "output": 12.00},
     "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
     "gemini-2.5-flash": {"input": 0.10, "output": 0.40},
     "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40},
     # xAI Grok models
+    "grok-4.6": {"input": 2.00, "output": 6.00},
     "grok-4-1-fast-non-reasoning": {"input": 0.20, "output": 0.50},
+    "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4": {"input": 3.00, "output": 15.00},
     "grok-3-beta": {"input": 3.00, "output": 15.00},
 }
 
 # Provider mapping for models (full IDs and short aliases)
 MODEL_PROVIDERS = {
+    "claude-sonnet-5": "anthropic",
     "claude-opus-4-6": "anthropic",
     "claude-opus-4-5-20251101": "anthropic",
     "claude-opus-4-5": "anthropic",
@@ -79,6 +85,7 @@ MODEL_PROVIDERS = {
     "claude-sonnet-4-5": "anthropic",
     "claude-haiku-4-5-20251022": "anthropic",
     "claude-haiku-4-5": "anthropic",
+    "gpt-5.6-luna": "openai",
     "gpt-5.2": "openai",
     "gpt-5-mini": "openai",
     "gpt-5-nano": "openai",
@@ -92,11 +99,14 @@ MODEL_PROVIDERS = {
     "text-embedding-3-small": "openai",
     "text-embedding-3-large": "openai",
     "text-embedding-ada-002": "openai",
+    "gemini-3.6-flash": "google",
     "gemini-3-pro-preview": "google",
     "gemini-2.5-pro": "google",
     "gemini-2.5-flash": "google",
     "gemini-2.5-flash-lite": "google",
+    "grok-4.6": "xai",
     "grok-4-1-fast-non-reasoning": "xai",
+    "grok-4-1-fast-reasoning": "xai",
     "grok-4": "xai",
     "grok-3-beta": "xai",
 }

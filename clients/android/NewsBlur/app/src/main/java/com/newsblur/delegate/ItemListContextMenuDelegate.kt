@@ -69,6 +69,7 @@ open class ItemListContextMenuDelegateImpl(
             fs.isAllSaved ||
             fs.isSingleSavedTag ||
             fs.isInfrequent ||
+            fs.isTrending ||
             fs.isAllRead
         ) {
             menu.findItem(R.id.menu_mark_all_as_read).isVisible = false

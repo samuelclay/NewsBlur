@@ -937,7 +937,7 @@ public class BlurDatabaseHelper {
         StringBuilder feedSelection = null;
         if (fs.isAllNormal()) {
             // a null selection is fine for all stories
-        } else if (fs.isDailyBriefing()) {
+        } else if (fs.isDailyBriefing() || fs.isTrending()) {
             feedSelection = new StringBuilder(DatabaseConstants.STORY_HASH + " IN (SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")");
         } else if (fs.getMultipleFeeds() != null) {
             feedSelection = new StringBuilder(DatabaseConstants.STORY_FEED_ID + " IN ( ");
@@ -963,7 +963,7 @@ public class BlurDatabaseHelper {
     public int getUnreadCount(@NonNull FeedSet fs, @NonNull StateFilter stateFilter) {
         // if reading in starred-only mode, there are no unreads, since stories vended as starred are never unread
         if (fs.isFilterSaved()) return 0;
-        if (fs.isDailyBriefing()) {
+        if (fs.isDailyBriefing() || fs.isTrending()) {
             String q = "SELECT COUNT(*) FROM " + DatabaseConstants.STORY_TABLE +
                     " WHERE " + DatabaseConstants.STORY_READ + " = 0" +
                     " AND " + DatabaseConstants.STORY_HASH + " IN (" +
@@ -1409,7 +1409,7 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
-        if (fs.isDailyBriefing()) {
+        if (fs.isDailyBriefing() || fs.isTrending()) {
             return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
         }
 
@@ -1440,7 +1440,7 @@ public class BlurDatabaseHelper {
      * fetched via the API and used to actually select story data when rendering story lists.
      */
     public void prepareReadingSession(@NonNull FeedSet fs, @NonNull StateFilter stateFilter, @NonNull ReadFilter readFilter) {
-        if (fs.isDailyBriefing()) {
+        if (fs.isDailyBriefing() || fs.isTrending()) {
             return;
         }
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table

@@ -193,7 +193,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        NEWSBLUR.reader.open_premium_upgrade_modal();
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'webfeeds' });
     }
 
 });

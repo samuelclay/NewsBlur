@@ -6,14 +6,15 @@ from apps.monitor.views.newsblur_clustering import Clustering
 from apps.monitor.views.newsblur_dbtimes import DbTimes
 from apps.monitor.views.newsblur_deleted_users import DeletedUsers
 from apps.monitor.views.newsblur_discover import Discover
+from apps.monitor.views.newsblur_domain_fetch import DomainFetch
 from apps.monitor.views.newsblur_errors import Errors
 from apps.monitor.views.newsblur_feed_counts import FeedCounts
 from apps.monitor.views.newsblur_feed_sizes import FeedSizes
 from apps.monitor.views.newsblur_feeds import Feeds
 from apps.monitor.views.newsblur_llm_costs import LLMCosts
 from apps.monitor.views.newsblur_loadtimes import LoadTimes
-from apps.monitor.views.newsblur_media_player import MediaPlayer
 from apps.monitor.views.newsblur_mcp_usage import MCPUsage
+from apps.monitor.views.newsblur_media_player import MediaPlayer
 from apps.monitor.views.newsblur_notifications import Notifications
 from apps.monitor.views.newsblur_referrals import Referrals
 from apps.monitor.views.newsblur_stories import Stories

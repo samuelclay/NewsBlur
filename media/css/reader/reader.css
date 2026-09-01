@@ -3264,7 +3264,8 @@ img.feed_favicon {
 }
 
 /* Fade the tier badge on read siblings to match the rest of the row. */
-.NB-story-cluster-source.read .NB-cluster-tier-badge {
+.NB-story-cluster-source.read .NB-cluster-tier-badge,
+.NB-story-title.NB-story-title-cluster.read .NB-cluster-tier-badge {
     opacity: 0.4;
 }
 
@@ -3306,7 +3307,8 @@ img.feed_favicon {
     color: #d2a76b;
 }
 
-.NB-dark .NB-story-cluster-source.read .NB-cluster-tier-badge {
+.NB-dark .NB-story-cluster-source.read .NB-cluster-tier-badge,
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-cluster-tier-badge {
     opacity: 0.4;
 }
 
@@ -3521,44 +3523,10 @@ img.feed_favicon {
     margin-top: 2px;
 }
 
-/* Remove ALL read-state dimming on cluster rows — size differentiates, not color */
-.NB-story-title.NB-story-title-cluster.read a.story_title {
-    color: #272727;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-story-image {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-sentiment {
-    opacity: 1;
-}
-
-.NB-story-title.NB-story-title-cluster.read .feed_favicon {
-    opacity: .65;
-}
-
-.NB-story-title.NB-story-title-cluster.read .story_date {
-    color: #888785;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
-    color: inherit;
-    font-weight: inherit;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-middot {
-    color: inherit;
-}
-
-.NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
-    color: #888785;
-}
+/* reader.css: Read cluster rows dim like regular story titles — the generic
+   .NB-story-title.read rules (faded feed borders, gray title/date/preview,
+   dimmed favicon) cascade here, matching the parent story and the
+   single-line .NB-story-cluster-source.read fade. */
 
 /* Hover state - subtle, no transform */
 .NB-story-title.NB-story-title-cluster:hover {
@@ -3591,28 +3559,9 @@ img.feed_favicon {
     background-color: rgba(255, 255, 255, 0.04);
 }
 
-/* Remove ALL read-state dimming on cluster rows in dark mode */
-.NB-dark .NB-story-title.NB-story-title-cluster.read a.story_title {
-    color: #ddd;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
-    opacity: 1;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
-    color: inherit;
-}
-
-.NB-dark .NB-story-title.NB-story-title-cluster.read .story_date {
-    color: inherit;
-}
-
-.NB-dark .read .NB-story-title-cluster .NB-storytitles-content-preview,
-.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
-    color: inherit;
-}
+/* reader.css: Dark-mode read cluster rows also inherit the standard read
+   dimming from darkmode.css (.NB-dark .read .NB-storytitles-title, author,
+   date, content preview) — no cluster-specific overrides needed. */
 
 /* Story detail cluster section (uses StoryTitleView) */
 .NB-story-cluster-detail {
@@ -7825,6 +7774,7 @@ body {
 
 .NB-discover-load-more.NB-modal-submit-button {
     margin: 12px 0 0;
+    text-align: center;
 }
 
 .NB-discover-retry.NB-modal-submit-button,
@@ -13597,6 +13547,20 @@ form.opml_import_form input {
     height: 100%;
 }
 
+/* Natural Language classifier pills notify on focus (liked) prompts only —
+   a notification for a story matching a hide prompt is contradictory.
+   The story/publisher trainer uses .NB-classifier-prompt for both content
+   and image prompts; the manage tab uses .NB-classifier-image_prompt. */
+.NB-classifier-prompt .NB-classifier-notification-bell,
+.NB-classifier-image_prompt .NB-classifier-notification-bell {
+    display: none;
+}
+
+.NB-classifier-prompt.NB-classifier-like .NB-classifier-notification-bell,
+.NB-classifier-image_prompt.NB-classifier-like .NB-classifier-notification-bell {
+    display: inline-flex;
+}
+
 /* Bell styles inside liked/disliked classifier pills */
 .NB-classifier-like .NB-classifier-notification-bell {
     background: rgba(255, 255, 255, 0.15);
@@ -17005,7 +16969,7 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(139deg) saturate(10);
 }
 
-.NB-menu-manage .NB-menu-manage-tutorial .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-features .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 18px;
     filter: hue-rotate(321deg) saturate(18);
@@ -18750,27 +18714,23 @@ h5.NB-classifier-section-header {
 }
 
 .NB-provider-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #D97857 0%, #C56B4A 100%);
-    color: #4A2218;
-    border: 1px solid #C5684A;
+    background-color: #F0DDD3;
+    color: #8A4A32;
 }
 
 .NB-provider-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #74AA9C 0%, #5A9A8A 100%);
-    color: #1A3D36;
-    border: 1px solid #4A8A7A;
+    background-color: #D9EAE4;
+    color: #2F6457;
 }
 
 .NB-provider-pill.NB-provider-google {
-    background: linear-gradient(135deg, #8AB4F8 0%, #669DF6 100%);
-    color: #1A3A5C;
-    border: 1px solid #5B8EE6;
+    background-color: #DEE9FB;
+    color: #2F5A94;
 }
 
 .NB-provider-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
-    color: #FFFFFF;
-    border: 1px solid #333333;
+    background-color: #E2E2E2;
+    color: #303030;
 }
 
 .NB-story-ask-ai-voice-button {
@@ -18961,27 +18921,20 @@ h5.NB-classifier-section-header {
     color: #666;
 }
 
+/* reader.css: The usage/limit message renders the shared .NB-archive-callout
+   strip (see reader_utils.js make_archive_callout), so this wrapper stays
+   unstyled and only positions it. */
 .NB-story-ask-ai-usage-message {
-    padding: 12px;
     margin-top: 16px;
-    background-color: #F7F9FC;
-    border: 1px solid #D4E0F7;
-    border-left: 3px solid #4A90E2;
-    border-radius: 6px;
-    color: #2C5282;
-    font-size: 13px;
-    line-height: 1.5;
 }
 
-.NB-story-ask-ai-usage-message a {
-    color: #4A90E2;
-    text-decoration: none;
-    font-weight: 600;
+.NB-story-ask-ai-inline .NB-story-ask-ai-usage-message {
+    margin: 0 16px 16px;
 }
 
-.NB-story-ask-ai-usage-message a:hover {
-    text-decoration: underline;
-    color: #2E5F8F;
+/* When the limit message arrives without an answer above it, keep it off the header. */
+.NB-story-ask-ai-inline .NB-story-ask-ai-answer[style*="display: none"]~.NB-story-ask-ai-usage-message {
+    margin-top: 16px;
 }
 
 /* Model Pills */
@@ -18997,33 +18950,28 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #D97857 0%, #C56B4A 100%);
-    color: #4A2218;
-    border: 1px solid #C5684A;
+    background-color: #F0DDD3;
+    color: #8A4A32;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #74AA9C 0%, #5A9A8A 100%);
-    color: #1A3D36;
-    border: 1px solid #4A8A7A;
+    background-color: #D9EAE4;
+    color: #2F6457;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-google {
-    background: linear-gradient(135deg, #8AB4F8 0%, #669DF6 100%);
-    color: #1A3A5C;
-    border: 1px solid #5B8EE6;
+    background-color: #DEE9FB;
+    color: #2F5A94;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
-    color: #FFFFFF;
-    border: 1px solid #333333;
+    background-color: #E2E2E2;
+    color: #303030;
 }
 
 .NB-story-ask-ai-model-pill.NB-provider-unknown {
-    background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
-    color: #424242;
-    border: 1px solid #9E9E9E;
+    background-color: #E8E8E6;
+    color: #555555;
 }
 
 /* Pulsating border animation for loading state */
@@ -19110,17 +19058,18 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline {
     margin: 24px 0;
-    padding: 20px;
-    background: linear-gradient(135deg, #F0F4FF 0%, #FFF5F0 100%);
-    border: 1px solid #D4E0F7;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 0;
+    background-color: #FAFBF8;
+    border: 1px solid #DCDED6;
+    border-radius: 6px;
     position: relative;
     box-sizing: border-box;
     opacity: 0;
     transform: translateY(-10px) scale(0.98);
     animation: askAiUnfurl 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    overflow: hidden;
+    /* No overflow: hidden here — the Re-ask/Send model dropdown opens upward and
+       must escape the container when the module is short. Clipping only applies
+       while collapsing (see .NB-closing below). */
 }
 
 /* Story font themes */
@@ -19295,7 +19244,6 @@ h5.NB-classifier-section-header {
     0% {
         opacity: 1;
         transform: translateY(0) scale(1);
-        padding: 20px;
         margin-top: 24px;
         margin-bottom: 0;
         border-width: 1px;
@@ -19309,7 +19257,6 @@ h5.NB-classifier-section-header {
     100% {
         opacity: 0;
         transform: translateY(-10px) scale(0.98);
-        padding: 0;
         margin-top: 0;
         margin-bottom: 0;
         border-width: 0;
@@ -19318,16 +19265,7 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline.NB-closing {
     animation: askAiCollapse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.NB-story-ask-ai-inline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #4A90E2 0%, #E24A90 50%, #E2904A 100%);
+    overflow: hidden;
 }
 
 @keyframes slideInFade {
@@ -19386,7 +19324,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 0;
     position: relative;
     opacity: 0;
     animation: questionFadeIn 0.5s ease-out 0.15s forwards;
@@ -19397,10 +19335,11 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question {
-    padding: 14px 16px;
-    background-color: rgba(255, 255, 255, 0.85);
-    border: 2px solid #D4E0F7;
-    border-radius: 4px;
+    padding: 12px 16px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #E4E6DE;
+    border-radius: 0;
     position: relative;
     transition: border-color 0.3s ease;
 }
@@ -19411,15 +19350,15 @@ h5.NB-classifier-section-header {
 
 @keyframes borderPulse {
     0% {
-        border-color: #E1EBFF;
+        border-color: #E4E6DE;
     }
 
     38% {
-        border-color: #5C89C9;
+        border-color: #A0A499;
     }
 
     100% {
-        border-color: #E1EBFF;
+        border-color: #E4E6DE;
     }
 }
 
@@ -19462,12 +19401,12 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question-text {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
-    color: #2C3E50;
+    color: #59604E;
     font-weight: 500;
     font-style: italic;
-    padding-right: 90px;
+    padding-right: 36px;
 }
 
 /* Model pill wrapper for inline pills in answer content */
@@ -19495,7 +19434,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input-wrapper {
-    margin-bottom: 16px;
+    margin: 16px;
     display: flex;
     gap: 8px;
 }
@@ -19503,32 +19442,31 @@ h5.NB-classifier-section-header {
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input {
     flex: 1;
     padding: 10px 14px;
-    border: 1px solid #D4E0F7;
-    border-radius: 6px;
+    border: 1px solid #D0D2CC;
+    border-radius: 4px;
     font-size: 13px;
     background-color: #FFFFFF;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input:focus {
     outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #90928B;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-submit {
     padding: 10px 20px;
     font-size: 13px;
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    background-color: #4A90A4;
     border: none;
     color: white;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.15s ease;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-submit:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    background-color: #3A7A8A;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-response {
@@ -19589,32 +19527,31 @@ h5.NB-classifier-section-header {
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
     padding: 16px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #D4E0F7;
-    border-radius: 8px;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
     line-height: 1.7;
-    color: #333;
+    color: #404040;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-followup-wrapper {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #D4E0F7;
+    margin-top: 0;
+    padding: 12px 16px;
+    border-top: 1px solid #E4E6DE;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-error {
-    margin-top: 16px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #E2A04A;
-    border-left: 3px solid #E2904A;
-    border-radius: 8px;
+    margin: 16px;
+    padding: 12px 14px;
+    background-color: rgba(196, 90, 71, 0.05);
+    border: 1px solid #E0CFC0;
+    border-radius: 4px;
     font-size: 13px;
     line-height: 1.6;
-    color: #8B4513;
+    color: #8B5A3C;
     display: none;
     opacity: 0;
     transform: scale(0.95);
@@ -20390,92 +20327,262 @@ h5.NB-classifier-section-header {
     margin: 6px 8px 0;
 }
 
-.NB-modal-email label {
-    float: left;
-    padding-top: 4px;
-    font-weight: bold;
+/* Staggered entrance: title, story card, then each form section rises in turn. */
+@keyframes NB-email-modal-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.NB-modal-email .NB-input,
+.NB-modal-email .NB-modal-title,
+.NB-modal-email .NB-modal-email-story,
+.NB-modal-email>.NB-modal-email-field,
+.NB-modal-email .NB-modal-email-from-container,
+.NB-modal-email .NB-modal-email-cc-wrapper,
+.NB-modal-email .NB-recommend-form {
+    animation: NB-email-modal-enter 0.3s cubic-bezier(0.2, 0, 0, 1) backwards;
+}
+
+.NB-modal-email .NB-modal-email-story {
+    animation-delay: 0.05s;
+}
+
+.NB-modal-email .NB-modal-email-to-container {
+    animation-delay: 0.1s;
+}
+
+.NB-modal-email .NB-modal-email-comments-container {
+    animation-delay: 0.15s;
+}
+
+.NB-modal-email .NB-modal-email-from-container {
+    animation-delay: 0.2s;
+}
+
 .NB-modal-email .NB-modal-email-cc-wrapper {
-    width: 430px;
-    margin-left: 120px;
-    display: block;
-    overflow: hidden;
+    animation-delay: 0.25s;
+}
+
+.NB-modal-email .NB-recommend-form {
+    animation-delay: 0.3s;
+}
+
+/* Story preview card */
+.NB-modal-email .NB-modal-email-story {
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    background-color: #F8F8F6;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .NB-modal-email .NB-modal-email-feed {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
     margin: 0 0 6px;
-    line-height: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #606060;
 }
 
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-image {
-    height: 12px;
-    width: 12px;
+    width: 14px;
+    height: 14px;
+    margin: 0 6px 0 0;
+    border-radius: 3px;
+    float: none;
+    flex-shrink: 0;
 }
 
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-title {
-    margin-left: 0;
+    margin: 0;
     float: none;
-    overflow: visible;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .NB-modal-email .NB-modal-email-story-title {
-    clear: both;
-    margin: 8px 0 4px;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 1.35;
+    color: #303030;
+    text-wrap: balance;
 }
 
 .NB-modal-email .NB-modal-email-story-permalink {
-    color: #808080;
+    display: block;
+    margin: 4px 0 0;
+    color: #909090;
     font-size: 11px;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.NB-modal.NB-modal-email .NB-modal-email-comments-container {
-    padding: 6px 0 0;
+.NB-modal-email .NB-modal-email-story-permalink:hover {
+    color: #607D9C;
+    text-decoration: underline;
+}
+
+/* Form fields: label above input, full-width */
+.NB-modal-email .NB-modal-email-field {
+    margin: 14px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-field label {
+    display: block;
+    margin: 0 0 4px 2px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #808080;
+}
+
+.NB-modal-email .NB-modal-email-label-hint {
+    margin-left: 6px;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #A8A8A8;
+}
+
+.NB-modal-email .NB-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0;
 }
 
 .NB-modal-email .NB-modal-email-comments {
-    width: 550px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     height: 80px;
-    font-size: 14px;
-    color: #404040;
-    line-height: 20px;
-    padding: 8px 0 0 8px;
     margin: 0;
-    border: 1px solid #808080;
-    /* font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; */
+    padding: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    color: #404040;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    resize: vertical;
 }
 
-.NB-modal-email .NB-modal-email-to-container,
+.NB-modal-email .NB-modal-email-comments:focus {
+    border-color: rgba(0, 0, 0, .3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(66, 133, 244, 0.15);
+    outline: none;
+}
+
+/* From name and email sit side-by-side */
 .NB-modal-email .NB-modal-email-from-container {
+    display: flex;
+    gap: 12px;
+    margin: 14px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-from-container .NB-modal-email-field {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+/* CC me: the whole label row is clickable for a generous hit area */
+.NB-modal-email .NB-modal-email-cc-wrapper {
+    margin: 8px 0 0;
+}
+
+.NB-modal-email .NB-modal-email-cc-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 8px 6px 2px;
+    font-size: 13px;
     color: #505050;
-    font-size: 12px;
-    padding: 12px 0 0;
-}
-
-.NB-modal-email .NB-modal-email-to-container {
-    margin: 4px 0;
-}
-
-.NB-modal-email .NB-modal-email-from-container {}
-
-.NB-modal-email form {
-    margin: 24px 0 0;
+    cursor: pointer;
 }
 
 .NB-modal-email .NB-modal-email-cc {
-    float: left;
-    margin: 4px 6px 0 0;
+    margin: 0 8px 0 0;
+    cursor: pointer;
 }
 
-.NB-modal-email .NB-modal-email-explanation {
-    clear: both;
-    color: #505050;
-    font-size: 12px;
+/* Footer: send button and keyboard hint on the left, email client escape hatch on the right */
+.NB-modal-email .NB-recommend-form {
+    margin: 12px 0 0;
+}
+
+.NB-modal-email .NB-modal-submit {
+    display: flex;
+    align-items: center;
     margin: 0;
-    padding: 14px 1px 0;
+    padding: 14px 0 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.NB-modal-email .NB-modal-submit .NB-modal-submit-button {
+    margin: 0;
+    padding: 9px 16px;
+    font-size: 13px;
+}
+
+.NB-modal-email .NB-modal-email-shortcut-hint {
+    margin: 0 0 0 10px;
+    font-size: 11px;
+    color: #B0B0B0;
+}
+
+.NB-modal-email .NB-modal-emailclient {
+    margin-left: auto;
+    padding: 8px 2px;
+    font-size: 12px;
+    color: #607D9C;
+    text-decoration: none;
+}
+
+.NB-modal-email .NB-modal-emailclient:hover {
+    text-decoration: underline;
+}
+
+.NB-modal-email .NB-modal-emailclient::after {
+    content: ' ↗';
+    font-size: 11px;
+}
+
+/* Sent confirmation: keep the button green through its disabled state and give it a soft pop */
+@keyframes NB-email-sent-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.04);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent,
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent.NB-disabled,
+.NB-modal-email .NB-modal-submit-button.NB-modal-email-sent.NB-disabled:hover {
+    background-color: #217412;
+    background-image: linear-gradient(to top, #216200, #217412);
+    color: #FCFCFC;
+    text-shadow: none;
+    animation: NB-email-sent-pop 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .NB-modal.NB-modal-email .NB-error {
@@ -20483,190 +20590,446 @@ h5.NB-classifier-section-header {
     margin-top: 8px;
 }
 
-/* ================== */
-/* = Tutorial Modal = */
-/* ================== */
+/* ========================== */
+/* = Features & Tips Modal  = */
+/* ========================== */
 
+/* Prevent double scrollbars - the detail pane scrolls internally */
+#simplemodal-container:has(.NB-modal-features) .simplemodal-wrap {
+    overflow: visible !important;
+}
 
-.NB-modal-tutorial .NB-modal-title .NB-icon {
+.NB-modal-features {
+    padding: 0;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f4 100%);
+}
+
+.NB-modal-features .NB-features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-modal-features .NB-modal-title {
+    margin-bottom: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+}
+
+.NB-modal-features .NB-modal-title .NB-icon {
     background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 28px;
     filter: hue-rotate(321deg) saturate(18);
 }
 
-.NB-modal-tutorial h4 {
-    clear: both;
+.NB-features-header-subtitle {
+    font-size: 13px;
+    color: #6b7280;
 }
 
-.NB-modal-tutorial .NB-page {
-    display: none;
+.NB-features-body {
+    display: flex;
+    height: min(80vh, 780px);
 }
 
-.NB-modal-tutorial .NB-modal-page {
-    float: right;
-    margin-top: 7px;
+/* Left rail: the nine features */
+.NB-features-rail {
+    flex: 0 0 250px;
+    box-sizing: border-box;
+    padding: 14px 10px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.NB-modal-tutorial .NB-page {
-    /*  height: 446px;*/
-    overflow: hidden;
-}
-
-.NB-modal-tutorial .NB-page.NB-page-1 {
-    display: block;
-}
-
-.NB-modal-tutorial .NB-modal-submit .NB-modal-submit-button {
-    float: right;
-}
-
-.NB-modal-tutorial ul {
-    clear: both;
-    list-style: none;
-    padding: 0;
-}
-
-.NB-modal-tutorial li {
-    margin: 0 0 12px;
-    padding: 0;
-    padding-left: 20px;
-    background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 2px;
-}
-
-.NB-modal-tutorial .NB-page-1 .NB-right {
-    padding-right: 12px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view {
-    float: left;
-    width: 33%;
-    text-align: center;
-    margin: 0 0 18px 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0 0 2px 0;
-    padding-right: 16px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title img {
-    vertical-align: middle;
-    margin: -2px 4px 0 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-image {
-    border: 1px solid #303030;
-    width: 180px;
-    height: 150px;
-}
-
-.NB-modal-tutorial .NB-tutorial-view span {
-    font-size: 11px;
-    color: #808080;
-}
-
-.NB-modal-tutorial .NB-page-2 ul {
-    margin-bottom: 0;
-}
-
-.NB-modal-tutorial .NB-page-3 b {
-    display: block;
-    margin: 0 0 8px 0;
-}
-
-.NB-modal-tutorial .NB-tutorial-slider-demo {
-    position: relative;
-}
-
-.NB-modal-tutorial .NB-taskbar-intelligence {
-    left: 64px;
-    right: auto;
-    top: 24px;
-    position: relative;
-}
-
-.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
-    margin-bottom: 12px;
-}
-
-.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
-    margin-right: 24px;
-    border: 1px solid #505050;
-}
-
-.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
-    width: 8px;
-    margin: 0px 8px 2px 0;
-}
-
-.NB-modal-tutorial .NB-page-4 ul li {
-    clear: both;
-    padding: 0 224px 0 20px;
-    margin: 0 0 18px 0;
-}
-
-.NB-modal-tutorial .NB-page-4 img {
-    border: 1px solid #303030;
-    float: right;
-    clear: right;
-    margin: 0 -212px 18px 12px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-group {
-    width: 510px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut {
-    margin: 0 20px 0 0;
-    width: 235px;
-}
-
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut:last-child {
-    margin-bottom: 0;
-    margin-right: 0;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter {
-    overflow: hidden;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a {
-    background-color: #E9F4FD;
-    float: left;
-    font-size: 20px;
-    margin: 0px 16px;
-    padding: 12px;
-    text-align: center;
-    width: 40%;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a:hover {
-    background-color: #FAE3DB;
-}
-
-.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter img {
-    margin: 0 12px 0 0;
-    vertical-align: middle;
+.NB-features-rail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
     border: 1px solid transparent;
-    width: 64px;
-    height: 64px;
+    cursor: pointer;
+    transition: background 0.15s ease;
 }
 
-.NB-modal-tutorial .NB-page-5 h4.NB-tutorial-feedback-header {
-    margin: 24px 0px 12px;
+.NB-features-rail-item:hover {
+    background: rgba(0, 0, 0, 0.04);
 }
 
-.NB-modal-tutorial .NB-page-5 ul,
-.NB-modal-tutorial .NB-page-5 h4 {
-    clear: none;
+.NB-features-rail-item.NB-active {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.NB-features-rail-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
 
-/* ================== */
-/* = Tutorial Modal = */
-/* ================== */
+.NB-features-rail-item.NB-active .NB-features-rail-name {
+    color: #111827;
+    font-weight: 600;
+}
+
+/* Divider between the nine flagship features and the secondary list */
+.NB-features-rail-divider {
+    margin: 12px 10px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+}
+
+/* Secondary rail items are more compact */
+.NB-features-rail-item-secondary {
+    padding: 5px 10px;
+}
+
+.NB-features-rail-item-secondary .NB-features-icon-chip {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+}
+
+.NB-features-rail-item-secondary .NB-features-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.NB-features-rail-item-secondary .NB-features-rail-name {
+    font-size: 12.5px;
+}
+
+/* Each feature owns a color: the active item's border picks it up */
+.NB-features-rail-item-training.NB-active { border-color: #0a7aff; }
+.NB-features-rail-item-ask-ai.NB-active { border-color: #ff6247; }
+.NB-features-rail-item-web-feeds.NB-active { border-color: #9d4de0; }
+.NB-features-rail-item-newsletters.NB-active { border-color: #ec4899; }
+.NB-features-rail-item-search.NB-active { border-color: #14b8a6; }
+.NB-features-rail-item-archive.NB-active { border-color: #f08c00; }
+.NB-features-rail-item-saved.NB-active { border-color: #34a853; }
+.NB-features-rail-item-native-apps.NB-active { border-color: #d9a514; }
+.NB-features-rail-item-clustering.NB-active { border-color: #5a55d2; }
+.NB-features-rail-item-river.NB-active { border-color: #0a7aff; }
+.NB-features-rail-item-notifications.NB-active { border-color: #ff6247; }
+.NB-features-rail-item-text-view.NB-active { border-color: #9d4de0; }
+.NB-features-rail-item-changes.NB-active { border-color: #34a853; }
+.NB-features-rail-item-themes.NB-active { border-color: #d9a514; }
+.NB-features-rail-item-shortcuts.NB-active { border-color: #f08c00; }
+.NB-features-rail-item-integrations.NB-active { border-color: #14b8a6; }
+.NB-features-rail-item-blurblog.NB-active { border-color: #ec4899; }
+.NB-features-rail-item-mcp.NB-active { border-color: #5a55d2; }
+.NB-features-rail-item-cli.NB-active { border-color: #0891b2; }
+
+/* Icon chips: soft tinted squares holding the feature icon */
+.NB-features-icon-chip {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-features-icon-chip-large {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+}
+
+.NB-features-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-features-icon-chip-large .NB-features-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.NB-features-chip-blue { background: rgba(10, 122, 255, 0.12); }
+.NB-features-chip-coral { background: rgba(255, 98, 71, 0.12); }
+.NB-features-chip-purple { background: rgba(157, 77, 224, 0.12); }
+.NB-features-chip-pink { background: rgba(236, 72, 153, 0.12); }
+.NB-features-chip-teal { background: rgba(20, 184, 166, 0.12); }
+.NB-features-chip-orange { background: rgba(240, 140, 0, 0.12); }
+.NB-features-chip-green { background: rgba(52, 168, 83, 0.12); }
+.NB-features-chip-gold { background: rgba(217, 165, 20, 0.14); }
+.NB-features-chip-indigo { background: rgba(90, 85, 210, 0.12); }
+.NB-features-chip-cyan { background: rgba(8, 145, 178, 0.12); }
+
+/* Icon tints match the splash nav Features dropdown (static_pages.css) */
+.NB-features-icon-blue { filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(1.1); }
+.NB-features-icon-coral { filter: invert(50%) sepia(80%) saturate(1200%) hue-rotate(340deg) brightness(1.1); }
+.NB-features-icon-purple { filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(1.1); }
+.NB-features-icon-pink { filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(310deg) brightness(1.1); }
+.NB-features-icon-teal { filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(1.1); }
+.NB-features-icon-orange { filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(1.1); }
+.NB-features-icon-green { filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(90deg) brightness(1.1); }
+.NB-features-icon-gold { filter: invert(60%) sepia(90%) saturate(1200%) hue-rotate(20deg) brightness(1.1); }
+.NB-features-icon-indigo { filter: invert(25%) sepia(90%) saturate(2500%) hue-rotate(235deg) brightness(0.9); }
+.NB-features-icon-cyan { filter: invert(55%) sepia(85%) saturate(1800%) hue-rotate(160deg) brightness(1.1); }
+
+/* Detail pane */
+.NB-features-detail {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px 20px;
+    box-sizing: border-box;
+}
+
+.NB-features-detail-inner {
+    max-width: 700px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.NB-features-detail-inner.NB-features-detail-entering {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-features-detail-inner {
+        transition: none;
+    }
+}
+
+.NB-features-detail-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.NB-features-detail-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.NB-features-detail-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: #111827;
+}
+
+/* The tier badge reuses the features page badge classes (static_pages.css) */
+.NB-features-detail-name-row .NB-feature-section-badge {
+    margin: 0;
+}
+
+.NB-features-detail-subtitle {
+    margin-top: 4px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Screenshots */
+.NB-features-shots {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.NB-features-shots-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.NB-features-shot img {
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+
+.NB-features-shot-caption {
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+/* Sections: How it works, Tips, Questions */
+.NB-features-section {
+    margin-bottom: 20px;
+}
+
+.NB-features-section-title {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+}
+
+.NB-features-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.NB-features-step {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.NB-features-step-number {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transform: translateY(4px);
+}
+
+.NB-features-step-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #374151;
+}
+
+/* Step numerals carry the feature's color */
+.NB-features-accent-blue { color: #0a7aff; background: rgba(10, 122, 255, 0.12); }
+.NB-features-accent-coral { color: #ff6247; background: rgba(255, 98, 71, 0.12); }
+.NB-features-accent-purple { color: #9d4de0; background: rgba(157, 77, 224, 0.12); }
+.NB-features-accent-pink { color: #ec4899; background: rgba(236, 72, 153, 0.12); }
+.NB-features-accent-teal { color: #0d9488; background: rgba(20, 184, 166, 0.12); }
+.NB-features-accent-orange { color: #f08c00; background: rgba(240, 140, 0, 0.12); }
+.NB-features-accent-green { color: #34a853; background: rgba(52, 168, 83, 0.12); }
+.NB-features-accent-gold { color: #b8860b; background: rgba(217, 165, 20, 0.14); }
+.NB-features-accent-indigo { color: #5a55d2; background: rgba(90, 85, 210, 0.12); }
+.NB-features-accent-cyan { color: #0891b2; background: rgba(8, 145, 178, 0.12); }
+
+.NB-features-tips {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.NB-features-tip {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.NB-features-tip-marker {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transform: translateY(-2px);
+}
+
+.NB-features-accent-bg-blue { background: #0a7aff; }
+.NB-features-accent-bg-coral { background: #ff6247; }
+.NB-features-accent-bg-purple { background: #9d4de0; }
+.NB-features-accent-bg-pink { background: #ec4899; }
+.NB-features-accent-bg-teal { background: #14b8a6; }
+.NB-features-accent-bg-orange { background: #f08c00; }
+.NB-features-accent-bg-green { background: #34a853; }
+.NB-features-accent-bg-gold { background: #d9a514; }
+.NB-features-accent-bg-indigo { background: #5a55d2; }
+.NB-features-accent-bg-cyan { background: #0891b2; }
+
+.NB-features-tip-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #374151;
+}
+
+/* Questions */
+.NB-features-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.NB-features-faq-item {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.NB-features-faq-q {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 3px;
+}
+
+.NB-features-faq-a {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Try it */
+.NB-features-try {
+    padding: 4px 0 8px;
+}
+
+.NB-features-try .NB-features-try-button {
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Narrow windows: rail collapses to a horizontal strip of chips */
+@media (max-width: 900px) {
+    .NB-features-body {
+        flex-direction: column;
+        height: min(78vh, 700px);
+    }
+
+    .NB-features-rail {
+        flex: 0 0 auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 10px 14px;
+    }
+
+    .NB-features-rail-item {
+        flex-shrink: 0;
+    }
+
+    .NB-features-rail-name {
+        white-space: nowrap;
+    }
+}
+
+/* =============== */
+/* = Intro Modal = */
+/* =============== */
 
 .NB-modal-intro {}
 
@@ -23137,6 +23500,27 @@ h5.NB-classifier-section-header {
     border-bottom: none;
 }
 
+/* reader.css: Highlight the feature that prompted the upgrade modal (e.g. opening
+   it from a briefing callout highlights the Daily Briefing line). The box-shadow
+   spread acts as horizontal padding so the pill doesn't shift the text or icon. */
+.NB-premium-tier-features li.NB-premium-feature-highlighted {
+    background: rgba(139, 92, 246, 0.16);
+    border-radius: 6px;
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.16);
+    animation: NB-premium-feature-pulse 1.6s ease-in-out 2;
+}
+
+@keyframes NB-premium-feature-pulse {
+    0%, 100% {
+        background: rgba(139, 92, 246, 0.16);
+        box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.16);
+    }
+    50% {
+        background: rgba(139, 92, 246, 0.32);
+        box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.32);
+    }
+}
+
 /* Feature bullet icons */
 .NB-premium-tier-features li .NB-premium-bullet-image {
     position: absolute;
@@ -23317,6 +23701,12 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/nouns/world.svg');
     filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
     /* red */
+}
+
+.NB-premium-tier-features-archive li.NB-18 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
+    filter: invert(25%) sepia(70%) saturate(2500%) hue-rotate(230deg) brightness(90%) contrast(105%);
+    /* indigo */
 }
 
 /* Pro tier icons with individual vivid colors */
@@ -23767,39 +24157,179 @@ h5.NB-classifier-section-header {
 /* = Goodies Modal = */
 /* ================= */
 
-.NB-modal-goodies fieldset {
-    margin: 32px 0 32px;
-}
-
 .NB-modal-goodies .NB-modal-title .NB-icon {
     background: transparent url("/media/embed/icons/nouns/dialog-goodies.svg") no-repeat center center;
     background-size: 28px;
     filter: hue-rotate(186deg) saturate(18);
 }
 
-.NB-modal-goodies .NB-goodies-group {
-    clear: both;
-    margin: 16px 0 0 0;
-    overflow: hidden;
-    background-color: #F7F7F5;
-    padding: 8px;
+/* Doubled class beats modals.css's later .NB-modal .NB-modal-title text-wrap: balance */
+.NB-modal.NB-modal-goodies .NB-modal-title {
+    white-space: nowrap;
+    text-wrap: nowrap;
 }
 
-.NB-modal-goodies .NB-goodies-title {
-    font-size: 14px;
+.NB-modal-goodies .NB-modal-tab {
+    padding: 8px 12px 10px;
+}
+
+.NB-modal.NB-modal-goodies .NB-tab {
+    height: 800px;
+    max-height: calc(100vh - 220px);
+    padding: 14px 6px 20px;
+}
+
+/* Official app hero card */
+.NB-modal-goodies .NB-goodies-hero {
+    background-color: #F7F7F5;
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 2px 0 8px;
+}
+
+.NB-modal-goodies .NB-goodies-hero-header {
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-goodies .NB-goodies-hero-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    margin: 0 12px 0 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+}
+
+.NB-modal-goodies .NB-goodies-hero-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-modal-goodies .NB-goodies-hero-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #404030;
+}
+
+.NB-modal-goodies .NB-goodies-hero-meta {
+    font-size: 12px;
+    color: #808070;
+    margin-top: 4px;
+}
+
+/* Screenshots share the strip equally and keep their aspect ratio */
+.NB-modal-goodies .NB-goodies-hero-shots {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.NB-modal-goodies .NB-goodies-hero-shots img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    align-self: flex-start;
+    border-radius: 6px;
+    border: 1px solid #D8D8D2;
+}
+
+/* Section headings between app groups */
+.NB-modal-goodies .NB-goodies-section-title {
+    font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
-    margin: 8px;
-    color: #404030;
-    text-shadow: 1px 1px 0 #E0E0E0;
+    letter-spacing: .05em;
+    color: #A0A090;
+    margin: 20px 4px 4px;
 }
 
+/* Third-party app cards, two per row */
+.NB-modal-goodies .NB-goodies-apps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 8px 0 4px;
+}
+
+.NB-modal-goodies .NB-goodies-apps-full {
+    grid-template-columns: 1fr;
+}
+
+.NB-modal-goodies .NB-goodies-app {
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #FCFCFA;
+}
+
+.NB-modal-goodies .NB-goodies-app-header {
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-goodies .NB-goodies-app-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    margin: 0 12px 0 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+    flex-shrink: 0;
+}
+
+.NB-modal-goodies .NB-goodies-app-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 12px;
+}
+
+.NB-modal-goodies .NB-goodies-app-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #404030;
+}
+
+.NB-modal-goodies .NB-goodies-app-meta {
+    font-size: 11px;
+    color: #808070;
+    margin-top: 2px;
+    line-height: 15px;
+}
+
+.NB-modal-goodies .NB-goodies-app-thumbs {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.NB-modal-goodies .NB-goodies-app-thumbs img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    align-self: flex-start;
+    border-radius: 4px;
+    border: 1px solid #D8D8D2;
+}
+
+.NB-modal-goodies .NB-goodies-app-button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Firefox about:config tip: a card with no store button */
+.NB-modal-goodies .NB-goodies-tip {
+    border: 1px solid #E4E4E0;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #FCFCFA;
+}
+
+/* Bookmarklet button, shared with the intro modal */
 .NB-modal-goodies .NB-goodies-bookmarklet-button,
-.NB-modal-intro .NB-goodies-bookmarklet-button,
-.NB-modal-goodies .NB-goodies-contenthandler-button {
+.NB-modal-intro .NB-goodies-bookmarklet-button {
     display: inline-block;
-    float: right;
-    /* font-family: 'Lucida Grande', Verdana, sans-serif; */
     font-weight: bold;
     font-size: 11px;
     border-radius: 8px;
@@ -23811,170 +24341,21 @@ h5.NB-classifier-section-header {
     min-width: 62px;
     text-align: center;
     vertical-align: 2px;
-    color: #fff;
     text-decoration: none;
     outline: none;
     margin: 8px 8px;
 }
 
-.NB-modal-goodies .NB-goodies-firefox-link {
+.NB-modal-intro .NB-goodies-bookmarklet-button {
     float: right;
-}
-
-.NB-modal-goodies .NB-goodies-firefox {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/firefox.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-modal-submit-button {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-safari {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/safari.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-chrome-link {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-chrome {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/reader/chrome.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-readkit {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/readkit.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-tafiti {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/tafiti.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-reeder-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_reeder_ios.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-reeder-mac {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_reeder_mac.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-leaf {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_leaf.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-unread-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/icon_unread.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-bluree {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/bluree.png') no-repeat 0 0;
-    background-size: 28px;
-}
-
-.NB-modal-goodies .NB-goodies-subtitle {
-    margin: 14px 8px 4px;
-    line-height: 18px;
-    color: #707070;
 }
 
 .NB-modal-goodies .NB-goodies-custom-input {
-    float: right;
-    width: 320px;
+    width: 380px;
     border: 1px solid #909090;
+    border-radius: 4px;
     padding: 4px;
-    margin: 6px 0 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-mobile-link {
-    float: right;
-}
-
-.NB-modal-goodies .NB-goodies-ios {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/apple.png') no-repeat 0 0;
-    background-size: 28px 28px;
-}
-
-.NB-modal-goodies .NB-goodies-android {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/android.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-nokia {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/nokia.png') no-repeat 0 0;
-}
-
-.NB-modal-goodies .NB-goodies-sailfish {
-    float: right;
-    width: 64px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/sailfish.png') no-repeat 0 0;
-    background-size: auto 28px;
-}
-
-.NB-modal-goodies .NB-goodies-windows {
-    float: right;
-    width: 28px;
-    height: 28px;
-    margin: 0 6px 0 0;
-    background: transparent url('/media/img/mobile/windows_phone_icon.png') no-repeat 0 0;
-    background-size: 28px;
+    flex-shrink: 0;
 }
 
 /* ========================== */
@@ -24634,6 +25015,29 @@ h5.NB-classifier-section-header {
     margin: 12px 0;
     border-radius: 3px;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+.NB-modal-preferences .NB-preferences-unsubscribed {
+    padding: 6px 12px;
+    background-color: #F8E3DC;
+    text-align: center;
+    margin: 12px 0;
+    border-radius: 3px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+/* Long email radio labels wrap beside the radio instead of dropping below it */
+.NB-modal-preferences .NB-preference-emails .NB-preference-options label {
+    float: none;
+    display: block;
+    overflow: hidden;
+}
+
+.NB-modal-preferences .NB-preference-email-settings .NB-preference-email-status {
+    color: #83210A;
+    font-size: 11px;
+    margin-top: 4px;
+    font-weight: bold;
 }
 
 .NB-modal-preferences .NB-preference-story-pane-position input {
@@ -25348,18 +25752,22 @@ h5.NB-classifier-section-header {
     margin: 0;
     flex-shrink: 0;
     float: none;
+    align-self: center;
 }
 
 .NB-modal-account .NB-renewal-notify-container label {
     margin: 0;
     padding: 0;
+    display: flex;
+    align-items: center;
+    align-self: center;
+    line-height: 1;
 }
 
 .NB-modal-account .NB-renewal-notify-label {
     font-size: 12px;
     color: #606060;
     cursor: pointer;
-    line-height: 1.3;
 }
 
 .NB-modal-account .NB-preference-saved-stories-date,
@@ -30891,6 +31299,7 @@ h5.NB-classifier-section-header {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 0;
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -30944,14 +31353,13 @@ h5.NB-classifier-section-header {
 .NB-add-site-tab-with-search {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
 }
 
 .NB-add-site-tab-results {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 16px 48px 0;
+    flex: 0 0 auto;
+    overflow: visible;
+    padding: 0;
 }
 
 /* Global Search */
@@ -31448,14 +31856,16 @@ h5.NB-classifier-section-header {
     position: relative;
     width: 100%;
     max-width: 100%;
+    min-height: 0;
     box-sizing: border-box;
 }
 
 .NB-add-site-tab-pane {
     display: none;
     height: 100%;
-    overflow: hidden;
-    padding: 20px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 16px 48px 0;
     box-sizing: border-box;
 }
 
@@ -32725,7 +33135,7 @@ h5.NB-classifier-section-header {
 .NB-add-site-webfeed-content {
     padding: 0 4px;
     flex: 1;
-    overflow-y: auto;
+    overflow: visible;
 }
 
 .NB-add-site-webfeed-empty {
@@ -34150,6 +34560,17 @@ h5.NB-classifier-section-header {
     padding: 40px 20px;
     color: #888;
     font-size: 14px;
+}
+
+/* Hint shown under the empty state when the Style popover filters hide all feeds */
+.NB-add-site-empty-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.NB-dark .NB-add-site-empty-hint {
+    color: #777;
 }
 
 /* Newsletters Popular */
@@ -40244,6 +40665,40 @@ button.NB-merge-group-apply.NB-button:hover {
     border-bottom-color: #405BA8;
 }
 
+.NB-briefing-direct-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    vertical-align: -3px;
+    border-bottom: none;
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NB-briefing-direct-link:hover {
+    border-bottom: none;
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.NB-briefing-direct-link:active {
+    transform: scale(0.96);
+}
+
+.NB-briefing-direct-link-icon,
+img.NB-briefing-direct-link-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    max-width: 14px;
+    max-height: 14px;
+    margin: 0;
+    border: 0;
+}
+
 /* reader.css: Favicons inline within briefing story links */
 .NB-briefing-inline-favicon {
     display: inline-block;
@@ -40416,9 +40871,10 @@ span.NB-briefing-inline-favicon {
     display: none;
 }
 
-/* reader.css: Well-Read Stories and Long Reads — staff-only trending story feeds */
+/* reader.css: Trending story feeds are revealed by feed_list_view.js */
 .NB-feeds-header-river-well-read-container,
-.NB-feeds-header-river-long-reads-container {
+.NB-feeds-header-river-long-reads-container,
+.NB-feeds-header-river-good-reads-container {
     display: none;
 }
 .NB-briefing-admin-meta {
@@ -40494,51 +40950,47 @@ span.NB-briefing-inline-favicon {
     text-align: center;
 }
 
-/* reader.css: Upsell banner for free users */
-.NB-briefing-upsell {
-    padding: 10px 14px;
-    border-top: 1px solid #E0DDD4;
+/* reader.css: Premium Archive callout for non-archive users — used by the briefing
+   views and the related stories upsell. The badge sits on the first line of
+   left-aligned text so the strip stays light and wraps cleanly instead of
+   centering into ragged lines. */
+.NB-archive-callout {
     display: flex;
-    justify-content: center;
-}
-
-.NB-briefing-upsell-link {
-    display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
-    text-decoration: none;
-    padding: 4px 10px 4px 4px;
+    margin: 8px 14px;
+    padding: 8px 12px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    background: #fafafa;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    background: rgba(99, 102, 241, 0.04);
     cursor: pointer;
-    flex: 0 0 auto;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.NB-briefing-upsell-link:hover {
-    background: rgba(99, 102, 241, 0.06);
-    border-color: #c4b5fd;
+.NB-archive-callout:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: #8b5cf6;
 }
 
-.NB-briefing-upsell-link .NB-archive-badge {
+.NB-archive-callout .NB-archive-badge {
     display: inline-block;
+    flex-shrink: 0;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: 4px;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
-.NB-briefing-upsell-text {
+.NB-archive-callout-text {
     font-size: 11px;
+    line-height: 1.45;
     color: #606060;
-    line-height: 1.3;
+    text-align: left;
 }
 
 /* reader.css: Briefing summary story — the AI-generated overview at the top */
@@ -40662,6 +41114,28 @@ span.NB-briefing-inline-favicon {
     align-items: flex-start;
     padding: 14px 0;
     margin: 0 20px;
+    border-radius: 6px;
+    transition: box-shadow 0.4s ease, background-color 0.4s ease;
+}
+
+/* reader.css: Pulse highlight for sections deep-linked from email (e.g. ?next=briefing-notifications) */
+.NB-briefing-popover .NB-popover-section.NB-popover-section-pulse {
+    animation: NB-popover-section-pulse 2s ease-out;
+}
+
+@keyframes NB-popover-section-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(82, 130, 191, 0.55);
+        background-color: rgba(82, 130, 191, 0.10);
+    }
+    40% {
+        box-shadow: 0 0 0 6px rgba(82, 130, 191, 0.18);
+        background-color: rgba(82, 130, 191, 0.10);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(82, 130, 191, 0);
+        background-color: transparent;
+    }
 }
 
 .NB-briefing-popover .NB-popover-section-label {
@@ -41300,4 +41774,64 @@ span.NB-briefing-inline-favicon {
     font-size: 12px;
     color: #A04040;
     margin-bottom: 8px;
+}
+
+/* ================================= */
+/* = Curated River Explainer Banner = */
+/* ================================= */
+
+/* reader.css: Non-sticky note above the first story title on the four curated rivers
+   (Global Shared, Widely Read, Long Reads, Good Reads) explaining how each is assembled. */
+.NB-story-titles-explainer {
+    margin: 8px 8px 4px;
+    padding: 8px 12px 10px;
+    border: 1px solid #E8E8DF;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #F8F8F3 0%, #F3F3EC 100%);
+    box-sizing: border-box;
+}
+
+.NB-layout-grid .NB-story-titles-explainer {
+    margin: 0;
+    grid-column-start: 1;
+    grid-column-end: -1;
+}
+
+.NB-story-titles-explainer-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-story-titles-explainer-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.NB-story-titles-explainer-label {
+    flex-shrink: 0;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8F9089;
+}
+
+/* reader.css: Hairline that runs from the label to the right edge, like a masthead rule. */
+.NB-story-titles-explainer-rule {
+    flex: 1;
+    height: 1px;
+    min-width: 12px;
+    background-color: #E3E3D9;
+}
+
+.NB-story-titles-explainer-body {
+    margin-top: 5px;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    color: #6E7068;
 }

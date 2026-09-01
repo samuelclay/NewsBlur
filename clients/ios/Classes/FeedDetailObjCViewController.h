@@ -64,6 +64,8 @@
 @property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
+- (BOOL)canPullToNextUnreadList;
+
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL dashboardAwaitingFinish;
@@ -107,6 +109,9 @@
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scroll;
+- (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation;
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath;

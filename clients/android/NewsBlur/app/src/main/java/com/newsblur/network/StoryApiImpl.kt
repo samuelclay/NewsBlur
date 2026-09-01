@@ -82,6 +82,9 @@ class StoryApiImpl(
             uri = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES).toUri()
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
             values.put(APIConstants.PARAMETER_INFREQUENT, infrequentCutoff.toString())
+        } else if (fs.isTrending) {
+            uri = APIConstants.buildUrl(APIConstants.PATH_TRENDING_STORIES).toUri()
+            values.put(APIConstants.PARAMETER_TRENDING_TYPE, fs.trendingType)
         } else if (fs.isAllNormal) {
             uri = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES).toUri()
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)

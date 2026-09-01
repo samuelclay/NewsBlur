@@ -157,6 +157,15 @@ color: #a85b40;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* darkmode.css: "Reason to upgrade" icons are dark line art (e.g. direction_black.svg)
+   that disappears on the dark card. Normalize to black, then invert to light gray —
+   same treatment as the premium tier modal's bullet icons. !important overrides the
+   per-icon filters in reader.css (e.g. the archive NB-5 train icon). */
+.NB-dark .NB-module-premium-icon,
+.NB-dark .NB-module-premium-archive-icon {
+    filter: brightness(0) invert(0.85) brightness(1.2) !important;
+}
+
 .NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
     color: rgba(216, 216, 216, 0.5);
 }
@@ -823,17 +832,34 @@ color: #a85b40;
     border-color: #444;
 }
 
-/* Goodies & Extras: Section "blobs" */
-.NB-dark .NB-goodies-group,
-.NB-dark .NB-modal-goodies .NB-goodies-title {
-    color: #c0c0c0;
-    text-shadow: none;
+/* Goodies & Extras: official app hero card */
+.NB-dark .NB-modal-goodies .NB-goodies-hero {
     background-color: #303739;
+    border-color: #3E4649;
 }
 
-/* Goodies & Extras: Section subtitle text*/
-.NB-dark .NB-modal-goodies .NB-goodies-subtitle {
-    color: gray;
+.NB-dark .NB-modal-goodies .NB-goodies-hero-name,
+.NB-dark .NB-modal-goodies .NB-goodies-app-name {
+    color: #c0c0c0;
+    text-shadow: none;
+}
+
+.NB-dark .NB-modal-goodies .NB-goodies-hero-meta,
+.NB-dark .NB-modal-goodies .NB-goodies-app-meta,
+.NB-dark .NB-modal-goodies .NB-goodies-section-title {
+    color: #8a9294;
+}
+
+/* Goodies & Extras: app cards and screenshot borders */
+.NB-dark .NB-modal-goodies .NB-goodies-app,
+.NB-dark .NB-modal-goodies .NB-goodies-tip {
+    background-color: #2A3133;
+    border-color: #3E4649;
+}
+
+.NB-dark .NB-modal-goodies .NB-goodies-hero-shots img,
+.NB-dark .NB-modal-goodies .NB-goodies-app-thumbs img {
+    border-color: #3E4649;
 }
 
 /* Goodies & Extras: Custom URLs input field */
@@ -1024,9 +1050,97 @@ color: #a85b40;
     color: #909090;
 }
 
-/* Tips & Tricks: Text color */
-.NB-dark .NB-modal-tutorial {
-    color: #c0c0c0;
+/* Features & Tips modal */
+.NB-dark #simplemodal-container:has(.NB-modal-features) {
+    background-color: #1a1f24;
+    border-color: #374151;
+}
+
+.NB-dark #simplemodal-container:has(.NB-modal-features) .simplemodal-data {
+    background-color: #1a1f24;
+}
+
+.NB-dark .NB-modal-features {
+    background: linear-gradient(180deg, #1a1f24 0%, #151a1e 100%);
+}
+
+.NB-dark .NB-modal-features .NB-features-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-modal-features .NB-modal-title {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-header-subtitle {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-features-rail {
+    border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-features-rail-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Border color comes from the feature's accent (reader.css), same in both themes */
+.NB-dark .NB-features-rail-item.NB-active {
+    background: #252d33;
+}
+
+.NB-dark .NB-features-rail-name {
+    color: #c0c8d0;
+}
+
+.NB-dark .NB-features-rail-item.NB-active .NB-features-rail-name {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-rail-divider {
+    color: #6b7280;
+}
+
+.NB-dark .NB-features-detail-name {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-detail-subtitle,
+.NB-dark .NB-features-faq-a {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-features-step-text,
+.NB-dark .NB-features-tip-text {
+    color: #c0c8d0;
+}
+
+.NB-dark .NB-features-shot img {
+    border-color: #374151;
+}
+
+.NB-dark .NB-features-shot-caption,
+.NB-dark .NB-features-section-title {
+    color: #6b7280;
+}
+
+.NB-dark .NB-features-faq-item {
+    background: #252d33;
+    border-color: #374151;
+}
+
+.NB-dark .NB-features-faq-q {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-features-rail {
+    scrollbar-color: #374151 transparent;
+}
+
+@media (max-width: 900px) {
+    .NB-dark .NB-features-rail {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
 }
 
 /* Import or upload sites: Text color */
@@ -3355,17 +3469,12 @@ a.mention, a.mention-group {
 /* ======================== */
 
 .NB-dark .NB-story-ask-ai-inline {
-    background: linear-gradient(135deg, #1a1f2e 0%, #2a1f1e 100%);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.NB-dark .NB-story-ask-ai-inline::before {
-    background: linear-gradient(90deg, rgba(74, 144, 226, 0.6) 0%, rgba(226, 74, 144, 0.6) 50%, rgba(226, 144, 74, 0.6) 100%);
+    background-color: #2B2B2B;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-question {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: transparent;
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -3375,20 +3484,20 @@ a.mention, a.mention-group {
 
 @keyframes borderPulseDark {
     0% {
-        border-color: rgba(92, 137, 201, 0.4);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 
     38% {
-        border-color: rgba(92, 137, 201, 0.8);
+        border-color: rgba(255, 255, 255, 0.35);
     }
 
     100% {
-        border-color: rgba(92, 137, 201, 0.4);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-question-text {
-    color: #E0E6ED;
+    color: #B8BCB0;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-close {
@@ -3412,60 +3521,39 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error {
-    background-color: rgba(226, 144, 74, 0.15);
-    border-color: rgba(139, 90, 43, 0.4);
-    border-left-color: rgba(226, 144, 74, 0.6);
-    color: #FFB870;
+    background-color: rgba(226, 144, 74, 0.1);
+    border-color: rgba(226, 144, 74, 0.3);
+    color: #E0A878;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error strong {
-    color: #FFC890;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message {
-    background-color: rgba(74, 144, 226, 0.15);
-    border-color: rgba(74, 144, 226, 0.3);
-    border-left-color: rgba(74, 144, 226, 0.6);
-    color: #6BA3E0;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message a {
-    color: #8BC5FF;
-}
-
-.NB-dark .NB-story-ask-ai-usage-message a:hover {
-    color: #A8D4FF;
+    color: #F0BC90;
 }
 
 /* Model Pills - Dark Mode */
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #8B4D35 0%, #6B3A28 100%);
-    color: #F5C4B0;
-    border: 1px solid #A35845;
+    background-color: rgba(217, 120, 87, 0.2);
+    color: #E8A88E;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #1A4D44 0%, #0F3830 100%);
-    color: #A8E6CF;
-    border: 1px solid #2D6A5A;
+    background-color: rgba(116, 170, 156, 0.18);
+    color: #8ECDB8;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-google {
-    background: linear-gradient(135deg, #1A3A5C 0%, #0F2840 100%);
-    color: #8AB4F8;
-    border: 1px solid #3D6A9F;
+    background-color: rgba(138, 180, 248, 0.18);
+    color: #9CBCF0;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
-    color: #FFFFFF;
-    border: 1px solid #444444;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #E0E0E0;
 }
 
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-unknown {
-    background: linear-gradient(135deg, #424242 0%, #303030 100%);
-    color: #BDBDBD;
-    border: 1px solid #616161;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #B0B0B0;
 }
 
 /* Error state for model pill - Dark Mode */
@@ -3475,9 +3563,9 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #D0D8E0;
+    background-color: transparent;
+    border-color: transparent;
+    color: #C8C8C4;
 }
 
 .NB-dark .NB-story-ask-ai-answer h1,
@@ -3500,8 +3588,8 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input:focus {
-    border-color: rgba(74, 144, 226, 0.6);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input::placeholder {
@@ -3616,28 +3704,52 @@ a.mention, a.mention-group {
     background-color: rgba(74, 144, 226, 0.3);
 }
 
+/* Fast/Thinking segmented control at the bottom of the model dropdown - dark mode */
+.NB-dark .NB-thinking-toggle-wrapper {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-thinking-toggle-segmented {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-thinking-toggle-option {
+    color: #909690;
+}
+
+.NB-dark .NB-thinking-toggle-option:hover {
+    color: #C0C6C0;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-thinking-toggle-option.NB-selected {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #E8E8E4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-thinking-toggle-option.NB-selected .NB-thinking-toggle-icon {
+    filter: brightness(1.4);
+}
+
 .NB-dark .NB-provider-pill.NB-provider-anthropic {
-    background: linear-gradient(135deg, #8B4D35 0%, #6B3A28 100%);
-    color: #F5C4B0;
-    border: 1px solid #A35845;
+    background-color: rgba(217, 120, 87, 0.2);
+    color: #E8A88E;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-openai {
-    background: linear-gradient(135deg, #2A5A4A 0%, #1A4A3A 100%);
-    color: #90D0C0;
-    border: 1px solid #3A6A5A;
+    background-color: rgba(116, 170, 156, 0.18);
+    color: #8ECDB8;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-google {
-    background: linear-gradient(135deg, #2A4A7A 0%, #1A3A6A 100%);
-    color: #90B0E0;
-    border: 1px solid #3A5A8A;
+    background-color: rgba(138, 180, 248, 0.18);
+    color: #9CBCF0;
 }
 
 .NB-dark .NB-provider-pill.NB-provider-xai {
-    background: linear-gradient(135deg, #3A3A3A 0%, #2A2A2A 100%);
+    background-color: rgba(255, 255, 255, 0.12);
     color: #E0E0E0;
-    border: 1px solid #5A5A5A;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input {
@@ -3647,12 +3759,12 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input:focus {
-    border-color: rgba(74, 144, 226, 0.6);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input::placeholder {
-    color: #6B7A92;
+    color: #808680;
 }
 
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
@@ -5744,6 +5856,14 @@ a.mention, a.mention-group {
     border-bottom-color: #7B9FD4;
 }
 
+.NB-dark .NB-briefing-direct-link-icon {
+    filter: brightness(1.25);
+}
+
+.NB-dark .NB-briefing-direct-link:hover .NB-briefing-direct-link-icon {
+    filter: brightness(1.55);
+}
+
 /* darkmode.css: Story items */
 .NB-dark .NB-briefing-story-item {
     border-bottom-color: #303030;
@@ -5808,23 +5928,19 @@ a.mention, a.mention-group {
     border-color: #303030;
 }
 
-/* darkmode.css: Upsell banner */
-.NB-dark .NB-briefing-upsell {
-    border-top-color: #303030;
+/* darkmode.css: Premium Archive callout for non-archive users */
+.NB-dark .NB-archive-callout {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.08);
 }
 
-.NB-dark .NB-briefing-upsell-link {
-    background: #2A2820;
-    border-color: #404040;
-}
-
-.NB-dark .NB-briefing-upsell-link:hover {
-    background: rgba(99, 102, 241, 0.1);
+.NB-dark .NB-archive-callout:hover {
+    background: rgba(99, 102, 241, 0.16);
     border-color: #6366f1;
 }
 
-.NB-dark .NB-briefing-upsell-text {
-    color: #909090;
+.NB-dark .NB-archive-callout-text {
+    color: #a0a0a0;
 }
 
 /* darkmode.css: Briefing summary story */
@@ -5988,4 +6104,74 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-feed-story-content .NB-briefing-section-icon {
     filter: grayscale(1) invert(1);
+}
+
+/* ================================= */
+/* = Curated River Explainer Banner = */
+/* ================================= */
+
+.NB-dark .NB-story-titles-explainer {
+    border-color: #35383A;
+    background: linear-gradient(180deg, #2E3133 0%, #292B2C 100%);
+}
+
+.NB-dark .NB-story-titles-explainer-label {
+    color: #8A8C85;
+}
+
+.NB-dark .NB-story-titles-explainer-rule {
+    background-color: #3A3D3F;
+}
+
+.NB-dark .NB-story-titles-explainer-body {
+    color: #A0A29B;
+}
+
+/* =========================== */
+/* = Send Story by Email Modal = */
+/* =========================== */
+
+.NB-dark .NB-modal-email .NB-modal-email-story {
+    background-color: #252D30;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-feed {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-permalink {
+    color: #808080;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-story-permalink:hover {
+    color: #8DAAC6;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-field label {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-label-hint {
+    color: #707070;
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-cc-label {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-modal-email .NB-modal-submit {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-modal-email .NB-modal-email-shortcut-hint {
+    color: #707070;
+}
+
+.NB-dark .NB-modal-email .NB-modal-emailclient {
+    color: #8DAAC6;
 }

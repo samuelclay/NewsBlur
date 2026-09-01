@@ -39,6 +39,16 @@
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
+    # A fresh flask_metrics is ~100MB. Left unbounded it crept to 7.9GB over
+    # eight months on hdb-mongo-secondary-3 and helped OOM the host, so cap it
+    # and let it restart instead of taking the box down. MALLOC_ARENA_MAX limits
+    # glibc's per-thread arenas, which is where the growth actually accumulates:
+    # the dev server handles each request on a new thread and glibc never
+    # returns those arenas to the OS.
+    memory: 512m
+    memory_swap: 512m
+    env:
+      MALLOC_ARENA_MAX: "2"
     volumes:
       - /srv/newsblur:/srv/newsblur
     networks_cli_compatible: yes

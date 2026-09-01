@@ -15,17 +15,14 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.archive_extension.blocklist import (
-    get_blocked_domains,
-    get_blocked_patterns,
-    is_blocked,
-)
+from apps.archive_extension.blocklist import get_blocked_domains, get_blocked_patterns, is_blocked
 from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
 from apps.archive_extension.tasks import categorize_archives, index_archive_for_search
 from apps.archive_extension.utils import format_datetime_utc
 from utils import json_functions as json
 from utils import log as logging
+from utils.llm_models import ANTHROPIC_MODEL
 from utils.user_functions import ajax_login_required, get_user
 
 
@@ -1131,7 +1128,7 @@ Return ONLY valid JSON with the exact IDs from above:
 ]"""
 
             response = client.messages.create(
-                model="claude-haiku-4-5", max_tokens=2000, messages=[{"role": "user", "content": prompt}]
+                model=ANTHROPIC_MODEL, max_tokens=2000, messages=[{"role": "user", "content": prompt}]
             )
 
             result_text = response.content[0].text.strip()

@@ -22,6 +22,7 @@ from apps.statistics.rstats import RStats, round_time
 from utils import db_functions
 from utils import json_functions as json
 from utils import log as logging
+from utils.analytics_degradation import skip_when_analytics_down
 from utils.story_functions import relative_date
 
 
@@ -330,10 +331,13 @@ class MFeedback(mongo.Document):
         seen_posts = set()
         try:
             data = requests.get("https://forum.newsblur.com/posts.json", timeout=3).content
-        except (urllib.error.HTTPError, requests.exceptions.ConnectTimeout) as e:
+            # An empty body decodes back to itself, so fall back to an empty dict.
+            data = (json.decode(data) or {}).get("latest_posts", "")
+        except (urllib.error.HTTPError, requests.exceptions.RequestException, ValueError) as e:
+            # The forum times out and serves error pages often enough that it isn't worth
+            # raising. The feedback already stored just stays stale until the next run.
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
-        data = json.decode(data).get("latest_posts", "")
 
         if not len(data):
             print("No data!")
@@ -400,6 +404,7 @@ class MAnalyticsFetcher(mongo.Document):
         )
 
     @classmethod
+    @skip_when_analytics_down()
     def add(cls, feed_id, feed_fetch, feed_process, page, icon, total, feed_code):
         server_name = settings.SERVER_NAME
         if "app" in server_name:
@@ -447,6 +452,7 @@ class MAnalyticsLoader(mongo.Document):
         return "%s: %.4ss" % (self.server, self.page_load)
 
     @classmethod
+    @skip_when_analytics_down()
     def add(cls, page_load):
         server_name = settings.SERVER_NAME
 

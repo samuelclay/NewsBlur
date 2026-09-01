@@ -99,7 +99,7 @@ def set_classifier_notification(request):
     if not classifier_type or not classifier_value:
         return {"code": -1, "message": "classifier_type and classifier_value are required"}
 
-    if classifier_type not in ("title", "author", "tag", "text", "url"):
+    if classifier_type not in ("title", "author", "tag", "text", "url", "prompt", "image_prompt"):
         return {"code": -1, "message": "Invalid classifier_type"}
 
     # is_regex only applies to title, text, url, author classifiers
@@ -155,7 +155,9 @@ def set_apns_token(request):
     """
     user = get_user(request)
     tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    apns_token = request.POST["apns_token"]
+    apns_token = request.POST.get("apns_token")
+    if not apns_token:
+        return {"code": -1, "message": "Missing apns_token."}
 
     logging.user(user, "~FCUpdating APNS push token")
     if apns_token not in tokens.ios_tokens:

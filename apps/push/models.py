@@ -4,12 +4,13 @@
 
 import hashlib
 import re
+import urllib.error
 from datetime import datetime, timedelta
 
 import feedparser
 import requests
 from django.conf import settings
-from django.db import models
+from django.db import IntegrityError, models
 from django.urls import reverse
 
 from apps.push import signals
@@ -18,6 +19,7 @@ from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
 
 DEFAULT_LEASE_SECONDS = 10 * 24 * 60 * 60  # 10 days
+MAX_URL_LENGTH = 200  # Matches the max_length of the hub and topic URLFields below
 
 
 class PushSubscriptionManager(models.Manager):
@@ -42,15 +44,31 @@ class PushSubscriptionManager(models.Manager):
         if lease_seconds is None:
             lease_seconds = getattr(settings, "PUBSUBHUBBUB_LEASE_SECONDS", DEFAULT_LEASE_SECONDS)
         feed = Feed.get_by_id(feed.id)
-        subscription, created = self.get_or_create(feed=feed)
+        if not feed:
+            return None
+        if len(hub) > MAX_URL_LENGTH:
+            # Postgres rejects a hub URL longer than its column, and a truncated hub URL
+            # points somewhere else entirely, so there is nothing worth subscribing to.
+            logging.debug(
+                "   ---> [%-30s] ~FR~BKFeed hub URL too long to subscribe to push: %s"
+                % (feed.log_title[:30], hub[:100])
+            )
+            return None
+        try:
+            subscription, created = self.get_or_create(feed=feed)
+        except IntegrityError:
+            if not Feed.get_by_id(feed.id):
+                return None
+            raise
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
-        if len(topic) < 200:
+        if len(topic) < MAX_URL_LENGTH:
             subscription.topic = topic
         else:
-            subscription.topic = feed.feed_link[:200]
+            subscription.topic = feed.feed_link[:MAX_URL_LENGTH]
         subscription.hub = hub
-        subscription.save()
+        if not self._save_subscription(subscription, feed):
+            return None
 
         if callback is None:
             callback_path = reverse("push-callback", args=(subscription.pk,))
@@ -84,6 +102,8 @@ class PushSubscriptionManager(models.Manager):
                     subscription = self.subscribe(
                         extracted_topic.group(1), feed=feed, hub=hub, force_retry=True
                     )
+                    if not subscription:
+                        return None
             else:
                 logging.debug(
                     "   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s (code: %s)"
@@ -91,15 +111,30 @@ class PushSubscriptionManager(models.Manager):
                 )
                 # Raise URLError for non-successful responses (not 202/204)
                 if response and response.status_code not in (202, 204):
-                    import urllib.error
-
                     raise urllib.error.URLError("error subscribing to %s on %s:\n%s" % (topic, hub, error))
 
-        subscription.save()
+        if not self._save_subscription(subscription, feed):
+            return None
         feed.setup_push()
         if subscription.verified:
             signals.verified.send(sender=subscription)
         return subscription
+
+    def _save_subscription(self, subscription, feed):
+        """Save the subscription, reporting whether the feed survived the fetch.
+
+        Deleting a feed cascades its push subscription away, so a save() that starts
+        after the delete finds no row to update and inserts one for a feed_id that is
+        gone, which postgres rejects with a foreign key violation.
+        """
+        try:
+            subscription.save()
+        except IntegrityError:
+            logging.debug(
+                "   ---> [%-30s] ~FR~BKFeed deleted while subscribing to push, skipping" % feed.log_title[:30]
+            )
+            return False
+        return True
 
     def _get_hub(self, topic):
         parsed = feedparser.parse(topic)
@@ -186,6 +221,13 @@ class PushSubscription(models.Model):
                     logging.debug(
                         "   ---> [%-30s] ~FR~BKTimed out updating PuSH hub/topic: %s / %s"
                         % (self.feed, hub_url, self_url)
+                    )
+                except urllib.error.URLError as e:
+                    # The hub turned down the resubscribe, often by rate limiting us. That
+                    # is between us and the hub, so don't fail the callback that got us here.
+                    logging.debug(
+                        "   ---> [%-30s] ~FR~BKFailed to update PuSH hub/topic: %s / %s: %s"
+                        % (self.feed, hub_url, self_url, e)
                     )
 
     def __str__(self):

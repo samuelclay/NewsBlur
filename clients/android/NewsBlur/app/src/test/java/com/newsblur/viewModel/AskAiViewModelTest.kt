@@ -49,7 +49,7 @@ class AskAiViewModelTest {
             val usageHandler = slot<(Any?) -> Unit>()
             val errorHandler = slot<(Any?) -> Unit>()
 
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false
@@ -115,7 +115,7 @@ class AskAiViewModelTest {
                 listOf(
                     AskAiResponseBlock(
                         questionText = "Summarize in bullet points",
-                        model = AskAiProvider.OPUS,
+                        model = AskAiProvider.ANTHROPIC,
                         responseText = "First chunk. Second chunk.",
                         isFollowUp = false,
                     ),
@@ -127,7 +127,7 @@ class AskAiViewModelTest {
     @Test
     fun sendQuestionShowsImmediateApiError() =
         runTest {
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false
@@ -155,7 +155,7 @@ class AskAiViewModelTest {
         runTest {
             val chunkHandler = slot<(Any?) -> Unit>()
 
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false
@@ -200,7 +200,7 @@ class AskAiViewModelTest {
             val completeHandler = slot<(Any?) -> Unit>()
             val requests = mutableListOf<AskAiQuestionRequest>()
 
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false
@@ -230,7 +230,7 @@ class AskAiViewModelTest {
             )
             advanceUntilIdle()
 
-            viewModel.reaskWithModel(AskAiProvider.GEMINI)
+            viewModel.reaskWithModel(AskAiProvider.GOOGLE)
             advanceUntilIdle()
 
             assertEquals(2, requests.size)
@@ -238,7 +238,7 @@ class AskAiViewModelTest {
             assertEquals("What changed in the leadership team?", requests[1].customQuestion)
             assertTrue(requests[0].conversationHistory.isEmpty())
             assertTrue(requests[1].conversationHistory.isEmpty())
-            assertEquals(AskAiProvider.GEMINI.rawValue, requests[1].model)
+            assertEquals(AskAiProvider.GOOGLE.rawValue, requests[1].model)
             coVerify(exactly = 2) { askAiApi.sendQuestion(any()) }
         }
 
@@ -249,7 +249,7 @@ class AskAiViewModelTest {
             val chunkHandler = slot<(Any?) -> Unit>()
             val requests = mutableListOf<AskAiQuestionRequest>()
 
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false
@@ -305,7 +305,7 @@ class AskAiViewModelTest {
         runTest {
             val apiThread = CompletableDeferred<Thread>()
 
-            every { prefsRepo.getAskAiModel() } returns AskAiProvider.OPUS.rawValue
+            every { prefsRepo.getAskAiModel() } returns AskAiProvider.ANTHROPIC.rawValue
             every { prefsRepo.isShowAskAi() } returns true
             every { prefsRepo.getIsArchive() } returns false
             every { prefsRepo.getIsPro() } returns false

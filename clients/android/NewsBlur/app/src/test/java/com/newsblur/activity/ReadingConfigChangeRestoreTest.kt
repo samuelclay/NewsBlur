@@ -85,4 +85,33 @@ class ReadingConfigChangeRestoreTest {
         assertEquals("visible-read-story", restore?.story?.storyHash)
         assertEquals(true, restore?.story?.read)
     }
+
+    @Test
+    fun restoreStatePrefersRecentlyMarkedReadStoryWhenPagerHasAdvanced() {
+        val recentlyMarkedReadStory =
+            Story().apply {
+                storyHash = "marked-read-story"
+                title = "Story still on screen after mark read"
+                read = true
+            }
+        val pagerStory =
+            Story().apply {
+                storyHash = "next-unread-story"
+                title = "Next story selected by shifted pager"
+                read = false
+            }
+
+        val restore =
+            createReadingConfigChangeRestore(
+                visibleStory = null,
+                pagerStory = pagerStory,
+                fallbackStoryHash = null,
+                recentlyMarkedReadStory = recentlyMarkedReadStory,
+                scrollPosRel = 0.42f,
+            )
+
+        assertEquals("marked-read-story", restore?.storyHash)
+        assertEquals("marked-read-story", restore?.story?.storyHash)
+        assertEquals(true, restore?.story?.read)
+    }
 }

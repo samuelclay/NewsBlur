@@ -31,6 +31,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.handle_change();
         this.select_preferences();
+        this.fetch_email_status();
 
         this.fetch_payment_history();
         this.fetch_usage_billing_history();
@@ -303,12 +304,15 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-emails' }, [
+                    $.make('div', { className: 'NB-preferences-unsubscribed' }, [
+                        'You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe.'
+                    ]).toggle(!NEWSBLUR.assets.preference('send_emails')),
                     $.make('div', { className: 'NB-preference NB-preference-emails' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-emails-1' }, [
-                                    'Email replies, re-shares, and new followers'
+                                    'Email me replies, re-shares, new followers, and account notices'
                                 ])
                             ]),
                             $.make('div', [
@@ -733,6 +737,18 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             }
         });
         $('#NB-preference-renewal-notify', this.$modal).prop('checked', !!pref('notify_before_renewal'));
+    },
+
+    fetch_email_status: function () {
+        // The page-load preferences can be stale if emails were unsubscribed on
+        // another page (e.g. the email unsubscribe link), so fetch a fresh value.
+        var self = this;
+        this.model.make_request('/profile/get_preference', { 'preference': 'send_emails' }, function (data) {
+            if (!data || _.isUndefined(data.payload) || _.isNull(data.payload)) return;
+            NEWSBLUR.Preferences['send_emails'] = data.payload;
+            self.select_preferences();
+            $('.NB-preferences-unsubscribed', self.$modal).toggle(!data.payload);
+        }, $.noop);
     },
 
     serialize_preferences: function () {

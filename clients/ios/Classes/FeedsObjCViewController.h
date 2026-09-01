@@ -106,6 +106,10 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (void)selectNextFolderOrFeed;
+- (BOOL)selectNextUnreadFolderOrFeed;
+- (NSString *)nextUnreadNavigationKind;
+- (NSString *)nextUnreadNavigationTitle;
+- (UIImage *)nextUnreadNavigationIcon;
 
 - (IBAction)selectIntelligence;
 - (void)selectDashboard:(id)sender;

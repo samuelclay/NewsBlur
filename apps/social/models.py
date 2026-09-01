@@ -199,6 +199,12 @@ class MSocialProfile(mongo.Document):
         try:
             profile = cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:
+            # Don't conjure a profile for a user_id with no django User behind
+            # it. create() runs save() -> import_user_fields(), which raises
+            # User.DoesNotExist from deep inside mongoengine; raise it here
+            # instead so callers can see what actually went wrong.
+            if not User.objects.filter(pk=user_id).exists():
+                raise User.DoesNotExist("No user with id %s" % user_id)
             profile = cls.objects.create(user_id=user_id)
             profile.save()
 
@@ -224,9 +230,9 @@ class MSocialProfile(mongo.Document):
         if self.bio:
             self.bio = strip_tags(self.bio)
         if self.website:
-            self.website = strip_tags(self.website)
+            self.website = strip_tags(self.website)[: MSocialProfile.website.max_length]
         if self.location:
-            self.location = strip_tags(self.location)
+            self.location = strip_tags(self.location)[: MSocialProfile.location.max_length]
         if self.custom_css:
             self.custom_css = strip_tags(self.custom_css)
 
@@ -726,6 +732,7 @@ class MSocialProfile(mongo.Document):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user.username, user.email)],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -784,6 +791,7 @@ class MSocialProfile(mongo.Document):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user.username, user.email)],
+            headers=user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -1002,13 +1010,19 @@ class MSocialSubscription(mongo.Document):
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for social_sub in social_subs:
                 user_id = social_sub.subscription_user_id
-                if social_profiles[user_id]["shared_stories_count"] <= 0:
+                # A subscription can outlive the blurblog's profile (deleted/never created),
+                # in which case profile_feeds returns nothing for it. Skip it rather than
+                # 500 the whole feed load. (apps/social/models.py)
+                profile = social_profiles.get(user_id)
+                if not profile:
+                    continue
+                if profile["shared_stories_count"] <= 0:
                     continue
                 if update_counts and social_sub.needs_unread_recalc:
                     social_sub.calculate_feed_scores()
 
                 # Combine subscription read counts with feed/user info
-                feed = dict(list(social_sub.canonical().items()) + list(social_profiles[user_id].items()))
+                feed = dict(list(social_sub.canonical().items()) + list(profile.items()))
                 social_feeds.append(feed)
 
         return social_feeds
@@ -1301,7 +1315,6 @@ class MSocialSubscription(mongo.Document):
         cutoff_date=None,
         date_filter_start=None,
         date_filter_end=None,
-        dashboard_global=False,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
 
@@ -1318,12 +1331,7 @@ class MSocialSubscription(mongo.Document):
 
         ranked_stories_keys = "zU:%s:social" % (user_id)
         unread_ranked_stories_keys = "zhU:%s:social" % (user_id)
-        if (
-            (offset or dashboard_global)
-            and cache
-            and rt.exists(ranked_stories_keys)
-            and rt.exists(unread_ranked_stories_keys)
-        ):
+        if offset and cache and rt.exists(ranked_stories_keys) and rt.exists(unread_ranked_stories_keys):
             story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
             if not story_hashes_and_dates:
                 return [], [], []
@@ -1510,7 +1518,11 @@ class MSocialSubscription(mongo.Document):
                 # XXX TODO: Real-time notification, just for this user
         return data
 
-    def mark_feed_read(self, cutoff_date=None):
+    def mark_feed_read(self, cutoff_date=None, force=False):
+        # force exists for signature parity with UserSubscription.mark_feed_read in
+        # apps/reader/models.py: mark_all_as_read and mark_feed_as_read pass
+        # force=True to both subscription types. Social subs have no zero-badge
+        # early return to bypass, so the flag changes nothing here.
         user_profile = Profile.objects.get(user_id=self.user_id)
         recount = True
 
@@ -2615,6 +2627,7 @@ class MSharedStory(mongo.DynamicDocument):
                 text,
                 from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
                 to=["%s <%s>" % (user.username, user.email)],
+                headers=user.profile.email_unsubscribe_headers(),
             )
             msg.attach_alternative(html, "text/html")
             msg.send()
@@ -2692,6 +2705,7 @@ class MSharedStory(mongo.DynamicDocument):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (original_user.username, original_user.email)],
+            headers=original_user.profile.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()

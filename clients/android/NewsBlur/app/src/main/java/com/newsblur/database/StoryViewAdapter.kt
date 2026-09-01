@@ -156,6 +156,11 @@ class StoryViewAdapter(
             ignoreIntel = false
             singleFeed = false
         }
+        if (fs.isTrending) {
+            ignoreReadStatus = false
+            ignoreIntel = false
+            singleFeed = false
+        }
         if (fs.isSingleSocial) {
             ignoreReadStatus = false
             ignoreIntel = false
@@ -198,6 +203,22 @@ class StoryViewAdapter(
 
     fun updateFeedSet(fs: FeedSet?) {
         this.fs = fs
+    }
+
+    @Synchronized
+    fun clearStoriesNow() {
+        diffJob?.cancel()
+        diffJob = null
+        lastLoadId = -1L
+        oldScrollState = null
+        pendingScrollStoryHash = null
+        pendingHighlightStoryHash = null
+        activeFeedIds = null
+        clusterThumbnailUrls.clear()
+        stories.clear()
+        displayItems.clear()
+        storyDisplayPositions.clear()
+        notifyDataSetChanged()
     }
 
     fun setStyle(listStyle: StoryListStyle) {
@@ -263,10 +284,11 @@ class StoryViewAdapter(
             adapterScope.launch {
                 val filtered = applySkipBackfill(incoming = stories, skip = skipBackFillingStories)
                 val newDisplayItems = buildDisplayItems(filtered)
+                val oldDisplayItems = synchronized(this@StoryViewAdapter) { displayItems.toList() }
 
                 val diff =
                     try {
-                        DiffUtil.calculateDiff(DisplayItemDiffer(newDisplayItems), false)
+                        DiffUtil.calculateDiff(DisplayItemDiffer(oldDisplayItems, newDisplayItems), false)
                     } catch (e: Exception) {
                         Log.e(this@StoryViewAdapter, "error diffing: ${e.message}", e)
                         return@launch
@@ -369,23 +391,24 @@ class StoryViewAdapter(
     }
 
     private inner class DisplayItemDiffer(
+        private val oldDisplayItems: List<DisplayItem>,
         private val newDisplayItems: List<DisplayItem>,
     ) : DiffUtil.Callback() {
         override fun areContentsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
-        ): Boolean = newDisplayItems[newItemPosition].contentMatches(displayItems[oldItemPosition])
+        ): Boolean = newDisplayItems[newItemPosition].contentMatches(oldDisplayItems[oldItemPosition])
 
         override fun areItemsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
         ): Boolean =
-            newDisplayItems[newItemPosition].stableId == displayItems[oldItemPosition].stableId &&
-                newDisplayItems[newItemPosition]::class == displayItems[oldItemPosition]::class
+            newDisplayItems[newItemPosition].stableId == oldDisplayItems[oldItemPosition].stableId &&
+                newDisplayItems[newItemPosition]::class == oldDisplayItems[oldItemPosition]::class
 
         override fun getNewListSize(): Int = newDisplayItems.size
 
-        override fun getOldListSize(): Int = displayItems.size
+        override fun getOldListSize(): Int = oldDisplayItems.size
     }
 
     @Synchronized
@@ -611,6 +634,7 @@ class StoryViewAdapter(
                     targetFeedSet,
                     feedUtils.getFeed(story!!.feedId),
                     folderName,
+                    null,
                     null,
                 )
                 return true

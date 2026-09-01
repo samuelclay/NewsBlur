@@ -41,9 +41,28 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince, relative_timeuntil
 from utils.ratelimit import ratelimit
+from utils.url_safety import (
+    BLOCKED_PRIVATE_URL_MESSAGE,
+    UnsafeUrlError,
+    validate_public_url,
+)
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
+
+
+def normalize_feed_id(feed_id):
+    """Clients sometimes send the DOM element id ('feed:123') instead of the bare feed id."""
+    if not feed_id:
+        return None
+
+    feed_id = str(feed_id)
+    if feed_id.startswith("feed:"):
+        feed_id = feed_id[len("feed:") :]
+    if not feed_id.isdigit():
+        return None
+
+    return int(feed_id)
 
 
 @json.json_view
@@ -360,12 +379,20 @@ def exception_retry(request):
 @ajax_login_required
 @json.json_view
 def exception_change_feed_address(request):
-    feed_id = request.POST["feed_id"]
+    feed_id = normalize_feed_id(request.POST.get("feed_id"))
+    if not feed_id:
+        return {"code": -1, "message": "Missing or invalid feed id."}
+
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_address = request.POST["feed_address"]
     timezone = request.user.profile.timezone
     code = -1
+
+    try:
+        validate_public_url(feed_address)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed
@@ -458,12 +485,20 @@ def exception_change_feed_address(request):
 @ajax_login_required
 @json.json_view
 def exception_change_feed_link(request):
-    feed_id = request.POST["feed_id"]
+    feed_id = normalize_feed_id(request.POST.get("feed_id"))
+    if not feed_id:
+        return {"code": -1, "message": "Missing or invalid feed id."}
+
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_link = request.POST["feed_link"]
     timezone = request.user.profile.timezone
     code = -1
+
+    try:
+        validate_public_url(feed_link)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if False and (feed.has_page_exception or feed.has_feed_exception):
         # Fix broken feed

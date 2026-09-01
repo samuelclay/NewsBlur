@@ -64,7 +64,12 @@ class FeedApiImpl(
         }
 
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_FEED_AS_READ)
-        val response: APIResponse = networkClient.post(urlString, values)
+        val response: APIResponse =
+            networkClient.postWithoutRetry(
+                urlString,
+                values,
+                BULK_MARK_READ_TIMEOUT_SECONDS,
+            )
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -280,5 +285,9 @@ class FeedApiImpl(
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_ALL_AS_READ)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    private companion object {
+        const val BULK_MARK_READ_TIMEOUT_SECONDS = 120L
     }
 }

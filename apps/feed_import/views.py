@@ -20,7 +20,6 @@ from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
 from apps.feed_import.models import OAuthToken, OPMLExporter, OPMLImporter, UploadedOPML
 from apps.feed_import.tasks import ProcessOPML, ProcessOPMLExport
 from apps.reader.forms import SignupForm
-from apps.reader.models import UserSubscription
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
@@ -40,40 +39,26 @@ def opml_upload(request):
             file = request.FILES["file"]
             xml_opml = file.read()
             try:
-                UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
+                uploaded_opml = UploadedOPML.objects.create(
+                    user_id=request.user.pk,
+                    opml_file=xml_opml,
+                )
             except (UnicodeDecodeError, ValidationError, InvalidStringData):
-                folders = None
                 code = -1
                 message = "There was a Unicode decode error when reading your OPML file. Ensure it's a text file with a .opml or .xml extension. Is it a zip file?"
-
-            opml_importer = OPMLImporter(xml_opml, request.user)
-            try:
-                folders = opml_importer.try_processing()
-            except TimeoutError:
-                folders = None
-                ProcessOPML.delay(request.user.pk)
-                feed_count = opml_importer.count_feeds_in_opml()
-                logging.user(
-                    request, "~FR~SBOPML upload took too long, found %s feeds. Tasking..." % feed_count
-                )
-                payload = dict(folders=folders, delayed=True, feed_count=feed_count)
-                code = 2
-                message = ""
-            except AttributeError:
-                code = -1
-                message = "OPML import failed. Couldn't parse XML file."
-                folders = None
-
-            if folders:
-                code = 1
-                feeds = UserSubscription.objects.filter(user=request.user).values()
-                payload = dict(folders=folders, feeds=feeds)
-                logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
-                from apps.social.models import MActivity
-
-                MActivity.new_opml_import(user_id=request.user.pk, count=len(feeds))
-                UserSubscription.queue_new_feeds(request.user)
-                UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
+            else:
+                opml_importer = OPMLImporter(xml_opml, request.user)
+                try:
+                    feed_count = opml_importer.count_feeds_in_opml()
+                except AttributeError:
+                    code = -1
+                    message = "OPML import failed. Couldn't parse XML file."
+                else:
+                    ProcessOPML.delay(request.user.pk, str(uploaded_opml.pk))
+                    logging.user(request, "~FR~SBOPML upload found %s feeds. Tasking..." % feed_count)
+                    payload = dict(folders=None, delayed=True, feed_count=feed_count)
+                    code = 2
+                    message = ""
         else:
             message = "Attach an .opml file."
             code = -1

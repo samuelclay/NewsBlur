@@ -5,12 +5,18 @@ from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
 from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+from utils import feedfinder_forman
 from utils import json_functions as json
 from utils import log as logging
+from utils.url_safety import (
+    BLOCKED_PRIVATE_URL_MESSAGE,
+    UnsafeUrlError,
+    validate_public_url,
+)
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
-from .models import MWebFeedConfig
+from .models import MWebFeedConfig, is_degenerate_container_xpath
 from .tasks import AnalyzeWebFeedPage
 
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{8,64}$")
@@ -29,12 +35,29 @@ def analyze(request):
 
     if not URL_RE.match(url):
         return {"code": -1, "message": "Please enter a valid URL starting with http:// or https://"}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if request_id:
         if not REQUEST_ID_RE.match(request_id):
             return {"code": -1, "message": "Invalid request identifier"}
     else:
         request_id = str(uuid.uuid4())
+
+    # If the pasted URL is itself a real RSS/Atom/JSON feed, don't run the
+    # Premium-Archive page-monitoring analysis on it. Hand it back to the client
+    # so it can subscribe through the normal (free) add-feed flow. A web page that
+    # merely links to a feed is left alone -- that feed may not be what they want.
+    # Skip the check when refining with a hint: by then we know it's a page.
+    if not story_hint and feedfinder_forman.url_is_feed(url):
+        logging.user(request.user, f"~BB~FWWeb Feed: ~SB{url}~SN is already a feed, redirecting to subscribe")
+        return {
+            "code": 2,
+            "message": "This is already an RSS feed. Subscribing directly.",
+            "feed_address": url,
+        }
 
     logging.user(
         request.user,
@@ -91,6 +114,10 @@ def subscribe(request):
 
     if not URL_RE.match(url):
         return {"code": -1, "message": "Invalid URL"}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return {"code": -1, "message": BLOCKED_PRIVATE_URL_MESSAGE}
 
     if not story_container_xpath or not title_xpath:
         logging.user(
@@ -100,6 +127,20 @@ def subscribe(request):
             % (repr(story_container_xpath), repr(title_xpath), repr(link_xpath), list(request.POST.keys())),
         )
         return {"code": -1, "message": "Missing XPath expressions for story extraction"}
+
+    if is_degenerate_container_xpath(story_container_xpath):
+        logging.user(
+            request.user,
+            "~BB~FWWeb Feed: ~FR~SBRejected degenerate container XPath~SN~FW - %s"
+            % repr(story_container_xpath[:200]),
+        )
+        return {
+            "code": -1,
+            "message": (
+                "That story pattern is tied to the exact items on the page right now, "
+                "so it would never find new stories. Please analyze the page again."
+            ),
+        }
 
     feed_address = f"webfeed:{url}"
 

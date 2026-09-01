@@ -1242,6 +1242,7 @@ var classifier_prototype = {
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
                 include_images: 'false',
+                classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
                 $btn.text('Test on this story').removeClass('NB-disabled');
@@ -1499,6 +1500,7 @@ var classifier_prototype = {
                 prompt: prompt_text,
                 story_hash: story.get('story_hash'),
                 include_images: 'true',
+                classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
                 $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');
@@ -1783,7 +1785,17 @@ var classifier_prototype = {
         // as make_classifier() so all existing CSS and click handlers apply.
         // filter_type: 'image' (default) or 'content'
         filter_type = filter_type || 'image';
-        var scope = 'feed';
+
+        // Restore the prompt's saved scope (feed-scoped by default) so the
+        // scope toggles and the notification bell use the correct scope key.
+        var scope_key = filter_type === 'image' ? 'image_prompts_scope' : 'prompts_scope';
+        var scope_info = null;
+        if (value && this.user_classifiers && this.user_classifiers[scope_key] &&
+            value in this.user_classifiers[scope_key]) {
+            scope_info = this.user_classifiers[scope_key][value];
+        }
+        var scope = scope_info ? scope_info.scope : 'feed';
+        var folder_name = scope_info ? (scope_info.folder_name || '') : '';
 
         var label;
         if (filter_type === 'content') {
@@ -1809,10 +1821,19 @@ var classifier_prototype = {
             $scope_toggles.append($toggle);
         });
 
-        var $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
-            $scope_toggles,
+        // Scope badge, notification bell, and type label as separate containers,
+        // matching make_classifier() so all existing CSS and handlers apply.
+        var $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge' }, [
+            $scope_toggles
+        ]);
+        var $type_label = $.make('span', { className: 'NB-classifier-type-badge' }, [
             $.make('span', { className: 'NB-classifier-type-label' }, label)
         ]);
+
+        // Notification bell: only built for saved prompt pills (non-empty value),
+        // never the live preview pill. CSS hides it unless the prompt is a focus
+        // (liked) prompt — notifying on a hide prompt is contradictory.
+        var notification_type = filter_type === 'image' ? 'image_prompt' : 'prompt';
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
             $.make('span', { className: 'NB-classifier NB-classifier-prompt' }, [
@@ -1833,7 +1854,9 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    $type_badge,
+                    $scope_badge,
+                    (value && this.make_notification_bell(notification_type, value, scope, folder_name, 1, false)),
+                    $type_label,
                     $.make('span', title_html)
                 ])
             ])
@@ -1843,8 +1866,8 @@ var classifier_prototype = {
         $('.NB-classifier', $classifier).data('original-state', 'neutral');
         $('.NB-classifier', $classifier).data('scope', scope);
         $('.NB-classifier', $classifier).data('original-scope', scope);
-        $('.NB-classifier', $classifier).data('folder-name', '');
-        $('.NB-classifier', $classifier).data('original-folder-name', '');
+        $('.NB-classifier', $classifier).data('folder-name', folder_name);
+        $('.NB-classifier', $classifier).data('original-folder-name', folder_name);
 
         // Standard hover behavior matching make_classifier()
         var self = this;
@@ -1999,8 +2022,9 @@ var classifier_prototype = {
         var titles = _.keys(this.user_classifiers.titles);
 
         _.each(titles, _.bind(function (title) {
-            // Check if title text is in the story title
-            if (!existing_title || existing_title.toLowerCase().indexOf(title.toLowerCase()) != -1) {
+            // media/js/newsblur/reader/reader_classifier.js: Use scoring semantics when deciding
+            // which title classifiers match the current story.
+            if (!existing_title || NEWSBLUR.title_classifier_utils.find_match_position(existing_title, title) != -1) {
                 var $title = this.make_classifier(title, title, 'title');
                 $titles.push($title);
             }
@@ -2099,8 +2123,9 @@ var classifier_prototype = {
         var titles = _.keys(this.user_classifiers.titles);
 
         _.each(titles, _.bind(function (title) {
-            // Only include titles that DON'T match the story title
-            if (story_title && story_title.toLowerCase().indexOf(title.toLowerCase()) === -1) {
+            // media/js/newsblur/reader/reader_classifier.js: Keep the non-matching list inverse
+            // to the word-start matcher used for story scoring.
+            if (story_title && NEWSBLUR.title_classifier_utils.find_match_position(story_title, title) === -1) {
                 var $title = this.make_classifier(title, title, 'title');
                 $titles.push($title);
             }
@@ -3193,8 +3218,9 @@ var classifier_prototype = {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                     }
                 } else {
-                    // Exact phrase - only show badge when NOT found (since selected text is usually found)
-                    if (story_title.toLowerCase().indexOf(text.toLowerCase()) === -1) {
+                    // media/js/newsblur/reader/reader_classifier.js: Validate exact title phrases
+                    // with the same word-start semantics used when the classifier is applied.
+                    if (NEWSBLUR.title_classifier_utils.find_match_position(story_title, text) === -1) {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in title'));
                     }
                 }
@@ -3688,8 +3714,20 @@ var classifier_prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-classifier-premium-link' }, function ($t, $p) {
             e.preventDefault();
+            // reader_classifier.js: Highlight the tier feature line matching the
+            // notice this link sits in (regex, scope, notifications, or full-text).
+            var highlight_feature = null;
+            if ($t.closest('.NB-classifier-pro-notice').length) {
+                highlight_feature = 'regex';
+            } else if ($t.closest('.NB-classifier-scope-notice').length) {
+                highlight_feature = 'training-scope';
+            } else if ($t.closest('.NB-classifier-notif-notice').length) {
+                highlight_feature = 'notifications';
+            } else if ($t.closest('.NB-classifier-archive-notice').length) {
+                highlight_feature = 'text-training';
+            }
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
             });
         });
 
@@ -3818,7 +3856,7 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-manage-scope-pro-banner a' }, function ($t) {
             e.preventDefault();
             $.modal.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'training-scope' });
             });
         });
 

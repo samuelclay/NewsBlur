@@ -50,6 +50,7 @@
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_well_read_header: $('.NB-feeds-header-river-well-read'),
                 $river_long_reads_header: $('.NB-feeds-header-river-long-reads'),
+                $river_good_reads_header: $('.NB-feeds-header-river-good-reads'),
                 $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $river_briefing_admin_header: $('.NB-feeds-header-river-briefing-admin'),
                 $archive_header: $('.NB-feeds-header-archive'),
@@ -1555,6 +1556,7 @@
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_well_read_header.removeClass('NB-selected');
             this.$s.$river_long_reads_header.removeClass('NB-selected');
+            this.$s.$river_good_reads_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$river_briefing_admin_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
@@ -2543,6 +2545,13 @@
                     _.delay(function () {
                         story.set('selected', true);
                     }, 100);
+                } else if (data.is_preview) {
+                    // reader.js: The linked story is beyond the 3-story preview that
+                    // non-archive users receive, so there's nothing to select. Show
+                    // the Premium Archive upgrade instead of silently doing nothing.
+                    _.delay(function () {
+                        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
+                    }, 100);
                 }
             }
         },
@@ -3067,7 +3076,12 @@
         open_trending_stories: function (options) {
             options = options || {};
             var trending_type = options.trending_type || 'well_read';
-            var folder_title = trending_type == 'long_reads' ? 'Long Reads' : 'Widely Read Stories';
+            var folder_titles = {
+                'well_read': 'Widely Read Stories',
+                'long_reads': 'Long Reads',
+                'good_reads': 'Good Reads'
+            };
+            var folder_title = folder_titles[trending_type] || folder_titles['well_read'];
 
             this.reset_feed(options);
             this.hide_splash_page();
@@ -3080,7 +3094,9 @@
                 show_options: true
             });
 
-            if (trending_type == 'long_reads') {
+            if (trending_type == 'good_reads') {
+                this.$s.$river_good_reads_header.addClass('NB-selected');
+            } else if (trending_type == 'long_reads') {
                 this.$s.$river_long_reads_header.addClass('NB-selected');
             } else {
                 this.$s.$river_well_read_header.addClass('NB-selected');
@@ -3168,7 +3184,7 @@
 
             // Check if user has archive access (Premium Archive tier)
             if (!NEWSBLUR.Globals.is_archive) {
-                this.open_feedchooser_modal({ premium_only: true });
+                this.open_premium_upgrade_modal({ highlight_feature: 'ask-ai' });
                 return;
             }
 
@@ -4212,6 +4228,8 @@
                 feed_title = "Widely Read Stories";
             } else if (feed_id == 'trending:long_reads') {
                 feed_title = "Long Reads";
+            } else if (feed_id == 'trending:good_reads') {
+                feed_title = "Good Reads";
             } else if (feed_id == 'river:blurblogs') {
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {
@@ -4297,8 +4315,8 @@
             NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed(feed_id);
         },
 
-        open_tutorial_modal: function () {
-            NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
+        open_features_modal: function (options) {
+            NEWSBLUR.features = new NEWSBLUR.ReaderFeatures(options);
         },
 
         open_intro_modal: function (options) {
@@ -5012,9 +5030,9 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-tutorial', role: "button" }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-features', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Features &amp; Tips')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -8588,11 +8606,11 @@
                     });
                 }
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-tutorial' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-features' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_tutorial_modal();
+                        self.open_features_modal();
                     });
                 }
             });
@@ -9105,7 +9123,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-launch-tutorial' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_tutorial_modal();
+                    self.open_features_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-launch-intro' }, function ($t, $p) {
@@ -9117,7 +9135,10 @@
             $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_premium_upgrade_modal();
+                    // reader.js: The "Reason to upgrade" module button carries the
+                    // feature slug for its rotating reason, so the upgrade modal
+                    // highlights the matching archive tier line.
+                    self.open_premium_upgrade_modal({ highlight_feature: $t.data('highlight-feature') });
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-trial-offer-button' }, function ($t, $p) {

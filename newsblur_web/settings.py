@@ -35,10 +35,13 @@ import django.http
 import paypalrestsdk
 import redis
 import sentry_sdk
+from django.core.exceptions import RequestDataTooBig
+from django.http import UnreadablePostError
 from mongoengine import connect
 from pymongo import monitoring
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from utils.mongo_command_monitor import MongoCommandLogger
@@ -304,6 +307,41 @@ SUBSCRIBER_EXPIRE = 7
 # servers. On your local, you should probably set this to 10-15 minutes
 PRO_MINUTES_BETWEEN_FETCHES = 5
 
+# DOMAIN_FETCHES_PER_MINUTE caps how many feeds on a single domain can be fetched
+# per minute across ALL task servers combined; feeds over budget are silently
+# deferred, not errored. See utils/domain_fetch_limiter.py. Production data
+# (July 2026) shows 99.75% of hosts stay under 1 fetch/minute, so this only
+# touches the handful of hottest domains. 30/minute is one fetch every 2
+# seconds, gentle for any single site.
+DOMAIN_FETCHES_PER_MINUTE = 30
+
+# Hosts that can take more than the default get raised budgets: multi-tenant hosts
+# whose volume is breadth, not hammering, plus large single sites with power users
+# whose many feeds deserve better than the default. Values chosen from measured
+# production rates (utils/domain_fetch_limiter.py has the methodology).
+DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
+    # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API
+    # at googleapis.com (utils/youtube_fetcher.py), which has its own quota. All
+    # youtube subdomains (gdata.youtube.com legacy addresses) collapse into this
+    # budget in feed_host(); combined demand measured ~425/min in August 2026.
+    "youtube.com": 600,
+    # Google's feed CDN, 6,900+ distinct feeds/hour, built to be crawled.
+    "feeds.feedburner.com": 200,
+    "feeds2.feedburner.com": 60,
+    # Mostly Pro users' 5-minute search feeds (measured ~250/min demand in August
+    # 2026); 120/min cycles every search roughly every 15-20 minutes.
+    "news.google.com": 120,
+    # Amazon-owned book marketplace with a Pro bookseller watching 1,700 search
+    # feeds. 120/min (2 fetches/sec) cycles their feeds every 15-20 minutes
+    # instead of the 3-4 hours the default budget was stretching them to.
+    "abebooks.com": 120,
+    # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
+    # budget there remains the true gate on API calls; this just converts overflow
+    # into silent deferral instead of 429s in fetch history.
+    "reddit.com": 95,
+    "old.reddit.com": 95,
+}
+
 ROOT_URLCONF = "newsblur_web.urls"
 INTERNAL_IPS = ("127.0.0.1",)
 LOGGING_LOG_SQL = True
@@ -516,9 +554,23 @@ CELERY_IMPORTS = (
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = 750 * 1024
 CELERY_TASK_TIME_LIMIT = 12 * 30
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
+
+# Master switch for the grandfathered $12/$24 -> $36 premium pricing migration. The nightly beat
+# tasks below are always registered (cron-driven); they only act while this is True. Set here in
+# base settings so every server (including the task workers that run the campaign) loads it.
+# Shell calls to Profile.run_premium_pricing_migration(...) bypass this flag for testing.
+PREMIUM_PRICING_MIGRATION_ENABLED = True
+
+# Safety gate for actually cancelling a non-approving PayPal subscriber's old subscription.
+# When True, legacy PayPal subscriptions that cannot be revised to $36 are cancelled before
+# renewal and the subscriber receives the PayPal pricing migration email.
+PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED = True
+
+PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS = 30
 
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
@@ -549,6 +601,16 @@ CELERY_BEAT_SCHEDULE = {
     "share-popular-stories": {
         "task": "share-popular-stories",
         "schedule": datetime.timedelta(minutes=10),
+        "options": {"queue": "cron_queue"},
+    },
+    "refresh-trending-stories": {
+        "task": "refresh-trending-stories",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
+    },
+    "curate-global-shared-stories": {
+        "task": "curate-global-shared-stories",
+        "schedule": datetime.timedelta(hours=1),
         "options": {"queue": "cron_queue"},
     },
     "clean-analytics": {
@@ -598,6 +660,16 @@ CELERY_BEAT_SCHEDULE = {
     },
     "refund-unredeemed-gifts": {
         "task": "refund-unredeemed-gifts",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    "premium-pricing-migration": {
+        "task": "premium-pricing-migration",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    "reconcile-premium-pricing-migration": {
+        "task": "reconcile-premium-pricing-migration",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
@@ -750,8 +822,14 @@ if not DEBUG:
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
-        ignore_errors=[SystemExit],
+        # UnreadablePostError is a client hanging up in the middle of a POST and
+        # RequestDataTooBig is a bot posting an oversized body, mostly at the /push/
+        # callbacks. Both come from the outside world, so there is nothing to fix.
+        ignore_errors=[SystemExit, UnreadablePostError, RequestDataTooBig],
     )
+    # Bots probing the servers by IP address send a bad Host header, which Django
+    # reports as an error through this logger. It is noise, not a broken request.
+    ignore_logger("django.security.DisallowedHost")
     sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 
 COMPRESS = not DEBUG
@@ -765,24 +843,13 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
 
 
-def clear_prometheus_aggregation_stats():
-    prom_folder = "/srv/newsblur/.prom_cache"
-    os.makedirs(prom_folder, mode=0o777, exist_ok=True)
-    os.environ["PROMETHEUS_MULTIPROC_DIR"] = prom_folder
-    for filename in os.listdir(prom_folder):
-        file_path = os.path.join(prom_folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            if "No such file" in str(e):
-                return
-            print("Failed to delete %s. Reason: %s" % (file_path, e))
-
-
-clear_prometheus_aggregation_stats()
+# Prometheus multiprocess mode is enabled only under Gunicorn, which sets
+# PROMETHEUS_MULTIPROC_DIR in config/gunicorn_conf.py before Django loads.
+# Setting it here would enable it for every Django process: Celery children
+# (recycled by CELERY_WORKER_MAX_MEMORY_PER_CHILD) each wrote a counter and
+# histogram file into .prom_cache that nothing ever scraped or deleted, which
+# grew to 162,000 files on a task server. Without the env var,
+# prometheus_client keeps metrics in memory and writes no files.
 
 if DEBUG:
     template_loaders = [
@@ -870,17 +937,29 @@ MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 
+# Analytics is optional data, so it fails fast rather than holding a request
+# open for pymongo's 30 second default while the server is unreachable. Callers
+# guard these operations with utils/analytics_degradation.py, which trips a
+# circuit breaker after the first timeout.
+MONGO_ANALYTICS_TIMEOUTS = {
+    "serverSelectionTimeoutMS": 2000,
+    "connectTimeoutMS": 2000,
+    "socketTimeoutMS": 5000,
+}
+
 if "username" in MONGO_ANALYTICS_DB:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 else:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['host']}/",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 
 
@@ -911,6 +990,10 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
     CELERY_REDIS_DB_NUM,
 )
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+# newsblur_web/settings.py: Each htask-work server runs its own celery beat for redundancy.
+# This scheduler takes a redis lock per task interval so a scheduled task only runs once,
+# instead of once per beat process. See newsblur_web/celery_beat.py.
+CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
 BROKER_TRANSPORT_OPTIONS = {

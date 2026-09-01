@@ -10,6 +10,7 @@ import hashlib
 import heapq
 import re
 import time
+import uuid
 from operator import itemgetter
 from pprint import pprint
 
@@ -483,8 +484,108 @@ class UserSubscription(models.Model):
         metrics_source = normalize_reader_metrics_source(metrics_source)
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
+        unread_page_cache_key = "zUP:%s:%s" % (self.user_id, self.feed_id)
 
-        if offset and r.exists(unread_ranked_stories_key):
+        def story_hash_cache_member(story_hash):
+            if isinstance(story_hash, bytes):
+                return story_hash.decode("utf-8")
+            return story_hash
+
+        def split_story_hash_scores(story_hashes):
+            hashes = []
+            scores = {}
+            for story_hash in story_hashes:
+                if isinstance(story_hash, (list, tuple)) and len(story_hash) == 2:
+                    story_hash, score = story_hash
+                    scores[story_hash_cache_member(story_hash)] = score
+                hashes.append(story_hash)
+            return hashes, scores
+
+        def cache_story_hash_scores(story_hashes, known_scores=None):
+            if not story_hashes:
+                return
+
+            known_scores = known_scores or {}
+            missing_story_hashes = [
+                story_hash
+                for story_hash in story_hashes
+                if story_hash_cache_member(story_hash) not in known_scores
+            ]
+            scores = []
+            if missing_story_hashes:
+                pipeline = r.pipeline()
+                for story_hash in missing_story_hashes:
+                    pipeline.zscore(unread_ranked_stories_key, story_hash)
+                scores = pipeline.execute()
+
+            cache_scores = {}
+            for story_hash in story_hashes:
+                score = known_scores.get(story_hash_cache_member(story_hash))
+                if score is not None:
+                    cache_scores[story_hash] = score
+            for story_hash, score in zip(missing_story_hashes, scores):
+                if score is not None:
+                    cache_scores[story_hash] = score
+
+            if cache_scores:
+                r.zadd(unread_page_cache_key, cache_scores)
+                r.expire(unread_page_cache_key, 1 * 60 * 60)
+
+        if read_filter == "unread" and offset and r.exists(unread_page_cache_key):
+            page_end = offset + limit
+            cached_count = r.zcard(unread_page_cache_key)
+
+            if cached_count < page_end:
+                cached_hashes = {story_hash_cache_member(h) for h in r.zrange(unread_page_cache_key, 0, -1)}
+                needed_count = page_end - cached_count
+                candidate_limit = page_end
+                candidate_hashes = []
+                candidate_scores = {}
+                byscorefunc = r.zrevrange
+                if order == "oldest":
+                    byscorefunc = r.zrange
+                unread_ranked_exists = r.exists(unread_ranked_stories_key)
+                while len(candidate_hashes) < candidate_limit:
+                    if unread_ranked_exists:
+                        candidate_rows = byscorefunc(
+                            unread_ranked_stories_key,
+                            start=0,
+                            end=candidate_limit - 1,
+                            withscores=True,
+                        )
+                    else:
+                        candidate_rows = UserSubscription.story_hashes(
+                            self.user.pk,
+                            feed_ids=[self.feed.pk],
+                            order=order,
+                            read_filter=read_filter,
+                            offset=0,
+                            limit=candidate_limit,
+                            include_timestamps=True,
+                            cutoff_date=cutoff_date,
+                            date_filter_start=date_filter_start,
+                            date_filter_end=date_filter_end,
+                            metrics_source=metrics_source,
+                        )
+                    candidate_hashes, candidate_scores = split_story_hash_scores(candidate_rows)
+                    if len(candidate_hashes) < candidate_limit or candidate_limit >= max(page_end * 4, 400):
+                        break
+                    candidate_limit = min(candidate_limit * 2, max(page_end * 4, 400))
+
+                new_hashes = []
+                for story_hash in candidate_hashes:
+                    if story_hash_cache_member(story_hash) in cached_hashes:
+                        continue
+                    new_hashes.append(story_hash)
+                    if len(new_hashes) >= needed_count:
+                        break
+                cache_story_hash_scores(new_hashes, candidate_scores)
+
+            if order == "oldest":
+                story_hashes = r.zrange(unread_page_cache_key, start=offset, end=offset + limit - 1)
+            else:
+                story_hashes = r.zrevrange(unread_page_cache_key, start=offset, end=offset + limit - 1)
+        elif offset and r.exists(unread_ranked_stories_key):
             fast_path_dirty = "dirty" if self.needs_unread_recalc else "clean"
             UNREAD_CACHE_FAST_PATH.labels(source=metrics_source, dirty=fast_path_dirty).inc()
             if self.needs_unread_recalc:
@@ -497,19 +598,34 @@ class UserSubscription(models.Model):
             if order == "oldest":
                 byscorefunc = r.zrange
             story_hashes = byscorefunc(unread_ranked_stories_key, start=offset, end=offset + limit)[:limit]
+            if read_filter == "unread":
+                cache_rows = byscorefunc(
+                    unread_ranked_stories_key,
+                    start=0,
+                    end=offset + limit - 1,
+                    withscores=True,
+                )
+                cache_hashes, cache_scores = split_story_hash_scores(cache_rows)
+                cache_story_hash_scores(cache_hashes, cache_scores)
         else:
-            story_hashes = UserSubscription.story_hashes(
+            story_hash_rows = UserSubscription.story_hashes(
                 self.user.pk,
                 feed_ids=[self.feed.pk],
                 order=order,
                 read_filter=read_filter,
                 offset=offset,
                 limit=limit,
+                include_timestamps=read_filter == "unread",
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
                 metrics_source=metrics_source,
             )
+            story_hashes, story_scores = split_story_hash_scores(story_hash_rows)
+            if read_filter == "unread":
+                if offset == 0:
+                    r.delete(unread_page_cache_key)
+                cache_story_hash_scores(story_hashes, story_scores)
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
         mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
@@ -649,13 +765,15 @@ class UserSubscription(models.Model):
         if feed_ids is None:
             across_all_feeds = True
             feed_ids = []
-        # Deprecated: all_feed_ids is no longer used, use feed_ids for cache keys
+        # Keep page caches keyed to the stable requested feed set while merging
+        # only the feeds that can currently contribute stories.
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
+        cache_feed_ids = [f for f in all_feed_ids]
 
         # Use helper method to generate consistent cache keys
         ranked_stories_keys, unread_ranked_stories_keys = cls.get_river_cache_keys(
-            user_id, feed_ids, cache_prefix
+            user_id, cache_feed_ids, cache_prefix
         )
         stories_cached = rt.exists(ranked_stories_keys)
         if offset and stories_cached:
@@ -688,13 +806,9 @@ class UserSubscription(models.Model):
             # drift when stories marked as read cause zdiffstore to recompute
             # the per-feed unread sets, shifting the merged list and causing
             # the offset to skip stories the user hasn't seen yet.
-            already_cached = set()
             extending_cache = False
             if cache_key:
-                cached_entries = rt.zrange(cache_key, 0, -1)
-                if cached_entries:
-                    already_cached = set(cached_entries)
-                    extending_cache = True
+                extending_cache = bool(rt.zcard(cache_key))
 
             per_feed_chunk = 25
             per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
@@ -768,27 +882,41 @@ class UserSubscription(models.Model):
             merged_with_scores = []
             total_seen = 0
             merge_target = target_limit if extending_cache else target_offset + target_limit
-            while heap and len(merged_story_hashes) < merge_target:
-                transformed_score, feed_id, story_hash = heapq.heappop(heap)
-                original_score = -transformed_score if order == "newest" else transformed_score
-                if extending_cache and story_hash in already_cached:
-                    # Skip stories from previous pages — anchors pagination to
-                    # what was already shown, not to a shifting offset.
-                    push_next_from_feed(feed_id)
-                    continue
-                if not extending_cache and total_seen < target_offset:
-                    # Fresh merge (page 1 or expired cache): traditional offset skip,
-                    # but still cache skipped stories for future page extensions.
+            if extending_cache:
+                membership_batch_size = max(per_feed_chunk, target_limit * 3)
+                while heap and len(merged_story_hashes) < merge_target:
+                    candidates = []
+                    while heap and len(candidates) < membership_batch_size:
+                        transformed_score, feed_id, story_hash = heapq.heappop(heap)
+                        original_score = -transformed_score if order == "newest" else transformed_score
+                        candidates.append((story_hash, original_score))
+                        push_next_from_feed(feed_id)
+
+                    cached_scores = rt.zmscore(cache_key, [story_hash for story_hash, _ in candidates])
+                    for (story_hash, original_score), cached_score in zip(candidates, cached_scores):
+                        if cached_score is not None:
+                            continue
+                        if len(merged_story_hashes) < merge_target:
+                            merged_story_hashes.append(story_hash)
+                        if cache_key:
+                            merged_with_scores.append((story_hash, original_score))
+            else:
+                while heap and len(merged_story_hashes) < merge_target:
+                    transformed_score, feed_id, story_hash = heapq.heappop(heap)
+                    original_score = -transformed_score if order == "newest" else transformed_score
+                    if total_seen < target_offset:
+                        # Fresh merge (page 1 or expired cache): traditional offset skip,
+                        # but still cache skipped stories for future page extensions.
+                        if cache_key:
+                            merged_with_scores.append((story_hash, original_score))
+                        total_seen += 1
+                        push_next_from_feed(feed_id)
+                        continue
+                    merged_story_hashes.append(story_hash)
                     if cache_key:
                         merged_with_scores.append((story_hash, original_score))
                     total_seen += 1
                     push_next_from_feed(feed_id)
-                    continue
-                merged_story_hashes.append(story_hash)
-                if cache_key:
-                    merged_with_scores.append((story_hash, original_score))
-                total_seen += 1
-                push_next_from_feed(feed_id)
 
             # Cache merged results in Redis so page 2+ can reuse them.
             # Use ZADD without DELETE so pagination extends the cache
@@ -1236,7 +1364,13 @@ class UserSubscription(models.Model):
 
     @classmethod
     def trim_user_read_stories(self, user_id):
-        user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            # The cleanup task can run after the user has been deleted
+            logging.debug(" ---> ~FRCan't trim read stories, no user for user_id: ~SB%s" % user_id)
+            return
+
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only("feed")
         if not subs:
@@ -1257,14 +1391,17 @@ class UserSubscription(models.Model):
         if len(feed_keys) <= batch_size:
             r.sunionstore(key, *feed_keys)
         else:
-            temp_key = "%s:trim_temp" % key
+            temp_key = "%s:trim_temp:%s" % (key, uuid.uuid4().hex)
             for i in range(0, len(feed_keys), batch_size):
                 batch = feed_keys[i : i + batch_size]
                 if i == 0:
                     r.sunionstore(temp_key, *batch)
                 else:
                     r.sunionstore(temp_key, temp_key, *batch)
-            r.rename(temp_key, key)
+            if r.exists(temp_key):
+                r.rename(temp_key, key)
+            else:
+                r.delete(key)
         new_count = r.scard(key)
 
         missing_rs = []
@@ -1294,9 +1431,20 @@ class UserSubscription(models.Model):
             % (old_count - new_total, old_count, new_count, missing_count),
         )
 
-    def mark_feed_read(self, cutoff_date=None):
+    def mark_feed_read(self, cutoff_date=None, force=False):
+        # Zero badge counts can't always be trusted: they go stale whenever a
+        # recount is missed (the webfeed notify bug left thousands of subs with
+        # zero badges over weeks of unread stories), and skipping on stale zeros
+        # makes an explicit mark-read a silent no-op -- the un-advanced cutoff
+        # then resurfaces all those stories as unread at the next recount. User
+        # actions (mark_all_as_read, mark_feed_as_read in apps/reader/views.py)
+        # pass force=True to advance the cutoff regardless of what the badges
+        # claim. Internal recount-driven calls (calculate_feed_scores) keep the
+        # skip: they run right after computing a zero, and forcing there would
+        # cement a wrong zero from a racing recount by marking everything read.
         if (
-            self.unread_count_negative == 0
+            not force
+            and self.unread_count_negative == 0
             and self.unread_count_neutral == 0
             and self.unread_count_positive == 0
             and not self.needs_unread_recalc
@@ -1585,7 +1733,7 @@ class UserSubscription(models.Model):
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
 
-    def calculate_feed_scores(self, silent=False, stories=None, force=False):
+    def calculate_feed_scores(self, silent=False, stories=None, stories_cutoff=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         oldest_unread_story_date = now
@@ -1601,6 +1749,10 @@ class UserSubscription(models.Model):
         ucu = self.unread_count_updated
         onur = self.needs_unread_recalc
         oit = self.is_trained
+        # Snapshot last_read_date before sampling unread stories below, so the
+        # write-back can detect a story marked read mid-recompute and avoid
+        # clobbering the recalc flag (see the conditional clear at the end).
+        olrd = self.last_read_date
 
         # if not self.feed.fetched_once:
         #     if not silent:
@@ -1627,7 +1779,22 @@ class UserSubscription(models.Model):
         has_scoped = self.user.profile.is_archive and self.user.profile.has_scoped_classifiers
         if self.is_trained or has_scoped:
             if not stories:
-                stories = cache.get("S:v3:%s" % self.feed_id)
+                # The fetch-time prefetch is cached as {"stories": [...], "cutoff": dt}.
+                # The cutoff records how far back the prefetch reaches (see
+                # utils/feed_fetcher.py: it is bounded to DAYS_OF_UNREAD rather than
+                # the feed's archive-wide unread_cutoff).
+                cached_stories = cache.get("S:v4:%s" % self.feed_id)
+                if isinstance(cached_stories, dict):
+                    stories = cached_stories.get("stories")
+                    stories_cutoff = cached_stories.get("cutoff")
+
+            if stories and stories_cutoff and date_delta < stories_cutoff:
+                # This subscriber's unread window reaches further back than the
+                # prefetch covers (an archive user with a long days_of_unread and an
+                # old mark_read_date). Using the truncated list would undercount, so
+                # discard it and fall through to the targeted per-user query below.
+                stories = None
+                stories_cutoff = None
 
             unread_story_hashes = self.story_hashes(
                 user_id=self.user_id,
@@ -1846,14 +2013,33 @@ class UserSubscription(models.Model):
             update_fields.append("unread_count_updated")
         if self.oldest_unread_story_date != oousd:
             update_fields.append("oldest_unread_story_date")
-        if self.needs_unread_recalc != onur:
-            update_fields.append("needs_unread_recalc")
         if self.is_trained != oit:
             update_fields.append("is_trained")
         if len(update_fields):
             update_dict = {field: getattr(self, field) for field in update_fields}
-            if not UserSubscription.objects.filter(pk=self.pk).update(**update_dict):
-                return None
+            # Write the counts only if no story was marked read while we were
+            # recomputing: mark_story_ids_as_read and mark_feed_read both advance
+            # last_read_date, and counts computed against the pre-read snapshot
+            # would overwrite the mark-read's zeros with stale numbers -- a badge
+            # with no unread stories behind it. When the write is rejected, leave
+            # the recalc flag set so the next recount runs from fresh state.
+            if not UserSubscription.objects.filter(pk=self.pk, last_read_date=olrd).update(**update_dict):
+                UserSubscription.objects.filter(pk=self.pk).update(needs_unread_recalc=True)
+                self.needs_unread_recalc = True
+                return self
+
+        # Clear needs_unread_recalc only if no story was marked read while we were
+        # recomputing. mark_story_ids_as_read advances last_read_date (and sets the
+        # flag); if it moved since our snapshot, a read raced the count above, which
+        # is now stale. Leave the flag set so the next recount produces the correct
+        # number instead of clobbering the flag with a stale count (a lost-update
+        # race that otherwise leaves a permanently wrong, "clean" unread count).
+        if onur and not self.needs_unread_recalc:
+            cleared = UserSubscription.objects.filter(pk=self.pk, last_read_date=olrd).update(
+                needs_unread_recalc=False
+            )
+            if not cleared:
+                self.needs_unread_recalc = True
 
         if self.unread_count_positive == 0 and self.unread_count_neutral == 0:
             self.mark_feed_read()
@@ -1878,6 +2064,7 @@ class UserSubscription(models.Model):
 
         max_score = max(
             scores["author"],
+            scores.get("author_regex", 0),
             scores["tags"],
             scores["title"],
             scores.get("title_regex", 0),
@@ -1888,6 +2075,7 @@ class UserSubscription(models.Model):
         )
         min_score = min(
             scores["author"],
+            scores.get("author_regex", 0),
             scores["tags"],
             scores["title"],
             scores.get("title_regex", 0),
@@ -1898,7 +2086,7 @@ class UserSubscription(models.Model):
         )
 
         if min_score <= -2:
-            return -1  # super downvote → negative bucket
+            return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
         elif max_score > 0:
             return 1
         elif min_score < 0:
@@ -2632,41 +2820,65 @@ class UserSubscriptionFolders(models.Model):
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
 
-        def _find_feed_in_folders(old_folders, folder_name="", multiples_found=False, deleted=False):
+        # apps/reader/models.py
+        # Count every placement of the feed and note whether any sits directly in the
+        # folder the client asked us to delete from. A stale, renamed, or duplicated
+        # in_folder used to make this a silent no-op: the feed was neither removed from
+        # the tree nor unsubscribed, so it "came back" on the next load. Instead we
+        # always remove exactly one placement (falling back to the first one found when
+        # the requested folder doesn't match), and only unsubscribe when that was the
+        # feed's last remaining placement.
+        def _count_feed(old_folders, folder_name=""):
+            total = 0
+            in_requested = False
+            for folder in old_folders:
+                if isinstance(folder, int):
+                    if folder == feed_id:
+                        total += 1
+                        if in_folder is not None and in_folder == folder_name:
+                            in_requested = True
+                elif isinstance(folder, dict):
+                    for f_k, f_v in list(folder.items()):
+                        sub_total, sub_in = _count_feed(f_v, f_k)
+                        total += sub_total
+                        in_requested = in_requested or sub_in
+            return total, in_requested
+
+        arranged = self.arranged_folders()
+        total_occurrences, occurrence_in_requested = _count_feed(arranged)
+
+        # Honor the requested folder only when the feed actually lives there; otherwise
+        # remove the first placement anywhere so a mismatched in_folder can't leave the
+        # feed stuck and subscribed.
+        target_folder = in_folder if (in_folder is not None and occurrence_in_requested) else None
+        removal = {"deleted": False}
+
+        def _remove_one(old_folders, folder_name=""):
             new_folders = []
-            for k, folder in enumerate(old_folders):
+            for folder in old_folders:
                 if isinstance(folder, int):
                     if (
                         folder == feed_id
-                        and in_folder is not None
-                        and ((in_folder != folder_name) or (in_folder == folder_name and deleted))
+                        and not removal["deleted"]
+                        and (target_folder is None or target_folder == folder_name)
                     ):
-                        multiples_found = True
+                        removal["deleted"] = True
                         logging.user(
-                            self.user,
-                            "~FB~SBDeleting feed, and a multiple has been found in '%s' / '%s' %s"
-                            % (folder_name, in_folder, "(deleted)" if deleted else ""),
+                            self.user, "~FBDelete feed: %s from folder '%s'" % (feed_id, folder_name)
                         )
-                    if folder == feed_id and (in_folder is None or in_folder == folder_name) and not deleted:
-                        logging.user(
-                            self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (k, len(old_folders))
-                        )
-                        deleted = True
-                    else:
-                        new_folders.append(folder)
+                        continue
+                    new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        nf, multiples_found, deleted = _find_feed_in_folders(
-                            f_v, f_k, multiples_found, deleted
-                        )
-                        new_folders.append({f_k: nf})
+                        new_folders.append({f_k: _remove_one(f_v, f_k)})
+            return new_folders
 
-            return new_folders, multiples_found, deleted
-
-        user_sub_folders = self.arranged_folders()
-        user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
+        user_sub_folders = _remove_one(arranged)
         self.folders = json.encode(user_sub_folders)
         self.save()
+
+        deleted = removal["deleted"]
+        multiples_found = total_occurrences > 1
 
         if not multiples_found and deleted and commit_delete:
             user_sub = None

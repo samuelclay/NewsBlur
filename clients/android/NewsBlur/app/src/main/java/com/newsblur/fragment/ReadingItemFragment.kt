@@ -15,6 +15,7 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
@@ -24,6 +25,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
@@ -78,6 +80,7 @@ import com.newsblur.util.StoryUtil
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import com.newsblur.view.ReadingScrollView
 import com.newsblur.view.StoryThumbnailView
 import com.newsblur.viewModel.ReadingItemViewModel
 import com.newsblur.web.NewsblurWebview
@@ -90,12 +93,14 @@ import org.json.JSONArray
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.regex.Pattern
 import javax.inject.Inject
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class ReadingItemFragment :
     NbFragment(),
-    PopupMenu.OnMenuItemClickListener {
+    PopupMenu.OnMenuItemClickListener,
+    ReadingScrollView.ScrollChangeListener {
     @Inject
     lateinit var storyApi: StoryApi
 
@@ -164,13 +169,22 @@ class ReadingItemFragment :
     private var isWebVisualStateReady = false
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
+    private var savedScrollPosPx = 0
+    private var hasSavedScrollPosition = false
+    private var preferAbsoluteScrollRestore = false
     private val webViewContentMutex = Any()
     private var isWebViewReleasedForBackground = false
     private var isRestoringReleasedWebView = false
     private var readingWebview: NewsblurWebview? = null
+    private var hasWebViewContent = false
     private var readingWebviewParent: ViewGroup? = null
     private var readingWebviewLayoutParams: ViewGroup.LayoutParams? = null
     private var readingWebviewIndex = -1
+    private var readerAnchorCaptureRunnable: Runnable? = null
+    private var readerAnchorCaptureGeneration = 0L
+    private var readerAnchorCapturedScrollY: Int? = null
+    private var configurationChangeGeneration = 0L
+    private var pendingConfigurationChangeRestore: ConfigurationChangeScrollSource? = null
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
@@ -205,10 +219,13 @@ class ReadingItemFragment :
         }
         if (savedInstanceState != null) {
             savedScrollPosRel = savedInstanceState.getFloat(BUNDLE_SCROLL_POS_REL)
+            savedScrollPosPx = savedInstanceState.getInt(BUNDLE_SCROLL_POS_PX)
+            preferAbsoluteScrollRestore = savedInstanceState.getBoolean(BUNDLE_SCROLL_POS_PREFER_ABSOLUTE)
             // we can't actually use the saved scroll position until the webview finishes loading
         } else {
             savedScrollPosRel = requireArguments().getFloat(ARG_INITIAL_SCROLL_POS_REL)
         }
+        hasSavedScrollPosition = savedScrollPosRel > 0f || savedScrollPosPx > 0
 
         story?.let { storyHighlights.addAll(it.highlights) }
     }
@@ -220,6 +237,8 @@ class ReadingItemFragment :
         val heightm = binding.readingScrollview.getChildAt(0).measuredHeight
         val pos = binding.readingScrollview.scrollY
         savedInstanceState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
+        savedInstanceState.putInt(BUNDLE_SCROLL_POS_PX, pos)
+        savedInstanceState.putBoolean(BUNDLE_SCROLL_POS_PREFER_ABSOLUTE, true)
     }
 
     fun currentScrollPosRel(): Float? {
@@ -235,13 +254,66 @@ class ReadingItemFragment :
         return binding.readingScrollview.scrollY.toFloat() / contentHeight
     }
 
-    fun prepareForConfigurationChange(): Float {
-        val scrollPosRel = currentScrollPosRel() ?: savedScrollPosRel
+    private fun captureCurrentScrollPosition(
+        preferAbsoluteRestore: Boolean,
+        reason: String,
+    ): Boolean {
+        val scrollPosRel = currentScrollPosRel() ?: return false
         savedScrollPosRel = scrollPosRel
-        return scrollPosRel
+        savedScrollPosPx = binding.readingScrollview.scrollY
+        hasSavedScrollPosition = true
+        preferAbsoluteScrollRestore = preferAbsoluteRestore
+        logReaderRestore(
+            "capture reason=$reason px=$savedScrollPosPx rel=$savedScrollPosRel " +
+                "height=${binding.readingScrollview.getChildAt(0).measuredHeight} preferAbs=$preferAbsoluteRestore " +
+                "state=${lifecycle.currentState}",
+        )
+        return true
+    }
+
+    fun prepareForConfigurationChange(): Float {
+        val scrollView = binding.readingScrollview
+        val oldScrollY = scrollView.scrollY
+        val oldContentHeight = scrollView.getChildAt(0).measuredHeight
+        val oldWebView = readingWebview
+        val oldWebViewWidth = oldWebView?.width ?: 0
+        val oldWebViewHeight = oldWebView?.height ?: 0
+        val previousRestore = pendingConfigurationChangeRestore
+        val hasCurrentReaderAnchor =
+            shouldUseReaderAnchorForConfigurationChange(
+                previousRestoreHasAnchor =
+                    previousRestore?.hasReaderAnchor == true &&
+                        previousRestore.webView === oldWebView,
+                anchorCapturedScrollY = readerAnchorCapturedScrollY,
+                currentScrollY = oldScrollY,
+            )
+
+        configurationChangeGeneration++
+        invalidateReaderAnchorCapture()
+        if (captureCurrentScrollPosition(preferAbsoluteRestore = false, reason = "configuration")) {
+            val restore =
+                ConfigurationChangeScrollSource(
+                    generation = configurationChangeGeneration,
+                    scrollY = previousRestore?.scrollY ?: oldScrollY,
+                    contentHeight = previousRestore?.contentHeight ?: oldContentHeight,
+                    webView = oldWebView,
+                    webViewWidth = oldWebViewWidth,
+                    webViewHeight = oldWebViewHeight,
+                    hasReaderAnchor = hasCurrentReaderAnchor,
+                )
+            pendingConfigurationChangeRestore = restore
+            scrollView.doOnNextLayout {
+                scheduleConfigurationChangeScrollRestore(restore)
+            }
+        } else {
+            pendingConfigurationChangeRestore = null
+        }
+        return savedScrollPosRel
     }
 
     override fun onDestroyView() {
+        cancelPendingConfigurationChangeRestore()
+        invalidateReaderAnchorCapture()
         destroyReadingWebviewForBackground()
         sampledQueue?.close()
         super.onDestroyView()
@@ -252,18 +324,32 @@ class ReadingItemFragment :
     override fun onPause() {
         if (::binding.isInitialized) {
             enableProgress(false)
+            captureCurrentScrollPosition(preferAbsoluteRestore = true, reason = "pause")
         }
         readingWebview?.onPause()
-        contentHash = 0
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
+        val shouldReloadStoryContent =
+            shouldReloadStoryContentOnResume(
+                isWebViewReleasedForBackground = isWebViewReleasedForBackground,
+                hasCompletedInitialStoryRender = hasCompletedInitialStoryRender,
+                hasWebViewContent = hasWebViewContent,
+            )
+        logReaderRestore(
+            "onResume released=$isWebViewReleasedForBackground completed=$hasCompletedInitialStoryRender " +
+                "hasContent=$hasWebViewContent reload=$shouldReloadStoryContent savedPx=$savedScrollPosPx " +
+                "savedRel=$savedScrollPosRel hasSaved=$hasSavedScrollPosition preferAbs=$preferAbsoluteScrollRestore",
+        )
         isRestoringReleasedWebView = isWebViewReleasedForBackground
-        resetStoryRenderState()
+        if (shouldReloadStoryContent) {
+            contentHash = 0
+            resetStoryRenderState()
+            reloadStoryContent()
+        }
         syncStoryLoadingUi()
-        reloadStoryContent()
         updateAskAiButton()
         ensureReadingWebview().resumeTimers()
         ensureReadingWebview().onResume()
@@ -280,6 +366,7 @@ class ReadingItemFragment :
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
         readingWebview = binding.readingWebview
+        hasWebViewContent = false
         readingWebviewParent = binding.readingWebview.parent as? ViewGroup
         readingWebviewLayoutParams = binding.readingWebview.layoutParams
         readingWebviewIndex = readingWebviewParent?.indexOfChild(binding.readingWebview) ?: -1
@@ -298,6 +385,13 @@ class ReadingItemFragment :
         syncStoryLoadingUi()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
+        binding.readingScrollview.registerScrollChangeListener(this)
+        binding.readingScrollview.setOnTouchListener { _, event ->
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                cancelPendingConfigurationChangeRestore()
+            }
+            false
+        }
 
         return binding.root
     }
@@ -328,6 +422,17 @@ class ReadingItemFragment :
                     }
                 }
             }
+        }
+    }
+
+    override fun scrollChanged(
+        hPos: Int,
+        vPos: Int,
+        currentWidth: Int,
+        currentHeight: Int,
+    ) {
+        if (pendingConfigurationChangeRestore == null) {
+            scheduleReaderAnchorCapture()
         }
     }
 
@@ -652,7 +757,7 @@ class ReadingItemFragment :
                         } else {
                             folderName
                         }
-                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null)
+                    FeedItemsList.startActivity(requireContext(), targetFeedSet, it, folderName, null, null)
                 }
                 true
             }
@@ -1298,6 +1403,9 @@ class ReadingItemFragment :
     }
 
     private fun resetStoryRenderState() {
+        cancelPendingConfigurationChangeRestore()
+        invalidateReaderAnchorCapture()
+        readerAnchorCapturedScrollY = null
         hasCompletedInitialStoryRender = false
         isContentLoadFinished = false
         isWebLoadFinished.set(false)
@@ -1441,6 +1549,7 @@ class ReadingItemFragment :
 
                 isWebLoadFinished.set(false)
                 ensureReadingWebview().loadDataWithBaseURL(READING_BASE_URL, html, "text/html", "UTF-8", null)
+                hasWebViewContent = true
                 onContentLoadFinished()
             }
         }
@@ -1524,7 +1633,18 @@ class ReadingItemFragment :
 
         isWebViewReleasedForBackground = true
         isRestoringReleasedWebView = false
-        savedScrollPosRel = currentScrollPosRel() ?: savedScrollPosRel
+        val shouldCapture =
+            shouldCaptureScrollPositionBeforeWebViewRelease(
+                isViewStarted = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED),
+                hasSavedScrollPosition = hasSavedScrollPosition,
+            )
+        logReaderRestore(
+            "releaseWebView shouldCapture=$shouldCapture state=${lifecycle.currentState} " +
+                "savedPx=$savedScrollPosPx savedRel=$savedScrollPosRel preferAbs=$preferAbsoluteScrollRestore",
+        )
+        if (shouldCapture) {
+            captureCurrentScrollPosition(preferAbsoluteRestore = true, reason = "release")
+        }
         contentHash = 0
         destroyReadingWebviewForBackground()
     }
@@ -1555,21 +1675,260 @@ class ReadingItemFragment :
      */
     private fun onLoadFinished() {
         // if there was a scroll position saved, restore it
-        if (savedScrollPosRel > 0f) {
-            // ScrollViews containing WebViews are very particular about call timing.  since the inner view
-            // height can drastically change as viewport width changes, position has to be saved and restored
-            // as a proportion of total inner view height. that height won't be known until all the various
-            // async bits of the fragment have finished loading.  however, even after the WebView calls back
-            // onProgressChanged with a value of 100, immediate calls to get the size of the view will return
-            // incorrect values.  even posting a runnable to the very end of our UI event queue may be
-            // insufficient time to allow the WebView to actually finish internally computing state and size.
-            // an additional fixed delay is added in a last ditch attempt to give the black-box platform
-            // threads a chance to finish their work.
-            binding.readingScrollview.postDelayed({
-                val relPos = (binding.readingScrollview.getChildAt(0).measuredHeight * savedScrollPosRel).roundToInt()
-                binding.readingScrollview.scrollTo(0, relPos)
-            }, 75L)
+        if (hasSavedScrollPosition) {
+            scheduleSavedScrollRestore()
         }
+        scheduleReaderAnchorCapture()
+    }
+
+    private fun scheduleSavedScrollRestore(
+        attempt: Int = 0,
+        previousAppliedScrollY: Int? = null,
+    ) {
+        val delayMs = STORY_SCROLL_RESTORE_DELAYS_MS.getOrNull(attempt) ?: return
+        binding.readingScrollview.postDelayed({
+            if (!::binding.isInitialized || !hasSavedScrollPosition) return@postDelayed
+            if (!shouldApplyScrollRestore(binding.readingScrollview.scrollY, previousAppliedScrollY)) {
+                logReaderRestore(
+                    "restore skipped attempt=$attempt current=${binding.readingScrollview.scrollY} " +
+                        "previousApplied=$previousAppliedScrollY",
+                )
+                return@postDelayed
+            }
+
+            val contentHeight = binding.readingScrollview.getChildAt(0).measuredHeight
+            val desiredScrollY =
+                resolveRestoredScrollY(
+                    contentHeight = contentHeight,
+                    savedScrollPosRel = savedScrollPosRel,
+                    savedScrollPosPx = savedScrollPosPx,
+                    preferAbsoluteScrollRestore = preferAbsoluteScrollRestore,
+                )
+            val maxScrollY = maxRestoredScrollY(contentHeight, binding.readingScrollview.height)
+            val restoreY = desiredScrollY.coerceIn(0, maxScrollY)
+            binding.readingScrollview.scrollTo(0, restoreY)
+
+            val appliedScrollY = binding.readingScrollview.scrollY
+            val shouldRetry =
+                shouldRetryScrollRestore(
+                    desiredScrollY = desiredScrollY,
+                    maxScrollY = maxScrollY,
+                    appliedScrollY = appliedScrollY,
+                    attempt = attempt,
+                    maxAttempts = STORY_SCROLL_RESTORE_DELAYS_MS.size,
+                )
+            logReaderRestore(
+                "restore attempt=$attempt desired=$desiredScrollY max=$maxScrollY applied=$appliedScrollY " +
+                    "contentHeight=$contentHeight viewport=${binding.readingScrollview.height} retry=$shouldRetry",
+            )
+            if (shouldRetry) {
+                scheduleSavedScrollRestore(attempt + 1, appliedScrollY)
+            }
+        }, delayMs)
+    }
+
+    private fun scheduleReaderAnchorCapture() {
+        if (!hasCompletedInitialStoryRender || pendingConfigurationChangeRestore != null) return
+
+        val scrollView = binding.readingScrollview
+        readerAnchorCaptureRunnable?.let(scrollView::removeCallbacks)
+        val captureGeneration = ++readerAnchorCaptureGeneration
+        readerAnchorCaptureRunnable =
+            Runnable {
+                captureReaderAnchor(
+                    scrollY = scrollView.scrollY,
+                    captureGeneration = captureGeneration,
+                )
+            }.also {
+                scrollView.postDelayed(it, READER_ANCHOR_CAPTURE_DELAY_MS)
+            }
+    }
+
+    private fun captureReaderAnchor(
+        scrollY: Int,
+        captureGeneration: Long,
+    ) {
+        val webView = readingWebview ?: return
+        if (webView.height <= 0) return
+
+        val visibleWebViewY = scrollY - webView.top
+        if (visibleWebViewY !in 0 until webView.height) {
+            readerAnchorCapturedScrollY = null
+            return
+        }
+
+        val documentYFraction = visibleWebViewY.toDouble() / webView.height
+        webView.evaluateJavascript("NB_capture_reader_anchor($documentYFraction);") { result ->
+            if (
+                captureGeneration != readerAnchorCaptureGeneration ||
+                pendingConfigurationChangeRestore != null ||
+                readingWebview !== webView
+            ) {
+                return@evaluateJavascript
+            }
+            readerAnchorCapturedScrollY =
+                if (result == "true") {
+                    scrollY
+                } else {
+                    null
+                }
+            logReaderRestore(
+                "anchor capture result=$result scroll=$scrollY webTop=${webView.top} " +
+                    "webHeight=${webView.height} fraction=$documentYFraction",
+            )
+        }
+    }
+
+    private fun scheduleConfigurationChangeScrollRestore(
+        source: ConfigurationChangeScrollSource,
+        attempt: Int = 0,
+    ) {
+        val delayMs = STORY_SCROLL_RESTORE_DELAYS_MS.getOrNull(attempt) ?: return
+        val scrollView = binding.readingScrollview
+        scrollView.postDelayed({
+            if (!isCurrentConfigurationChangeRestore(source, scrollView)) return@postDelayed
+
+            if (source.hasReaderAnchor) {
+                resolveReaderAnchorAfterConfigurationChange(source, scrollView, attempt)
+            } else {
+                restoreConfigurationChangeFallback(source, scrollView, attempt)
+            }
+        }, delayMs)
+    }
+
+    private fun resolveReaderAnchorAfterConfigurationChange(
+        source: ConfigurationChangeScrollSource,
+        scrollView: ReadingScrollView,
+        attempt: Int,
+    ) {
+        val webView = readingWebview
+        if (webView == null || webView !== source.webView || webView.height <= 0) {
+            retryOrFallbackConfigurationChangeRestore(source, scrollView, attempt)
+            return
+        }
+
+        webView.evaluateJavascript("NB_resolve_reader_anchor();") { result ->
+            if (!isCurrentConfigurationChangeRestore(source, scrollView) || readingWebview !== webView) {
+                return@evaluateJavascript
+            }
+
+            val resolution = parseReaderAnchorResolution(result)
+            if (resolution == null) {
+                retryOrFallbackConfigurationChangeRestore(source, scrollView, attempt)
+                return@evaluateJavascript
+            }
+            if (
+                !resolution.layoutChanged &&
+                attempt < STORY_SCROLL_RESTORE_DELAYS_MS.lastIndex
+            ) {
+                scheduleConfigurationChangeScrollRestore(source, attempt + 1)
+                return@evaluateJavascript
+            }
+
+            val desiredScrollY =
+                resolveReaderAnchorScrollY(
+                    webViewTop = webView.top,
+                    webViewHeight = webView.height,
+                    documentYFraction = resolution.documentYFraction,
+                )
+            applyConfigurationChangeScrollRestore(source, scrollView, desiredScrollY, "anchor")
+        }
+    }
+
+    private fun retryOrFallbackConfigurationChangeRestore(
+        source: ConfigurationChangeScrollSource,
+        scrollView: ReadingScrollView,
+        attempt: Int,
+    ) {
+        if (attempt < STORY_SCROLL_RESTORE_DELAYS_MS.lastIndex) {
+            scheduleConfigurationChangeScrollRestore(source, attempt + 1)
+        } else {
+            restoreConfigurationChangeFallback(source, scrollView, attempt)
+        }
+    }
+
+    private fun restoreConfigurationChangeFallback(
+        source: ConfigurationChangeScrollSource,
+        scrollView: ReadingScrollView,
+        attempt: Int,
+    ) {
+        if (!isCurrentConfigurationChangeRestore(source, scrollView)) return
+
+        val contentHeight = scrollView.getChildAt(0).measuredHeight
+        if (contentHeight <= 0) {
+            if (attempt >= STORY_SCROLL_RESTORE_DELAYS_MS.lastIndex) {
+                pendingConfigurationChangeRestore = null
+            } else {
+                scheduleConfigurationChangeScrollRestore(source, attempt + 1)
+            }
+            return
+        }
+        val layoutChanged =
+            contentHeight != source.contentHeight ||
+                readingWebview?.width != source.webViewWidth ||
+                readingWebview?.height != source.webViewHeight
+        if (!layoutChanged && attempt < STORY_SCROLL_RESTORE_DELAYS_MS.lastIndex) {
+            scheduleConfigurationChangeScrollRestore(source, attempt + 1)
+            return
+        }
+
+        val desiredScrollY =
+            resolveConfigurationChangeScrollY(
+                oldScrollY = source.scrollY,
+                oldContentHeight = source.contentHeight,
+                reflowedContentHeight = contentHeight,
+            )
+        applyConfigurationChangeScrollRestore(source, scrollView, desiredScrollY, "relative-fallback")
+    }
+
+    private fun applyConfigurationChangeScrollRestore(
+        source: ConfigurationChangeScrollSource,
+        scrollView: ReadingScrollView,
+        desiredScrollY: Int,
+        method: String,
+    ) {
+        if (!isCurrentConfigurationChangeRestore(source, scrollView)) return
+
+        val contentHeight = scrollView.getChildAt(0).measuredHeight
+        if (contentHeight <= 0) return
+        val restoreY = desiredScrollY.coerceIn(0, maxRestoredScrollY(contentHeight, scrollView.height))
+        scrollView.scrollTo(0, restoreY)
+        pendingConfigurationChangeRestore = null
+        logReaderRestore(
+            "configuration restore method=$method generation=${source.generation} desired=$desiredScrollY " +
+                "applied=${scrollView.scrollY} contentHeight=$contentHeight",
+        )
+        scheduleReaderAnchorCapture()
+    }
+
+    private fun isCurrentConfigurationChangeRestore(
+        source: ConfigurationChangeScrollSource,
+        scrollView: ReadingScrollView,
+    ): Boolean =
+        shouldApplyConfigurationChangeRestore(
+            sourceGeneration = source.generation,
+            currentGeneration = configurationChangeGeneration,
+            hasCurrentView = ::binding.isInitialized && binding.readingScrollview === scrollView,
+        ) && pendingConfigurationChangeRestore === source
+
+    private fun cancelPendingConfigurationChangeRestore() {
+        if (pendingConfigurationChangeRestore == null) return
+        configurationChangeGeneration++
+        pendingConfigurationChangeRestore = null
+        scheduleReaderAnchorCapture()
+    }
+
+    private fun invalidateReaderAnchorCapture() {
+        if (::binding.isInitialized) {
+            readerAnchorCaptureRunnable?.let(binding.readingScrollview::removeCallbacks)
+        }
+        readerAnchorCaptureRunnable = null
+        readerAnchorCaptureGeneration++
+    }
+
+    private fun logReaderRestore(message: String) {
+        com.newsblur.util.Log
+            .d(this.javaClass.name, "reader_restore story=${story?.storyHash} $message")
     }
 
     fun showStoryShortcuts() {
@@ -1689,10 +2048,14 @@ class ReadingItemFragment :
         parent.addView(recreatedWebview, insertIndex, layoutParams)
         configureReadingWebview(recreatedWebview, readingActivity)
         readingWebview = recreatedWebview
+        hasWebViewContent = false
         return recreatedWebview
     }
 
     private fun destroyReadingWebviewForBackground() {
+        cancelPendingConfigurationChangeRestore()
+        invalidateReaderAnchorCapture()
+        readerAnchorCapturedScrollY = null
         val webview = readingWebview ?: return
         webview.stopLoading()
         webview.pauseTimers()
@@ -1716,13 +2079,17 @@ class ReadingItemFragment :
         webview.removeAllViews()
         webview.destroy()
         readingWebview = null
+        hasWebViewContent = false
     }
 
     companion object {
 
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
+        private const val BUNDLE_SCROLL_POS_PX = "scrollStatePx"
+        private const val BUNDLE_SCROLL_POS_PREFER_ABSOLUTE = "scrollStatePreferAbsolute"
         private const val ARG_INITIAL_SCROLL_POS_REL = "initialScrollPosRel"
         const val VERTICAL_SCROLL_DISTANCE_DP = 240
+        private val STORY_SCROLL_RESTORE_DELAYS_MS = longArrayOf(75L, 250L, 750L, 1500L)
 
         @JvmStatic
         fun newInstance(
@@ -1783,6 +2150,122 @@ class ReadingItemFragment :
         private val imgSniff = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE)
     }
 }
+
+internal fun shouldReloadStoryContentOnResume(
+    isWebViewReleasedForBackground: Boolean,
+    hasCompletedInitialStoryRender: Boolean,
+    hasWebViewContent: Boolean,
+): Boolean = isWebViewReleasedForBackground || !hasCompletedInitialStoryRender || !hasWebViewContent
+
+internal fun shouldCaptureScrollPositionBeforeWebViewRelease(
+    isViewStarted: Boolean,
+    hasSavedScrollPosition: Boolean,
+): Boolean = isViewStarted || !hasSavedScrollPosition
+
+internal fun resolveRestoredScrollY(
+    contentHeight: Int,
+    savedScrollPosRel: Float,
+    savedScrollPosPx: Int,
+    preferAbsoluteScrollRestore: Boolean,
+): Int =
+    if (preferAbsoluteScrollRestore && savedScrollPosPx > 0) {
+        savedScrollPosPx
+    } else {
+        (contentHeight * savedScrollPosRel).roundToInt()
+    }
+
+internal fun resolveConfigurationChangeScrollY(
+    oldScrollY: Int,
+    oldContentHeight: Int,
+    reflowedContentHeight: Int,
+): Int {
+    if (oldContentHeight <= 0 || reflowedContentHeight <= 0) return 0
+
+    val relativeScrollPosition = (oldScrollY.toFloat() / oldContentHeight).coerceIn(0f, 1f)
+    return (reflowedContentHeight * relativeScrollPosition).roundToInt()
+}
+
+internal fun resolveReaderAnchorScrollY(
+    webViewTop: Int,
+    webViewHeight: Int,
+    documentYFraction: Double,
+): Int {
+    if (webViewHeight <= 0 || !documentYFraction.isFinite()) return webViewTop.coerceAtLeast(0)
+    return webViewTop + (webViewHeight * documentYFraction.coerceIn(0.0, 1.0)).roundToInt()
+}
+
+internal fun shouldApplyConfigurationChangeRestore(
+    sourceGeneration: Long,
+    currentGeneration: Long,
+    hasCurrentView: Boolean,
+): Boolean = hasCurrentView && sourceGeneration == currentGeneration
+
+internal fun shouldUseReaderAnchorForConfigurationChange(
+    previousRestoreHasAnchor: Boolean,
+    anchorCapturedScrollY: Int?,
+    currentScrollY: Int,
+): Boolean =
+    previousRestoreHasAnchor ||
+        anchorCapturedScrollY?.let {
+            abs(it - currentScrollY) <= READER_ANCHOR_CAPTURE_TOLERANCE_PX
+        } == true
+
+private fun parseReaderAnchorResolution(result: String): ReaderAnchorResolution? =
+    runCatching {
+        val values = JSONArray(result)
+        ReaderAnchorResolution(
+            documentYFraction = values.getDouble(0),
+            layoutChanged = values.getBoolean(1),
+        )
+    }.getOrNull()
+
+internal fun maxRestoredScrollY(
+    contentHeight: Int,
+    viewportHeight: Int,
+): Int = (contentHeight - viewportHeight).coerceAtLeast(0)
+
+internal fun shouldRetryScrollRestore(
+    desiredScrollY: Int,
+    maxScrollY: Int,
+    appliedScrollY: Int,
+    attempt: Int,
+    maxAttempts: Int,
+): Boolean {
+    if (attempt >= maxAttempts - 1) return false
+
+    val reachableScrollY = desiredScrollY.coerceIn(0, maxScrollY)
+    val contentCannotReachSavedOffset =
+        maxScrollY + STORY_SCROLL_RESTORE_TOLERANCE_PX < desiredScrollY
+    val scrollDidNotApply =
+        appliedScrollY + STORY_SCROLL_RESTORE_TOLERANCE_PX < reachableScrollY
+    return contentCannotReachSavedOffset || scrollDidNotApply
+}
+
+internal fun shouldApplyScrollRestore(
+    currentScrollY: Int,
+    previousAppliedScrollY: Int?,
+): Boolean =
+    previousAppliedScrollY == null ||
+        abs(currentScrollY - previousAppliedScrollY) <= STORY_SCROLL_RESTORE_TOLERANCE_PX
+
+private const val STORY_SCROLL_RESTORE_TOLERANCE_PX = 24
+private const val READER_ANCHOR_CAPTURE_DELAY_MS = 125L
+private const val READER_ANCHOR_CAPTURE_TOLERANCE_PX = 48
+
+private data class ConfigurationChangeScrollSource(
+    val generation: Long,
+    val scrollY: Int,
+    val contentHeight: Int,
+    val webView: NewsblurWebview?,
+    val webViewWidth: Int,
+    val webViewHeight: Int,
+    val hasReaderAnchor: Boolean,
+)
+
+private data class ReaderAnchorResolution(
+    val documentYFraction: Double,
+    val layoutChanged: Boolean,
+)
 
 private fun MaterialButton.setStoryReadState(
     prefsRepo: PrefsRepo,

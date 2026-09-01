@@ -243,13 +243,14 @@ class FeedItemsList : ItemsList() {
             feed: Feed?,
             folderName: String?,
             sessionDataSource: SessionDataSource?,
+            storyListSessionDataSource: SessionDataSource?,
         ) {
             Intent(context, FeedItemsList::class.java)
                 .apply {
                     putExtra(EXTRA_FEED, feed)
                     putExtra(EXTRA_FOLDER_NAME, folderName)
                     putExtra(EXTRA_FEED_SET, feedSet)
-                    putExtra(EXTRA_SESSION_DATA, sessionDataSource)
+                    putSessionDataKeyExtra(this, sessionDataSource, storyListSessionDataSource)
                 }.also { intent ->
                     context.startActivity(intent)
                 }

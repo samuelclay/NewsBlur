@@ -20,6 +20,7 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
+from mongoengine.queryset import NotUniqueError
 from openai import APITimeoutError, OpenAI
 
 from apps.search.projection_matrix import project_vector
@@ -67,7 +68,13 @@ class MUserSearch(mongo.Document):
             user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(user_id=user_id)
         except cls.DoesNotExist:
             if create:
-                user_search = cls.objects.create(user_id=user_id)
+                try:
+                    user_search = cls.objects.create(user_id=user_id)
+                except NotUniqueError:
+                    # A concurrent request created it between the get and the create
+                    user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(
+                        user_id=user_id
+                    )
             else:
                 user_search = None
 
@@ -530,12 +537,6 @@ class SearchStory:
 
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         if strip:
             query = re.sub(
                 r'([^\s\w_\-"])+', " ", query
@@ -608,13 +609,6 @@ class SearchStory:
         if not feed_ids or not phrase or not phrase.strip():
             return []
 
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError:
-            return []
-        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError):
-            return []
-
         clean_phrase = phrase.strip().replace('"', "")
         if not clean_phrase:
             return []
@@ -659,7 +653,6 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES().indices.flush()
 
         if strip:
             query = re.sub(
@@ -710,12 +703,6 @@ class SearchStory:
 
     @classmethod
     def more_like_this(cls, feed_ids, story_hash, order, offset, limit):
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         body = {
             "query": {
                 "bool": {
@@ -960,12 +947,6 @@ class DiscoverStory:
         feed_ids_to_exclude=None,
         story_hashes_to_exclude=None,
     ):
-        try:
-            cls.ES().indices.flush(index=cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         must_clauses = [
             {
                 "script_score": {
@@ -1019,12 +1000,6 @@ class DiscoverStory:
     @classmethod
     def fetch_story_content_vector(cls, story_hash):
         # Fetch the content vector from ES for the specified story_hash
-        try:
-            cls.ES().indices.flush(index=cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         body = {"query": {"ids": {"values": [story_hash]}}}
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
@@ -1467,7 +1442,11 @@ class SearchFeed:
 
         # Part 2: Semantic search (generate embedding for query)
         try:
-            client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            # Hybrid search backs the interactive autocomplete endpoint, and the semantic
+            # half only refines the text results gathered above. Cap the embedding call
+            # instead of using the client defaults (600s read timeout, two retries), which
+            # leave a typeahead request hanging when OpenAI is slow or unreachable.
+            client = OpenAI(api_key=settings.OPENAI_API_KEY, timeout=5.0, max_retries=1)
             response = client.embeddings.create(model="text-embedding-3-small", input=text.lower())
 
             # Track embedding cost

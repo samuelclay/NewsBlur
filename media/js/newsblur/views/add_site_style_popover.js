@@ -17,7 +17,9 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-image-preview-option": "change_image_preview",
         "click .NB-content-preview-option": "change_content_preview",
         "click .NB-sort-order-option": "change_sort_order",
-        "click .NB-columns-option": "change_columns"
+        "click .NB-columns-option": "change_columns",
+        "click .NB-show-subscribed-option": "change_show_subscribed",
+        "click .NB-staleness-option": "change_staleness"
     },
 
     initialize: function (options) {
@@ -52,6 +54,24 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-subscribers', role: "button" }, 'Subscribers'),
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-stories', role: "button" }, 'Stories'),
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-name', role: "button" }, 'Name')
+                ])
+            ]),
+            // Shared: Show — hide sites the user already subscribes to
+            $.make('div', { className: 'NB-style-row' }, [
+                $.make('div', { className: 'NB-style-label' }, 'Show'),
+                $.make('ul', { className: 'segmented-control NB-options-show-subscribed' }, [
+                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-all', role: "button", title: 'Show every site, including ones you already follow' }, 'All sites'),
+                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-hide', role: "button", title: 'Hide sites you already subscribe to' }, 'New to me')
+                ])
+            ]),
+            // Shared: Updated — hide sites that have not published recently
+            $.make('div', { className: 'NB-style-row' }, [
+                $.make('div', { className: 'NB-style-label' }, 'Updated'),
+                $.make('ul', { className: 'segmented-control NB-options-staleness' }, [
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-any', role: "button", title: 'No recency filter' }, 'Any time'),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-5years', role: "button", title: 'Updated within the last 5 years' }, '5 years'),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-year', role: "button", title: 'Updated within the last year' }, '1 year'),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-month', role: "button", title: 'Updated within the last month' }, '1 month')
                 ])
             ]),
             // Grid View Section
@@ -121,10 +141,21 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
         var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
         if (!_.contains(['subscribers', 'stories', 'name'], sort_order)) sort_order = 'subscribers';
         var columns = NEWSBLUR.assets.preference('add_site_grid_columns') || 'auto';
+        var hide_subscribed = !!NEWSBLUR.assets.preference('add_site_hide_subscribed');
+        var staleness = NEWSBLUR.assets.preference('add_site_staleness') || 'any';
+        if (!_.contains(['any', '5years', 'year', 'month'], staleness)) staleness = 'any';
 
         // Sort By (shared)
         this.$('.NB-sort-order-option').removeClass('NB-active');
         this.$('.NB-options-sort-order-' + sort_order).addClass('NB-active');
+
+        // Show — hide already-subscribed sites (shared)
+        this.$('.NB-show-subscribed-option').removeClass('NB-active');
+        this.$('.NB-options-show-subscribed-' + (hide_subscribed ? 'hide' : 'all')).addClass('NB-active');
+
+        // Updated — staleness filter (shared)
+        this.$('.NB-staleness-option').removeClass('NB-active');
+        this.$('.NB-options-staleness-' + staleness).addClass('NB-active');
 
         // Grid View options
         this.$('.NB-columns-option').removeClass('NB-active');
@@ -260,6 +291,40 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
     update_columns: function (setting) {
         NEWSBLUR.assets.save_preferences({ 'add_site_grid_columns': setting });
         this.add_site_view.render_active_tab();
+    },
+
+    change_show_subscribed: function (e) {
+        var $target = $(e.currentTarget);
+        this.update_show_subscribed($target.hasClass("NB-options-show-subscribed-hide"));
+        this.show_correct_options();
+    },
+
+    update_show_subscribed: function (hide_subscribed) {
+        NEWSBLUR.assets.save_preferences({ 'add_site_hide_subscribed': !!hide_subscribed });
+        // Filtering happens server-side, so the active tab must re-fetch, not just re-render.
+        this.add_site_view.reload_active_tab();
+    },
+
+    change_staleness: function (e) {
+        var $target = $(e.currentTarget);
+
+        if ($target.hasClass("NB-options-staleness-5years")) {
+            this.update_staleness('5years');
+        } else if ($target.hasClass("NB-options-staleness-year")) {
+            this.update_staleness('year');
+        } else if ($target.hasClass("NB-options-staleness-month")) {
+            this.update_staleness('month');
+        } else {
+            this.update_staleness('any');
+        }
+
+        this.show_correct_options();
+    },
+
+    update_staleness: function (setting) {
+        NEWSBLUR.assets.save_preferences({ 'add_site_staleness': setting });
+        // Filtering happens server-side, so the active tab must re-fetch, not just re-render.
+        this.add_site_view.reload_active_tab();
     }
 
 });

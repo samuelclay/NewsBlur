@@ -1,0 +1,15 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}Hi {{ user.username }},
+
+I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of $36 per year, and your subscription will renew at that rate on {{ renewal_date|date:"F j, Y" }}.
+
+You have been on an older grandfathered price of ${{ old_amount }} per year, and I am grateful you have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it.
+
+There is nothing you need to do. The new rate takes effect automatically at your next renewal. Your account, your sites, and everything you have saved stay exactly as they are. You can adjust your subscription anytime in your account settings.
+
+Thank you for being a premium member. It genuinely keeps NewsBlur going.
+
+Sam{% endblock body %}

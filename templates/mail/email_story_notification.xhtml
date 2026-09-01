@@ -21,11 +21,13 @@
     }
 </style>
 
+    {% if not feed.is_daily_briefing %}
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
         <img src="{{ favicon_url }}" style="width: 16px;height: 16px;vertical-align: middle; "> <a href="{{ feed.feed_link }}" style="color: #303050;text-decoration: none;">{{ feed_title }}</a>
     </h2>
-    
+
     <hr>
+    {% endif %}
 
     <h2><a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
 
@@ -46,7 +48,7 @@
 <tr>
     <td class="comment_body_td content-td content-td-footer" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 0 40px 12px;" bgcolor="white">
         <p style="font-size:12px;text-align: center;"> 
-            {% if classifier_match_desc %}You received this because of a classifier match ({{ classifier_match_desc }}) on <a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">{{ feed_title }}</a>.{% else %}You received this because you have <a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.{% endif %}
+            {% if feed.is_daily_briefing %}{% if classifier_match_desc %}You received this because of a classifier match ({{ classifier_match_desc }}) on <a href="https://{% current_domain %}/briefing?next=briefing-notifications" style="text-decoration:none;">{{ feed_title }}</a>.{% else %}You received this because you have <a href="https://{% current_domain %}/briefing?next=briefing-notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.{% endif %}{% else %}{% if classifier_match_desc %}You received this because of a classifier match ({{ classifier_match_desc }}) on <a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">{{ feed_title }}</a>.{% else %}You received this because you have <a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.{% endif %}{% endif %}
         </p>
     </td>
 </tr>

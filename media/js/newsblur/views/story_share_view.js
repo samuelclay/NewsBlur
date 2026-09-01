@@ -216,7 +216,28 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var left_height = content_height + comments_height;
         var original_height = $story_content.data('original_height') || content_height;
 
-        if (!NEWSBLUR.reader.flags.narrow_content &&
+        // In sticky-sideoptions mode, the parent .NB-story-content-container's
+        // min-height (set in update_sideoptions_sticky_state) handles growing
+        // the story area when the sideoptions stack is taller than the story.
+        // Growing $story_content directly here would feed back into
+        // $sideoption_container.height() on the next autosize keystroke and
+        // runaway-grow the story.
+        var is_sticky_sideoptions = this.sideoptions_view &&
+            this.sideoptions_view.story_view &&
+            this.sideoptions_view.story_view.$el.hasClass('NB-story-sideoptions-sticky');
+
+        if (is_sticky_sideoptions) {
+            if ($story_content.data('original_height')) {
+                $story_content.css('height', '');
+                $story_content.removeData('original_height');
+            }
+            if (this.sideoptions_view &&
+                this.sideoptions_view.save_view &&
+                this.sideoptions_view.save_view.is_open &&
+                !options.from_save_view) {
+                this.sideoptions_view.save_view.resize({ from_share_view: true });
+            }
+        } else if (!NEWSBLUR.reader.flags.narrow_content &&
             !options.close && new_sideoptions_height >= original_height) {
             // Sideoptions too big, embiggen left side
             $story_content.animate({

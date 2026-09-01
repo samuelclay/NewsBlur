@@ -17,6 +17,7 @@ import tiktoken
 from django.conf import settings
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 
 def setup_openai_model(openai_model):
@@ -30,7 +31,23 @@ def setup_openai_model(openai_model):
     return encoding
 
 
-def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
+def _classifier_direction(prompt_classifier):
+    """Return (match_score, directive) for a prompt classifier.
+
+    utils/ai_functions.py: A classifier's direction lives in `classifier_type`,
+    never in the user's prompt text. "sports" is a valid prompt for both a hidden
+    and a focus classifier, and in production the same word is used for both, so
+    the prompt alone cannot say which way it points. Left unstated, the model
+    reads a bare topic as the user's interests and returns +1 — which
+    apps/reader/views.py then discards for a hidden classifier, hiding nothing.
+    """
+    classifier_type = getattr(prompt_classifier, "classifier_type", "focus") or "focus"
+    if classifier_type == "hidden":
+        return -1, "HIDE"
+    return 1, "FOCUS ON"
+
+
+def classify_stories_with_ai(prompt_classifier, stories, model=ANTHROPIC_MODEL, user_id=None):
     """
     Classify a list of stories using Claude's tool use.
 
@@ -47,7 +64,7 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
 
     if not AnthropicProvider().is_configured():
         logging.error("Anthropic API key not configured")
-        return {story["story_id"]: 0 for story in stories}
+        return None
 
     # Initialize Anthropic client
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -62,6 +79,10 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
                 "excerpt": story.get("story_content", "")[:500],  # Limit content size
             }
         )
+
+    # The direction has to be resolved before the schema is built: a hidden
+    # classifier must not even be able to express +1.
+    match_score, match_verb = _classifier_direction(prompt_classifier)
 
     # Define the tool for classification
     tool_definition = {
@@ -78,12 +99,9 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
                             "id": {"type": "string"},
                             "classification": {
                                 "type": "integer",
-                                "enum": [1, 0, -1],
-                                "description": "1 for focus (promote), 0 for neutral, -1 for hidden (demote)",
-                            },
-                            "explanation": {
-                                "type": "string",
-                                "description": "Brief explanation of classification",
+                                "enum": [0, match_score],
+                                "description": "%d when the story matches the criteria, 0 otherwise"
+                                % match_score,
                             },
                         },
                         "required": ["id", "classification"],
@@ -94,25 +112,31 @@ def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5
         },
     }
 
-    # Create system message based on prompt type
-    system_message = f"""You are a story classifier for a news reader application. Your task is to classify stories based on the user's criteria. Each story should be classified as one of:
+    # Create system message. The direction (hide vs focus) must be stated
+    # explicitly — see _classifier_direction() for why the prompt alone can't.
+    system_message = f"""You are a story classifier for a news reader application.
 
-- Focus (1): Stories that strongly match the user's interests according to their prompt
-- Neutral (0): Stories that don't particularly match or contradict the user's criteria
-- Hidden (-1): Stories that the user wants to hide based on their prompt
+The user wants to {match_verb} stories matching this criteria: {prompt_classifier.prompt}
 
-The user's classification criteria is: {prompt_classifier.prompt}
+Classify each story independently:
+- {match_score}: the story clearly matches the criteria above
+- 0: the story does not match
 
-Classify each story independently. Most stories should remain neutral (0) by default.
-Only classify stories as Focus (1) or Hidden (-1) if they clearly match the user's criteria.
+The criteria describes which stories to act on, not which stories the user likes.
+A criteria of "sports" on a {match_verb} classifier means every sports story gets
+{match_score}, whether or not the user enjoys sports.
+
+Most stories should be 0. Only return {match_score} when the story clearly matches.
 
 You MUST use the classify_stories tool to return your classifications."""
 
     try:
         # Call the Anthropic API with tool use
+        # Each classification costs ~25 output tokens. A fixed 1024 cap silently
+        # truncated the tool call on large batches, which parsed as a failure.
         response = client.messages.create(
             model=model,
-            max_tokens=1024,
+            max_tokens=min(8192, 512 + 32 * len(story_items)),
             system=system_message,
             tools=[tool_definition],
             tool_choice={"type": "tool", "name": "classify_stories"},
@@ -145,14 +169,14 @@ You MUST use the classify_stories tool to return your classifications."""
                     return classifications
                 except (KeyError, TypeError) as e:
                     logging.error(f"Error parsing AI classification response: {e}")
-                    return {story["story_id"]: 0 for story in stories}
+                    return None
 
         logging.error("AI did not return a valid tool use")
-        return {story["story_id"]: 0 for story in stories}
+        return None
 
     except Exception as e:
         logging.error(f"Error during AI classification: {e}")
-        return {story["story_id"]: 0 for story in stories}
+        return None
 
 
 def _fetch_image_as_base64(url, timeout=10, max_size_bytes=5 * 1024 * 1024):
@@ -207,7 +231,7 @@ def _fetch_image_as_base64(url, timeout=10, max_size_bytes=5 * 1024 * 1024):
         return None, None
 
 
-def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku-4-5", user_id=None):
+def classify_stories_with_vision(prompt_classifier, stories, model=ANTHROPIC_MODEL, user_id=None):
     """Classify stories using Claude Vision (VLM) — analyzes both text AND images.
 
     This is the VLM version of classify_stories_with_ai(). The key difference:
@@ -243,9 +267,14 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
 
     if not AnthropicProvider().is_configured():
         logging.error("Anthropic API key not configured")
-        return {story["story_id"]: 0 for story in stories}
+        return None
 
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+    # A hidden image classifier must return -1 for a match, not +1. This had the
+    # same bug as the text classifier: it always returned 1 for a match, so
+    # hidden image classifiers never hid anything.
+    match_score, match_verb = _classifier_direction(prompt_classifier)
 
     # Same tool definition as text-only classifier — the output format is identical.
     # The only difference is in the INPUT (we add images to the message).
@@ -263,12 +292,9 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
                             "id": {"type": "string"},
                             "classification": {
                                 "type": "integer",
-                                "enum": [1, 0, -1],
-                                "description": "1 for focus (promote), 0 for neutral, -1 for hidden (demote)",
-                            },
-                            "explanation": {
-                                "type": "string",
-                                "description": "Brief explanation, referencing image content when relevant",
+                                "enum": [0, match_score],
+                                "description": "%d when the image matches the filter, 0 otherwise"
+                                % match_score,
                             },
                         },
                         "required": ["id", "classification"],
@@ -284,10 +310,10 @@ def classify_stories_with_vision(prompt_classifier, stories, model="claude-haiku
     # is specifically for visual content (photos of food, charts, etc.).
     system_message = f"""You are a STRICT image classifier for a news reader. Classify ONLY based on what is literally, visually depicted in the image.
 
-- Match (1): The image literally shows the described thing as the main subject
-- No match (0): The image does NOT literally show the described thing
+- {match_score} (Match): The image literally shows the described thing as the main subject
+- 0 (No match): The image does NOT literally show the described thing
 
-The user's image filter is: {prompt_classifier.prompt}
+The user wants to {match_verb} stories whose images match this filter: {prompt_classifier.prompt}
 
 STRICT RULES:
 1. Only match if the described thing is LITERALLY VISIBLE as the main subject of the image.
@@ -297,6 +323,8 @@ STRICT RULES:
 5. When in doubt, classify as no match (0). Be very conservative.
 
 If a story has no images, classify as no match (0).
+
+The filter describes which images to act on, not which images the user likes.
 
 You MUST use the classify_stories tool to return your classifications."""
 
@@ -361,7 +389,7 @@ You MUST use the classify_stories tool to return your classifications."""
         # is a list of blocks (text + images) instead of a plain string.
         response = client.messages.create(
             model=model,
-            max_tokens=1024,
+            max_tokens=min(8192, 512 + 32 * len(stories_with_ids)),
             system=system_message,
             tools=[tool_definition],
             tool_choice={"type": "tool", "name": "classify_stories"},
@@ -393,11 +421,11 @@ You MUST use the classify_stories tool to return your classifications."""
                     return classifications
                 except (KeyError, TypeError) as e:
                     logging.error(f"Error parsing vision classification response: {e}")
-                    return {story["story_id"]: 0 for story in stories}
+                    return None
 
         logging.error("Vision AI did not return a valid tool use")
-        return {story["story_id"]: 0 for story in stories}
+        return None
 
     except Exception as e:
         logging.error(f"Error during vision classification: {e}")
-        return {story["story_id"]: 0 for story in stories}
+        return None

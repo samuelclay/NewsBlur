@@ -54,6 +54,19 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 }, 'Generate Briefing')
             ])
         ]));
+
+        // briefing_onboarding_view.js: Set tier expectations up front — scheduled
+        // auto-generation and full story lists require Premium Archive.
+        if (NEWSBLUR.utils.is_briefing_preview()) {
+            this.$('.NB-briefing-onboarding-header').append(
+                NEWSBLUR.utils.make_archive_callout(
+                    "Daily Briefings are a Premium Archive feature. On your plan you can generate a " +
+                    "preview with the first 3 stories of each briefing. Upgrade for every story and " +
+                    "automatic briefings on your schedule.",
+                    { highlight_feature: 'briefing' }
+                )
+            );
+        }
     },
 
     fetch_preferences: function () {

@@ -668,7 +668,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
 
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'stay-unread' });
             });
         });
         $.targetIs(e, { tagSelector: '.NB-modal-submit-retry' }, function ($t, $p) {
@@ -695,7 +695,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
 
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'saved-rss' });
             });
         });
         $.targetIs(e, { tagSelector: '.NB-premium-archive-link' }, function ($t, $p) {
@@ -709,7 +709,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
 
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'auto-mark-read' });
             });
         });
         $.targetIs(e, { tagSelector: '.NB-auto-mark-read-option' }, function ($t, $p) {

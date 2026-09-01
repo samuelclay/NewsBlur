@@ -11,52 +11,69 @@ import SwiftUI
 
 // MARK: - AI Provider
 
+// AskAIModels.swift: iOS's single place to update when AI models change.
+// Raw values are stable vendor keys understood by the backend registry in
+// apps/ask_ai/providers.py — only the display/short names change on upgrades.
 enum AskAIProvider: String, CaseIterable, Identifiable {
-    case opus = "opus"
-    case gpt = "gpt-5.2"
-    case gemini = "gemini-3"
-    case grok = "grok-4.1"
+    case anthropic = "anthropic"
+    case openai = "openai"
+    case google = "google"
+    case xai = "xai"
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
-        case .opus: return "Anthropic Claude Opus 4.5"
-        case .gpt: return "OpenAI GPT 5.2"
-        case .gemini: return "Google Gemini 3 Pro"
-        case .grok: return "xAI Grok 4.1 Fast"
+        case .anthropic: return "Anthropic Claude Sonnet 5"
+        case .openai: return "OpenAI GPT-5.6 Luna"
+        case .google: return "Google Gemini 3.6 Flash"
+        case .xai: return "xAI Grok 4.6"
         }
     }
 
     var shortName: String {
         switch self {
-        case .opus: return "Opus 4.5"
-        case .gpt: return "GPT 5.2"
-        case .gemini: return "Gemini 3"
-        case .grok: return "Grok 4.1"
+        case .anthropic: return "Sonnet 5"
+        case .openai: return "GPT-5.6 Luna"
+        case .google: return "Gemini 3.6"
+        case .xai: return "Grok 4.6"
         }
     }
 
     var providerName: String {
         switch self {
-        case .opus: return "anthropic"
-        case .gpt: return "openai"
-        case .gemini: return "google"
-        case .grok: return "xai"
+        case .anthropic: return "anthropic"
+        case .openai: return "openai"
+        case .google: return "google"
+        case .xai: return "xai"
         }
     }
 
     var color: Color {
         switch self {
-        case .opus: return Color(red: 0.85, green: 0.47, blue: 0.34) // Anthropic coral/tan
-        case .gpt: return Color(red: 0.2, green: 0.65, blue: 0.45) // Green
-        case .gemini: return Color(red: 0.26, green: 0.52, blue: 0.96) // Google blue
-        case .grok: return Color(red: 0.1, green: 0.1, blue: 0.1) // Dark/black
+        case .anthropic: return Color(red: 0.85, green: 0.47, blue: 0.34) // Anthropic coral/tan
+        case .openai: return Color(red: 0.2, green: 0.65, blue: 0.45) // Green
+        case .google: return Color(red: 0.26, green: 0.52, blue: 0.96) // Google blue
+        case .xai: return Color(red: 0.1, green: 0.1, blue: 0.1) // Dark/black
         }
     }
 
     var textColor: Color {
         return .white
+    }
+
+    /// Resolves a stored key, mapping legacy model-specific keys ("opus",
+    /// "gpt-5.2", ...) saved before keys became vendor slugs (Aug 2026).
+    static func fromSavedValue(_ value: String?) -> AskAIProvider? {
+        guard let value else { return nil }
+        if let provider = AskAIProvider(rawValue: value) { return provider }
+        let legacyKeys: [String: AskAIProvider] = [
+            "opus": .anthropic, "haiku": .anthropic,
+            "gpt-5.2": .openai, "gpt-5-mini": .openai,
+            "gemini-3": .google, "gemini-flash-lite": .google,
+            "grok-4.1": .xai, "grok-4.1-fast": .xai,
+        ]
+        return legacyKeys[value]
     }
 }
 
@@ -175,7 +192,7 @@ struct AskAIConversation {
         self.responseText = ""
         self.conversationHistory = []
         self.completedBlocks = []
-        self.model = .opus
+        self.model = .anthropic
         self.isStreaming = false
         self.isComplete = false
         self.error = nil

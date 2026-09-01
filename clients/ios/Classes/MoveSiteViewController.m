@@ -217,6 +217,7 @@
         if ([folder isEqualToString:@"infrequent"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder hasPrefix:@"trending:"]) continue;
         if ([folder isEqualToString:@"widget_stories"]) continue;
         if ([folder isEqualToString:@"read_stories"]) continue;
         if ([folder isEqualToString:@"saved_searches"]) continue;

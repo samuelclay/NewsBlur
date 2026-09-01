@@ -27,6 +27,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "../../fixtures")
 FIXTURE_PATH = os.path.join(FIXTURE_DIR, "popular_feeds.json")
@@ -36,7 +37,7 @@ REDDIT_DELAY = 0.7
 REDDIT_RATE_LIMIT_WAIT = 10
 REDDIT_MAX_RETRIES = 3
 
-CLAUDE_MODEL = "claude-haiku-4-5"
+CLAUDE_MODEL = ANTHROPIC_MODEL
 CATEGORIZE_BATCH_SIZE = 100
 
 # Expanded taxonomy (47 categories) - shared base from discover_real_feeds.py
