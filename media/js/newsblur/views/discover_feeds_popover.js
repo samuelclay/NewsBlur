@@ -337,7 +337,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         e.preventDefault();
         e.stopPropagation();
         this.close(_.bind(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'discover' });
         }, this));
     },
 

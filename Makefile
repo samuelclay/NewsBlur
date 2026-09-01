@@ -6,6 +6,17 @@ ANDROID_SDK_ROOT ?= $(if $(ANDROID_HOME),$(ANDROID_HOME),$(HOME)/Library/Android
 ANDROID_EMULATOR := $(ANDROID_SDK_ROOT)/emulator/emulator
 ANDROID_AVD ?= NewsBlur_API_36
 ANDROID_APP_PACKAGE ?= com.newsblur
+ANDROID_PROJECT ?= clients/android/NewsBlur
+ANDROID_GRADLE_ARGS ?= --console=plain
+ANDROID_JAVA_HOME ?=
+
+# iOS simulator build/install/launch (see ios-simulator target)
+IOS_PROJECT ?= clients/ios/NewsBlur.xcodeproj
+IOS_SCHEME ?= NewsBlur
+IOS_CONFIGURATION ?= Debug
+IOS_SIMULATOR_DEVICE ?= iPhone 17
+IOS_BUNDLE_ID ?= com.newsblur.NewsBlur
+IOS_DERIVED_DATA ?= clients/ios/build/DerivedData
 
 # Color function matching NewsBlur's logging system (utils/log.py)
 # Usage: @$(call log, "~FBBlue text ~FRRed text~ST")
@@ -36,7 +47,7 @@ define log
 		-e "s/~ST/$${ESC}[0m/g"
 endef
 
-.PHONY: node api android-emulator
+.PHONY: node api android-emulator ios-simulator
 
 # Default target - smart setup that checks if first-time install or update
 .DEFAULT_GOAL := default
@@ -69,6 +80,10 @@ default:
 android-emulator:
 	@if [ ! -x "$(ANDROID_EMULATOR)" ]; then \
 		echo "Android emulator binary not found at $(ANDROID_EMULATOR)"; \
+		exit 1; \
+	fi; \
+	if [ ! -x "$(ANDROID_PROJECT)/gradlew" ]; then \
+		echo "Android Gradle wrapper not found at $(ANDROID_PROJECT)/gradlew"; \
 		exit 1; \
 	fi; \
 	AVD_DIR="$${ANDROID_AVD_HOME:-$${ANDROID_SDK_HOME:-$$HOME/.android}/avd}"; \
@@ -118,10 +133,61 @@ android-emulator:
 		echo "Android emulator $$SERIAL did not finish booting."; \
 		exit 1; \
 	fi; \
+	JAVA_HOME_FOR_GRADLE="$(ANDROID_JAVA_HOME)"; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]; then \
+		JAVA_HOME_FOR_GRADLE="/Applications/Android Studio.app/Contents/jbr/Contents/Home"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -n "$$JAVA_HOME" ]; then \
+		JAVA_HOME_FOR_GRADLE="$$JAVA_HOME"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ]; then \
+		echo "Set ANDROID_JAVA_HOME or JAVA_HOME to a JDK before running Android Gradle."; \
+		exit 1; \
+	fi; \
+	echo "Building and installing latest debug app on $$SERIAL..."; \
+	(cd "$(ANDROID_PROJECT)" && ANDROID_SERIAL="$$SERIAL" JAVA_HOME="$$JAVA_HOME_FOR_GRADLE" ./gradlew $(ANDROID_GRADLE_ARGS) :app:installDebug) || exit 1; \
 	echo "Restarting $(ANDROID_APP_PACKAGE) on $$SERIAL..."; \
 	adb -s "$$SERIAL" shell am force-stop "$(ANDROID_APP_PACKAGE)"; \
 	adb -s "$$SERIAL" shell monkey -p "$(ANDROID_APP_PACKAGE)" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; \
 	echo "Launched $(ANDROID_APP_PACKAGE) on $$SERIAL."
+
+# Build, install, and launch the iOS app on an iPhone 17 simulator.
+# Override the device with: make ios-simulator IOS_SIMULATOR_DEVICE="iPhone 17 Pro"
+ios-simulator:
+	@if ! command -v xcodebuild >/dev/null 2>&1; then \
+		echo "xcodebuild not found. Install Xcode, then run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'."; \
+		exit 1; \
+	fi; \
+	DEVICE="$(IOS_SIMULATOR_DEVICE)"; \
+	UDID=$$(xcrun simctl list devices available | grep -E "^ *$$DEVICE \(" | head -n 1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}'); \
+	if [ -z "$$UDID" ]; then \
+		echo "No available simulator named '$$DEVICE'. Run 'xcrun simctl list devices available' to see options."; \
+		exit 1; \
+	fi; \
+	echo "Using simulator $$DEVICE ($$UDID)"; \
+	echo "Booting simulator (if not already booted)..."; \
+	xcrun simctl bootstatus "$$UDID" -b; \
+	open -a Simulator --args -CurrentDeviceUDID "$$UDID"; \
+	echo "Building $(IOS_SCHEME) ($(IOS_CONFIGURATION)) for $$DEVICE..."; \
+	xcodebuild \
+		-project "$(IOS_PROJECT)" \
+		-scheme "$(IOS_SCHEME)" \
+		-configuration "$(IOS_CONFIGURATION)" \
+		-sdk iphonesimulator \
+		-destination "platform=iOS Simulator,id=$$UDID" \
+		-derivedDataPath "$(IOS_DERIVED_DATA)" \
+		build || exit 1; \
+	APP="$(IOS_DERIVED_DATA)/Build/Products/$(IOS_CONFIGURATION)-iphonesimulator/$(IOS_SCHEME).app"; \
+	if [ ! -d "$$APP" ]; then \
+		echo "Built app not found at $$APP"; \
+		exit 1; \
+	fi; \
+	echo "Installing $$APP on $$UDID..."; \
+	xcrun simctl install "$$UDID" "$$APP" || exit 1; \
+	echo "Restarting $(IOS_BUNDLE_ID) on $$UDID..."; \
+	xcrun simctl terminate "$$UDID" "$(IOS_BUNDLE_ID)" >/dev/null 2>&1 || true; \
+	xcrun simctl launch "$$UDID" "$(IOS_BUNDLE_ID)" || exit 1; \
+	echo "Launched $(IOS_BUNDLE_ID) on $$DEVICE."
 
 rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
@@ -305,8 +371,27 @@ tlnb-slow:
 	/srv/newsblur/utils/tlnb.py app | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (match($$0, /\[[0-9]+\.[0-9]*s/)) {t=substr($$0, RSTART+1, RLENGTH-2); if (t+0 >= 1.0) print line}}'
 tlnb-samuel:
 	$(MAKE) tlnb-user USER=samuel
+# tlnb-user: tails production logs for a single user across all app servers.
+# Besides the colored terminal stream, it mirrors an ANSI-stripped copy into
+# logs/tlnb-<USER>.log (truncated fresh each run). Another Claude/Codex can run
+# `tail -f logs/tlnb-<USER>.log` to watch that user's live server activity.
 tlnb-user:
-	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) print line}'
+	@mkdir -p logs
+	@: > logs/tlnb-$(USER).log
+	@echo "==> Mirroring live logs for user '$(USER)' to logs/tlnb-$(USER).log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch the server:  tail -f logs/tlnb-$(USER).log"
+	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" -v logfile="logs/tlnb-$(USER).log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) {print line; print $$0 >> logfile; fflush(logfile)}}'
+# tlnb-staging: full firehose of the staging server's newsblur.log (every request
+# plus full DB transactions, useful for debugging). Besides the colored terminal
+# stream, it mirrors an ANSI-stripped copy into logs/tlnb-staging.log (truncated
+# fresh each run). Another Claude/Codex can run `tail -f logs/tlnb-staging.log`
+# to watch staging while debugging.
+tlnb-staging:
+	@mkdir -p logs
+	@: > logs/tlnb-staging.log
+	@echo "==> Mirroring staging logs to logs/tlnb-staging.log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch staging:  tail -f logs/tlnb-staging.log"
+	/srv/newsblur/utils/tlnb.py staging | awk -v logfile="logs/tlnb-staging.log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); print line; print $$0 >> logfile; fflush(logfile)}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:

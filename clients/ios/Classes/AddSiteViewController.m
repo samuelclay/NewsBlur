@@ -351,6 +351,9 @@
                        @"widget_stories",
                        @"river_blurblogs",
                        @"river_global",
+                       @"trending:well_read",
+                       @"trending:long_reads",
+                       @"trending:good_reads",
                        @"dashboard",
                        @"infrequent",
                        @"everything"]);

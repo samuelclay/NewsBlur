@@ -980,7 +980,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     fetch_briefing_stories: function (page, callback, error_callback) {
-        this.make_request('/briefing/stories', { page: page || 1 }, callback, error_callback, {
+        var self = this;
+        // assetmodel.js: Load the shared-story profiles before rendering so
+        // ProfileThumb.create() can resolve briefing sharers/commenters into avatars.
+        var pre_callback = function (data) {
+            if (data.user_profiles) {
+                self.add_user_profiles(data.user_profiles);
+            }
+            callback(data);
+        };
+        this.make_request('/briefing/stories', { page: page || 1 }, pre_callback, error_callback, {
             'ajax_group': 'feed',
             'request_type': 'GET'
         });
@@ -2633,8 +2642,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
                 if (classifier_score <= -2 || (intelligence.title > -2 && intelligence.title <= 0)) {
-                    // Standard substring matching
-                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                    // media/js/newsblur/common/assetmodel.js: Match title classifiers at word starts,
+                    // while allowing trained stems to continue through the end of a word.
+                    if (NEWSBLUR.title_classifier_utils.find_match_position(
+                        story.get('story_title', ''), classifier_title
+                    ) != -1) {
                         intelligence.title = classifier_score;
                     }
                 }

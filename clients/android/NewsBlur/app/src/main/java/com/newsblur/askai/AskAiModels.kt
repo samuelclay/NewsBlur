@@ -1,5 +1,8 @@
 package com.newsblur.askai
 
+// AskAiModels.kt: Android's single place to update when AI models change.
+// Raw values are stable vendor keys understood by the backend registry in
+// apps/ask_ai/providers.py — only the display/short names change on upgrades.
 enum class AskAiProvider(
     val rawValue: String,
     val displayName: String,
@@ -7,39 +10,53 @@ enum class AskAiProvider(
     val providerName: String,
     val colorHex: Long,
 ) {
-    OPUS(
-        rawValue = "opus",
-        displayName = "Anthropic Claude Opus 4.5",
-        shortName = "Opus 4.5",
+    ANTHROPIC(
+        rawValue = "anthropic",
+        displayName = "Anthropic Claude Sonnet 5",
+        shortName = "Sonnet 5",
         providerName = "anthropic",
         colorHex = 0xFFD9735F,
     ),
-    GPT(
-        rawValue = "gpt-5.2",
-        displayName = "OpenAI GPT 5.2",
-        shortName = "GPT 5.2",
+    OPENAI(
+        rawValue = "openai",
+        displayName = "OpenAI GPT-5.6 Luna",
+        shortName = "GPT-5.6 Luna",
         providerName = "openai",
         colorHex = 0xFF33A673,
     ),
-    GEMINI(
-        rawValue = "gemini-3",
-        displayName = "Google Gemini 3 Pro",
-        shortName = "Gemini 3",
+    GOOGLE(
+        rawValue = "google",
+        displayName = "Google Gemini 3.6 Flash",
+        shortName = "Gemini 3.6",
         providerName = "google",
         colorHex = 0xFF4384F5,
     ),
-    GROK(
-        rawValue = "grok-4.1",
-        displayName = "xAI Grok 4.1 Fast",
-        shortName = "Grok 4.1",
+    XAI(
+        rawValue = "xai",
+        displayName = "xAI Grok 4.6",
+        shortName = "Grok 4.6",
         providerName = "xai",
         colorHex = 0xFF171717,
     ),
     ;
 
     companion object {
+        // Legacy model-specific keys ("opus", "gpt-5.2", ...) saved before
+        // keys became vendor slugs (Aug 2026).
+        private val legacyKeys =
+            mapOf(
+                "opus" to ANTHROPIC,
+                "haiku" to ANTHROPIC,
+                "gpt-5.2" to OPENAI,
+                "gpt-5-mini" to OPENAI,
+                "gemini-3" to GOOGLE,
+                "gemini-flash-lite" to GOOGLE,
+                "grok-4.1" to XAI,
+                "grok-4.1-fast" to XAI,
+            )
+
         fun fromRawValue(value: String?): AskAiProvider =
-            entries.firstOrNull { it.rawValue == value } ?: OPUS
+            entries.firstOrNull { it.rawValue == value } ?: legacyKeys[value] ?: ANTHROPIC
     }
 }
 
@@ -117,7 +134,7 @@ data class AskAiStory(
 
 data class AskAiUiState(
     val story: AskAiStory? = null,
-    val selectedModel: AskAiProvider = AskAiProvider.OPUS,
+    val selectedModel: AskAiProvider = AskAiProvider.ANTHROPIC,
     val customQuestion: String = "",
     val completedBlocks: List<AskAiResponseBlock> = emptyList(),
     val currentQuestionId: String = "",

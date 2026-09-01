@@ -9,6 +9,7 @@ import random
 import re
 import time
 
+import redis
 from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -57,6 +58,7 @@ from apps.social.models import (
     MSocialServices,
     MSocialSubscription,
 )
+from apps.social.rglobal import RGlobalSharedStory
 from apps.social.tasks import (
     EmailCommentReplies,
     EmailFirstShare,
@@ -64,6 +66,7 @@ from apps.social.tasks import (
     PostToService,
     UpdateRecalcForSubscription,
 )
+from apps.statistics.rtrending import RTrendingStory
 from utils import jennyholzer
 from utils import json_functions as json
 from utils import log as logging
@@ -98,7 +101,11 @@ def sanitize_for_xml(text):
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     user = get_user(request)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
@@ -329,7 +336,12 @@ def load_social_stories(request, user_id, username=None):
     if socialsub:
         socialsub.feed_opens += 1
         socialsub.needs_unread_recalc = True
-        socialsub.save()
+        try:
+            socialsub.save()
+        except NotUniqueError:
+            # A concurrent request already wrote this subscription. All that's
+            # lost is the feed_opens bump, so serve the stories anyway.
+            logging.user(request, "~FR~SBCouldn't save social subscription, continuing")
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(
@@ -344,6 +356,20 @@ def load_social_stories(request, user_id, username=None):
         "feeds": unsub_feeds,
         "classifiers": classifiers,
     }
+
+
+def unread_story_hashes_for_user(user, story_hashes):
+    """Which of these stories the user hasn't read, straight from the read-story set."""
+    if not story_hashes or not user.is_authenticated:
+        return list(story_hashes)
+
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    pipe = r.pipeline()
+    for story_hash in story_hashes:
+        pipe.sismember("RS:%s" % user.pk, story_hash)
+    read_states = pipe.execute()
+
+    return [story_hash for story_hash, is_read in zip(story_hashes, read_states) if not is_read]
 
 
 @json.json_view
@@ -375,20 +401,24 @@ def load_river_blurblog(request):
     on_dashboard = is_true(request.GET.get("dashboard", False))
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
-    if global_feed:
-        global_user = User.objects.get(username="popular")
-        relative_user_id = global_user.pk
-
-    if not relative_user_id:
+    if relative_user_id and not global_feed:
+        relative_user_id = int(relative_user_id)
+        if relative_user_id != user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
+    elif not relative_user_id:
         relative_user_id = user.pk
 
-    socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id)
-    if social_user_ids:
-        socialsubs = socialsubs.filter(subscription_user_id__in=social_user_ids)
+    if global_feed:
+        socialsubs = []
+    else:
+        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id)
+        if social_user_ids:
+            socialsubs = socialsubs.filter(subscription_user_id__in=social_user_ids)
 
-    if not social_user_ids:
-        social_user_ids = [s.subscription_user_id for s in socialsubs]
+        if not social_user_ids:
+            social_user_ids = [s.subscription_user_id for s in socialsubs]
 
+    per_page = limit
     offset = (page - 1) * limit
     limit = page * limit - 1
 
@@ -407,23 +437,42 @@ def load_river_blurblog(request):
         read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
     )
 
-    story_hashes, story_dates, unread_feed_story_hashes = MSocialSubscription.feed_stories(
-        user.pk,
-        social_user_ids,
-        offset=offset,
-        limit=limit,
-        order=order,
-        read_filter=read_filter,
-        relative_user_id=relative_user_id,
-        socialsubs=socialsubs,
-        cutoff_date=user.profile.unread_cutoff,
-        date_filter_start=date_filter_start_utc,
-        date_filter_end=date_filter_end_utc,
-        dashboard_global=on_dashboard and global_feed,
-    )
-    mstories = MStory.find_by_story_hashes(story_hashes)
-    story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
-    sorted_mstories = reversed(sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)])))
+    if global_feed:
+        # apps/social/views.py: The global river is curated hourly rather than followed, so its
+        # stories come from the curated list instead of anyone's social subscriptions.
+        story_hashes = RGlobalSharedStory.get_story_hashes(
+            offset=offset,
+            limit=per_page,
+            order=order,
+            read_filter=read_filter,
+            user_id=user.pk if user.is_authenticated else None,
+        )
+        unread_feed_story_hashes = unread_story_hashes_for_user(user, story_hashes)
+        mstories = MStory.find_by_story_hashes(story_hashes)
+        story_hashes_to_dates = dict(
+            (story.story_hash, int(story.story_date.timestamp())) for story in mstories
+        )
+        story_hash_order = dict((story_hash, i) for i, story_hash in enumerate(story_hashes))
+        sorted_mstories = sorted(mstories, key=lambda story: story_hash_order.get(story.story_hash, 999))
+    else:
+        story_hashes, story_dates, unread_feed_story_hashes = MSocialSubscription.feed_stories(
+            user.pk,
+            social_user_ids,
+            offset=offset,
+            limit=limit,
+            order=order,
+            read_filter=read_filter,
+            relative_user_id=relative_user_id,
+            socialsubs=socialsubs,
+            cutoff_date=user.profile.unread_cutoff,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
+        )
+        mstories = MStory.find_by_story_hashes(story_hashes)
+        story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
+        sorted_mstories = reversed(
+            sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)]))
+        )
     stories = Feed.format_stories(sorted_mstories)
     # Exclude briefing feed stories from social/shared rivers
     if stories:
@@ -441,6 +490,17 @@ def load_river_blurblog(request):
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(
         stories, share_relative_user_id, check_all=True
     )
+
+    if global_feed:
+        # apps/social/views.py: Nobody is followed to build this river, so the people who shared
+        # these stories stand in as its social feeds when applying the reader's classifiers.
+        social_user_ids = list(
+            set(
+                user_id
+                for story in stories
+                for user_id in story["friend_user_ids"] + story["public_user_ids"]
+            )
+        )
 
     story_feed_ids = list(set(s["story_feed_id"] for s in stories))
     usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
@@ -587,7 +647,11 @@ def load_river_blurblog(request):
 
 def load_social_page(request, user_id, username=None, **kwargs):
     user = get_user(request.user)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
@@ -611,7 +675,6 @@ def load_social_page(request, user_id, username=None, **kwargs):
     user_social_profile = None
     user_social_services = None
     user_following_social_profile = None
-    relative_user_id = user_id
     if user.is_authenticated:
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
@@ -648,30 +711,19 @@ def load_social_page(request, user_id, username=None, **kwargs):
     ):
         stories = []
     elif global_feed:
-        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id)
-        social_user_ids = [s.subscription_user_id for s in socialsubs]
-        story_ids, story_dates, _ = MSocialSubscription.feed_stories(
-            user.pk,
-            social_user_ids,
-            offset=offset,
-            limit=limit + 1,
-            # order=order, read_filter=read_filter,
-            relative_user_id=relative_user_id,
-            cache=request.user.is_authenticated,
-            cutoff_date=user.profile.unread_cutoff,
-            date_filter_start=date_filter_start_utc,
-            date_filter_end=date_filter_end_utc,
-        )
+        # apps/social/views.py: The global blurblog page reads the same hourly curated river
+        # that river:global serves, so both stay in sync.
+        story_ids = RGlobalSharedStory.get_story_hashes(offset=offset, limit=limit + 1)
         if len(story_ids) > limit:
             has_next_page = True
             story_ids = story_ids[:-1]
         mstories = MStory.find_by_story_hashes(story_ids)
-        story_id_to_dates = dict(list(zip(story_ids, story_dates)))
+        story_id_order = dict((story_hash, i) for i, story_hash in enumerate(story_ids))
 
-        def sort_stories_by_id(story):
-            return int(story_id_to_dates[str(story.story_hash)])
+        def sort_stories_by_curated_order(story):
+            return story_id_order.get(story.story_hash, len(story_ids))
 
-        sorted_mstories = sorted(mstories, key=sort_stories_by_id, reverse=True)
+        sorted_mstories = sorted(mstories, key=sort_stories_by_curated_order)
         stories = Feed.format_stories(sorted_mstories)
         for story in stories:
             story["shared_date"] = story["story_date"]
@@ -727,10 +779,20 @@ def load_social_page(request, user_id, username=None, **kwargs):
         for story in stories:
             if user.pk in story["share_user_ids"]:
                 story["shared_by_user"] = True
-                shared_story = MSharedStory.objects.hint([("story_hash", 1)]).get(
-                    user_id=user.pk, story_feed_id=story["story_feed_id"], story_hash=story["story_hash"]
+                # A user can end up with duplicate shares of the same story, so
+                # take the first match rather than blowing up on either count.
+                shared_story = (
+                    MSharedStory.objects.hint([("story_hash", 1)])
+                    .filter(
+                        user_id=user.pk,
+                        story_feed_id=story["story_feed_id"],
+                        story_hash=story["story_hash"],
+                    )
+                    .limit(1)
+                    .first()
                 )
-                story["user_comments"] = shared_story.comments
+                if shared_story:
+                    story["user_comments"] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
@@ -806,8 +868,13 @@ def story_public_comments(request):
     feed_id = int(request.GET.get("feed_id"))
     story_id = request.GET.get("story_id")
 
-    if not relative_user_id:
-        relative_user_id = get_user(request).pk
+    current_user = get_user(request)
+    if relative_user_id:
+        relative_user_id = int(relative_user_id)
+        if relative_user_id != current_user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
+    else:
+        relative_user_id = current_user.pk
 
     story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     if not story:
@@ -844,6 +911,7 @@ def story_public_comments(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_shared(request):
     code = 1
     feed_id = int(request.POST["feed_id"])
@@ -902,6 +970,7 @@ def mark_story_as_shared(request):
             )
         return json.json_response(request, {"code": -1, "message": message})
 
+    created_share = False
     shared_story = (
         MSharedStory.objects.filter(
             user_id=request.user.pk, story_feed_id=feed_id, story_hash=story["story_hash"]
@@ -927,6 +996,7 @@ def mark_story_as_shared(request):
         }
         try:
             shared_story = MSharedStory.objects.create(**story_db)
+            created_share = True
             shared_story.publish_to_subscribers()
         except NotUniqueError:
             shared_story = MSharedStory.objects.get(
@@ -953,6 +1023,9 @@ def mark_story_as_shared(request):
         logging.user(
             request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30])
         )
+
+    if created_share:
+        RTrendingStory.record_quality_action(story.story_hash, request.user.pk)
 
     if original_story_found:
         story.count_comments()
@@ -1018,6 +1091,7 @@ def mark_story_as_shared(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_unshared(request):
     feed_id = int(request.POST["feed_id"])
     story_id = request.POST["story_id"]
@@ -1075,6 +1149,7 @@ def mark_story_as_unshared(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", method="POST")
 def save_comment_reply(request):
     code = 1
     story_feed_id = request.POST.get("story_feed_id")
@@ -1217,6 +1292,7 @@ def save_comment_reply(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_comment_reply(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1320,14 +1396,32 @@ def profile(request):
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 
-    user_profile = MSocialProfile.get_user(user_id)
-    user_profile.count_follows()
+    try:
+        social_profile = MSocialProfile.get_user(user_id)
+    except User.DoesNotExist:
+        return json.json_response(request, {"code": -1, "message": "User not found."})
+    social_profile.count_follows()
 
     activities = []
-    if not user_profile.private or user_profile.is_followed_by_user(user.pk):
+    can_view_private_profile = (
+        user_id == user.pk or not social_profile.private or social_profile.is_followed_by_user(user.pk)
+    )
+    if can_view_private_profile:
         activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
 
-    user_profile = user_profile.canonical(include_follows=True, common_follows_with_user=user.pk)
+    if can_view_private_profile:
+        user_profile = social_profile.canonical(include_follows=True, common_follows_with_user=user.pk)
+    else:
+        user_profile = social_profile.canonical()
+        user_profile.update(
+            {
+                "followers_youknow": [],
+                "followers_everybody": [],
+                "following_youknow": [],
+                "following_everybody": [],
+                "requested_follow": user.pk in social_profile.requested_follow_user_ids,
+            }
+        )
     profile_ids = set(
         user_profile["followers_youknow"]
         + user_profile["followers_everybody"]
@@ -1380,6 +1474,7 @@ def load_user_profile(request):
 
 
 @ajax_login_required
+@required_params("website", "location", "bio", "photo_service", method="POST")
 @json.json_view
 def save_user_profile(request):
     data = request.POST
@@ -1407,7 +1502,11 @@ def save_user_profile(request):
 @ajax_login_required
 @json.json_view
 def upload_avatar(request):
-    photo = request.FILES["photo"]
+    # required_params can't reach request.FILES, so check the upload by hand.
+    photo = request.FILES.get("photo")
+    if not photo:
+        return {"code": -1, "message": "Missing parameter: photo"}
+
     profile = MSocialProfile.get_user(request.user.pk)
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
 
@@ -1490,6 +1589,7 @@ def load_user_friends(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def follow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1533,6 +1633,7 @@ def follow(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def unfollow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1563,6 +1664,7 @@ def unfollow(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def approve_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1580,6 +1682,7 @@ def approve_follower(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def ignore_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1667,6 +1770,7 @@ def find_friends(request):
 
 
 @ajax_login_required
+@required_params("story_id", story_feed_id=int, comment_user_id=int, method="POST")
 def like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1737,6 +1841,7 @@ def like_comment(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1810,7 +1915,13 @@ def shared_stories_rss_feed(request, user_id, username=None):
         raise Http404
 
     limit = 25
-    offset = request.GET.get("page", 0) * limit
+    # ?page= arrives as a string, which turned this multiplication into string
+    # repetition and crashed the slice below with a TypeError.
+    try:
+        page = int(request.GET.get("page", 0))
+    except (TypeError, ValueError):
+        page = 0
+    offset = page * limit
     username = username and username.lower()
     profile = MSocialProfile.get_user(user.pk)
     params = {"username": profile.username_slug, "user_id": user.pk}
@@ -1942,7 +2053,11 @@ def load_interactions(request):
     user_id = request.GET.get("user_id", None)
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     if not user_id or "null" in user_id:
-        user_id = get_user(request).pk
+        user_id = request.user.pk
+    else:
+        user_id = int(user_id)
+        if user_id != request.user.pk:
+            return json.json_response(request, {"code": -1, "message": "Access denied."})
     page = max(1, int(request.GET.get("page", 1)))
     limit = request.GET.get("limit")
     interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit, categories=categories)

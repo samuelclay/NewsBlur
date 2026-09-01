@@ -13,6 +13,8 @@ urlpatterns = [
     # Django OAuth Toolkit - use ExtensionAuthorizationView to allow chrome-extension:// redirects
     url(r"^status/?$", views.ifttt_status, name="ifttt-status"),
     url(r"^authorize/?$", views.ExtensionAuthorizationView.as_view(), name="oauth-authorize"),
+    # Dev-only preview of the authorize page styling (DEBUG + localhost only)
+    url(r"^dev/authorize/?$", views.dev_authorize_preview, name="dev-oauth-authorize"),
     url(r"^token/?$", op_views.TokenView.as_view(), name="oauth-token"),
     # Browser extension OAuth callback - displays success page while extension intercepts the code
     url(r"^extension-callback/?$", views.extension_oauth_callback, name="oauth-extension-callback"),

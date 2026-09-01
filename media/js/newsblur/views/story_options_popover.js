@@ -421,7 +421,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
     open_premium_modal: function (e) {
         this.close(e, function () {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         });
     }
 

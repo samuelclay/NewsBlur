@@ -18,7 +18,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backupscheme"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/app_icon_sunrise_gold"
         android:label="@string/newsblur"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
@@ -31,15 +31,6 @@
             android:exported="true"
             android:noHistory="true"
             android:theme="@style/splashScreen">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
-
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -65,6 +56,618 @@
             </intent-filter>
 
         </activity>
+
+        <activity-alias
+            android:name=".activity.LauncherSunriseGold"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sunrise_gold"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherMeadowSage"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_meadow_sage"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherAtlanticBlue"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_atlantic_blue"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherCoralRose"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_coral_rose"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherRubyRed"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ruby_red"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherEmberOrange"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ember_orange"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherTealMint"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_teal_mint"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherLavenderIris"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_lavender_iris"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSlateGray"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_slate_gray"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSepiaCocoa"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sepia_cocoa"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherArcticCyan"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_arctic_cyan"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherPlumBerry"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_plum_berry"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSunriseGoldLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sunrise_gold_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSunriseGoldDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sunrise_gold_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherMeadowSageLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_meadow_sage_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherMeadowSageDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_meadow_sage_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherAtlanticBlueLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_atlantic_blue_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherAtlanticBlueDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_atlantic_blue_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherCoralRoseLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_coral_rose_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherCoralRoseDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_coral_rose_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherRubyRedLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ruby_red_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherRubyRedDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ruby_red_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherEmberOrangeLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ember_orange_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherEmberOrangeDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_ember_orange_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherTealMintLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_teal_mint_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherTealMintDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_teal_mint_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherLavenderIrisLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_lavender_iris_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherLavenderIrisDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_lavender_iris_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSlateGrayLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_slate_gray_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSlateGrayDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_slate_gray_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSepiaCocoaLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sepia_cocoa_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherSepiaCocoaDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_sepia_cocoa_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherArcticCyanLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_arctic_cyan_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherArcticCyanDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_arctic_cyan_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherPlumBerryLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_plum_berry_light"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LauncherPlumBerryDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_plum_berry_dark"
+            android:label="@string/newsblur"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
 
         <activity
             android:name=".activity.LoginActivity"
@@ -103,6 +706,18 @@
 
         <activity
             android:name=".activity.InfrequentItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.WidelyReadStoriesItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.LongReadsItemsList"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.GoodReadsItemsList"
             android:theme="@style/Theme.Translucent" />
 
         <activity
@@ -146,6 +761,21 @@
 
         <activity
             android:name=".activity.InfrequentReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.WidelyReadStoriesReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.LongReadsReading"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".activity.GoodReadsReading"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 

@@ -45,6 +45,7 @@ APP_PATH = os.environ.get(
     "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
 )
 
+
 def prepend_to_path(path):
     """Prepend a directory to PATH if it exists and is not already present."""
     if not path or not os.path.isdir(path):

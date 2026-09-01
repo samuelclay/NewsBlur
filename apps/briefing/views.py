@@ -1,14 +1,11 @@
 """Briefing views: manage user briefing feeds with customizable sections and notifications."""
 
-import datetime
 import re
-import zlib
 
 import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
-from django.utils.encoding import smart_str
 
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
@@ -23,6 +20,7 @@ from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
+from apps.social.models import MSharedStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required
@@ -54,8 +52,12 @@ def _build_section_order(prefs):
     """Build complete section_order list from prefs, falling back to default order."""
     custom_keys = ["custom_%d" % (i + 1) for i in range(len(prefs.custom_section_prompts or []))]
     if prefs.section_order:
-        # views.py: Return stored order, but ensure any new custom keys are appended
+        # views.py: Return stored order, but ensure built-in sections added after the
+        # order was saved (e.g. the global rivers) and any new custom keys are appended
         order = list(prefs.section_order)
+        for key in DEFAULT_SECTION_ORDER:
+            if key not in order:
+                order.append(key)
         for key in custom_keys:
             if key not in order:
                 order.append(key)
@@ -194,6 +196,27 @@ def load_briefing_stories(request):
         }
         briefing_list.append(briefing_data)
 
+    # views.py: Attach friend/public shares and comments to every briefing story so
+    # the story detail view can render the social teaser. _story_to_dict only sets the
+    # denormalized share_count/comment_count; without the social arrays (shared_by_friends,
+    # friend_shares, friend_comments, ...) the client's comment renderer has counts but no
+    # data to back them. stories_with_comments_and_profiles mutates the dicts in place and
+    # returns the profiles the client needs to resolve those user_ids into avatars.
+    all_briefing_stories = []
+    for briefing_data in briefing_list:
+        if briefing_data.get("summary_story"):
+            all_briefing_stories.append(briefing_data["summary_story"])
+        all_briefing_stories.extend(briefing_data.get("curated_stories") or [])
+
+    user_profiles = []
+    if all_briefing_stories:
+        try:
+            all_briefing_stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(
+                all_briefing_stories, user.pk
+            )
+        except redis.ConnectionError:
+            logging.user(request, "~BR~FK~SBRedis is unavailable for briefing shared stories.")
+
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     section_definitions = {s["key"]: s["name"] for s in BRIEFING_SECTION_DEFINITIONS}
@@ -238,6 +261,7 @@ def load_briefing_stories(request):
         "briefing_feed_id": prefs.briefing_feed_id,
         "enabled": prefs.enabled,
         "section_definitions": section_definitions,
+        "user_profiles": user_profiles,
         "has_next_page": has_next_page,
         "page": page,
     }
@@ -248,6 +272,7 @@ def load_briefing_stories(request):
         from apps.ask_ai.providers import (
             DEFAULT_BRIEFING_MODEL,
             get_briefing_models_for_frontend,
+            resolve_briefing_model_key,
         )
 
         TIME_DISPLAY_MAP = {
@@ -272,7 +297,7 @@ def load_briefing_stories(request):
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
-            "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
+            "briefing_model": resolve_briefing_model_key(prefs.briefing_model) or DEFAULT_BRIEFING_MODEL,
             "briefing_models": get_briefing_models_for_frontend(),
         }
 
@@ -344,10 +369,11 @@ def briefing_preferences(request):
 
         briefing_model = request.POST.get("briefing_model")
         if briefing_model is not None:
-            from apps.ask_ai.providers import VALID_BRIEFING_MODELS
+            from apps.ask_ai.providers import resolve_briefing_model_key
 
-            if briefing_model in VALID_BRIEFING_MODELS:
-                prefs.briefing_model = briefing_model
+            resolved_model = resolve_briefing_model_key(briefing_model)
+            if resolved_model:
+                prefs.briefing_model = resolved_model
             elif briefing_model in ("", "default"):
                 prefs.briefing_model = None
 
@@ -411,6 +437,7 @@ def briefing_preferences(request):
     from apps.ask_ai.providers import (
         DEFAULT_BRIEFING_MODEL,
         get_briefing_models_for_frontend,
+        resolve_briefing_model_key,
     )
 
     folders = []
@@ -439,7 +466,7 @@ def briefing_preferences(request):
         "section_order": _build_section_order(prefs),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
-        "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
+        "briefing_model": resolve_briefing_model_key(prefs.briefing_model) or DEFAULT_BRIEFING_MODEL,
         "briefing_models": get_briefing_models_for_frontend(),
         "folders": folders,
     }
@@ -573,26 +600,9 @@ def load_all_briefings_admin(request):
 
 def _story_to_dict(story):
     """Convert an MStory to a serializable dict."""
-    content = story.story_content
-    if not content and story.story_content_z:
-        try:
-            content = smart_str(zlib.decompress(story.story_content_z))
-        except Exception:
-            content = ""
-
-    story_date = story.story_date or datetime.datetime.utcnow()
-
-    return {
-        "story_hash": story.story_hash,
-        "story_title": story.story_title,
-        "story_content": content,
-        "story_date": story_date.isoformat(),
-        "story_timestamp": story_date.strftime("%s"),
-        "story_authors": story.story_author_name or "",
-        "story_permalink": story.story_permalink,
-        "story_feed_id": story.story_feed_id,
-        "story_tags": story.story_tags or [],
-        "image_urls": story.image_urls or [],
-        "secure_image_urls": Feed.secure_image_urls(story.image_urls or []),
-        "id": story.story_guid or story.story_hash,
-    }
+    story_dict = Feed.format_story(story, story.story_feed_id)
+    story_date = story_dict.get("story_date")
+    if story_date:
+        story_dict["story_date"] = story_date.isoformat()
+    story_dict["id"] = story.story_guid or story.story_hash
+    return story_dict

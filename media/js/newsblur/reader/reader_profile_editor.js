@@ -383,9 +383,9 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
 
-    close_and_load_feedchooser: function () {
+    close_and_load_premium: function () {
         this.close(function () {
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'privacy' });
         });
     },
 
@@ -517,7 +517,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
-            self.close_and_load_feedchooser();
+            self.close_and_load_premium();
         });
     },
 

@@ -9,6 +9,8 @@ from datetime import datetime
 
 import mongoengine as mongo
 
+from utils.llm_models import ANTHROPIC_ARCHIVE_MODEL
+
 
 class MArchiveConversation(mongo.Document):
     """
@@ -54,7 +56,7 @@ class MArchiveQuery(mongo.Document):
     response_date = mongo.DateTimeField()
 
     # Metadata
-    model = mongo.StringField(max_length=64, default="claude-sonnet-4-5")
+    model = mongo.StringField(max_length=64, default=ANTHROPIC_ARCHIVE_MODEL)
     duration_ms = mongo.IntField()  # Time to generate response
     tokens_used = mongo.IntField()
 

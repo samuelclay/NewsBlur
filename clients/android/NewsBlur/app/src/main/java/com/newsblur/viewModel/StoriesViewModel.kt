@@ -35,6 +35,7 @@ class StoriesViewModel
         ) {
             viewModelScope.launch(Dispatchers.IO) {
                 val currentLoadId = loadSeq.incrementAndGet()
+                val requestedFeedSet = FeedSet.fromCompactSerial(fs.toCompactSerial())
                 try {
                     dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).use { cursor ->
                         val stories = mutableListOf<Story>()
@@ -50,7 +51,13 @@ class StoriesViewModel
                             } while (cursor.moveToNext())
                         }
 
-                        val storyBatch = StoryBatch(stories = stories, indexOfLastUnread = indexOfLastUnread, loadId = currentLoadId)
+                        val storyBatch =
+                            StoryBatch(
+                                feedSet = requestedFeedSet,
+                                stories = stories,
+                                indexOfLastUnread = indexOfLastUnread,
+                                loadId = currentLoadId,
+                            )
                         _activeStories.postValue(storyBatch)
                     }
                 } catch (e: Exception) {
@@ -65,6 +72,7 @@ class StoriesViewModel
         }
 
         data class StoryBatch(
+            val feedSet: FeedSet,
             val stories: List<Story>,
             val indexOfLastUnread: Int,
             val loadId: Long,

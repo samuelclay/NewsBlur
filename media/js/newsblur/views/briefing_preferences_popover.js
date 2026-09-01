@@ -4,7 +4,11 @@ NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"}
+    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"},
+    {key: "widely_read", name: "Widely Read on NewsBlur", subtitle: "What the NewsBlur community is reading"},
+    {key: "long_reads", name: "Long Reads on NewsBlur", subtitle: "Deep reads the community gave real time to"},
+    {key: "good_reads", name: "Good Reads on NewsBlur", subtitle: "Stories readers finished, saved, and shared"},
+    {key: "global_shared", name: "Global Shared Stories", subtitle: "Hand-picked shares from across NewsBlur"}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
@@ -115,7 +119,26 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 this.folders = data.folders || [];
                 this.render();
                 this.highlight_active_options();
+                this.maybe_scroll_to_section();
             }, this)
+        });
+    },
+
+    // briefing_preferences_popover.js: Honor scroll_to option from email deep links (e.g. ?next=briefing-notifications)
+    maybe_scroll_to_section: function () {
+        var scroll_to = this.options.scroll_to;
+        if (!scroll_to) return;
+
+        var section_class = 'NB-popover-section-' + scroll_to;
+        var $section = this.$el.find('.' + section_class);
+        if (!$section.length) return;
+
+        _.defer(function () {
+            $section[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $section.addClass('NB-popover-section-pulse');
+            _.delay(function () {
+                $section.removeClass('NB-popover-section-pulse');
+            }, 2200);
         });
     },
 
@@ -129,7 +152,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
-        this.$el.html($.make('div', [
+        var sections = [
             this.make_section('Auto-generate', 'Automatically generate briefings on schedule', [
                 this.make_control('enabled', [
                     ['true', 'On'],
@@ -197,7 +220,28 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             this.make_keywords_ui(),
             this.make_model_section(),
             this.make_notification_section()
-        ]));
+        ];
+
+        // briefing_preferences_popover.js: Non-archive users can set a schedule here,
+        // but the generation task only runs for Premium Archive/Pro accounts. Make
+        // that explicit at the top so the settings don't look silently broken.
+        // Close the popover before opening the upgrade modal so it isn't hidden
+        // behind the popover overlay.
+        if (NEWSBLUR.utils.is_briefing_preview()) {
+            sections.unshift(NEWSBLUR.utils.make_archive_callout(
+                "Scheduled briefings require a Premium Archive subscription. On your plan, " +
+                "briefings are only generated when you use the Generate button.",
+                {
+                    on_upgrade: _.bind(function () {
+                        this.close(function () {
+                            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'briefing' });
+                        });
+                    }, this)
+                }
+            ));
+        }
+
+        this.$el.html($.make('div', sections));
 
         this.update_schedule_controls();
         this.update_story_count_labels();
@@ -841,7 +885,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             }, items)
         ];
 
-        return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        var $section = this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        // briefing_preferences_popover.js: Marker class so scroll_to: 'notifications' can find this section
+        $section.addClass('NB-popover-section-notifications');
+        return $section;
     },
 
     toggle_notification_type: function (e) {
@@ -879,7 +926,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     make_model_section: function () {
-        var current_model = this.prefs.briefing_model || 'haiku';
+        var current_model = this.prefs.briefing_model || 'openai';
         var models = this.prefs.briefing_models || [];
 
         var items = _.map(models, function (m) {

@@ -9,6 +9,7 @@ classifiers.
 import datetime
 import re
 import threading
+import unicodedata
 from collections import defaultdict
 
 import mongoengine as mongo
@@ -550,6 +551,10 @@ def compute_story_score(
     return score
 
 
+def _is_unicode_word_character(character):
+    return character == "_" or character.isalnum() or unicodedata.category(character).startswith("M")
+
+
 def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
     """
     Apply title classifiers to a story (non-regex only).
@@ -574,8 +579,20 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
         if getattr(classifier, "is_regex", False):
             continue
 
-        # Standard substring matching (case-insensitive)
-        if classifier.title.lower() in story_title_lower:
+        classifier_title_lower = classifier.title.lower()
+        if not classifier_title_lower:
+            continue
+
+        match_index = story_title_lower.find(classifier_title_lower)
+        classifier_starts_with_word = _is_unicode_word_character(classifier_title_lower[0])
+        while (
+            classifier_starts_with_word
+            and match_index > 0
+            and _is_unicode_word_character(story_title_lower[match_index - 1])
+        ):
+            match_index = story_title_lower.find(classifier_title_lower, match_index + 1)
+
+        if match_index >= 0:
             if classifier.score <= -2:
                 return classifier.score  # super downvote beats everything
             if classifier.score > 0:
@@ -911,18 +928,36 @@ class MClassifierPrompt(mongo.Document):
             logging.debug("~BR~FK~SBRedis unavailable for AI classifier cache write")
 
     @classmethod
-    def invalidate_cache(cls, user_id, prompt_id):
-        """Delete all cached scores for a prompt across all feeds."""
+    def invalidate_cache(cls, user_id, prompt_id, feed_ids=None):
+        """Delete cached scores for a prompt across the user's feeds.
+
+        Builds the exact keys rather than scanning for them. SCAN with MATCH
+        walks the entire keyspace no matter how few keys can match, and this
+        Redis holds millions of keys, so the old scan never reached the handful
+        of keys it was looking for: stale verdicts survived, and every prompt
+        delete spent a web request grinding through the keyspace.
+        """
+        if feed_ids is None:
+            from apps.reader.models import UserSubscription
+
+            feed_ids = set(UserSubscription.objects.filter(user_id=user_id).values_list("feed_id", flat=True))
+            # A global prompt caches under each feed it ran against, which the
+            # subscriptions above cover. A feed-scoped prompt may point at a feed
+            # the user has since unsubscribed from, so add its own feed as well.
+            try:
+                prompt = cls.objects.filter(id=prompt_id).first()
+            except (mongo.errors.ValidationError, ValueError):
+                prompt = None
+            if prompt and prompt.feed_id:
+                feed_ids.add(prompt.feed_id)
+
+        keys = [cls._cache_key(user_id, prompt_id, feed_id) for feed_id in set(feed_ids)]
+        if not keys:
+            return
+
         try:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
-            pattern = f"{cls.CACHE_KEY_PREFIX}:{user_id}:{prompt_id}:*"
-            cursor = 0
-            while True:
-                cursor, keys = r.scan(cursor, match=pattern, count=100)
-                if keys:
-                    r.delete(*keys)
-                if cursor == 0:
-                    break
+            r.delete(*keys)
         except redis.ConnectionError:
             pass
 
@@ -1106,17 +1141,28 @@ class MClassifierPrompt(mongo.Document):
         new_results = {}
         if uncached_stories:
             if prompt.include_images:
-                new_results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
+                results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
             else:
-                new_results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
+                results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
 
-            # Write new results to cache keyed by story_hash
-            if user_id and feed_id and new_results:
-                cache_scores = {}
-                for s in uncached_stories:
-                    score = new_results.get(s["story_id"], 0)
-                    cache_scores[s["story_hash"]] = score
-                cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
+            if results is None:
+                # The classifier failed outright (API error, unparseable tool call).
+                # Leave these stories uncached so the next fetch retries them. Caching
+                # a neutral score here would stick for the full TTL, so one transient
+                # failure would permanently mark a batch of stories as "not a match".
+                logging.debug(
+                    "~BR~FKAI classifier failed for ~SB%s~SN stories, leaving them uncached"
+                    % len(uncached_stories)
+                )
+            else:
+                new_results = results
+                # Write new results to cache keyed by story_hash
+                if user_id and feed_id and new_results:
+                    cache_scores = {}
+                    for s in uncached_stories:
+                        score = new_results.get(s["story_id"], 0)
+                        cache_scores[s["story_hash"]] = score
+                    cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
 
         # Merge cached + new results, keyed by story_hash
         all_results = {}
@@ -1331,16 +1377,31 @@ def get_classifiers_for_user(
     # Include both feed-specific and folder-level (feed_id=0) prompts
     prompts_dict = {}
     image_prompts_dict = {}
+    prompts_scope = {}
+    image_prompts_scope = {}
     if feed_id and not isinstance(feed_id, list):
         prompts = MClassifierPrompt.objects.filter(user_id=user.pk, feed_id__in=[feed_id, 0])
     else:
         prompts = MClassifierPrompt.objects.filter(user_id=user.pk)
     for p in prompts:
         score = 1 if p.classifier_type == "focus" else -1
+        # Derive scope from the prompt's feed_id/folder_id: a non-zero feed_id is
+        # feed-scoped (the default, no entry needed), feed_id=0 with a folder_id
+        # is folder-scoped, and feed_id=0 with no folder_id is global.
+        if p.feed_id:
+            scope_info = None
+        elif p.folder_id:
+            scope_info = {"scope": "folder", "folder_name": p.folder_id}
+        else:
+            scope_info = {"scope": "global", "folder_name": ""}
         if p.include_images:
             image_prompts_dict[p.prompt] = score
+            if scope_info:
+                image_prompts_scope[p.prompt] = scope_info
         else:
             prompts_dict[p.prompt] = score
+            if scope_info:
+                prompts_scope[p.prompt] = scope_info
 
     payload = {
         "feeds": dict(feeds),
@@ -1360,6 +1421,8 @@ def get_classifiers_for_user(
         "tags_scope": tags_scope,
         "prompts": prompts_dict,
         "image_prompts": image_prompts_dict,
+        "prompts_scope": prompts_scope,
+        "image_prompts_scope": image_prompts_scope,
     }
 
     return payload

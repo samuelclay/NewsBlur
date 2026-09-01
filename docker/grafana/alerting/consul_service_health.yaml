@@ -56,7 +56,7 @@ groups:
                     type: last
                   type: query
         noDataState: OK
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 15m
         annotations:
           __dashboardUid__: T86VjXrG2

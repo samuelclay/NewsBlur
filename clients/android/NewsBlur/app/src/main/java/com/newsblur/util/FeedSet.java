@@ -21,6 +21,9 @@ import com.newsblur.network.APIConstants;
 public class FeedSet implements Serializable {
 
     private static final long serialVersionUID = 0L;
+    public static final String TRENDING_WELL_READ = "well_read";
+    public static final String TRENDING_LONG_READS = "long_reads";
+    public static final String TRENDING_GOOD_READS = "good_reads";
 
     private Set<String> feeds;
     /** Mapping of social feed IDs to usernames. */
@@ -31,6 +34,7 @@ public class FeedSet implements Serializable {
     private boolean isInfrequent;
     private boolean isDailyBriefing;
     private boolean isForWidget;
+    private String trendingType;
 
     private String folderName;
     private String searchQuery;
@@ -103,6 +107,27 @@ public class FeedSet implements Serializable {
         FeedSet fs = new FeedSet();
         fs.isDailyBriefing = true;
         return fs;
+    }
+
+    /**
+     * Convenience constructor for permanent trending story pseudo-feeds.
+     */
+    public static FeedSet trendingStories(String trendingType) {
+        FeedSet fs = new FeedSet();
+        fs.trendingType = trendingType;
+        return fs;
+    }
+
+    public static FeedSet widelyReadStories() {
+        return trendingStories(TRENDING_WELL_READ);
+    }
+
+    public static FeedSet longReads() {
+        return trendingStories(TRENDING_LONG_READS);
+    }
+
+    public static FeedSet goodReads() {
+        return trendingStories(TRENDING_GOOD_READS);
     }
 
     /**
@@ -240,6 +265,40 @@ public class FeedSet implements Serializable {
         return this.isDailyBriefing;
     }
 
+    public boolean isTrending() {
+        return this.trendingType != null;
+    }
+
+    public boolean isWidelyReadStories() {
+        return TRENDING_WELL_READ.equals(this.trendingType);
+    }
+
+    public boolean isLongReads() {
+        return TRENDING_LONG_READS.equals(this.trendingType);
+    }
+
+    public boolean isGoodReads() {
+        return TRENDING_GOOD_READS.equals(this.trendingType);
+    }
+
+    public String getTrendingType() {
+        return this.trendingType;
+    }
+
+    public String getTrendingFeedId() {
+        return this.trendingType == null ? null : "trending:" + this.trendingType;
+    }
+
+    public String getTrendingPreferenceName() {
+        if (isLongReads()) {
+            return PrefConstants.LONG_READS_FOLDER_NAME;
+        } else if (isGoodReads()) {
+            return PrefConstants.GOOD_READS_FOLDER_NAME;
+        } else {
+            return PrefConstants.WIDELY_READ_STORIES_FOLDER_NAME;
+        }
+    }
+
     public boolean isAllRead() {
         return this.isAllRead;
     }
@@ -368,6 +427,7 @@ public class FeedSet implements Serializable {
         if ( isFilterSaved != s.isFilterSaved ) return false;
         if ( stateFilterOverride != s.stateFilterOverride ) return false;
         if ( readFilterOverride != s.readFilterOverride ) return false;
+        if ( isTrending() && s.isTrending() ) return FeedUtils.textUtilsEquals(trendingType, s.trendingType);
         if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
         if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
         if ( (savedTags != null) && (s.savedTags != null) && s.savedTags.equals(savedTags) ) return true;
@@ -388,6 +448,7 @@ public class FeedSet implements Serializable {
         if (isAllRead) result = 15;
         if (isInfrequent) result = 16;
         if (isDailyBriefing) result = 18;
+        if (trendingType != null) result = 19;
         if (feeds != null) result = 31 * result + feeds.hashCode();
         if (socialFeeds != null) result = 37 * result + socialFeeds.hashCode();
         if (folderName != null) result = 41 * result + folderName.hashCode();
@@ -396,6 +457,7 @@ public class FeedSet implements Serializable {
         if (isFilterSaved) result = 59 * result;
         if (stateFilterOverride != null) result = 61 * result + stateFilterOverride.hashCode();
         if (readFilterOverride != null) result = 67 * result + readFilterOverride.hashCode();
+        if (trendingType != null) result = 71 * result + trendingType.hashCode();
         return result;
     }
 

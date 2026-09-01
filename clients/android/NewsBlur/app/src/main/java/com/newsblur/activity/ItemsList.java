@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
@@ -67,6 +70,7 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
+import com.newsblur.util.SessionDataSourceRegistry;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryHeaderPillAppearanceResolver;
 import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
@@ -102,7 +106,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_WIDGET_STORY = "widget_story";
     public static final String EXTRA_AUTO_OPEN_STORY = "auto_open_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
-    public static final String EXTRA_SESSION_DATA = "session_data";
+    public static final String EXTRA_SESSION_DATA_KEY = "session_data_key";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
@@ -126,6 +130,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Nullable
     private SessionDataSource sessionDataSource;
     @Nullable
+    private SessionDataSource storyListSessionDataSource;
+    @Nullable
+    private String sessionDataKey;
+    @Nullable
     private ValueAnimator storyStatusBannerAnimator;
     @Nullable
     private PopupWindow itemListMenuPopup;
@@ -145,6 +153,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean fetchingBannerDelayElapsed = false;
+    @Nullable
+    private ImageView interactiveSwipeUnderlay;
     private final Handler storySearchHandler = new Handler(Looper.getMainLooper());
     private final Runnable showFetchingBannerRunnable = () -> {
         fetchingBannerDelayElapsed = true;
@@ -171,7 +181,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
-        sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
+        sessionDataKey = getIntent().getStringExtra(EXTRA_SESSION_DATA_KEY);
+        SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
+        if (sessionDataEntry != null) {
+            sessionDataSource = sessionDataEntry.getSessionDataSource();
+            storyListSessionDataSource = sessionDataEntry.getStoryListSessionDataSource();
+        }
 
         if (shouldResetReadingSessionOnCreate()) {
             TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
@@ -192,10 +207,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             }
         }
 
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
         EdgeToEdgeUtil.applyView(this, binding);
+        binding.getRoot().post(() -> getWindow().setBackgroundDrawableResource(android.R.color.transparent));
         View toolbarSettingsButton = findViewById(R.id.toolbar_settings_button);
         if (toolbarSettingsButton != null) {
             toolbarSettingsButton.setOnClickListener(this::showItemListSettingsPopup);
@@ -251,6 +265,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public FeedSet getFeedSet() {
         return this.fs;
+    }
+
+    public static void putSessionDataKeyExtra(@NonNull Intent intent,
+                                              @Nullable SessionDataSource sessionDataSource,
+                                              @Nullable SessionDataSource storyListSessionDataSource) {
+        String sessionDataKey = SessionDataSourceRegistry.register(sessionDataSource, storyListSessionDataSource);
+        if (sessionDataKey != null) {
+            intent.putExtra(EXTRA_SESSION_DATA_KEY, sessionDataKey);
+        }
     }
 
     @Override
@@ -363,22 +386,64 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (sessionDataSource != null) {
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
-                // set the next session on the parent activity
-                fs = session.getFeedSet();
-                feedUtils.prepareReadingSession(fs, false);
-                triggerSync();
-                scheduleInitialFetchingBanner();
-
-                // set the next session on the child activity
-                viewModel.updateSession(session);
-
-                // update item set fragment
-                itemSetFragment.resetEmptyState();
-                itemSetFragment.hasUpdated();
-                itemSetFragment.scrollToTop();
-                refreshStoryHeaderControls();
+                applyNextSession(session);
             } else finish();
         } else finish();
+    }
+
+    @Nullable
+    public Session peekNextStoryListSession() {
+        if (storyListSessionDataSource == null) return null;
+        return storyListSessionDataSource.peekNextSession();
+    }
+
+    public boolean openNextStoryListSession() {
+        if (storyListSessionDataSource == null) return false;
+        Session session = storyListSessionDataSource.getNextSession();
+        if (session == null) return false;
+        if (openDifferentStoryListActivity(session)) return true;
+        applyNextSession(session);
+        return true;
+    }
+
+    private boolean openDifferentStoryListActivity(@NonNull Session session) {
+        if (session.getFeedSet().isFolder() && !(this instanceof FolderItemsList)) {
+            if (sessionDataSource != null) {
+                sessionDataSource.setSession(session);
+            }
+            Intent intent = new Intent(this, FolderItemsList.class);
+            intent.putExtra(EXTRA_FEED_SET, session.getFeedSet());
+            intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, session.getFolderName());
+            putSessionDataKeyExtra(intent, sessionDataSource, storyListSessionDataSource);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    private void applyNextSession(@NonNull Session session) {
+        // set the next session on the parent activity
+        fs = session.getFeedSet();
+        feedUtils.prepareReadingSession(fs, false);
+        triggerSync();
+        scheduleInitialFetchingBanner();
+
+        if (sessionDataSource != null) {
+            sessionDataSource.setSession(session);
+        }
+        if (storyListSessionDataSource != null) {
+            storyListSessionDataSource.setSession(session);
+        }
+
+        // set the next session on the child activity
+        viewModel.updateSession(session);
+
+        // update item set fragment
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
+        refreshStoryHeaderControls();
     }
 
     private void updateStatusIndicators() {
@@ -1030,8 +1095,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void beginInteractiveStoryListSwipe() {
+        prepareInteractiveSwipeUnderlay();
         View surface = getInteractiveSwipeSurface();
         surface.animate().cancel();
+        itemSetFragment.setInteractiveStoryListSwipeRendering(true);
         surface.setTranslationZ(UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP));
     }
 
@@ -1255,7 +1322,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private View getInteractiveSwipeSurface() {
         if (interactiveSwipeSurface == null) {
-            interactiveSwipeSurface = findViewById(android.R.id.content);
+            interactiveSwipeSurface = binding.getRoot();
         }
         return interactiveSwipeSurface;
     }
@@ -1268,6 +1335,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onDestroy() {
         if (readingLaunchParentRef.get() == this) {
             readingLaunchParentRef.clear();
+        }
+        if (!isChangingConfigurations()) {
+            SessionDataSourceRegistry.remove(sessionDataKey);
         }
         super.onDestroy();
     }
@@ -1283,6 +1353,35 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         surface.setTranslationX(0f);
         surface.setTranslationZ(0f);
+        itemSetFragment.setInteractiveStoryListSwipeRendering(false);
+        hideInteractiveSwipeUnderlay();
+    }
+
+    private void prepareInteractiveSwipeUnderlay() {
+        FrameLayout contentFrame = findViewById(android.R.id.content);
+        if (interactiveSwipeUnderlay == null) {
+            interactiveSwipeUnderlay = new ImageView(this);
+            interactiveSwipeUnderlay.setScaleType(ImageView.ScaleType.FIT_XY);
+            interactiveSwipeUnderlay.setVisibility(View.GONE);
+            contentFrame.addView(interactiveSwipeUnderlay, 0, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            ));
+        }
+
+        // The translucent activity surface can retain stale story-row pixels while translated.
+        // Use a fixed feed-list snapshot as the visual underlay for the interactive back drag.
+        Bitmap snapshot = Main.createVisibleFeedListSnapshot();
+        interactiveSwipeUnderlay.setImageBitmap(snapshot);
+        interactiveSwipeUnderlay.setVisibility(snapshot != null ? View.VISIBLE : View.GONE);
+    }
+
+    private void hideInteractiveSwipeUnderlay() {
+        if (interactiveSwipeUnderlay == null) {
+            return;
+        }
+        interactiveSwipeUnderlay.setVisibility(View.GONE);
+        interactiveSwipeUnderlay.setImageDrawable(null);
     }
 
     private int measureStoryStatusBannerHeight() {

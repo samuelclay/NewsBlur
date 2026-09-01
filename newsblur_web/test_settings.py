@@ -56,14 +56,14 @@ TransactionTestCase._fixture_setup = _fixture_setup_with_site
 if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
-        "name": "newsblur_test",
+        "name": "nb_test",
         "host": "newsblur_db_mongo:29019",
     }
 
 else:
     MONGO_PORT = 27017
     MONGO_DB = {
-        "name": "newsblur_test",
+        "name": "nb_test",
         "host": "127.0.0.1:27017",
     }
 
@@ -74,6 +74,11 @@ DAYS_OF_UNREAD = 9999
 DAYS_OF_UNREAD_FREE = 9999
 TEST_DEBUG = True
 DEBUG = True
+
+# Tests share Redis with the dev server, so keep the per-domain fetch budget from
+# ever throttling test fetches. The limiter's own unit tests mock Redis and override
+# this setting. See utils/domain_fetch_limiter.py.
+DOMAIN_FETCHES_PER_MINUTE = 10000
 
 # Fix subdomain middleware warning in tests
 PARENT_HOST = "testserver"

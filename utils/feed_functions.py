@@ -450,3 +450,97 @@ def strip_underscore_from_feed_address(feed_address):
     # Strip _=#### from feed_address
     parsed_url = qurl(feed_address, remove="_")
     return parsed_url
+
+
+def is_youtube_feed_address(url):
+    """Return True only when the URL is actually served by YouTube.
+
+    Detection keys off the URL host (youtube.com or a youtube subdomain such as
+    www.youtube.com or gdata.youtube.com), not a naive ``"youtube.com" in url``
+    substring match. Privacy proxies like openrss.org embed the channel URL in
+    their own path, e.g. https://openrss.org/www.youtube.com/@JudgeJudy/videos,
+    and must keep their own embed-free content instead of being replaced by
+    NewsBlur's YouTube API decrapifier. See utils/youtube_fetcher.py.
+    """
+    if not url:
+        return False
+    # Tolerate scheme-less addresses (e.g. "openrss.org/www.youtube.com/...") by
+    # giving urlparse a netloc to find.
+    try:
+        parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    except ValueError:
+        return False
+    host = (parsed.hostname or "").lower()
+    return host == "youtube.com" or host.endswith(".youtube.com")
+
+
+def is_openrss_feed_address(url):
+    """Return True only when the URL is actually served by openrss.org.
+
+    Like is_youtube_feed_address, detection keys off the URL host rather than a
+    naive ``"openrss.org" in url`` substring match, so a target site that merely
+    references openrss.org in a query string is never mistaken for the proxy.
+    """
+    if not url:
+        return False
+    # Tolerate scheme-less addresses (e.g. "openrss.org/www.youtube.com/...") by
+    # giving urlparse a netloc to find.
+    try:
+        parsed = urllib.parse.urlparse(url if "://" in url else "//" + url)
+    except ValueError:
+        return False
+    host = (parsed.hostname or "").lower()
+    return host == "openrss.org" or host.endswith(".openrss.org")
+
+
+def rewrite_openrss_to_feed_address(url):
+    """Normalize an Open RSS preview URL to its actual feed (/feed/) address.
+
+    Open RSS serves a human-readable HTML preview at the bare path, e.g.
+    https://openrss.org/www.youtube.com/@JudgeJudy/videos, and the real feed
+    under /feed/, e.g. https://openrss.org/feed/www.youtube.com/@JudgeJudy/videos.
+    The preview page advertises the feed via an autodiscovery <link>, but we
+    rewrite to the /feed/ path up front so we never cache the preview page as the
+    feed address. Open RSS asked us to do this rather than rely on autodiscovery.
+
+    Returns the rewritten URL, or the original URL unchanged when it is not an
+    openrss.org address, is already a /feed/ address, is openrss.org's own root,
+    or is one of Open RSS's first-party feeds (e.g. https://openrss.org/changelog.rss),
+    which live at the bare path and 404 under /feed/. A proxied feed's first path
+    segment is always a hostname (www.youtube.com, reddit.com), so only rewrite
+    when that segment looks like one. See apps/rss_feeds/test_rss_feeds.py.
+    """
+    if not is_openrss_feed_address(url):
+        return url
+    had_scheme = "://" in url
+    parsed = urllib.parse.urlparse(url if had_scheme else "//" + url)
+    path = parsed.path or ""
+    if path in ("", "/") or path == "/feed" or path.startswith("/feed/"):
+        return url
+    if not _openrss_path_segment_is_hostname(path.lstrip("/").split("/", 1)[0]):
+        return url
+    rewritten = urllib.parse.urlunparse(parsed._replace(path="/feed" + path))
+    if not had_scheme and rewritten.startswith("//"):
+        rewritten = rewritten[2:]
+    return rewritten
+
+
+# File extensions that mark an openrss.org path segment as a first-party feed file
+# (e.g. /changelog.rss) rather than a proxied hostname (e.g. /reddit.com).
+OPENRSS_FEED_FILE_EXTENSIONS = ("rss", "xml", "atom", "json", "html", "htm", "txt")
+
+
+def _openrss_path_segment_is_hostname(segment):
+    """Return True when an openrss.org path segment looks like a proxied hostname.
+
+    Proxied feeds embed the target site as the first path segment, so it has at
+    least one dot with a TLD-like last label: www.youtube.com, reddit.com.
+    Open RSS's own pages and feeds are single words (changelog, blog) or feed
+    files (changelog.rss, feed.xml), which must never be prefixed with /feed/.
+    """
+    if not segment or "." not in segment:
+        return False
+    last_label = segment.rsplit(".", 1)[1].lower()
+    if not last_label or last_label in OPENRSS_FEED_FILE_EXTENSIONS:
+        return False
+    return True

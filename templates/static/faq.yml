@@ -204,7 +204,7 @@ sections:
       - id: mcp
         question: "Can I connect AI agents like Claude Code to my NewsBlur account?"
         answer: |
-          <p>Yes. The NewsBlur MCP Server implements the Model Context Protocol, so you can read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. There are 22 tools available with pre-built prompt templates for common workflows like daily briefings and inbox triage. This is a Premium Archive feature.</p>
+          <p>Yes. The NewsBlur MCP Server implements the Model Context Protocol, so you can read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. There are 28 tools available with pre-built prompt templates for common workflows like daily briefings and inbox triage. This is a Premium Archive feature.</p>
         feature_url: "/features/mcp"
         feature_label: "MCP Server"
 

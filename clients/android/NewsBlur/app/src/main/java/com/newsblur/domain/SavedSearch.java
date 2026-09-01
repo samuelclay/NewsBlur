@@ -55,6 +55,12 @@ public class SavedSearch {
             feedTitle = "All Site Stories";
         } else if (feedId.equals("river:infrequent")) {
             feedTitle = "Infrequent Site Stories";
+        } else if (feedId.equals("trending:well_read")) {
+            feedTitle = "Widely Read Stories";
+        } else if (feedId.equals("trending:long_reads")) {
+            feedTitle = "Long Reads";
+        } else if (feedId.equals("trending:good_reads")) {
+            feedTitle = "Good Reads";
         } else if (feedId.startsWith("river:")) {
             String folderName = feedId.replace("river:", "");
             FeedSet fs = dbHelper.feedSetFromFolderName(folderName);
@@ -88,6 +94,12 @@ public class SavedSearch {
         String url = null;
         if (feedId.equals("river:") || feedId.equals("river:infrequent")) {
             url = "https://newsblur.com/media/img/icons/circular/ak-icon-allstories.png";
+        } else if (feedId.equals("trending:well_read")) {
+            url = "https://newsblur.com/media/img/icons/nouns/blaze.svg";
+        } else if (feedId.equals("trending:long_reads")) {
+            url = "https://newsblur.com/media/img/icons/nouns/moon.svg";
+        } else if (feedId.equals("trending:good_reads")) {
+            url = "https://newsblur.com/media/img/icons/nouns/star.svg";
         } else if (feedId.startsWith("river:")) {
             url = "https://newsblur.com/media/img/icons/circular/g_icn_folder.png";
         } else if (feedId.equals("read")) {

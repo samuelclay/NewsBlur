@@ -17,6 +17,22 @@ import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object EdgeToEdgeUtil {
+    internal data class HorizontalMargins(
+        val left: Int,
+        val right: Int,
+    )
+
+    internal fun updatedHorizontalMargins(
+        currentLeft: Int,
+        currentRight: Int,
+        navBarLeft: Int,
+        navBarRight: Int,
+    ): HorizontalMargins {
+        val currentMargins = HorizontalMargins(currentLeft, currentRight)
+        val targetMargins = HorizontalMargins(navBarLeft, navBarRight)
+        return if (currentMargins == targetMargins) currentMargins else targetMargins
+    }
+
     fun Activity.applyTheme(
         theme: ThemeValue,
         translucent: Boolean = false,
@@ -144,35 +160,42 @@ object EdgeToEdgeUtil {
     }
 
     private fun View.applyContentInsets(navBar: Insets) {
-        if (navBar.left > 0 || navBar.right > 0) {
-            updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = navBar.left
-                rightMargin = navBar.right
-            }
-        }
+        applyHorizontalNavBarMargins(navBar)
     }
 
     private fun View.applyToolbarInsets(
         statusBar: Insets,
         navBar: Insets,
     ) {
-        if (navBar.left > 0 || navBar.right > 0) {
-            updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = navBar.left
-                rightMargin = navBar.right
-            }
-        }
+        applyHorizontalNavBarMargins(navBar)
         setPadding(paddingLeft, statusBar.top, paddingRight, paddingBottom)
     }
 
     private fun View.applyBottomToolbarInsets(navBar: Insets) {
+        applyHorizontalNavBarMargins(navBar)
         if (navBar.left > 0 || navBar.right > 0) {
-            updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = navBar.left
-                rightMargin = navBar.right
-            }
+            setPadding(paddingLeft, paddingTop, paddingRight, 0)
         } else {
             setPadding(paddingLeft, paddingTop, paddingRight, navBar.bottom)
+        }
+    }
+
+    private fun View.applyHorizontalNavBarMargins(navBar: Insets) {
+        val currentMargins = layoutParams as? ViewGroup.MarginLayoutParams ?: return
+        val margins =
+            updatedHorizontalMargins(
+                currentLeft = currentMargins.leftMargin,
+                currentRight = currentMargins.rightMargin,
+                navBarLeft = navBar.left,
+                navBarRight = navBar.right,
+            )
+        if (currentMargins.leftMargin == margins.left && currentMargins.rightMargin == margins.right) {
+            return
+        }
+
+        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            leftMargin = margins.left
+            rightMargin = margins.right
         }
     }
 }

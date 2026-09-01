@@ -6,8 +6,15 @@ NEWSBLUR.ReaderStatistics = function (feed_id, options) {
 
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
-    if (!feed_id) {
-        feed_id = NEWSBLUR.assets.feeds.first().id;
+    if (!this.options.embedded) {
+        // Statistics only exist for real feeds and social feeds. Opening this modal
+        // from the manage menu on a river, folder, or saved story tag passes a string
+        // id like 'river:' or 'starred' that doesn't resolve to a feed, so fall back
+        // to the first feed instead of crashing in initialize_feed. (reader_statistics.js)
+        var feed = feed_id && this.model.get_feed(feed_id);
+        if (!feed || !((feed.is_feed && feed.is_feed()) || (feed.is_social && feed.is_social()))) {
+            feed_id = NEWSBLUR.assets.feeds.first().id;
+        }
     }
     this.feed_id = feed_id;
     if (this.options.embedded) {
@@ -418,7 +425,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
 
     close_and_load_premium: function () {
         this.close(function () {
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'update-frequency' });
         });
     },
 

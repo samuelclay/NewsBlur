@@ -14,6 +14,7 @@ from lxml import html as lxml_html
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 from .prompts import get_analysis_messages
 
@@ -131,10 +132,14 @@ def strip_navigation_elements(html_text, gentle=False):
 def fetch_page_html(url):
     """Fetch page HTML with fallback to scraping proxies."""
     headers = {"User-Agent": USER_AGENT}
+    try:
+        validate_public_url(url)
+    except UnsafeUrlError:
+        return None
 
     # Try direct fetch first
     try:
-        response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
+        response = safe_requests_get(url, headers=headers, timeout=15, allow_redirects=True)
         text = decode_response_text(response)
         if response.status_code == 200 and text:
             return text
@@ -249,6 +254,79 @@ def extract_preview_stories(html_text, variant, url):
     return stories
 
 
+def parse_variants_json(response_text):
+    """Parse the LLM analysis response into a list of variant dicts.
+
+    Tolerates markdown code fences around the JSON. Returns a list (possibly
+    empty) on success, or None when the text is not valid JSON / not a list.
+    """
+    cleaned = response_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
+    if cleaned.endswith("```"):
+        cleaned = cleaned[: cleaned.rfind("```")]
+    cleaned = cleaned.strip()
+
+    try:
+        variants = json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(variants, list):
+        return None
+    return variants
+
+
+def filter_degenerate_variants(variants):
+    """Drop variants whose container XPath is pinned to specific items.
+
+    A container that enumerates item ids extracts the analysis-time items forever and
+    never finds a new story, which defeats the entire point of a web feed. See
+    is_degenerate_container_xpath in apps/webfeed/models.py.
+    """
+    from apps.webfeed.models import is_degenerate_container_xpath
+
+    return [v for v in variants if not is_degenerate_container_xpath(v.get("story_container"))]
+
+
+def rank_variants_by_previews(variants):
+    """Order variants best-first by how many preview stories they extracted.
+
+    A variant's worth is judged by what it actually pulls off the page, not by
+    the LLM's self-reported confidence order -- which is exactly the signal that
+    fails on sites with churn-prone utility classes. Re-numbers each variant's
+    `index` to match the new display order and returns (ranked, usable_count),
+    where usable_count is how many variants produced at least one story.
+    """
+    ranked = sorted(variants, key=lambda v: len(v.get("preview_stories", [])), reverse=True)
+    usable_count = 0
+    for i, variant in enumerate(ranked):
+        variant["index"] = i
+        if variant.get("preview_stories"):
+            usable_count += 1
+    return ranked, usable_count
+
+
+def choose_better_attempt(first, second):
+    """Pick the better of two analysis attempts.
+
+    Each attempt is a (variants, usable_count, response_text) tuple. Prefer the
+    attempt that extracted more stories; if neither matched anything, fall back
+    to whichever returned any variants at all so the user still has options.
+    """
+    first_variants, first_usable, _ = first
+    second_variants, second_usable, _ = second
+    if second_usable > first_usable:
+        return second
+    if first_usable > 0:
+        return first
+    # Neither attempt matched a story -- prefer a non-empty variant list.
+    if first_variants:
+        return first
+    if second_variants:
+        return second
+    return first
+
+
 @app.task(name="fetch-webfeed", time_limit=60, soft_time_limit=55)
 def FetchWebFeed(feed_id, user_id):
     """Fetch stories for a web feed in the background, publishing progress via Redis PubSub."""
@@ -275,7 +353,11 @@ def FetchWebFeed(feed_id, user_id):
         feed.count_subscribers()
 
         publish("processing")
-        feed.update()
+        # Force the first fetch: the user just subscribed and is looking at the
+        # feed. A non-forced update can be silently deferred for an hour or more
+        # by the per-domain fetch budget (utils/domain_fetch_limiter.py) when the
+        # domain is saturated, leaving a brand-new feed empty.
+        feed.update(force=True)
 
         feed = Feed.get_by_id(feed_id)
         publish("complete", {"feed": feed.canonical() if feed else None})
@@ -337,11 +419,6 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         html_hash = hashlib.sha256(page_html[:10000].encode("utf-8", errors="replace")).hexdigest()[:16]
 
-        logging.user(
-            user,
-            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
-        )
-
         publish_event("progress", {"message": "Preparing page..."})
 
         # Pre-process HTML to strip navigation elements for LLM analysis
@@ -355,61 +432,97 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event("progress", {"message": "Finding story patterns..."})
 
-        # Step 2: Call Claude for XPath analysis
-        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
+        # Step 2: Call the configured LLM for XPath analysis. The model is non-deterministic
+        # and sometimes returns selectors that match nothing (especially on
+        # utility-class-heavy sites like Tailwind), so wrap the call in a helper
+        # we can retry, and judge each pass by what its selectors actually
+        # extract rather than by the model's self-reported confidence order.
+        from apps.ask_ai.providers import (
+            DEFAULT_WEBFEED_MODEL,
+            LLM_EXCEPTIONS,
+            get_briefing_model_config,
+            get_briefing_provider,
+        )
 
-        messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint)
-        provider, model_id = get_briefing_provider("haiku")
+        webfeed_model_name, webfeed_model_config = get_briefing_model_config(DEFAULT_WEBFEED_MODEL)
+        provider, model_id = get_briefing_provider(webfeed_model_name)
+        thinking_config = webfeed_model_config.get("thinking_config")
+        vendor = webfeed_model_config.get("vendor", "unknown")
+        vendor_display = webfeed_model_config.get("vendor_display", vendor.title())
+        model_display = webfeed_model_config.get("display_name", model_id)
+
+        logging.user(
+            user,
+            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with ~SB{model_display}~SN",
+        )
 
         if not provider.is_configured():
-            error_msg = "Anthropic API key not configured"
+            error_msg = "%s API key not configured" % vendor_display
             publish_event("error", {"error": error_msg})
             return {"code": -1, "message": error_msg}
 
-        full_response = []
-        for text in provider.stream_response(messages, model_id):
-            full_response.append(text)
+        def request_variants(retry):
+            """Run one analysis pass: call Claude, parse the JSON, attach preview
+            stories, and rank best-first. Returns (variants, usable_count, text)
+            where variants is None on a parse failure and usable_count is the
+            number of variants that extracted at least one story."""
+            messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint, retry=retry)
+            response_chunks = []
+            for chunk in provider.stream_response(messages, model_id, thinking_config=thinking_config):
+                response_chunks.append(chunk)
+            text = "".join(response_chunks)
 
-        response_text = "".join(full_response)
+            input_tokens, output_tokens = provider.get_last_usage()
+            LLMCostTracker.record_usage(
+                provider=vendor,
+                model=model_id,
+                feature="webfeed",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                user_id=user_id,
+                request_id=f"{request_token}:retry" if retry else request_token,
+                metadata={"url": url, "retry": retry},
+            )
 
-        # Record LLM cost
-        input_tokens, output_tokens = provider.get_last_usage()
-        LLMCostTracker.record_usage(
-            provider="anthropic",
-            model=model_id,
-            feature="webfeed",
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            user_id=user_id,
-            request_id=request_token,
-            metadata={"url": url},
-        )
+            parsed = parse_variants_json(text)
+            if not parsed:
+                return parsed, 0, text
+            usable_variants = filter_degenerate_variants(parsed)
+            if len(usable_variants) < len(parsed):
+                logging.user(
+                    user,
+                    "~BB~FWWeb Feed: ~FR~SBDropped %s degenerate variant(s)~SN~FW pinned to "
+                    "analysis-time items for ~SB%s~SN" % (len(parsed) - len(usable_variants), url),
+                )
+            for variant in usable_variants:
+                variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
+            ranked, usable = rank_variants_by_previews(usable_variants)
+            return ranked, usable, text
 
-        # Step 3: Parse JSON response
-        # Strip markdown code fences if present
-        cleaned = response_text.strip()
-        if cleaned.startswith("```"):
-            cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
-        if cleaned.endswith("```"):
-            cleaned = cleaned[: cleaned.rfind("```")]
-        cleaned = cleaned.strip()
+        # Step 3: First analysis pass, plus a single retry when nothing matched.
+        variants, usable_count, response_text = request_variants(retry=False)
+        if usable_count == 0:
+            publish_event("progress", {"message": "Refining story patterns..."})
+            retry_attempt = request_variants(retry=True)
+            variants, usable_count, response_text = choose_better_attempt(
+                (variants, usable_count, response_text), retry_attempt
+            )
 
-        try:
-            variants = json.loads(cleaned)
-        except json.JSONDecodeError:
+        if variants is None:
             error_msg = "Failed to parse AI response. Please try again."
             publish_event("error", {"error": error_msg})
             logging.user(user, f"~BB~FWWeb Feed: ~FR~SBJSON parse failed~SN~FW: {response_text[:200]}")
             RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
-        if not isinstance(variants, list) or len(variants) == 0:
+        if len(variants) == 0:
             error_msg = "No story patterns found on this page."
             publish_event("error", {"error": error_msg})
             RTrendingWebFeed.record_analysis_result(success=False)
             return {"code": -1, "message": error_msg}
 
         # Extract page title
+        doc = None
         page_title = ""
         try:
             doc = lxml_html.fromstring(page_html)
@@ -424,7 +537,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         # Extract favicon URL
         favicon_url = ""
         try:
-            if not doc:
+            if doc is None:
                 doc = lxml_html.fromstring(page_html)
             for xpath in [
                 '//link[@rel="icon"]/@href',
@@ -440,17 +553,11 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         except Exception:
             pass
 
-        publish_event("progress", {"message": "Extracting previews..."})
-
-        # Step 4: Extract preview stories for each variant
-        for i, variant in enumerate(variants):
-            variant["index"] = i
-            variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
-
-        # Filter out variants with no preview stories
-        valid_variants = [v for v in variants if len(v.get("preview_stories", [])) > 0]
+        # Step 4: Variants already carry preview stories and are ranked best-first.
+        # Show only the ones that actually extracted stories; if none did, fall
+        # back to showing all so the user can still choose or refine with a hint.
+        valid_variants = [v for v in variants if v.get("preview_stories")]
         if not valid_variants:
-            # Keep all variants even without previews so user can still choose
             valid_variants = variants
 
         logging.user(

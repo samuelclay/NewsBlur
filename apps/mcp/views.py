@@ -4,6 +4,13 @@ RFC 8414 requires OAuth discovery at /.well-known/oauth-authorization-server/{pa
 at the origin root. Since HAProxy only routes /mcp/* to the MCP server, these
 Django views serve the discovery metadata directly so clients can find the
 OAuth endpoints.
+
+The identity URLs here (resource, authorization_servers, issuer) must use the
+canonical no-trailing-slash form https://host/mcp: strict clients (Codex's rmcp)
+derive the expected issuer from the path-insertion discovery URL without a
+trailing slash and exact-match it, and the FastMCP server's own metadata at
+/mcp/.well-known/oauth-authorization-server already advertises the no-slash
+issuer (MCP_OAUTH_BASE_URL). See apps/mcp/test_mcp.py for the contract.
 """
 
 import json
@@ -18,7 +25,7 @@ def _get_base_url(request):
     if scheme not in ("http", "https"):
         scheme = "https" if not settings.DEBUG else request.scheme
     host = request.get_host()  # includes port if non-standard
-    return f"{scheme}://{host}/mcp/"
+    return f"{scheme}://{host}/mcp"
 
 
 def _json_response(data):
@@ -36,9 +43,9 @@ def oauth_authorization_server_metadata(request):
     return _json_response(
         {
             "issuer": base_url,
-            "authorization_endpoint": f"{base_url}authorize",
-            "token_endpoint": f"{base_url}token",
-            "registration_endpoint": f"{base_url}register",
+            "authorization_endpoint": f"{base_url}/authorize",
+            "token_endpoint": f"{base_url}/token",
+            "registration_endpoint": f"{base_url}/register",
             "scopes_supported": ["read", "write", "mcp"],
             "response_types_supported": ["code"],
             "grant_types_supported": ["authorization_code", "refresh_token"],

@@ -44,4 +44,5 @@
     container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /srv/newsblur/docker/prometheus/rules.yml:/etc/prometheus/rules.yml
       - /mnt/metrics/prometheus_data:/prometheus

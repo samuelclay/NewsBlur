@@ -56,7 +56,7 @@ groups:
                     type: last
                   type: query
         noDataState: OK
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 2m
         annotations:
           summary: "Redis replication lag high on {{ $labels.instance }}"
@@ -115,7 +115,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 1m
         annotations:
           summary: "Redis slave disconnected on {{ $labels.instance }}"
@@ -174,7 +174,7 @@ groups:
                     type: last
                   type: query
         noDataState: OK
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 2m
         annotations:
           summary: "Postgres replication lag high on {{ $labels.instance }}"
@@ -233,7 +233,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 1m
         annotations:
           summary: "Postgres replica disconnected on {{ $labels.instance }}"
@@ -292,7 +292,7 @@ groups:
                     type: last
                   type: query
         noDataState: OK
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 2m
         annotations:
           summary: "Mongo replication lag high on {{ $labels.db }}"
@@ -351,7 +351,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 1m
         annotations:
           summary: "Mongo secondary unhealthy on {{ $labels.db }}"

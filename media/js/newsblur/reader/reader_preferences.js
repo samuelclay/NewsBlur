@@ -35,8 +35,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.handle_change();
         this.open_modal();
         this.original_preferences = this.serialize_preferences();
+        this.fetch_email_status();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+    },
+
+    fetch_email_status: function () {
+        // The page-load preferences can be stale if emails were unsubscribed on
+        // another page (e.g. the email unsubscribe link), so fetch a fresh value.
+        var self = this;
+        this.model.make_request('/profile/get_preference', { 'preference': 'send_emails' }, function (data) {
+            if (!data || _.isUndefined(data.payload) || _.isNull(data.payload)) return;
+            NEWSBLUR.Preferences['send_emails'] = data.payload;
+            $('.NB-preference-email-status', self.$modal).toggle(!data.payload);
+        }, $.noop);
     },
 
     make_modal: function () {
@@ -76,7 +88,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 }),
                                 $.make('div', { className: 'NB-daysofunread-slider-value' })
                             ]),
-                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#' }, [
+                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' }, [
                                 $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
                                 ' Customize days of unreads'
                             ]))
@@ -237,6 +249,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-showlongreads-1', type: 'checkbox', name: 'show_long_reads', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showlongreads-1' }, [
                                     'Show Long Reads'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showgoodreads-1', type: 'checkbox', name: 'show_good_reads', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showgoodreads-1' }, [
+                                    'Show Good Reads'
                                 ])
                             ])
                         ]),
@@ -411,7 +429,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('div', { className: 'NB-clustering-mark-read-option' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
                                         $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true', disabled: !NEWSBLUR.Globals.is_archive }),
                                         $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, 'Mark duplicates as read'),
-                                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link' }, [
+                                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link', 'data-feature': 'clustering' }, [
                                             $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
                                         ]))
                                     ])
@@ -437,6 +455,16 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Backup your sites',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-email-settings' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('a', { className: 'NB-splash-link NB-link-account-email-settings', href: '#' }, 'Manage email settings'),
+                            $.make('div', { className: 'NB-preference-email-status' }, 'You are unsubscribed from all NewsBlur emails').toggle(!NEWSBLUR.assets.preference('send_emails'))
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Emails',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Found in the Account dialog')
                         ])
                     ])
                 ]),
@@ -1207,6 +1235,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_good_reads]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_good_reads) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
         $('input[name=youtube_captions]', $modal).each(function () {
             if (NEWSBLUR.Preferences.youtube_captions) {
                 $(this).prop('checked', true);
@@ -1697,6 +1731,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
                 self.original_preferences['show_widely_read_stories'] != form['show_widely_read_stories'] ||
                 self.original_preferences['show_long_reads'] != form['show_long_reads'] ||
+                self.original_preferences['show_good_reads'] != form['show_good_reads'] ||
                 self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
@@ -1716,15 +1751,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
+    close_and_load_account_emails: function () {
+        this.close(function () {
+            NEWSBLUR.reader.open_account_modal({ 'animate_email': true });
+        });
+    },
+
     close_and_load_feedchooser: function () {
         this.close(function () {
             NEWSBLUR.reader.open_feedchooser_modal();
         });
     },
 
-    close_and_load_premium: function () {
+    close_and_load_premium: function (highlight_feature) {
         this.close(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
         });
     },
 
@@ -1794,6 +1835,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
             self.save_preferences();
         });
+        $.targetIs(e, { tagSelector: '.NB-link-account-email-settings' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.close_and_load_account_emails();
+        });
         $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function ($t, $p) {
             e.preventDefault();
 
@@ -1806,7 +1852,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
-            self.close_and_load_premium();
+            // reader_preferences.js: The archive notices carry a data-feature naming
+            // the tier line to highlight in the upgrade modal.
+            self.close_and_load_premium($t.data('feature'));
         });
         $.targetIs(e, { tagSelector: '.NB-clustering-mark-read-option.NB-disabled' }, function ($t, $p) {
             e.preventDefault();

@@ -22,4 +22,4 @@ There are plenty of ways to use NewsBlur beyond the website:
 
 -----------------------------------------------------------------------------
 
-Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: https://{% current_domain %}{{ user.profile.autologin_url }}?next=optout
+Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: https://{% current_domain %}{% if user.profile.email_optout_url %}{{ user.profile.email_optout_url }}{% else %}{% url "profile-email-optout" %}{% endif %}

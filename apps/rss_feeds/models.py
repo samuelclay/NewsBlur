@@ -56,10 +56,14 @@ from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
+from utils.analytics_degradation import skip_when_analytics_down
 from utils.feed_functions import (
     TimeoutError,
+    is_openrss_feed_address,
+    is_youtube_feed_address,
     levenshtein_distance,
     relative_timesince,
+    rewrite_openrss_to_feed_address,
     seconds_timesince,
     strip_underscore_from_feed_address,
     timelimit,
@@ -73,9 +77,37 @@ from utils.story_functions import (
     strip_comments__lxml,
     strip_tags,
 )
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
+# Mongo rejects any document over 16MB, and a single story carries up to five of these
+# text blobs, so no one of them may exceed 2MB. A multi-megabyte story is broken scraped
+# content and not an article, so cutting it down is safe. apps/rss_feeds/models.py
+MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
+
+
+def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
+    """
+    Cut UTF-8 encoded `content_bytes` down to at most `max_bytes` and decode it.
+
+    The character straddling the cut is kept whole rather than left half-encoded, so
+    the result can run a byte or two short of the cap. apps/rss_feeds/models.py
+    """
+    if len(content_bytes) <= max_bytes:
+        return smart_str(content_bytes)
+
+    truncated_bytes = content_bytes[:max_bytes]
+    try:
+        return truncated_bytes.decode("utf-8")
+    except UnicodeDecodeError as error:
+        boundary_end = max_bytes
+        while boundary_end < len(content_bytes) and content_bytes[boundary_end] & 0xC0 == 0x80:
+            boundary_end += 1
+        boundary_character = content_bytes[error.start : boundary_end]
+        prefix_bytes = content_bytes[: max_bytes - len(boundary_character)]
+
+        return prefix_bytes.decode("utf-8", errors="ignore") + boundary_character.decode("utf-8")
 
 
 class Feed(models.Model):
@@ -240,7 +272,7 @@ class Feed(models.Model):
 
     @property
     def is_youtube_feed(self):
-        return "youtube.com" in self.feed_address
+        return is_youtube_feed_address(self.feed_address)
 
     @property
     def is_google_news_feed(self):
@@ -596,22 +628,37 @@ class Feed(models.Model):
         if url and url.startswith("@") and "@" in url[1:]:
             username, domain = url[1:].split("@")
             url = f"https://{domain}/users/{username}.rss"
-        if url and "youtube.com/user/" in url:
-            username = re.search("youtube.com/user/(\w+)", url).group(1)
-            url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            without_rss = True
-        if url and "youtube.com/@" in url:
-            username = url.split("youtube.com/@")[1]
-            url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            without_rss = True
-        if url and "youtube.com/channel/" in url:
-            channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
-            url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
-            without_rss = True
-        if url and "youtube.com/feeds" in url:
-            without_rss = True
-        if url and "youtube.com/playlist" in url:
-            without_rss = True
+        # Only rewrite when YouTube actually serves the URL. Privacy proxies like
+        # openrss.org embed the channel URL in their path, so guard on the host to
+        # avoid hijacking https://openrss.org/www.youtube.com/@user/videos.
+        if url and is_youtube_feed_address(url):
+            if "youtube.com/user/" in url:
+                username = re.search("youtube.com/user/(\w+)", url).group(1)
+                url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+                without_rss = True
+            if "youtube.com/@" in url:
+                username = url.split("youtube.com/@")[1]
+                url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+                without_rss = True
+            if "youtube.com/channel/" in url:
+                channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
+                url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
+                without_rss = True
+            if "youtube.com/feeds" in url:
+                without_rss = True
+            if "youtube.com/playlist" in url:
+                without_rss = True
+        # Open RSS (openrss.org) proxies a site's feed under /feed/ and serves a
+        # human-readable preview at the bare path. Rewrite previews to the /feed/
+        # address so we never cache the preview page as the feed. Guarded on host
+        # like is_youtube_feed_address above. See utils/feed_functions.py.
+        openrss_preview_url = None
+        if url and is_openrss_feed_address(url):
+            rewritten = rewrite_openrss_to_feed_address(url)
+            if rewritten != url:
+                openrss_preview_url = url
+                url = rewritten
+                without_rss = True
         if url and "reddit.com/r/" in url and url.endswith(".rss"):
             without_rss = True
         if url and "/wp-json/wp/v2/posts" in url:
@@ -667,8 +714,17 @@ class Feed(models.Model):
         if not url:
             logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.debug(" ---> ~FRUnsafe feed URL rejected: ~SB%s~SN (%s)" % (url, e))
+            return
 
         feed = by_url(url)
+        if not feed and openrss_preview_url:
+            # A pre-change feed may still be stored at the preview address; reuse it
+            # (it migrates to /feed/ on its next fetch) rather than create a duplicate.
+            feed = by_url(urlnorm.normalize(openrss_preview_url))
         found_feed_urls = []
 
         if interactive:
@@ -730,14 +786,12 @@ class Feed(models.Model):
         # Check for JSON feed
         if not feed and fetch and create:
             try:
-                r = requests.get(url, timeout=10)
-            except (
-                requests.ConnectionError,
-                requests.models.InvalidURL,
-                requests.ReadTimeout,
-                requests.exceptions.MissingSchema,
-                requests.exceptions.InvalidSchema,
-            ):
+                r = safe_requests_get(url, timeout=10)
+            except (UnsafeUrlError, requests.RequestException):
+                # RequestException covers everything a hostile or broken site can throw
+                # at a URL the user is trying to add (redirect loops, undecodable
+                # content-encoding, bad schemes, timeouts). None of it makes this a
+                # feed, so fall through and let the caller report "not a feed".
                 r = None
             if r and "application/json" in (r.headers.get("Content-Type") or ""):
                 try:
@@ -939,13 +993,18 @@ class Feed(models.Model):
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
+                validate_public_url(self.feed_address)
                 found_feed_urls = feedfinder_forman.find_feeds(self.feed_address)
                 if found_feed_urls:
                     feed_address = found_feed_urls[0]
-            except KeyError:
+            except (KeyError, UnsafeUrlError):
                 pass
             if not len(found_feed_urls) and self.feed_link:
-                found_feed_urls = feedfinder_forman.find_feeds(self.feed_link)
+                try:
+                    validate_public_url(self.feed_link)
+                    found_feed_urls = feedfinder_forman.find_feeds(self.feed_link)
+                except UnsafeUrlError:
+                    found_feed_urls = []
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
 
@@ -1639,6 +1698,27 @@ class Feed(models.Model):
             if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
                 self.save(update_fields=["feed_address", "feed_link"])
 
+        # Per-domain fetch budget shared across all task servers, modeled on the
+        # Reddit API budget in utils/reddit_fetcher.py. When a domain's per-minute
+        # budget is spent, silently defer this fetch (no fetch history, no exception)
+        # instead of hammering the site: one Pro user's 1,100 abebooks.com web feeds
+        # at Pro speed added up to ~175,000 fetches/day against a single domain.
+        # Forced fetches (user-initiated refresh) still count against the budget but
+        # are never deferred. See utils/domain_fetch_limiter.py.
+        if not self.is_newsletter:
+            from utils import domain_fetch_limiter
+
+            allowed, defer_sec = domain_fetch_limiter.reserve_fetch_slot(self.feed_address)
+            if not allowed and not options.get("force"):
+                logging.debug(
+                    "   ---> [%-30s] ~FY~SBDomain fetch budget spent~SN~FY, deferring %s min: %s"
+                    % (self.log_title[:30], defer_sec // 60, self.feed_address)
+                )
+                self.set_next_scheduled_update(delay_fetch_sec=defer_sec)
+                r.zrem("tasked_feeds", original_feed_id)
+                r.zrem("error_feeds", original_feed_id)
+                return self
+
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
             if not feed.fetched_once:
@@ -1682,7 +1762,7 @@ class Feed(models.Model):
         from utils.webfeed_fetcher import WebFeedFetcher
 
         # Only fetch if at least one archive subscriber exists
-        if self.archive_subscribers <= 0:
+        if not self.archive_subscribers or self.archive_subscribers <= 0:
             logging.debug(
                 "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers" % (self.log_title[:30],)
             )
@@ -1692,10 +1772,27 @@ class Feed(models.Model):
         fpf = fetcher.fetch()
 
         if fpf:
-            from utils.feed_fetcher import ProcessFeed
+            from utils.feed_fetcher import FeedFetcherWorker, ProcessFeed
+            from utils.feed_functions import TimeoutError
 
-            processor = ProcessFeed(self.pk, fpf, {"verbose": False, "updates_off": False, "force": True})
-            processor.process()
+            options = {"verbose": False, "updates_off": False, "force": True, "compute_scores": True}
+            processor = ProcessFeed(self.pk, fpf, options)
+            ret_feed, ret_entries = processor.process()
+
+            # The regular fetch pipeline notifies subscribers after processing
+            # (process_feed_wrapper in utils/feed_fetcher.py); web feeds bypass that
+            # dispatcher, so without these calls new webfeed stories never set
+            # needs_unread_recalc (sidebar counts stay stale until the user opens
+            # the feed by hand) and never publish to the real-time pubsub.
+            if ret_entries and ret_entries.get("new"):
+                worker = FeedFetcherWorker(options)
+                worker.publish_to_subscribers(self, ret_entries["new"])
+                try:
+                    worker.count_unreads_for_subscribers(self, new_story_count=ret_entries["new"])
+                except TimeoutError:
+                    logging.debug(
+                        "   ---> [%-30s] ~FRWeb Feed: unread count took too long" % (self.log_title[:30],)
+                    )
 
         return self
 
@@ -1791,6 +1888,9 @@ class Feed(models.Model):
                     s.save()
                     ret_values["new"] += 1
                     s.publish_to_subscribers()
+                except NotUniqueError:
+                    ret_values["same"] += 1
+                    continue
                 except (IntegrityError, OperationError) as e:
                     ret_values["error"] += 1
                     if settings.DEBUG:
@@ -1798,10 +1898,20 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
+                    continue
                 if self.is_google_news_feed and s:
                     s.fetch_og_image()
                     if s.image_urls:
-                        s.save()
+                        try:
+                            s.save()
+                        except NotUniqueError as e:
+                            # A racing fetcher won this story_hash between the save above
+                            # and here. The story is already stored and counted as new, so
+                            # only the og:image URLs are lost.
+                            logging.debug(
+                                "   ---> [%-30s] ~SN~FRNotUniqueError on og:image save: %s - %s"
+                                % (self.feed_title[:30], story.get("guid"), e)
+                            )
                 if self.search_indexed and s:
                     s.index_story_for_search()
                 if s and s.story_hash:
@@ -1926,6 +2036,12 @@ class Feed(models.Model):
                         kwargs=dict(feed_id=self.pk),
                         queue="update_feeds",
                     )
+
+        # Hand back the hashes of the stories actually created this run. AI prompt
+        # classifiers need to know precisely which stories are new: inferring them
+        # by taking the newest N by date silently picks the wrong stories whenever
+        # a feed publishes out of order. See utils/feed_fetcher.py.
+        ret_values["new_story_hashes"] = discover_story_ids
 
         return ret_values
 
@@ -2922,6 +3038,33 @@ class Feed(models.Model):
         #     print 'New/updated story: %s' % (story),
         return story_in_system, story_has_changed
 
+    def has_solo_mega_subscriber(self):
+        """True when this feed's single active subscriber carries more feeds than the
+        Premium limit.
+
+        A mega subscriber (a Pro/Archive user with thousands of feeds) shouldn't put
+        feeds only they read on the fastest fetch schedule: one Pro user importing
+        thousands of YouTube channels can burn the shared YouTube API quota for everyone.
+        Feeds with 2+ active subscribers are never penalized. See
+        apps/rss_feeds/models.py get_next_scheduled_update.
+        """
+        from apps.profile.models import Profile
+        from apps.reader.models import UserSubscription
+
+        if self.active_subscribers != 1:
+            return False
+
+        user_ids = list(
+            UserSubscription.objects.filter(feed=self, active=True).values_list("user_id", flat=True)[:2]
+        )
+        if len(user_ids) != 1:
+            return False
+
+        # Count only active subscriptions, matching how the Premium feed limit is
+        # enforced: muted/inactive rows don't count against a user's limit
+        subscription_count = UserSubscription.objects.filter(user_id=user_ids[0], active=True).count()
+        return subscription_count > Profile.PREMIUM_FEED_LIMIT
+
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
             if verbose:
@@ -3097,6 +3240,18 @@ class Feed(models.Model):
                         "Pro boost: %s min -> %s min (%s min max for %s pro subs)"
                         % (before_pro, total, settings.PRO_MINUTES_BETWEEN_FETCHES, self.pro_subscribers)
                     )
+
+        # YouTube feeds whose single subscriber is a mega subscriber (more feeds
+        # than the Premium limit) get 4 fetches/day max, overriding the Pro boost:
+        # bulk YouTube imports would otherwise burn the shared YouTube API quota
+        # for everyone. Feeds with 2+ subscribers are never penalized.
+        if total < 60 * 6 and is_youtube_feed_address(self.feed_address) and self.has_solo_mega_subscriber():
+            before_mega = total
+            total = 60 * 6
+            adjustments.append(
+                "Solo mega subscriber YouTube floor: %s min -> %s min (4 fetches/day max)"
+                % (before_mega, total)
+            )
 
         # Forbidden feeds get a min of 6 hours
         if self.is_forbidden:
@@ -3393,6 +3548,10 @@ class MFeedIcon(mongo.Document):
     data = mongo.StringField()
     icon_url = mongo.StringField()
     not_found = mongo.BooleanField(default=False)
+    # The feed's self-declared <icon> URL that apps/rss_feeds/icon_importer.py last
+    # resolved or attempted, so a broken/undecodable declared icon is not refetched
+    # on every poll. Mongo is schemaless, so adding this needs no migration.
+    declared_source_url = mongo.StringField()
 
     meta = {
         "collection": "feed_icons",
@@ -3487,6 +3646,9 @@ class MStory(mongo.Document):
     story_permalink = mongo.StringField()
     story_guid = mongo.StringField()
     story_hash = mongo.StringField()
+    newsletter_headers = mongo.DictField()
+    newsletter_identity = mongo.StringField()
+    newsletter_identity_source = mongo.StringField(max_length=64)
     image_urls = mongo.ListField(mongo.StringField(max_length=1024))
     story_tags = mongo.ListField(mongo.StringField(max_length=250))
     comment_count = mongo.IntField()
@@ -3557,10 +3719,46 @@ class MStory(mongo.Document):
             return smart_str(zlib.decompress(self.original_text_z))
         return self.story_content_str
 
+    def truncate_oversized_content(self):
+        """
+        Cap every large text field at MAX_STORY_CONTENT_BYTES so the story can't grow
+        past Mongo's 16MB document limit.
+
+        The plain fields are capped here, before save() compresses them. The page and
+        text importers hand their fields over already compressed, so those are only
+        unpacked when the stored blob is itself over the cap — a page that compresses
+        down small is left alone no matter how large it started.
+        """
+        for field_name in ("story_content", "story_original_content", "story_latest_content"):
+            content = getattr(self, field_name)
+            if not content:
+                continue
+            content_bytes = smart_bytes(content)
+            if len(content_bytes) <= MAX_STORY_CONTENT_BYTES:
+                continue
+            logging.debug(
+                "   ---> ~SN~FRTruncating oversized %s on story %s: %s bytes"
+                % (field_name, self.story_hash, len(content_bytes))
+            )
+            setattr(self, field_name, truncate_story_content(content_bytes))
+
+        for field_name in ("original_text_z", "original_page_z"):
+            compressed = getattr(self, field_name)
+            if not compressed or len(compressed) <= MAX_STORY_CONTENT_BYTES:
+                continue
+            logging.debug(
+                "   ---> ~SN~FRTruncating oversized %s on story %s: %s compressed bytes"
+                % (field_name, self.story_hash, len(compressed))
+            )
+            truncated = truncate_story_content(zlib.decompress(compressed))
+            setattr(self, field_name, zlib.compress(smart_bytes(truncated)))
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields["story_title"].max_length
         story_content_type_max = MStory._fields["story_content_type"].max_length
         self.story_hash = self.feed_guid_hash
+
+        self.truncate_oversized_content()
 
         self.extract_image_urls()
 
@@ -4064,7 +4262,7 @@ class MStory(mongo.Document):
                     return None
 
             try:
-                resp = requests.get(
+                resp = safe_requests_get(
                     article_url,
                     headers={"User-Agent": "NewsBlur OG Image Fetcher"},
                     timeout=8,
@@ -4199,7 +4397,14 @@ class MStory(mongo.Document):
                 has_broken_proto = "http://" in lead_image[1:] or "https://" in lead_image[1:]
                 if len(lead_image) < 1024 and not has_broken_proto:
                     self.image_urls = [lead_image]
-            self.save()
+            try:
+                self.save()
+            except NotUniqueError:
+                # A racing fetcher re-created this story between the lookup that loaded it
+                # and this save, so the story_hash now belongs to the copy that won. The
+                # text we just fetched is still good, so hand it back rather than 500ing;
+                # only the cached copy is lost. apps/rss_feeds/models.py
+                logging.debug("   ---> ~SN~FRNotUniqueError caching original text: %s" % (self.story_hash,))
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)
@@ -4793,6 +4998,19 @@ class MSavedSearch(mongo.Document):
             cls.objects(**params).delete()
 
 
+def empty_fetch_history():
+    """Fetch history shaped like MFetchHistory.feed() returns, but with no entries.
+
+    Used when the analytics DB is unavailable: callers index these keys
+    directly, so they need every key present rather than an empty dict.
+    """
+    return {
+        "feed_fetch_history": [],
+        "page_fetch_history": [],
+        "push_history": [],
+    }
+
+
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
@@ -4807,6 +5025,7 @@ class MFetchHistory(mongo.Document):
     }
 
     @classmethod
+    @skip_when_analytics_down(default=empty_fetch_history)
     def feed(cls, feed_id, timezone=None, fetch_history=None):
         if not fetch_history:
             try:
@@ -4831,13 +5050,20 @@ class MFetchHistory(mongo.Document):
         return history
 
     @classmethod
+    @skip_when_analytics_down(default=empty_fetch_history)
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
+        if message is not None:
+            message = smart_str(message)[:4096]
+        primary_objects = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)
         try:
-            fetch_history = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(feed_id=feed_id)
+            fetch_history = primary_objects.get(feed_id=feed_id)
         except cls.DoesNotExist:
-            fetch_history = cls.objects.create(feed_id=feed_id)
+            try:
+                fetch_history = cls.objects.create(feed_id=feed_id)
+            except NotUniqueError:
+                fetch_history = primary_objects.get(feed_id=feed_id)
 
         if fetch_type == "feed":
             history = fetch_history.feed_fetch_history or []

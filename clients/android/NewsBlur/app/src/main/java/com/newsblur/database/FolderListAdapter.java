@@ -4,10 +4,13 @@ import static com.newsblur.util.AppConstants.ALL_SHARED_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.ALL_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.DAILY_BRIEFING_GROUP_KEY;
 import static com.newsblur.util.AppConstants.GLOBAL_SHARED_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.GOOD_READS_GROUP_KEY;
 import static com.newsblur.util.AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.LONG_READS_GROUP_KEY;
 import static com.newsblur.util.AppConstants.READ_STORIES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.SAVED_SEARCHES_GROUP_KEY;
 import static com.newsblur.util.AppConstants.SAVED_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.WIDELY_READ_STORIES_GROUP_KEY;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -65,7 +68,7 @@ import com.newsblur.util.UIUtils;
  */
 public class FolderListAdapter extends BaseExpandableListAdapter {
 
-    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, DAILY_BRIEFING, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
+    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, DAILY_BRIEFING, INFREQUENT_STORIES, WIDELY_READ_STORIES, LONG_READS, GOOD_READS, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
     private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG, SAVED_SEARCH }
 
     private final static float defaultTextSize_childName = 14;
@@ -196,6 +199,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			if (v == null) v =  inflater.inflate(R.layout.row_all_stories, null, false);
 		} else if (isRowInfrequentStories(groupPosition)) {
 			if (v == null) v =  inflater.inflate(R.layout.row_infrequent_stories, null, false);
+        } else if (isRowWidelyReadStories(groupPosition)) {
+            if (v == null) v = inflater.inflate(R.layout.row_widely_read_stories, null, false);
+        } else if (isRowLongReads(groupPosition)) {
+            if (v == null) v = inflater.inflate(R.layout.row_long_reads, null, false);
+        } else if (isRowGoodReads(groupPosition)) {
+            if (v == null) v = inflater.inflate(R.layout.row_good_reads, null, false);
         } else if (isRowReadStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
         } else if (isRowSavedSearches(groupPosition)) {
@@ -480,6 +489,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.allFeeds();
         } else if (isRowInfrequentStories(groupPosition)) {
             return FeedSet.infrequentFeeds();
+        } else if (isRowWidelyReadStories(groupPosition)) {
+            return FeedSet.widelyReadStories();
+        } else if (isRowLongReads(groupPosition)) {
+            return FeedSet.longReads();
+        } else if (isRowGoodReads(groupPosition)) {
+            return FeedSet.goodReads();
         } else if (isRowReadStories(groupPosition)) {
             return FeedSet.allRead();
         } else if (isRowSavedStories(groupPosition)) {
@@ -504,6 +519,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     public Folder getGroupFolder(int groupPosition) {
+        if (!isValidGroupPosition(groupPosition)) return null;
         String flatFolderName = activeFolderNames.get(groupPosition);
         return flatFolders.get(flatFolderName);
     }
@@ -586,6 +602,18 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return INFREQUENT_SITE_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
     }
 
+    public boolean isRowWidelyReadStories(int groupPosition) {
+        return WIDELY_READ_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
+    }
+
+    public boolean isRowLongReads(int groupPosition) {
+        return LONG_READS_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
+    }
+
+    public boolean isRowGoodReads(int groupPosition) {
+        return GOOD_READS_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
+    }
+
     public boolean isRowReadStories(int groupPosition) {
         return READ_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
     }
@@ -604,6 +632,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                !isRowDailyBriefing(groupPosition) &&
                !isRowAllStories(groupPosition) &&
                !isRowInfrequentStories(groupPosition) &&
+               !isRowWidelyReadStories(groupPosition) &&
+               !isRowLongReads(groupPosition) &&
+               !isRowGoodReads(groupPosition) &&
                !isRowReadStories(groupPosition) &&
                !isRowSavedStories(groupPosition) &&
                !isRowSavedSearches(groupPosition);
@@ -803,6 +834,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
         addSpecialRow(READ_STORIES_GROUP_KEY);
         if (prefsRepo.isEnableRowGlobalShared() && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
+        if (prefsRepo.isEnableRowWidelyReadStories() && (currentState != StateFilter.SAVED)) addSpecialRow(WIDELY_READ_STORIES_GROUP_KEY);
+        if (prefsRepo.isEnableRowLongReads() && (currentState != StateFilter.SAVED)) addSpecialRow(LONG_READS_GROUP_KEY);
+        if (prefsRepo.isEnableRowGoodReads() && (currentState != StateFilter.SAVED)) addSpecialRow(GOOD_READS_GROUP_KEY);
         if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);
@@ -938,9 +972,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     public Set<String> getAllFeedsForFolder(int groupPosition) {
-        String flatFolderName = activeFolderNames.get(groupPosition);
-        Folder folder = flatFolders.get(flatFolderName);
+        return safeFolderFeedIds(getGroupFolder(groupPosition));
+    }
+
+    public static Set<String> safeFolderFeedIds(@Nullable Folder folder) {
+        if (folder == null || folder.feedIds == null) return Collections.emptySet();
         return new HashSet<>(folder.feedIds);
+    }
+
+    public synchronized boolean isValidGroupPosition(int groupPosition) {
+        return activeFolderNames != null && groupPosition >= 0 && groupPosition < activeFolderNames.size();
     }
 
     /** Get the cached SocialFeed object for the feed at the given list location. */
@@ -1002,6 +1043,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return GroupType.ALL_STORIES.ordinal();
         } else if (isRowInfrequentStories(groupPosition)) {
             return GroupType.INFREQUENT_STORIES.ordinal();
+        } else if (isRowWidelyReadStories(groupPosition)) {
+            return GroupType.WIDELY_READ_STORIES.ordinal();
+        } else if (isRowLongReads(groupPosition)) {
+            return GroupType.LONG_READS.ordinal();
+        } else if (isRowGoodReads(groupPosition)) {
+            return GroupType.GOOD_READS.ordinal();
         } else if (isRowReadStories(groupPosition)) {
             return GroupType.READ_STORIES.ordinal();
         } else if (isRowSavedSearches(groupPosition)) {
@@ -1100,5 +1147,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public SessionDataSource buildSessionDataSource(Session activeSession) {
         return new SessionDataSource(activeSession, activeFolderNames, activeFolderChildren);
+    }
+
+    public SessionDataSource buildNextUnreadSessionDataSource(Session activeSession) {
+        return new SessionDataSource(activeSession, activeFolderNames, activeFolderChildren, currentState, feedSavedCounts.keySet());
     }
 }
