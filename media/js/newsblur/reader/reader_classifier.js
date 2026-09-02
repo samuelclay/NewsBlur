@@ -2652,6 +2652,8 @@ var classifier_prototype = {
         if (is_regex === undefined) {
             is_regex = classifier_type === 'regex';
         }
+        var has_filter_view = !!classifier_value && !is_regex &&
+            _.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, classifier_type);
         // Storage key: regex classifiers use type + '_regex', others use type + 's'
         var storage_key = is_regex ? classifier_type + '_regex' : classifier_type + 's';
         // Input name: regex classifiers save as 'like_title_regex' or 'like_text_regex'
@@ -2706,6 +2708,13 @@ var classifier_prototype = {
             $.make('span', { className: 'NB-classifier-type-label' }, classifier_type_title)
         ]);
 
+        var $filter_view_button = has_filter_view && $.make('button', {
+            type: 'button',
+            className: 'NB-classifier-filter-view-btn',
+            'aria-label': 'View matching stories',
+            'data-tooltip': 'View matching stories'
+        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>');
+
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
             $.make('span', { className: css_class }, [
                 $.make('input', {
@@ -2740,6 +2749,7 @@ var classifier_prototype = {
                     $.make('span', classifier_title)
                 ])
             ]),
+            $filter_view_button,
             (classifier_count && $.make('span', { className: 'NB-classifier-count' }, [
                 '&times;&nbsp;',
                 classifier_count
@@ -2784,6 +2794,43 @@ var classifier_prototype = {
         }).bind('mouseleave', function (e) {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-super-dislike');
         });
+
+        if ($filter_view_button) {
+            $filter_view_button.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var $row_classifier = $('.NB-classifier', $classifier);
+                var row_scope = $row_classifier.data('scope') || 'feed';
+                var row_folder = $row_classifier.data('folder-name') || '';
+                if ($.modal && $.modal.close) {
+                    $.modal.close();
+                }
+                _.defer(function () {
+                    NEWSBLUR.reader.open_classifier_filter(classifier_type, classifier_value, {
+                        scope: row_scope,
+                        folder_name: row_folder,
+                        origin: 'trainer'
+                    });
+                });
+            });
+
+            $filter_view_button.on('mouseenter', function () {
+                var $this = $(this);
+                var text = $this.attr('data-tooltip');
+                if (!text) return;
+                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                $('body').append($tip);
+                var rect = this.getBoundingClientRect();
+                $tip.css({
+                    top: rect.top - $tip.outerHeight() - 6,
+                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+                });
+                $this.data('$tooltip', $tip);
+            }).on('mouseleave', function () {
+                var $tip = $(this).data('$tooltip');
+                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+            });
+        }
 
         // Click individual scope toggle icons to switch scope
         if (classifier_type !== 'feed') {
@@ -5136,6 +5183,7 @@ var classifier_prototype = {
         if (type === 'image_prompt') type_label = 'Image Filter';
 
         var effective_scope = scope || 'feed';
+        var has_filter_view = _.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type);
 
         // For feed-type classifiers, no scope controls (publisher is always feed-scoped)
         var $scope_badge;
@@ -5162,6 +5210,13 @@ var classifier_prototype = {
             $.make('span', { className: 'NB-classifier-type-label' }, type_label)
         ]);
 
+        var $filter_view_button = has_filter_view && $.make('button', {
+            type: 'button',
+            className: 'NB-classifier-filter-view-btn',
+            'aria-label': 'View matching stories',
+            'data-tooltip': 'View matching stories'
+        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>');
+
         var $item = $.make('div', {
             className: 'NB-manage-classifier-item',
             'data-feed-id': feed_id,
@@ -5186,14 +5241,10 @@ var classifier_prototype = {
                     (type !== 'feed' ? $type_label_el : null),
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (type === 'feed' && $.favicon_el(feed_id)),
-                    $.make('span', value),
-                    (_.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type) &&
-                        $.make('span', {
-                            className: 'NB-classifier-filter-view-btn',
-                            'data-tooltip': 'View matching stories'
-                        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>'))
+                    $.make('span', value)
                 ])
-            ])
+            ]),
+            $filter_view_button
         ]);
 
         // Store scope data on the classifier element
