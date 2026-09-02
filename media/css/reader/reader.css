@@ -8593,25 +8593,24 @@ body {
 /* =========================== */
 /* = Classifier Filter Banner = */
 /* =========================== */
-/* media/css/reader/reader.css — banner that appears above .NB-story-titles
-   when the user enters the classifier filter view (see
-   media/js/newsblur/views/classifier_filter_banner_view.js). Layout mirrors
-   the search indexing banner above so the two feel related. Per-type
-   background gradients give each classifier type its own visual key. */
+/* media/css/reader/reader.css — compact filter toolbar shown above story
+   titles by media/js/newsblur/views/classifier_filter_banner_view.js. */
 
 .NB-classifier-filter-banner {
+    --classifier-accent: #75628E;
+    --classifier-tint: #F4F1F7;
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    /* Extra right padding reserves space for the absolutely-positioned
-       close button so the classifier pill never runs under it. */
-    padding: 12px 40px 12px 16px;
-    border-bottom: 1px solid rgba(120, 120, 120, 0.18);
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid rgba(57, 51, 65, 0.16);
+    box-shadow: inset 3px 0 0 var(--classifier-accent);
     position: sticky;
     top: 0;
     z-index: 5;
-    background: linear-gradient(135deg, #efe6f5 0%, #e3d5f0 100%);
+    background: var(--classifier-tint);
     cursor: default;
+    container-type: inline-size;
     animation: NB-classifier-filter-banner-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -8620,42 +8619,43 @@ body {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Per-type gradients — each classifier family gets its own hue so the
-   user can tell at a glance what kind of filter is active. */
 .NB-classifier-filter-banner.NB-filter-tag {
-    background: linear-gradient(135deg, #e6f1ea 0%, #d0e6d7 100%);
-    border-bottom-color: rgba(74, 130, 90, 0.18);
+    --classifier-accent: #3C8054;
+    --classifier-tint: #EDF5EF;
 }
 .NB-classifier-filter-banner.NB-filter-author {
-    background: linear-gradient(135deg, #f1ead9 0%, #e4d7b2 100%);
-    border-bottom-color: rgba(158, 126, 60, 0.2);
+    --classifier-accent: #946D24;
+    --classifier-tint: #F7F2E7;
 }
 .NB-classifier-filter-banner.NB-filter-title {
-    background: linear-gradient(135deg, #e6eef5 0%, #d5e3f0 100%);
-    border-bottom-color: rgba(74, 144, 217, 0.18);
+    --classifier-accent: #3977A8;
+    --classifier-tint: #EDF3F7;
 }
 .NB-classifier-filter-banner.NB-filter-url {
-    background: linear-gradient(135deg, #f0e5e9 0%, #e3ccd5 100%);
-    border-bottom-color: rgba(168, 82, 108, 0.2);
+    --classifier-accent: #A14E67;
+    --classifier-tint: #F7EEF1;
 }
 .NB-classifier-filter-banner.NB-filter-text {
-    background: linear-gradient(135deg, #ece6f5 0%, #dcd1ee 100%);
-    border-bottom-color: rgba(110, 82, 168, 0.22);
+    --classifier-accent: #7255A3;
+    --classifier-tint: #F2EFF8;
 }
 
 .NB-classifier-filter-banner-icon {
-    width: 22px;
-    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     flex-shrink: 0;
-    color: #3a3a3a;
-    opacity: 0.75;
-    /* Align with the first row of content (title line) so the icon doesn't
-       drift when the classifier pill wraps to multiple lines. */
-    margin-top: 1px;
+    color: var(--classifier-accent);
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(40, 38, 44, 0.1);
+    border-radius: 7px;
+    box-sizing: border-box;
 }
 .NB-classifier-filter-banner-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 17px;
+    height: 17px;
 }
 
 .NB-classifier-filter-banner-content {
@@ -8663,155 +8663,549 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
-.NB-classifier-filter-banner-text {
+.NB-classifier-filter-banner-heading {
     display: flex;
-    /* Title stacks above the pill so long classifier values have the full
-       content width to wrap into. */
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    font-size: 12px;
-    color: #2a2a2a;
-    line-height: 1.25;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 5px;
+    color: #252329;
+    font-size: 14px;
+    line-height: 1.28;
     min-width: 0;
 }
 
-.NB-classifier-filter-banner-title {
-    font-weight: 600;
-    letter-spacing: 0.01em;
+.NB-classifier-filter-banner-type {
+    color: var(--classifier-accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.065em;
+    text-transform: uppercase;
+}
+.NB-classifier-filter-banner-separator {
+    color: rgba(37, 35, 41, 0.34);
+}
+.NB-classifier-filter-banner-value {
+    min-width: 0;
+    font-weight: 650;
+    overflow-wrap: anywhere;
 }
 
 .NB-classifier-filter-banner-subtext {
-    font-size: 11px;
-    color: rgba(42, 42, 42, 0.58);
-    line-height: 1.3;
+    color: #636067;
+    font-size: 11.5px;
+    line-height: 1.35;
 }
 
-/* Trainer-style classifier pill inside the filter banner.
-   The banner hosts a .NB-classifier inside a .NB-classifiers wrapper so
-   it inherits all of the trainer's styles (icon positioning, hover
-   colors, scope/type badges). A few overrides are needed here because
-   the trainer assumes floated pills in a multi-column layout, while the
-   banner is a single inline pill in a flex row. */
-.NB-classifier-filter-banner-classifier-host {
-    display: block;
-    max-width: 100%;
-    /* Override the .NB-classifiers layout bits that are not wanted here. */
-    float: none;
-    margin: 0;
-    padding: 0;
+.NB-classifier-filter-narrow-hint {
+    display: none;
+    color: #636067;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.3;
 }
-/* Let long classifier values wrap onto multiple lines. The trainer's pill
-   uses white-space: nowrap because it lives in a multi-column float layout;
-   here the pill is a single inline element in a wrapping flex row, so we
-   flip to normal wrapping and let the label flex-wrap across lines. */
-.NB-classifier-filter-banner-classifier-host .NB-classifier {
-    float: none;
-    margin: 0;
-    display: inline-block;
-    max-width: 100%;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    vertical-align: top;
+.NB-classifier-filter-narrow-hint-compact {
+    display: none;
 }
-.NB-classifier-filter-banner-classifier-host .NB-classifier label {
+
+.NB-classifier-filter-banner-tools {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    margin-top: 4px;
+    opacity: 1;
+}
+.NB-classifier-filter-tool-group {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 5px;
+}
+.NB-classifier-filter-tool-label {
+    flex: 0 0 64px;
+    color: #706D73;
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+.NB-classifier-filter-segmented {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid rgba(48, 45, 52, 0.17);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.45);
+}
+.NB-classifier-filter-scope-button,
+.NB-classifier-filter-training-button,
+.NB-classifier-filter-notification-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 0;
+    border-right: 1px solid rgba(48, 45, 52, 0.14);
+    color: #68656B;
+    background: transparent;
+    cursor: pointer;
+    transition: color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+.NB-classifier-filter-segmented > button:last-child {
+    border-right: 0;
+}
+.NB-classifier-filter-scope-button svg,
+.NB-classifier-filter-training-button > svg,
+.NB-classifier-filter-notification-icon svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.NB-classifier-filter-button-label {
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+.NB-classifier-filter-scope-button:hover,
+.NB-classifier-filter-training-button:hover,
+.NB-classifier-filter-notification-button:hover,
+.NB-classifier-filter-scope-button:focus-visible,
+.NB-classifier-filter-training-button:focus-visible,
+.NB-classifier-filter-notification-button:focus-visible {
+    color: #252329;
+    background: rgba(255, 255, 255, 0.78);
+    outline: 0;
+}
+.NB-classifier-filter-scope-button.NB-active,
+.NB-classifier-filter-training-button.NB-active,
+.NB-classifier-filter-notification-button.NB-active {
+    color: var(--classifier-accent);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 -2px 0 var(--classifier-accent);
+}
+.NB-classifier-filter-training-button.NB-training-like.NB-active {
+    color: #357B4B;
+}
+.NB-classifier-filter-training-button.NB-training-dislike.NB-active {
+    color: #A6632E;
+}
+.NB-classifier-filter-training-button.NB-training-super_dislike.NB-active {
+    color: #A44959;
+}
+.NB-classifier-filter-super-dislike-icon {
+    position: relative;
+    width: 19px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.NB-classifier-filter-super-dislike-icon > span {
+    position: absolute;
+    display: inline-flex;
+    width: 13px;
+    height: 13px;
+}
+.NB-classifier-filter-super-dislike-icon svg {
+    width: 13px;
+    height: 13px;
+}
+.NB-classifier-filter-super-dislike-icon .NB-super-dislike-icon-back {
+    top: 0;
+    left: 0;
+    opacity: 0.48;
+}
+.NB-classifier-filter-super-dislike-icon .NB-super-dislike-icon-front {
+    right: 0;
+    bottom: 0;
+}
+.NB-classifier-filter-notification-icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.NB-classifier-filter-notification-group {
+    align-items: flex-start;
+}
+.NB-classifier-filter-notification-group > .NB-classifier-filter-tool-label {
+    line-height: 32px;
+}
+.NB-classifier-filter-notification-content {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    row-gap: 2px;
-    max-width: 100%;
-}
-.NB-classifier-filter-banner-classifier-host .NB-classifier label > span:last-child {
-    /* The value span — let it wrap and shrink inside the label. */
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
     min-width: 0;
+    gap: 5px;
+}
+.NB-classifier-filter-notification-button:disabled {
+    opacity: 0.42;
+    cursor: default;
+}
+.NB-classifier-filter-notification-button:disabled:hover {
+    color: #68656B;
+    background: transparent;
+}
+.NB-classifier-filter-notification-upgrade {
+    min-height: 24px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: 12px;
+    color: var(--classifier-accent);
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 9.5px;
+    font-weight: 650;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.NB-classifier-filter-notification-upgrade:hover,
+.NB-classifier-filter-notification-upgrade:focus-visible {
+    background: rgba(255, 255, 255, 0.95);
+    outline: 0;
 }
 
 .NB-classifier-filter-banner-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
     flex-shrink: 0;
 }
 
 .NB-classifier-filter-banner-back-trainer {
-    font-size: 11px;
-    color: rgba(40, 40, 40, 0.72);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 120ms ease, color 120ms ease;
-}
-.NB-classifier-filter-banner-back-trainer:hover {
-    background: rgba(255, 255, 255, 0.7);
-    color: #1e1e1e;
-}
-
-.NB-classifier-filter-banner-close {
-    /* Pin to the banner's top-right so a long classifier value can wrap
-       without being clipped by the close button. */
-    position: absolute;
-    top: 10px;
-    right: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    font-size: 13px;
-    color: rgba(40, 40, 40, 0.55);
+    min-height: 32px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #5C5960;
+    background: transparent;
     cursor: pointer;
     transition: background 120ms ease, color 120ms ease;
-    z-index: 1;
 }
-.NB-classifier-filter-banner-close:hover {
-    background: rgba(255, 255, 255, 0.8);
-    color: #1e1e1e;
+.NB-classifier-filter-banner-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #4E4B51;
+    background: transparent;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+}
+.NB-classifier-filter-banner-clear-icon {
+    font-size: 10px;
+}
+.NB-classifier-filter-banner-back-trainer:hover,
+.NB-classifier-filter-banner-clear:hover,
+.NB-classifier-filter-banner-back-trainer:focus-visible,
+.NB-classifier-filter-banner-clear:focus-visible {
+    color: #252329;
+    background: rgba(255, 255, 255, 0.76);
+    outline: 0;
 }
 
-/* Dark theme variants. The body gets .NB-dark when dark mode is active;
-   darkmode.css handles the base classifier pill colors already. */
 .NB-dark .NB-classifier-filter-banner {
-    background: linear-gradient(135deg, #2a2032 0%, #1f1828 100%);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    --classifier-accent: #B39ACA;
+    --classifier-tint: #27242B;
+    border-bottom-color: rgba(255, 255, 255, 0.13);
 }
 .NB-dark .NB-classifier-filter-banner.NB-filter-tag {
-    background: linear-gradient(135deg, #1f2c24 0%, #16231b 100%);
+    --classifier-accent: #79B98D;
+    --classifier-tint: #202923;
 }
 .NB-dark .NB-classifier-filter-banner.NB-filter-author {
-    background: linear-gradient(135deg, #2c261a 0%, #201c12 100%);
+    --classifier-accent: #D1AD68;
+    --classifier-tint: #2A271F;
 }
 .NB-dark .NB-classifier-filter-banner.NB-filter-title {
-    background: linear-gradient(135deg, #1e2630 0%, #161d26 100%);
+    --classifier-accent: #81B7DF;
+    --classifier-tint: #202830;
 }
 .NB-dark .NB-classifier-filter-banner.NB-filter-url {
-    background: linear-gradient(135deg, #2b1e25 0%, #20161c 100%);
+    --classifier-accent: #D68AA0;
+    --classifier-tint: #2B2327;
 }
 .NB-dark .NB-classifier-filter-banner.NB-filter-text {
-    background: linear-gradient(135deg, #25202e 0%, #1c1824 100%);
+    --classifier-accent: #B69BDD;
+    --classifier-tint: #27232E;
 }
-.NB-dark .NB-classifier-filter-banner-text,
 .NB-dark .NB-classifier-filter-banner-icon {
-    color: #e9e9ea;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+.NB-dark .NB-classifier-filter-banner-heading {
+    color: #F1EFF2;
+}
+.NB-dark .NB-classifier-filter-banner-separator {
+    color: rgba(241, 239, 242, 0.34);
 }
 .NB-dark .NB-classifier-filter-banner-subtext {
-    color: rgba(233, 233, 234, 0.62);
+    color: #B7B3BA;
 }
-.NB-dark .NB-classifier-filter-banner-close,
+.NB-dark .NB-classifier-filter-narrow-hint {
+    color: #B7B3BA;
+}
+.NB-dark .NB-classifier-filter-tool-label {
+    color: #AAA5AE;
+}
+.NB-dark .NB-classifier-filter-segmented {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.12);
+}
+.NB-dark .NB-classifier-filter-scope-button,
+.NB-dark .NB-classifier-filter-training-button,
+.NB-dark .NB-classifier-filter-notification-button {
+    border-right-color: rgba(255, 255, 255, 0.12);
+    color: #B5B0B9;
+}
+.NB-dark .NB-classifier-filter-scope-button:hover,
+.NB-dark .NB-classifier-filter-training-button:hover,
+.NB-dark .NB-classifier-filter-notification-button:hover,
+.NB-dark .NB-classifier-filter-scope-button:focus-visible,
+.NB-dark .NB-classifier-filter-training-button:focus-visible,
+.NB-dark .NB-classifier-filter-notification-button:focus-visible,
+.NB-dark .NB-classifier-filter-scope-button.NB-active,
+.NB-dark .NB-classifier-filter-training-button.NB-active,
+.NB-dark .NB-classifier-filter-notification-button.NB-active {
+    background: rgba(255, 255, 255, 0.09);
+    color: #F4F1F5;
+}
+.NB-dark .NB-classifier-filter-notification-button:disabled:hover {
+    color: #B5B0B9;
+    background: transparent;
+}
+.NB-dark .NB-classifier-filter-notification-upgrade {
+    background: rgba(255, 255, 255, 0.08);
+}
+.NB-dark .NB-classifier-filter-notification-upgrade:hover,
+.NB-dark .NB-classifier-filter-notification-upgrade:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+}
+.NB-dark .NB-classifier-filter-banner-clear,
 .NB-dark .NB-classifier-filter-banner-back-trainer {
-    color: rgba(233, 233, 234, 0.55);
+    color: #C7C3C9;
 }
-.NB-dark .NB-classifier-filter-banner-close:hover,
+.NB-dark .NB-classifier-filter-banner-clear:hover,
+.NB-dark .NB-classifier-filter-banner-clear:focus-visible,
+.NB-dark .NB-classifier-filter-banner-back-trainer:focus-visible,
 .NB-dark .NB-classifier-filter-banner-back-trainer:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #f4f4f5;
+    color: #FFFFFF;
+}
+
+@container (max-width: 380px) {
+    .NB-classifier-filter-tool-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 3px;
+    }
+    .NB-classifier-filter-tool-label,
+    .NB-classifier-filter-notification-group > .NB-classifier-filter-tool-label {
+        flex: 0 0 auto;
+        line-height: 1.2;
+    }
+    .NB-classifier-filter-notification-content {
+        max-width: 100%;
+    }
+}
+
+@container (max-width: 340px) {
+    .NB-classifier-filter-scope-button,
+    .NB-classifier-filter-training-button,
+    .NB-classifier-filter-notification-button {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+}
+
+@container (max-width: 300px) {
+    .NB-classifier-filter-banner-icon {
+        display: none;
+    }
+}
+
+@container (max-width: 240px) {
+    .NB-classifier-filter-scope-button,
+    .NB-classifier-filter-training-button,
+    .NB-classifier-filter-notification-button {
+        padding-right: 7px;
+        padding-left: 7px;
+    }
+    .NB-classifier-filter-scope-button > svg,
+    .NB-classifier-filter-training-button > svg,
+    .NB-classifier-filter-super-dislike-icon,
+    .NB-classifier-filter-notification-icon {
+        display: none;
+    }
+}
+
+@container (max-width: 200px) {
+    .NB-classifier-filter-banner-content {
+        box-sizing: border-box;
+        padding-right: 24px;
+    }
+    .NB-classifier-filter-banner-subtext,
+    .NB-classifier-filter-banner-tools {
+        display: none;
+    }
+    .NB-classifier-filter-narrow-hint {
+        display: block;
+    }
+    .NB-classifier-filter-banner-actions {
+        position: absolute;
+        top: 6px;
+        right: 4px;
+    }
+    .NB-classifier-filter-banner-clear {
+        width: 26px;
+        min-height: 26px;
+    }
+    .NB-classifier-filter-banner-back-trainer {
+        display: none;
+    }
+}
+
+@container (max-width: 120px) {
+    .NB-classifier-filter-banner-separator,
+    .NB-classifier-filter-banner-value,
+    .NB-classifier-filter-narrow-hint-label {
+        display: none;
+    }
+    .NB-classifier-filter-narrow-hint-compact {
+        display: inline;
+    }
+}
+
+.NB-classifier-filter-highlight {
+    padding: 0 1px;
+    border-radius: 2px;
+    color: inherit;
+    background: #FFE28A;
+    box-shadow: inset 0 -1px 0 rgba(157, 112, 22, 0.25);
+}
+.NB-dark .NB-classifier-filter-highlight {
+    color: #FFF3C2;
+    background: #67551F;
+    box-shadow: inset 0 -1px 0 rgba(255, 224, 128, 0.32);
+}
+
+.NB-storytitles-classifier-url {
+    margin-top: 4px;
+    overflow: hidden;
+    color: #77737A;
+    font-family: monospace;
+    font-size: 10px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.NB-storytitles-classifier-url-label {
+    margin-right: 5px;
+    color: #8B878E;
+    font-family: sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+}
+.NB-dark .NB-storytitles-classifier-url {
+    color: #AAA5AD;
+}
+
+.NB-classifier-filter-empty {
+    max-width: 330px;
+    margin: 34px auto;
+    padding: 24px 20px;
+    border: 1px solid rgba(50, 47, 54, 0.12);
+    border-radius: 10px;
+    box-sizing: border-box;
+    color: #343137;
+    background: rgba(255, 255, 255, 0.52);
+    text-align: center;
+}
+.NB-classifier-filter-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    color: #7B7187;
+    background: #EFEBF3;
+}
+.NB-classifier-filter-empty-icon svg {
+    width: 21px;
+    height: 21px;
+}
+.NB-classifier-filter-empty-title {
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+.NB-classifier-filter-empty-copy {
+    margin-top: 4px;
+    color: #747078;
+    font-size: 11px;
+    line-height: 1.45;
+}
+.NB-classifier-filter-empty-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 15px;
+}
+.NB-classifier-filter-empty-actions button {
+    min-height: 32px;
+    padding: 0 11px;
+    border: 1px solid rgba(55, 51, 59, 0.18);
+    border-radius: 6px;
+    color: #555159;
+    background: #FFFFFF;
+    cursor: pointer;
+}
+.NB-classifier-filter-empty-actions button:hover,
+.NB-classifier-filter-empty-actions button:focus-visible {
+    border-color: #81718F;
+    color: #312C36;
+    outline: 0;
+}
+.NB-classifier-filter-empty-widen {
+    color: #FFFFFF !important;
+    background: #75628E !important;
+    border-color: #75628E !important;
+}
+.NB-dark .NB-classifier-filter-empty {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F0EDF1;
+    background: rgba(255, 255, 255, 0.045);
+}
+.NB-dark .NB-classifier-filter-empty-icon {
+    color: #C1ADCF;
+    background: rgba(182, 155, 221, 0.13);
+}
+.NB-dark .NB-classifier-filter-empty-copy {
+    color: #AAA5AD;
+}
+.NB-dark .NB-classifier-filter-empty-actions button {
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #D5D1D7;
+    background: rgba(255, 255, 255, 0.07);
 }
 
 /* Trainer modal row "view matching stories" icon. Stays quiet until the
@@ -8821,15 +9215,15 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
     margin-left: 2px;
     padding: 2px 4px;
     border: 0;
     border-radius: 4px;
     box-sizing: border-box;
     cursor: pointer !important;
-    opacity: 0.32;
+    opacity: 0.16;
     color: inherit;
     background: transparent;
     transition: opacity 140ms ease, background 140ms ease, color 140ms ease;
@@ -8845,7 +9239,9 @@ body {
     height: 18px;
     pointer-events: none;
 }
-.NB-manage-classifier-item:hover .NB-classifier-filter-view-btn {
+.NB-classifier-container:hover .NB-classifier-filter-view-btn,
+.NB-manage-classifier-item:hover .NB-classifier-filter-view-btn,
+.NB-classifier-filter-view-btn:focus-visible {
     opacity: 0.82;
 }
 .NB-classifier-filter-view-btn:hover {

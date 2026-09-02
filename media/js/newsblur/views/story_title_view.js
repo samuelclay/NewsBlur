@@ -72,11 +72,43 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.toggle_read_status();
         this.color_feedbar();
         this.load_youtube_embeds();
+        this.apply_classifier_filter_highlight();
         if (this.options.is_grid) this.watch_grid_image();
         if (_.contains(['list', 'magazine'], story_layout) && this.show_image_preview()) this.watch_grid_image();
         if (_.contains(['split'], story_layout) && this.show_image_preview() && NEWSBLUR.assets.preference('feed_view_single_story')) this.watch_grid_image();
 
         return this;
+    },
+
+    apply_classifier_filter_highlight: function () {
+        var filter = NEWSBLUR.reader.flags['classifier_filter'];
+        if (!filter || !filter.value || !NEWSBLUR.classifier_filter_utils) return;
+
+        var selector = NEWSBLUR.classifier_filter_utils.story_title_highlight_selector(filter.type);
+        if (selector) {
+            this.$(selector).mark(filter.value, {
+                className: 'NB-classifier-filter-highlight',
+                separateWordSearch: false,
+                acrossElements: true,
+                caseSensitive: false
+            });
+        }
+
+        if (filter.type !== 'url') return;
+        var permalink = this.model.get('story_permalink') || '';
+        var match_index = permalink.toLowerCase().indexOf(String(filter.value).toLowerCase());
+        if (match_index === -1) return;
+
+        var before = permalink.slice(0, match_index);
+        var match = permalink.slice(match_index, match_index + String(filter.value).length);
+        var after = permalink.slice(match_index + String(filter.value).length);
+        var $url_match = $.make('div', { className: 'NB-storytitles-classifier-url' }, [
+            $.make('span', { className: 'NB-storytitles-classifier-url-label' }, 'URL'),
+            $.make('span', before),
+            $.make('mark', { className: 'NB-classifier-filter-highlight' }, match),
+            $.make('span', after)
+        ]);
+        this.$('.story_title').first().append($url_match);
     },
 
     template: _.template('\

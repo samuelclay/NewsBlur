@@ -2654,6 +2654,7 @@ var classifier_prototype = {
         }
         var has_filter_view = !!classifier_value && !is_regex &&
             _.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, classifier_type);
+        var filter_feed_id = this.feed_id;
         // Storage key: regex classifiers use type + '_regex', others use type + 's'
         var storage_key = is_regex ? classifier_type + '_regex' : classifier_type + 's';
         // Input name: regex classifiers save as 'like_title_regex' or 'like_text_regex'
@@ -2806,11 +2807,17 @@ var classifier_prototype = {
                     $.modal.close();
                 }
                 _.defer(function () {
-                    NEWSBLUR.reader.open_classifier_filter(classifier_type, classifier_value, {
+                    var filter_options = {
                         scope: row_scope,
                         folder_name: row_folder,
                         origin: 'trainer'
-                    });
+                    };
+                    filter_options.feed_id = filter_feed_id;
+                    NEWSBLUR.reader.open_classifier_filter(
+                        classifier_type,
+                        classifier_value,
+                        filter_options
+                    );
                 });
             });
 
@@ -5183,7 +5190,8 @@ var classifier_prototype = {
         if (type === 'image_prompt') type_label = 'Image Filter';
 
         var effective_scope = scope || 'feed';
-        var has_filter_view = _.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type);
+        var has_filter_view = !is_regex &&
+            _.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type);
 
         // For feed-type classifiers, no scope controls (publisher is always feed-scoped)
         var $scope_badge;
@@ -5305,11 +5313,13 @@ var classifier_prototype = {
                 $.modal.close();
             }
             _.defer(function () {
-                NEWSBLUR.reader.open_classifier_filter(type, value, {
+                var filter_options = {
                     scope: row_scope,
                     folder_name: row_folder,
                     origin: 'trainer'
-                });
+                };
+                filter_options.feed_id = feed_id;
+                NEWSBLUR.reader.open_classifier_filter(type, value, filter_options);
             });
         });
 
