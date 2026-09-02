@@ -1655,12 +1655,14 @@
         //
         // type:    one of tag | author | title | url | text
         // value:   the classifier's value (e.g. the tag name, author name, ...)
-        // opts:    { scope, folder_name, origin }
+        // opts:    { scope, folder_name, origin, feed_id }
         //   scope    - feed (default), folder, or global (archive only)
         //   folder_name - only meaningful when scope='folder'
         //   origin   - 'trainer' (from the trainer dialog) or 'pill' (from a
         //              tag/author/url chip). Used to decide whether the
         //              banner shows the "Back to trainer" return link.
+        //   feed_id  - fallback site when a dashboard trainer has no active
+        //              story list to reload.
         open_classifier_filter: function (type, value, opts) {
             opts = opts || {};
             if (!type || !value) return;
@@ -1687,9 +1689,21 @@
                 this._sync_classifier_filter_url(this.flags['classifier_filter']);
             }
 
-            // Pass classifier_filter in options so reset_feed doesn't wipe
-            // the flag during the reload.
-            this.reload_feed({ classifier_filter: this.flags['classifier_filter'] });
+            // A dashboard trainer has no active story list. In that one case,
+            // open the site represented by the trainer row and let its first
+            // request carry the filter, avoiding an unfiltered request race.
+            if (opts.feed_id &&
+                (this.flags['splash_page_frontmost'] || window.location.pathname === '/') &&
+                opts.feed_id !== this.active_feed) {
+                this.open_feed(opts.feed_id, {
+                    force: true,
+                    classifier_filter: this.flags['classifier_filter']
+                });
+            } else {
+                // Pass classifier_filter in options so reset_feed doesn't wipe
+                // the flag during the reload.
+                this.reload_feed({ classifier_filter: this.flags['classifier_filter'] });
+            }
 
             if (NEWSBLUR.Views.ClassifierFilterBannerView) {
                 if (NEWSBLUR.app.classifier_filter_banner_view) {

@@ -1,23 +1,26 @@
 // Sticky banner that appears above .NB-story-titles when the user enters
-// the classifier filter view. The inline pill mirrors the trainer's
-// .NB-classifier DOM exactly so training from the banner feels identical
-// to training from the trainer modal.
+// the classifier filter view. It keeps the active value prominent while
+// grouping scope, training, and notification actions into a quiet toolbar.
 
 NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
     className: "NB-classifier-filter-banner",
 
     events: {
-        "click .NB-classifier-filter-banner-close": "close",
-        "click .NB-classifier-filter-banner-back-trainer": "back_to_trainer"
+        "click .NB-classifier-filter-banner-clear": "close",
+        "click .NB-classifier-filter-banner-back-trainer": "back_to_trainer",
+        "click .NB-classifier-filter-scope-button": "change_scope",
+        "click .NB-classifier-filter-training-button": "apply_training",
+        "click .NB-classifier-filter-notification-button": "toggle_notification",
+        "click .NB-classifier-filter-notification-upgrade": "open_notification_upgrade"
     },
 
     type_label_map: {
-        'tag': 'tag',
-        'author': 'author',
-        'title': 'title phrase',
+        'tag': 'Tag',
+        'author': 'Author',
+        'title': 'Title',
         'url': 'URL',
-        'text': 'text phrase'
+        'text': 'Text'
     },
 
     type_icons: {
@@ -32,9 +35,16 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         options = options || {};
         this.filter = options.filter || NEWSBLUR.reader.flags['classifier_filter'];
         this._classifier_notifications = {};
+        this.result_count = null;
+        this.results_complete = false;
 
-        // Kick off a notifications load so the bell can render with current
-        // channels. Re-render if the response lands after the initial paint.
+        if (NEWSBLUR.assets && NEWSBLUR.assets.stories) {
+            this.listenTo(NEWSBLUR.assets.stories, 'reset add remove', this.update_result_count);
+            this.listenTo(NEWSBLUR.assets.stories, 'no_more_stories', this.complete_result_count);
+        }
+
+        // Load the current notification channels for the inline controls.
+        // Re-render if the response lands after the initial paint.
         var self = this;
         if (NEWSBLUR.assets && NEWSBLUR.assets.load_classifier_notifications) {
             NEWSBLUR.assets.load_classifier_notifications(function (data) {
@@ -51,32 +61,72 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
         var type = this.filter.type;
         var origin = this.filter.origin;
+        var type_label = this.type_label_map[type] || Inflector.capitalize(type);
 
         var $icon = $.make('div', { className: 'NB-classifier-filter-banner-icon' });
         $icon.html(this.type_icons[type] || '');
 
-        var $pill_wrapper = this._make_trainer_style_pill();
-
-        var $text = $.make('div', { className: 'NB-classifier-filter-banner-text' }, [
-            $.make('span', { className: 'NB-classifier-filter-banner-title' },
-                'Browsing stories with ' + (this.type_label_map[type] || type)),
-            $pill_wrapper
+        var $heading = $.make('div', { className: 'NB-classifier-filter-banner-heading' }, [
+            $.make('span', { className: 'NB-classifier-filter-banner-type' }, type_label),
+            $.make('span', { className: 'NB-classifier-filter-banner-separator' }, '\u00b7'),
+            $.make('span', { className: 'NB-classifier-filter-banner-value' }, this.filter.value)
+        ]);
+        var summary = NEWSBLUR.classifier_filter_utils.format_result_summary(
+            this.result_count,
+            this.results_complete,
+            this._result_context()
+        );
+        var $summary = $.make('div', {
+            className: 'NB-classifier-filter-banner-subtext',
+            'aria-live': 'polite'
+        }, summary);
+        var $narrow_hint = $.make('div', {
+            className: 'NB-classifier-filter-narrow-hint',
+            'aria-label': 'Widen the story titles pane to use filter controls'
+        }, [
+            $.make('span', {
+                className: 'NB-classifier-filter-narrow-hint-label'
+            }, 'Widen pane for controls'),
+            $.make('span', {
+                className: 'NB-classifier-filter-narrow-hint-compact',
+                'aria-hidden': 'true'
+            }, '\u2194')
+        ]);
+        var $tools = $.make('div', { className: 'NB-classifier-filter-banner-tools' }, [
+            this._make_scope_controls(),
+            this._make_training_controls(),
+            this._make_notification_controls(
+                type,
+                this.filter.value,
+                this.filter.scope || 'feed',
+                this.filter.folder_name || ''
+            )
         ]);
 
         var $content = $.make('div', { className: 'NB-classifier-filter-banner-content' }, [
-            $text
+            $heading,
+            $summary,
+            $narrow_hint,
+            $tools
         ]);
 
         var $actions = $.make('div', { className: 'NB-classifier-filter-banner-actions' });
         if (origin === 'trainer') {
-            $actions.append($.make('span', {
-                className: 'NB-classifier-filter-banner-back-trainer'
+            $actions.append($.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-banner-back-trainer',
+                'aria-label': 'Back to classifier trainer'
             }, 'Back to trainer'));
         }
-        $actions.append($.make('span', {
-            className: 'NB-classifier-filter-banner-close',
-            'data-tooltip': 'Close'
-        }, '\u2715'));
+        $actions.append($.make('button', {
+            type: 'button',
+            className: 'NB-classifier-filter-banner-clear',
+            'aria-label': 'Clear classifier filter'
+        }, $.make(
+            'span',
+            { className: 'NB-classifier-filter-banner-clear-icon', 'aria-hidden': 'true' },
+            '\u2715'
+        )));
 
         this.$el.empty().addClass('NB-filter-' + type);
         var self = this;
@@ -90,315 +140,200 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         return this;
     },
 
-    // Build a pill that matches the trainer's .NB-classifier DOM so it
-    // inherits all the trainer stylesheet rules (padding, icon positioning,
-    // hover/active colors). The `.NB-classifiers` wrapper at the bottom is
-    // mandatory — those rules are all scoped under it.
-    _make_trainer_style_pill: function () {
-        var type = this.filter.type;
-        var value = this.filter.value;
+    _result_context: function () {
+        return NEWSBLUR.reader.feed_title(NEWSBLUR.reader.active_feed) || 'this site';
+    },
+
+    update_result_count: function () {
+        if (!NEWSBLUR.assets || !NEWSBLUR.assets.stories) return;
+        this.result_count = NEWSBLUR.assets.stories.length;
+        this.results_complete = !!NEWSBLUR.assets.stories.no_more_stories;
+        if (this.$el && this.$el.closest(document.documentElement).length) this.render();
+    },
+
+    complete_result_count: function () {
+        if (!NEWSBLUR.assets || !NEWSBLUR.assets.stories) return;
+        this.result_count = NEWSBLUR.assets.stories.length;
+        this.results_complete = true;
+        if (this.$el && this.$el.closest(document.documentElement).length) this.render();
+    },
+
+    _make_scope_controls: function () {
         var scope = this.filter.scope || 'feed';
-        var folder_name = this.filter.folder_name || '';
-        var score = this._lookup_current_score();
+        var scope_labels = {
+            feed: 'Site',
+            folder: 'Folder',
+            global: 'All'
+        };
+        var $buttons = $.make('span', {
+            className: 'NB-classifier-filter-segmented',
+            role: 'group',
+            'aria-label': 'Classifier filter scope'
+        });
 
-        var display_type = type === 'url' ? 'URL' : Inflector.capitalize(type);
-
-        var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
         _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
-            var $toggle = $.make('span', {
-                className: 'NB-scope-toggle NB-scope-toggle-' + icon.key +
+            var $button = $.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-scope-button' +
                     (icon.key === scope ? ' NB-active' : ''),
-                'data-tooltip': icon.title
+                title: icon.title,
+                'aria-label': icon.title,
+                'aria-pressed': icon.key === scope ? 'true' : 'false',
+                'data-scope': icon.key
             });
-            $toggle.html(icon.svg);
-            $toggle.data('scope', icon.key);
-            $scope_toggles.append($toggle);
-        });
-        var $scope_badge = $.make('span', { className: 'NB-classifier-scope-badge' }, [
-            $scope_toggles
-        ]);
-
-        var $type_label = $.make('span', { className: 'NB-classifier-type-badge' }, [
-            $.make('span', { className: 'NB-classifier-type-label' }, display_type)
-        ]);
-
-        var $bell = this._make_notification_bell(type, value, scope, folder_name, score);
-
-        var $classifier = $.make('span', {
-            className: 'NB-classifier NB-classifier-' + type
-        }, [
-            $.make('input', {
-                type: 'checkbox',
-                className: 'NB-classifier-input-like',
-                name: 'like_' + type,
-                value: value
-            }),
-            $.make('input', {
-                type: 'checkbox',
-                className: 'NB-classifier-input-dislike',
-                name: 'dislike_' + type,
-                value: value
-            }),
-            $.make('input', {
-                type: 'checkbox',
-                className: 'NB-classifier-input-super-dislike',
-                name: 'super_dislike_' + type,
-                value: value
-            }),
-            $.make('div', { className: 'NB-classifier-icon-like' }),
-            $.make('div', { className: 'NB-classifier-icon-dislike' }, [
-                $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
-            ]),
-            $.make('div', { className: 'NB-classifier-icon-super-dislike' }),
-            $.make('label', [
-                $scope_badge,
-                $bell,
-                $type_label,
-                $.make('span', value)
-            ])
-        ]);
-
-        $classifier.data('scope', scope);
-        $classifier.data('folder-name', folder_name);
-
-        if (score > 0) {
-            $classifier.addClass('NB-classifier-like');
-            $('.NB-classifier-input-like', $classifier).prop('checked', true);
-        } else if (score <= -2) {
-            $classifier.addClass('NB-classifier-super-dislike');
-            $('.NB-classifier-input-super-dislike', $classifier).prop('checked', true);
-        } else if (score < 0) {
-            $classifier.addClass('NB-classifier-dislike');
-            $('.NB-classifier-input-dislike', $classifier).prop('checked', true);
-        }
-
-        $classifier.on('mouseenter', function (e) {
-            $(e.currentTarget).addClass('NB-classifier-hover-like');
-        }).on('mouseleave', function (e) {
-            $(e.currentTarget).removeClass('NB-classifier-hover-like');
-        });
-        $('.NB-classifier-icon-dislike', $classifier).on('mouseenter', function () {
-            $classifier.addClass('NB-classifier-hover-dislike');
-        }).on('mouseleave', function () {
-            $classifier.removeClass('NB-classifier-hover-dislike');
-        });
-        $('.NB-classifier-icon-super-dislike', $classifier).on('mouseenter', function () {
-            $classifier.addClass('NB-classifier-hover-super-dislike');
-        }).on('mouseleave', function () {
-            $classifier.removeClass('NB-classifier-hover-super-dislike');
+            $button.html(icon.svg);
+            $button.append($.make(
+                'span',
+                { className: 'NB-classifier-filter-button-label' },
+                scope_labels[icon.key]
+            ));
+            $buttons.append($button);
         });
 
-        // Super-dislike is bound first so its click doesn't bubble up to
-        // the dislike or whole-pill handlers.
-        var self = this;
-        $('.NB-classifier-icon-super-dislike', $classifier).on('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            self._apply_training('super_dislike');
-        });
-        $('.NB-classifier-icon-dislike', $classifier).on('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            self._apply_training('dislike');
-        });
-        $classifier.on('click', function (e) {
-            if ($(e.target).closest('.NB-scope-toggle, .NB-classifier-notification-bell, .NB-classifier-notif-indicators').length) {
-                return;
-            }
-            e.preventDefault();
-            self._apply_training('like');
-        });
-
-        // Scope toggle clicks — re-issue the filter at the new scope.
-        $('.NB-scope-toggle', $classifier).on('click', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            self._change_scope($(this).data('scope'));
-        });
-        // Instant tooltips for scope toggles (matches trainer dialog).
-        $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
-            var $this = $(this);
-            var text = $this.attr('data-tooltip');
-            if (!text) return;
-            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
-            $('body').append($tip);
-            var rect = this.getBoundingClientRect();
-            $tip.css({
-                top: rect.top - $tip.outerHeight() - 6,
-                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-            });
-            $this.data('$tooltip', $tip);
-        }).on('mouseleave', function () {
-            var $tip = $(this).data('$tooltip');
-            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-        });
-
-        // The .NB-classifier stylesheet rules are scoped under .NB-classifiers;
-        // the host wrapper here gets the trainer styles while the -host class
-        // in reader.css neutralizes the trainer's float so the pill sits
-        // inline inside the banner's flex row.
-        return $.make('span', { className: 'NB-classifiers NB-classifier-filter-banner-classifier-host' }, [
-            $classifier
+        return $.make('span', { className: 'NB-classifier-filter-tool-group' }, [
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Apply to'),
+            $buttons
         ]);
     },
 
-    _make_notification_bell: function (type, value, scope, folder_name, score) {
+    _make_training_controls: function () {
+        var score = this._lookup_current_score();
+        var thumb_down_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.6l2.3-7A2 2 0 0 1 6.5 3H20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.8 1.1L12 22h0a3.1 3.1 0 0 1-3-3.9Z"/></svg>';
+        var controls = [
+            {
+                key: 'like',
+                label: 'Like matching stories',
+                short_label: 'Like',
+                active: score > 0,
+                svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 7A2 2 0 0 1 17.5 21H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2h0a3.1 3.1 0 0 1 3 3.9Z"/></svg>'
+            },
+            {
+                key: 'dislike',
+                label: 'Dislike matching stories',
+                short_label: 'Dislike',
+                active: score < 0 && score > -2,
+                svg: thumb_down_svg
+            },
+            {
+                key: 'super_dislike',
+                label: 'Hide matching stories',
+                short_label: 'Hide',
+                active: score <= -2,
+                svg: '<span class="NB-classifier-filter-super-dislike-icon" aria-hidden="true">' +
+                    '<span class="NB-super-dislike-icon-back">' + thumb_down_svg + '</span>' +
+                    '<span class="NB-super-dislike-icon-front">' + thumb_down_svg + '</span>' +
+                    '</span>'
+            }
+        ];
+
+        var $buttons = $.make('span', {
+            className: 'NB-classifier-filter-segmented NB-classifier-filter-training-segmented',
+            role: 'group',
+            'aria-label': 'Train this classifier'
+        });
+        _.each(controls, function (control) {
+            var $button = $.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-training-button NB-training-' + control.key +
+                    (control.active ? ' NB-active' : ''),
+                title: control.label,
+                'aria-label': control.label,
+                'aria-pressed': control.active ? 'true' : 'false',
+                'data-opinion': control.key
+            });
+            $button.html(control.svg);
+            $button.append($.make(
+                'span',
+                { className: 'NB-classifier-filter-button-label' },
+                control.short_label
+            ));
+            $buttons.append($button);
+        });
+
+        return $.make('span', { className: 'NB-classifier-filter-tool-group' }, [
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Train'),
+            $buttons
+        ]);
+    },
+
+    _notification_state: function (type, value, scope, folder_name) {
         var feed_id = NEWSBLUR.reader.active_feed;
-        var is_regex = false;
-        var regex_key = is_regex ? 'regex' : '';
-        var notif_key = type + ':' + value + ':' + regex_key + ':' + scope + ':' +
+        var notif_key = type + ':' + value + '::' + scope + ':' +
             (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
         var notif = this._classifier_notifications && this._classifier_notifications[notif_key];
-        var active_types = (notif && notif.notification_types) || [];
-        var has_channels = active_types.length > 0;
-
-        var bell_svg = NEWSBLUR.Views.ClassifierNotificationPopover &&
-            NEWSBLUR.Views.ClassifierNotificationPopover.BELL_SVG;
-
-        var $bell_icon = $.make('span', { className: 'NB-bell-icon' });
-        if (bell_svg) $bell_icon.html(bell_svg);
-
-        var $indicators = $.make('span', { className: 'NB-classifier-notif-indicators' });
-        _.each(active_types, function (t) {
-            var icon_svg = NEWSBLUR.Views.ClassifierNotificationPopover &&
-                NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS[t];
-            if (icon_svg) {
-                var $i = $.make('span', { className: 'NB-channel-indicator NB-channel-' + t });
-                $i.html(icon_svg);
-                $indicators.append($i);
-            }
-        });
-
-        var $bell = $.make('span', {
-            className: 'NB-classifier-notification-bell' + (has_channels ? ' NB-active' : '')
-        }, [
-            $bell_icon,
-            $indicators
-        ]);
-
-        $bell.data('classifier-type', type);
-        $bell.data('classifier-value', value);
-        $bell.data('is-regex', is_regex);
-        $bell.data('scope', scope);
-        $bell.data('folder-name', folder_name);
-        $bell.data('score', score);
-        $bell.data('notification-types', active_types.slice());
-
-        // Hover-to-open with timers, mirroring the trainer bell. Click also
-        // opens immediately. The 200ms hover delay avoids accidental opens
-        // when the user is just sweeping the cursor across the pill.
-        var self = this;
-        $bell.on('mouseenter', function () {
-            var $this = $(this);
-            clearTimeout(self._bell_close_timer);
-            self._bell_hover_timer = setTimeout(function () {
-                self._show_notification_popover($this);
-            }, 200);
-        }).on('mouseleave', function () {
-            clearTimeout(self._bell_hover_timer);
-            self._bell_close_timer = setTimeout(function () {
-                if (!self._popover_hovered) {
-                    self._close_notification_popover();
-                }
-            }, 150);
-        }).on('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            clearTimeout(self._bell_hover_timer);
-            self._show_notification_popover($(this));
-        });
-
-        return $bell;
-    },
-
-    _show_notification_popover: function ($bell) {
-        // Re-opening the same popover during hover-in/out is a no-op so we
-        // don't tear down a popover the user is actively interacting with.
-        if (this._active_popover && this._active_popover_bell &&
-            this._active_popover_bell[0] === $bell[0]) {
-            clearTimeout(this._bell_close_timer);
-            return;
-        }
-        this._close_notification_popover();
-
-        var classifier_type = $bell.data('classifier-type');
-        var classifier_value = $bell.data('classifier-value');
-        var scope = $bell.data('scope');
-        var folder_name = $bell.data('folder-name') || '';
-        var feed_id = NEWSBLUR.reader.active_feed;
-        var active_types = $bell.data('notification-types') || [];
-
-        if (!NEWSBLUR.Views.ClassifierNotificationPopover) return;
-
-        var self = this;
-        var popover = new NEWSBLUR.Views.ClassifierNotificationPopover({
-            classifier_type: classifier_type,
-            classifier_value: classifier_value,
-            is_regex: false,
-            scope: scope,
+        return {
             feed_id: scope === 'feed' ? feed_id : 0,
-            folder_name: folder_name,
-            is_email: _.contains(active_types, 'email'),
-            is_web: _.contains(active_types, 'web'),
-            is_ios: _.contains(active_types, 'ios'),
-            is_android: _.contains(active_types, 'android'),
-            $bell: $bell,
-            trainer: null,
-            // Banner has no save button, so persist immediately whenever a
-            // channel toggle flips. The popover already updated the bell's
-            // visual indicators in place, so we just need to sync the server
-            // and refresh the local cache so future renders match.
-            on_change: function (notification_types) {
-                var payload = {
-                    classifier_type: classifier_type,
-                    classifier_value: classifier_value,
-                    is_regex: false,
-                    scope: scope,
-                    feed_id: scope === 'feed' ? feed_id : 0,
-                    folder_name: folder_name,
-                    notification_types: notification_types
-                };
-                NEWSBLUR.assets.set_classifier_notification(payload, function (resp) {
-                    if (resp && resp.classifier_notifications) {
-                        self._classifier_notifications = resp.classifier_notifications;
-                    }
-                });
-            }
-        });
-
-        var $popover = popover.render().$el;
-        $('body').append($popover);
-
-        var rect = $bell[0].getBoundingClientRect();
-        var popover_height = $popover.outerHeight();
-        $popover.css({
-            top: rect.top - popover_height - 6,
-            left: Math.max(4, rect.left - 20)
-        });
-
-        this._active_popover = $popover;
-        this._active_popover_bell = $bell;
-
-        // Sticky hover: while the cursor is over the popover, cancel the
-        // bell's pending close so the user can interact with the toggles.
-        $popover.on('mouseenter', function () {
-            self._popover_hovered = true;
-            clearTimeout(self._bell_close_timer);
-        }).on('mouseleave', function () {
-            self._popover_hovered = false;
-            self._bell_close_timer = setTimeout(function () {
-                self._close_notification_popover();
-            }, 150);
-        });
+            key: notif_key,
+            notification: notif || {},
+            notification_types: ((notif && notif.notification_types) || []).slice()
+        };
     },
 
-    _close_notification_popover: function () {
-        if (this._active_popover) {
-            this._active_popover.remove();
-            this._active_popover = null;
-            this._active_popover_bell = null;
+    _make_notification_controls: function (type, value, scope, folder_name) {
+        var state = this._notification_state(type, value, scope, folder_name);
+        var is_archive = NEWSBLUR.Globals.is_archive;
+        var channel_icons = NEWSBLUR.Views.ClassifierNotificationPopover &&
+            NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS || {};
+        var channels = [
+            { key: 'email', short_label: 'Email' },
+            { key: 'web', short_label: 'Web' },
+            { key: 'ios', short_label: 'iOS' },
+            { key: 'android', short_label: 'Android' }
+        ];
+        var $buttons = $.make('span', {
+            className: 'NB-classifier-filter-segmented NB-classifier-filter-notification-segmented' +
+                (!is_archive ? ' NB-disabled' : ''),
+            role: 'group',
+            'aria-label': is_archive ? 'Notify on match' :
+                'Notify on match. Premium Archive required'
+        });
+        _.each(channels, function (channel) {
+            var is_active = _.contains(state.notification_types, channel.key);
+            var label = channel.short_label + ' notifications';
+            var $button = $.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-notification-button NB-notification-' + channel.key +
+                    (is_active ? ' NB-active' : ''),
+                title: is_archive ? label : label + ' require Premium Archive',
+                'aria-label': label,
+                'aria-pressed': is_active ? 'true' : 'false',
+                'aria-disabled': !is_archive ? 'true' : 'false',
+                'data-channel': channel.key
+            });
+            if (!is_archive) $button.prop('disabled', true);
+            if (channel_icons[channel.key]) {
+                var $icon = $.make('span', {
+                    className: 'NB-classifier-filter-notification-icon',
+                    'aria-hidden': 'true'
+                });
+                $icon.html(channel_icons[channel.key]);
+                $button.append($icon);
+            }
+            $button.append($.make(
+                'span',
+                { className: 'NB-classifier-filter-button-label' },
+                channel.short_label
+            ));
+            $buttons.append($button);
+        });
+
+        var $notification_content = $.make('span', {
+            className: 'NB-classifier-filter-notification-content'
+        }, $buttons);
+        if (!is_archive) {
+            $notification_content.append($.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-notification-upgrade',
+                'aria-label': 'Upgrade to Premium Archive for classifier notifications'
+            }, 'Upgrade to Premium Archive'));
         }
-        this._popover_hovered = false;
+
+        return $.make('span', {
+            className: 'NB-classifier-filter-tool-group NB-classifier-filter-notification-group'
+        }, [
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Notify on'),
+            $notification_content
+        ]);
     },
 
     // Only checks feed-scoped classifiers on the active feed; folder/global
@@ -429,7 +364,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     },
 
     hide_banner: function () {
-        this._close_notification_popover();
+        this.stopListening();
         var $el = this.$el;
         $el.animate({ 'opacity': 0 }, {
             'duration': 200,
@@ -439,6 +374,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
     update: function (filter) {
         this.filter = filter;
+        this.result_count = null;
+        this.results_complete = false;
         this.render();
         // Re-attach if a prior hide_banner animated the element out of the
         // DOM but the caller is reusing the view instance.
@@ -462,13 +399,78 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
     },
 
+    change_scope: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        this._change_scope($(e.currentTarget).data('scope'));
+    },
+
+    apply_training: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        this._apply_training($(e.currentTarget).data('opinion'));
+    },
+
+    toggle_notification: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.open_notification_upgrade();
+            return;
+        }
+
+        var channel = $(e.currentTarget).data('channel');
+        var type = this.filter.type;
+        var value = this.filter.value;
+        var scope = this.filter.scope || 'feed';
+        var folder_name = this.filter.folder_name || '';
+        var state = this._notification_state(type, value, scope, folder_name);
+        var notification_types = state.notification_types;
+        if (_.contains(notification_types, channel)) {
+            notification_types = _.without(notification_types, channel);
+        } else {
+            notification_types.push(channel);
+        }
+
+        this._classifier_notifications[state.key] = $.extend({}, state.notification, {
+            classifier_type: type,
+            classifier_value: value,
+            is_regex: false,
+            scope: scope,
+            feed_id: state.feed_id,
+            folder_name: folder_name,
+            notification_types: notification_types
+        });
+        this.render();
+
+        var self = this;
+        NEWSBLUR.assets.set_classifier_notification({
+            classifier_type: type,
+            classifier_value: value,
+            is_regex: false,
+            scope: scope,
+            feed_id: state.feed_id,
+            folder_name: folder_name,
+            notification_types: notification_types
+        }, function (resp) {
+            if (resp && resp.classifier_notifications) {
+                self._classifier_notifications = resp.classifier_notifications;
+                self.render();
+            }
+        });
+    },
+
+    open_notification_upgrade: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'notifications' });
+    },
+
     // For non-archive users scope toggles are still rendered, but clicking
     // a non-feed scope shakes the badge instead of actually switching.
     _change_scope: function (new_scope) {
-        if (!new_scope || new_scope === this.filter.scope) return;
+        if (!new_scope || new_scope === (this.filter.scope || 'feed')) return;
         if (new_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
-            var $badge = this.$el.find('.NB-classifier-scope-badge');
-            var $toggle = this.$el.find('.NB-scope-toggle-' + new_scope);
+            var $badge = this.$el.find('.NB-classifier-filter-segmented').first();
+            var $toggle = this.$el.find(
+                '.NB-classifier-filter-scope-button[data-scope="' + new_scope + '"]'
+            );
             $badge.removeClass('NB-shake');
             if ($badge.length) $badge[0].offsetWidth;
             $badge.addClass('NB-shake');
