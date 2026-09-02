@@ -8823,15 +8823,22 @@ body {
     justify-content: center;
     width: 26px;
     height: 22px;
-    margin-left: 8px;
+    margin-left: 2px;
     padding: 2px 4px;
+    border: 0;
     border-radius: 4px;
+    box-sizing: border-box;
     cursor: pointer !important;
     opacity: 0.32;
     color: inherit;
     background: transparent;
     transition: opacity 140ms ease, background 140ms ease, color 140ms ease;
     vertical-align: middle;
+}
+.NB-manage-classifier-item .NB-classifier-filter-view-btn {
+    position: static;
+    margin-top: 2px;
+    margin-left: 2px;
 }
 .NB-classifier-filter-view-btn svg {
     width: 18px;
@@ -10044,12 +10051,18 @@ form.opml_import_form input {
 
 .NB-modal-classifiers .NB-classifier-container {
     white-space: nowrap;
-    display: inline-block;
+    display: inline-flex;
+    align-items: flex-start;
     margin: 2px 6px 6px 0;
 }
 
 .NB-modal-classifiers .NB-classifier-container .NB-classifier {
-    margin: 0 2px 0 0;
+    margin: 0;
+}
+
+.NB-modal-classifiers .NB-classifier-container .NB-classifier-filter-view-btn {
+    position: static;
+    margin: 0 0 0 2px;
 }
 
 .NB-classifier-container .NB-classifier-count {
@@ -10628,11 +10641,13 @@ form.opml_import_form input {
 }
 
 .NB-manage-classifier-item {
-    display: inline-block;
+    display: inline-flex;
+    align-items: flex-start;
 }
 
 .NB-manage-classifier-item .NB-classifier {
     font-size: 12px;
+    margin-right: 0;
 }
 
 /* Manage tab submit area */

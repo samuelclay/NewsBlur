@@ -69,6 +69,7 @@ from apps.analyzer.models import (
     apply_classifier_titles,
     apply_classifier_url_regex,
     apply_classifier_urls,
+    classifier_title_matches,
     get_classifiers_for_user,
     load_scoped_classifiers,
     sort_classifiers_by_feed,
@@ -337,7 +338,7 @@ def filter_stories_by_classifier(stories, classifier_type, classifier_value):
         if classifier_type == "author":
             return story.get("story_authors") == classifier_value
         if classifier_type == "title":
-            return needle_lower in (story.get("story_title") or "").lower()
+            return classifier_title_matches(story.get("story_title"), classifier_value)
         if classifier_type == "url":
             return needle_lower in (story.get("story_permalink") or "").lower()
         if classifier_type == "text":

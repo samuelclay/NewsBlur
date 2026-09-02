@@ -1777,7 +1777,10 @@
         },
 
         reload_feed: function (options) {
-            options = options || {};
+            options = NEWSBLUR.classifier_filter_utils.preserve_active_filter(
+                options,
+                this.flags['classifier_filter']
+            );
 
             if (this.flags['starred_view'] && this.flags['starred_tag']) {
                 options['tag'] = this.flags['starred_tag'];
