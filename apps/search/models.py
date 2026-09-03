@@ -598,6 +598,58 @@ class SearchStory:
         return result_ids
 
     @classmethod
+    def query_tag(cls, feed_ids, tag, order, offset, limit):
+        """Return story hashes with one exact tag in the selected feeds.
+
+        ``tags.raw`` contains the entire comma-separated tag string. Match the
+        requested tag in each possible token position so a tag does not also
+        match a longer tag that merely contains it. ``None`` means the search
+        failed; an empty list is a successful query with no matches.
+        """
+        tag = html.unescape(tag or "").strip()
+        if not feed_ids or not tag:
+            return []
+
+        wildcard_tag = tag.replace("\\", "\\\\").replace("*", "\\*").replace("?", "\\?")
+        tag_filter = {
+            "bool": {
+                "should": [
+                    {"term": {"tags.raw": tag}},
+                    {"wildcard": {"tags.raw": f"{wildcard_tag}, *"}},
+                    {"wildcard": {"tags.raw": f"*, {wildcard_tag}"}},
+                    {"wildcard": {"tags.raw": f"*, {wildcard_tag}, *"}},
+                ],
+                "minimum_should_match": 1,
+            }
+        }
+        body = {
+            "query": {
+                "bool": {
+                    "filter": [
+                        {"terms": {"feed_id": feed_ids[:2000]}},
+                        tag_filter,
+                    ]
+                }
+            },
+            "sort": [{"date": {"order": "desc" if order == "newest" else "asc"}}],
+            "from": offset,
+            "size": limit,
+        }
+
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+            return [result["_id"] for result in results["hits"]["hits"]]
+        except (
+            elasticsearch.exceptions.TransportError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+            KeyError,
+            TypeError,
+        ) as e:
+            logging.error(" ***> ~FRUnable to query indexed story tags: %s" % e)
+            return None
+
+    @classmethod
     def query_briefing_custom(cls, feed_ids, phrase, date_start, date_end, limit=10):
         """Search stories by exact phrase within a date range, for briefing custom sections.
 
