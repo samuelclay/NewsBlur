@@ -123,8 +123,9 @@ test('filter banner labels each segment and keeps the clear action icon-only', f
     const css = repo_file('media/css/reader/reader.css');
 
     assert.match(js, /className:\s*'NB-classifier-filter-banner-heading'/);
-    assert.match(js, /format_result_summary/);
-    assert.match(js, /'aria-live':\s*'polite'/);
+    assert.doesNotMatch(js, /format_result_summary/);
+    assert.doesNotMatch(js, /NB-classifier-filter-banner-subtext/);
+    assert.doesNotMatch(css, /\.NB-classifier-filter-banner-subtext/);
     assert.match(js, /'aria-label':\s*'Clear classifier filter'/);
     assert.match(js, /feed:\s*'Site'/);
     assert.match(js, /folder:\s*'Folder'/);

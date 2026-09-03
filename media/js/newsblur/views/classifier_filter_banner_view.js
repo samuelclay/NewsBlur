@@ -35,13 +35,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         options = options || {};
         this.filter = options.filter || NEWSBLUR.reader.flags['classifier_filter'];
         this._classifier_notifications = {};
-        this.result_count = null;
-        this.results_complete = false;
-
-        if (NEWSBLUR.assets && NEWSBLUR.assets.stories) {
-            this.listenTo(NEWSBLUR.assets.stories, 'reset add remove', this.update_result_count);
-            this.listenTo(NEWSBLUR.assets.stories, 'no_more_stories', this.complete_result_count);
-        }
 
         // Load the current notification channels for the inline controls.
         // Re-render if the response lands after the initial paint.
@@ -71,15 +64,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $.make('span', { className: 'NB-classifier-filter-banner-separator' }, '\u00b7'),
             $.make('span', { className: 'NB-classifier-filter-banner-value' }, this.filter.value)
         ]);
-        var summary = NEWSBLUR.classifier_filter_utils.format_result_summary(
-            this.result_count,
-            this.results_complete,
-            this._result_context()
-        );
-        var $summary = $.make('div', {
-            className: 'NB-classifier-filter-banner-subtext',
-            'aria-live': 'polite'
-        }, summary);
         var $narrow_hint = $.make('div', {
             className: 'NB-classifier-filter-narrow-hint',
             'aria-label': 'Widen the story titles pane to use filter controls'
@@ -105,7 +89,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
         var $content = $.make('div', { className: 'NB-classifier-filter-banner-content' }, [
             $heading,
-            $summary,
             $narrow_hint,
             $tools
         ]);
@@ -138,24 +121,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         this.$el.append($actions);
 
         return this;
-    },
-
-    _result_context: function () {
-        return NEWSBLUR.reader.feed_title(NEWSBLUR.reader.active_feed) || 'this site';
-    },
-
-    update_result_count: function () {
-        if (!NEWSBLUR.assets || !NEWSBLUR.assets.stories) return;
-        this.result_count = NEWSBLUR.assets.stories.length;
-        this.results_complete = !!NEWSBLUR.assets.stories.no_more_stories;
-        if (this.$el && this.$el.closest(document.documentElement).length) this.render();
-    },
-
-    complete_result_count: function () {
-        if (!NEWSBLUR.assets || !NEWSBLUR.assets.stories) return;
-        this.result_count = NEWSBLUR.assets.stories.length;
-        this.results_complete = true;
-        if (this.$el && this.$el.closest(document.documentElement).length) this.render();
     },
 
     _make_scope_controls: function () {
@@ -374,8 +339,6 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
 
     update: function (filter) {
         this.filter = filter;
-        this.result_count = null;
-        this.results_complete = false;
         this.render();
         // Re-attach if a prior hide_banner animated the element out of the
         // DOM but the caller is reusing the view instance.
