@@ -2583,6 +2583,11 @@ color: #fff;
     color: #636D74;
 }
 
+.NB-dark .NB-pill-view-classifier:hover,
+.NB-dark .NB-pill-view-classifier:focus-visible {
+    background: rgba(255, 255, 255, .16);
+}
+
 .NB-dark .NB-feed-story .NB-feed-story-tag {
     border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
 }

@@ -5410,6 +5410,8 @@ body {
 
 .NB-feed-story .NB-feed-story-author-wrapper {
     float: left;
+    display: flex;
+    align-items: center;
     font-size: 12px;
     color: #757B6B;
     /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
@@ -5446,6 +5448,9 @@ body {
 }
 
 .NB-feed-story .NB-feed-story-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     cursor: pointer;
     flex: none;
 }
@@ -5510,7 +5515,9 @@ body {
 
 .NB-feed-story .NB-feed-story-tag {
     /* Grey */
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     cursor: pointer;
     font-weight: normal;
     font-size: 12px;
@@ -5613,37 +5620,47 @@ body {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
-/* "View matching stories" tippy hover surface shown over tag/author/url
-   pills. See media/js/newsblur/views/story_detail_view.js:show_pill_filter_menu.
-   Tippy renders whatever HTML we pass in `title`, so we style the inner
-   .NB-pill-view-classifier element directly to control icon alignment,
-   padding, hover highlight, and cursor. */
+/* Matching-story browse action embedded inside author, tag, and URL
+   classifiers. The classifier text keeps its existing training action. */
 .NB-pill-view-classifier {
+    -webkit-appearance: none;
+    appearance: none;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 6px 10px;
-    border-radius: 4px;
+    justify-content: center;
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
     cursor: pointer;
-    line-height: 1;
-    white-space: nowrap;
-    color: #ffffff;
+    color: inherit;
     background: transparent;
-    transition: background 120ms ease, color 120ms ease;
+    opacity: .6;
+    vertical-align: middle;
+    transition: background 120ms ease, color 120ms ease, opacity 120ms ease;
 }
+
 .NB-pill-view-classifier svg {
     display: block;
     flex-shrink: 0;
-    width: 13px;
-    height: 13px;
-    /* The SVG ships with stroke="white" inline; flex + align-items: center
-       handles vertical alignment with the label. */
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
 }
-.NB-pill-view-classifier:hover {
-    /* Text-selection-style highlight — matches the visual language the user
-       sees when highlighting text in a story. */
-    background: rgba(120, 170, 240, 0.28);
-    color: #ffffff;
+
+.NB-pill-view-classifier:hover,
+.NB-pill-view-classifier:focus-visible {
+    color: inherit;
+    background: rgba(0, 0, 0, .12);
+    opacity: 1;
+    outline: none;
+}
+
+.NB-pill-view-classifier:focus-visible {
+    box-shadow: 0 0 0 1px rgba(63, 118, 80, .35);
 }
 
 /* URL Match Display */
@@ -5663,7 +5680,9 @@ body {
 }
 
 .NB-feed-story .NB-feed-story-url {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     cursor: pointer;
     font-weight: normal;
     font-size: 11px;
@@ -5675,6 +5694,10 @@ body {
     background-color: rgba(0, 0, 0, .05);
     color: #808080;
     max-width: 100%;
+}
+
+.NB-feed-story .NB-feed-story-url-content {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

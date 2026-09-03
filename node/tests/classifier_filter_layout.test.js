@@ -75,6 +75,49 @@ test('manage trainer does not offer literal matching view for regex classifiers'
     );
 });
 
+test('story classifier pills embed browse buttons for matching-story views', function () {
+    const js = repo_file('media/js/newsblur/views/story_detail_view.js');
+    const css = repo_file('media/css/reader/reader.css');
+
+    assert.match(js, /classifier_filter_button_html\("author",\s*story\.story_authors\(\)\)/);
+    assert.match(js, /classifier_filter_button_html\("tag",\s*tag\)/);
+    assert.match(js, /classifier_filter_button_html\("url",\s*story\.get\("story_permalink"\)\)/);
+    assert.match(js, /title="View matching stories"/);
+    assert.match(js, /aria-label="View matching stories"/);
+    assert.match(js, /data-classifier-type=/);
+    assert.match(js, /data-classifier-value=/);
+    assert.match(js, /M224,104v96a16,16,0,0,1-16,16H48/);
+    assert.doesNotMatch(js, /M237\.22,151\.9l0-\.1/);
+    assert.match(js, /\.NB-score-icon, \.NB-score-icon-double, \.NB-pill-view-classifier/);
+    assert.doesNotMatch(js, /(?:mouseenter|mousemove) \.NB-feed-story-(?:tag|author|url)/);
+    assert.doesNotMatch(js, /show_pill_filter_menu:/);
+    assert.doesNotMatch(js, /this\.attach_classifier_filter_tooltips\(\);/);
+    assert.doesNotMatch(js, /attach_classifier_filter_tooltips:\s*function/);
+    assert.match(js, /"mousemove \.NB-pill-view-classifier":\s*"show_classifier_filter_tooltip"/);
+    assert.match(js, /"mouseleave \.NB-pill-view-classifier":\s*"hide_classifier_filter_tooltip"/);
+    assert.match(js, /show_classifier_filter_tooltip:\s*function[\s\S]*?tippy\(e\.currentTarget/);
+    assert.match(js, /trigger:\s*'manual'/);
+
+    const author_start = js.indexOf('<span class="NB-feed-story-author');
+    const author_button = js.indexOf('classifier_filter_button_html("author"', author_start);
+    const author_end = js.indexOf('</span>', author_start);
+    assert.ok(author_button > author_start && author_button < author_end);
+
+    const tag_start = js.indexOf('<div class="NB-feed-story-tag ');
+    const tag_button = js.indexOf('classifier_filter_button_html("tag"', tag_start);
+    const tag_end = js.indexOf('</div>', tag_start);
+    assert.ok(tag_button > tag_start && tag_button < tag_end);
+
+    const button_rule = css_rule(css, '.NB-pill-view-classifier');
+    assert.match(button_rule, /width:\s*18px;/);
+    assert.match(button_rule, /height:\s*18px;/);
+    assert.match(button_rule, /background:\s*transparent;/);
+
+    const button_hover_rule = css_rule(css, '.NB-pill-view-classifier:hover,\n.NB-pill-view-classifier:focus-visible');
+    assert.match(button_hover_rule, /background:\s*rgba\(0, 0, 0, \.12\);/);
+    assert.match(button_hover_rule, /opacity:\s*1;/);
+});
+
 test('filter banner labels each segment and keeps the clear action icon-only', function () {
     const js = repo_file('media/js/newsblur/views/classifier_filter_banner_view.js');
     const css = repo_file('media/css/reader/reader.css');
