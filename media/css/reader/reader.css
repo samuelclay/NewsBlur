@@ -8716,12 +8716,6 @@ body {
     overflow-wrap: anywhere;
 }
 
-.NB-classifier-filter-banner-subtext {
-    color: #636067;
-    font-size: 11.5px;
-    line-height: 1.35;
-}
-
 .NB-classifier-filter-narrow-hint {
     display: none;
     color: #636067;
@@ -8974,9 +8968,6 @@ body {
 .NB-dark .NB-classifier-filter-banner-separator {
     color: rgba(241, 239, 242, 0.34);
 }
-.NB-dark .NB-classifier-filter-banner-subtext {
-    color: #B7B3BA;
-}
 .NB-dark .NB-classifier-filter-narrow-hint {
     color: #B7B3BA;
 }
@@ -9080,7 +9071,6 @@ body {
         box-sizing: border-box;
         padding-right: 24px;
     }
-    .NB-classifier-filter-banner-subtext,
     .NB-classifier-filter-banner-tools {
         display: none;
     }

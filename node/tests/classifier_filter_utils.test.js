@@ -38,33 +38,6 @@ test('reload options respect an explicitly supplied classifier filter', function
     );
 });
 
-test('result summaries distinguish loading, exact, partial, and empty results', function () {
-    assert.equal(
-        classifier_filter_utils.format_result_summary(null, false, 'MacStories'),
-        'Finding matching stories in MacStories…'
-    );
-    assert.equal(
-        classifier_filter_utils.format_result_summary(0, false, 'MacStories'),
-        'Finding matching stories in MacStories…'
-    );
-    assert.equal(
-        classifier_filter_utils.format_result_summary(0, true, 'MacStories'),
-        'No matching stories in MacStories'
-    );
-    assert.equal(
-        classifier_filter_utils.format_result_summary(1, true, 'MacStories'),
-        '1 matching story in MacStories'
-    );
-    assert.equal(
-        classifier_filter_utils.format_result_summary(12, true, 'MacStories'),
-        '12 matching stories in MacStories'
-    );
-    assert.equal(
-        classifier_filter_utils.format_result_summary(120, false, 'All sites'),
-        '120 matching stories loaded from All sites'
-    );
-});
-
 test('matching-story views include read stories without changing the saved view preference', function () {
     assert.equal(
         classifier_filter_utils.read_filter_for_matching_view('unread', {
