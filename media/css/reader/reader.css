@@ -4203,6 +4203,58 @@ img.feed_favicon {
 
 .NB-story-title-container .NB-feed-story {}
 
+/* The desktop river list reserves fixed columns for the feed, date, and
+   optional image. In an extra-narrow titles pane those reservations can leave
+   the headline only a few characters wide, so reflow the metadata into rows. */
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list.NB-story-title {
+    padding: 0 10px 0 40px;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list.NB-story-title.NB-has-image {
+    padding-right: 10px;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .NB-story-feed {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    height: auto;
+    margin: 0 0 4px;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .NB-story-feed .feed_favicon {
+    position: static;
+    flex: 0 0 16px;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .NB-story-feed .feed_title {
+    position: static;
+    display: block;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .NB-storytitles-title {
+    display: block;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .NB-storytitles-story-image-container {
+    display: none;
+}
+
+#story_titles.NB-layout-list.NB-extra-narrow-content .NB-story-title-list .story_date {
+    position: static;
+    display: block;
+    width: auto;
+    margin: 0 4px 8px;
+}
+
 /* ============================= */
 /* = Story Detail in Grid View = */
 /* ============================= */
