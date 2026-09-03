@@ -71,7 +71,11 @@
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
                 'sidebar_closed': this.options.hide_sidebar,
-                'splash_page_frontmost': true
+                'splash_page_frontmost': true,
+                // { type, value, scope, folder_name, origin } — set via
+                // open_classifier_filter, cleared by close_classifier_filter
+                // and by reset_feed on navigation.
+                'classifier_filter': null
             };
             this.locks = {};
             this.counts = {
@@ -176,6 +180,47 @@
             this.load_delayed_stylesheets();
             this.load_theme();
             this.setup_read_time_tracker();
+            this.setup_classifier_filter_popstate();
+        },
+
+        // Backbone's router only fires on path changes, so back/forward
+        // between filtered and unfiltered views of the same feed needs a
+        // manual popstate listener to keep the banner in sync.
+        setup_classifier_filter_popstate: function () {
+            var self = this;
+            window.addEventListener('popstate', function () {
+                var parsed = self.read_classifier_filter_from_url();
+                var current = self.flags['classifier_filter'];
+
+                if (parsed) {
+                    var same = current &&
+                        current.type === parsed.type &&
+                        current.value === parsed.value &&
+                        (current.scope || 'feed') === parsed.scope &&
+                        (current.folder_name || '') === parsed.folder_name &&
+                        (current.feed_id || null) === parsed.feed_id &&
+                        (current.river_folder_name || '') === parsed.river_folder_name &&
+                        (current.river_feed_id || '') === parsed.river_feed_id &&
+                        (current.story_hash || '') === parsed.story_hash &&
+                        (current.classifier_scope || 'feed') === parsed.classifier_scope &&
+                        (current.classifier_folder_name || '') === parsed.classifier_folder_name;
+                    if (same) return;
+                    self.open_classifier_filter(parsed.type, parsed.value, {
+                        scope: parsed.scope,
+                        folder_name: parsed.folder_name || null,
+                        feed_id: parsed.feed_id,
+                        river_folder_name: parsed.river_folder_name || null,
+                        river_feed_id: parsed.river_feed_id || null,
+                        story_hash: parsed.story_hash || null,
+                        classifier_scope: parsed.classifier_scope,
+                        classifier_folder_name: parsed.classifier_folder_name || null,
+                        origin: 'url',
+                        from_router: true
+                    });
+                } else if (current) {
+                    self.close_classifier_filter({ from_router: true });
+                }
+            });
         },
 
         // ========
@@ -198,18 +243,57 @@
             $('.NB-javascript').removeClass('NB-javascript');
         },
 
+        story_pane_view_for_resize: function () {
+            if (this.flags['page_view_showing_feed_view']) {
+                return 'feed';
+            } else if (this.flags['feed_view_showing_story_view']) {
+                return 'story';
+            } else if (this.flags['temporary_story_view']) {
+                return 'text';
+            }
+            return this.story_view;
+        },
+
+        position_story_pane: function (view, options) {
+            options = options || {};
+            var story_pane_view_offsets = {
+                'page': 0,
+                'feed': 1,
+                'text': 2,
+                'story': 3
+            };
+            var offset_multiplier = story_pane_view_offsets[view] || 0;
+            var story_pane_animation_duration = options.resize ? 0 :
+                (this.model.preference('animations') ? 550 : 0);
+            var story_pane_position = options.resize ? -100 * offset_multiplier + '%' :
+                -1 * offset_multiplier * this.$s.$feed_iframe.width();
+
+            if (options.resize) {
+                this.$s.$story_pane.stop(true).css('left', story_pane_position);
+            } else {
+                this.$s.$story_pane.animate({
+                    'left': story_pane_position
+                }, {
+                    'easing': 'easeInOutQuint',
+                    'duration': story_pane_animation_duration,
+                    'queue': false
+                });
+            }
+        },
+
+        align_story_pane_to_current_view: function () {
+            this.position_story_pane(this.story_pane_view_for_resize(), { resize: true });
+        },
+
         resize_window: function () {
             var flag;
-            var view = this.story_view;
+            var view = this.story_pane_view_for_resize();
 
             if (this.flags['page_view_showing_feed_view']) {
-                view = 'feed';
                 flag = 'page';
             } else if (this.flags['feed_view_showing_story_view']) {
-                view = 'story';
                 flag = 'story';
             } else if (this.flags['temporary_story_view']) {
-                view = 'text';
                 flag = 'text';
             }
 
@@ -515,14 +599,7 @@
 
             this.flags.scrolling_by_selecting_story_title = true;
             clearTimeout(this.locks.scrolling);
-
-            var offset = 0;
-            if (this.story_view == 'feed') {
-                offset = this.$s.$feed_iframe.width();
-            } else if (this.story_view == 'story') {
-                offset = 2 * this.$s.$feed_iframe.width();
-            }
-            this.$s.$story_pane.css('left', -1 * offset);
+            this.align_story_pane_to_current_view();
 
             this.flags.set_story_titles_size = this.flags.set_story_titles_size || _.debounce(_.bind(function () {
                 var story_titles_size = this.layout.contentLayout.state[this.model.preference('story_pane_anchor')].size;
@@ -1494,6 +1571,19 @@
                 this.flags.search = "";
                 this.flags.searching = false;
             }
+            // Clear classifier filter on navigation unless the caller is
+            // re-entering the same filter view (open_classifier_filter sets
+            // options.classifier_filter so the flag survives reset_feed).
+            // Drop the banner view reference too — otherwise the next
+            // open_classifier_filter sees a stale view instance and calls
+            // update() on a $el that has already been removed from the DOM.
+            if (_.isUndefined(options.classifier_filter)) {
+                if (NEWSBLUR.app.classifier_filter_banner_view) {
+                    NEWSBLUR.app.classifier_filter_banner_view.hide_banner();
+                    NEWSBLUR.app.classifier_filter_banner_view = null;
+                }
+                this.flags['classifier_filter'] = null;
+            }
             if (_.isUndefined(options.date_filter_start) && _.isUndefined(options.date_filter_end)) {
                 this.flags.date_filter_start = null;
                 this.flags.date_filter_end = null;
@@ -1596,8 +1686,286 @@
             NEWSBLUR.app.text_tab_view.unload();
         },
 
-        reload_feed: function (options) {
+        // ==========================
+        // = Classifier Filter View =
+        // ==========================
+
+        classifier_filter_context_for_matching_view: function (source_feed_id, source_story_hash) {
+            if (!source_feed_id && this.active_story) {
+                source_feed_id = this.active_story.get('story_feed_id');
+            }
+            var is_folder_river = this.flags['river_view'] && !this.flags['social_view'];
+            var folder_name = null;
+
+            if (is_folder_river && this.active_folder && _.isFunction(this.active_folder.get)) {
+                folder_name = this.active_folder.get('folder_title');
+            }
+            if (is_folder_river && !folder_name && _.isString(this.active_feed) &&
+                _.string.startsWith(this.active_feed, 'river:')) {
+                folder_name = this.active_feed.replace('river:', '');
+                if (folder_name === 'infrequent') folder_name = 'Infrequent';
+            }
+            if (is_folder_river && !folder_name) folder_name = 'Everything';
+
+            var context = NEWSBLUR.classifier_filter_utils.context_for_matching_view({
+                is_river: this.flags['river_view'],
+                is_social: this.flags['social_view'],
+                folder_name: folder_name,
+                source_feed_id: source_feed_id,
+                source_story_hash: source_story_hash
+            });
+
+            var retained_folder_name = context.folder_name;
+            if (!retained_folder_name) {
+                var source_feed = this.model.get_feed(source_feed_id);
+                var source_folder = source_feed && source_feed.folders && source_feed.folders[0];
+                retained_folder_name = source_folder && source_folder.options &&
+                    source_folder.options.title || 'Everything';
+            }
+            context.river_folder_name = retained_folder_name;
+            context.river_feed_id = is_folder_river ? this.active_feed :
+                'river:' + (retained_folder_name === 'Everything' ? '' : retained_folder_name);
+            return context;
+        },
+
+        // media/js/newsblur/reader/reader.js
+        // Enter classifier filter view for a single classifier value. The
+        // current feed/folder/river stays mounted; we simply flip the flag
+        // and reload_feed re-fetches through the classifier-aware backend
+        // branch in apps/reader/views.py. The banner view is rendered
+        // lazily and stuck above the story titles.
+        //
+        // type:    one of tag | author | title | url | text
+        // value:   the classifier's value (e.g. the tag name, author name, ...)
+        // opts:    { scope, folder_name, origin, feed_id, river_folder_name,
+        //            classifier_scope, classifier_folder_name }
+        //   scope    - story-list breadth: feed (default), folder, or global
+        //   folder_name - only meaningful when scope='folder'
+        //   origin   - 'trainer' (from the trainer dialog) or 'pill' (from a
+        //              tag/author/url chip). Used to decide whether the
+        //              banner shows the "Back to trainer" return link.
+        //   feed_id  - fallback site when a dashboard trainer has no active
+        //              story list to reload.
+        open_classifier_filter: function (type, value, opts) {
+            opts = opts || {};
+            if (!type || !value) return;
+            if (!_.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type)) return;
+
+            var scope = opts.scope || 'feed';
+
+            var previous_filter = this.flags['classifier_filter'] || {};
+            var source_feed_id = opts.feed_id || previous_filter.feed_id;
+            if (!source_feed_id && _.isFinite(this.active_feed)) {
+                source_feed_id = this.active_feed;
+            }
+            var river_folder_name = opts.river_folder_name ||
+                (scope === 'folder' && opts.folder_name) ||
+                previous_filter.river_folder_name || null;
+            var classifier_scope = opts.classifier_scope ||
+                previous_filter.classifier_scope || 'feed';
+            var classifier_folder_name = Object.prototype.hasOwnProperty.call(
+                opts,
+                'classifier_folder_name'
+            ) ? opts.classifier_folder_name : previous_filter.classifier_folder_name;
+            if (classifier_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
+                classifier_scope = 'feed';
+                classifier_folder_name = null;
+            }
+            var source_story_hash = Object.prototype.hasOwnProperty.call(opts, 'story_hash') ?
+                opts.story_hash : previous_filter.story_hash;
+
+            this.flags['classifier_filter'] = {
+                type: type,
+                value: value,
+                scope: scope,
+                folder_name: scope === 'folder' ? (opts.folder_name || river_folder_name) : null,
+                feed_id: source_feed_id || null,
+                river_folder_name: river_folder_name,
+                river_feed_id: opts.river_feed_id || previous_filter.river_feed_id || null,
+                story_hash: source_story_hash || null,
+                classifier_scope: classifier_scope,
+                classifier_folder_name: classifier_folder_name || null,
+                origin: opts.origin || previous_filter.origin || 'pill'
+            };
+            var classifier_filter = this.flags['classifier_filter'];
+
+            // The router calls us with from_router=true when it's the one
+            // reading the URL; skipping the pushState in that case avoids
+            // stacking a duplicate history entry on top of the one that
+            // just arrived.
+            if (!opts.from_router && !opts.navigate_to_scope) {
+                this._sync_classifier_filter_url(classifier_filter);
+            }
+
+            var navigated_to_scope = false;
+            if (opts.navigate_to_scope && scope === 'feed' && source_feed_id &&
+                source_feed_id !== this.active_feed) {
+                this.open_feed(source_feed_id, {
+                    force: true,
+                    classifier_filter: classifier_filter
+                });
+                navigated_to_scope = true;
+            } else if (opts.navigate_to_scope && scope === 'folder') {
+                var target_folder_name = river_folder_name || 'Everything';
+                var target_folder = target_folder_name === 'Everything' ? null :
+                    NEWSBLUR.assets.get_folder(target_folder_name);
+                var river_options = { classifier_filter: classifier_filter };
+                if (classifier_filter.river_feed_id === 'river:infrequent') {
+                    river_options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+                    target_folder = null;
+                }
+                this.open_river_stories(
+                    target_folder && target_folder.folder_view && target_folder.folder_view.$el,
+                    target_folder,
+                    river_options
+                );
+                navigated_to_scope = true;
+            } else if (opts.navigate_to_scope && scope === 'global') {
+                this.open_river_stories(null, null, { classifier_filter: classifier_filter });
+                navigated_to_scope = true;
+            // A dashboard trainer has no active story list. In that one case,
+            // open the site represented by the trainer row and let its first
+            // request carry the filter, avoiding an unfiltered request race.
+            } else if (opts.feed_id &&
+                (this.flags['splash_page_frontmost'] || window.location.pathname === '/') &&
+                opts.feed_id !== this.active_feed) {
+                this.open_feed(opts.feed_id, {
+                    force: true,
+                    classifier_filter: classifier_filter
+                });
+            } else {
+                // Pass classifier_filter in options so reset_feed doesn't wipe
+                // the flag during the reload.
+                this.reload_feed({ classifier_filter: classifier_filter });
+            }
+
+            if (!opts.from_router && opts.navigate_to_scope) {
+                this._sync_classifier_filter_url(classifier_filter, {
+                    replace: navigated_to_scope
+                });
+            }
+
+            if (NEWSBLUR.Views.ClassifierFilterBannerView) {
+                if (NEWSBLUR.app.classifier_filter_banner_view) {
+                    NEWSBLUR.app.classifier_filter_banner_view.update(classifier_filter);
+                } else {
+                    NEWSBLUR.app.classifier_filter_banner_view = new NEWSBLUR.Views.ClassifierFilterBannerView({
+                        filter: classifier_filter
+                    });
+                    NEWSBLUR.app.classifier_filter_banner_view.show_banner();
+                }
+            }
+        },
+
+        close_classifier_filter: function (opts) {
+            opts = opts || {};
+            this.flags['classifier_filter'] = null;
+            if (NEWSBLUR.app.classifier_filter_banner_view) {
+                NEWSBLUR.app.classifier_filter_banner_view.hide_banner();
+                NEWSBLUR.app.classifier_filter_banner_view = null;
+            }
+            if (!opts.from_router) {
+                this._sync_classifier_filter_url(null);
+            }
+            this.reload_feed();
+        },
+
+        // Writes the current filter into the URL query string so the view
+        // is bookmarkable and survives a reload. Pass null to clear.
+        //
+        // URL shape: ?classifier_<type>=<value> (one key per classifier
+        // kind) with classifier_scope / classifier_folder riding along
+        // when they aren't the default "feed" scope. pushState for opens
+        // so back returns to the unfiltered feed; replaceState for closes
+        // so we don't stack empty history entries.
+        _sync_classifier_filter_url: function (filter, options) {
+            if (!window.history || !window.history.pushState) return;
             options = options || {};
+            var url = window.location.pathname + window.location.search;
+            var strip_keys = ['classifier_tag', 'classifier_author', 'classifier_title',
+                              'classifier_url', 'classifier_text',
+                              'classifier_scope', 'classifier_folder', 'classifier_feed',
+                              'classifier_context_folder', 'classifier_context_river',
+                              'classifier_source_story', 'classifier_training_scope',
+                              'classifier_training_folder'];
+            _.each(strip_keys, function (k) {
+                url = $.updateQueryString(k, null, url);
+            });
+            if (filter) {
+                url = $.updateQueryString('classifier_' + filter.type, encodeURIComponent(filter.value), url);
+                if (filter.scope && filter.scope !== 'feed') {
+                    url = $.updateQueryString('classifier_scope', filter.scope, url);
+                }
+                if (filter.folder_name) {
+                    url = $.updateQueryString('classifier_folder', encodeURIComponent(filter.folder_name), url);
+                }
+                if (filter.feed_id) {
+                    url = $.updateQueryString('classifier_feed', filter.feed_id, url);
+                }
+                if (filter.river_folder_name) {
+                    url = $.updateQueryString('classifier_context_folder', encodeURIComponent(filter.river_folder_name), url);
+                }
+                if (filter.river_feed_id) {
+                    url = $.updateQueryString('classifier_context_river', encodeURIComponent(filter.river_feed_id), url);
+                }
+                if (filter.story_hash) {
+                    url = $.updateQueryString('classifier_source_story', encodeURIComponent(filter.story_hash), url);
+                }
+                if (filter.classifier_scope && filter.classifier_scope !== 'feed') {
+                    url = $.updateQueryString('classifier_training_scope', filter.classifier_scope, url);
+                }
+                if (filter.classifier_folder_name) {
+                    url = $.updateQueryString('classifier_training_folder', encodeURIComponent(filter.classifier_folder_name), url);
+                }
+                window.history[options.replace ? 'replaceState' : 'pushState']({}, "", url);
+            } else {
+                window.history.replaceState({}, "", url);
+            }
+        },
+
+        _safe_decode_url_param: function (raw) {
+            if (!raw) return '';
+            try { return decodeURIComponent(raw); } catch (e) { return raw; }
+        },
+
+        // Returns the canonical filter object from the query string or
+        // null if no classifier_* params are set.
+        read_classifier_filter_from_url: function () {
+            var found_type = null;
+            var found_value = null;
+            var types = NEWSBLUR.ClassifierConstants.FILTER_TYPES;
+            for (var i = 0; i < types.length; i++) {
+                var raw = $.getQueryString('classifier_' + types[i]);
+                if (raw) {
+                    found_type = types[i];
+                    found_value = this._safe_decode_url_param(raw);
+                    break;
+                }
+            }
+            if (!found_type || !found_value) return null;
+
+            var source_feed_id = parseInt($.getQueryString('classifier_feed'), 10);
+            if (!_.isFinite(source_feed_id)) source_feed_id = null;
+
+            return {
+                type: found_type,
+                value: found_value,
+                scope: $.getQueryString('classifier_scope') || 'feed',
+                folder_name: this._safe_decode_url_param($.getQueryString('classifier_folder')),
+                feed_id: source_feed_id,
+                river_folder_name: this._safe_decode_url_param($.getQueryString('classifier_context_folder')),
+                river_feed_id: this._safe_decode_url_param($.getQueryString('classifier_context_river')),
+                story_hash: this._safe_decode_url_param($.getQueryString('classifier_source_story')),
+                classifier_scope: $.getQueryString('classifier_training_scope') || 'feed',
+                classifier_folder_name: this._safe_decode_url_param($.getQueryString('classifier_training_folder'))
+            };
+        },
+
+        reload_feed: function (options) {
+            options = NEWSBLUR.classifier_filter_utils.preserve_active_filter(
+                options,
+                this.flags['classifier_filter']
+            );
 
             if (this.flags['starred_view'] && this.flags['starred_tag']) {
                 options['tag'] = this.flags['starred_tag'];
@@ -4281,7 +4649,6 @@
         switch_taskbar_view: function (view, options) {
             options = options || {};
             var self = this;
-            var $story_pane = this.$s.$story_pane;
             var feed_id = this.active_story_view();
             var feed = this.model.get_feed(feed_id);
             view = view || this.story_view;
@@ -4306,7 +4673,6 @@
 
             var $taskbar_buttons = $('.NB-taskbar-view .NB-taskbar-button');
             var $feed_view = this.$s.$feed_view;
-            var $feed_iframe = this.$s.$feed_iframe;
             var $to_feed_arrow = $('.NB-taskbar .NB-task-view-to-feed-arrow');
             var $to_story_arrow = $('.NB-taskbar .NB-task-view-to-story-arrow');
             var $to_text_arrow = $('.NB-taskbar .NB-task-view-to-text-arrow');
@@ -4352,13 +4718,7 @@
                     only_if_hidden: options.resize
                 });
 
-                $story_pane.animate({
-                    'left': 0
-                }, {
-                    'easing': 'easeInOutQuint',
-                    'duration': this.model.preference('animations') ? 550 : 0,
-                    'queue': false
-                });
+                this.position_story_pane('page', options);
             } else if (view == 'feed') {
                 NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story, {
                     immediate: true,
@@ -4367,13 +4727,7 @@
                 NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
                 NEWSBLUR.app.story_titles.scroll_to_selected_story(this.active_story);
 
-                $story_pane.animate({
-                    'left': -1 * $feed_iframe.width()
-                }, {
-                    'easing': 'easeInOutQuint',
-                    'duration': this.model.preference('animations') ? 550 : 0,
-                    'queue': false
-                });
+                this.position_story_pane('feed', options);
 
                 NEWSBLUR.app.story_list.reset_story_positions();
                 if (!options.resize && this.active_story &&
@@ -4387,13 +4741,7 @@
             } else if (view == 'text') {
                 NEWSBLUR.app.story_titles.scroll_to_selected_story(this.active_story);
 
-                $story_pane.animate({
-                    'left': -2 * $feed_iframe.width()
-                }, {
-                    'easing': 'easeInOutQuint',
-                    'duration': this.model.preference('animations') ? 550 : 0,
-                    'queue': false
-                });
+                this.position_story_pane('text', options);
                 if (_.contains(['split', 'full'],
                     NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
                     NEWSBLUR.app.text_tab_view.fetch_and_render();
@@ -4407,13 +4755,7 @@
                     this.active_story.story_title_view.render_inline_story_detail();
                 }
             } else if (view == 'story') {
-                $story_pane.animate({
-                    'left': -3 * $feed_iframe.width()
-                }, {
-                    'easing': 'easeInOutQuint',
-                    'duration': this.model.preference('animations') ? 550 : 0,
-                    'queue': false
-                });
+                this.position_story_pane('story', options);
                 if (!this.active_story) {
                     NEWSBLUR.app.story_tab_view.show_explainer_single_story_mode();
                 } else if (!options.resize) {
@@ -6555,6 +6897,11 @@
         },
 
         get_unread_view_score: function (ignore_temp) {
+            // Classifier filter view always shows every matching story,
+            // including ones trained to dislike/super-dislike. The
+            // intelligence indicator still flips on each row so the user
+            // can tell what they trained, but the stories don't vanish.
+            if (this.flags['classifier_filter']) return -2;
             if (this.flags['feed_list_showing_starred']) return -1;
             if (this.flags['unread_threshold_temporarily'] && !ignore_temp) {
                 var score_name = this.flags['unread_threshold_temporarily'];

@@ -32,6 +32,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-url": "save_url_classifier",
+        "mousemove .NB-pill-view-classifier": "show_classifier_filter_tooltip",
+        "mouseleave .NB-pill-view-classifier": "hide_classifier_filter_tooltip",
+        "focus .NB-pill-view-classifier": "show_classifier_filter_tooltip",
+        "blur .NB-pill-view-classifier": "hide_classifier_filter_tooltip",
+        "click .NB-pill-view-classifier": "open_classifier_filter_from_pill",
         "click .NB-feed-story-ai-classifier": "open_trainer_from_ai_pill",
         "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "open_email",
@@ -274,6 +279,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
             score_icon_html: this.score_icon_html,
+            classifier_filter_button_html: this.classifier_filter_button_html,
             prompt_classifiers: this.model.get('prompt_classifiers') || [],
             url_match: this.get_url_match(),
             options: this.options,
@@ -389,6 +395,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
                                 <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
+                                <%= classifier_filter_button_html("author", story.story_authors()) %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -398,6 +405,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <% _.each(story.get("story_tags"), function(tag) { %>\
                                 <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                     <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
+                                    <%= classifier_filter_button_html("tag", tag) %>\
                                 </div>\
                             <% }) %>\
                         </div>\
@@ -405,7 +413,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% if (url_match && url_match.score) { %>\
                         <div class="NB-feed-story-url-match">\
                             <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
-                                <span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span>\
+                                <span class="NB-feed-story-url-content"><span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span></span>\
+                                <%= classifier_filter_button_html("url", story.get("story_permalink")) %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -1950,7 +1959,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
         // Clone and strip score icons before reading value
         var $clean = $tag.clone();
-        $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+        $clean.find('.NB-score-icon, .NB-score-icon-double, .NB-pill-view-classifier').remove();
         var value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
         // Cycle: +1 → -1, -1 → 0, -2 → 0, neutral → +1 (skip super downvote in inline cycle)
         var score = $tag.hasClass('NB-score-1') ? -1 : ($tag.hasClass('NB-score--1') || $tag.hasClass('NB-score--2')) ? 0 : 1;
@@ -1981,6 +1990,63 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Open the Intelligence Trainer instead of toggling inline
         // URL classifiers are complex and benefit from the full trainer interface
         this.open_story_trainer();
+    },
+
+    classifier_filter_button_html: function (type, value) {
+        if (!type || !value) return '';
+
+        var escaped_type = _.escape(String(type));
+        var escaped_value = _.escape(String(value));
+        return '<button type="button" class="NB-pill-view-classifier" ' +
+            'title="View matching stories" aria-label="View matching stories" ' +
+            'data-classifier-type="' + escaped_type + '" ' +
+            'data-classifier-value="' + escaped_value + '">' +
+            '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false">' +
+            '<path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/>' +
+            '</svg></button>';
+    },
+
+    show_classifier_filter_tooltip: function (e) {
+        var $button = $(e.currentTarget);
+        var tooltip = $button.data('NB-classifier-filter-tooltip');
+        if (!tooltip) {
+            var tooltip_instance = tippy(e.currentTarget, {
+                appendTo: this.el,
+                arrow: true,
+                arrowType: 'round',
+                size: 'small',
+                duration: 150,
+                animation: 'scale',
+                trigger: 'manual',
+                interactive: false,
+                performance: true
+            });
+            if (tooltip_instance && tooltip_instance.tooltips && tooltip_instance.tooltips.length) {
+                tooltip = tooltip_instance.tooltips[0];
+                $button.data('NB-classifier-filter-tooltip', tooltip);
+            }
+        }
+        if (tooltip) tooltip.show();
+    },
+
+    hide_classifier_filter_tooltip: function (e) {
+        var tooltip = $(e.currentTarget).data('NB-classifier-filter-tooltip');
+        if (tooltip) tooltip.hide();
+    },
+
+    open_classifier_filter_from_pill: function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        var $trigger = $(e.currentTarget);
+        var type = $trigger.attr('data-classifier-type');
+        var value = $trigger.attr('data-classifier-value');
+        if (!type || !value) return;
+        var filter_options = NEWSBLUR.reader.classifier_filter_context_for_matching_view(
+            this.model.get('story_feed_id'),
+            this.model.get('story_hash')
+        );
+        filter_options.classifier_scope = 'feed';
+        filter_options.origin = 'pill';
+        NEWSBLUR.reader.open_classifier_filter(type, value, filter_options);
     },
 
     open_trainer_from_ai_pill: function () {
