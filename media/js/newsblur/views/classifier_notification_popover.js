@@ -33,25 +33,25 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
             ]),
             $.make('ul', { className: 'segmented-control NB-classifier-notif-types' }, [
                 $.make('li', {
-                    className: 'NB-classifier-notif-option NB-classifier-notif-email' +
+                    className: 'NB-classifier-notif-option NB-classifier-notif-email NB-notification-channel-option' +
                         (this.channels.email ? ' NB-active' : ''),
                     role: 'button'
-                }, 'Email'),
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('email', 'Email')),
                 $.make('li', {
-                    className: 'NB-classifier-notif-option NB-classifier-notif-web' +
+                    className: 'NB-classifier-notif-option NB-classifier-notif-web NB-notification-channel-option' +
                         (this.channels.web ? ' NB-active' : ''),
                     role: 'button'
-                }, 'Web'),
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('web', 'Web')),
                 $.make('li', {
-                    className: 'NB-classifier-notif-option NB-classifier-notif-ios' +
+                    className: 'NB-classifier-notif-option NB-classifier-notif-ios NB-notification-channel-option' +
                         (this.channels.ios ? ' NB-active' : ''),
                     role: 'button'
-                }, 'iOS'),
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('ios', 'iOS')),
                 $.make('li', {
-                    className: 'NB-classifier-notif-option NB-classifier-notif-android' +
+                    className: 'NB-classifier-notif-option NB-classifier-notif-android NB-notification-channel-option' +
                         (this.channels.android ? ' NB-active' : ''),
                     role: 'button'
-                }, 'Android')
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('android', 'Android'))
             ])
         ]);
 
@@ -173,6 +173,18 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
     // Static properties
 
     BELL_SVG: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+
+    make_channel_content: function (type, label) {
+        var $icon = $.make('span', {
+            className: 'NB-notification-channel-icon NB-notification-channel-' + type,
+            'aria-hidden': 'true'
+        });
+        $icon.html(this.CHANNEL_ICONS[type] || '');
+        return [
+            $icon,
+            $.make('span', { className: 'NB-notification-channel-label' }, label)
+        ];
+    },
 
     CHANNEL_ICONS: {
         email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',

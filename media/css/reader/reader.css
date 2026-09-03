@@ -14300,6 +14300,30 @@ form.opml_import_form input {
     color: #fff;
 }
 
+/* Shared channel treatment for notification popovers and the notifications dialog. */
+.NB-notification-channel-option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 0;
+    background-image: none;
+}
+.NB-notification-channel-option.NB-active {
+    box-shadow: inset 0 -2px 0 #4A90D9;
+}
+.NB-notification-channel-icon {
+    display: inline-flex;
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+}
+.NB-notification-channel-icon svg {
+    width: 13px;
+    height: 13px;
+}
+
 /* Feed notification popover: stack filter and types vertically */
 .NB-classifier-notification-popover-feed .NB-feed-notification-controls {
     display: flex;
@@ -22527,10 +22551,13 @@ h5.NB-classifier-section-header {
     margin: 0 12px;
 }
 
-.NB-feed-notification .NB-feed-notification-filter,
+.NB-feed-notification .NB-feed-notification-filter {
+    width: 232px;
+}
+
 .NB-feed-notification .NB-feed-notification-types,
 .NB-classifier-notification .NB-classifier-notification-types {
-    width: 232px;
+    width: 248px;
 }
 
 .NB-feed-notification .NB-feed-notification-filter .NB-unread-icon,

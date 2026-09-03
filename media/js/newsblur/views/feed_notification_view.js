@@ -14,6 +14,7 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
 
     render: function () {
         var feed = this.model;
+        var channel_icons = NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS;
         var $feed = $(_.template('<div class="NB-feed-notification <% if (selected) { %>selected<% } %>">\
             <div class="NB-feed-notification-controls">\
                 <ul class="segmented-control NB-feed-notification-filter">\
@@ -27,10 +28,10 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
                     </li>\
                 </ul>\
                 <ul class="segmented-control NB-feed-notification-types">\
-                    <li class="NB-feed-notification-option NB-feed-notification-email <% if (is_email) { %>NB-active<% } %>" role="button">Email</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-web <% if (is_web) { %>NB-active<% } %>" role="button">Web</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-ios <% if (is_ios) { %>NB-active<% } %>" role="button">iOS</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-android <% if (is_android) { %>NB-active<% } %>" role="button">Android</li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-email NB-notification-channel-option <% if (is_email) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-email" aria-hidden="true"><%= channel_icons.email %></span><span class="NB-notification-channel-label">Email</span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-web NB-notification-channel-option <% if (is_web) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-web" aria-hidden="true"><%= channel_icons.web %></span><span class="NB-notification-channel-label">Web</span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-ios NB-notification-channel-option <% if (is_ios) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-ios" aria-hidden="true"><%= channel_icons.ios %></span><span class="NB-notification-channel-label">iOS</span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-android NB-notification-channel-option <% if (is_android) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-android" aria-hidden="true"><%= channel_icons.android %></span><span class="NB-notification-channel-label">Android</span></li>\
                 </ul>\
             </div>\
             <% if (!popover) { %>\
@@ -50,7 +51,8 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
             is_ios: _.contains(feed.get('notification_types'), 'ios'),
             is_android: _.contains(feed.get('notification_types'), 'android'),
             is_web: _.contains(feed.get('notification_types'), 'web'),
-            is_focus: feed.get('notification_filter') == 'focus'
+            is_focus: feed.get('notification_filter') == 'focus',
+            channel_icons: channel_icons
         }));
 
         this.$el.replaceWith($feed);
