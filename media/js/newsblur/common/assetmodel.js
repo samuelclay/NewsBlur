@@ -954,6 +954,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             classifier_filter_type: cf ? cf.type : null,
             classifier_filter_value: cf ? cf.value : null,
             classifier_filter_scope: cf ? cf.scope : null,
+            classifier_filter_source_story: cf ? cf.story_hash : null,
             include_hidden: true,
             infrequent: false
         }, options);

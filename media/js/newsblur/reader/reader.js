@@ -197,11 +197,23 @@
                         current.type === parsed.type &&
                         current.value === parsed.value &&
                         (current.scope || 'feed') === parsed.scope &&
-                        (current.folder_name || '') === parsed.folder_name;
+                        (current.folder_name || '') === parsed.folder_name &&
+                        (current.feed_id || null) === parsed.feed_id &&
+                        (current.river_folder_name || '') === parsed.river_folder_name &&
+                        (current.river_feed_id || '') === parsed.river_feed_id &&
+                        (current.story_hash || '') === parsed.story_hash &&
+                        (current.classifier_scope || 'feed') === parsed.classifier_scope &&
+                        (current.classifier_folder_name || '') === parsed.classifier_folder_name;
                     if (same) return;
                     self.open_classifier_filter(parsed.type, parsed.value, {
                         scope: parsed.scope,
                         folder_name: parsed.folder_name || null,
+                        feed_id: parsed.feed_id,
+                        river_folder_name: parsed.river_folder_name || null,
+                        river_feed_id: parsed.river_feed_id || null,
+                        story_hash: parsed.story_hash || null,
+                        classifier_scope: parsed.classifier_scope,
+                        classifier_folder_name: parsed.classifier_folder_name || null,
                         origin: 'url',
                         from_router: true
                     });
@@ -1678,6 +1690,44 @@
         // = Classifier Filter View =
         // ==========================
 
+        classifier_filter_context_for_matching_view: function (source_feed_id, source_story_hash) {
+            if (!source_feed_id && this.active_story) {
+                source_feed_id = this.active_story.get('story_feed_id');
+            }
+            var is_folder_river = this.flags['river_view'] && !this.flags['social_view'];
+            var folder_name = null;
+
+            if (is_folder_river && this.active_folder && _.isFunction(this.active_folder.get)) {
+                folder_name = this.active_folder.get('folder_title');
+            }
+            if (is_folder_river && !folder_name && _.isString(this.active_feed) &&
+                _.string.startsWith(this.active_feed, 'river:')) {
+                folder_name = this.active_feed.replace('river:', '');
+                if (folder_name === 'infrequent') folder_name = 'Infrequent';
+            }
+            if (is_folder_river && !folder_name) folder_name = 'Everything';
+
+            var context = NEWSBLUR.classifier_filter_utils.context_for_matching_view({
+                is_river: this.flags['river_view'],
+                is_social: this.flags['social_view'],
+                folder_name: folder_name,
+                source_feed_id: source_feed_id,
+                source_story_hash: source_story_hash
+            });
+
+            var retained_folder_name = context.folder_name;
+            if (!retained_folder_name) {
+                var source_feed = this.model.get_feed(source_feed_id);
+                var source_folder = source_feed && source_feed.folders && source_feed.folders[0];
+                retained_folder_name = source_folder && source_folder.options &&
+                    source_folder.options.title || 'Everything';
+            }
+            context.river_folder_name = retained_folder_name;
+            context.river_feed_id = is_folder_river ? this.active_feed :
+                'river:' + (retained_folder_name === 'Everything' ? '' : retained_folder_name);
+            return context;
+        },
+
         // media/js/newsblur/reader/reader.js
         // Enter classifier filter view for a single classifier value. The
         // current feed/folder/river stays mounted; we simply flip the flag
@@ -1687,8 +1737,9 @@
         //
         // type:    one of tag | author | title | url | text
         // value:   the classifier's value (e.g. the tag name, author name, ...)
-        // opts:    { scope, folder_name, origin, feed_id }
-        //   scope    - feed (default), folder, or global (archive only)
+        // opts:    { scope, folder_name, origin, feed_id, river_folder_name,
+        //            classifier_scope, classifier_folder_name }
+        //   scope    - story-list breadth: feed (default), folder, or global
         //   folder_name - only meaningful when scope='folder'
         //   origin   - 'trainer' (from the trainer dialog) or 'pill' (from a
         //              tag/author/url chip). Used to decide whether the
@@ -1701,48 +1752,105 @@
             if (!_.contains(NEWSBLUR.ClassifierConstants.FILTER_TYPES, type)) return;
 
             var scope = opts.scope || 'feed';
-            if (scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
-                scope = 'feed';
+
+            var previous_filter = this.flags['classifier_filter'] || {};
+            var source_feed_id = opts.feed_id || previous_filter.feed_id;
+            if (!source_feed_id && _.isFinite(this.active_feed)) {
+                source_feed_id = this.active_feed;
             }
+            var river_folder_name = opts.river_folder_name ||
+                (scope === 'folder' && opts.folder_name) ||
+                previous_filter.river_folder_name || null;
+            var classifier_scope = opts.classifier_scope ||
+                previous_filter.classifier_scope || 'feed';
+            var classifier_folder_name = Object.prototype.hasOwnProperty.call(
+                opts,
+                'classifier_folder_name'
+            ) ? opts.classifier_folder_name : previous_filter.classifier_folder_name;
+            if (classifier_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
+                classifier_scope = 'feed';
+                classifier_folder_name = null;
+            }
+            var source_story_hash = Object.prototype.hasOwnProperty.call(opts, 'story_hash') ?
+                opts.story_hash : previous_filter.story_hash;
 
             this.flags['classifier_filter'] = {
                 type: type,
                 value: value,
                 scope: scope,
-                folder_name: opts.folder_name || null,
-                origin: opts.origin || 'pill'
+                folder_name: scope === 'folder' ? (opts.folder_name || river_folder_name) : null,
+                feed_id: source_feed_id || null,
+                river_folder_name: river_folder_name,
+                river_feed_id: opts.river_feed_id || previous_filter.river_feed_id || null,
+                story_hash: source_story_hash || null,
+                classifier_scope: classifier_scope,
+                classifier_folder_name: classifier_folder_name || null,
+                origin: opts.origin || previous_filter.origin || 'pill'
             };
+            var classifier_filter = this.flags['classifier_filter'];
 
             // The router calls us with from_router=true when it's the one
             // reading the URL; skipping the pushState in that case avoids
             // stacking a duplicate history entry on top of the one that
             // just arrived.
-            if (!opts.from_router) {
-                this._sync_classifier_filter_url(this.flags['classifier_filter']);
+            if (!opts.from_router && !opts.navigate_to_scope) {
+                this._sync_classifier_filter_url(classifier_filter);
             }
 
+            var navigated_to_scope = false;
+            if (opts.navigate_to_scope && scope === 'feed' && source_feed_id &&
+                source_feed_id !== this.active_feed) {
+                this.open_feed(source_feed_id, {
+                    force: true,
+                    classifier_filter: classifier_filter
+                });
+                navigated_to_scope = true;
+            } else if (opts.navigate_to_scope && scope === 'folder') {
+                var target_folder_name = river_folder_name || 'Everything';
+                var target_folder = target_folder_name === 'Everything' ? null :
+                    NEWSBLUR.assets.get_folder(target_folder_name);
+                var river_options = { classifier_filter: classifier_filter };
+                if (classifier_filter.river_feed_id === 'river:infrequent') {
+                    river_options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+                    target_folder = null;
+                }
+                this.open_river_stories(
+                    target_folder && target_folder.folder_view && target_folder.folder_view.$el,
+                    target_folder,
+                    river_options
+                );
+                navigated_to_scope = true;
+            } else if (opts.navigate_to_scope && scope === 'global') {
+                this.open_river_stories(null, null, { classifier_filter: classifier_filter });
+                navigated_to_scope = true;
             // A dashboard trainer has no active story list. In that one case,
             // open the site represented by the trainer row and let its first
             // request carry the filter, avoiding an unfiltered request race.
-            if (opts.feed_id &&
+            } else if (opts.feed_id &&
                 (this.flags['splash_page_frontmost'] || window.location.pathname === '/') &&
                 opts.feed_id !== this.active_feed) {
                 this.open_feed(opts.feed_id, {
                     force: true,
-                    classifier_filter: this.flags['classifier_filter']
+                    classifier_filter: classifier_filter
                 });
             } else {
                 // Pass classifier_filter in options so reset_feed doesn't wipe
                 // the flag during the reload.
-                this.reload_feed({ classifier_filter: this.flags['classifier_filter'] });
+                this.reload_feed({ classifier_filter: classifier_filter });
+            }
+
+            if (!opts.from_router && opts.navigate_to_scope) {
+                this._sync_classifier_filter_url(classifier_filter, {
+                    replace: navigated_to_scope
+                });
             }
 
             if (NEWSBLUR.Views.ClassifierFilterBannerView) {
                 if (NEWSBLUR.app.classifier_filter_banner_view) {
-                    NEWSBLUR.app.classifier_filter_banner_view.update(this.flags['classifier_filter']);
+                    NEWSBLUR.app.classifier_filter_banner_view.update(classifier_filter);
                 } else {
                     NEWSBLUR.app.classifier_filter_banner_view = new NEWSBLUR.Views.ClassifierFilterBannerView({
-                        filter: this.flags['classifier_filter']
+                        filter: classifier_filter
                     });
                     NEWSBLUR.app.classifier_filter_banner_view.show_banner();
                 }
@@ -1770,12 +1878,16 @@
         // when they aren't the default "feed" scope. pushState for opens
         // so back returns to the unfiltered feed; replaceState for closes
         // so we don't stack empty history entries.
-        _sync_classifier_filter_url: function (filter) {
+        _sync_classifier_filter_url: function (filter, options) {
             if (!window.history || !window.history.pushState) return;
+            options = options || {};
             var url = window.location.pathname + window.location.search;
             var strip_keys = ['classifier_tag', 'classifier_author', 'classifier_title',
                               'classifier_url', 'classifier_text',
-                              'classifier_scope', 'classifier_folder'];
+                              'classifier_scope', 'classifier_folder', 'classifier_feed',
+                              'classifier_context_folder', 'classifier_context_river',
+                              'classifier_source_story', 'classifier_training_scope',
+                              'classifier_training_folder'];
             _.each(strip_keys, function (k) {
                 url = $.updateQueryString(k, null, url);
             });
@@ -1787,7 +1899,25 @@
                 if (filter.folder_name) {
                     url = $.updateQueryString('classifier_folder', encodeURIComponent(filter.folder_name), url);
                 }
-                window.history.pushState({}, "", url);
+                if (filter.feed_id) {
+                    url = $.updateQueryString('classifier_feed', filter.feed_id, url);
+                }
+                if (filter.river_folder_name) {
+                    url = $.updateQueryString('classifier_context_folder', encodeURIComponent(filter.river_folder_name), url);
+                }
+                if (filter.river_feed_id) {
+                    url = $.updateQueryString('classifier_context_river', encodeURIComponent(filter.river_feed_id), url);
+                }
+                if (filter.story_hash) {
+                    url = $.updateQueryString('classifier_source_story', encodeURIComponent(filter.story_hash), url);
+                }
+                if (filter.classifier_scope && filter.classifier_scope !== 'feed') {
+                    url = $.updateQueryString('classifier_training_scope', filter.classifier_scope, url);
+                }
+                if (filter.classifier_folder_name) {
+                    url = $.updateQueryString('classifier_training_folder', encodeURIComponent(filter.classifier_folder_name), url);
+                }
+                window.history[options.replace ? 'replaceState' : 'pushState']({}, "", url);
             } else {
                 window.history.replaceState({}, "", url);
             }
@@ -1814,11 +1944,20 @@
             }
             if (!found_type || !found_value) return null;
 
+            var source_feed_id = parseInt($.getQueryString('classifier_feed'), 10);
+            if (!_.isFinite(source_feed_id)) source_feed_id = null;
+
             return {
                 type: found_type,
                 value: found_value,
                 scope: $.getQueryString('classifier_scope') || 'feed',
-                folder_name: this._safe_decode_url_param($.getQueryString('classifier_folder'))
+                folder_name: this._safe_decode_url_param($.getQueryString('classifier_folder')),
+                feed_id: source_feed_id,
+                river_folder_name: this._safe_decode_url_param($.getQueryString('classifier_context_folder')),
+                river_feed_id: this._safe_decode_url_param($.getQueryString('classifier_context_river')),
+                story_hash: this._safe_decode_url_param($.getQueryString('classifier_source_story')),
+                classifier_scope: $.getQueryString('classifier_training_scope') || 'feed',
+                classifier_folder_name: this._safe_decode_url_param($.getQueryString('classifier_training_folder'))
             };
         },
 

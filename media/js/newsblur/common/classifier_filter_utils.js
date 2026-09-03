@@ -43,7 +43,23 @@
         return selectors[type] || null;
     }
 
+    function context_for_matching_view(options) {
+        options = options || {};
+        var is_folder_river = options.is_river && !options.is_social;
+
+        var context = {
+            scope: is_folder_river ? 'folder' : 'feed',
+            folder_name: is_folder_river ? (options.folder_name || 'Everything') : null,
+            feed_id: options.source_feed_id
+        };
+        if (options.source_story_hash) {
+            context.story_hash = options.source_story_hash;
+        }
+        return context;
+    }
+
     return {
+        context_for_matching_view: context_for_matching_view,
         preserve_active_filter: preserve_active_filter,
         format_result_summary: format_result_summary,
         story_title_highlight_selector: story_title_highlight_selector

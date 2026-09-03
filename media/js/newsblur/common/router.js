@@ -233,6 +233,12 @@ NEWSBLUR.Router = Backbone.Router.extend({
             NEWSBLUR.reader.open_classifier_filter(parsed.type, parsed.value, {
                 scope: parsed.scope,
                 folder_name: parsed.folder_name || null,
+                feed_id: parsed.feed_id,
+                river_folder_name: parsed.river_folder_name || null,
+                river_feed_id: parsed.river_feed_id || null,
+                story_hash: parsed.story_hash || null,
+                classifier_scope: parsed.classifier_scope,
+                classifier_folder_name: parsed.classifier_folder_name || null,
                 origin: 'url',
                 from_router: true
             });

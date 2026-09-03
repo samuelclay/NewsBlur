@@ -75,3 +75,38 @@ test('story-list highlighting only targets visible matching fields', function ()
     assert.equal(classifier_filter_utils.story_title_highlight_selector('tag'), null);
     assert.equal(classifier_filter_utils.story_title_highlight_selector('url'), null);
 });
+
+test('matching-story links preserve the current river as folder scope', function () {
+    assert.deepEqual(
+        classifier_filter_utils.context_for_matching_view({
+            is_river: true,
+            is_social: false,
+            folder_name: 'Everything',
+            source_feed_id: 169,
+            source_story_hash: '169:source-story',
+            classifier_scope: 'feed'
+        }),
+        {
+            scope: 'folder',
+            folder_name: 'Everything',
+            feed_id: 169,
+            story_hash: '169:source-story'
+        }
+    );
+});
+
+test('matching-story links keep site scope in a single-site view', function () {
+    assert.deepEqual(
+        classifier_filter_utils.context_for_matching_view({
+            is_river: false,
+            is_social: false,
+            source_feed_id: 169,
+            classifier_scope: 'feed'
+        }),
+        {
+            scope: 'feed',
+            folder_name: null,
+            feed_id: 169
+        }
+    );
+});
