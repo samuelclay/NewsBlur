@@ -286,6 +286,7 @@ Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.cou
 - **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
 - Local dev: `https://localhost` for main repo. In a worktree, run `make worktree` first, then `./worktree-dev.sh` to get the assigned ports/URLs.
 - **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
+- **GitHub media**: With `gh` v2.99.0 or newer, use the repeatable `--attach` flag on `gh pr comment`, `gh pr edit`, `gh issue comment`, and related create/edit commands to upload local images or video inline. Reference the exact same local path in the Markdown body to preserve custom alt text, or append `#Alt text` to the `--attach` path.
 - **GitHub screenshot uploads**: With `gh` 2.99.0+, reference local image paths in the Markdown body and pass each path with the repeatable `--attach` flag on `gh pr edit` or `gh pr comment`; `gh` uploads the files and rewrites those paths while preserving alt text. Append `#Alt text` to an attached path when the Markdown body does not already supply a description.
 
 ### Dev Auto-Login (DEBUG mode only)
