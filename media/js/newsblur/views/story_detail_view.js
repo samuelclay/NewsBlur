@@ -32,9 +32,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-url": "save_url_classifier",
-        "mouseenter .NB-feed-story-tag": "show_pill_filter_menu",
-        "mouseenter .NB-feed-story-author": "show_pill_filter_menu",
-        "mouseenter .NB-feed-story-url": "show_pill_filter_menu",
+        "mousemove .NB-pill-view-classifier": "show_classifier_filter_tooltip",
+        "mouseleave .NB-pill-view-classifier": "hide_classifier_filter_tooltip",
+        "focus .NB-pill-view-classifier": "show_classifier_filter_tooltip",
+        "blur .NB-pill-view-classifier": "hide_classifier_filter_tooltip",
         "click .NB-pill-view-classifier": "open_classifier_filter_from_pill",
         "click .NB-feed-story-ai-classifier": "open_trainer_from_ai_pill",
         "click .NB-feed-story-train": "open_story_trainer",
@@ -278,6 +279,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
             score_icon_html: this.score_icon_html,
+            classifier_filter_button_html: this.classifier_filter_button_html,
             prompt_classifiers: this.model.get('prompt_classifiers') || [],
             url_match: this.get_url_match(),
             options: this.options,
@@ -393,6 +395,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
                                 <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
+                                <%= classifier_filter_button_html("author", story.story_authors()) %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -402,6 +405,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <% _.each(story.get("story_tags"), function(tag) { %>\
                                 <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                     <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
+                                    <%= classifier_filter_button_html("tag", tag) %>\
                                 </div>\
                             <% }) %>\
                         </div>\
@@ -409,7 +413,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% if (url_match && url_match.score) { %>\
                         <div class="NB-feed-story-url-match">\
                             <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
-                                <span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span>\
+                                <span class="NB-feed-story-url-content"><span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span></span>\
+                                <%= classifier_filter_button_html("url", story.get("story_permalink")) %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -1954,7 +1959,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
         // Clone and strip score icons before reading value
         var $clean = $tag.clone();
-        $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
+        $clean.find('.NB-score-icon, .NB-score-icon-double, .NB-pill-view-classifier').remove();
         var value = classifier_type === 'tag' ? _.string.trim($clean.html()) : _.string.trim($clean.text());
         // Cycle: +1 → -1, -1 → 0, -2 → 0, neutral → +1 (skip super downvote in inline cycle)
         var score = $tag.hasClass('NB-score-1') ? -1 : ($tag.hasClass('NB-score--1') || $tag.hasClass('NB-score--2')) ? 0 : 1;
@@ -1987,59 +1992,46 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.open_story_trainer();
     },
 
-    show_pill_filter_menu: function (e) {
-        var $pill = $(e.currentTarget);
-        if ($pill.data('NB-pill-tippy-initialized')) return;
-        $pill.data('NB-pill-tippy-initialized', true);
+    classifier_filter_button_html: function (type, value) {
+        if (!type || !value) return '';
 
-        var type;
-        if ($pill.hasClass('NB-feed-story-tag')) type = 'tag';
-        else if ($pill.hasClass('NB-feed-story-author')) type = 'author';
-        else if ($pill.hasClass('NB-feed-story-url')) type = 'url';
-        if (!type) return;
+        var escaped_type = _.escape(String(type));
+        var escaped_value = _.escape(String(value));
+        return '<button type="button" class="NB-pill-view-classifier" ' +
+            'title="View matching stories" aria-label="View matching stories" ' +
+            'data-classifier-type="' + escaped_type + '" ' +
+            'data-classifier-value="' + escaped_value + '">' +
+            '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false">' +
+            '<path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/>' +
+            '</svg></button>';
+    },
 
-        // URL pills display highlighted segments; fall back to the full
-        // permalink so the filter matches a real URL substring.
-        var value;
-        if (type === 'url') {
-            value = this.model.get('story_permalink') || '';
-        } else {
-            var $clean = $pill.clone();
-            $clean.find('.NB-score-icon, .NB-score-icon-double').remove();
-            value = _.string.trim($clean.text());
+    show_classifier_filter_tooltip: function (e) {
+        var $button = $(e.currentTarget);
+        var tooltip = $button.data('NB-classifier-filter-tooltip');
+        if (!tooltip) {
+            var tooltip_instance = tippy(e.currentTarget, {
+                appendTo: this.el,
+                arrow: true,
+                arrowType: 'round',
+                size: 'small',
+                duration: 150,
+                animation: 'scale',
+                trigger: 'manual',
+                interactive: false,
+                performance: true
+            });
+            if (tooltip_instance && tooltip_instance.tooltips && tooltip_instance.tooltips.length) {
+                tooltip = tooltip_instance.tooltips[0];
+                $button.data('NB-classifier-filter-tooltip', tooltip);
+            }
         }
-        if (!value) return;
+        if (tooltip) tooltip.show();
+    },
 
-        // Embed type+value as data attributes on the tippy content itself
-        // so the click handler can read them straight off e.currentTarget
-        // without tracing back to the originating pill.
-        var escaped_value = $('<div/>').text(value).html().replace(/"/g, '&quot;');
-        var title_html =
-            '<span class="NB-pill-view-classifier" data-classifier-type="' + type +
-            '" data-classifier-value="' + escaped_value + '">' +
-            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>' +
-            ' View matching stories' +
-            '</span>';
-        $pill.attr('title', title_html);
-
-        var $t = tippy($pill.get(0), {
-            appendTo: this.el,
-            arrow: true,
-            arrowType: 'round',
-            size: 'small',
-            duration: 200,
-            animation: 'scale',
-            trigger: 'mouseenter focus',
-            interactive: true,
-            performance: true,
-            delay: [300, 100]
-        });
-
-        // Tippy normally waits for the next mouseenter after init; nudge
-        // the first show so the popup appears on the initial hover.
-        _.defer(function () {
-            if ($t && $t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
-        });
+    hide_classifier_filter_tooltip: function (e) {
+        var tooltip = $(e.currentTarget).data('NB-classifier-filter-tooltip');
+        if (tooltip) tooltip.hide();
     },
 
     open_classifier_filter_from_pill: function (e) {
