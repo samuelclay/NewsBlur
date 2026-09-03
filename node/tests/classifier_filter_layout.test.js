@@ -149,6 +149,16 @@ test('filter banner has deliberate layouts down to the story pane minimum width'
     assert.match(css, /@container\s*\(max-width:\s*120px\)/);
 });
 
+test('matching-story mode displays its temporary all-stories read filter', function () {
+    const story_titles_header = repo_file('media/js/newsblur/views/story_titles_header_view.js');
+    const feed_title = repo_file('media/js/newsblur/views/feed_title_view.js');
+    const feed_options = repo_file('media/js/newsblur/views/feed_options_popover.js');
+
+    assert.match(story_titles_header, /read_filter_for_matching_view/);
+    assert.match(feed_title, /read_filter_for_matching_view/);
+    assert.match(feed_options, /read_filter_for_matching_view/);
+});
+
 test('filtered story titles apply a dedicated match highlight', function () {
     const js = repo_file('media/js/newsblur/views/story_title_view.js');
     const css = repo_file('media/css/reader/reader.css');

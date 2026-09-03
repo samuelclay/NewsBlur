@@ -758,7 +758,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     page: page,
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
-                    read_filter: this.view_setting(feed_id, 'read_filter'),
+                    read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                        this.view_setting(feed_id, 'read_filter'),
+                        cf
+                    ),
                     date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
                     date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
                     query: NEWSBLUR.reader.flags.search,
@@ -958,6 +961,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             include_hidden: true,
             infrequent: false
         }, options);
+        options.read_filter = NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+            options.read_filter,
+            cf
+        );
 
         var pre_callback = function (data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {

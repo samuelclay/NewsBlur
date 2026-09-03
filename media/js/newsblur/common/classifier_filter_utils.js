@@ -34,6 +34,10 @@
         return count + ' ' + story_label + ' in ' + context;
     }
 
+    function read_filter_for_matching_view(read_filter, active_filter) {
+        return active_filter ? 'all' : read_filter;
+    }
+
     function story_title_highlight_selector(type) {
         var selectors = {
             title: '.NB-storytitles-title',
@@ -62,6 +66,7 @@
         context_for_matching_view: context_for_matching_view,
         preserve_active_filter: preserve_active_filter,
         format_result_summary: format_result_summary,
+        read_filter_for_matching_view: read_filter_for_matching_view,
         story_title_highlight_selector: story_title_highlight_selector
     };
 });
