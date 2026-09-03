@@ -76,8 +76,13 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
                 'aria-hidden': 'true'
             }, '\u2194')
         ]);
-        var $tools = $.make('div', { className: 'NB-classifier-filter-banner-tools' }, [
-            this._make_scope_controls(),
+        var $view_section = $.make('section', {
+            className: 'NB-classifier-filter-view-section',
+            'aria-label': 'Filter stories'
+        }, this._make_scope_controls());
+        var $account_controls = $.make('div', {
+            className: 'NB-classifier-filter-account-controls'
+        }, [
             this._make_training_controls(),
             this._make_notification_controls(
                 type,
@@ -85,6 +90,14 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
                 this.filter.classifier_scope || 'feed',
                 this.filter.classifier_folder_name || ''
             )
+        ]);
+        var $account_section = $.make('section', {
+            className: 'NB-classifier-filter-account-section',
+            'aria-label': 'Train and notification settings'
+        }, $account_controls);
+        var $tools = $.make('div', { className: 'NB-classifier-filter-banner-tools' }, [
+            $view_section,
+            $account_section
         ]);
 
         var $content = $.make('div', { className: 'NB-classifier-filter-banner-content' }, [
@@ -156,37 +169,36 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
 
         return $.make('span', { className: 'NB-classifier-filter-tool-group' }, [
-            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Apply to'),
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Filter stories'),
             $buttons
         ]);
     },
 
     _make_training_controls: function () {
         var score = this._lookup_current_score();
-        var thumb_down_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.6l2.3-7A2 2 0 0 1 6.5 3H20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.8 1.1L12 22h0a3.1 3.1 0 0 1-3-3.9Z"/></svg>';
         var controls = [
             {
                 key: 'like',
                 label: 'Like matching stories',
                 short_label: 'Like',
                 active: score > 0,
-                svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 7A2 2 0 0 1 17.5 21H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2h0a3.1 3.1 0 0 1 3 3.9Z"/></svg>'
+                icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-like" aria-hidden="true"></span>'
             },
             {
                 key: 'dislike',
                 label: 'Dislike matching stories',
                 short_label: 'Dislike',
                 active: score < 0 && score > -2,
-                svg: thumb_down_svg
+                icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike" aria-hidden="true"></span>'
             },
             {
                 key: 'super_dislike',
                 label: 'Hide matching stories',
                 short_label: 'Hide',
                 active: score <= -2,
-                svg: '<span class="NB-classifier-filter-super-dislike-icon" aria-hidden="true">' +
-                    '<span class="NB-super-dislike-icon-back">' + thumb_down_svg + '</span>' +
-                    '<span class="NB-super-dislike-icon-front">' + thumb_down_svg + '</span>' +
+                icon: '<span class="NB-classifier-filter-super-dislike-icon" aria-hidden="true">' +
+                    '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike NB-super-dislike-icon-back"></span>' +
+                    '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike NB-super-dislike-icon-front"></span>' +
                     '</span>'
             }
         ];
@@ -206,7 +218,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
                 'aria-pressed': control.active ? 'true' : 'false',
                 'data-opinion': control.key
             });
-            $button.html(control.svg);
+            $button.html(control.icon);
             $button.append($.make(
                 'span',
                 { className: 'NB-classifier-filter-button-label' },

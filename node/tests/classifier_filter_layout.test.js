@@ -145,6 +145,71 @@ test('filter banner labels each segment and keeps the clear action icon-only', f
     assert.match(clear_rule, /padding:\s*0;/);
 });
 
+test('filter banner reuses trainer thumb icons and sentiment colors', function () {
+    const js = repo_file('media/js/newsblur/views/classifier_filter_banner_view.js');
+    const css = repo_file('media/css/reader/reader.css');
+
+    assert.match(js, /NB-classifier-filter-training-icon NB-training-icon-like/);
+    assert.match(js, /NB-classifier-filter-training-icon NB-training-icon-dislike/);
+    assert.doesNotMatch(js, /var thumb_down_svg/);
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-icon.NB-training-icon-like'),
+        /thumbs-up\.svg/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-icon.NB-training-icon-dislike'),
+        /thumbs-down\.svg/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-like.NB-active'),
+        /color:\s*#34912E;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-dislike.NB-active'),
+        /color:\s*#A90103;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-super_dislike.NB-active'),
+        /color:\s*#6B0001;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-like .NB-classifier-filter-training-icon'),
+        /color:\s*#34912E;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-dislike .NB-classifier-filter-training-icon'),
+        /color:\s*#A90103;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-training-super_dislike .NB-classifier-filter-training-icon'),
+        /color:\s*#6B0001;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-active'),
+        /box-shadow:\s*inset 0 -2px 0 currentColor;/
+    );
+    assert.match(
+        css_rule(css, '.NB-classifier-filter-training-button.NB-active .NB-classifier-filter-button-label'),
+        /color:\s*#252329;/
+    );
+    assert.match(
+        css,
+        /\.NB-dark \.NB-classifier-filter-training-button\.NB-training-like\.NB-active\s*\{[^}]*color:\s*#34912E;/s
+    );
+    assert.match(
+        css,
+        /\.NB-dark \.NB-classifier-filter-training-button\.NB-training-dislike\.NB-active\s*\{[^}]*color:\s*#A90103;/s
+    );
+    assert.match(
+        css,
+        /\.NB-dark \.NB-classifier-filter-training-button\.NB-training-super_dislike\.NB-active\s*\{[^}]*color:\s*#6B0001;/s
+    );
+    assert.match(
+        css_rule(css, '.NB-dark .NB-classifier-filter-training-button.NB-active .NB-classifier-filter-button-label'),
+        /color:\s*#F4F1F5;/
+    );
+});
+
 test('filter banner renders notification channels inline with Premium Archive gating', function () {
     const js = repo_file('media/js/newsblur/views/classifier_filter_banner_view.js');
     const css = repo_file('media/css/reader/reader.css');
@@ -175,6 +240,50 @@ test('filter banner renders notification channels inline with Premium Archive ga
     );
 });
 
+test('filter banner separates the temporary view filter from account actions', function () {
+    const js = repo_file('media/js/newsblur/views/classifier_filter_banner_view.js');
+    const css = repo_file('media/css/reader/reader.css');
+
+    assert.match(js, /className:\s*'NB-classifier-filter-view-section'/);
+    assert.match(js, /Filter stories/);
+    assert.doesNotMatch(js, /Filter this view/);
+    assert.doesNotMatch(js, /Apply to/);
+    assert.match(js, /className:\s*'NB-classifier-filter-account-section'/);
+    assert.doesNotMatch(js, /Save to account/);
+    assert.match(js, /className:\s*'NB-classifier-filter-account-controls'/);
+    assert.match(
+        css,
+        /\.NB-classifier-filter-account-section\s*\{[^}]*border-radius:\s*7px;[^}]*background:\s*rgba\(/s
+    );
+    assert.doesNotMatch(css, /\.NB-classifier-filter-account-controls::before\s*\{/);
+    assert.doesNotMatch(css, /\.NB-classifier-filter-account-controls \.NB-classifier-filter-tool-group::before\s*\{/);
+});
+
+test('filter banner segmented controls use the house style and retain active underlines', function () {
+    const css = repo_file('media/css/reader/reader.css');
+    const segmented_rule = css_rule(css, '.NB-classifier-filter-segmented');
+
+    assert.match(segmented_rule, /padding:\s*1px;/);
+    assert.match(segmented_rule, /border:\s*0;/);
+    assert.match(segmented_rule, /background:\s*transparent;/);
+    assert.match(
+        css,
+        /\.NB-classifier-filter-segmented:hover\s*\{[^}]*background(?:-color)?:\s*#E5E6E2;/s
+    );
+    assert.match(
+        css,
+        /\.NB-classifier-filter-scope-button,[\s\S]*?\.NB-classifier-filter-notification-button\s*\{[^}]*margin:\s*0 2px 0 0;[^}]*border-radius:\s*3px;/s
+    );
+    assert.match(
+        css,
+        /\.NB-classifier-filter-scope-button\.NB-active,[\s\S]*?\.NB-classifier-filter-notification-button\.NB-active\s*\{[^}]*background:\s*#D5D6D2;[^}]*box-shadow:\s*inset 0 -2px 0 var\(--classifier-accent\);/s
+    );
+    assert.match(
+        css,
+        /\.NB-dark \.NB-classifier-filter-segmented:hover\s*\{[^}]*background(?:-color)?:\s*#494D54;/s
+    );
+});
+
 test('filter banner has deliberate layouts down to the story pane minimum width', function () {
     const js = repo_file('media/js/newsblur/views/classifier_filter_banner_view.js');
     const css = repo_file('media/css/reader/reader.css');
@@ -185,7 +294,7 @@ test('filter banner has deliberate layouts down to the story pane minimum width'
     assert.match(js, /NB-classifier-filter-narrow-hint-compact/);
     assert.match(tools_rule, /opacity:\s*1;/);
     assert.doesNotMatch(tools_rule, /transition:\s*opacity/);
-    assert.match(css, /@container\s*\(max-width:\s*380px\)/);
+    assert.match(css, /@container\s*\(max-width:\s*430px\)/);
     assert.match(css, /@container\s*\(max-width:\s*340px\)/);
     assert.match(css, /@container\s*\(max-width:\s*300px\)/);
     assert.match(css, /@container\s*\(max-width:\s*240px\)/);
@@ -201,6 +310,20 @@ test('matching-story mode displays its temporary all-stories read filter', funct
     assert.match(story_titles_header, /read_filter_for_matching_view/);
     assert.match(feed_title, /read_filter_for_matching_view/);
     assert.match(feed_options, /read_filter_for_matching_view/);
+});
+
+test('notification controls compact before they can cross the account surface', function () {
+    const css = repo_file('media/css/reader/reader.css');
+    const compact_start = css.indexOf('@container (max-width: 380px)');
+    const compact_end = css.indexOf('\n@container', compact_start + 1);
+
+    assert.notEqual(compact_start, -1);
+    assert.notEqual(compact_end, -1);
+    const compact_css = css.slice(compact_start, compact_end);
+    assert.match(compact_css, /\.NB-classifier-filter-banner-icon\s*\{[^}]*display:\s*none;/s);
+    assert.match(compact_css, /\.NB-classifier-filter-notification-button/);
+    assert.match(compact_css, /padding-right:\s*6px;/);
+    assert.match(compact_css, /padding-left:\s*6px;/);
 });
 
 test('filtered story titles apply a dedicated match highlight', function () {

@@ -8731,9 +8731,31 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 5px;
+    gap: 7px;
     margin-top: 4px;
     opacity: 1;
+}
+.NB-classifier-filter-view-section,
+.NB-classifier-filter-account-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 4px;
+}
+.NB-classifier-filter-account-section {
+    box-sizing: border-box;
+    gap: 5px;
+    padding: 7px 8px;
+    border: 1px solid rgba(48, 45, 52, 0.10);
+    border-radius: 7px;
+    background: rgba(48, 45, 52, 0.055);
+}
+.NB-classifier-filter-account-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
 }
 .NB-classifier-filter-tool-group {
     display: inline-flex;
@@ -8752,9 +8774,14 @@ body {
 .NB-classifier-filter-segmented {
     display: inline-flex;
     overflow: hidden;
-    border: 1px solid rgba(48, 45, 52, 0.17);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.45);
+    padding: 1px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    transition: background-color 140ms ease-in-out;
+}
+.NB-classifier-filter-segmented:hover {
+    background-color: #E5E6E2;
 }
 .NB-classifier-filter-scope-button,
 .NB-classifier-filter-training-button,
@@ -8765,16 +8792,17 @@ body {
     gap: 4px;
     min-width: 32px;
     height: 32px;
+    margin: 0 2px 0 0;
     padding: 0 8px;
     border: 0;
-    border-right: 1px solid rgba(48, 45, 52, 0.14);
+    border-radius: 3px;
     color: #68656B;
     background: transparent;
     cursor: pointer;
     transition: color 120ms ease, background 120ms ease, box-shadow 120ms ease;
 }
 .NB-classifier-filter-segmented > button:last-child {
-    border-right: 0;
+    margin-right: 0;
 }
 .NB-classifier-filter-scope-button svg,
 .NB-classifier-filter-training-button > svg,
@@ -8796,24 +8824,63 @@ body {
 .NB-classifier-filter-training-button:focus-visible,
 .NB-classifier-filter-notification-button:focus-visible {
     color: #252329;
-    background: rgba(255, 255, 255, 0.78);
+    background: #D5D6D2;
     outline: 0;
 }
 .NB-classifier-filter-scope-button.NB-active,
 .NB-classifier-filter-training-button.NB-active,
 .NB-classifier-filter-notification-button.NB-active {
     color: var(--classifier-accent);
-    background: rgba(255, 255, 255, 0.9);
+    background: #D5D6D2;
     box-shadow: inset 0 -2px 0 var(--classifier-accent);
 }
+.NB-classifier-filter-segmented:hover > button.NB-active {
+    background: #C5C6C2;
+}
+.NB-classifier-filter-training-button.NB-active {
+    box-shadow: inset 0 -2px 0 currentColor;
+}
 .NB-classifier-filter-training-button.NB-training-like.NB-active {
-    color: #357B4B;
+    color: #34912E;
 }
 .NB-classifier-filter-training-button.NB-training-dislike.NB-active {
-    color: #A6632E;
+    color: #A90103;
 }
 .NB-classifier-filter-training-button.NB-training-super_dislike.NB-active {
-    color: #A44959;
+    color: #6B0001;
+}
+.NB-classifier-filter-training-button.NB-active .NB-classifier-filter-button-label {
+    color: #252329;
+}
+.NB-classifier-filter-training-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+.NB-classifier-filter-training-icon.NB-training-icon-like {
+    -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+    mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+}
+.NB-classifier-filter-training-icon.NB-training-icon-dislike {
+    -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-down.svg');
+    mask-image: url('/media/embed/icons/nouns/thumbs-down.svg');
+}
+.NB-classifier-filter-training-button.NB-training-like .NB-classifier-filter-training-icon {
+    color: #34912E;
+}
+.NB-classifier-filter-training-button.NB-training-dislike .NB-classifier-filter-training-icon {
+    color: #A90103;
+}
+.NB-classifier-filter-training-button.NB-training-super_dislike .NB-classifier-filter-training-icon {
+    color: #6B0001;
 }
 .NB-classifier-filter-super-dislike-icon {
     position: relative;
@@ -8824,10 +8891,6 @@ body {
 .NB-classifier-filter-super-dislike-icon > span {
     position: absolute;
     display: inline-flex;
-    width: 13px;
-    height: 13px;
-}
-.NB-classifier-filter-super-dislike-icon svg {
     width: 13px;
     height: 13px;
 }
@@ -8971,17 +9034,22 @@ body {
 .NB-dark .NB-classifier-filter-narrow-hint {
     color: #B7B3BA;
 }
+.NB-dark .NB-classifier-filter-account-section {
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(0, 0, 0, 0.16);
+}
 .NB-dark .NB-classifier-filter-tool-label {
     color: #AAA5AE;
 }
 .NB-dark .NB-classifier-filter-segmented {
-    border-color: rgba(255, 255, 255, 0.18);
-    background: rgba(0, 0, 0, 0.12);
+    background: transparent;
+}
+.NB-dark .NB-classifier-filter-segmented:hover {
+    background-color: #494D54;
 }
 .NB-dark .NB-classifier-filter-scope-button,
 .NB-dark .NB-classifier-filter-training-button,
 .NB-dark .NB-classifier-filter-notification-button {
-    border-right-color: rgba(255, 255, 255, 0.12);
     color: #B5B0B9;
 }
 .NB-dark .NB-classifier-filter-scope-button:hover,
@@ -8993,7 +9061,25 @@ body {
 .NB-dark .NB-classifier-filter-scope-button.NB-active,
 .NB-dark .NB-classifier-filter-training-button.NB-active,
 .NB-dark .NB-classifier-filter-notification-button.NB-active {
-    background: rgba(255, 255, 255, 0.09);
+    background: #6C6C74;
+    color: #F4F1F5;
+}
+.NB-dark .NB-classifier-filter-segmented:hover > button.NB-active {
+    background: #787881;
+}
+.NB-dark .NB-classifier-filter-segmented > button:hover:not(:disabled):not(.NB-active) {
+    background: #585B63;
+}
+.NB-dark .NB-classifier-filter-training-button.NB-training-like.NB-active {
+    color: #34912E;
+}
+.NB-dark .NB-classifier-filter-training-button.NB-training-dislike.NB-active {
+    color: #A90103;
+}
+.NB-dark .NB-classifier-filter-training-button.NB-training-super_dislike.NB-active {
+    color: #6B0001;
+}
+.NB-dark .NB-classifier-filter-training-button.NB-active .NB-classifier-filter-button-label {
     color: #F4F1F5;
 }
 .NB-dark .NB-classifier-filter-notification-button:disabled:hover {
@@ -9019,7 +9105,7 @@ body {
     color: #FFFFFF;
 }
 
-@container (max-width: 380px) {
+@container (max-width: 430px) {
     .NB-classifier-filter-tool-group {
         flex-direction: column;
         align-items: flex-start;
@@ -9036,6 +9122,21 @@ body {
     }
 }
 
+@container (max-width: 380px) {
+    .NB-classifier-filter-banner-icon {
+        display: none;
+    }
+    .NB-classifier-filter-account-section {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+    .NB-classifier-filter-notification-button {
+        gap: 2px;
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+}
+
 @container (max-width: 340px) {
     .NB-classifier-filter-scope-button,
     .NB-classifier-filter-training-button,
@@ -9043,25 +9144,32 @@ body {
         padding-right: 6px;
         padding-left: 6px;
     }
+    .NB-classifier-filter-notification-button {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
 }
 
 @container (max-width: 300px) {
-    .NB-classifier-filter-banner-icon {
+    .NB-classifier-filter-notification-icon {
         display: none;
     }
 }
 
 @container (max-width: 240px) {
+    .NB-classifier-filter-account-section {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
     .NB-classifier-filter-scope-button,
     .NB-classifier-filter-training-button,
     .NB-classifier-filter-notification-button {
-        padding-right: 7px;
-        padding-left: 7px;
+        padding-right: 4px;
+        padding-left: 4px;
     }
     .NB-classifier-filter-scope-button > svg,
-    .NB-classifier-filter-training-button > svg,
-    .NB-classifier-filter-super-dislike-icon,
-    .NB-classifier-filter-notification-icon {
+    .NB-classifier-filter-training-button > .NB-classifier-filter-training-icon,
+    .NB-classifier-filter-super-dislike-icon {
         display: none;
     }
 }
