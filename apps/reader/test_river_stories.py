@@ -28,6 +28,7 @@ from apps.analyzer.models import (
 )
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
+from apps.search.models import SearchStory
 from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 
@@ -221,6 +222,56 @@ class Test_RiverStories(TransactionTestCase):
         self.assertLess(counts["mongo"], 15, "Mongo queries should be reasonable")
         print(
             f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)"
+        )
+
+    @patch.object(SearchStory, "query_tag", create=True)
+    def test_river_tag_filter_queries_matching_tags_instead_of_recent_story_batch(self, query_tag):
+        """Folder tag filters should paginate indexed matches, not post-filter a raw river window."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+
+        source_story = MStory.objects.get(story_hash=self.test_story_hashes[0])
+        source_story.story_tags = ["deep-folder-tag"]
+        source_story.save()
+        indexed_story_hashes = self.test_story_hashes[1:13]
+        for indexed_story in MStory.objects(story_hash__in=indexed_story_hashes):
+            indexed_story.story_tags = ["deep-folder-tag"]
+            indexed_story.save()
+        # Simulate a full search-index page that does not yet contain the
+        # story whose tag the user just clicked.
+        query_tag.return_value = indexed_story_hashes
+
+        response = self.client.post(
+            reverse("load-river-stories"),
+            {
+                "feeds": self.test_feeds,
+                "read_filter": "all",
+                "page": 1,
+                "classifier_filter_type": "tag",
+                "classifier_filter_value": "deep-folder-tag",
+                "classifier_filter_scope": "folder",
+                "classifier_filter_source_story": source_story.story_hash,
+            },
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        query_tag.assert_called_once_with(
+            self.test_feeds,
+            "deep-folder-tag",
+            order="newest",
+            offset=0,
+            limit=12,
+        )
+        self.assertEqual(
+            len(content["stories"]),
+            13,
+        )
+        self.assertEqual(
+            {story["story_hash"] for story in content["stories"]},
+            set(indexed_story_hashes) | {source_story.story_hash},
         )
 
     def test_trending_stories__training_applies_to_well_read_and_long_reads(self):
