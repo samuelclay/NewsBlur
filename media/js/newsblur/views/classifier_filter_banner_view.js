@@ -98,8 +98,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             this._make_notification_controls(
                 type,
                 this.filter.value,
-                this.filter.scope || 'feed',
-                this.filter.folder_name || ''
+                this.filter.classifier_scope || 'feed',
+                this.filter.classifier_folder_name || ''
             )
         ]);
 
@@ -257,7 +257,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     },
 
     _notification_state: function (type, value, scope, folder_name) {
-        var feed_id = NEWSBLUR.reader.active_feed;
+        var feed_id = this.filter.feed_id || NEWSBLUR.reader.active_feed;
         var notif_key = type + ':' + value + '::' + scope + ':' +
             (scope === 'feed' ? feed_id : 0) + ':' + (folder_name || '');
         var notif = this._classifier_notifications && this._classifier_notifications[notif_key];
@@ -340,7 +340,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     // scopes start at neutral in the pill and flip to their trained state
     // after the user clicks.
     _lookup_current_score: function () {
-        var feed_id = NEWSBLUR.reader.active_feed;
+        var feed_id = this.filter.feed_id || NEWSBLUR.reader.active_feed;
         if (!feed_id || !_.isFinite(feed_id)) return 0;
         var classifiers = NEWSBLUR.assets.classifiers[feed_id];
         if (!classifiers) return 0;
@@ -419,8 +419,8 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var channel = $(e.currentTarget).data('channel');
         var type = this.filter.type;
         var value = this.filter.value;
-        var scope = this.filter.scope || 'feed';
-        var folder_name = this.filter.folder_name || '';
+        var scope = this.filter.classifier_scope || 'feed';
+        var folder_name = this.filter.classifier_folder_name || '';
         var state = this._notification_state(type, value, scope, folder_name);
         var notification_types = state.notification_types;
         if (_.contains(notification_types, channel)) {
@@ -462,40 +462,23 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'notifications' });
     },
 
-    // For non-archive users scope toggles are still rendered, but clicking
-    // a non-feed scope shakes the badge instead of actually switching.
+    // Filter scope changes story-list context only. Classifier training and
+    // notification scope stay on the separate classifier_scope fields.
     _change_scope: function (new_scope) {
         if (!new_scope || new_scope === (this.filter.scope || 'feed')) return;
-        if (new_scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
-            var $badge = this.$el.find('.NB-classifier-filter-segmented').first();
-            var $toggle = this.$el.find(
-                '.NB-classifier-filter-scope-button[data-scope="' + new_scope + '"]'
-            );
-            $badge.removeClass('NB-shake');
-            if ($badge.length) $badge[0].offsetWidth;
-            $badge.addClass('NB-shake');
-            setTimeout(function () { $badge.removeClass('NB-shake'); }, 500);
-
-            $toggle.addClass('NB-scope-toggle-denied');
-            setTimeout(function () { $toggle.removeClass('NB-scope-toggle-denied'); }, 800);
-
-            $('.NB-scope-tooltip').remove();
-            var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
-            $('body').append($tip);
-            if ($toggle.length) {
-                var rect = $toggle[0].getBoundingClientRect();
-                $tip.css({
-                    top: rect.top - $tip.outerHeight() - 6,
-                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-                });
-            }
-            setTimeout(function () { $tip.fadeOut(300, function () { $tip.remove(); }); }, 1500);
-            return;
-        }
+        var folder_name = new_scope === 'folder' ?
+            (this.filter.river_folder_name || 'Everything') : null;
         NEWSBLUR.reader.open_classifier_filter(this.filter.type, this.filter.value, {
             scope: new_scope,
-            folder_name: this.filter.folder_name,
-            origin: this.filter.origin
+            folder_name: folder_name,
+            feed_id: this.filter.feed_id,
+            river_folder_name: this.filter.river_folder_name,
+            river_feed_id: this.filter.river_feed_id,
+            story_hash: this.filter.story_hash,
+            classifier_scope: this.filter.classifier_scope,
+            classifier_folder_name: this.filter.classifier_folder_name,
+            origin: this.filter.origin,
+            navigate_to_scope: true
         });
     },
 
@@ -503,7 +486,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     // untrains back to neutral. Writes through save_classifier and fires
     // recalculate_story_scores so every visible row flips immediately.
     _apply_training: function (opinion) {
-        var feed_id = NEWSBLUR.reader.active_feed;
+        var feed_id = this.filter.feed_id || NEWSBLUR.reader.active_feed;
         if (!feed_id || !_.isFinite(feed_id)) return;
 
         var type = this.filter.type;
@@ -515,9 +498,10 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         if (target_score === undefined) return;
 
         var save_data = { feed_id: feed_id };
-        if (this.filter.scope && this.filter.scope !== 'feed') {
-            save_data.scope = this.filter.scope;
-            save_data.folder_name = this.filter.folder_name || '';
+        var classifier_scope = this.filter.classifier_scope || 'feed';
+        if (classifier_scope !== 'feed') {
+            save_data.scope = classifier_scope;
+            save_data.folder_name = this.filter.classifier_folder_name || '';
         }
 
         var new_score;

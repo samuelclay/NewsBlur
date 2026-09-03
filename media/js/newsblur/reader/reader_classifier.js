@@ -2807,12 +2807,13 @@ var classifier_prototype = {
                     $.modal.close();
                 }
                 _.defer(function () {
-                    var filter_options = {
-                        scope: row_scope,
-                        folder_name: row_folder,
-                        origin: 'trainer'
-                    };
+                    var filter_options = NEWSBLUR.reader.classifier_filter_context_for_matching_view(
+                        filter_feed_id
+                    );
                     filter_options.feed_id = filter_feed_id;
+                    filter_options.classifier_scope = row_scope;
+                    filter_options.classifier_folder_name = row_folder;
+                    filter_options.origin = 'trainer';
                     NEWSBLUR.reader.open_classifier_filter(
                         classifier_type,
                         classifier_value,
@@ -5307,18 +5308,19 @@ var classifier_prototype = {
         $('.NB-classifier-filter-view-btn', $item).on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
-            var row_scope = $item.data('scope') || 'feed';
-            var row_folder = $item.data('folder-name') || '';
+            var $row_classifier = $('.NB-classifier', $item);
+            var row_scope = $row_classifier.data('scope') || 'feed';
+            var row_folder = $row_classifier.data('folder-name') || '';
             if ($.modal && $.modal.close) {
                 $.modal.close();
             }
             _.defer(function () {
-                var filter_options = {
-                    scope: row_scope,
-                    folder_name: row_folder,
-                    origin: 'trainer'
-                };
-                filter_options.feed_id = feed_id;
+                var filter_options = NEWSBLUR.reader.classifier_filter_context_for_matching_view(
+                    feed_id
+                );
+                filter_options.classifier_scope = row_scope;
+                filter_options.classifier_folder_name = row_folder;
+                filter_options.origin = 'trainer';
                 NEWSBLUR.reader.open_classifier_filter(type, value, filter_options);
             });
         });

@@ -2048,10 +2048,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var type = $trigger.attr('data-classifier-type');
         var value = $trigger.attr('data-classifier-value');
         if (!type || !value) return;
-        NEWSBLUR.reader.open_classifier_filter(type, value, {
-            scope: 'feed',
-            origin: 'pill'
-        });
+        var filter_options = NEWSBLUR.reader.classifier_filter_context_for_matching_view(
+            this.model.get('story_feed_id'),
+            this.model.get('story_hash')
+        );
+        filter_options.classifier_scope = 'feed';
+        filter_options.origin = 'pill';
+        NEWSBLUR.reader.open_classifier_filter(type, value, filter_options);
     },
 
     open_trainer_from_ai_pill: function () {
