@@ -111,7 +111,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                                   Stories older than <%= end_date %>\
                                   &middot;\
                                 <% } %>\
-                                <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "read_filter") : "unread" %>\
+                                <%= read_filter %>\
                                 &middot;\
                                 <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest" %>\
                                 <% if (infrequent_stories) { %>\
@@ -134,6 +134,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: NEWSBLUR.reader.feed_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
+                read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                    NEWSBLUR.reader.active_feed ?
+                        NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "read_filter") :
+                        "unread",
+                    NEWSBLUR.reader.flags['classifier_filter']
+                ),
                 all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_freq: NEWSBLUR.assets.preference('infrequent_stories_per_month'),

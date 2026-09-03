@@ -120,7 +120,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                         Stories older than <%= end_date %>\
                         &middot;\
                       <% } %>\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                      <%= read_filter %>\
                       &middot;\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
                       <% if (has_notifications && has_notifications.length) { %>\
@@ -176,6 +176,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         </<%= list_type %>>\
         ', {
             feed: feed,
+            read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                NEWSBLUR.assets.view_setting(feed.id, "read_filter"),
+                NEWSBLUR.reader.flags['classifier_filter']
+            ),
             type: this.options.type,
             disable_hover: this.options.disable_hover,
             extra_classes: extra_classes,

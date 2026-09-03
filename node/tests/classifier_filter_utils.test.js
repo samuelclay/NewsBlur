@@ -65,6 +65,17 @@ test('result summaries distinguish loading, exact, partial, and empty results', 
     );
 });
 
+test('matching-story views include read stories without changing the saved view preference', function () {
+    assert.equal(
+        classifier_filter_utils.read_filter_for_matching_view('unread', {
+            type: 'tag',
+            value: 'abbey gate'
+        }),
+        'all'
+    );
+    assert.equal(classifier_filter_utils.read_filter_for_matching_view('unread', null), 'unread');
+});
+
 test('story-list highlighting only targets visible matching fields', function () {
     assert.equal(classifier_filter_utils.story_title_highlight_selector('title'), '.NB-storytitles-title');
     assert.equal(classifier_filter_utils.story_title_highlight_selector('author'), '.NB-storytitles-author');
