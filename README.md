@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/samuelclay-newsblur-badge.png)](https://mseep.ai/app/samuelclay-newsblur)
+
 # NewsBlur
 
 <div align="center">
