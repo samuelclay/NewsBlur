@@ -50,13 +50,15 @@ import UIKit
     func test_hundredsOfLargeOriginalsRetainOnlySmallPreparedBitmaps() throws {
         let renderer = FeedIconRenderer()
         let size = CGSize(width: 16, height: 16)
-        var source: UIImage? = makeImage(size: 384, color: .orange)
-        weak var original = source
-        for index in 0..<300 {
-            let image = try XCTUnwrap(renderer.image(forKey: "feed-\(index)", size: size) { source })
-            XCTAssertEqual(image.cgImage?.width, Int(16 * image.scale))
+        weak var original: UIImage?
+        try autoreleasepool {
+            let source = makeImage(size: 384, color: .orange)
+            original = source
+            for index in 0..<300 {
+                let image = try XCTUnwrap(renderer.image(forKey: "feed-\(index)", size: size) { source })
+                XCTAssertEqual(image.cgImage?.width, Int(16 * image.scale))
+            }
         }
-        source = nil
         XCTAssertNil(original, "The prepared cache must not retain hundreds of large originals.")
         for index in 0..<300 {
             XCTAssertNotNil(renderer.image(forKey: "feed-\(index)", size: size) { nil })
