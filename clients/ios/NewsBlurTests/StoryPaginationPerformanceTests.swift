@@ -193,8 +193,96 @@ import QuartzCore
         }
     }
 
+    func test_pageContainingOnlyHiddenStoriesStillReloadsToAdvancePagination() {
+        let fixture = makeFixture(storyCount: 100)
+        let hiddenStories = makeStories(100..<112).map { story -> [String: Any] in
+            var hidden = story
+            hidden["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
+            return hidden
+        }
+        fixture.resetMeasurements()
+
+        fixture.controller.renderStories(hiddenStories)
+        fixture.table.layoutIfNeeded()
+
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 100)
+        XCTAssertEqual(fixture.table.reloadCalls, 1)
+        XCTAssertEqual(fixture.table.insertedRows, 0)
+        XCTAssertFalse(fixture.controller.pageFinished)
+    }
+
+    func test_warmHeightReturnsWithoutFontOrRenderCacheLookup() throws {
+        let fixture = makeFixture(storyCount: 100)
+        let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 40))
+        let expected = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+        fixture.resetMeasurements()
+
+        for _ in 0..<500 {
+            XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), expected)
+        }
+
+        XCTAssertEqual(fixture.appDelegate.fontLookups, 0)
+        XCTAssertEqual(fixture.heights.lookups, 0)
+        XCTAssertEqual(fixture.previews.lookups, 0)
+    }
+
+    func test_sizingChangesInvalidateStoredRowGeometry() throws {
+        let fixture = makeFixture(storyCount: 100)
+        let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 40))
+        let initialHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+        defaults.set("long", forKey: "story_list_preview_text_size")
+        fixture.table.bounds.size.width = 320
+        fixture.resetMeasurements()
+
+        fixture.controller.reloadWithSizing()
+        fixture.table.layoutIfNeeded()
+        let newHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+
+        XCTAssertGreaterThan(newHeight, initialHeight)
+        XCTAssertGreaterThan(fixture.appDelegate.fontLookups, 0)
+        fixture.resetMeasurements()
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), newHeight)
+        XCTAssertEqual(fixture.appDelegate.fontLookups, 0)
+    }
+
+    func test_appendedStoryCannotReuseFormerLoadingRowHeight() throws {
+        let fixture = makeFixture(storyCount: 100)
+        let formerLoadingPath = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: formerLoadingPath), 40)
+
+        fixture.controller.renderStories(makeStories(100..<112))
+        fixture.table.layoutIfNeeded()
+
+        let newStoryPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 100))
+        XCTAssertEqual(newStoryPath, formerLoadingPath)
+        XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: newStoryPath), 40)
+        let loadingPath = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: loadingPath), 40)
+    }
+
+    func test_fullPayloadRefreshInvalidatesPreviewAndGeometryBeforeAppend() throws {
+        let fixture = makeFixture(storyCount: 100)
+        let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
+        let initialHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+        var updated = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
+        updated["story_title"] = "Updated"
+        updated["story_content"] = "<p>short</p>"
+        let shareType = try XCTUnwrap(NSClassFromString("ShareViewController") as? UIViewController.Type)
+        let share = shareType.init(nibName: nil, bundle: nil)
+        share.setValue(fixture.appDelegate, forKey: "appDelegate")
+        // StoryPaginationPerformanceTests.swift uses the real share/reply replacement entry point, without sending a request.
+        share.perform(NSSelectorFromString("replaceStory:withReplyId:"), with: updated, with: nil)
+        fixture.controller.renderStories(makeStories(100..<112))
+        fixture.table.layoutIfNeeded()
+
+        let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: path) as? FeedDetailTableCell)
+        XCTAssertEqual(cell.storyTitle, "Updated")
+        XCTAssertEqual(cell.storyContent, "short")
+        XCTAssertLessThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), initialHeight)
+    }
+
     private func makeFixture(storyCount: Int) -> PaginationFixture {
-        let appDelegate = NewsBlurAppDelegate()
+        let appDelegate = PaginationAppDelegate()
         appDelegate.isPremium = true
         appDelegate.isPremiumArchive = true
         appDelegate.selectedIntelligence = 0
@@ -213,6 +301,7 @@ import QuartzCore
 
         let controller = PaginationRenderController()
         controller.appDelegate = appDelegate
+        appDelegate.testFeedDetail = controller
         controller.storiesCollection = stories
         let table = PaginationMeasurementTable(frame: CGRect(x: 0, y: 0, width: 390, height: 780), style: .plain)
         table.estimatedRowHeight = 0
@@ -241,6 +330,7 @@ import QuartzCore
         indices.map { index in
             let paragraph = "<p>Reading caf&#233; news &amp; technical analysis with <strong>native scrolling</strong>, <a href='https://example.test/\(index)'>sources</a>, and varied article content.</p>"
             var story: [String: Any] = [
+                "id": "pagination-\(index)",
                 "story_hash": "pagination-\(index)",
                 "story_feed_id": 1,
                 "story_title": "Report \(index) &amp; native scrolling",
@@ -332,6 +422,8 @@ private struct PaginationCellSnapshot: Equatable {
     let previews: PaginationMeasurementCache
     let heights: PaginationMeasurementCache
 
+    var appDelegate: PaginationAppDelegate { controller.appDelegate as! PaginationAppDelegate }
+
     func resetMeasurements() {
         controller.heightCalls = 0
         table.reloadCalls = 0
@@ -339,10 +431,29 @@ private struct PaginationCellSnapshot: Equatable {
         previews.resetMeasurements()
         heights.resetMeasurements()
         stories.appendMilliseconds = 0
+        appDelegate.fontLookups = 0
     }
 }
 
-@MainActor private final class PaginationRenderController: FeedDetailObjCViewController {
+private final class PaginationAppDelegate: NewsBlurAppDelegate {
+    var fontLookups = 0
+    weak var testFeedDetail: FeedDetailViewController?
+
+    override var feedDetailViewController: FeedDetailViewController! {
+        get { testFeedDetail }
+        set { testFeedDetail = newValue }
+    }
+
+    override var fontDescriptorTitleSize: UIFontDescriptor! {
+        get {
+            fontLookups += 1
+            return super.fontDescriptorTitleSize
+        }
+        set { super.fontDescriptorTitleSize = newValue }
+    }
+}
+
+@MainActor private final class PaginationRenderController: FeedDetailViewController {
     var heightCalls = 0
 
     override var isLegacyTable: Bool { true }
@@ -394,10 +505,12 @@ private final class PaginationStoriesCollection: StoriesCollection {
 }
 
 private final class PaginationMeasurementCache: NSCache<NSString, NSObject> {
+    private(set) var lookups = 0
     private(set) var misses = 0
     private(set) var storedKeys: [String] = []
 
     override func object(forKey key: NSString) -> NSObject? {
+        lookups += 1
         let object = super.object(forKey: key)
         if object == nil { misses += 1 }
         return object
@@ -409,6 +522,7 @@ private final class PaginationMeasurementCache: NSCache<NSString, NSObject> {
     }
 
     func resetMeasurements() {
+        lookups = 0
         misses = 0
         storedKeys.removeAll(keepingCapacity: true)
     }
