@@ -597,6 +597,19 @@ import XCTest
         XCTAssertEqual((story["cluster_stories"] as? [[String: Any]])?.first?["read_status"] as? Int, 1)
     }
 
+    func test_ignoredPageOneRequestDoesNotInstallAPermanentPaginationGate() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        let load = try XCTUnwrap(fixture.controller.value(forKey: "firstPageLoad") as? StoryFirstPageLoad)
+        fixture.controller.pageFinished = true
+        fixture.controller.fetchFeedDetail(1, withCallback: nil)
+        XCTAssertTrue(fixture.controller.value(forKey: "firstPageLoad") as? StoryFirstPageLoad === load)
+        XCTAssertFalse(load.pending)
+        fixture.controller.pageFinished = false
+        fixture.controller.fetchNextPage(nil)
+        XCTAssertTrue(fixture.app.requests.last?.url.contains("page=2&") == true)
+    }
+
     private func prime(_ fixture: FirstPageFixture, stories: [[String: Any]]? = nil) async throws {
         fixture.open()
         fixture.app.releaseReadFlush()
