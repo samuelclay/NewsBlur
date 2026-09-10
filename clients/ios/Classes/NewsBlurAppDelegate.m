@@ -130,6 +130,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *missingFavicons;
 @property (atomic, strong) NSCache<NSString *, NSNumber *> *missingStoryImages;
+@property (nonatomic, strong) NSCache<NSString *, NSArray *> *storyImageSources;
+@property (nonatomic, strong) NSCache<NSString *, NSDictionary *> *storyImageRequests;
+@property (nonatomic) NSUInteger storyImageRequestRevision;
 @property (nonatomic) NSUInteger storyImageCacheGeneration;
 @property (nonatomic) NSUInteger faviconCacheGeneration;
 @property (nonatomic) NSUInteger faviconWriteGeneration;
@@ -4851,6 +4854,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     if (!feeds) {
         [self.feedDetailViewController resetStoryImageSources];
+        @synchronized (self.cachedStoryImages) {
+            [self.storyImageSources removeAllObjects];
+            [self.storyImageRequests removeAllObjects];
+        }
     }
 }
 
@@ -6499,7 +6506,69 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 }
 
+- (BOOL)cachedStoryImageForStoryHash:(NSString *)storyHash matchesSourceURLs:(NSArray *)sourceURLs {
+    if (!storyHash.length || !sourceURLs.count) return NO;
+    @synchronized (self.cachedStoryImages) {
+        return [[self.storyImageSources objectForKey:storyHash] isEqualToArray:sourceURLs];
+    }
+}
+
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
+    if (!image || !storyHash.length) return;
+    @synchronized (self.cachedStoryImages) {
+        [self.storyImageRequests removeObjectForKey:storyHash];
+        [self cacheStoryImage:image forStoryHash:storyHash sourceURLs:nil];
+    }
+}
+
+- (NSUInteger)beginStoryImageSourceRefresh {
+    @synchronized (self.cachedStoryImages) {
+        return ++self.storyImageRequestRevision;
+    }
+}
+
+- (NSDictionary *)storyImageRequestForStoryHash:(NSString *)storyHash sourceURLs:(NSArray *)sourceURLs minimumRevision:(NSUInteger)minimumRevision {
+    if (!storyHash.length || !sourceURLs.count) return nil;
+    @synchronized (self.cachedStoryImages) {
+        NSDictionary *request = [self.storyImageRequests objectForKey:storyHash];
+        if ([request[@"urls"] isEqualToArray:sourceURLs] &&
+            [request[@"revision"] unsignedIntegerValue] >= minimumRevision) {
+            return request;
+        }
+
+        if (!self.storyImageRequests) {
+            self.storyImageRequests = [[NSCache alloc] init];
+            self.storyImageRequests.countLimit = 4096;
+            self.storyImageRequests.totalCostLimit = 1024 * 1024;
+        }
+        // NewsBlurAppDelegate.m shares ownership of identical sources across controllers, while source changes and explicit refreshes reject older completions.
+        request = @{@"story_hash": storyHash, @"urls": [sourceURLs copy],
+                    @"revision": @(++self.storyImageRequestRevision)};
+        NSUInteger sourceCost = storyHash.length * 2 + 128;
+        for (NSString *source in sourceURLs) sourceCost += source.length * 2 + 64;
+        [self.storyImageRequests setObject:request forKey:storyHash cost:sourceCost];
+        return request;
+    }
+}
+
+- (BOOL)isCurrentStoryImageRequest:(NSDictionary *)request {
+    NSString *storyHash = request[@"story_hash"];
+    if (!storyHash.length) return NO;
+    @synchronized (self.cachedStoryImages) {
+        return [self.storyImageRequests objectForKey:storyHash] == request;
+    }
+}
+
+- (BOOL)cacheStoryImage:(UIImage *)image forRequest:(NSDictionary *)request {
+    if (!image) return NO;
+    @synchronized (self.cachedStoryImages) {
+        if (![self isCurrentStoryImageRequest:request]) return NO;
+        [self cacheStoryImage:image forStoryHash:request[@"story_hash"] sourceURLs:request[@"urls"]];
+        return YES;
+    }
+}
+
+- (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash sourceURLs:(NSArray *)sourceURLs {
     if (!image || !storyHash) return;
 
     PINCache *cache = self.cachedStoryImages;
@@ -6508,6 +6577,20 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
         [self.missingStoryImages removeObjectForKey:storyHash];
         [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+        // NewsBlurAppDelegate.m publishes source ownership with the shared bitmap so another controller cannot leave an obsolete completed-source match.
+        [self.storyImageSources removeObjectForKey:storyHash];
+        if (sourceURLs.count) {
+            if (!self.storyImageSources) {
+                self.storyImageSources = [[NSCache alloc] init];
+                self.storyImageSources.countLimit = 4096;
+                self.storyImageSources.totalCostLimit = 1024 * 1024;
+            }
+            NSUInteger sourceCost = storyHash.length * 2 + 64;
+            for (NSString *source in sourceURLs) sourceCost += source.length * 2 + 64;
+            if (sourceCost <= self.storyImageSources.totalCostLimit) {
+                [self.storyImageSources setObject:[sourceURLs copy] forKey:storyHash cost:sourceCost];
+            }
+        }
         [cache.diskCache setObject:image forKey:storyHash];
     }
 }
@@ -6527,6 +6610,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         // NewsBlurAppDelegate.m serializes removal with saves and rejects a disk result read before invalidation.
         self.storyImageCacheGeneration++;
         [self.missingStoryImages removeObjectForKey:storyHash];
+        [self.storyImageSources removeObjectForKey:storyHash];
+        [self.storyImageRequests removeObjectForKey:storyHash];
         [cache removeObjectForKey:storyHash];
     }
 }
@@ -6537,6 +6622,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     @synchronized (cache) {
         self.storyImageCacheGeneration++;
         [self.missingStoryImages removeAllObjects];
+        [self.storyImageSources removeAllObjects];
+        [self.storyImageRequests removeAllObjects];
         [cache removeAllObjects];
     }
 }

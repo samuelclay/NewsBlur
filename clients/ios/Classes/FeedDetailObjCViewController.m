@@ -117,6 +117,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL storyRowHeightShortTitles;
 @property (nonatomic, strong) NSCache<NSString *, NSArray *> *completedStoryImageSources;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSDictionary *> *pendingStoryImageRequests;
+@property (nonatomic) NSUInteger storyImageRefreshRevision;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
@@ -1915,17 +1916,21 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             self.pendingStoryImageRequests = [NSMutableDictionary dictionary];
         }
 
-        if (cachedImage && [[self.completedStoryImageSources objectForKey:storyHash] isEqualToArray:imageURLs]) {
+        if (cachedImage && [[self.completedStoryImageSources objectForKey:storyHash] isEqualToArray:imageURLs] &&
+            [self.appDelegate cachedStoryImageForStoryHash:storyHash matchesSourceURLs:imageURLs]) {
+            [self.appDelegate storyImageRequestForStoryHash:storyHash sourceURLs:imageURLs minimumRevision:self.storyImageRefreshRevision];
             [self.pendingStoryImageRequests removeObjectForKey:storyHash];
             return;
         }
 
         NSDictionary *pendingRequest = self.pendingStoryImageRequests[storyHash];
-        if ([pendingRequest[@"urls"] isEqualToArray:imageURLs]) {
+        if ([pendingRequest[@"urls"] isEqualToArray:imageURLs] &&
+            [self.appDelegate isCurrentStoryImageRequest:pendingRequest[@"source_request"]]) {
             return;
         }
 
-        self.pendingStoryImageRequests[storyHash] = @{@"story_hash": storyHash, @"urls": [imageURLs copy]};
+        NSDictionary *sourceRequest = [self.appDelegate storyImageRequestForStoryHash:storyHash sourceURLs:imageURLs minimumRevision:self.storyImageRefreshRevision];
+        self.pendingStoryImageRequests[storyHash] = @{@"story_hash": storyHash, @"urls": [imageURLs copy], @"source_request": sourceRequest};
     }
 
     // FeedDetailObjCViewController.m: keep the current thumbnail during its first
@@ -1949,6 +1954,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSString *storyHash = request[@"story_hash"];
     @synchronized (self) {
         if (self.pendingStoryImageRequests[storyHash] != request) {
+            return;
+        }
+        if (![self.appDelegate isCurrentStoryImageRequest:request[@"source_request"]]) {
+            [self.pendingStoryImageRequests removeObjectForKey:storyHash];
             return;
         }
     }
@@ -2002,7 +2011,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             return;
         }
 
-        [self.appDelegate cacheStoryImage:image forStoryHash:storyHash];
+        if (![self.appDelegate cacheStoryImage:image forRequest:request[@"source_request"]]) {
+            return;
+        }
         [self.completedStoryImageSources setObject:request[@"urls"] forKey:storyHash];
     }
 
@@ -2020,6 +2031,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)resetStoryImageSources {
     @synchronized (self) {
         // FeedDetailObjCViewController.m refreshes unchanged URLs explicitly while retaining their visible bitmap.
+        self.storyImageRefreshRevision = [self.appDelegate beginStoryImageSourceRefresh];
         [self.pendingStoryImageRequests removeAllObjects];
         [self.completedStoryImageSources removeAllObjects];
     }
