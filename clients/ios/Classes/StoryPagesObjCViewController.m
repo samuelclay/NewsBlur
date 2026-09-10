@@ -1271,6 +1271,10 @@
         NSInteger pageIndex = currentPage.pageIndex;
         [self resizeScrollView];
         [appDelegate adjustStoryDetailWebView];
+        if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
+            [self reorientPages];
+            return;
+        }
         currentPage.pageIndex = -2;
         nextPage.pageIndex = -2;
         previousPage.pageIndex = -2;
@@ -1355,6 +1359,7 @@
 
 - (void)resizeScrollView {
     NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) storyCount = MAX(storyCount, currentPage.pageIndex + 2);
 	if (storyCount == 0) {
 		storyCount = 1;
 	}
@@ -1512,8 +1517,15 @@
 - (void)applyNewIndex:(NSInteger)newIndex
        pageController:(StoryDetailViewController *)pageController
         supressRedraw:(BOOL)suppressRedraw {
+    BOOL retainedCurrentPage = pageController && pageController == currentPage &&
+        [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
+    if (retainedCurrentPage) {
+        // StoryPagesObjCViewController.m updates a retained article's frame without hiding or reloading its current web content.
+        newIndex = currentPage.pageIndex;
+        suppressRedraw = YES;
+    }
 	NSInteger pageCount = [[appDelegate.storiesCollection activeFeedStoryLocations] count];
-	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
+	BOOL outOfBounds = !retainedCurrentPage && (newIndex >= pageCount || newIndex < 0);
     
 	if (!outOfBounds) {
         CGRect pageFrame = pageController.view.bounds;
@@ -1635,6 +1647,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (inRotation || self.isRepositioningFirstPage) return;
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self setStoryFromScroll]; return; }
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
@@ -1759,7 +1772,14 @@
 
     CGFloat axisInset = [self axisInsetForScrollView:scrollView];
     CGFloat rawOffset = self.isHorizontal ? targetContentOffset->x : targetContentOffset->y;
-    NSInteger nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    // StoryPagesObjCViewController.m keeps a retained article's projected swipe around its existing frame until the gesture chooses its new neighbor.
+    NSInteger nearestNumber;
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
+        NSInteger projectedPage = lround((rawOffset + axisInset) / pageAmount);
+        nearestNumber = MAX(0, MAX(currentPage.pageIndex - 1, MIN(currentPage.pageIndex + 1, projectedPage)));
+    } else {
+        nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    }
     CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
 
     if (self.isHorizontal) {
@@ -1808,6 +1828,7 @@
 }
 
 - (void)lockScrollViewToNearestPage {
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) return;
     CGFloat pageAmount = self.isHorizontal ? self.scrollView.bounds.size.width : self.scrollView.bounds.size.height;
     if (pageAmount <= 0) {
         return;
@@ -2093,8 +2114,11 @@
 	NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
                                                   pageAmount:pageAmount];
     if (retainedFirstPageStory) {
-        if (nearestNumber == currentPage.pageIndex) return;
-        NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:nearestNumber > currentPage.pageIndex ? 1 : -1];
+        if (pageAmount <= 0) return;
+        CGFloat rawOffset = self.isHorizontal ? offset.x : offset.y;
+        NSInteger intendedPage = lround((rawOffset + [self axisInsetForScrollView:self.scrollView]) / pageAmount);
+        if (intendedPage == currentPage.pageIndex) return;
+        NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:intendedPage > currentPage.pageIndex ? 1 : -1];
         if (target != NSNotFound) [self changePage:target animated:NO];
         return;
     }
