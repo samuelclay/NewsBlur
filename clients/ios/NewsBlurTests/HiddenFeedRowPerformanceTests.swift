@@ -11,7 +11,7 @@ import UIKit
 
         for _ in 0..<100 {
             let cell = fixture.controller.tableView(fixture.table, cellForRowAt: path)
-            XCTAssertFalse(cell is FeedTableCell)
+            XCTAssertEqual(cell.reuseIdentifier, "BlankCellIdentifier")
         }
 
         XCTAssertEqual(fixture.appDelegate.preparedIconReads, 0)
@@ -24,7 +24,7 @@ import UIKit
 
         let cell = fixture.controller.tableView(fixture.table, cellForRowAt: path)
 
-        XCTAssertFalse(cell is FeedTableCell)
+        XCTAssertEqual(cell.reuseIdentifier, "BlankCellIdentifier")
         XCTAssertEqual(fixture.appDelegate.preparedIconReads, 0)
     }
 
@@ -44,13 +44,14 @@ import UIKit
         let path = IndexPath(row: 0, section: 3)
         XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
 
-        let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: path) as? FeedTableCell)
+        let cell = fixture.controller.tableView(fixture.table, cellForRowAt: path)
         fixture.controller.tableView(fixture.table, prefetchRowsAt: [path])
 
-        XCTAssertEqual(cell.feedTitle, "Nested Feed")
-        XCTAssertEqual(cell.neutralCount, 27)
+        XCTAssertEqual(cell.reuseIdentifier, "FeedCellIdentifier")
+        XCTAssertEqual(cell.value(forKey: "feedTitle") as? String, "Nested Feed")
+        XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 27)
         XCTAssertEqual(cell.indentationLevel, 2)
-        XCTAssertTrue(cell.feedFavicon === fixture.appDelegate.icon)
+        XCTAssertTrue(cell.value(forKey: "feedFavicon") as? UIImage === fixture.appDelegate.icon)
         XCTAssertEqual(fixture.appDelegate.preparedIconReads, 1)
         XCTAssertEqual(fixture.queue.operationsAdded, 1)
     }
@@ -63,12 +64,13 @@ import UIKit
         XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: childPath), 0)
         XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: duplicatePath), 0)
 
-        let child = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: childPath) as? FeedTableCell)
+        let child = fixture.controller.tableView(fixture.table, cellForRowAt: childPath)
         let duplicate = fixture.controller.tableView(fixture.table, cellForRowAt: duplicatePath)
         fixture.controller.tableView(fixture.table, prefetchRowsAt: [childPath, duplicatePath])
 
-        XCTAssertEqual(child.feedTitle, "Nested Feed")
-        XCTAssertFalse(duplicate is FeedTableCell)
+        XCTAssertEqual(child.reuseIdentifier, "FeedCellIdentifier")
+        XCTAssertEqual(child.value(forKey: "feedTitle") as? String, "Nested Feed")
+        XCTAssertEqual(duplicate.reuseIdentifier, "BlankCellIdentifier")
         XCTAssertEqual(fixture.appDelegate.preparedIconReads, 1)
         XCTAssertEqual(fixture.queue.operationsAdded, 1)
     }
