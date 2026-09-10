@@ -33,6 +33,7 @@
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
 @property (nonatomic) BOOL isRefreshingPages;
+@property (nonatomic) BOOL isRepositioningFirstPage;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -1282,6 +1283,25 @@
     }
 }
 
+- (void)preserveCurrentPageAtLocation:(NSInteger)location {
+    if (location < 0 || location >= appDelegate.storiesCollection.storyLocationsCount || !self.currentPage) return;
+    if (self.currentPage.pageIndex == location) return;
+    self.isRepositioningFirstPage = YES;
+    // StoryPagesObjCViewController.m moves the existing rendered page without invoking its story-loading path.
+    self.currentPage.pageIndex = location;
+    [self resizeScrollView];
+    [self applyNewIndex:location pageController:self.currentPage supressRedraw:YES];
+    CGRect bounds = self.scrollView.bounds;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    CGPoint offset = self.scrollView.contentOffset;
+    if (self.isHorizontal) offset.x = [self pageOffsetForIndex:location pageAmount:bounds.size.width axisInset:axisInset];
+    else offset.y = [self pageOffsetForIndex:location pageAmount:bounds.size.height axisInset:axisInset];
+    [self.scrollView setContentOffset:offset animated:NO];
+    if (self.previousPage) [self applyNewIndex:location - 1 pageController:self.previousPage];
+    if (self.nextPage) [self applyNewIndex:location + 1 pageController:self.nextPage];
+    self.isRepositioningFirstPage = NO;
+}
+
 - (void)reorientPages {
     NSInteger currentIndex = currentPage.pageIndex;
     [self resizeScrollView]; // Will change currentIndex, so preserve
@@ -1614,7 +1634,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    if (inRotation) return;
+    if (inRotation || self.isRepositioningFirstPage) return;
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
@@ -2029,6 +2049,11 @@
 }
 
 - (void)changeToNextPage:(id)sender {
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
+        NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:1];
+        if (target != NSNotFound) [self changePage:target animated:YES];
+        return;
+    }
     if (nextPage.pageIndex < 0 && currentPage.pageIndex < 0) {
         // just displaying a placeholder - display the first story instead
         [self changePage:0 animated:YES];
@@ -2039,6 +2064,11 @@
 }
 
 - (void)changeToPreviousPage:(id)sender {
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
+        NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:-1];
+        if (target != NSNotFound) [self changePage:target animated:YES];
+        return;
+    }
     if (previousPage.pageIndex < 0) {
         if (currentPage.pageIndex < 0) {
             [self changeToNextPage:sender];
@@ -2054,11 +2084,20 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
+    if (self.isRepositioningFirstPage) return;
+    BOOL retainedFirstPageStory = [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
+    if (retainedFirstPageStory && !self.scrollView.dragging && !self.scrollView.decelerating) return;
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
 	NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
                                                   pageAmount:pageAmount];
+    if (retainedFirstPageStory) {
+        if (nearestNumber == currentPage.pageIndex) return;
+        NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:nearestNumber > currentPage.pageIndex ? 1 : -1];
+        if (target != NSNotFound) [self changePage:target animated:NO];
+        return;
+    }
     StoryDetailViewController *previousCurrentPage = currentPage;
     
     
@@ -2702,6 +2741,7 @@
 #pragma mark Story Traversal
 
 - (IBAction)doNextUnreadStory:(id)sender {
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self changeToNextPage:sender]; return; }
     FeedDetailViewController *fdvc = appDelegate.feedDetailViewController;
     NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
@@ -2728,6 +2768,7 @@
 }
 
 - (IBAction)doPreviousStory:(id)sender {
+    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self changeToPreviousPage:sender]; return; }
     [self endTouchDown:sender];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;

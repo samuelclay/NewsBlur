@@ -41,7 +41,7 @@ import XCTest
         XCTAssertEqual(story["read_status"] as? Int, 0)
         XCTAssertEqual(story["starred"] as? Bool, false)
         XCTAssertNil(story["starred_date"])
-        XCTAssertNil(story["user_tags"])
+        XCTAssertTrue(story["user_tags"] is NSNull)
         let other = try XCTUnwrap(StoryFirstPageRequest(account: "other", host: fixture.request.host, url: fixture.request.url))
         await assertMiss(relaunched, request: other)
     }

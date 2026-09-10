@@ -351,6 +351,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    (void)StoryFirstPageCache.shared;
     if (self.launchedShortcutItem) {
         [self handleShortcutItem:self.launchedShortcutItem];
         self.launchedShortcutItem = nil;
@@ -2204,11 +2205,20 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     }
     
+    FeedDetailViewController *feedDetailView = self.feedDetailViewController;
+    StoryFirstPageLoad *firstPageLoad = [feedDetailView prepareCachedFirstPage];
     [self flushQueuedReadStories:NO withCallback:^{
+        [StoryFirstPageLoad continueOnMain:^{
+        if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
         [self flushQueuedSavedStories:NO withCallback:^{
+            [StoryFirstPageLoad continueOnMain:^{
+            if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+                if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
+                [feedDetailView fetchFeedDetail:1 withCallback:nil];
             });
+            }];
+        }];
         }];
     }];
 }
@@ -2851,11 +2861,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
     [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     
+    StoryFirstPageLoad *firstPageLoad = [feedDetailView prepareCachedFirstPage];
     [self flushQueuedReadStories:NO withCallback:^{
+        [StoryFirstPageLoad continueOnMain:^{
+        if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
         [self flushQueuedSavedStories:NO withCallback:^{
+            [StoryFirstPageLoad continueOnMain:^{
+            if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (firstPageLoad && ![feedDetailView isCurrentFirstPageLoad:firstPageLoad]) return;
                 [feedDetailView fetchRiver];
             });
+            }];
+        }];
         }];
     }];
 }
