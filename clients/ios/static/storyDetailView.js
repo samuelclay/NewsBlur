@@ -237,6 +237,8 @@ function attachFastClick() {
 
 function notifyLoaded() {
     var url = "http://ios.newsblur.com/notify-loaded";
+    var load = document.querySelector('meta[name="newsblur-story-load"]');
+    if (load) url += "?load_id=" + encodeURIComponent(load.getAttribute("content"));
     window.location = url;
 }
 

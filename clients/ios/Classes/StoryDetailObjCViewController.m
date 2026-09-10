@@ -30,6 +30,18 @@
 @interface StoryDetailObjCViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
+@property (nonatomic, strong) NSString *fallbackStoryHeaderHTML;
+@property (nonatomic) NSUInteger storyLoadGeneration;
+@property (nonatomic) NSUInteger readyStoryLoadGeneration;
+@property (nonatomic) NSUInteger storyScrollActivityGeneration;
+@property (nonatomic, copy) NSString *storyLoadHash;
+@property (nonatomic, strong) WKNavigation *storyNavigation;
+@property (nonatomic) BOOL restoredStoryScrollPosition;
+@property (nonatomic) BOOL awaitingStoryScrollRestoration;
+@property (nonatomic) BOOL preparedWebViewFonts;
+@property (nonatomic) BOOL failedWebViewFontPreparation;
+@property (nonatomic, strong) WKNavigation *fontWarmupNavigation;
+@property (nonatomic) CFTimeInterval fontWarmupStarted;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
@@ -45,6 +57,8 @@
 - (NSString *)clusterSentimentHTMLForScore:(NSInteger)score;
 - (NSString *)clusterTierBadgeHTMLForStory:(NSDictionary *)clusterStory;
 - (void)refreshClusterStories;
+- (void)invalidateStoryLoad;
+- (BOOL)isCurrentStoryLoad:(NSUInteger)generation;
 
 @end
 
@@ -98,6 +112,8 @@
     configuration.allowsInlineMediaPlayback = ![videoPlayback isEqualToString:@"fullscreen"];
 
     self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    self.preparedWebViewFonts = NO;
+    self.failedWebViewFontPreparation = NO;
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x000000);
 
     [self.view addSubview:self.webView];
@@ -312,8 +328,11 @@
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
     [self storeScrollPosition:NO];
-    
-    self.fullStoryHTML = nil;
+
+    // StoryDetailObjCViewController.m keeps a visible document alive while Safari or sharing covers it.
+    if (!self.hasStory || self.webView.hidden) {
+        [self invalidateStoryLoad];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -340,7 +359,7 @@
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
     if (pagesVC.isCustomToolbarActive) {
         CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
-        if (toolbarOffset > 0) {
+        if (toolbarOffset > 0 && !self.restoredStoryScrollPosition && !self.hasScrolledAwayFromTop) {
             UIScrollView *sv = self.webView.scrollView;
             CGFloat topRest = -sv.contentInset.top;
             sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
@@ -435,7 +454,23 @@
         baseURL = [NSURL URLWithString:@"https://newsblur.com/"];
     });
 
-    [self.webView loadHTMLString:html baseURL:baseURL];
+    self.storyNavigation = [self.webView loadHTMLString:html baseURL:baseURL];
+}
+
+- (void)invalidateStoryLoad {
+    self.storyLoadGeneration++;
+    self.fullStoryHTML = nil;
+    self.fallbackStoryHeaderHTML = nil;
+    self.storyLoadHash = nil;
+    self.storyNavigation = nil;
+    self.awaitingStoryScrollRestoration = NO;
+    if (self.webView.hidden) self.hasStory = NO;
+}
+
+- (BOOL)isCurrentStoryLoad:(NSUInteger)generation {
+    NSString *storyHash = self.activeStory[@"story_hash"];
+    return generation == self.storyLoadGeneration &&
+        ((self.storyLoadHash == nil && storyHash == nil) || [self.storyLoadHash isEqualToString:storyHash]);
 }
 
 - (void)hideNoStoryMessage {
@@ -627,9 +662,14 @@
     }
     
     if (self.activeStory == nil) {
+        [self invalidateStoryLoad];
         return;
     }
 
+    [self invalidateStoryLoad];
+    NSUInteger generation = self.storyLoadGeneration;
+    self.storyLoadHash = [self.activeStory[@"story_hash"] copy];
+    self.restoredStoryScrollPosition = NO;
     self.lastWidthClassKey = nil;
     scrollPct = 0;
     hasScrolled = NO;
@@ -796,8 +836,9 @@
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<style>%@</style><style id=\"NB-theme-style\">%@</style>"
+                    "<meta name=\"newsblur-story-load\" content=\"%lu\"/>"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%ld, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    mainCSS, themeCSS, (long)contentWidth];
+                    mainCSS, themeCSS, (unsigned long)generation, (long)contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script>%@</script>"
                     "<script>%@</script>"
@@ -864,22 +905,19 @@
                              htmlBottom
                              ];
     
-    NSString *htmlTopAndBottom = [htmlTop stringByAppendingString:htmlBottom];
-    
     // NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
     self.hasStory = NO;
     self.fullStoryHTML = htmlContent;
+    if (self.fontWarmupNavigation || self.failedWebViewFontPreparation) {
+        self.fallbackStoryHeaderHTML = [htmlTop stringByAppendingString:htmlBottom];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.hasStory)
-            return;
-        
-        [self loadHTMLString:htmlTopAndBottom];
-        [self.appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
-    });
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (![self isCurrentStoryLoad:generation]) return;
+
+        // StoryDetailObjCViewController.m already has the full document; avoid a header navigation and its resource wait.
         [self loadStory];
+        [self.appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
     });
     
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
@@ -1126,6 +1164,8 @@
 }
 
 - (void)hideStory {
+    [self invalidateStoryLoad];
+    self.hasStory = NO;
     self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStoryMessage.hidden = NO;
@@ -1137,8 +1177,8 @@
 #pragma mark Story layout
 
 - (void)clearWebView {
+    [self invalidateStoryLoad];
     self.hasStory = NO;
-    self.fullStoryHTML = nil;
     self.lastWidthClassKey = nil;
 
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x000000);
@@ -1147,7 +1187,43 @@
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
 
-    [self loadHTMLString:@"<html><body></body></html>"];
+    if (!self.preparedWebViewFonts && !self.failedWebViewFontPreparation) {
+        self.fontWarmupStarted = [ReaderPerformance start];
+        [self loadHTMLString:[self fontWarmupHTML]];
+        self.fontWarmupNavigation = self.storyNavigation;
+        WKNavigation *navigation = self.fontWarmupNavigation;
+        WKWebView *preparingWebView = self.webView;
+        __weak typeof(self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [weakSelf finishFontPreparationForWebView:preparingWebView navigation:navigation
+                                               error:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil]];
+        });
+    } else {
+        [self loadHTMLString:@"<html><body></body></html>"];
+    }
+}
+
+- (NSString *)fontWarmupHTML {
+    static NSString *html;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSBundle *bundle = NSBundle.mainBundle;
+        NSString *css = [StoryDetailAssetCache.shared embeddedMainCSSWithLoader:^NSString *(NSString *source) {
+            return [self embedResourcesInCSS:source bundle:bundle];
+        }];
+        NSRegularExpression *fontFaces = [NSRegularExpression regularExpressionWithPattern:@"@font-face\\s*\\{[^}]+\\}" options:0 error:nil];
+        NSMutableString *fonts = [NSMutableString string];
+        for (NSTextCheckingResult *match in [fontFaces matchesInString:css ?: @"" options:0 range:NSMakeRange(0, css.length)]) {
+            [fonts appendString:[css substringWithRange:match.range]];
+        }
+        // StoryDetailObjCViewController.m warms the exact local font bytes without requesting an article or its images.
+        html = [NSString stringWithFormat:@"<!DOCTYPE html><html><head><style>%@</style></head><body>"
+                "<span style=\"font-family:ChronicleSSm-Book;font-size:1px\">Aa0</span>"
+                "<span style=\"font-family:GothamNarrow-Book;font-size:1px\">Aa0</span>"
+                "<span style=\"font-family:WhitneySSm-Book;font-size:1px\">Aa0</span>"
+                "</body></html>", fonts];
+    });
+    return html;
 }
 
 - (NSInteger)storyContentWidth {
@@ -2041,6 +2117,8 @@
         if (isUserDragging) {
             if (fabs(deltaY) > 0.1) {
                 self.isUserScrolling = YES;
+                self.storyScrollActivityGeneration++;
+                self.awaitingStoryScrollRestoration = NO;
                 // Track direction only during actual finger movement, not during
                 // deceleration (isDragging can stay YES with momentum scrolling)
                 UIGestureRecognizerState panState = scrollView.panGestureRecognizer.state;
@@ -2242,6 +2320,8 @@
 }
 
 - (void)storeScrollPosition:(BOOL)queue {
+    if (self.awaitingStoryScrollRestoration || !self.hasStory ||
+        ![self isCurrentStoryLoad:self.storyLoadGeneration]) return;
     __block NSInteger position = [self scrollPosition];
     __block NSDictionary *story = self.activeStory;
     __weak __typeof(&*self)weakSelf = self;
@@ -2250,11 +2330,12 @@
     if (!hasScrolled) return;
     
     NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
+    NSUInteger generation = self.storyLoadGeneration;
     if (queue) {
         NSTimeInterval interval = 2;
         [JNWThrottledBlock runBlock:^{
             __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-            if (!strongSelf) return;
+            if (!strongSelf || ![strongSelf isCurrentStoryLoad:generation]) return;
             NSInteger updatedPos = [strongSelf scrollPosition];
             [self.appDelegate markScrollPosition:updatedPos inStory:story];
         } withIdentifier:storyIdentifier throttle:interval];
@@ -2274,8 +2355,12 @@
 - (void)scrollToLastPosition:(BOOL)animated {
     if (hasScrolled) return;
     hasScrolled = YES;
+    self.awaitingStoryScrollRestoration = YES;
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+    NSUInteger generation = self.storyLoadGeneration;
+    NSUInteger scrollActivity = self.storyScrollActivityGeneration;
+    WKWebView *restoringWebView = self.webView;
     __weak __typeof(&*self)weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
@@ -2286,6 +2371,7 @@
                 return;
             }
             FMResultSet *cursor = [db executeQuery:@"SELECT scroll, story_hash FROM story_scrolls s WHERE s.story_hash = ? LIMIT 1", storyHash];
+            BOOL foundSavedPosition = NO;
             
             while ([cursor next]) {
                 NSDictionary *story = [cursor resultDictionary];
@@ -2295,21 +2381,45 @@
                     // No scroll found
                     continue;
                 }
+                foundSavedPosition = YES;
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (!self->scrollPct) self->scrollPct = [scroll floatValue] / 1000.f;
-                    NSInteger position = floor(self->scrollPct * strongSelf.webView.scrollView.contentSize.height);
-                    NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
-                    if (position > maxPosition) {
-                        NSLog(@"Position too far, scaling back to max position: %@ > %@", @(position), @(maxPosition));
-                        position = maxPosition;
-                    }
-                    if (position > 0) {
-                        NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, self->scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                    // StoryDetailObjCViewController.m must not apply an old database result after page reuse or a user's scroll.
+                    if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
+                        scrollActivity != strongSelf.storyScrollActivityGeneration ||
+                        restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
+                        restoringWebView.scrollView.isDecelerating) return;
+                    // StoryDetailObjCViewController.m can receive DOM readiness before WK publishes its native content size.
+                    [restoringWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return true;"
+                                               arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
+                                       completionHandler:^(id result, NSError *error) {
+                        if (error || ![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
+                            scrollActivity != strongSelf.storyScrollActivityGeneration ||
+                            restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
+                            restoringWebView.scrollView.isDecelerating) return;
+                        strongSelf.awaitingStoryScrollRestoration = NO;
+                        if (!self->scrollPct) self->scrollPct = [scroll floatValue] / 1000.f;
+                        NSInteger position = floor(self->scrollPct * strongSelf.webView.scrollView.contentSize.height);
+                        NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
+                        if (position > maxPosition) {
+                            NSLog(@"Position too far, scaling back to max position: %@ > %@", @(position), @(maxPosition));
+                            position = maxPosition;
+                        }
+                        if (position > 0) {
+                            strongSelf.restoredStoryScrollPosition = YES;
+                            NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, self->scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
                             [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
-                    }
+                        }
+                    }];
                 });
             }
             [cursor close];
+            if (!foundSavedPosition) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([strongSelf isCurrentStoryLoad:generation] && strongSelf.webView == restoringWebView) {
+                        strongSelf.awaitingStoryScrollRestoration = NO;
+                    }
+                });
+            }
             
         }];
     });
@@ -2341,6 +2451,21 @@
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
     if ([[url host] isEqualToString: @"ios.newsblur.com"]){
+        if ([action isEqualToString:@"notify-loaded"]) {
+            NSString *loadId = nil;
+            for (NSURLQueryItem *item in components.queryItems) {
+                if ([item.name isEqualToString:@"load_id"]) loadId = item.value;
+            }
+            NSString *expectedLoadId = [NSString stringWithFormat:@"%lu", (unsigned long)self.storyLoadGeneration];
+            if (webView == self.webView && navigationAction.sourceFrame.isMainFrame &&
+                self.hasStory && [self isCurrentStoryLoad:self.storyLoadGeneration] &&
+                [loadId isEqualToString:expectedLoadId]) {
+                [self webViewNotifyLoaded];
+            }
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        }
+
         // reset the active comment
         appDelegate.activeComment = nil;
         appDelegate.activeShareType = action;
@@ -2537,10 +2662,6 @@
                            height:[[urlComponents objectAtIndex:6] intValue]];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
-        } else if ([action isEqualToString:@"notify-loaded"]) {
-            [self webViewNotifyLoaded];
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -2637,8 +2758,8 @@
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-    if (!self.hasStory) // other Web page loads aren't visible
-        return;
+    if (webView != self.webView || navigation != self.storyNavigation || !self.hasStory ||
+        ![self isCurrentStoryLoad:self.storyLoadGeneration]) return;
 
     // DOM should already be set up here
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -2648,7 +2769,22 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    [self loadStory];
+    if (webView == self.webView && navigation && navigation == self.fontWarmupNavigation) {
+        __weak typeof(self) weakSelf = self;
+        [webView callAsyncJavaScript:@"await Promise.all(Array.from(document.fonts, font => font.load())); await document.fonts.ready; return true;"
+                          arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
+                  completionHandler:^(id result, NSError *error) {
+            [weakSelf finishFontPreparationForWebView:webView navigation:navigation error:error];
+        }];
+        return;
+    }
+    if (webView == self.webView && navigation == self.storyNavigation && self.failedWebViewFontPreparation &&
+        !self.hasStory && [self isCurrentStoryLoad:self.storyLoadGeneration]) {
+        [self loadStory];
+        return;
+    }
+    if (webView != self.webView || navigation != self.storyNavigation || !self.hasStory ||
+        ![self isCurrentStoryLoad:self.storyLoadGeneration]) return;
 
     // After the full story HTML finishes loading, update the viewport width to
     // match the actual web view size. On initial load, drawStory may fire before
@@ -2659,18 +2795,53 @@
     }
 }
 
+- (void)finishFontPreparationForWebView:(WKWebView *)webView navigation:(WKNavigation *)navigation error:(NSError *)error {
+    if (self.webView != webView || !navigation || self.fontWarmupNavigation != navigation) return;
+    self.preparedWebViewFonts = error == nil;
+    self.failedWebViewFontPreparation = error != nil;
+    self.fontWarmupNavigation = nil;
+    if (self.fontWarmupStarted > 0) {
+        [ReaderPerformance finish:error ? @"detail.font_bootstrap_failed" : @"detail.font_bootstrap" since:self.fontWarmupStarted];
+    }
+    [self loadStory];
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [self finishFontPreparationForWebView:webView navigation:navigation error:error];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [self finishFontPreparationForWebView:webView navigation:navigation error:error];
+}
+
 - (void)loadStory {
+    if (self.fontWarmupNavigation) return;
     if (!self.fullStoryHTML)
         return; // if we're loading anything other than a full story, the view will be hidden
+
+    NSUInteger generation = self.storyLoadGeneration;
+    if (![self isCurrentStoryLoad:generation]) return;
+    if (self.failedWebViewFontPreparation && self.fallbackStoryHeaderHTML) {
+        NSString *header = self.fallbackStoryHeaderHTML;
+        self.fallbackStoryHeaderHTML = nil;
+        [self loadHTMLString:header];
+        // StoryDetailObjCViewController.m retains its previous two-stage recovery if local font preparation fails.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            if ([self isCurrentStoryLoad:generation]) [self loadStory];
+        });
+        return;
+    }
+    self.fallbackStoryHeaderHTML = nil;
     
     [self.activityIndicator stopAnimating];
     
     self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
 
     self.lastWidthClassKey = nil; // Force viewport update after full HTML load
-    [self loadHTMLString:self.fullStoryHTML];
+    NSString *html = self.fullStoryHTML;
     self.fullStoryHTML = nil;
     self.hasStory = YES;
+    [self loadHTMLString:html];
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
@@ -2678,18 +2849,18 @@
         self.activeStoryId) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
+                           if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
                            [self checkTryFeedStory];
                        });
     }
     
-    CGFloat alpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
 
         // Initialize content inset for edge-to-edge layout
-        [self updateContentInsetForNavigationBarAlpha:alpha];
+        [self updateContentInsetForNavigationBarAlpha:self.appDelegate.storyPagesViewController.navigationBarFadeAlpha];
 
         // Adjust initial scroll position for hidden toolbar. After setting the
         // inset, the scroll view rests at -contentInset.top (full toolbar space).
@@ -2697,7 +2868,7 @@
         StoryPagesObjCViewController *pagesVC = self.appDelegate.storyPagesViewController;
         if (pagesVC.isCustomToolbarActive) {
             CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
-            if (toolbarOffset > 0) {
+            if (toolbarOffset > 0 && !self.restoredStoryScrollPosition && !self.hasScrolledAwayFromTop) {
                 UIScrollView *sv = self.webView.scrollView;
                 CGFloat topRest = -sv.contentInset.top;
                 sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
@@ -2706,6 +2877,7 @@
 
         if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhoneOrCompact && self.appDelegate.detailViewController.storyTitlesInGridView) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
                 [self.appDelegate.feedDetailViewController reload];
             });
@@ -2714,6 +2886,9 @@
 }
 
 - (void)webViewNotifyLoaded {
+    if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
+        self.readyStoryLoadGeneration == self.storyLoadGeneration) return;
+    self.readyStoryLoadGeneration = self.storyLoadGeneration;
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
     [self applyClassifierHighlights];
@@ -2737,8 +2912,12 @@
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+    if (webView != self.webView) return;
     NSLog(@"Web content process did terminate: %@", webView);  // log
     
+    self.preparedWebViewFonts = NO;
+    self.failedWebViewFontPreparation = NO;
+    [self clearWebView];
     [self drawStory];
 }
 
@@ -3300,6 +3479,12 @@
             return;
         contentOffset.y = MAX(contentOffset.y - scrollHeight, 0);
     }
+    if (CGPointEqualToPoint(contentOffset, scrollView.contentOffset)) return;
+    // StoryDetailObjCViewController.m treats keyboard paging as user activity, including while a saved-position query is pending.
+    self.storyScrollActivityGeneration++;
+    self.awaitingStoryScrollRestoration = NO;
+    hasScrolled = YES;
+    if (contentOffset.y > 0) self.hasScrolledAwayFromTop = YES;
     [scrollView setContentOffset:contentOffset animated:YES];
 }
 
