@@ -2007,33 +2007,61 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)cancelFaviconPrefetch {
     [self.faviconPrefetchQueue cancelAllOperations];
     [self.faviconPrefetchOperations removeAllObjects];
+    [appDelegate cancelFaviconPreparation];
+}
+
+- (FeedIconPreparationRequest *)faviconPreparationRequestForIndexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView {
+    if (indexPath.section >= appDelegate.dictFoldersArray.count) return nil;
+    NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
+    NSArray *folder = appDelegate.dictFolders[folderName];
+    if (indexPath.row >= folder.count) return nil;
+    if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) return nil;
+    NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
+    BOOL savedSearch = [appDelegate isSavedSearch:identifier];
+    NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
+    if ([appDelegate isSavedFeed:feedID]) return nil;
+    if (self.searchFeedIds) {
+        if (![self.searchFeedIds containsObject:feedID]) return nil;
+    } else if ([appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedID] || savedSearch)) {
+        return nil;
+    }
+    BOOL social = [appDelegate isSocialFeed:feedID];
+    NSDictionary *customIcon = appDelegate.dictFeedIcons[feedID];
+    if (!social && customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) return nil;
+    CGFloat side = social ? (appDelegate.isPhone ? 26 : 28) : 16;
+    return [[FeedIconPreparationRequest alloc] initWithKey:feedID size:CGSizeMake(side, side)];
+}
+
+- (void)prepareVisibleFeedFavicons {
+    CFTimeInterval started = [ReaderPerformance start];
+    NSMutableArray<FeedIconPreparationRequest *> *requests = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    // FeedsObjCViewController.m spends the preparation budget in displayed order, excluding every zero-height row.
+    for (NSInteger section = 0; section < appDelegate.dictFoldersArray.count && requests.count < 1024; section++) {
+        NSArray *folder = appDelegate.dictFolders[appDelegate.dictFoldersArray[section]];
+        for (NSInteger row = 0; row < MIN(folder.count, 5000) && requests.count < 1024; row++) {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:row inSection:section];
+            FeedIconPreparationRequest *request = [self faviconPreparationRequestForIndexPath:path tableView:self.feedTitlesTable];
+            if (request && ![seen containsObject:request.key]) {
+                [requests addObject:request];
+                [seen addObject:request.key];
+            }
+        }
+    }
+    [appDelegate prepareFavicons:requests];
+    if (started > 0) [ReaderPerformance finish:@"prepare.feed-icons" since:started];
 }
 
 - (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
     for (NSIndexPath *indexPath in indexPaths) {
-        if (self.faviconPrefetchOperations[indexPath] || indexPath.section >= appDelegate.dictFoldersArray.count) continue;
-        NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
-        NSArray *folder = appDelegate.dictFolders[folderName];
-        if (indexPath.row >= folder.count) continue;
-        if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) continue;
-        NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
-        BOOL savedSearch = [appDelegate isSavedSearch:identifier];
-        NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
-        if ([appDelegate isSavedFeed:feedID]) continue;
-        if (self.searchFeedIds) {
-            if (![self.searchFeedIds containsObject:feedID]) continue;
-        } else if ([appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedID] || savedSearch)) {
-            continue;
-        }
-        BOOL social = [appDelegate isSocialFeed:feedID];
-        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedID];
-        if (!social && customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) continue;
-        CGFloat side = social ? (appDelegate.isPhone ? 26 : 28) : 16;
+        if (self.faviconPrefetchOperations[indexPath]) continue;
+        FeedIconPreparationRequest *request = [self faviconPreparationRequestForIndexPath:indexPath tableView:tableView];
+        if (!request) continue;
         // FeedsObjCViewController.m snapshots identifiers on the main thread before preparing exact cell artwork.
         NewsBlurAppDelegate *delegate = appDelegate;
         NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
             @autoreleasepool {
-                [delegate preparedFavicon:feedID size:CGSizeMake(side, side)];
+                [delegate preparedFavicon:request.key size:request.size];
             }
         }];
         __weak typeof(self) weakSelf = self;
@@ -2380,6 +2408,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self highlightSelection];
+    [self prepareVisibleFeedFavicons];
 }
 
 - (void)refreshFolderCounts {
