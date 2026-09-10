@@ -120,6 +120,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic) NSInteger lastSection;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
+@property (nonatomic, strong) NSOperationQueue *faviconPrefetchQueue;
+@property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSBlockOperation *> *faviconPrefetchOperations;
 
 @end
 
@@ -231,6 +233,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     self.rowHeights = [NSMutableDictionary dictionary];
     self.folderTitleViews = [NSMutableDictionary dictionary];
+    self.faviconPrefetchQueue = [[NSOperationQueue alloc] init];
+    self.faviconPrefetchQueue.maxConcurrentOperationCount = 2;
+    self.faviconPrefetchQueue.qualityOfService = NSQualityOfServiceUtility;
+    self.faviconPrefetchOperations = [NSMutableDictionary dictionary];
+    self.feedTitlesTable.prefetchDataSource = self;
     
 #if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
@@ -697,6 +704,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [self cancelFaviconPrefetch];
     [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
     [self.searchField resignFirstResponder];
@@ -1996,6 +2004,60 @@ static BOOL NBBoolPreferenceValue(id value) {
 #pragma mark -
 #pragma mark Table View - Feed List
 
+- (void)cancelFaviconPrefetch {
+    [self.faviconPrefetchQueue cancelAllOperations];
+    [self.faviconPrefetchOperations removeAllObjects];
+}
+
+- (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    for (NSIndexPath *indexPath in indexPaths) {
+        if (self.faviconPrefetchOperations[indexPath] || indexPath.section >= appDelegate.dictFoldersArray.count) continue;
+        NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
+        NSArray *folder = appDelegate.dictFolders[folderName];
+        if (indexPath.row >= folder.count) continue;
+        NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
+        BOOL savedSearch = [appDelegate isSavedSearch:identifier];
+        NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
+        if ([appDelegate isSavedFeed:feedID]) continue;
+        if (self.searchFeedIds) {
+            if (![self.searchFeedIds containsObject:feedID]) continue;
+        } else if ([appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedID] || savedSearch)) {
+            continue;
+        }
+        BOOL social = [appDelegate isSocialFeed:feedID];
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedID];
+        if (!social && customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) continue;
+        CGFloat side = social ? (appDelegate.isPhone ? 26 : 28) : 16;
+        // FeedsObjCViewController.m snapshots identifiers on the main thread before preparing exact cell artwork.
+        NewsBlurAppDelegate *delegate = appDelegate;
+        NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+            @autoreleasepool {
+                [delegate preparedFavicon:feedID size:CGSizeMake(side, side)];
+            }
+        }];
+        __weak typeof(self) weakSelf = self;
+        __weak NSBlockOperation *weakOperation = operation;
+        operation.completionBlock = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(self) strongSelf = weakSelf;
+                NSBlockOperation *finishedOperation = weakOperation;
+                if (finishedOperation && strongSelf.faviconPrefetchOperations[indexPath] == finishedOperation) {
+                    [strongSelf.faviconPrefetchOperations removeObjectForKey:indexPath];
+                }
+            });
+        };
+        self.faviconPrefetchOperations[indexPath] = operation;
+        [self.faviconPrefetchQueue addOperation:operation];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView cancelPrefetchingForRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    for (NSIndexPath *indexPath in indexPaths) {
+        [self.faviconPrefetchOperations[indexPath] cancel];
+        [self.faviconPrefetchOperations removeObjectForKey:indexPath];
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (appDelegate.hasNoSites) {
         return 0;
@@ -2095,7 +2157,10 @@ static BOOL NBBoolPreferenceValue(id value) {
             customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
         }
     }
-    cell.feedFavicon = customFeedIcon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+    CGFloat faviconSide = isSocial ? (appDelegate.isPhone ? 26 : 28) : 16;
+    UIImage *preparedFavicon = (customFeedIcon || isSaved) ? nil : [appDelegate preparedFavicon:feedIdStr size:CGSizeMake(faviconSide, faviconSide)];
+    cell.feedFavicon = customFeedIcon ?: preparedFavicon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+    cell.feedFaviconPrepared = preparedFavicon != nil;
 
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
@@ -2301,6 +2366,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)reloadFeedTitlesTable {
+    [self cancelFaviconPrefetch];
     [self resetRowHeights];
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];

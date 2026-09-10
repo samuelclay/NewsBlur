@@ -29,6 +29,7 @@
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *feedTitle;
 @property (nonatomic) UIImage *feedFavicon;
+@property (nonatomic) BOOL feedFaviconPrepared;
 @property (assign, nonatomic) int positiveCount;
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;

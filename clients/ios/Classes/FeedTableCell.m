@@ -73,6 +73,11 @@ static UIFont *textFont = nil;
     [self setNeedsDisplay];
 }
 
+- (void)setFeedFavicon:(UIImage *)image {
+    feedFavicon = image;
+    self.feedFaviconPrepared = NO;
+}
+
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
@@ -221,7 +226,7 @@ static UIFont *textFont = nil;
     if (cell.isSocial) {
         if (!cell.appDelegate.isPhone) {
             faviconSize = CGSizeMake(28, 28);
-            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
             [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
@@ -229,7 +234,7 @@ static UIFont *textFont = nil;
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             faviconSize = CGSizeMake(26, 26);
-            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
             [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
@@ -238,7 +243,7 @@ static UIFont *textFont = nil;
         }
     } else {
         faviconSize = CGSizeMake(16, 16);
-        UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+        UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
         if (!cell.appDelegate.isPhone) {
             [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
