@@ -30,6 +30,12 @@ class RScrapingBee:
     - sbUsage                -> cached JSON of ScrapingBee's account usage API (5 minute TTL)
 
     Daily keys expire after 35 days.
+
+    A single host can also burn the whole plan: one user's 1,700 AbeBooks search web
+    feeds cost ~43K credits/day in September 2026 because AbeBooks challenged some task
+    server IPs and every challenged fetch was proxied. host_over_budget() caps the credits
+    any one host may spend per day (settings.SCRAPINGBEE_HOST_DAILY_CREDIT_CAP); callers
+    skip the paid proxies past the cap and count the skip under status "capped".
     """
 
     TTL_DAYS = 35
@@ -39,7 +45,10 @@ class RScrapingBee:
     SOURCES = ("feed", "discovery", "original_story", "webfeed", "webfeed_preview")
     # ScrapingBee only bills 200 and 404 responses. 500 means the target site blocked
     # even the proxy; "error" means the request to ScrapingBee itself raised.
-    STATUSES = ("200", "304", "404", "500", "other", "error")
+    STATUSES = ("200", "304", "404", "500", "other", "error", "capped")
+    # Fallback when settings.SCRAPINGBEE_HOST_DAILY_CREDIT_CAP isn't set. Only the hottest
+    # few hosts (rsshub.app, deviantart, craigslist) spend even half this in a normal day.
+    DEFAULT_HOST_DAILY_CREDIT_CAP = 1000
 
     @classmethod
     def _redis(cls):
@@ -114,6 +123,39 @@ class RScrapingBee:
             )
 
     @classmethod
+    def host_daily_credit_cap(cls):
+        return int(getattr(settings, "SCRAPINGBEE_HOST_DAILY_CREDIT_CAP", cls.DEFAULT_HOST_DAILY_CREDIT_CAP))
+
+    @classmethod
+    def host_credits_today(cls, url):
+        host = cls._host(url)
+        if not host:
+            return 0
+        try:
+            return int(cls._redis().zscore(f"sbDomainCredits:{cls._date()}", host) or 0)
+        except Exception as e:
+            logging.debug(" ***> ScrapingBee host credits unavailable for %s: %s" % (host, e))
+            return 0
+
+    @classmethod
+    def host_over_budget(cls, url):
+        """True once a host has spent its daily credit cap, so callers skip the paid proxies."""
+        return cls.host_credits_today(url) >= cls.host_daily_credit_cap()
+
+    @classmethod
+    def record_capped(cls, source, url=None):
+        """Count a proxy request that was skipped because its host is over the daily cap."""
+        try:
+            r = cls._redis()
+            today = cls._date()
+            pipe = r.pipeline()
+            pipe.hincrby(f"sbCalls:{today}", f"{source}:capped", 1)
+            pipe.expire(f"sbCalls:{today}", cls._ttl())
+            pipe.execute()
+        except Exception as e:
+            logging.debug(" ***> ScrapingBee capped stat not recorded (%s): %s" % (source, e))
+
+    @classmethod
     def record_response(cls, source, response, url=None):
         """Count a completed ScrapingBee request, charging whatever its Spb-cost header says."""
         cls.record(
@@ -134,6 +176,8 @@ class RScrapingBee:
             "calls_today": 0,
             "credits_today": 0,
             "top_domains": [],
+            "host_credit_cap": cls.host_daily_credit_cap(),
+            "hosts_over_cap": 0,
         }
         for field, count in r.hgetall(f"sbCalls:{today}").items():
             source, status = field.split(":", 1)
@@ -146,6 +190,7 @@ class RScrapingBee:
         domain_requests = dict(r.zrevrange(f"sbDomains:{today}", 0, -1, withscores=True))
         for host, credits in r.zrevrange(f"sbDomainCredits:{today}", 0, cls.TOP_DOMAINS - 1, withscores=True):
             stats["top_domains"].append((host, int(credits), int(domain_requests.get(host, 0))))
+        stats["hosts_over_cap"] = r.zcount(f"sbDomainCredits:{today}", stats["host_credit_cap"], "+inf")
 
         return stats
 

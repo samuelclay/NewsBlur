@@ -19534,6 +19534,200 @@
    ],
    "title": "Top Domains by Requests Today",
    "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 0,
+    "y": 727
+   },
+   "id": 355,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "scrapingbee_usage{metric=\"hosts_over_cap\"}",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Hosts Over Daily Credit Cap",
+   "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 4,
+    "y": 727
+   },
+   "id": 356,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "sum(scrapingbee_usage{metric=\"calls_today\",status=\"capped\"})",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Proxy Calls Skipped by Cap Today",
+   "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 8,
+    "y": 727
+   },
+   "id": 357,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "scrapingbee_usage{metric=\"host_credit_cap\"}",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Per-Host Daily Credit Cap",
+   "type": "stat"
   }
  ],
  "refresh": "5s",

@@ -19,6 +19,16 @@ USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
 # Custom exception code for web feed XPath extraction failure
 WEBFEED_EXCEPTION_CODE = 590
 
+# Responses that mean a bot check challenged this request, not that the page is gone.
+# AbeBooks answers 202 challenge pages to some task server IPs and real pages to others,
+# and in September 2026 proxying every challenged fetch cost ~43K ScrapingBee credits a
+# day for one user's search feeds.
+CHALLENGE_STATUSES = (202, 403, 429, 503)
+# A site that served the feed directly this recently is only challenging some of our
+# IPs, so the next scheduled fetch on another server gets through for free. A site
+# that hasn't answered directly in this long blocks every server and needs the proxy.
+DIRECT_FETCH_MAX_AGE = datetime.timedelta(hours=24)
+
 # Phrases a results page shows when a search legitimately has no items right now. A
 # page carrying one of these is a healthy feed with zero stories, not a broken one:
 # it must not count toward reanalysis or flag exception 590 (very specific rare-book
@@ -40,6 +50,9 @@ class WebFeedFetcher:
         self.feed = feed
         self.url = feed.feed_address[len("webfeed:") :]
         self.config = MWebFeedConfig.get_config(feed.pk)
+        # Set by _fetch_html when a fetch is skipped without failing: a bot challenge on a
+        # site other servers still reach, or a host over its daily proxy credit cap.
+        self.skip_reason = None
 
     def fetch(self):
         """Main entry point. Returns a feedparser-compatible dict or None on failure."""
@@ -54,6 +67,14 @@ class WebFeedFetcher:
         logging.debug("   ---> [%-30s] ~FYWeb Feed: Fetching ~SB%s~SN" % (self.feed.log_title[:30], self.url))
 
         page_html = self._fetch_html()
+        if not page_html and self.skip_reason:
+            # Not a failure: nothing is recorded, so this can't trip reanalysis, and the
+            # feed simply waits for its next scheduled fetch.
+            logging.debug(
+                "   ---> [%-30s] ~FYWeb Feed: skipping this fetch (%s): ~SB%s~SN"
+                % (self.feed.log_title[:30], self.skip_reason, self.url)
+            )
+            return None
         if not page_html:
             self.config.record_failure()
             if self.config.needs_reanalysis:
@@ -122,9 +143,22 @@ class WebFeedFetcher:
             response = safe_requests_get(self.url, headers=headers, timeout=15, allow_redirects=True)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
+                # Persisted by record_success / record_failure in fetch()
+                self.config.last_direct_fetch = datetime.datetime.utcnow()
                 return text
+            if response.status_code in CHALLENGE_STATUSES and self._recently_fetched_directly():
+                self.skip_reason = (
+                    "bot challenge (%s) on a site other servers still reach" % response.status_code
+                )
+                return None
         except requests.RequestException:
             pass
+
+        # One host can't spend more than its share of the ScrapingBee plan in a day
+        if RScrapingBee.host_over_budget(self.url):
+            RScrapingBee.record_capped("webfeed", url=self.url)
+            self.skip_reason = "host is over its daily proxy credit cap"
+            return None
 
         # Fallback to ScrapingBee
         if getattr(settings, "SCRAPINGBEE_API_KEY", None):
@@ -171,6 +205,13 @@ class WebFeedFetcher:
             % (self.feed.log_title[:30], self.url)
         )
         return None
+
+    def _recently_fetched_directly(self):
+        """True when the site served this feed to a task server without a proxy recently."""
+        last_direct_fetch = self.config.last_direct_fetch if self.config else None
+        if not last_direct_fetch:
+            return False
+        return datetime.datetime.utcnow() - last_direct_fetch < DIRECT_FETCH_MAX_AGE
 
     def _extract_stories(self, html_text):
         """Apply stored XPaths to HTML and extract story dicts."""

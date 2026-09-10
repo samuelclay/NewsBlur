@@ -48,6 +48,11 @@ class MWebFeedConfig(mongo.Document):
     variant_index = mongo.IntField()
     analysis_html_hash = mongo.StringField()
     last_successful_extract = mongo.DateTimeField()
+    # When the site last served this feed to a task server directly, without a proxy.
+    # utils/webfeed_fetcher.py uses it to tell a site that challenges only some of our
+    # IPs (skip the paid proxy, another server will get through) from one that blocks
+    # every server (the proxy is the only way in).
+    last_direct_fetch = mongo.DateTimeField()
     consecutive_failures = mongo.IntField(default=0)
     needs_reanalysis = mongo.BooleanField(default=False)
     created_at = mongo.DateTimeField(default=datetime.datetime.utcnow)

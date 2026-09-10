@@ -41,6 +41,14 @@ class ScrapingBeeUsage(View):
             "credits_today_total"
         ] = f'{chart_name}{{metric="credits_today_total"}} {stats["credits_today"]}'
 
+        # Per-host daily credit cap and how many hosts have hit it, see RScrapingBee.host_over_budget
+        formatted_data[
+            "host_credit_cap"
+        ] = f'{chart_name}{{metric="host_credit_cap"}} {stats["host_credit_cap"]}'
+        formatted_data[
+            "hosts_over_cap"
+        ] = f'{chart_name}{{metric="hosts_over_cap"}} {stats["hosts_over_cap"]}'
+
         # Hungriest target hosts today, capped in RScrapingBee.TOP_DOMAINS to bound label cardinality
         for host, credits, requests_count in stats["top_domains"]:
             formatted_data[

@@ -2322,6 +2322,50 @@ class Test_ScrapingBeeProxy(TestCase):
         self.assertEqual(status, 200)
         mock_scrapingbee.assert_called_once()
 
+    @patch("utils.feed_fetcher.RScrapingBee.record_capped")
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.random.random", return_value=0.05)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_skips_proxies_when_host_is_over_daily_credit_cap(
+        self, mock_get, mock_random, mock_over_budget, mock_capped
+    ):
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(fetcher, "fetch_scrapingbee") as mock_scrapingbee, patch.object(
+            fetcher, "fetch_scrapeninja"
+        ) as mock_scrapeninja:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual((status, body), (None, None))
+        self.assertTrue(fetcher.skipped_for_credit_cap)
+        mock_scrapingbee.assert_not_called()
+        mock_scrapeninja.assert_not_called()
+        mock_capped.assert_called_once_with("feed", url=self.feed.feed_address)
+
+    @patch("utils.feed_fetcher.RScrapingBee.record_capped")
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_capped_forbidden_fetch_records_no_error(
+        self, mock_get, mock_random, mock_over_budget, mock_capped
+    ):
+        """A fetch that was never attempted because of the credit cap shouldn't poison fetch
+        history or back the feed off; it just waits for its next scheduled fetch."""
+        from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+
+        self.feed.is_forbidden = True
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(Feed, "save_feed_history") as mock_history:
+            result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed)
+        mock_history.assert_not_called()
+
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     def test_failed_forbidden_fetch_is_recorded_as_an_error(self, mock_random):
         """Proxy failures used to return FEED_ERRHTTP without touching the fetch history, so the
