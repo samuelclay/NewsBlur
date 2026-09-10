@@ -578,6 +578,11 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash;
+- (BOOL)cachedStoryImageForStoryHash:(NSString *)storyHash matchesSourceURLs:(NSArray *)sourceURLs;
+- (NSUInteger)beginStoryImageSourceRefresh;
+- (NSDictionary *)storyImageRequestForStoryHash:(NSString *)storyHash sourceURLs:(NSArray *)sourceURLs minimumRevision:(NSUInteger)minimumRevision;
+- (BOOL)isCurrentStoryImageRequest:(NSDictionary *)request;
+- (BOOL)cacheStoryImage:(UIImage *)image forRequest:(NSDictionary *)request;
 - (void)cacheStoryImagePlaceholder:(NSString *)storyHash;
 - (void)removeCachedStoryImageForStoryHash:(NSString *)storyHash;
 - (void)removeAllCachedStoryImages;
