@@ -119,6 +119,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSDictionary *> *pendingStoryImageRequests;
 @property (nonatomic) NSUInteger storyImageRefreshRevision;
 @property (nonatomic, strong) StoryThumbnailPrefetcher *storyThumbnailPrefetcher;
+@property (nonatomic, strong) NSObject *storyFaviconPreparation;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
@@ -1419,6 +1420,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
+    [appDelegate cancelFaviconPreparation:self.storyFaviconPreparation];
+    self.storyFaviconPreparation = nil;
+
     [self.searchField resignFirstResponder];
     [self hideTryFeedSubscribeBanner];
 }
@@ -1644,6 +1648,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)clearStoryRenderCaches {
+    [appDelegate cancelFaviconPreparation:self.storyFaviconPreparation];
+    self.storyFaviconPreparation = nil;
     [self.storyThumbnailPrefetcher cancelAll];
     [self.storyPreviewPrefetchOperation cancel];
     [_storyTextLayoutCache removeAllLayouts];
@@ -3631,6 +3637,28 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }];
 }
 
+- (void)prefetchStoryFaviconsForRows:(NSArray<NSIndexPath *> *)indexPaths {
+    NSMutableArray<FeedIconPreparationRequest *> *requests = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    // FeedDetailObjCViewController.m snapshots the exact feed IDs of nearby regular and cluster rows without loading originals.
+    for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
+        if (![self storyRowDescriptorForIndexPath:indexPath]) continue;
+        NSDictionary *story = [self clusterStoryForIndexPath:indexPath] ?: [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+        id rawFeedID = story[@"story_feed_id"];
+        if (!rawFeedID || rawFeedID == NSNull.null) continue;
+        NSString *feedID = [appDelegate feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", rawFeedID]];
+        if (!feedID.length || [seen containsObject:feedID]) continue;
+        [seen addObject:feedID];
+        [requests addObject:[[FeedIconPreparationRequest alloc] initWithKey:feedID size:CGSizeMake(16, 16)]];
+    }
+    if (requests.count) {
+        self.storyFaviconPreparation = [appDelegate prepareFavicons:requests maximumRequestCount:24];
+    } else {
+        [appDelegate cancelFaviconPreparation:self.storyFaviconPreparation];
+        self.storyFaviconPreparation = nil;
+    }
+}
+
 - (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
     if (tableView != self.storyTitlesTable || !self.isLegacyTable || self.isDashboard ||
         storiesCollection.isDailyBriefing || CGRectGetWidth(tableView.bounds) <= 0) return;
@@ -3643,6 +3671,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (requestedRows.count > 24) [requestedRows removeObjectsInRange:NSMakeRange(0, requestedRows.count - 24)];
     self.storyTextLayoutPrefetchRows = requestedRows;
     [self prefetchStoryImagesForRows:requestedRows];
+    [self prefetchStoryFaviconsForRows:requestedRows];
     if (![self.storyPreviewPrefetchActiveRows isSubsetOfSet:[NSSet setWithArray:requestedRows]]) {
         [self.storyPreviewPrefetchOperation cancel];
     }
@@ -3706,6 +3735,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [requestedRows removeObjectsInArray:indexPaths];
     self.storyTextLayoutPrefetchRows = requestedRows;
     [self prefetchStoryImagesForRows:requestedRows];
+    [self prefetchStoryFaviconsForRows:requestedRows];
     if ([self.storyPreviewPrefetchActiveRows intersectsSet:[NSSet setWithArray:indexPaths]]) {
         [self.storyPreviewPrefetchOperation cancel];
     }
@@ -3962,7 +3992,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
     
     // favicon
-    cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
+    UIImage *preparedFavicon = self.isLegacyTable && !self.isDashboard && !storiesCollection.isDailyBriefing ?
+        [appDelegate preparedFavicon:feedIdStr size:CGSizeMake(16, 16)] : nil;
+    if (preparedFavicon) [cell setPreparedSiteFavicon:preparedFavicon];
+    else cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
     cell.hasAlpha = NO;
     
     // undread indicator

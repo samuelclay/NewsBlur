@@ -4885,14 +4885,22 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests {
+    [self prepareFavicons:requests maximumRequestCount:1024];
+}
+
+- (NSObject *)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests maximumRequestCount:(NSInteger)maximumRequestCount {
     __weak typeof(self) weakSelf = self;
-    [self.feedIconRenderer prepare:requests loader:^UIImage *(NSString *key) {
+    return [self.feedIconRenderer prepare:requests maximumRequestCount:maximumRequestCount loader:^UIImage *(NSString *key) {
         return [weakSelf faviconImageForKey:key promoteOriginal:NO];
     }];
 }
 
 - (void)cancelFaviconPreparation {
     [_feedIconRenderer cancelPreparation];
+}
+
+- (void)cancelFaviconPreparation:(NSObject *)preparation {
+    if (preparation) [_feedIconRenderer cancelPreparation:preparation];
 }
 
 - (NSUInteger)faviconMemoryCost:(UIImage *)image {
