@@ -42,6 +42,8 @@ The seeded gestures alternate speeds and periodically reverse direction. They us
 
 `coldcapture:<directory>` records an app restart without deleting its data. A `checkpoint:<name>` before a navigation tap records a timestamp for comparing the first subsequent cell/header measurement with the video. Capture directories contain `scroll.mp4`, symbolized `cpu.txt` samples, `session.json`, and a copy of the app's `measurements.jsonl`. The summary filters events to the recorded session. The app measurement file contains timings, not story content; videos naturally show the account's visible stories.
 
+Set `IOS_CAPTURE_CPU=0` to repeat a video capture without attaching the CPU sampler. Use this control when measuring startup, where profiler attachment can affect the result. `launch.probes_ready`, `launch.prepare_views`, `render.stories`, and `detail.prepare` help locate preparation costs in subsequent builds. A checkpoint-to-first-cell interval includes automation dispatch and cell configuration; it does not establish that every image or the full web page has finished drawing.
+
 CPU sampling uses macOS `sample` against the actual simulator app PID. Optional `IOS_USE_XCTRACE=1` also requests a Time Profiler trace. The Xcode/iOS runtime combination used for this audit stalled simulator Instruments attachment with overlapping-image mapping errors, so the audit relies on the symbolized samples and display-link measurements. Video frame counts alone are not treated as app FPS.
 
 Run the dedicated Alpha regressions after building:

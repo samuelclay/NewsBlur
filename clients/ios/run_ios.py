@@ -161,10 +161,11 @@ def do_capture(path, cold=False):
         ["xcrun", "simctl", "launch", UDID, BUNDLE_ID], text=True
     )
     pid = str(int(launch_output.rsplit(":", 1)[1].strip()))
+    sample_cpu = os.environ.get("IOS_CAPTURE_CPU", "1") != "0"
     commands = [
         ("profile", ["sample", pid, os.environ.get("IOS_SAMPLE_SECONDS", "600"), "1",
                      "-file", os.path.join(path, "cpu.txt")]),
-    ]
+    ] if sample_cpu else []
     if os.environ.get("IOS_USE_XCTRACE") == "1":
         commands.append(("instruments", ["xcrun", "xctrace", "record", "--template", "Time Profiler",
                                         "--device", UDID, "--attach", pid, "--no-prompt",
@@ -179,7 +180,8 @@ def do_capture(path, cold=False):
             raise RuntimeError("Capture failed to start; inspect capture logs")
     metadata = {"udid": UDID, "bundle_id": BUNDLE_ID, "pid": pid,
                 "started_at": launch_requested_at if cold else time.time(),
-                "cold_launch": cold, "launch_requested_at": launch_requested_at}
+                "cold_launch": cold, "launch_requested_at": launch_requested_at,
+                "cpu_sampling": sample_cpu}
     with open(os.path.join(path, "session.json"), "w") as file:
         json.dump(metadata, file, indent=2)
     CAPTURE_DIRECTORIES.append(path)
