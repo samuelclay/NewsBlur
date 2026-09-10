@@ -118,6 +118,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) NSCache<NSString *, NSArray *> *completedStoryImageSources;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSDictionary *> *pendingStoryImageRequests;
 @property (nonatomic) NSUInteger storyImageRefreshRevision;
+@property (nonatomic, strong) StoryThumbnailPrefetcher *storyThumbnailPrefetcher;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
@@ -1640,6 +1641,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)clearStoryRenderCaches {
+    [self.storyThumbnailPrefetcher cancelAll];
     [self.storyPreviewPrefetchOperation cancel];
     [_storyTextLayoutCache removeAllLayouts];
     self.storyTextLayoutPrefetchRows = nil;
@@ -3585,6 +3587,25 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     return _storyTextLayoutCache;
 }
 
+- (void)prefetchStoryImagesForRows:(NSArray<NSIndexPath *> *)indexPaths {
+    if ([[NSUserDefaults.standardUserDefaults stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"]) {
+        [self.storyThumbnailPrefetcher cancelAll];
+        return;
+    }
+    NSMutableArray<NSString *> *storyHashes = [NSMutableArray arrayWithCapacity:MIN(indexPaths.count, 24)];
+    for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
+        NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
+        if (!descriptor) continue;
+        NSDictionary *story = [self clusterStoryForIndexPath:indexPath] ?: [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+        NSString *storyHash = story[@"story_hash"];
+        if ([storyHash isKindOfClass:[NSString class]] && storyHash.length) [storyHashes addObject:storyHash];
+    }
+    if (!self.storyThumbnailPrefetcher && storyHashes.count) {
+        self.storyThumbnailPrefetcher = [[StoryThumbnailPrefetcher alloc] initWithAppDelegate:appDelegate];
+    }
+    [self.storyThumbnailPrefetcher prefetchStoryHashes:storyHashes];
+}
+
 - (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
     if (tableView != self.storyTitlesTable || !self.isLegacyTable || self.isDashboard ||
         storiesCollection.isDailyBriefing || CGRectGetWidth(tableView.bounds) <= 0) return;
@@ -3596,6 +3617,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     if (requestedRows.count > 24) [requestedRows removeObjectsInRange:NSMakeRange(0, requestedRows.count - 24)];
     self.storyTextLayoutPrefetchRows = requestedRows;
+    [self prefetchStoryImagesForRows:requestedRows];
     if (![self.storyPreviewPrefetchActiveRows isSubsetOfSet:[NSSet setWithArray:requestedRows]]) {
         [self.storyPreviewPrefetchOperation cancel];
     }
@@ -3658,6 +3680,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSMutableArray<NSIndexPath *> *requestedRows = [self.storyTextLayoutPrefetchRows mutableCopy];
     [requestedRows removeObjectsInArray:indexPaths];
     self.storyTextLayoutPrefetchRows = requestedRows;
+    [self prefetchStoryImagesForRows:requestedRows];
     if ([self.storyPreviewPrefetchActiveRows intersectsSet:[NSSet setWithArray:indexPaths]]) {
         [self.storyPreviewPrefetchOperation cancel];
     }
