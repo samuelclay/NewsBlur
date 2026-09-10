@@ -384,6 +384,147 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
     }
 
+    func test_sameSourceAcrossControllersAllowsEitherDownloadToSucceed() {
+        for failedRequestFinishesFirst in [false, true] {
+            let (appDelegate, cache) = makeCache()
+            let first = makeController(appDelegate: appDelegate)
+            let second = makeController(appDelegate: appDelegate)
+            let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+            cacheStories(stories, on: first)
+            cacheStories(stories, on: second)
+            let image = makeImage()
+            if failedRequestFinishesFirst { finish(first.requests[0], with: nil, on: first) }
+            finish(second.requests[0], with: image, on: second)
+            if !failedRequestFinishesFirst { finish(first.requests[0], with: nil, on: first) }
+
+            XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+            cacheStories(stories, on: second)
+            XCTAssertEqual(second.requests.count, 1)
+        }
+    }
+
+    func test_sameSourceAcrossControllersKeepsBothSuccessfulRequestsValid() {
+        let (appDelegate, cache) = makeCache()
+        let first = makeController(appDelegate: appDelegate)
+        let second = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: first)
+        cacheStories(stories, on: second)
+        let firstImage = makeImage()
+        let secondImage = makeImage()
+        finish(first.requests[0], with: firstImage, on: first)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === firstImage)
+        finish(second.requests[0], with: secondImage, on: second)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === secondImage)
+        cacheStories(stories, on: first)
+        cacheStories(stories, on: second)
+        XCTAssertEqual(first.requests.count, 1)
+        XCTAssertEqual(second.requests.count, 1)
+    }
+
+    func test_rejectedRequestClearsItsPendingStateAndCanRetry() throws {
+        let (appDelegate, cache) = makeCache()
+        let first = makeController(appDelegate: appDelegate)
+        let second = makeController(appDelegate: appDelegate)
+        let old: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]]
+        cacheStories(old, on: first)
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]], on: second)
+        finish(first.requests[0], with: makeImage(), on: first)
+        XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+        XCTAssertNil((first.value(forKey: "pendingStoryImageRequests") as? NSDictionary)?["story"])
+
+        cacheStories(old, on: first)
+        XCTAssertEqual(first.requests.count, 2)
+        let retry = try XCTUnwrap(first.requests.last)
+        let image = makeImage()
+        finish(retry, with: image, on: first)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+    }
+
+    func test_evictedSharedRequestDoesNotSuppressCompletionRetryOrPendingRetry() throws {
+        for finishBeforeRetry in [false, true] {
+            let (appDelegate, cache) = makeCache()
+            let controller = makeController(appDelegate: appDelegate)
+            let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+            cacheStories(stories, on: controller)
+            let sharedRequests = try XCTUnwrap(appDelegate.value(forKey: "storyImageRequests") as? NSCache<NSString, NSDictionary>)
+            sharedRequests.removeAllObjects()
+            if finishBeforeRetry {
+                finish(controller.requests[0], with: makeImage(), on: controller)
+                XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+                XCTAssertNil((controller.value(forKey: "pendingStoryImageRequests") as? NSDictionary)?["story"])
+            }
+
+            cacheStories(stories, on: controller)
+            XCTAssertEqual(controller.requests.count, 2)
+            let retry = try XCTUnwrap(controller.requests.last)
+            let image = makeImage()
+            finish(retry, with: image, on: controller)
+            finish(controller.requests[0], with: makeImage(), on: controller)
+            XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+        }
+    }
+
+    func test_explicitRefreshRejectsEarlierSameSourceFromAnotherControllerOnly() throws {
+        let (appDelegate, cache) = makeCache()
+        let previous = makeController(appDelegate: appDelegate)
+        let current = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories + [["story_hash": "other", "image_urls": ["https://example.test/other.jpg"]]], on: previous)
+        cacheStories(stories, on: current)
+        let original = makeImage()
+        finish(current.requests[0], with: original, on: current)
+        current.resetStoryImageSources()
+        cacheStories(stories, on: current)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === original)
+
+        XCTAssertEqual(current.requests.count, 2)
+        let refreshedRequest = try XCTUnwrap(current.requests.last)
+        let refreshed = makeImage()
+        finish(refreshedRequest, with: refreshed, on: current)
+        finish(previous.requests[0], with: makeImage(), on: previous)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === refreshed)
+        let unrelated = makeImage()
+        finish(previous.requests[1], with: unrelated, on: previous)
+        XCTAssertTrue(cache.object(forKey: "other") as? UIImage === unrelated)
+    }
+
+    func test_externalSaveOrRemovalRejectsAnotherControllersPendingImage() {
+        for removeImage in [false, true] {
+            let (appDelegate, cache) = makeCache()
+            let controller = makeController(appDelegate: appDelegate)
+            let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+            cacheStories(stories, on: controller)
+            let savedImage = makeImage()
+            appDelegate.cacheStoryImage(savedImage, forStoryHash: "story")
+            if removeImage { appDelegate.removeCachedStoryImage(forStoryHash: "story") }
+            finish(controller.requests[0], with: makeImage(), on: controller)
+            if removeImage {
+                XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+            } else {
+                XCTAssertTrue(cache.object(forKey: "story") as? UIImage === savedImage)
+            }
+            cacheStories(stories, on: controller)
+            XCTAssertEqual(controller.requests.count, 2)
+        }
+    }
+
+    func test_accountResetRejectsAnotherControllersPendingImageAndAllowsRetry() {
+        let appDelegate = ThumbnailRefreshAppDelegate()
+        let cache = ThumbnailCacheDouble()
+        appDelegate.setValue(cache, forKey: "cachedStoryImages")
+        let primary = makeController(appDelegate: appDelegate)
+        appDelegate.testFeedDetail = primary
+        let supplementary = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: supplementary)
+        appDelegate.dictFeeds = nil
+        finish(supplementary.requests[0], with: makeImage(), on: supplementary)
+        XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+        cacheStories(stories, on: supplementary)
+        XCTAssertEqual(supplementary.requests.count, 2)
+    }
+
     private func finish(_ request: NSDictionary, with image: UIImage?, on controller: ThumbnailDownloadController) {
         controller.perform(NSSelectorFromString("finishStoryImageRequest:withImage:"), with: request, with: image)
     }
