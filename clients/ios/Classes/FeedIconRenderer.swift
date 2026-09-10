@@ -26,19 +26,26 @@ import UIKit
         }
     }
 
-    private final class PreparationGeneration {}
+    private final class PreparationGeneration: NSObject {}
 
     private final class Preparation {
         let requests: [FeedIconPreparationRequest]
         let loader: (String) -> UIImage?
         let generation = PreparationGeneration()
+        let maximumRequestCount: Int
         var next = 0
         var remainingCost: Int
 
-        init(requests: [FeedIconPreparationRequest], cost: Int, loader: @escaping (String) -> UIImage?) {
+        init(requests: [FeedIconPreparationRequest], maximumRequestCount: Int, cost: Int, loader: @escaping (String) -> UIImage?) {
             self.requests = requests
+            self.maximumRequestCount = maximumRequestCount
             self.loader = loader
             remainingCost = cost
+        }
+
+        func matches(_ requests: [FeedIconPreparationRequest], maximumRequestCount: Int) -> Bool {
+            self.maximumRequestCount == maximumRequestCount && self.requests.count == requests.count &&
+                zip(self.requests, requests).allSatisfy { $0.0.key == $0.1.key && $0.0.size == $0.1.size }
         }
     }
 
@@ -139,22 +146,36 @@ import UIKit
     }
 
     func prepare(_ requests: [FeedIconPreparationRequest], loader: @escaping (String) -> UIImage?) {
+        _ = prepare(requests, maximumRequestCount: 1024, loader: loader)
+    }
+
+    func prepare(_ requests: [FeedIconPreparationRequest], maximumRequestCount: Int,
+                 loader: @escaping (String) -> UIImage?) -> NSObject? {
         lock.lock()
         var seen = Set<String>()
-        let limit = 1024 - (activePreparation ? 1 : 0)
+        let maximumRequestCount = min(max(maximumRequestCount, 0), 1024)
         var bounded = [FeedIconPreparationRequest]()
         for request in requests {
-            if bounded.count == limit { break }
+            if bounded.count == maximumRequestCount { break }
             if request.size.width > 0 && request.size.height > 0 && seen.insert(request.key).inserted {
                 bounded.append(request)
             }
         }
-        if let preparation, preparation.requests.count == bounded.count,
-           zip(preparation.requests, bounded).allSatisfy({ $0.0.key == $0.1.key && $0.0.size == $0.1.size }) {
+        // FeedIconRenderer.swift keeps identical work before reserving an active slot for a replacement batch.
+        if let preparation, preparation.matches(bounded, maximumRequestCount: maximumRequestCount) {
             lock.unlock()
-            return
+            return preparation.generation
         }
-        preparation = bounded.isEmpty ? nil : Preparation(requests: bounded, cost: preparationByteLimit, loader: loader)
+        if activePreparation && bounded.count == maximumRequestCount && !bounded.isEmpty {
+            bounded.removeLast()
+        }
+        if let preparation, preparation.matches(bounded, maximumRequestCount: maximumRequestCount) {
+            lock.unlock()
+            return preparation.generation
+        }
+        preparation = bounded.isEmpty ? nil : Preparation(requests: bounded, maximumRequestCount: maximumRequestCount,
+                                                          cost: preparationByteLimit, loader: loader)
+        let token = preparation?.generation
         let shouldStart = preparation != nil && !preparationRunning
         if shouldStart { preparationRunning = true }
         lock.unlock()
@@ -162,11 +183,18 @@ import UIKit
             // FeedIconRenderer.swift queues one drain and retains identifiers, never a subscription set of originals.
             preparationQueue.async { [weak self] in self?.drainPreparation() }
         }
+        return token
     }
 
     func cancelPreparation() {
         lock.lock()
         preparation = nil
+        lock.unlock()
+    }
+
+    func cancelPreparation(_ token: NSObject) {
+        lock.lock()
+        if preparation?.generation === token { preparation = nil }
         lock.unlock()
     }
 
