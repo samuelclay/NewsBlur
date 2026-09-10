@@ -162,6 +162,88 @@ import UIKit
         }
     }
 
+    func test_oldTitleCancellationLeavesNewerFeedListPreparationAlive() throws {
+        let fixture = try makeFixture()
+        defer { fixture.close() }
+        let paths = try fixture.nearbyPaths()
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        fixture.queue.suspend()
+        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        // StoryFaviconPrefetchTests.swift uses identical IDs to ensure ownership is not inferred only from request contents.
+        fixture.app.prepareFavicons(["1", "2", "3"].map {
+            FeedIconPreparationRequest(key: $0, size: CGSize(width: 16, height: 16))
+        })
+        prefetcher.tableView?(fixture.table, cancelPrefetchingForRowsAt: paths)
+        XCTAssertEqual(fixture.renderer.pendingPreparationCount, 3)
+        fixture.queue.resume()
+        fixture.queue.sync {}
+        XCTAssertEqual(fixture.storage.diskCache.workerReads, 3)
+        XCTAssertNotNil(fixture.renderer.image(forKey: "3", size: CGSize(width: 16, height: 16)) { nil })
+    }
+
+    func test_replacingNearbyRowsBoundsActiveAndQueuedFaviconWorkTogether() throws {
+        let fixture = try makeFixture()
+        defer { fixture.close() }
+        let oldPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 997))
+        let readStarted = expectation(description: "Original nearby icon entered its worker")
+        let release = DispatchSemaphore(value: 0)
+        fixture.storage.diskCache.afterRead = { key, main in
+            if key == "1" && !main {
+                readStarted.fulfill()
+                _ = release.wait(timeout: .now() + 5)
+            }
+        }
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [oldPath])
+        wait(for: [readStarted], timeout: 1)
+        var stories = try XCTUnwrap(fixture.controller.storiesCollection.activeFeedStories as? [[String: Any]])
+        for index in 0..<100 { stories[index]["story_feed_id"] = index + 1_000 }
+        fixture.controller.storiesCollection.setStories(stories)
+        let newPaths = (0..<100).map { IndexPath(row: $0, section: 0) }
+
+        prefetcher.tableView(fixture.table, prefetchRowsAt: newPaths)
+        XCTAssertEqual(fixture.renderer.pendingPreparationCount, 24, "The old active disk read counts toward the same24-row bound.")
+        prefetcher.tableView?(fixture.table, cancelPrefetchingForRowsAt: newPaths)
+        XCTAssertEqual(fixture.renderer.pendingPreparationCount, 1)
+        release.signal()
+        fixture.queue.sync {}
+        fixture.storage.diskCache.afterRead = nil
+        XCTAssertEqual(fixture.renderer.pendingPreparationCount, 0)
+        XCTAssertEqual(fixture.storage.diskCache.workerReads, 1)
+        XCTAssertNil(fixture.renderer.image(forKey: "1", size: CGSize(width: 16, height: 16)) { nil })
+    }
+
+    func test_identicalFullNearbyRequestKeepsItsActiveReadAndPreparesEveryFeedOnce() throws {
+        let fixture = try makeFixture()
+        defer { fixture.close() }
+        var stories = try XCTUnwrap(fixture.controller.storiesCollection.activeFeedStories as? [[String: Any]])
+        for index in 0..<24 { stories[index]["story_feed_id"] = index + 1 }
+        fixture.controller.storiesCollection.setStories(stories)
+        let paths = (0..<24).map { IndexPath(row: $0, section: 0) }
+        let readStarted = expectation(description: "The first of24 nearby feeds entered its worker")
+        let release = DispatchSemaphore(value: 0)
+        fixture.storage.diskCache.afterRead = { key, main in
+            if key == "1" && !main {
+                readStarted.fulfill()
+                _ = release.wait(timeout: .now() + 5)
+            }
+        }
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        wait(for: [readStarted], timeout: 1)
+
+        // StoryFaviconPrefetchTests.swift repeats UIKit's same nearby window while its first read is active.
+        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        XCTAssertEqual(fixture.renderer.pendingPreparationCount, 24)
+        fixture.storage.diskCache.afterRead = nil
+        release.signal()
+        fixture.queue.sync {}
+
+        XCTAssertEqual(fixture.storage.diskCache.workerReadKeys, (1...24).map(String.init),
+                       "An identical request must not cancel and reread its first feed or drop its24th feed.")
+        XCTAssertEqual(fixture.storage.diskCache.mainReads, 0)
+    }
+
     private func makeFixture() throws -> StoryFaviconFixture {
         let app = NewsBlurAppDelegate()
         app.isPremium = true
@@ -299,9 +381,11 @@ private final class StoryFaviconDiskStorage: NSObject {
     let directory: URL
     private let lock = NSLock()
     private var reads: [Bool: Int] = [:]
+    private var workerKeys = [String]()
     var afterRead: ((String, Bool) -> Void)?
     var mainReads: Int { lock.lock(); defer { lock.unlock() }; return reads[true, default: 0] }
     var workerReads: Int { lock.lock(); defer { lock.unlock() }; return reads[false, default: 0] }
+    var workerReadKeys: [String] { lock.lock(); defer { lock.unlock() }; return workerKeys }
 
     init(sources: [String: UIImage]) throws {
         directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -313,6 +397,7 @@ private final class StoryFaviconDiskStorage: NSObject {
         let main = Thread.isMainThread
         lock.lock()
         reads[main, default: 0] += 1
+        if !main { workerKeys.append(key) }
         lock.unlock()
         let image = UIImage(contentsOfFile: directory.appendingPathComponent(key).path)
         afterRead?(key, main)
