@@ -138,6 +138,8 @@ import UIKit
         table.delegate = controller
         controller.reloadTable()
         table.layoutIfNeeded()
+        table.contentOffset.y = max(0, table.contentSize.height - table.bounds.height - 40)
+        table.layoutIfNeeded()
         return PaginationFixture(controller: controller, stories: stories, table: table, previews: previews, heights: heights)
     }
 
