@@ -28,6 +28,9 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference skipped="NO" parallelizable="NO">
+            <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="E5D7C9B10516273849A00007" BuildableName="NewsBlurAlphaPerformanceTests.xctest" BlueprintName="NewsBlurAlphaPerformanceTests" ReferencedContainer="container:NewsBlur.xcodeproj"/>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
