@@ -4881,7 +4881,9 @@ finish_height_measurement:
     if (![storiesCollection.activeFeedStories count]) return;
     
     CGFloat remainingOffset = maximumOffset - currentOffset;
-    BOOL shouldFetchNextPage = !self.pageFetching && (remainingOffset <= 500.0 ||
+    // FeedDetailObjCViewController.m gives the next native page three screens of scrolling to arrive.
+    CGFloat prefetchDistance = MAX(500.0, 3 * CGRectGetHeight(self.storyTitlesTable.bounds));
+    BOOL shouldFetchNextPage = !self.pageFetching && (remainingOffset <= prefetchDistance ||
         (appDelegate.inFindingStoryMode));
     if (storiesCollection.isDailyBriefing) {
         shouldFetchNextPage = !self.pageFetching && [DailyBriefingPaginationDecision shouldPrefetchNextPageWithRemainingOffset:remainingOffset
