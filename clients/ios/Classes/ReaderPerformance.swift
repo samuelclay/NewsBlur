@@ -151,6 +151,12 @@ final class ReaderPerformance: NSObject {
         }
         if now - lastFlush > 1 {
             lastFlush = now
+            // ReaderPerformance.swift records counts only, proving cache-eviction depth without retaining account content.
+            if let stories = NewsBlurAppDelegate.shared?.storiesCollection {
+                events.append(["metric": "state.stories", "ms": 0, "at": epoch + now,
+                               "loaded_count": stories.activeFeedStories?.count ?? 0,
+                               "visible_count": stories.activeFeedStoryLocations?.count ?? 0])
+            }
             let batch = events
             events.removeAll(keepingCapacity: true)
             let destination = output
