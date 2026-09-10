@@ -2770,6 +2770,9 @@
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     if (webView == self.webView && navigation && navigation == self.fontWarmupNavigation) {
+        if (self.fontWarmupStarted > 0) {
+            [ReaderPerformance finish:@"detail.font_bootstrap_navigation_finished" since:self.fontWarmupStarted];
+        }
         __weak typeof(self) weakSelf = self;
         [webView callAsyncJavaScript:@"await Promise.all(Array.from(document.fonts, font => font.load())); await document.fonts.ready; return true;"
                           arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
@@ -2802,6 +2805,12 @@
     self.fontWarmupNavigation = nil;
     if (self.fontWarmupStarted > 0) {
         [ReaderPerformance finish:error ? @"detail.font_bootstrap_failed" : @"detail.font_bootstrap" since:self.fontWarmupStarted];
+        if (error) {
+            NSString *domain = [error.domain isEqualToString:WKErrorDomain] ? @"webkit" :
+                               [error.domain isEqualToString:NSURLErrorDomain] ? @"url" : @"other";
+            NSString *metric = [NSString stringWithFormat:@"detail.font_bootstrap_error.%@.%ld", domain, (long)error.code];
+            [ReaderPerformance finish:metric since:self.fontWarmupStarted];
+        }
     }
     [self loadStory];
 }
