@@ -45,22 +45,22 @@ import ObjectiveC.runtime
 
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
         wait(for: [measured], timeout: 5)
-        // StoryTextLayoutPerformanceTests.swift lets the worker publish its scalar result before drawing.
-        let published = expectation(description: "Worker result publication")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { published.fulfill() }
-        wait(for: [published], timeout: 1)
+        fixture.queue.sync {}
         let preparedAt = CACurrentMediaTime()
         let beforeDraw = probe.counts
         let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table,
             cellForRowAt: IndexPath(row: 0, section: 0)) as? FeedDetailTableCell)
         cell.setValue(fixture.app, forKey: "appDelegate")
         let height = fixture.controller.tableView(fixture.table, heightForRowAt: IndexPath(row: 0, section: 0))
-        _ = render(cell, app: fixture.app, size: CGSize(width: 390, height: height))
+        let size = CGSize(width: 390, height: height)
+        let pixels = render(cell, app: fixture.app, size: size)
         print("TEXT_LAYOUT_BENCHMARK worker_layout_ms=\(probe.workerMilliseconds) first_cell_and_draw_ms=\((CACurrentMediaTime() - preparedAt) * 1_000) main_measurements=\(probe.counts.main) worker_measurements=\(probe.counts.worker)")
 
         XCTAssertEqual(beforeDraw.main, 0)
         XCTAssertEqual(beforeDraw.worker, 2)
         XCTAssertEqual(probe.counts.main, 0, "A prepared first draw must not repeat either boundingRect on main.")
+        let oldPixels = try withOldLayout { render(cell, app: fixture.app, size: size) }
+        XCTAssertEqual(pixels, oldPixels)
     }
 
     func test_reusingStoryHashWithChangedTextCannotRetainOldGeometry() throws {
@@ -80,10 +80,14 @@ import ObjectiveC.runtime
 
     func test_currentCellPixelsAndSizesMatchOriginalLayoutAcrossSupportedPresentation() throws {
         let app = TextLayoutAppDelegate()
+        let queue = DispatchQueue(label: "test.story-text-layout.parity")
+        let cache = StoryTextLayoutCache(worker: queue)
+        let probe = try TextMeasurementProbe(matching: [title, preview]) { _ in }
+        defer { probe.restore() }
         var cases = 0
         for theme in ["light", "sepia", "medium", "dark"] {
             defaults.set(theme, forKey: "theme_style")
-            for pointSize: CGFloat in [10, 12, 13, 16, 18] {
+            for pointSize: CGFloat in [10, 11, 12, 13, 14, 16, 18, 23, 36] {
                 app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(pointSize)
                 for width: CGFloat in [320, 390, 768] {
                     for spacing in ["compact", "comfortable"] {
@@ -101,8 +105,14 @@ import ObjectiveC.runtime
                             if cell.textSize.rawValue == 0 { cell.storyContent = nil }
                             app.image = cases % 4 == 0 ? nil : fixtureImage()
                             let size = CGSize(width: width, height: cell.isShort ? 110 : 190)
+                            cell.storyTextLayoutCache = cache
+                            cache.prefetch([layoutRequest(cell, size: size, app: app, spacing: spacing, imageStyle: imageStyle)],
+                                           identifier: "parity-row")
+                            queue.sync {}
                             let actualView = makeContentView(cell, app: app, size: size)
+                            let mainBefore = probe.counts.main
                             let actualPixels = bitmap(actualView)
+                            XCTAssertEqual(probe.counts.main, mainBefore, "A prepared matrix case should not measure during drawRect.")
                             let actualSizes = layoutSizes(actualView)
                             let expected = try withOldLayout { () -> (Data, [NSValue]) in
                                 let view = makeContentView(cell, app: app, size: size)
@@ -117,7 +127,47 @@ import ObjectiveC.runtime
                 }
             }
         }
-        XCTAssertEqual(cases, 600)
+        XCTAssertEqual(cases, 1_080)
+    }
+
+    func test_prefetchDoesNotNormalizeMissingHTMLOnMain() throws {
+        let fixture = makeFixture()
+        let previews = try XCTUnwrap(fixture.controller.value(forKey: "storyPreviewTextCache") as? NSCache<NSString, NSString>)
+        previews.removeAllObjects()
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
+        fixture.queue.sync {}
+        XCTAssertEqual(fixture.controller.normalizations, 0)
+        XCTAssertEqual(fixture.cache.cachedEntryCount, 0)
+    }
+
+    func test_prefetchIgnoresClusterAndLoadingRows() throws {
+        let fixture = makeFixture()
+        fixture.controller.setValue([
+            ["type": 0, "story_location": 0],
+            ["type": 1, "story_location": 0, "cluster_story": ["story_title": title]]
+        ], forKey: "visibleStoryRows")
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 1, section: 0), IndexPath(row: 2, section: 0)])
+        fixture.queue.sync {}
+        XCTAssertEqual(fixture.cache.cachedEntryCount, 0)
+    }
+
+    func test_nativeCancellationAndSizingResetCancelQueuedLayouts() throws {
+        let fixture = makeFixture()
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        let paths = [IndexPath(row: 0, section: 0)]
+        fixture.queue.suspend()
+        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        XCTAssertEqual(fixture.cache.pendingRowCount, 1)
+        prefetcher.tableView?(fixture.table, cancelPrefetchingForRowsAt: paths)
+        XCTAssertEqual(fixture.cache.pendingRowCount, 0)
+        prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches"))
+        XCTAssertEqual(fixture.cache.pendingRowCount, 0)
+        fixture.queue.resume()
+        fixture.queue.sync {}
+        XCTAssertEqual(fixture.cache.cachedEntryCount, 0)
     }
 
     func test_clusterCellsKeepTheirDistinctDrawingPath() throws {
@@ -139,7 +189,8 @@ import ObjectiveC.runtime
         }
     }
 
-    private func makeFixture() -> (controller: TextLayoutController, table: UITableView, app: TextLayoutAppDelegate) {
+    private func makeFixture() -> (controller: TextLayoutController, table: UITableView, app: TextLayoutAppDelegate,
+                                  queue: DispatchQueue, cache: StoryTextLayoutCache) {
         let app = TextLayoutAppDelegate()
         app.isPremium = true
         app.recentlyReadStories = NSMutableDictionary()
@@ -165,8 +216,11 @@ import ObjectiveC.runtime
         let previews = NSCache<NSString, NSString>()
         previews.setObject(preview as NSString, forKey: "layout-fixture")
         controller.setValue(previews, forKey: "storyPreviewTextCache")
+        let queue = DispatchQueue(label: "test.story-text-layout.prefetch")
+        let cache = StoryTextLayoutCache(worker: queue)
+        controller.setValue(cache, forKey: "storyTextLayoutCache")
         app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
-        return (controller, table, app)
+        return (controller, table, app, queue, cache)
     }
 
     private func makeCell(app: TextLayoutAppDelegate) -> FeedDetailTableCell {
@@ -189,6 +243,23 @@ import ObjectiveC.runtime
         view.cell = cell
         view.appDelegate = app
         return view
+    }
+
+    private func layoutRequest(_ cell: FeedDetailTableCell, size: CGSize, app: NewsBlurAppDelegate,
+                               spacing: String, imageStyle: String) -> StoryTextLayoutRequest {
+        let style = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+        style.lineBreakMode = .byWordWrapping
+        style.alignment = .left
+        style.lineHeightMultiple = CGFloat(Float(0.95))
+        let margin: CGFloat = spacing == "compact" ? 0 : 10
+        let hasImage = imageStyle != "none" && (app as! TextLayoutAppDelegate).image != nil
+        return StoryTextLayoutRequest(title: (cell.storyTitle ?? "") as NSString,
+            preview: (cell.storyContent ?? "") as NSString,
+            contentWidth: StoryTextLayoutRequest.contentWidth(boundsWidth: size.width, imageStyle: imageStyle, hasImage: hasImage),
+            boundsHeight: size.height, fontPointSize: app.fontDescriptorTitleSize.pointSize,
+            textSize: Int(cell.textSize.rawValue), shortTitles: cell.isShort, river: cell.isRiverOrSocial,
+            comfortMargin: margin, riverPadding: (cell.isRiverOrSocial ? 20 : -10) + margin,
+            hasImage: hasImage, paragraphStyle: style)
     }
 
     private func render(_ cell: FeedDetailTableCell, app: NewsBlurAppDelegate, size: CGSize) -> Data {
@@ -266,10 +337,16 @@ private final class TextLayoutAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class TextLayoutController: FeedDetailViewController {
+    var normalizations = 0
     override var isLegacyTable: Bool { true }
     override var isDashboard: Bool { false }
     override func viewDidLoad() {}
     override func checkScroll() {}
+    @objc(normalizedPreviewTextForStory:)
+    func recordNormalization(_ story: NSDictionary) -> String {
+        normalizations += 1
+        return story["story_content"] as? String ?? ""
+    }
 }
 
 private final class TextMeasurementProbe {

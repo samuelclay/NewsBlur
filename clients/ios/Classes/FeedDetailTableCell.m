@@ -32,7 +32,7 @@ static UIFont *indicatorFont = nil;
 
 @interface FeedDetailTableCellView ()
 
-@property (nonatomic, copy) NSString *cachedRegularLayoutKey;
+@property (nonatomic, strong) StoryTextLayoutRequest *cachedRegularLayoutKey;
 @property (nonatomic) CGSize cachedRegularTitleSize;
 @property (nonatomic) CGSize cachedRegularContentSize;
 @property (nonatomic) CGFloat cachedRegularContentGap;
@@ -203,70 +203,24 @@ static UIFont *indicatorFont = nil;
                              comfortMargin:(CGFloat)comfortMargin
                               riverPadding:(CGFloat)riverPadding
                             hasCachedImage:(BOOL)hasCachedImage {
-    NSString *storyIdentifier = cell.storyHash.length ? cell.storyHash :
-        [NSString stringWithFormat:@"%lu-%lu",
-         (unsigned long)cell.storyTitle.hash,
-         (unsigned long)cell.storyContent.hash];
-    NSString *layoutKey = [NSString stringWithFormat:@"%@|%.1f|%.1f|%.1f|%.1f|%.1f|%ld|%d|%d|%d",
-                           storyIdentifier,
-                           contentRect.size.width,
-                           bounds.size.height,
-                           fontDescriptor.pointSize,
-                           comfortMargin,
-                           riverPadding,
-                           (long)cell.textSize,
-                           cell.isShort,
-                           cell.isRiverOrSocial,
-                           hasCachedImage];
+    StoryTextLayoutRequest *request = [[StoryTextLayoutRequest alloc]
+        initWithTitle:cell.storyTitle ?: @"" preview:cell.storyContent ?: @""
+        contentWidth:contentRect.size.width boundsHeight:bounds.size.height
+        fontPointSize:fontDescriptor.pointSize textSize:cell.textSize shortTitles:cell.isShort
+        river:cell.isRiverOrSocial comfortMargin:comfortMargin riverPadding:riverPadding
+        hasImage:hasCachedImage paragraphStyle:paragraphStyle];
+    if ([self.cachedRegularLayoutKey isEqual:request]) return;
+    self.cachedRegularLayoutKey = request;
 
-    if ([self.cachedRegularLayoutKey isEqualToString:layoutKey]) {
-        return;
+    StoryTextLayout *layout = [cell.storyTextLayoutCache cachedLayoutForRequest:request];
+    if (!layout) {
+        // FeedDetailTableCell.m preserves immediate text on cold misses or when scrolling outruns prefetch.
+        layout = [request measure];
+        [cell.storyTextLayoutCache cacheLayout:layout forRequest:request];
     }
-
-    self.cachedRegularLayoutKey = layoutKey;
-
-    UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    UIFont *titleFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize + 1];
-    CGFloat titleBoundingRows = cell.isShort ? 1.5 : 4;
-    if (!cell.isShort && (cell.textSize == FeedDetailTextSizeMedium || cell.textSize == FeedDetailTextSizeLong)) {
-        titleBoundingRows = MIN(((bounds.size.height - 24) / titleFont.pointSize) - 2, 4);
-    }
-
-    CFTimeInterval titleLayoutStarted = [ReaderPerformance start];
-    self.cachedRegularTitleSize = [cell.storyTitle
-                                   boundingRectWithSize:CGSizeMake(contentRect.size.width, titleFont.pointSize * titleBoundingRows)
-                                   options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                                   attributes:@{NSFontAttributeName: titleFont,
-                                                NSParagraphStyleAttributeName: paragraphStyle}
-                                   context:nil].size;
-    if (titleLayoutStarted > 0) [ReaderPerformance finish:@"story.title.layout" since:titleLayoutStarted];
-
-    self.cachedRegularContentSize = CGSizeZero;
-    self.cachedRegularContentGap = 0;
-
-    if (cell.storyContent.length > 0) {
-        UIFont *contentFont = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
-        CGFloat contentBoundingRows = cell.isShort ? 1.5 : 3;
-
-        if (!cell.isShort && (cell.textSize == FeedDetailTextSizeMedium || cell.textSize == FeedDetailTextSizeLong)) {
-            CGFloat defaultTitleBottom = (14 + riverPadding) + self.cachedRegularTitleSize.height;
-            contentBoundingRows = MAX(3, (bounds.size.height - 30 - comfortMargin - defaultTitleBottom) / contentFont.pointSize);
-        }
-
-        CFTimeInterval previewLayoutStarted = [ReaderPerformance start];
-        self.cachedRegularContentSize = [cell.storyContent
-                                         boundingRectWithSize:CGSizeMake(contentRect.size.width, contentFont.pointSize * contentBoundingRows)
-                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
-                                         attributes:@{NSFontAttributeName: contentFont,
-                                                      NSParagraphStyleAttributeName: paragraphStyle}
-                                         context:nil].size;
-        if (previewLayoutStarted > 0) [ReaderPerformance finish:@"story.preview.layout" since:previewLayoutStarted];
-
-        CGFloat dateY = bounds.size.height - 18 - comfortMargin;
-        CGFloat topEdge = cell.isRiverOrSocial ? riverPadding : 0;
-        self.cachedRegularContentGap = (dateY - topEdge - self.cachedRegularTitleSize.height - self.cachedRegularContentSize.height) / 3.0;
-        self.cachedRegularContentGap = MAX(self.cachedRegularContentGap, 2);
-    }
+    self.cachedRegularTitleSize = layout.titleSize;
+    self.cachedRegularContentSize = layout.previewSize;
+    self.cachedRegularContentGap = layout.contentGap;
 }
 
 - (UIColor *)clusterTierBadgeColorForTier:(NSString *)clusterTier {
