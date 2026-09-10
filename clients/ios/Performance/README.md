@@ -40,7 +40,7 @@ swift clients/ios/Performance/summarize.swift /tmp/newsblur-scroll-evidence/exam
 
 The seeded gestures alternate speeds and periodically reverse direction. They use portrait iPhone content coordinates and never tap a read-state action. Keep mark-as-read-on-scroll enabled for the story test; it marks the stories passed during the run. Never use mark-all-as-read to prepare data.
 
-The opt-in `state.stories` event records loaded and visible story counts once per second. Use it to verify that a long forward/reverse run exceeds the preview cache's 512-story capacity. These events contain counts and timestamps only.
+The opt-in `state.stories` event records loaded and visible story counts and table geometry once per second. Use it to verify that a long forward/reverse run exceeds the preview cache's 512-story capacity and to distinguish row traversal from repeated bouncing at the top. These events contain counts, offsets, dimensions, and timestamps only.
 
 `coldcapture:<directory>` records an app restart without deleting its data. A `checkpoint:<name>` before a navigation tap records a timestamp for comparing the first subsequent cell/header measurement with the video. Capture directories contain `scroll.mp4`, symbolized `cpu.txt` samples, `session.json`, and a copy of the app's `measurements.jsonl`. The summary filters events to the recorded session. The app measurement file contains timings, not story content; videos naturally show the account's visible stories.
 
