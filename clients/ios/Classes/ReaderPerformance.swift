@@ -24,6 +24,8 @@ final class ReaderPerformance: NSObject {
         let link = CADisplayLink(target: instance, selector: #selector(instance.tick(_:)))
         link.add(to: .main, forMode: .common)
         instance.displayLink = link
+        instance.events.append(["metric": "launch.probes_ready", "ms": 0,
+                                "at": instance.epoch + CACurrentMediaTime()])
     }
 
     static func start() -> Double {
@@ -42,7 +44,11 @@ final class ReaderPerformance: NSObject {
         wrapCell(FeedsObjCViewController.self, metric: "cell.feed")
         wrapCell(FeedDetailObjCViewController.self, metric: "cell.story")
         wrapHeight(FeedDetailObjCViewController.self, metric: "height.story")
+        wrapVoid(NewsBlurAppDelegate.self, name: "prepareViewControllers", metric: "launch.prepare_views")
+        wrapVoid(FeedsObjCViewController.self, name: "reloadFeedTitlesTable", metric: "reload.feeds")
         wrapVoid(FeedDetailObjCViewController.self, name: "reloadTable", metric: "reload.stories")
+        wrapObject(FeedDetailObjCViewController.self, name: "renderStories:", metric: "render.stories")
+        wrapVoid(StoryDetailObjCViewController.self, name: "drawStory", metric: "detail.prepare")
         wrapVoid(FeedDetailObjCViewController.self, name: "checkScroll", metric: "scroll.mark_read")
         wrapVoid(StoryDetailObjCViewController.self, name: "refreshHeader", metric: "detail.header")
         wrapVoid(StoryDetailObjCViewController.self, name: "updateFeedTitleGradientPosition", metric: "detail.gradient")
@@ -89,6 +95,19 @@ final class ReaderPerformance: NSObject {
         let block: @convention(block) (AnyObject) -> Void = { object in
             let start = Self.start()
             original(object, selector)
+            Self.finish(metric, since: start)
+        }
+        method_setImplementation(method, imp_implementationWithBlock(block))
+    }
+
+    private func wrapObject(_ type: AnyClass, name: String, metric: String) {
+        let selector = NSSelectorFromString(name)
+        guard let method = class_getInstanceMethod(type, selector) else { return }
+        typealias Original = @convention(c) (AnyObject, Selector, AnyObject?) -> Void
+        let original = unsafeBitCast(method_getImplementation(method), to: Original.self)
+        let block: @convention(block) (AnyObject, AnyObject?) -> Void = { object, argument in
+            let start = Self.start()
+            original(object, selector, argument)
             Self.finish(metric, since: start)
         }
         method_setImplementation(method, imp_implementationWithBlock(block))
