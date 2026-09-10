@@ -191,7 +191,7 @@ import QuartzCore
         try locations.map { location in
             let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: location))
             let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: path) as? FeedDetailTableCell)
-            let story = try XCTUnwrap(fixture.controller.getStory(atLocation: location))
+            let story = try XCTUnwrap(fixture.controller.getStoryAtLocation(location))
             XCTAssertEqual(cell.storyTitle, "Report \(location) & native scrolling")
             return PaginationCellSnapshot(
                 hash: cell.storyHash ?? "", title: cell.storyTitle ?? "", preview: cell.storyContent ?? "",
