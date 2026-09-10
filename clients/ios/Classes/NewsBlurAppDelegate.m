@@ -6485,6 +6485,14 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self cachedImageForStoryHash:storyHash];
 }
 
+- (void)removeCachedStoryImageForStoryHash:(NSString *)storyHash {
+    [self.cachedStoryImages removeObjectForKey:storyHash];
+}
+
+- (void)removeAllCachedStoryImages {
+    [self.cachedStoryImages removeAllObjects];
+}
+
 - (void)cleanImageCache {
     OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
     if (!offlineCleaningQueue) {
@@ -6523,7 +6531,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     [[PINCache sharedCache] removeAllObjects];
-    [self.cachedStoryImages removeAllObjects];
+    [self removeAllCachedStoryImages];
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     NSError *error = nil;

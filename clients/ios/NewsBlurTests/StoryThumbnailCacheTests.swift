@@ -4,6 +4,97 @@ import UIKit
 @testable import NewsBlur
 
 final class Test_StoryThumbnailCache: XCTestCase {
+    func test_removingThumbnailDuringDiskReadRejectsItsOldResult() {
+        let (appDelegate, cache) = makeCache()
+        cache.diskCache.setObject(makeImage(), forKey: "story")
+        cache.diskCache.afterRead = {
+            appDelegate.removeCachedStoryImage(forStoryHash: "story")
+        }
+
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        XCTAssertFalse(cache.diskCache.object(forKey: "story") is UIImage)
+    }
+
+    func test_removingAllThumbnailsDuringDiskReadRejectsItsOldResult() {
+        let (appDelegate, cache) = makeCache()
+        cache.diskCache.setObject(makeImage(), forKey: "story")
+        cache.diskCache.afterRead = {
+            appDelegate.removeAllCachedStoryImages()
+        }
+
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        XCTAssertFalse(cache.diskCache.object(forKey: "story") is UIImage)
+    }
+
+    func test_removingOneThumbnailPreservesOtherImagesAndAllowsNewSave() {
+        let (appDelegate, cache) = makeCache()
+        let unrelated = makeImage()
+        appDelegate.cacheStoryImage(makeImage(), forStoryHash: "story")
+        appDelegate.cacheStoryImage(unrelated, forStoryHash: "other")
+
+        appDelegate.removeCachedStoryImage(forStoryHash: "story")
+
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "other") === unrelated)
+        let replacement = makeImage()
+        appDelegate.cacheStoryImage(replacement, forStoryHash: "story")
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === replacement)
+        XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === replacement)
+    }
+
+    func test_removingAllThumbnailsAllowsDiskRecoveryAfterNewSave() {
+        let (appDelegate, cache) = makeCache()
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        appDelegate.removeAllCachedStoryImages()
+        let image = makeImage()
+        appDelegate.cacheStoryImage(image, forStoryHash: "story")
+        cache.memoryCache.removeAllObjects()
+
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+    }
+
+    func test_explicitFeedRefreshRequestsSameURLAgainWithoutHidingThumbnail() {
+        let appDelegate = ThumbnailRefreshAppDelegate()
+        let cache = ThumbnailCacheDouble()
+        appDelegate.setValue(cache, forKey: "cachedStoryImages")
+        let controller = makeController(appDelegate: appDelegate)
+        let collection = StoriesCollection()
+        collection.activeFeed = ["id": 1]
+        controller.storiesCollection = collection
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        let image = makeImage()
+        cacheStories(stories, on: controller)
+        finish(controller.requests[0], with: image, on: controller)
+
+        controller.instafetchFeed()
+        cacheStories(stories, on: controller)
+
+        XCTAssertEqual(appDelegate.feedRefreshRequests, 1)
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "story"])
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+    }
+
+    func test_accountChangeRequestsSameURLAgainWithoutHidingThumbnail() {
+        let appDelegate = ThumbnailRefreshAppDelegate()
+        let cache = ThumbnailCacheDouble()
+        appDelegate.setValue(cache, forKey: "cachedStoryImages")
+        let controller = makeController(appDelegate: appDelegate)
+        appDelegate.testFeedDetail = controller
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        let image = makeImage()
+        cacheStories(stories, on: controller)
+        finish(controller.requests[0], with: image, on: controller)
+
+        // StoryThumbnailCacheTests.swift exercises the same feed reset used by NewsBlurAppDelegate.showLogin.
+        appDelegate.dictFeeds = nil
+        cacheStories(stories, on: controller)
+
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "story"])
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+    }
+
     func test_missingThumbnailIsReadFromDiskOnlyOnceAcrossCellReuse() {
         let (appDelegate, cache) = makeCache()
         appDelegate.cacheStoryImagePlaceholder("missing")
@@ -267,6 +358,9 @@ private final class ThumbnailDownloadController: FeedDetailViewController {
     private(set) var requestedStoryHashes = [String]()
     private(set) var requests = [NSDictionary]()
 
+    override var isLegacyTable: Bool { false }
+    override func reload() {}
+
     @objc(getFirstImage:forStoryHash:withManager:)
     func recordImageRequest(_ urls: Any?, forStoryHash hash: String?, withManager manager: Any?) {
         if let hash {
@@ -280,6 +374,21 @@ private final class ThumbnailDownloadController: FeedDetailViewController {
 
     @objc(showImageForStoryHash:)
     func ignoreVisibleImageRefresh(_ hash: String) {
+    }
+}
+
+private final class ThumbnailRefreshAppDelegate: NewsBlurAppDelegate {
+    var feedRefreshRequests = 0
+    weak var testFeedDetail: FeedDetailViewController?
+
+    override var feedDetailViewController: FeedDetailViewController! {
+        get { testFeedDetail }
+        set { testFeedDetail = newValue }
+    }
+
+    override func get(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        // StoryThumbnailCacheTests.swift stops the real refresh before network access or response rendering.
+        feedRefreshRequests += 1
     }
 }
 
@@ -320,6 +429,11 @@ private final class ThumbnailCacheDouble: NSObject {
     func removeObject(forKey key: String) {
         memoryCache.removeObject(forKey: key)
         diskCache.removeObject(forKey: key)
+    }
+
+    @objc func removeAllObjects() {
+        memoryCache.removeAllObjects()
+        diskCache.removeAllObjects()
     }
 }
 
