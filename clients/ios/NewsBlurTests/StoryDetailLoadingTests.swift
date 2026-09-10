@@ -387,7 +387,12 @@ import XCTest
 
         let reopenedReady = expectation(description: "Reopened real document is ready")
         page.readyObserver = { reopenedReady.fulfill() }
+        let finishedBeforeClear = page.finishedNavigations
         page.clearStory()
+        // StoryDetailLoadingTests.swift lets the back-navigation blank document finish before reopening.
+        for _ in 0..<60 where page.finishedNavigations == finishedBeforeClear { await delay(0.05) }
+        XCTAssertGreaterThan(page.finishedNavigations, finishedBeforeClear)
+        print("STORY_TOP_CLEARED native=\(web.scrollView.contentOffset.y) inset=\(web.scrollView.adjustedContentInset.top)")
         page.drawStory()
         await drainMainQueue()
         page.allowsAppearanceCallbacks = true
