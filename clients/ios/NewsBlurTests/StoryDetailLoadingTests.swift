@@ -445,7 +445,12 @@ import XCTest
         try await checkStalledStoryRendering(restoresPosition: false, repeatsStory: true)
     }
 
-    private func checkStalledStoryRendering(restoresPosition: Bool, repeatsStory: Bool = false) async throws {
+    func test_threeHiddenPageBootstrapsPrepareBeforeTheirContainerEntersAWindow() async throws {
+        try await checkStalledStoryRendering(restoresPosition: false, repeatsStory: true, preparesOffWindow: true)
+    }
+
+    private func checkStalledStoryRendering(restoresPosition: Bool, repeatsStory: Bool = false,
+                                           preparesOffWindow: Bool = false) async throws {
         let resource = try HeldHTTPStoryResource()
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
         let imageURL = try XCTUnwrap(resource.imageURL)
@@ -461,7 +466,38 @@ import XCTest
         let window = UIWindow(windowScene: scene)
         window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
         window.rootViewController = UIViewController()
-        window.rootViewController?.view.addSubview(web)
+        var detachedPages: [StoryLoadPage] = []
+        if preparesOffWindow {
+            let container = UIScrollView(frame: web.frame)
+            container.contentSize = CGSize(width: web.bounds.width * 3, height: web.bounds.height)
+            for index in 0..<3 {
+                let child = index == 0 ? page : makePage(web: RealStoryLoadWebView(frame: web.frame, configuration: WKWebViewConfiguration()))
+                child.allowsAppearanceCallbacks = false
+                let childWeb = try XCTUnwrap(child.webView as? RealStoryLoadWebView)
+                childWeb.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                childWeb.scrollView.contentInsetAdjustmentBehavior = .never
+                childWeb.navigationDelegate = child
+                // StoryPagesObjCViewController.m first loads each child view, then adds it to its off-window scroll view.
+                child.perform(NSSelectorFromString("clearWebView"))
+                child.view.frame = container.bounds.offsetBy(dx: CGFloat(index) * container.bounds.width, dy: 0)
+                container.addSubview(child.view)
+                window.rootViewController?.addChild(child)
+                detachedPages.append(child)
+            }
+            for _ in 0..<40 where detachedPages.contains(where: { $0.value(forKey: "fontWarmupNavigation") != nil }) {
+                await delay(0.05)
+            }
+            for (index, child) in detachedPages.enumerated() {
+                let childWeb = try XCTUnwrap(child.webView as? RealStoryLoadWebView)
+                let stages = try await childWeb.evaluateJavaScript("JSON.stringify({stage:window.nbTestFontStage,fonts:document.fonts.status,faces:Array.from(document.fonts,f=>[f.family,f.status]),width:document.body.offsetWidth,height:document.body.offsetHeight})")
+                print("STORY_HIDDEN_BOOTSTRAP index=\(index) didFinish=\(child.finishedNavigations) fontCalls=\(childWeb.fontPreparationCalls) inWindow=\(childWeb.window != nil) windowHidden=\(window.isHidden) stages=\(stages)")
+                XCTAssertEqual(child.value(forKey: "preparedWebViewFonts") as? Bool, true)
+                XCTAssertEqual(child.value(forKey: "failedWebViewFontPreparation") as? Bool, false)
+            }
+            window.rootViewController?.view.addSubview(container)
+        } else {
+            window.rootViewController?.view.addSubview(web)
+        }
         window.makeKeyAndVisible()
         defer {
             resource.stop()
@@ -470,7 +506,7 @@ import XCTest
         }
         web.navigationDelegate = page
         // StoryDetailObjCViewController.m initializes every WKWebView with clearWebView before drawing a story.
-        page.perform(NSSelectorFromString("clearWebView"))
+        if !preparesOffWindow { page.perform(NSSelectorFromString("clearWebView")) }
         for _ in 0..<60 where page.finishedNavigations == 0 { await delay(0.05) }
         XCTAssertEqual(page.finishedNavigations, 1)
         page.finishedNavigations = 0
@@ -800,9 +836,22 @@ private final class StoryScrollCursor: NSObject {
 }
 
 @MainActor private final class RealStoryLoadWebView: WKWebView {
+    var fontPreparationCalls = 0
+
     override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
         // StoryDetailLoadingTests.swift retains the production HTTPS document origin for real WebKit checks.
         return super.loadHTMLString(string, baseURL: baseURL ?? URL(string: "https://newsblur.com/"))
+    }
+
+    override func __callAsyncJavaScript(_ functionBody: String, arguments: [String: Any]?, inFrame frame: WKFrameInfo?, in contentWorld: WKContentWorld, completionHandler: ((Any?, Error?) -> Void)? = nil) {
+        var observedBody = functionBody
+        if functionBody.contains("font.load()") {
+            fontPreparationCalls += 1
+            // StoryDetailLoadingTests.swift records the existing promise stages without initiating additional font work.
+            observedBody = "window.nbTestFontStage='loading'; " + functionBody.replacingOccurrences(
+                of: "await document.fonts.ready;", with: "window.nbTestFontStage='faces_loaded'; await document.fonts.ready; window.nbTestFontStage='set_ready';")
+        }
+        super.__callAsyncJavaScript(observedBody, arguments: arguments, inFrame: frame, in: contentWorld, completionHandler: completionHandler)
     }
 }
 
