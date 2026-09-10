@@ -128,6 +128,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 @property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
+@property (nonatomic, strong) NSCache<NSString *, NSNumber *> *missingFavicons;
+@property (nonatomic) NSUInteger faviconCacheGeneration;
+@property (nonatomic) NSUInteger faviconWriteGeneration;
 
 - (void)presentFeedDetailAfterFeedSelection;
 - (void)updateFeedDetailTitleView;
@@ -177,6 +180,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @synthesize networkManager;
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
+@synthesize missingFavicons = _missingFavicons;
 @synthesize cachedStoryImages;
 @synthesize cachedUserAvatars;
 @synthesize activeUsername;
@@ -798,7 +802,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // Release any cached data, images, etc that aren't in use.
     // Only clear memory caches, not disk caches
     [cachedStoryImages.memoryCache removeAllObjects];
-    [cachedFavicons.memoryCache removeAllObjects];
+    NSCache *missingFavicons = self.missingFavicons;
+    @synchronized (missingFavicons) {
+        self.faviconCacheGeneration++;
+        [missingFavicons removeAllObjects];
+        [cachedFavicons.memoryCache removeAllObjects];
+    }
     [cachedUserAvatars.memoryCache removeAllObjects];
     [activeCachedImages removeAllObjects];
     [recentlyReadStories removeAllObjects];
@@ -4796,12 +4805,93 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 }
 
+- (NSCache<NSString *, NSNumber *> *)missingFavicons {
+    @synchronized (self) {
+        if (!_missingFavicons) {
+            _missingFavicons = [[NSCache alloc] init];
+            _missingFavicons.countLimit = 4096;
+        }
+        return _missingFavicons;
+    }
+}
+
+- (void)setDictFeeds:(NSMutableDictionary *)feeds {
+    dictFeeds = feeds;
+    // NewsBlurAppDelegate.m snapshots keys before background work; the feed dictionary remains mutable.
+    NSArray<NSString *> *feedIds = [feeds.allKeys copy];
+    NSCache *missingFavicons = self.missingFavicons;
+    NSNumber *generation;
+    @synchronized (missingFavicons) {
+        generation = @(++self.faviconCacheGeneration);
+        [missingFavicons removeAllObjects];
+        if (!feeds) {
+            [self.cachedFavicons.memoryCache removeAllObjects];
+        }
+    }
+    if (feedIds.count == 0) return;
+
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+        for (NSString *feedId in feedIds) {
+            @autoreleasepool {
+                @synchronized (missingFavicons) {
+                    if (generation.unsignedIntegerValue != self.faviconCacheGeneration) return;
+                }
+                [self faviconImageForKey:feedId generation:generation];
+            }
+        }
+    });
+}
+
+- (NSUInteger)faviconMemoryCost:(UIImage *)image {
+    if (image.CGImage) {
+        return CGImageGetBytesPerRow(image.CGImage) * CGImageGetHeight(image.CGImage);
+    }
+    return (NSUInteger)(image.size.width * image.scale * image.size.height * image.scale * 4);
+}
+
+- (UIImage *)faviconImageForKey:(NSString *)filename generation:(NSNumber *)expectedGeneration {
+    if (![filename isKindOfClass:[NSString class]] || filename.length == 0) return nil;
+
+    // NewsBlurAppDelegate.m bypasses PINCache's disk timestamp write on every memory hit.
+    UIImage *image = [self.cachedFavicons.memoryCache objectForKey:filename];
+    if (image) return image;
+
+    NSCache *missingFavicons = self.missingFavicons;
+    NSUInteger generation;
+    NSUInteger writeGeneration;
+    @synchronized (missingFavicons) {
+        generation = self.faviconCacheGeneration;
+        writeGeneration = self.faviconWriteGeneration;
+        if (expectedGeneration && expectedGeneration.unsignedIntegerValue != generation) return nil;
+        if ([missingFavicons objectForKey:filename]) return nil;
+    }
+
+    // NewsBlurAppDelegate.m keeps a synchronous cold fallback so existing icons never flash placeholders.
+    image = [self.cachedFavicons.diskCache objectForKey:filename];
+    @synchronized (missingFavicons) {
+        if (generation != self.faviconCacheGeneration) return nil;
+        UIImage *newerImage = [self.cachedFavicons.memoryCache objectForKey:filename];
+        if (newerImage) return newerImage;
+        // NewsBlurAppDelegate.m must not publish an old disk result over a concurrent favicon save.
+        if (writeGeneration != self.faviconWriteGeneration) return image;
+        if (image) {
+            [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:[self faviconMemoryCost:image]];
+        } else {
+            [missingFavicons setObject:@YES forKey:filename];
+        }
+    }
+    return image;
+}
+
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        // Set cost based on image memory size for proper cache eviction
-        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
-        [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:cost];
+        NSCache *missingFavicons = self.missingFavicons;
+        @synchronized (missingFavicons) {
+            self.faviconWriteGeneration++;
+            [missingFavicons removeObjectForKey:filename];
+            [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:[self faviconMemoryCost:image]];
+        }
         [self.cachedFavicons.diskCache setObject:image forKey:filename];
     }
 }
@@ -4815,7 +4905,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved {
-    UIImage *image = [self.cachedFavicons objectForKey:filename];
+    UIImage *image = [self faviconImageForKey:filename generation:nil];
     
     if (image) {
         return image;
