@@ -4856,6 +4856,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (!feeds) {
         [self.feedDetailViewController resetStoryImageSources];
         @synchronized (self.cachedStoryImages) {
+            self.storyImageCacheGeneration++;
             [self.storyImageSources removeAllObjects];
             [self.storyImageRequests removeAllObjects];
         }
@@ -6525,6 +6526,42 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 }
 
+- (void)prefetchCachedStoryImageForStoryHash:(NSString *)storyHash operation:(NSOperation *)operation {
+    if (!storyHash.length || operation.isCancelled) return;
+    PINCache *cache = self.cachedStoryImages;
+    id image = [cache.memoryCache objectForKey:storyHash];
+    if ([image isKindOfClass:[UIImage class]] ||
+        (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash])) return;
+
+    NSUInteger generation;
+    @synchronized (cache) {
+        image = [cache.memoryCache objectForKey:storyHash];
+        if ([image isKindOfClass:[UIImage class]] ||
+            (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash])) return;
+        generation = self.storyImageCacheGeneration;
+    }
+
+    // NewsBlurAppDelegate.m reads disk without holding the shared publication lock, so nearby prefetch cannot block another row's warm draw or a new download.
+    image = [cache.diskCache objectForKey:storyHash];
+    @synchronized (cache) {
+        if (operation.isCancelled || generation != self.storyImageCacheGeneration ||
+            [[cache.memoryCache objectForKey:storyHash] isKindOfClass:[UIImage class]]) return;
+        if ([image isKindOfClass:[UIImage class]]) {
+            CGImageRef cgImage = [(UIImage *)image CGImage];
+            NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
+            [self.missingStoryImages removeObjectForKey:storyHash];
+            [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+        } else {
+            if (!self.missingStoryImages) {
+                self.missingStoryImages = [[NSCache alloc] init];
+                self.missingStoryImages.countLimit = 4096;
+            }
+            [self.missingStoryImages setObject:@YES forKey:storyHash];
+            [cache.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
+        }
+    }
+}
+
 - (BOOL)cachedStoryImageForStoryHash:(NSString *)storyHash matchesSourceURLs:(NSArray *)sourceURLs {
     if (!storyHash.length || !sourceURLs.count) return NO;
     @synchronized (self.cachedStoryImages) {
@@ -6593,6 +6630,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     PINCache *cache = self.cachedStoryImages;
     @synchronized (cache) {
         // NewsBlurAppDelegate.m serializes saves with disk promotion while warm reads remain independent.
+        self.storyImageCacheGeneration++;
         NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
         [self.missingStoryImages removeObjectForKey:storyHash];
         [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
