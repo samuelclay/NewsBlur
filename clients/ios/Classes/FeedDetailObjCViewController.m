@@ -4362,19 +4362,49 @@ finish_height_measurement:
         if (self.scrollingMarkReadRow == NSNotFound) {
             self.scrollingMarkReadRow = topRow;
         } else if (topRow > self.scrollingMarkReadRow) {
+            NSMutableIndexSet *readLocations = [NSMutableIndexSet indexSet];
             for (NSInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
                 NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
                 NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 
                 if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
-                    [self reloadStoryRowsForLocation:thisRow rowAnimation:UITableViewRowAnimationFade];
+                    [readLocations addIndex:thisRow];
                 }
             }
             
             self.scrollingMarkReadRow = topRow;
+            [self refreshVisibleReadStateForStoryLocations:readLocations];
         }
     }
 
+}
+
+- (void)refreshVisibleReadStateForStoryLocations:(NSIndexSet *)locations {
+    if (!locations.count) {
+        return;
+    }
+
+    // FeedDetailObjCViewController.m: read state changes no row geometry. Redraw the
+    // existing cells once instead of rebuilding every story/cluster row during a scroll.
+    for (NSIndexPath *indexPath in self.storyTitlesTable.indexPathsForVisibleRows) {
+        NSInteger location = [self storyLocationForScrollingAtIndexPath:indexPath];
+        if (location == NSNotFound || ![locations containsIndex:location]) {
+            continue;
+        }
+
+        FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+        if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
+            continue;
+        }
+
+        NSDictionary *story = [self getStoryAtLocation:location];
+        NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
+        BOOL isRead = clusterStory ? [self isClusterStoryRead:clusterStory parentStory:story] : ![storiesCollection isStoryUnread:story];
+        if (cell.isRead != isRead) {
+            cell.isRead = isRead;
+            [cell setNeedsDisplay];
+        }
+    }
 }
 
 - (void)changeIntelligence:(NSInteger)newLevel {
