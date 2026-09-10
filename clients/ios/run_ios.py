@@ -16,6 +16,7 @@ Actions:
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
     swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
     capture:<directory>   - Record video, CPU samples, and optional app measurements
+    coldcapture:<directory> - Record an app restart, preserving its data and login
     checkpoint:<name>     - Timestamp a navigation/load event in the current capture
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     describe              - Print simulator accessibility elements
@@ -32,6 +33,8 @@ Environment:
     IOS_SIM_UDID     - Simulator UDID (alternative to --udid flag)
     IOS_BUNDLE_ID    - App bundle identifier (defaults to NewsBlur)
     IOS_APP_PATH     - Path to the built .app for install
+    IOS_USE_XCTRACE  - Also record an Instruments trace when set to 1
+    IOS_SAMPLE_SECONDS - Maximum CPU profile duration (defaults to 600)
 """
 
 import os
@@ -138,17 +141,26 @@ def do_swipe(coords):
                     "--duration", str(duration)], check=True)
 
 
-def do_capture(path):
+def do_capture(path, cold=False):
     """Record video and CPU samples until run_ios.py finishes its actions."""
     os.makedirs(path, exist_ok=True)
+    if cold:
+        do_terminate()
+    video_log = open(os.path.join(path, "video.log"), "w")
+    video = subprocess.Popen(
+        ["xcrun", "simctl", "io", UDID, "recordVideo", "--codec=h264", os.path.join(path, "scroll.mp4")],
+        stdout=video_log, stderr=subprocess.STDOUT
+    )
+    CAPTURES.append((video, video_log))
+    time.sleep(1)
+    launch_requested_at = time.time()
     launch_output = subprocess.check_output(
         ["xcrun", "simctl", "launch", UDID, BUNDLE_ID], text=True
     )
     pid = str(int(launch_output.rsplit(":", 1)[1].strip()))
     commands = [
-        ("video", ["xcrun", "simctl", "io", UDID, "recordVideo", "--codec=h264",
-                   os.path.join(path, "scroll.mp4")]),
-        ("profile", ["sample", pid, "120", "1", "-file", os.path.join(path, "cpu.txt")]),
+        ("profile", ["sample", pid, os.environ.get("IOS_SAMPLE_SECONDS", "600"), "1",
+                     "-file", os.path.join(path, "cpu.txt")]),
     ]
     if os.environ.get("IOS_USE_XCTRACE") == "1":
         commands.append(("instruments", ["xcrun", "xctrace", "record", "--template", "Time Profiler",
@@ -162,7 +174,9 @@ def do_capture(path):
     for process, _ in CAPTURES:
         if process.poll() is not None:
             raise RuntimeError("Capture failed to start; inspect capture logs")
-    metadata = {"udid": UDID, "bundle_id": BUNDLE_ID, "pid": pid, "started_at": time.time()}
+    metadata = {"udid": UDID, "bundle_id": BUNDLE_ID, "pid": pid,
+                "started_at": launch_requested_at if cold else time.time(),
+                "cold_launch": cold, "launch_requested_at": launch_requested_at}
     with open(os.path.join(path, "session.json"), "w") as file:
         json.dump(metadata, file, indent=2)
     CAPTURE_DIRECTORIES.append(path)
@@ -268,6 +282,8 @@ def parse_and_execute(action):
         do_swipe(arg)
     elif cmd == "capture":
         do_capture(arg)
+    elif cmd == "coldcapture":
+        do_capture(arg, cold=True)
     elif cmd == "checkpoint":
         do_checkpoint(arg)
     elif cmd == "fuzz":
