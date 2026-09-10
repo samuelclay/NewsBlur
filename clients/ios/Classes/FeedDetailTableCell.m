@@ -373,7 +373,7 @@ static UIFont *indicatorFont = nil;
         CGRect imageFrame = CGRectZero;
         BOOL hasCachedImage = NO;
 
-        id cachedImage = cell.storyHash.length ? appDelegate.cachedStoryImages[cell.storyHash] : nil;
+        id cachedImage = [appDelegate cachedImageForStoryHash:cell.storyHash];
         if (cachedImage && cachedImage != [NSNull null]) {
             imageFrame = CGRectMake(dateX - 30.0, contentY + (contentHeight - 24.0) / 2.0, 24.0, 24.0);
             hasCachedImage = YES;
@@ -549,7 +549,7 @@ static UIFont *indicatorFont = nil;
             }
         }
         
-        UIImage *cachedImage = (UIImage *)appDelegate.cachedStoryImages[cell.storyHash];
+        UIImage *cachedImage = [appDelegate cachedImageForStoryHash:cell.storyHash];
         
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
             hasCachedImageForLayout = YES;
