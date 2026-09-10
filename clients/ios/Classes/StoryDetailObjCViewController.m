@@ -773,34 +773,25 @@
     // Inline CSS and JS to avoid custom URL scheme issues with HTTPS baseURL
     // (WKWebView blocks custom schemes as "insecure" when baseURL is HTTPS)
     NSBundle *bundle = [NSBundle mainBundle];
+    StoryDetailAssetCache *assetCache = StoryDetailAssetCache.shared;
 
     // Read and inline CSS, embedding fonts and images as data URLs
-    NSString *mainCSSPath = [bundle pathForResource:@"storyDetailView" ofType:@"css"];
-    NSString *mainCSS = mainCSSPath ? [NSString stringWithContentsOfFile:mainCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
-    mainCSS = [self embedResourcesInCSS:mainCSS bundle:bundle];
+    NSString *mainCSS = [assetCache embeddedMainCSSWithLoader:^NSString *(NSString *css) {
+        return [self embedResourcesInCSS:css bundle:bundle];
+    }];
 
     NSString *themeSuffix = [ThemeManager themeManager].themeCSSSuffix;
     NSString *themeCSS = @"";
     if (themeSuffix.length) {
-        NSString *themeCSSPath = [bundle pathForResource:[NSString stringWithFormat:@"storyDetailView%@", themeSuffix] ofType:@"css"];
-        themeCSS = themeCSSPath ? [NSString stringWithContentsOfFile:themeCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
+        themeCSS = [assetCache textForResource:[NSString stringWithFormat:@"storyDetailView%@", themeSuffix] ofType:@"css"];
     }
 
     // Read and inline JS
-    NSString *zeptoPath = [bundle pathForResource:@"zepto" ofType:@"js"];
-    NSString *zeptoJS = zeptoPath ? [NSString stringWithContentsOfFile:zeptoPath encoding:NSUTF8StringEncoding error:nil] : @"";
-
-    NSString *fitvidPath = [bundle pathForResource:@"fitvid" ofType:@"js"];
-    NSString *fitvidJS = fitvidPath ? [NSString stringWithContentsOfFile:fitvidPath encoding:NSUTF8StringEncoding error:nil] : @"";
-
-    NSString *markPath = [bundle pathForResource:@"mark" ofType:@"js"];
-    NSString *markJS = markPath ? [NSString stringWithContentsOfFile:markPath encoding:NSUTF8StringEncoding error:nil] : @"";
-
-    NSString *storyDetailPath = [bundle pathForResource:@"storyDetailView" ofType:@"js"];
-    NSString *storyDetailJS = storyDetailPath ? [NSString stringWithContentsOfFile:storyDetailPath encoding:NSUTF8StringEncoding error:nil] : @"";
-
-    NSString *fastTouchPath = [bundle pathForResource:@"fastTouch" ofType:@"js"];
-    NSString *fastTouchJS = fastTouchPath ? [NSString stringWithContentsOfFile:fastTouchPath encoding:NSUTF8StringEncoding error:nil] : @"";
+    NSString *zeptoJS = [assetCache textForResource:@"zepto" ofType:@"js"];
+    NSString *fitvidJS = [assetCache textForResource:@"fitvid" ofType:@"js"];
+    NSString *markJS = [assetCache textForResource:@"mark" ofType:@"js"];
+    NSString *storyDetailJS = [assetCache textForResource:@"storyDetailView" ofType:@"js"];
+    NSString *fastTouchJS = [assetCache textForResource:@"fastTouch" ofType:@"js"];
 
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
