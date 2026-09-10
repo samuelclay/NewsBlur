@@ -489,7 +489,7 @@ import XCTest
             }
             for (index, child) in detachedPages.enumerated() {
                 let childWeb = try XCTUnwrap(child.webView as? RealStoryLoadWebView)
-                let stages = try await childWeb.evaluateJavaScript("JSON.stringify({stage:window.nbTestFontStage,fonts:document.fonts.status,faces:Array.from(document.fonts,f=>[f.family,f.status]),width:document.body.offsetWidth,height:document.body.offsetHeight})")
+                let stages = try await childWeb.evaluateJavaScript("JSON.stringify({stage:window.nbTestFontStage,fonts:document.fonts.status,faces:Array.from(document.fonts,f=>[f.family,f.status]),width:document.body?.offsetWidth,height:document.body?.offsetHeight})")
                 print("STORY_HIDDEN_BOOTSTRAP index=\(index) didFinish=\(child.finishedNavigations) fontCalls=\(childWeb.fontPreparationCalls) inWindow=\(childWeb.window != nil) windowHidden=\(window.isHidden) stages=\(stages)")
                 XCTAssertEqual(child.value(forKey: "preparedWebViewFonts") as? Bool, true)
                 XCTAssertEqual(child.value(forKey: "failedWebViewFontPreparation") as? Bool, false)
