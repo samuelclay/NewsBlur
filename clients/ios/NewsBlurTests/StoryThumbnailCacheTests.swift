@@ -104,6 +104,85 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertEqual(prefetcher.pendingHashCount, 0)
     }
 
+    @MainActor func test_memoryWarningStopsActiveAndQueuedPrefetchForEveryControllerInEitherClearOrder() {
+        for notificationFirst in [false, true] {
+            let (app, cache) = makeCache()
+            let image = makeImage()
+            let leftHashes = (0..<24).map { "left-\($0)" }
+            let rightHashes = (0..<24).map { "right-\($0)" }
+            for hash in leftHashes + rightHashes { cache.diskCache.setObject(image, forKey: hash) }
+            let entered = expectation(description: "Both title controllers have an active disk read")
+            entered.expectedFulfillmentCount = 2
+            let resume = DispatchSemaphore(value: 0)
+            cache.diskCache.onRead = { hash, isMain in
+                if !isMain && (hash == "left-0" || hash == "right-0") {
+                    entered.fulfill()
+                    _ = resume.wait(timeout: .now() + 2)
+                }
+            }
+            let leftQueue = DispatchQueue(label: "test.thumbnail-memory.left")
+            let rightQueue = DispatchQueue(label: "test.thumbnail-memory.right")
+            let left = StoryThumbnailPrefetcher(worker: leftQueue) { hash, operation in
+                app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
+            }
+            let right = StoryThumbnailPrefetcher(worker: rightQueue) { hash, operation in
+                app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
+            }
+            left.prefetchStoryHashes(leftHashes)
+            right.prefetchStoryHashes(rightHashes)
+            wait(for: [entered], timeout: 2)
+            // StoryThumbnailCacheTests.swift covers both notification orders because PINMemoryCache also clears memory independently.
+            if notificationFirst { NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil) }
+            app.didReceiveMemoryWarning()
+            if !notificationFirst { NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil) }
+            resume.signal()
+            resume.signal()
+            leftQueue.sync {}
+            rightQueue.sync {}
+            cache.diskCache.onRead = nil
+            XCTAssertEqual(cache.diskCache.readCount, 2, "A memory warning must stop all queued thumbnail reads")
+            for hash in leftHashes + rightHashes { XCTAssertNil(cache.memoryCache.object(forKey: hash)) }
+            XCTAssertEqual(left.pendingHashCount, 0)
+            XCTAssertEqual(right.pendingHashCount, 0)
+        }
+    }
+
+    @MainActor func test_memoryWarningBitmapClearInvalidatesAnEarlierDiskPublication() {
+        let (app, cache) = makeCache()
+        cache.diskCache.setObject(makeImage(), forKey: "story")
+        cache.diskCache.afterRead = { app.didReceiveMemoryWarning() }
+        app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation())
+        XCTAssertNil(cache.memoryCache.object(forKey: "story"), "Bitmap-only memory release must advance disk-promotion generation")
+    }
+
+    @MainActor func test_memoryWarningRetainsCompletedSourceOwnershipForLaterDiskReuse() {
+        let (app, cache) = makeCache()
+        let controller = makeController(appDelegate: app)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: controller)
+        let image = makeImage()
+        finish(controller.requests[0], with: image, on: controller)
+        app.didReceiveMemoryWarning()
+        NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        XCTAssertNil(cache.memoryCache.object(forKey: "story"))
+        cacheStories(stories, on: controller)
+        XCTAssertEqual(controller.requests.count, 1)
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image)
+    }
+
+    func test_scaledThumbnailSaveChargesDecodedBytesWithoutChangingItsPixelsOrMetadata() throws {
+        let (app, cache) = makeCache()
+        let bitmap = try XCTUnwrap(makeImage().cgImage)
+        let image = UIImage(cgImage: bitmap, scale: 3, orientation: .right)
+        app.cacheStoryImage(image, forStoryHash: "scaled")
+        XCTAssertEqual(cache.memoryCache.cost(forKey: "scaled"), UInt(bitmap.bytesPerRow * bitmap.height))
+        let stored = try XCTUnwrap(cache.memoryCache.object(forKey: "scaled") as? UIImage)
+        XCTAssertTrue(stored === image)
+        XCTAssertEqual(stored.scale, 3)
+        XCTAssertEqual(stored.imageOrientation, .right)
+        XCTAssertEqual(stored.pngData(), image.pngData())
+    }
+
     func test_thumbnailPrefetchCancelsAnActiveReadAndLoadsTheNewDirection() {
         let queue = DispatchQueue(label: "test.thumbnail-prefetch.direction")
         let entered = expectation(description: "Old direction is reading its first image")
@@ -835,6 +914,7 @@ private final class ThumbnailCacheDouble: NSObject {
 private final class ThumbnailStorageDouble: NSObject {
     private let lock = NSLock()
     private var objects: [String: Any] = [:]
+    private var costs: [String: UInt] = [:]
     private var reads = 0
     private var mainReads = 0
     var readCount: Int { lock.lock(); defer { lock.unlock() }; return reads }
@@ -847,6 +927,12 @@ private final class ThumbnailStorageDouble: NSObject {
         reads = 0
         mainReads = 0
         lock.unlock()
+    }
+
+    func cost(forKey key: String) -> UInt? {
+        lock.lock()
+        defer { lock.unlock() }
+        return costs[key]
     }
 
     @objc(objectForKey:)
@@ -869,11 +955,15 @@ private final class ThumbnailStorageDouble: NSObject {
         lock.lock()
         defer { lock.unlock() }
         objects[key] = object
+        costs.removeValue(forKey: key)
     }
 
     @objc(setObject:forKey:withCost:)
     func setObject(_ object: Any, forKey key: String, withCost cost: UInt) {
-        setObject(object, forKey: key)
+        lock.lock()
+        defer { lock.unlock() }
+        objects[key] = object
+        costs[key] = cost
     }
 
     @objc(removeObjectForKey:)
@@ -881,11 +971,13 @@ private final class ThumbnailStorageDouble: NSObject {
         lock.lock()
         defer { lock.unlock() }
         objects.removeValue(forKey: key)
+        costs.removeValue(forKey: key)
     }
 
     @objc func removeAllObjects() {
         lock.lock()
         defer { lock.unlock() }
         objects.removeAll()
+        costs.removeAll()
     }
 }
