@@ -325,6 +325,12 @@ DOMAIN_FETCHES_PER_MINUTE = 30
 # row. Only the hottest few hosts spend even half this normally, while one user's
 # 1,700 AbeBooks search feeds hit ~43K/day. See apps/statistics/rscrapingbee.py.
 SCRAPINGBEE_HOST_DAILY_CREDIT_CAP = 1000
+# SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS: a forbidden feed whose only subscriber hasn't been
+# seen in this many days isn't fetched through the paid proxy until they come back (the
+# skip shows as status="dormant" on the dashboard). Half of the 237K single-subscriber
+# forbidden feeds belong to accounts idle for over a year (September 2026 audit). See
+# Feed.has_dormant_sole_subscriber in apps/rss_feeds/models.py.
+SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS = 365
 
 DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API

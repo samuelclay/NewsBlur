@@ -45,7 +45,9 @@ class RScrapingBee:
     SOURCES = ("feed", "discovery", "original_story", "webfeed", "webfeed_preview")
     # ScrapingBee only bills 200 and 404 responses. 500 means the target site blocked
     # even the proxy; "error" means the request to ScrapingBee itself raised.
-    STATUSES = ("200", "304", "404", "500", "other", "error", "capped")
+    # "capped" and "dormant" are proxy requests that were skipped, not made: the host was
+    # over its daily credit cap, or the feed's only subscriber hasn't been seen in a year.
+    STATUSES = ("200", "304", "404", "500", "other", "error", "capped", "dormant")
     # Fallback when settings.SCRAPINGBEE_HOST_DAILY_CREDIT_CAP isn't set. Only the hottest
     # few hosts (rsshub.app, deviantart, craigslist) spend even half this in a normal day.
     DEFAULT_HOST_DAILY_CREDIT_CAP = 1000
@@ -143,17 +145,26 @@ class RScrapingBee:
         return cls.host_credits_today(url) >= cls.host_daily_credit_cap()
 
     @classmethod
-    def record_capped(cls, source, url=None):
-        """Count a proxy request that was skipped because its host is over the daily cap."""
+    def record_skip(cls, source, reason, url=None):
+        """
+        Count a proxy request that was deliberately skipped. `reason` becomes the status
+        label on the dashboard: "capped" (host over its daily credit cap) or "dormant" (the
+        feed's only subscriber hasn't been seen in a year). Never raises.
+        """
         try:
             r = cls._redis()
             today = cls._date()
             pipe = r.pipeline()
-            pipe.hincrby(f"sbCalls:{today}", f"{source}:capped", 1)
+            pipe.hincrby(f"sbCalls:{today}", f"{source}:{reason}", 1)
             pipe.expire(f"sbCalls:{today}", cls._ttl())
             pipe.execute()
         except Exception as e:
-            logging.debug(" ***> ScrapingBee capped stat not recorded (%s): %s" % (source, e))
+            logging.debug(" ***> ScrapingBee %s stat not recorded (%s): %s" % (reason, source, e))
+
+    @classmethod
+    def record_capped(cls, source, url=None):
+        """Count a proxy request that was skipped because its host is over the daily cap."""
+        cls.record_skip(source, "capped", url=url)
 
     @classmethod
     def record_response(cls, source, response, url=None):

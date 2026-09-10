@@ -252,6 +252,9 @@ class FetchFeed:
         # Set by should_skip_paid_proxy when the host is over its daily credit cap, so the
         # forbidden fetch doesn't record an error for a fetch that was never attempted
         self.skipped_for_credit_cap = False
+        # Set by should_skip_paid_proxy when the feed's only subscriber hasn't been seen in
+        # a year (Feed.has_dormant_sole_subscriber), likewise never attempted
+        self.skipped_for_dormant_subscriber = False
 
     def openrss_corrected_address(self, address):
         """Rewrite a legacy Open RSS preview address to its actual /feed/ form.
@@ -475,9 +478,9 @@ class FetchFeed:
                     # Record the failure so errors_since_good grows and the feed backs off
                     # instead of spending a proxy credit at its normal cadence forever.
                     # Enough of these in a row also stop the paid proxy, see fetch_forbidden.
-                    # A host over its daily credit cap wasn't attempted at all, so it just
-                    # waits for its next scheduled fetch.
-                    if not self.skipped_for_credit_cap:
+                    # A host over its daily credit cap, or a feed nobody active reads, wasn't
+                    # attempted at all, so it just waits for its next scheduled fetch.
+                    if not (self.skipped_for_credit_cap or self.skipped_for_dormant_subscriber):
                         self.feed.save_feed_history(forbidden_status or 500, "Forbidden feed fetch failed")
                     return FEED_ERRHTTP, None
                 # Apply encoding preprocessing to special feed content
@@ -1007,13 +1010,22 @@ class FetchFeed:
         errors the paid proxies are skipped, with a small random chance to retry so a feed
         that comes back is picked up again. Mirrors the 10% is_forbidden re-check in fetch().
         A host that has already spent its daily credit cap (apps/statistics/rscrapingbee.py)
-        is skipped outright.
+        is skipped outright, and so is a feed whose only subscriber hasn't been seen in a
+        year (Feed.has_dormant_sole_subscriber): a credit for a reader who isn't reading.
         """
         if RScrapingBee.host_over_budget(self.feed.feed_address):
             RScrapingBee.record_capped("feed", url=self.feed.feed_address)
             self.skipped_for_credit_cap = True
             logging.debug(
                 "   ***> [%-30s] ~FYSkipping paid proxy, host is over its daily credit cap: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+            return True
+        if self.feed.has_dormant_sole_subscriber():
+            RScrapingBee.record_skip("feed", "dormant", url=self.feed.feed_address)
+            self.skipped_for_dormant_subscriber = True
+            logging.debug(
+                "   ***> [%-30s] ~FYSkipping paid proxy, only subscriber hasn't been seen in a year: %s"
                 % (self.feed.log_title[:30], self.feed.feed_address)
             )
             return True
