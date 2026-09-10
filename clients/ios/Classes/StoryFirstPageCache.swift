@@ -229,6 +229,38 @@ import UIKit
         }
     }
 
+    @objc(reassertFields:storyHashes:account:host:completion:)
+    func reassert(fields: [String], storyHashes: [String], account: String?, host: String?, completion: @escaping () -> Void) {
+        guard let host, let request = StoryFirstPageRequest(account: account, host: host, url: host + "/") else {
+            StoryFirstPageLoad.continueOnMain(completion)
+            return
+        }
+        queue.async { [self] in
+            loadJournal(request)
+            let timestamp = now().timeIntervalSince1970
+            var schedule = false
+            for hash in Set(storyHashes.prefix(Self.maximumJournalEntries)) {
+                lock.lock()
+                let journal = journalForRequest(request)
+                // StoryFirstPageCache.swift reasserts the current field atomically so a newer local reversal always wins.
+                for field in fields {
+                    guard let edit = journal.latest[hash]?[field], timestamp >= edit.createdAt,
+                          timestamp - edit.createdAt <= Self.journalTTL else { continue }
+                    lastRevision = max(lastRevision + 1, UInt64(max(0, timestamp) * 1_000_000))
+                    journal.append(Mutation(hash: hash, field: field, value: edit.value, removed: edit.removed,
+                                            revision: lastRevision, createdAt: timestamp))
+                    schedule = schedule || !journal.writeScheduled
+                    journal.writeScheduled = true
+                }
+                lock.unlock()
+            }
+            if schedule {
+                queue.asyncAfter(deadline: .now() + 0.1) { [self] in persistJournal(request) }
+            }
+            DispatchQueue.main.async(execute: completion)
+        }
+    }
+
     func flush(completion: @escaping () -> Void) {
         lock.lock()
         isForeground = false
@@ -329,15 +361,18 @@ import UIKit
            object["format"] as? Int == 1, object["account"] as? String == request.account,
            object["host"] as? String == request.host, let persistedEpoch = object["epoch"] as? String, UUID(uuidString: persistedEpoch) != nil,
            let rows = object["mutations"] as? [[String: Any]], rows.count <= Self.maximumJournalEntries {
-            if mayRestorePreviousSession || object["session"] as? String == sessionID { epoch = persistedEpoch }
-            floor = (object["floor"] as? NSNumber)?.uint64Value ?? 0
-            for row in rows {
-                guard let hash = row["hash"] as? String, !hash.isEmpty, hash.utf8.count <= 256,
-                      let field = row["field"] as? String, let value = row["value"], Self.validMutationValue(value, field: field),
-                      let revision = row["revision"] as? NSNumber, let created = row["created"] as? TimeInterval,
-                      created <= timestamp else { epoch = UUID().uuidString; persisted.removeAll(); break }
-                if timestamp - created > Self.journalTTL { floor = max(floor, revision.uint64Value); continue }
-                persisted.append(Mutation(hash: hash, field: field, value: value, removed: row["removed"] as? Bool ?? false, revision: revision.uint64Value, createdAt: created))
+            // StoryFirstPageCache.swift discards incomplete prior-session history; a lost reversal cannot be recovered from its older persisted field.
+            if mayRestorePreviousSession || object["session"] as? String == sessionID {
+                epoch = persistedEpoch
+                floor = (object["floor"] as? NSNumber)?.uint64Value ?? 0
+                for row in rows {
+                    guard let hash = row["hash"] as? String, !hash.isEmpty, hash.utf8.count <= 256,
+                          let field = row["field"] as? String, let value = row["value"], Self.validMutationValue(value, field: field),
+                          let revision = row["revision"] as? NSNumber, let created = row["created"] as? TimeInterval,
+                          created <= timestamp else { epoch = UUID().uuidString; persisted.removeAll(); break }
+                    if timestamp - created > Self.journalTTL { floor = max(floor, revision.uint64Value); continue }
+                    persisted.append(Mutation(hash: hash, field: field, value: value, removed: row["removed"] as? Bool ?? false, revision: revision.uint64Value, createdAt: created))
+                }
             }
         }
         lock.lock()
@@ -406,6 +441,11 @@ import UIKit
 
     private static func validatedResponse(_ response: NSDictionary) -> (NSDictionary, Int)? {
         guard let stories = response["stories"] as? [NSDictionary], stories.count <= 100 else { return nil }
+        if let classifiers = response["classifiers"], !(classifiers is NSDictionary) { return nil }
+        for field in ["feed_authors", "feed_tags", "feeds"] {
+            if let value = response[field], !(value is NSArray) { return nil }
+        }
+        if let profiles = response["user_profiles"], !(profiles is [NSDictionary]) { return nil }
         var objects = 0
         var bytes = 0
         func copyJSON(_ value: Any, depth: Int) -> Any? {
