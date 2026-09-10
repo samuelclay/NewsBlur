@@ -114,6 +114,50 @@ import QuartzCore
         XCTAssertEqual(fixture.table.insertedRows, 14)
     }
 
+    func test_fetchingLaterNativeRiverPageDoesNotRestartListPresentation() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.isOnline = false
+        fixture.controller.pageFetching = false
+        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
+        fixture.resetMeasurements()
+
+        fixture.controller.fetchRiverPage(3, withCallback: nil)
+
+        XCTAssertEqual(fixture.controller.loadingPresentations, 0,
+                       "Presenting an existing list again schedules immediate and delayed whole-list reloads during scrolling.")
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 1)
+        XCTAssertEqual(fixture.stories.feedPage, 3)
+        XCTAssertTrue(fixture.controller.pageFetching)
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 100)
+        XCTAssertEqual(fixture.table.reloadCalls, 0)
+        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
+    }
+
+    func test_nonNativeRiverPaginationStillUpdatesItsPresentation() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.legacyTableForTest = false
+        fixture.controller.isOnline = false
+        fixture.controller.pageFetching = false
+
+        fixture.controller.fetchRiverPage(3, withCallback: nil)
+
+        XCTAssertEqual(fixture.controller.loadingPresentations, 1)
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 1)
+        XCTAssertEqual(fixture.stories.feedPage, 3)
+    }
+
+    func test_dailyBriefingPaginationStillUsesItsPresentationAndLoader() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.stories.isDailyBriefing = true
+        fixture.controller.pageFetching = false
+
+        fixture.controller.fetchRiverPage(3, withCallback: nil)
+
+        XCTAssertEqual(fixture.controller.loadingPresentations, 1)
+        XCTAssertEqual(fixture.controller.dailyBriefingPages, [3])
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
+    }
+
     func test_emptyPageReloadsCompletionRow() {
         let fixture = makeFixture(storyCount: 100)
         fixture.resetMeasurements()
@@ -455,13 +499,22 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class PaginationRenderController: FeedDetailViewController {
     var heightCalls = 0
+    var legacyTableForTest = true
+    var loadingPresentations = 0
+    var offlinePageLoads = 0
+    var dailyBriefingPages = [Int32]()
 
-    override var isLegacyTable: Bool { true }
+    override var isLegacyTable: Bool { legacyTableForTest }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}
     override func reload() { reloadTable() }
     override func checkScroll() {}
     override func scrollViewDidScroll(_ scrollView: UIScrollView!) {}
+    override func loadingFeed() { loadingPresentations += 1 }
+    override func loadOfflineStories() { offlinePageLoads += 1 }
+    override func fetchDailyBriefingPage(_ page: Int32, withCallback callback: (() -> Void)?) {
+        dailyBriefingPages.append(page)
+    }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         heightCalls += 1
