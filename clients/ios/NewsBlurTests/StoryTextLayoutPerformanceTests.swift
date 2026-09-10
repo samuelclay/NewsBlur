@@ -16,6 +16,8 @@ import ObjectiveC.runtime
     override func setUp() {
         super.setUp()
         for key in keys { saved[key] = defaults.object(forKey: key) }
+        defaults.set("light", forKey: "theme_light")
+        defaults.set("dark", forKey: "theme_dark")
         defaults.set("medium", forKey: "story_list_preview_text_size")
         defaults.set("comfortable", forKey: "feed_list_spacing")
         defaults.set("none", forKey: "story_list_preview_images_size")
