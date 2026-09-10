@@ -2,6 +2,7 @@ import Network
 import ObjectiveC.runtime
 import UIKit
 import WebKit
+import SQLite3
 import XCTest
 
 @testable import NewsBlur
@@ -448,10 +449,12 @@ import XCTest
             pages.appDelegate = app
             pages.storyToolbar = StoryToolbar()
             pages.toolbarScrollHandler = StoryToolbarScrollHandler()
-            let database = try XCTUnwrap(FMDatabaseQueue(path: ":memory:"))
-            database.inDatabase { db in
-                XCTAssertTrue(db!.executeUpdate("CREATE TABLE story_scrolls (story_feed_id INTEGER, story_hash TEXT, story_timestamp INTEGER, scroll INTEGER)", withArgumentsIn: []))
-            }
+            let databaseURL = FileManager.default.temporaryDirectory.appendingPathComponent("story-scroll-\(UUID().uuidString).sqlite")
+            var connection: OpaquePointer?
+            XCTAssertEqual(sqlite3_open(databaseURL.path, &connection), SQLITE_OK)
+            XCTAssertEqual(sqlite3_exec(connection, "CREATE TABLE story_scrolls (story_feed_id INTEGER, story_hash TEXT, story_timestamp INTEGER, scroll INTEGER)", nil, nil, nil), SQLITE_OK)
+            let database = try XCTUnwrap(FMDatabaseQueue(path: databaseURL.path))
+            defer { database.close(); sqlite3_close(connection); try? FileManager.default.removeItem(at: databaseURL) }
             app.setValue(database, forKey: "database")
             let fixture = makeFixture(app: app)
             pages.currentPage = fixture.page
@@ -461,11 +464,10 @@ import XCTest
             app.markScrollPosition(position, inStory: fixture.page.activeStory as? [AnyHashable: Any])
             var stored: Int?
             for _ in 0..<100 where stored == nil {
-                database.inDatabase { db in
-                    let cursor = db!.executeQuery("SELECT scroll FROM story_scrolls", withArgumentsIn: [])
-                    if cursor!.next() { stored = Int(cursor!.int(forColumn: "scroll")) }
-                    cursor!.close()
-                }
+                var statement: OpaquePointer?
+                XCTAssertEqual(sqlite3_prepare_v2(connection, "SELECT scroll FROM story_scrolls", -1, &statement, nil), SQLITE_OK)
+                if sqlite3_step(statement) == SQLITE_ROW { stored = Int(sqlite3_column_int(statement, 0)) }
+                sqlite3_finalize(statement)
                 if stored == nil { await delay(0.01) }
             }
             XCTAssertEqual(stored, max(1, position))
