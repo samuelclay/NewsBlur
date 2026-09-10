@@ -49,6 +49,8 @@ final class ReaderPerformance: NSObject {
         wrapVoid(FeedDetailObjCViewController.self, name: "reloadTable", metric: "reload.stories")
         wrapObject(FeedDetailObjCViewController.self, name: "renderStories:", metric: "render.stories")
         wrapVoid(StoryDetailObjCViewController.self, name: "drawStory", metric: "detail.prepare")
+        wrapVoid(StoryDetailObjCViewController.self, name: "loadStory", metric: "detail.submit")
+        wrapVoid(StoryDetailObjCViewController.self, name: "webViewNotifyLoaded", metric: "detail.dom_ready")
         wrapVoid(FeedDetailObjCViewController.self, name: "checkScroll", metric: "scroll.mark_read")
         wrapVoid(StoryDetailObjCViewController.self, name: "refreshHeader", metric: "detail.header")
         wrapVoid(StoryDetailObjCViewController.self, name: "updateFeedTitleGradientPosition", metric: "detail.gradient")
