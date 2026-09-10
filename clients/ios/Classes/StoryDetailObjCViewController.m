@@ -43,6 +43,7 @@
 @property (nonatomic, strong) WKNavigation *fontWarmupNavigation;
 @property (nonatomic, strong) WKNavigation *measuredFontWarmupNavigation;
 @property (nonatomic) CFTimeInterval fontWarmupStarted;
+@property (nonatomic) NSUInteger fontPreparationWaitGeneration;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
@@ -1193,13 +1194,6 @@
         [self loadHTMLString:[self fontWarmupHTML]];
         self.fontWarmupNavigation = self.storyNavigation;
         self.measuredFontWarmupNavigation = self.fontWarmupStarted > 0 ? self.fontWarmupNavigation : nil;
-        WKNavigation *navigation = self.fontWarmupNavigation;
-        WKWebView *preparingWebView = self.webView;
-        __weak typeof(self) weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [weakSelf finishFontPreparationForWebView:preparingWebView navigation:navigation
-                                               error:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil]];
-        });
     } else {
         [self loadHTMLString:@"<html><body></body></html>"];
     }
@@ -2829,7 +2823,22 @@
 }
 
 - (void)loadStory {
-    if (self.fontWarmupNavigation) return;
+    if (self.fontWarmupNavigation) {
+        NSUInteger generation = self.storyLoadGeneration;
+        if (self.fullStoryHTML && [self isCurrentStoryLoad:generation] && self.fontPreparationWaitGeneration != generation) {
+            // StoryDetailObjCViewController.m bounds an article's wait; idle cold-process startup can finish later.
+            self.fontPreparationWaitGeneration = generation;
+            WKNavigation *navigation = self.fontWarmupNavigation;
+            WKWebView *preparingWebView = self.webView;
+            __weak typeof(self) weakSelf = self;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                if (![weakSelf isCurrentStoryLoad:generation] || !weakSelf.fullStoryHTML) return;
+                [weakSelf finishFontPreparationForWebView:preparingWebView navigation:navigation
+                                                   error:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil]];
+            });
+        }
+        return;
+    }
     if (!self.fullStoryHTML)
         return; // if we're loading anything other than a full story, the view will be hidden
 
