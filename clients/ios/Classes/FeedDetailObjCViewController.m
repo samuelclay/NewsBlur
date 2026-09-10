@@ -6144,7 +6144,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (cell.storyHash) {
-        id cachedImage = appDelegate.cachedStoryImages[cell.storyHash];
+        id cachedImage = [appDelegate cachedImageForStoryHash:cell.storyHash];
         if (cachedImage && cachedImage != [NSNull null])
             storyImage = cachedImage;
     }
