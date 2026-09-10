@@ -270,22 +270,163 @@ import QuartzCore
         }
     }
 
-    func test_pageContainingOnlyHiddenStoriesStillReloadsToAdvancePagination() {
+    func test_pageContainingOnlyHiddenStoriesPreservesNativeRowsAndReaderPosition() throws {
         let fixture = makeFixture(storyCount: 100)
-        let hiddenStories = makeStories(100..<112).map { story -> [String: Any] in
-            var hidden = story
-            hidden["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
-            return hidden
-        }
+        let footer = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 36))
+        fixture.table.tableFooterView = footer
+        fixture.table.layoutIfNeeded()
+        fixture.table.contentOffset.y = fixture.table.contentSize.height - fixture.table.bounds.height
+        fixture.table.layoutIfNeeded()
+        let selectedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 99))
+        fixture.table.selectRow(at: selectedPath, animated: false, scrollPosition: .none)
+        let loadingPath = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
+        let loadingCell = try XCTUnwrap(fixture.table.cellForRow(at: loadingPath))
+        let visibleCells = fixture.table.visibleCells
+        let originalRows = try XCTUnwrap(fixture.controller.value(forKey: "visibleStoryRows") as? NSArray)
+        let originalIDs = fixture.stories.activeFeedStoryLocationIds
+        let originalHeight = fixture.table.contentSize.height
+        let originalOffset = fixture.table.contentOffset
+        let before = try snapshot(fixture, locations: [0, 40, 99])
+        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
         fixture.resetMeasurements()
 
-        fixture.controller.renderStories(hiddenStories)
+        fixture.controller.renderStories(makeHiddenStories(100..<112))
         fixture.table.layoutIfNeeded()
 
+        XCTAssertEqual(fixture.stories.activeFeedStories.count, 112)
         XCTAssertEqual(fixture.stories.storyLocationsCount, 100)
-        XCTAssertEqual(fixture.table.reloadCalls, 1)
+        XCTAssertEqual(fixture.stories.activeFeedStoryLocationIds, originalIDs)
+        XCTAssertEqual(fixture.table.reloadCalls, 0, "A filtered append changes the raw model without changing the displayed rows.")
         XCTAssertEqual(fixture.table.insertedRows, 0)
+        XCTAssertEqual(fixture.controller.heightCalls, 0)
+        XCTAssertEqual(fixture.previews.storedKeys.count, 0)
+        XCTAssertEqual(fixture.controller.value(forKey: "visibleStoryRows") as? NSArray, originalRows)
+        XCTAssertEqual(fixture.table.visibleCells, visibleCells)
+        XCTAssertTrue(fixture.table.cellForRow(at: loadingPath) === loadingCell)
+        XCTAssertTrue(fixture.table.tableFooterView === footer)
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, selectedPath)
+        XCTAssertEqual(fixture.table.contentSize.height, originalHeight)
+        XCTAssertEqual(fixture.table.contentOffset, originalOffset)
+        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
         XCTAssertFalse(fixture.controller.pageFinished)
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertEqual(try snapshot(fixture, locations: [0, 40, 99]), before)
+        try verifyRowMappings(fixture, storyCount: 100)
+    }
+
+    func test_filteredPagesAdvanceOnceAndLaterVisiblePageUsesCorrectModelLocations() async throws {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.isOnline = false
+        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
+        fixture.resetMeasurements()
+
+        for (page, indices) in [(3, 100..<112), (4, 112..<124)] {
+            let nextPage = expectation(description: "Request page \(page) after a filtered response")
+            fixture.controller.onOfflinePageLoad = { nextPage.fulfill() }
+            fixture.controller.renderStories(makeHiddenStories(indices))
+            await fulfillment(of: [nextPage], timeout: 1)
+            fixture.controller.onOfflinePageLoad = nil
+
+            XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2)
+            XCTAssertEqual(fixture.stories.feedPage, Int32(page))
+            XCTAssertTrue(fixture.controller.pageFetching)
+            XCTAssertFalse(fixture.controller.pageFinished)
+            XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
+            fixture.controller.fetchRiverPage(Int32(page + 1), withCallback: nil)
+            XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2, "The pending request still coalesces repeated fetch attempts.")
+        }
+
+        fixture.controller.renderStories(makeStories(124..<136))
+        fixture.table.layoutIfNeeded()
+
+        XCTAssertEqual(fixture.table.reloadCalls, 0)
+        XCTAssertEqual(fixture.stories.activeFeedStories.count, 136)
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 112)
+        XCTAssertEqual(fixture.table.insertedRows, 13)
+        XCTAssertEqual(fixture.controller.getStoryAtLocation(100)?["story_hash"] as? String, "pagination-124")
+        XCTAssertEqual(fixture.controller.getStoryAtLocation(111)?["story_hash"] as? String, "pagination-135")
+        let parentPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 106))
+        let cluster = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: IndexPath(row: parentPath.row + 1, section: 0)) as? FeedDetailTableCell)
+        XCTAssertEqual(cluster.storyHash, "related-130")
+        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
+
+        fixture.controller.renderStories([])
+        fixture.table.layoutIfNeeded()
+        XCTAssertTrue(fixture.controller.pageFinished)
+        XCTAssertEqual(fixture.table.reloadCalls, 1, "An actually empty response still updates the completion row.")
+    }
+
+    func test_filteredPageDoesNotAdvanceFarFromTheViewportOrAfterNavigation() async {
+        for changeFeed in [false, true] {
+            let fixture = makeFixture(storyCount: 100)
+            fixture.controller.isOnline = false
+            if !changeFeed {
+                fixture.table.contentOffset.y = 0
+            }
+            fixture.resetMeasurements()
+            let unexpectedRequest = expectation(description: "No filtered-page continuation for an irrelevant viewport")
+            unexpectedRequest.isInverted = true
+            fixture.controller.onOfflinePageLoad = { unexpectedRequest.fulfill() }
+
+            fixture.controller.renderStories(makeHiddenStories(100..<112))
+            if changeFeed {
+                fixture.stories.activeFolder = "another-folder"
+            }
+            await fulfillment(of: [unexpectedRequest], timeout: 0.15)
+
+            XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
+            XCTAssertEqual(fixture.stories.feedPage, 2)
+            XCTAssertEqual(fixture.table.reloadCalls, 0)
+        }
+    }
+
+    func test_filteredAppendReloadsWhenExistingVisibleStoryOrClusterRowsChanged() throws {
+        for changeCluster in [false, true] {
+            let fixture = makeFixture(storyCount: 100)
+            var stories = try XCTUnwrap(fixture.stories.activeFeedStories as? [[String: Any]])
+            if changeCluster {
+                stories[0].removeValue(forKey: "cluster_stories")
+            } else {
+                stories[0]["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
+            }
+            fixture.stories.activeFeedStories = stories
+            fixture.resetMeasurements()
+
+            fixture.controller.renderStories(makeHiddenStories(100..<112))
+            fixture.table.layoutIfNeeded()
+
+            XCTAssertEqual(fixture.table.reloadCalls, 1)
+            XCTAssertEqual(fixture.table.insertedRows, 0)
+            XCTAssertEqual(fixture.stories.storyLocationsCount, changeCluster ? 100 : 99)
+            XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), changeCluster ? 110 : 109)
+        }
+    }
+
+    func test_filteredPageApplyDoesNotRebuildGeometryAtIncreasingStoryCounts() throws {
+        for count in [100, 1_000, 5_000] {
+            let fixture = makeFixture(storyCount: count)
+            fixture.table.contentOffset.y = 0
+            fixture.table.layoutIfNeeded()
+            fixture.resetMeasurements()
+            let started = CACurrentMediaTime()
+
+            fixture.controller.renderStories(makeHiddenStories(count..<(count + 12)))
+            fixture.table.layoutIfNeeded()
+
+            let measurements: [String: Any] = [
+                "existing_stories": count,
+                "apply_ms": (CACurrentMediaTime() - started) * 1_000,
+                "model_append_ms": fixture.stories.appendMilliseconds,
+                "height_calls": fixture.controller.heightCalls,
+                "preview_normalizations": fixture.previews.storedKeys.count,
+                "reload_data_calls": fixture.table.reloadCalls,
+            ]
+            let report = try JSONSerialization.data(withJSONObject: measurements, options: [.sortedKeys])
+            print("FILTERED_PAGINATION_BENCHMARK \(String(decoding: report, as: UTF8.self))")
+            XCTAssertEqual(fixture.table.reloadCalls, 0)
+            XCTAssertEqual(fixture.controller.heightCalls, 0)
+            XCTAssertEqual(fixture.previews.storedKeys.count, 0)
+        }
     }
 
     func test_warmHeightReturnsWithoutFontOrRenderCacheLookup() throws {
@@ -434,6 +575,14 @@ import QuartzCore
         }
     }
 
+    private func makeHiddenStories(_ indices: Range<Int>) -> [[String: Any]] {
+        makeStories(indices).map { story in
+            var hidden = story
+            hidden["intelligence"] = ["feed": -1, "author": 0, "tags": 0, "title": 0]
+            return hidden
+        }
+    }
+
     private func insertTailForExperiment(_ fixture: PaginationFixture, oldRows: Int) throws {
         // StoryPaginationPerformanceTests.swift changes only the test instance, using the real row builder and UITableView.
         let result = fixture.controller.perform(NSSelectorFromString("buildVisibleStoryRows"))?.takeUnretainedValue()
@@ -537,6 +686,7 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     var offlinePageLoads = 0
     var dailyBriefingPages = [Int32]()
     var runsScrollCheck = false
+    var onOfflinePageLoad: (() -> Void)?
 
     override var isLegacyTable: Bool { legacyTableForTest }
     override var isMarkReadOnScroll: Bool { true }
@@ -545,7 +695,10 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     override func checkScroll() { if runsScrollCheck { super.checkScroll() } }
     override func scrollViewDidScroll(_ scrollView: UIScrollView!) {}
     override func loadingFeed() { loadingPresentations += 1 }
-    override func loadOfflineStories() { offlinePageLoads += 1 }
+    override func loadOfflineStories() {
+        offlinePageLoads += 1
+        onOfflinePageLoad?()
+    }
     override func fetchDailyBriefingPage(_ page: Int32, withCallback callback: (() -> Void)?) {
         dailyBriefingPages.append(page)
     }
