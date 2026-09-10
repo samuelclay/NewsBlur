@@ -335,15 +335,10 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let oldImage = makeImage()
         finish(previous.requests[0], with: oldImage, on: previous)
 
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === newImage, "An older controller must not overwrite a newer completed request, even before the next source lookup")
         cacheStories(updated, on: current)
-
-        XCTAssertEqual(current.requests.count, 2, "Completed source ownership must match the globally cached bitmap after another controller writes it")
-        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === oldImage, "Keep the displayed image while its replacement is pending")
-        let retry = try XCTUnwrap(current.requests.dropFirst().first)
-        finish(retry, with: newImage, on: current)
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === newImage)
-        cacheStories(updated, on: current)
-        XCTAssertEqual(current.requests.count, 2, "The verified replacement should be reused")
+        XCTAssertEqual(current.requests.count, 1, "The verified replacement should be reused")
     }
 
     func test_completedSourceStillReusesDiskImageAfterMemoryEviction() {
