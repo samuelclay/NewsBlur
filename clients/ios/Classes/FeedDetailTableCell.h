@@ -10,6 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "NBSwipeableCell.h"
 
+@class StoryTextLayoutCache;
+
 typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 {
     FeedDetailTextSizeTitleOnly = 0,
@@ -75,6 +77,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL hasAlpha;
 
 @property (nonatomic) FeedDetailTextSize textSize;
+@property (nonatomic, strong) StoryTextLayoutCache *storyTextLayoutCache;
 
 - (void)setupGestures;
 
