@@ -6195,6 +6195,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     
+    NSString *cacheAccount = [self.activeUsername copy];
+    NSString *cacheHost = [self.url copy];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Completed clearing %@ hashes", completedHashesStr);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
@@ -6205,7 +6207,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         NSLog(@"Failed mark read queued.");
         self.hasQueuedReadStories = YES;
         [self pruneQueuedReadHashes];
-        if (callback) callback();
+        [StoryFirstPageCache.shared reassertFields:@[@"read_status"] storyHashes:completedHashes account:cacheAccount host:cacheHost completion:^{
+            if (callback) callback();
+        }];
     }];
 }
 
@@ -6335,6 +6339,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSString *endpoint = saved ? @"mark_story_as_starred" : @"mark_story_as_unstarred";
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@", self.url, endpoint];
     
+    NSString *cacheAccount = [self.activeUsername copy];
+    NSString *cacheHost = [self.url copy];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *storyHash = [params objectForKey:@"story_id"];
         NSString *storyFeedId = [params objectForKey:@"feed_id"];
@@ -6342,7 +6348,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (callback) callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         self.hasQueuedSavedStories = YES;
-        if (callback) callback();
+        NSString *storyHash = params[@"story_id"];
+        NSArray *storyHashes = [storyHash isKindOfClass:[NSString class]] ? @[storyHash] : @[];
+        [StoryFirstPageCache.shared reassertFields:@[@"starred", @"starred_date", @"user_tags"] storyHashes:storyHashes account:cacheAccount host:cacheHost completion:^{
+            if (callback) callback();
+        }];
     }];
 }
 

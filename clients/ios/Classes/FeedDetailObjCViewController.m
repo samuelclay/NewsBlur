@@ -2268,16 +2268,13 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback {
+    if (!storiesCollection.activeFeed || (!callback && (self.pageFetching || self.pageFinished))) return;
     if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
     if (page == 1) {
         if (![self isCurrentFirstPageLoad:self.firstPageLoad] || self.firstPageLoad.authoritativeReceived) [self prepareCachedFirstPage];
         else self.firstPageLoad.pending = YES;
     }
     NSString *theFeedDetailURL;
-    
-    if (!storiesCollection.activeFeed) return;
-    
-    if (!callback && (self.pageFetching || self.pageFinished)) return;
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
@@ -2449,12 +2446,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
+    if (self.pageFetching || self.pageFinished) return;
     if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
     if (page == 1) {
         if (![self isCurrentFirstPageLoad:self.firstPageLoad] || self.firstPageLoad.authoritativeReceived) [self prepareCachedFirstPage];
         else self.firstPageLoad.pending = YES;
     }
-    if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
     // FeedDetailObjCViewController.m keeps an already presented native list intact while requesting its next page.
