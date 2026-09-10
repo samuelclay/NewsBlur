@@ -63,6 +63,53 @@ import UIKit
         }
     }
 
+    func test_invalidatedInFlightOriginalCannotPopulateTheCache() {
+        let renderer = FeedIconRenderer()
+        let size = CGSize(width: 16, height: 16)
+        let stale = renderer.image(forKey: "feed", size: size) {
+            renderer.removeImage(forKey: "feed")
+            return self.makeImage(size: 384, color: .red)
+        }
+        XCTAssertNil(stale)
+        XCTAssertNil(renderer.image(forKey: "feed", size: size) { nil })
+    }
+
+    func test_clearingDuringLoadDiscardsOnlyTheOlderGeneration() throws {
+        let renderer = FeedIconRenderer()
+        let size = CGSize(width: 16, height: 16)
+        var replacement: UIImage?
+        let stale = renderer.image(forKey: "feed", size: size) {
+            renderer.removeAllImages()
+            replacement = renderer.image(forKey: "feed", size: size) {
+                self.makeImage(size: 384, color: .blue)
+            }
+            return self.makeImage(size: 384, color: .red)
+        }
+        XCTAssertNil(stale)
+        let current = try XCTUnwrap(replacement)
+        XCTAssertTrue(renderer.image(forKey: "feed", size: size) { nil } === current)
+    }
+
+    func test_invalidatingOneFeedPreservesOtherPreparedArtwork() throws {
+        let renderer = FeedIconRenderer()
+        let size = CGSize(width: 16, height: 16)
+        let other = try XCTUnwrap(renderer.image(forKey: "other", size: size) {
+            self.makeImage(size: 384, color: .red)
+        })
+        renderer.removeImage(forKey: "feed")
+        XCTAssertTrue(renderer.image(forKey: "other", size: size) { nil } === other)
+    }
+
+    func test_missingDifferentSizeDoesNotDestroyPreparedArtwork() throws {
+        let renderer = FeedIconRenderer()
+        let size = CGSize(width: 16, height: 16)
+        let original = try XCTUnwrap(renderer.image(forKey: "feed", size: size) {
+            self.makeImage(size: 384, color: .red)
+        })
+        XCTAssertNil(renderer.image(forKey: "feed", size: CGSize(width: 28, height: 28)) { nil })
+        XCTAssertTrue(renderer.image(forKey: "feed", size: size) { nil } === original)
+    }
+
     private func makeImage(size: CGFloat, color: UIColor) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
