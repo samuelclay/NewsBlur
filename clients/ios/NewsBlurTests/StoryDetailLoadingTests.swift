@@ -132,6 +132,41 @@ import XCTest
         XCTAssertTrue(replacement.loads.isEmpty)
     }
 
+    func test_idleBootstrapMayFinishAfterColdWebKitStartupAndPrepareLaterReuse() async throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        let bootstrap = try XCTUnwrap(fixture.web.loads.last?.navigation)
+        await delay(1.1)
+
+        XCTAssertEqual(fixture.page.value(forKey: "failedWebViewFontPreparation") as? Bool, false)
+        XCTAssertNotNil(fixture.page.value(forKey: "fontWarmupNavigation"))
+        fixture.page.webView(fixture.web, didFinish: bootstrap)
+        XCTAssertEqual(fixture.page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        fixture.page.activeStory = story("adjacent", body: "Later adjacent article")
+        fixture.page.drawStory()
+        await drainMainQueue()
+        XCTAssertEqual(fixture.web.loads.count, 3)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Later adjacent article") == true)
+    }
+
+    func test_storyQueuedDuringColdBootstrapGetsItsOwnBoundedWait() async throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        await delay(1.1)
+        fixture.page.drawStory()
+        await drainMainQueue()
+
+        XCTAssertEqual(fixture.web.loads.count, 1, "StoryDetailObjCViewController.m measures the fallback deadline from article demand, not idle process startup.")
+        await delay(1.1)
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        XCTAssertFalse(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.last?.navigation))
+        XCTAssertEqual(fixture.web.loads.count, 3)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+    }
+
     func test_firstNavigationAlreadyContainsCompleteStoryAndHTTPSOrigin() async {
         let fixture = makeFixture()
         fixture.page.drawStory()

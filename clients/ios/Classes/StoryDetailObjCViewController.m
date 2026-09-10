@@ -41,6 +41,7 @@
 @property (nonatomic) BOOL preparedWebViewFonts;
 @property (nonatomic) BOOL failedWebViewFontPreparation;
 @property (nonatomic, strong) WKNavigation *fontWarmupNavigation;
+@property (nonatomic, strong) WKNavigation *measuredFontWarmupNavigation;
 @property (nonatomic) CFTimeInterval fontWarmupStarted;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
 @property (nonatomic) BOOL isUpdatingContentInset;
@@ -1191,6 +1192,7 @@
         self.fontWarmupStarted = [ReaderPerformance start];
         [self loadHTMLString:[self fontWarmupHTML]];
         self.fontWarmupNavigation = self.storyNavigation;
+        self.measuredFontWarmupNavigation = self.fontWarmupStarted > 0 ? self.fontWarmupNavigation : nil;
         WKNavigation *navigation = self.fontWarmupNavigation;
         WKWebView *preparingWebView = self.webView;
         __weak typeof(self) weakSelf = self;
@@ -2758,6 +2760,9 @@
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+    if (webView == self.webView && navigation && navigation == self.measuredFontWarmupNavigation) {
+        [ReaderPerformance finish:@"detail.font_bootstrap_navigation_started" since:self.fontWarmupStarted];
+    }
     if (webView != self.webView || navigation != self.storyNavigation || !self.hasStory ||
         ![self isCurrentStoryLoad:self.storyLoadGeneration]) return;
 
@@ -2769,10 +2774,10 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    if (webView == self.webView && navigation && navigation == self.measuredFontWarmupNavigation) {
+        [ReaderPerformance finish:@"detail.font_bootstrap_navigation_finished" since:self.fontWarmupStarted];
+    }
     if (webView == self.webView && navigation && navigation == self.fontWarmupNavigation) {
-        if (self.fontWarmupStarted > 0) {
-            [ReaderPerformance finish:@"detail.font_bootstrap_navigation_finished" since:self.fontWarmupStarted];
-        }
         __weak typeof(self) weakSelf = self;
         [webView callAsyncJavaScript:@"await Promise.all(Array.from(document.fonts, font => font.load())); await document.fonts.ready; return true;"
                           arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
