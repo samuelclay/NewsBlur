@@ -67,6 +67,12 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
+@property (nonatomic, strong) StoryFirstPageLoad *firstPageLoad;
+@property (nonatomic) BOOL restoringFirstPageViewport;
+@property (nonatomic) BOOL reconcilingFirstPageArticle;
+@property (nonatomic, copy) NSString *retainedFirstPageStoryHash;
+@property (nonatomic, copy) NSArray<NSString *> *retainedFirstPageNeighbors;
+@property (nonatomic) NSInteger retainedFirstPageLocation;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
@@ -1532,6 +1538,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    self.firstPageLoad = nil;
+    self.restoringFirstPageViewport = NO;
+    self.reconcilingFirstPageArticle = NO;
+    self.retainedFirstPageStoryHash = nil;
+    self.retainedFirstPageNeighbors = nil;
     if ([self respondsToSelector:@selector(resetDailyBriefingState)]) {
         [(FeedDetailViewController *)self resetDailyBriefingState];
     }
@@ -1583,6 +1594,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)reloadStories {
+    self.firstPageLoad = nil;
+    self.restoringFirstPageViewport = NO;
+    self.reconcilingFirstPageArticle = NO;
+    self.retainedFirstPageStoryHash = nil;
+    self.retainedFirstPageNeighbors = nil;
     appDelegate.hasLoadedFeedDetail = NO;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
@@ -1729,6 +1745,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (self.firstPageLoad.pending) return;
         if (!self.storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
@@ -1950,7 +1967,291 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
+- (NSString *)feedRequestURLForPage:(int)page {
+    NSString *theFeedDetailURL;
+    if (storiesCollection.isSocialView) {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
+                            self.appDelegate.url,
+                            [storiesCollection.activeFeed objectForKey:@"user_id"],
+                            page];
+    } else if (storiesCollection.isSavedView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
+                            self.appDelegate.url,
+                            page,
+                            [storiesCollection.activeSavedStoryTag urlEncode]];
+    } else if (storiesCollection.isReadView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/read_stories/?page=%d&v=2",
+                            self.appDelegate.url,
+                            page];
+    } else {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?include_hidden=true&page=%d",
+                            self.appDelegate.url,
+                            [storiesCollection.activeFeed objectForKey:@"id"],
+                            page];
+    }
+
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeOrder]];
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeReadFilter]];
+    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
+                            theFeedDetailURL,
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+    }
+
+    return theFeedDetailURL;
+}
+
+- (NSString *)riverRequestURLForPage:(int)page {
+    NSString *theFeedDetailURL;
+
+    if (storiesCollection.isSocialRiverView) {
+        if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"%@/social/river_stories/?global_feed=true&page=%d",
+                                self.appDelegate.url,
+                                page];
+
+        } else {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"%@/social/river_stories/?page=%d",
+                                self.appDelegate.url,
+                                page];
+        }
+    } else if (storiesCollection.isSavedView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/starred_stories/?page=%d&v=2",
+                            self.appDelegate.url,
+                            page];
+    } else if (storiesCollection.isReadView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/read_stories/?page=%d&v=2",
+                            self.appDelegate.url,
+                            page];
+    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
+        NSString *trendingType = [storiesCollection.activeFolder stringByReplacingOccurrencesOfString:@"trending:" withString:@""];
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/trending_stories/?trending_type=%@&page=%d",
+                            self.appDelegate.url,
+                            trendingType,
+                            page];
+    } else {
+        NSString *feeds = @"";
+        if (storiesCollection.activeFolderFeeds.count) {
+            feeds = [[storiesCollection.activeFolderFeeds
+                      subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
+                     componentsJoinedByString:@"&f="];
+        }
+        NSString *infrequent = @"false";
+        if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+            NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+            infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
+        }
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d&infrequent=%@",
+                            self.appDelegate.url,
+                            feeds,
+                            page,
+                            infrequent];
+    }
+
+
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeOrder]];
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeReadFilter]];
+    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
+                            theFeedDetailURL,
+                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+    }
+
+    return theFeedDetailURL;
+}
+
+- (NSString *)normalFirstPageRequestURL {
+    if (!self.isLegacyTable || self.isDashboard || self.dashboardIndex >= 0 ||
+        storiesCollection.inSearch || storiesCollection.isSocialView || storiesCollection.isSocialRiverView ||
+        storiesCollection.isSavedView || storiesCollection.isReadView || storiesCollection.isWidgetView ||
+        storiesCollection.isDailyBriefing || storiesCollection.isTrending || storiesCollection.isInfrequent ||
+        appDelegate.isSavedStoriesIntelligenceMode || appDelegate.tryFeedFeedId || appDelegate.inFindingStoryMode) return nil;
+    if (storiesCollection.isRiverView) {
+        if (!storiesCollection.activeFolder || [@[@"dashboard", @"notifications"] containsObject:storiesCollection.activeFolder]) return nil;
+        return [self riverRequestURLForPage:1];
+    }
+    if (!storiesCollection.activeFeed[@"id"]) return nil;
+    return [self feedRequestURLForPage:1];
+}
+
+- (StoryFirstPageLoad *)prepareCachedFirstPage {
+    NSString *url = [self normalFirstPageRequestURL];
+    StoryFirstPageRequest *request = [[StoryFirstPageRequest alloc] initWithAccount:appDelegate.activeUsername host:appDelegate.url url:url];
+    if (!request) { self.firstPageLoad = nil; return nil; }
+    StoryFirstPageCache *cache = StoryFirstPageCache.shared;
+    StoryFirstPageLoad *load = [[StoryFirstPageLoad alloc] initWithRequest:request revision:cache.newRevision generation:self.fetchRequestId];
+    self.firstPageLoad = load;
+    storiesCollection.feedPage = 1;
+    __weak typeof(self) weakSelf = self;
+    [self lookupFirstPageRequest:request completion:^(StoryFirstPageSnapshot *snapshot) {
+        typeof(self) self = weakSelf;
+        if (!self || ![self isCurrentFirstPageLoad:load] || !load.pending || !snapshot) return;
+        NSDictionary *response = [cache responseForSnapshot:snapshot provisional:YES];
+        NSArray *cachedStories = response[@"stories"];
+        if (!cachedStories.count) return;
+        load.displayedSnapshot = YES;
+        self.restoringFirstPageViewport = YES;
+        // FeedDetailObjCViewController.m installs only list-local presentation state for a provisional first page.
+        if (!self.storiesCollection.activeClassifiers) self.storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
+        NSDictionary *classifiers = response[@"classifiers"];
+        if ([classifiers isKindOfClass:NSDictionary.class]) {
+            NSDictionary *feedClassifiers = self.storiesCollection.isRiverView ? classifiers :
+                @{[NSString stringWithFormat:@"%@", self.storiesCollection.activeFeed[@"id"]]: classifiers};
+            for (NSString *feedId in feedClassifiers) {
+                if (!self.storiesCollection.activeClassifiers[feedId]) self.storiesCollection.activeClassifiers[feedId] = feedClassifiers[feedId];
+            }
+        }
+        self.storiesCollection.activePopularAuthors = response[@"feed_authors"];
+        self.storiesCollection.activePopularTags = response[@"feed_tags"];
+        [self.storiesCollection setFeedUserProfiles:response[@"user_profiles"]];
+        self.storiesCollection.activeFeedStories = cachedStories;
+        self.storiesCollection.storyCount = (int)cachedStories.count;
+        [self.storiesCollection calculateStoryLocations];
+        self.messageView.hidden = YES;
+        [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
+        [self reloadImmediately];
+        [self.storyTitlesTable layoutIfNeeded];
+        self.scrollingMarkReadRow = NSNotFound;
+        self.restoringFirstPageViewport = NO;
+        [self cacheImagesForStories:cachedStories];
+    }];
+    return load;
+}
+
+- (void)lookupFirstPageRequest:(StoryFirstPageRequest *)request completion:(void (^)(StoryFirstPageSnapshot *))completion {
+    [StoryFirstPageCache.shared lookupRequest:request completion:completion];
+}
+
+- (BOOL)isCurrentFirstPageLoad:(StoryFirstPageLoad *)load {
+    return load && self.firstPageLoad == load &&
+        [load matchesWithAccount:appDelegate.activeUsername host:appDelegate.url url:[self normalFirstPageRequestURL] generation:self.fetchRequestId];
+}
+
+- (BOOL)hasRetainedFirstPageStory {
+    if (self.retainedFirstPageStoryHash && [self.retainedFirstPageStoryHash isEqualToString:appDelegate.activeStory[@"story_hash"]]) return YES;
+    self.retainedFirstPageStoryHash = nil;
+    self.retainedFirstPageNeighbors = nil;
+    return NO;
+}
+
+- (NSInteger)consumeRetainedFirstPageStoryInDirection:(NSInteger)direction {
+    if (![self hasRetainedFirstPageStory]) return NSNotFound;
+    NSInteger target = NSNotFound;
+    for (NSInteger index = self.retainedFirstPageLocation + direction; index >= 0 && index < self.retainedFirstPageNeighbors.count; index += direction) {
+        NSInteger location = [storiesCollection locationOfStoryId:self.retainedFirstPageNeighbors[index]];
+        if (location >= 0) { target = location; break; }
+    }
+    if (target == NSNotFound && storiesCollection.storyLocationsCount > 0) {
+        target = MAX(0, MIN(self.retainedFirstPageLocation + (direction < 0 ? -1 : 0), storiesCollection.storyLocationsCount - 1));
+    }
+    self.retainedFirstPageStoryHash = nil;
+    self.retainedFirstPageNeighbors = nil;
+    return target;
+}
+
+- (void)finishFirstPageResponse:(NSDictionary *)response feedPage:(NSInteger)page feedId:(NSString *)feedId load:(StoryFirstPageLoad *)load {
+    if (!load || page != 1) { [self finishedLoadingFeed:response feedPage:page feedId:feedId]; return; }
+    if (![self isCurrentFirstPageLoad:load]) return;
+    if (!storiesCollection.isRiverView && ![[NSString stringWithFormat:@"%@", response[@"feed_id"]] isEqualToString:feedId]) {
+        load.pending = NO;
+        self.pageFetching = NO;
+        return;
+    }
+    StoryFirstPageCache *cache = StoryFirstPageCache.shared;
+    [cache storeAuthoritativeResponse:response request:load.request revision:load.revision];
+    NSDictionary *updated = [cache overlayResponse:response request:load.request revision:load.revision];
+    NSString *anchorHash;
+    NSString *selectedHash;
+    NSString *selectedChildHash;
+    NSString *openArticleHash = load.displayedSnapshot ? appDelegate.activeStory[@"story_hash"] : nil;
+    CGFloat pixelOffset = 0;
+    if (load.displayedSnapshot) {
+        NSIndexPath *visiblePath = [[self.storyTitlesTable.indexPathsForVisibleRows sortedArrayUsingSelector:@selector(compare:)] firstObject];
+        NSInteger location = visiblePath ? [self storyLocationForScrollingAtIndexPath:visiblePath] : NSNotFound;
+        NSIndexPath *parentPath = location != NSNotFound ? [self indexPathForStoryLocation:location] : nil;
+        if (parentPath) {
+            anchorHash = [self getStoryAtLocation:location][@"story_hash"];
+            pixelOffset = self.storyTitlesTable.contentOffset.y - [self.storyTitlesTable rectForRowAtIndexPath:parentPath].origin.y;
+        }
+        NSIndexPath *selection = self.storyTitlesTable.indexPathForSelectedRow;
+        if (selection) {
+            selectedHash = [self getStoryAtLocation:[self storyLocationForScrollingAtIndexPath:selection]][@"story_hash"];
+            selectedChildHash = [self clusterStoryForIndexPath:selection][@"story_hash"];
+        }
+        NSString *activeHash = appDelegate.activeStory[@"story_hash"];
+        NSInteger activeLocation = [storiesCollection locationOfStoryId:activeHash];
+        BOOL stillPresent = NO;
+        for (NSDictionary *story in updated[@"stories"]) {
+            if ([story[@"story_hash"] isEqualToString:activeHash]) { stillPresent = YES; break; }
+        }
+        if (activeHash && activeLocation >= 0 && !stillPresent) {
+            self.retainedFirstPageStoryHash = activeHash;
+            self.retainedFirstPageNeighbors = storiesCollection.activeFeedStoryLocationIds;
+            self.retainedFirstPageLocation = activeLocation;
+        }
+    }
+    self.restoringFirstPageViewport = load.displayedSnapshot;
+    self.reconcilingFirstPageArticle = openArticleHash != nil;
+    load.pending = NO;
+    load.authoritativeReceived = YES;
+    [self finishedLoadingFeed:updated feedPage:page feedId:feedId];
+    if (self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory]) {
+        NSInteger location = [storiesCollection locationOfStoryId:openArticleHash];
+        if (location >= 0) {
+            [appDelegate.storyPagesViewController preserveCurrentPageAtLocation:location];
+        }
+    }
+    self.reconcilingFirstPageArticle = NO;
+    if (load.displayedSnapshot) {
+        [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
+        [self reloadImmediately];
+        [self.storyTitlesTable layoutIfNeeded];
+        NSInteger location = anchorHash ? [storiesCollection locationOfStoryId:anchorHash] : -1;
+        NSIndexPath *path = location >= 0 ? [self indexPathForStoryLocation:location] : nil;
+        if (path) {
+            CGFloat y = [self.storyTitlesTable rectForRowAtIndexPath:path].origin.y + pixelOffset;
+            CGFloat minimum = -self.storyTitlesTable.adjustedContentInset.top;
+            CGFloat maximum = MAX(minimum, self.storyTitlesTable.contentSize.height - self.storyTitlesTable.bounds.size.height + self.storyTitlesTable.adjustedContentInset.bottom);
+            [self.storyTitlesTable setContentOffset:CGPointMake(self.storyTitlesTable.contentOffset.x, MIN(maximum, MAX(minimum, y))) animated:NO];
+        }
+        NSInteger selectedLocation = selectedHash ? [storiesCollection locationOfStoryId:selectedHash] : -1;
+        if (selectedLocation >= 0) {
+            NSIndexPath *selection = [self indexPathForStoryLocation:selectedLocation];
+            if (selectedChildHash) {
+                for (NSIndexPath *candidate in [self indexPathsForStoryLocationIncludingClusterRows:selectedLocation]) {
+                    if ([[self clusterStoryForIndexPath:candidate][@"story_hash"] isEqualToString:selectedChildHash]) { selection = candidate; break; }
+                }
+            }
+            [self.storyTitlesTable selectRowAtIndexPath:selection animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+        self.scrollingMarkReadRow = NSNotFound;
+        self.restoringFirstPageViewport = NO;
+    }
+}
+
 - (void)fetchNextPage:(void(^)(void))callback {
+    if (self.firstPageLoad.pending) return;
+    if (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline) {
+        if (storiesCollection.isRiverView) [self fetchRiverPage:1 withCallback:callback];
+        else [self fetchFeedDetail:1 withCallback:callback];
+        return;
+    }
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:callback];
     } else {
@@ -1959,6 +2260,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback {
+    if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
+    if (page == 1) {
+        if (![self isCurrentFirstPageLoad:self.firstPageLoad] || self.firstPageLoad.authoritativeReceived) [self prepareCachedFirstPage];
+        else self.firstPageLoad.pending = YES;
+    }
     NSString *theFeedDetailURL;
     
     if (!storiesCollection.activeFeed) return;
@@ -1982,12 +2288,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }];
         });
     }
-    if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1 && !self.firstPageLoad.displayedSnapshot) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame))];
     }
     
     if (!self.isOnline) {
-        [self loadOfflineStories];
+        self.firstPageLoad.pending = NO;
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        else [self loadOfflineStories];
         if (!self.isShowingFetching) {
             [self showFetchingBanner:@"Offline" isOffline:YES];
         }
@@ -1996,44 +2304,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [self hideFetchingBanner];
     }
 
-    if (storiesCollection.isSocialView) {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
-                            self.appDelegate.url,
-                            [storiesCollection.activeFeed objectForKey:@"user_id"],
-                            storiesCollection.feedPage];
-    } else if (storiesCollection.isSavedView) {
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
-                            self.appDelegate.url,
-                            storiesCollection.feedPage,
-                            [storiesCollection.activeSavedStoryTag urlEncode]];
-    } else if (storiesCollection.isReadView) {
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/read_stories/?page=%d&v=2",
-                            self.appDelegate.url,
-                            storiesCollection.feedPage];
-    } else {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?include_hidden=true&page=%d",
-                            self.appDelegate.url,
-                            [storiesCollection.activeFeed objectForKey:@"id"],
-                            storiesCollection.feedPage];
-    }
-    
-    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                        theFeedDetailURL,
-                        [storiesCollection activeOrder]];
-    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                        theFeedDetailURL,
-                        [storiesCollection activeReadFilter]];
-    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
-                            theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-    }
-    
+    theFeedDetailURL = [self feedRequestURLForPage:page];
+
     NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
     NSUInteger requestId = self.fetchRequestId;
+    StoryFirstPageLoad *firstPageLoad = self.firstPageLoad;
     NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
     self.currentFetchTask = [appDelegate GETreturningTask:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (requestId != self.fetchRequestId) {
@@ -2041,20 +2317,28 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                   (unsigned long)requestId, (unsigned long)self.fetchRequestId);
             return;
         }
-        if (!self.storiesCollection.activeFeed) return;
-        [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
+        if (!self.storiesCollection.activeFeed || (firstPageLoad && ![self isCurrentFirstPageLoad:firstPageLoad])) return;
+        [self finishFirstPageResponse:responseObject feedPage:feedPage feedId:feedId load:firstPageLoad];
         if (callback) {
             callback();
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (error.code == NSURLErrorCancelled) return;
-        if (requestId != self.fetchRequestId) return;
+        if (error.code == NSURLErrorCancelled) {
+            if (requestId == self.fetchRequestId && (!firstPageLoad || [self isCurrentFirstPageLoad:firstPageLoad])) {
+                firstPageLoad.pending = NO;
+                self.pageFetching = NO;
+            }
+            return;
+        }
+        if (requestId != self.fetchRequestId || (firstPageLoad && ![self isCurrentFirstPageLoad:firstPageLoad])) return;
+        firstPageLoad.pending = NO;
+        self.pageFetching = NO;
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         NSLog(@"in failed block %@", operation);
         self.isOnline = NO;
         self.isShowingFetching = NO;
-        //            storiesCollection.feedPage = 1;
-        [self loadOfflineStories];
+        // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
+        if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
@@ -2157,6 +2441,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
+    if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
+    if (page == 1) {
+        if (![self isCurrentFirstPageLoad:self.firstPageLoad] || self.firstPageLoad.authoritativeReceived) [self prepareCachedFirstPage];
+        else self.firstPageLoad.pending = YES;
+    }
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
@@ -2188,7 +2477,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
     }
     
-    if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1 && !self.firstPageLoad.displayedSnapshot) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame))];
     }
     
@@ -2202,92 +2491,42 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     if (!self.isOnline) {
+        self.firstPageLoad.pending = NO;
         [self hideFetchingBanner];
-        [self loadOfflineStories];
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        else [self loadOfflineStories];
         return;
     } else {
         [self hideFetchingBanner];
     }
 
-    NSString *theFeedDetailURL;
+    NSString *theFeedDetailURL = [self riverRequestURLForPage:page];
 
-    if (storiesCollection.isSocialRiverView) {
-        if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/social/river_stories/?global_feed=true&page=%d",
-                                self.appDelegate.url,
-                                storiesCollection.feedPage];
-            
-        } else {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/social/river_stories/?page=%d",
-                                self.appDelegate.url,
-                                storiesCollection.feedPage];
-        }
-    } else if (storiesCollection.isSavedView) {
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/starred_stories/?page=%d&v=2",
-                            self.appDelegate.url,
-                            storiesCollection.feedPage];
-    } else if (storiesCollection.isReadView) {
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/read_stories/?page=%d&v=2",
-                            self.appDelegate.url,
-                            storiesCollection.feedPage];
-    } else if ([storiesCollection.activeFolder hasPrefix:@"trending:"]) {
-        NSString *trendingType = [storiesCollection.activeFolder stringByReplacingOccurrencesOfString:@"trending:" withString:@""];
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/trending_stories/?trending_type=%@&page=%d",
-                            self.appDelegate.url,
-                            trendingType,
-                            storiesCollection.feedPage];
-    } else {
-        NSString *feeds = @"";
-        if (storiesCollection.activeFolderFeeds.count) {
-            feeds = [[storiesCollection.activeFolderFeeds
-                      subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
-                     componentsJoinedByString:@"&f="];
-        }
-        NSString *infrequent = @"false";
-        if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-            NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-            infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
-        }
-        theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d&infrequent=%@",
-                            self.appDelegate.url,
-                            feeds,
-                            storiesCollection.feedPage,
-                            infrequent];
-    }
-    
-    
-    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                        theFeedDetailURL,
-                        [storiesCollection activeOrder]];
-    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                        theFeedDetailURL,
-                        [storiesCollection activeReadFilter]];
-    if (storiesCollection.inSearch && storiesCollection.searchQuery) {
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&query=%@",
-                            theFeedDetailURL,
-                            [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-    }
-    
     NSUInteger requestId = self.fetchRequestId;
+    NSInteger feedPage = page;
+    StoryFirstPageLoad *firstPageLoad = self.firstPageLoad;
     self.currentFetchTask = [appDelegate GETreturningTask:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (requestId != self.fetchRequestId) {
             NSLog(@"Discarding stale river response (request %lu, current %lu)",
                   (unsigned long)requestId, (unsigned long)self.fetchRequestId);
             return;
         }
-        [self finishedLoadingFeed:responseObject feedPage:self.storiesCollection.feedPage feedId:nil];
+        if (firstPageLoad && ![self isCurrentFirstPageLoad:firstPageLoad]) return;
+        [self finishFirstPageResponse:responseObject feedPage:feedPage feedId:nil load:firstPageLoad];
         if (callback) {
             callback();
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (error.code == NSURLErrorCancelled) return;
-        if (requestId != self.fetchRequestId) return;
+        if (error.code == NSURLErrorCancelled) {
+            if (requestId == self.fetchRequestId && (!firstPageLoad || [self isCurrentFirstPageLoad:firstPageLoad])) {
+                firstPageLoad.pending = NO;
+                self.pageFetching = NO;
+            }
+            return;
+        }
+        if (requestId != self.fetchRequestId || (firstPageLoad && ![self isCurrentFirstPageLoad:firstPageLoad])) return;
+        firstPageLoad.pending = NO;
+        self.pageFetching = NO;
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         self.isOnline = NO;
         self.isShowingFetching = NO;
@@ -2295,8 +2534,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             [self informError:@"Can't find the story."];
         }
         [self clearTryFeedSearchState];
-        //            storiesCollection.feedPage = 1;
-        [self loadOfflineStories];
+        // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
+        if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
@@ -2431,7 +2670,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
     
-    if (!self.isPhoneOrCompact) {
+    if (!self.isPhoneOrCompact && !self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory]) {
         NSInteger pageIndex = appDelegate.storyPagesViewController.currentPage.pageIndex;
         BOOL storyChanged = NO;
 
@@ -2467,7 +2706,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }
         }
     }
-    [appDelegate.storyPagesViewController advanceToNextUnread];
+    if (!self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory]) [appDelegate.storyPagesViewController advanceToNextUnread];
 
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
@@ -4548,7 +4787,7 @@ finish_height_measurement:
 }
 
 - (void)checkScroll {
-    if (!self.isLegacyTable) {
+    if (!self.isLegacyTable || self.restoringFirstPageViewport) {
         return;
     }
     
