@@ -85,6 +85,122 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertFalse(cache.diskCache.object(forKey: "story") is UIImage)
     }
 
+    func test_thumbnailPrefetchCoalescesAndBoundsAbandonedReverseRows() {
+        let queue = DispatchQueue(label: "test.thumbnail-prefetch.coalescing")
+        queue.suspend()
+        var loaded = [String]()
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, _ in loaded.append(hash) }
+        for page in 0..<100 {
+            prefetcher.prefetchStoryHashes((0..<100).map { "page-\(page)-story-\($0)" })
+            XCTAssertEqual(prefetcher.pendingHashCount, 24)
+        }
+        prefetcher.cancelAll()
+        XCTAssertEqual(prefetcher.pendingHashCount, 0)
+        prefetcher.prefetchStoryHashes(["current", "current", "", String(repeating: "x", count: 1_025)])
+        XCTAssertEqual(prefetcher.pendingHashCount, 1)
+        queue.resume()
+        queue.sync {}
+        XCTAssertEqual(loaded, ["current"])
+        XCTAssertEqual(prefetcher.pendingHashCount, 0)
+    }
+
+    func test_thumbnailPrefetchCancelsAnActiveReadAndLoadsTheNewDirection() {
+        let queue = DispatchQueue(label: "test.thumbnail-prefetch.direction")
+        let entered = expectation(description: "Old direction is reading its first image")
+        let resume = DispatchSemaphore(value: 0)
+        var published = [String]()
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
+            if hash == "old" {
+                entered.fulfill()
+                _ = resume.wait(timeout: .now() + 2)
+            }
+            if !operation.isCancelled { published.append(hash) }
+        }
+        prefetcher.prefetchStoryHashes(["old", "abandoned"])
+        wait(for: [entered], timeout: 2)
+        prefetcher.prefetchStoryHashes(["reverse"])
+        resume.signal()
+        queue.sync {}
+        XCTAssertEqual(published, ["reverse"])
+        XCTAssertEqual(prefetcher.pendingHashCount, 0)
+    }
+
+    func test_slowThumbnailPrefetchDoesNotHoldThePublicationLockOrOverwriteANewDownload() {
+        let (app, cache) = makeCache()
+        cache.diskCache.setObject(makeImage(), forKey: "story")
+        let entered = expectation(description: "Disk prefetch is waiting outside the publication lock")
+        let resume = DispatchSemaphore(value: 0)
+        cache.diskCache.onRead = { _, isMain in
+            if !isMain {
+                entered.fulfill()
+                _ = resume.wait(timeout: .now() + 2)
+            }
+        }
+        let queue = DispatchQueue(label: "test.thumbnail-prefetch.publication")
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
+            app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
+        }
+        prefetcher.prefetchStoryHashes(["story"])
+        wait(for: [entered], timeout: 2)
+        let newer = makeImage()
+        let started = CACurrentMediaTime()
+        app.cacheStoryImage(newer, forStoryHash: "story")
+        XCTAssertLessThan(CACurrentMediaTime() - started, 0.1, "The main thread must not wait for an unrelated disk operation's lock")
+        resume.signal()
+        queue.sync {}
+        cache.diskCache.onRead = nil
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === newer)
+    }
+
+    func test_prefetchRejectsDiskImageAfterConcurrentSaveEvenIfTheNewImageIsEvicted() {
+        let (app, cache) = makeCache()
+        cache.diskCache.setObject(makeImage(), forKey: "story")
+        let newer = makeImage()
+        cache.diskCache.afterRead = {
+            app.cacheStoryImage(newer, forStoryHash: "story")
+            cache.memoryCache.removeAllObjects()
+        }
+        app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation())
+        XCTAssertNil(cache.memoryCache.object(forKey: "story"), "An old read cannot regain ownership after the newer bitmap was evicted")
+        XCTAssertTrue(app.cachedImage(forStoryHash: "story") === newer)
+    }
+
+    func test_cancelRemovalAndAccountResetRejectInFlightDiskPrefetch() {
+        for invalidation in ["cancel", "remove", "clear", "account"] {
+            let (app, cache) = makeCache()
+            cache.diskCache.setObject(makeImage(), forKey: "story")
+            let operation = BlockOperation()
+            cache.diskCache.afterRead = {
+                switch invalidation {
+                case "cancel": operation.cancel()
+                case "remove": app.removeCachedStoryImage(forStoryHash: "story")
+                case "clear": app.removeAllCachedStoryImages()
+                default: app.dictFeeds = nil
+                }
+            }
+            app.prefetchCachedStoryImage(forStoryHash: "story", operation: operation)
+            XCTAssertNil(cache.memoryCache.object(forKey: "story"), invalidation)
+        }
+    }
+
+    func test_prefetchedMissesAvoidRepeatedDiskReadsAndSuccessfulSourcesKeepTheirOwnership() {
+        let (app, cache) = makeCache()
+        app.prefetchCachedStoryImage(forStoryHash: "missing", operation: BlockOperation())
+        for _ in 0..<500 { XCTAssertNil(app.cachedImage(forStoryHash: "missing")) }
+        XCTAssertEqual(cache.diskCache.readCount, 1)
+
+        let controller = makeController(appDelegate: app)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: controller)
+        let image = makeImage()
+        finish(controller.requests[0], with: image, on: controller)
+        cache.memoryCache.removeAllObjects()
+        app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation())
+        cacheStories(stories, on: controller)
+        XCTAssertEqual(controller.requests.count, 1)
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image)
+    }
+
     func test_removingAllThumbnailsDuringDiskReadRejectsItsOldResult() {
         let (appDelegate, cache) = makeCache()
         cache.diskCache.setObject(makeImage(), forKey: "story")
