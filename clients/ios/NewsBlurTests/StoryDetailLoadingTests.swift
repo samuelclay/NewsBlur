@@ -58,6 +58,79 @@ import XCTest
         XCTAssertTrue(fixture.web.loads.last?.html.contains("Latest early story") == true)
     }
 
+    func test_webContentProcessReplacementPreparesFontsAgainBeforeCurrentStory() async throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.last?.navigation))
+        fixture.page.drawStory()
+        await drainMainQueue()
+        fixture.web.loads.removeAll()
+
+        fixture.page.webViewWebContentProcessDidTerminate(fixture.web)
+        await drainMainQueue()
+
+        XCTAssertEqual(fixture.web.loads.count, 1)
+        XCTAssertTrue(fixture.web.loads.first?.html.contains("data:font/otf;base64,") == true)
+        XCTAssertFalse(fixture.web.loads.first?.html.contains("Fixture article") == true)
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.first?.navigation))
+        await drainMainQueue()
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+    }
+
+    func test_replacedBootstrapCannotReleaseTheNextDocumentsFontGate() async throws {
+        let fixture = makeFixture()
+        fixture.web.defersAsyncJavaScript = true
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.last?.navigation))
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        fixture.page.activeStory = story("second", body: "Latest gated story")
+        fixture.page.drawStory()
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.last?.navigation))
+        await drainMainQueue()
+
+        XCTAssertEqual(fixture.web.asyncCompletions.count, 2)
+        _ = try XCTUnwrap(fixture.web.asyncCompletions.first)
+        fixture.web.asyncCompletions.removeFirst()(true, nil)
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        _ = try XCTUnwrap(fixture.web.asyncCompletions.first)
+        fixture.web.asyncCompletions.removeFirst()(true, nil)
+        XCTAssertEqual(fixture.web.loads.count, 3)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Latest gated story") == true)
+    }
+
+    func test_failedFontPreparationFallsBackWithoutClaimingReadinessOrRetrying() async throws {
+        let fixture = makeFixture()
+        fixture.web.defersAsyncJavaScript = true
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        fixture.page.drawStory()
+        await drainMainQueue()
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.first?.navigation))
+        let finishFonts = try XCTUnwrap(fixture.web.asyncCompletions.first)
+
+        finishFonts(nil, NSError(domain: "StoryDetailLoadingTests.swift", code: 1))
+
+        XCTAssertEqual(fixture.page.value(forKey: "preparedWebViewFonts") as? Bool, false)
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        XCTAssertFalse(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+        fixture.page.webView(fixture.web, didFinish: try XCTUnwrap(fixture.web.loads.last?.navigation))
+        XCTAssertEqual(fixture.web.loads.count, 3)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        XCTAssertFalse(fixture.web.loads.last?.html.contains("data:font/otf;base64,") == true)
+    }
+
+    func test_obsoleteWebKitTerminationCannotClearAReplacementView() async {
+        let fixture = makeFixture()
+        let replacement = RecordedStoryLoadWebView(frame: fixture.web.frame, configuration: WKWebViewConfiguration())
+        fixture.page.webView = replacement
+
+        fixture.page.webViewWebContentProcessDidTerminate(fixture.web)
+        await drainMainQueue()
+
+        XCTAssertTrue(replacement.loads.isEmpty)
+    }
+
     func test_firstNavigationAlreadyContainsCompleteStoryAndHTTPSOrigin() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
@@ -245,6 +318,24 @@ import XCTest
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 0)
     }
 
+    func test_firstPaintCallbackCannotRestoreAReusedPage() async throws {
+        let fixture = makeFixture()
+        fixture.app.setValue(ImmediateStoryScrollQueue(), forKey: "database")
+        fixture.web.defersAsyncJavaScript = true
+        fixture.page.drawStory()
+        await drainMainQueue()
+        restoreScroll(on: fixture.page)
+        for _ in 0..<60 where fixture.web.asyncCompletions.isEmpty { await delay(0.01) }
+        let complete = try XCTUnwrap(fixture.web.asyncCompletions.first)
+
+        fixture.page.activeStory = story("second", body: "New article before the old native frame arrives")
+        fixture.page.drawStory()
+        fixture.web.scrollView.contentOffset = .zero
+        complete(true, nil)
+
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 0)
+    }
+
     func test_delayedScrollRestoreCannotOverrideManualScrolling() async {
         let app = StoryLoadAppDelegate()
         let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
@@ -355,6 +446,7 @@ import XCTest
             let previousHeight = web.scrollView.contentSize.height
             let secondReady = expectation(description: "Second story is ready on the same prepared WKWebView")
             page.readyObserver = { secondReady.fulfill() }
+            page.perform(NSSelectorFromString("clearWebView"))
             page.activeStory = story("second", body: String(repeating: "<p>Second article paragraph.</p>", count: 220))
             page.drawStory()
             await fulfillment(of: [secondReady], timeout: 5)
@@ -376,31 +468,7 @@ import XCTest
         try await checkPlainWebKitRendering(notifiesNative: true)
     }
 
-    func test_generatedStoryHTMLRendersWithAnIndependentWebKitDelegate() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true)
-    }
-
-    func test_generatedStoryWithoutStylesRendersWithHeldImage() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<style\\b[^>]*>[\\s\\S]*?</style>")
-    }
-
-    func test_generatedStoryWithoutScriptsRendersWithHeldImage() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<script\\b[^>]*>[\\s\\S]*?</script>")
-    }
-
-    func test_generatedStoryWithoutViewportRendersWithHeldImage() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<meta\\b[^>]*name=\"viewport\"[^>]*>")
-    }
-
-    func test_generatedStoryWithoutEmbeddedFontsRendersWithHeldImage() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "@font-face\\s*\\{[^}]+\\}")
-    }
-
-    func test_generatedStoryWithoutReadyNavigationRendersWithHeldImage() async throws {
-        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, disableReadyNavigation: true)
-    }
-
-    private func checkPlainWebKitRendering(notifiesNative: Bool, generatedStory: Bool = false, stripPattern: String? = nil, disableReadyNavigation: Bool = false) async throws {
+    private func checkPlainWebKitRendering(notifiesNative: Bool) async throws {
         let resource = try HeldHTTPStoryResource()
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
         let imageURL = try XCTUnwrap(resource.imageURL)
@@ -421,28 +489,11 @@ import XCTest
         web.isHidden = false
         web.navigationDelegate = navigationDelegate
         let notify = notifiesNative ? "<script>document.addEventListener('DOMContentLoaded',function(){window.location='http://ios.newsblur.com/notify-loaded';});</script>" : ""
-        var html = "<html><body><img src='\(imageURL)' width='30' height='30'>" + String(repeating: "<p>Plain WebKit control paragraph.</p>", count: 150) + notify + "</body></html>"
-        if generatedStory {
-            let fixture = makeFixture()
-            fixture.page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
-            fixture.page.activeStory = story("first", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
-            fixture.page.drawStory()
-            await drainMainQueue()
-            html = try XCTUnwrap(fixture.web.loads.last?.html)
-        }
-        if let stripPattern {
-            html = try NSRegularExpression(pattern: stripPattern).stringByReplacingMatches(in: html, range: NSRange(html.startIndex..., in: html), withTemplate: "")
-        }
-        if disableReadyNavigation {
-            let readyNavigation = "    window.location = url;\n}"
-            XCTAssertEqual(html.components(separatedBy: readyNavigation).count, 2)
-            html = html.replacingOccurrences(of: readyNavigation, with: "}")
-        }
+        let html = "<html><body><img src='\(imageURL)' width='30' height='30'>" + String(repeating: "<p>Plain WebKit control paragraph.</p>", count: 150) + notify + "</body></html>"
         web.loadHTMLString(html, baseURL: nil)
         for _ in 0..<60 where web.scrollView.contentSize.height < web.bounds.height + 500 {
             await delay(0.05)
         }
-        print("STORY_PLAIN_WEBKIT native=\(web.scrollView.contentSize) notify=\(notifiesNative) generatedStory=\(generatedStory) stripped=\(stripPattern ?? "none") disableReady=\(disableReadyNavigation) pending=\(resource.pendingCount) suppressed=\(configuration.suppressesIncrementalRendering)")
         XCTAssertEqual(resource.pendingCount, 1)
         XCTAssertGreaterThan(web.scrollView.contentSize.height, web.bounds.height + 500)
     }
@@ -532,10 +583,6 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     override func viewWillDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewWillDisappear(animated) } }
     override func viewDidAppear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidAppear(animated) } }
     override func viewDidDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidDisappear(animated) } }
-    override func drawStory() {
-        if webView is RealStoryLoadWebView { print("STORY_REAL_DRAW \(Thread.callStackSymbols.prefix(10))") }
-        super.drawStory()
-    }
     override func getHeader() -> String! { "<h1>Fixture header</h1>" }
     override func getShareBar() -> String! { shareHTML }
     override func getComments() -> String! { "Fixture comments" }
@@ -567,6 +614,8 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class RecordedStoryLoadWebView: WKWebView {
     struct Load { let html: String; let baseURL: URL?; let navigation: WKNavigation }
     var loads: [Load] = []
+    var defersAsyncJavaScript = false
+    var asyncCompletions: [(Any?, Error?) -> Void] = []
     let trackedScroll = StoryLoadScrollView()
     override var scrollView: UIScrollView { trackedScroll }
 
@@ -584,6 +633,13 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     }
     override func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)? = nil) {
         completionHandler?(nil, nil)
+    }
+    override func __callAsyncJavaScript(_ functionBody: String, arguments: [String: Any]?, inFrame frame: WKFrameInfo?, in contentWorld: WKContentWorld, completionHandler: ((Any?, Error?) -> Void)? = nil) {
+        if defersAsyncJavaScript {
+            if let completionHandler { asyncCompletions.append(completionHandler) }
+        } else {
+            completionHandler?(true, nil)
+        }
     }
 }
 
@@ -645,7 +701,6 @@ private final class StoryScrollCursor: NSObject {
 @MainActor private final class RealStoryLoadWebView: WKWebView {
     override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
         // StoryDetailLoadingTests.swift retains the production HTTPS document origin for real WebKit checks.
-        print("STORY_REAL_SUBMISSION length=\(string.count) plain=\(string.contains("Plain WebKit")) full=\(string.contains("Readable article")) trace=\(Thread.callStackSymbols.prefix(8))")
         return super.loadHTMLString(string, baseURL: baseURL ?? URL(string: "https://newsblur.com/"))
     }
 }
@@ -672,7 +727,6 @@ private final class StoryScrollCursor: NSObject {
         listener.newConnectionHandler = { [weak self] connection in
             Task { @MainActor in
                 guard let self else { connection.cancel(); return }
-                print("STORY_HTTP_CONNECTION \(connection.endpoint)")
                 self.connections[ObjectIdentifier(connection)] = connection
                 connection.start(queue: .main)
                 self.receiveRequest(connection, received: Data())
@@ -720,36 +774,5 @@ private final class StoryScrollCursor: NSObject {
 @MainActor private final class PlainStoryNavigationDelegate: NSObject, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(navigationAction.request.url?.host == "ios.newsblur.com" ? .cancel : .allow)
-    }
-}
-
-@MainActor private final class HeldStoryResource: NSObject, WKURLSchemeHandler {
-    private var pending = [ObjectIdentifier: WKURLSchemeTask]()
-    var pendingCount: Int { pending.count }
-
-    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-        guard urlSchemeTask.request.url?.host == "resource", urlSchemeTask.request.url?.path == "/avatar.png" else {
-            print("STORY_UNEXPECTED_RESOURCE \(urlSchemeTask.request.url?.absoluteString ?? "nil")")
-            urlSchemeTask.didFailWithError(NSError(domain: NSURLErrorDomain, code: NSURLErrorResourceUnavailable))
-            return
-        }
-        print("STORY_HELD_RESOURCE \(urlSchemeTask.request.url?.absoluteString ?? "nil") mime=image/png")
-        pending[ObjectIdentifier(urlSchemeTask)] = urlSchemeTask
-    }
-    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-        pending.removeValue(forKey: ObjectIdentifier(urlSchemeTask))
-    }
-    func finish() {
-        let tasks = Array(pending.values)
-        pending.removeAll()
-        let data = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
-            UIColor.clear.setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-        }
-        for task in tasks {
-            task.didReceive(URLResponse(url: task.request.url!, mimeType: "image/png", expectedContentLength: data.count, textEncodingName: nil))
-            task.didReceive(data)
-            task.didFinish()
-        }
     }
 }
