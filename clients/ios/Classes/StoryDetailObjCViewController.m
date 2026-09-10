@@ -34,6 +34,7 @@
 @property (nonatomic) NSUInteger storyLoadGeneration;
 @property (nonatomic) NSUInteger readyStoryLoadGeneration;
 @property (nonatomic) NSUInteger storyScrollActivityGeneration;
+@property (nonatomic) NSUInteger scrollToTopGeneration;
 @property (nonatomic, copy) NSString *storyLoadHash;
 @property (nonatomic, strong) WKNavigation *storyNavigation;
 @property (nonatomic) BOOL restoredStoryScrollPosition;
@@ -466,6 +467,7 @@
     self.storyLoadHash = nil;
     self.storyNavigation = nil;
     self.awaitingStoryScrollRestoration = NO;
+    self.scrollToTopGeneration = 0;
     if (self.webView.hidden) self.hasStory = NO;
 }
 
@@ -2080,6 +2082,15 @@
 #pragma mark - Scrolling
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
+    if (scrollView != self.webView.scrollView) return NO;
+    // StoryDetailObjCViewController.m treats the native status-bar action as an explicit new reading position.
+    self.storyScrollActivityGeneration++;
+    self.awaitingStoryScrollRestoration = NO;
+    self.scrollToTopGeneration = self.storyLoadGeneration;
+    self.restoredStoryScrollPosition = NO;
+    self.hasScrolledAwayFromTop = NO;
+    hasScrolled = YES;
+    scrollPct = 0;
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
     if (pagesVC.isCustomToolbarActive) {
         [pagesVC.toolbarScrollHandler reset];
@@ -2094,6 +2105,13 @@
         }];
     }
     return YES;
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
+    if (scrollView != self.webView.scrollView || !self.scrollToTopGeneration ||
+        ![self isCurrentStoryLoad:self.scrollToTopGeneration]) return;
+    self.scrollToTopGeneration = 0;
+    [self storeScrollPosition:NO];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -2310,9 +2328,10 @@
 }
 
 - (NSInteger)scrollPosition {
-    NSInteger updatedPos = floor(self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height
-                                 * 1000);
-    return updatedPos;
+    UIScrollView *scrollView = self.webView.scrollView;
+    if (scrollView.contentSize.height <= 0) return 0;
+    // StoryDetailObjCViewController.m keeps positive fractions unchanged and records inset-adjusted top offsets as zero.
+    return floor(MAX(0, scrollView.contentOffset.y) / scrollView.contentSize.height * 1000);
 }
 
 - (void)storeScrollPosition:(BOOL)queue {
