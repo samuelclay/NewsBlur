@@ -90,6 +90,7 @@
 - (void)reloadWithSizing;
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
+- (void)resetStoryImageSources;
 - (void)reloadStories;
 - (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 - (void)fetchNextPage:(void(^)(void))callback;

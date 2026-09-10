@@ -1899,6 +1899,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
+- (void)resetStoryImageSources {
+    @synchronized (self) {
+        // FeedDetailObjCViewController.m refreshes unchanged URLs explicitly while retaining their visible bitmap.
+        [self.pendingStoryImageRequests removeAllObjects];
+        [self.completedStoryImageSources removeAllObjects];
+    }
+}
+
 - (void)showImageForStoryHash:(NSString *)storyHash {
     if (self.view.window == nil) {
         return;
@@ -6051,6 +6059,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 // called when the user taps refresh button
 
 - (IBAction)instafetchFeed {
+    [self resetStoryImageSources];
     NSString *urlString = [NSString
                            stringWithFormat:@"%@/reader/refresh_feed/%@",
                            self.appDelegate.url,

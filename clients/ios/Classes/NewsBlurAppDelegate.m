@@ -130,6 +130,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *missingFavicons;
 @property (atomic, strong) NSCache<NSString *, NSNumber *> *missingStoryImages;
+@property (nonatomic) NSUInteger storyImageCacheGeneration;
 @property (nonatomic) NSUInteger faviconCacheGeneration;
 @property (nonatomic) NSUInteger faviconWriteGeneration;
 @property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
@@ -4830,6 +4831,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [self.feedIconRenderer removeAllImages];
         }
     }
+    if (!feeds) {
+        [self.feedDetailViewController resetStoryImageSources];
+    }
 }
 
 - (FeedIconRenderer *)feedIconRenderer {
@@ -6443,9 +6447,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if ([image isKindOfClass:[UIImage class]]) return image;
         if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) return nil;
 
+        NSUInteger generation = self.storyImageCacheGeneration;
         image = [cache.diskCache objectForKey:storyHash];
         id completedImage = [cache.memoryCache objectForKey:storyHash];
         if ([completedImage isKindOfClass:[UIImage class]]) return completedImage;
+        if (generation != self.storyImageCacheGeneration) return nil;
 
         if ([image isKindOfClass:[UIImage class]]) {
             CGImageRef cgImage = [(UIImage *)image CGImage];
@@ -6486,11 +6492,25 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)removeCachedStoryImageForStoryHash:(NSString *)storyHash {
-    [self.cachedStoryImages removeObjectForKey:storyHash];
+    if (!storyHash.length) return;
+
+    PINCache *cache = self.cachedStoryImages;
+    @synchronized (cache) {
+        // NewsBlurAppDelegate.m serializes removal with saves and rejects a disk result read before invalidation.
+        self.storyImageCacheGeneration++;
+        [self.missingStoryImages removeObjectForKey:storyHash];
+        [cache removeObjectForKey:storyHash];
+    }
 }
 
 - (void)removeAllCachedStoryImages {
-    [self.cachedStoryImages removeAllObjects];
+    [self.feedDetailViewController resetStoryImageSources];
+    PINCache *cache = self.cachedStoryImages;
+    @synchronized (cache) {
+        self.storyImageCacheGeneration++;
+        [self.missingStoryImages removeAllObjects];
+        [cache removeAllObjects];
+    }
 }
 
 - (void)cleanImageCache {
