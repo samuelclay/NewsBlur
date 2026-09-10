@@ -2160,7 +2160,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-    [self loadingFeed];
+    // FeedDetailObjCViewController.m keeps an already presented native list intact while requesting its next page.
+    BOOL isNativePageAppend = page > 1 && self.isLegacyTable && !self.isDashboard &&
+        !storiesCollection.isDailyBriefing && storiesCollection.storyCount > 0;
+    if (!isNativePageAppend) {
+        [self loadingFeed];
+    }
     
     if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
         NSLog(@"⚠️ Called fetchRiverPage with dashboard; this should never occur");  // log
