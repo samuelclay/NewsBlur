@@ -548,6 +548,36 @@ import XCTest
         }
     }
 
+    func test_completedStatusBarTopPersistsBeforeLeavingAndRejectsAReusedPage() async {
+        for reusesPage in [false, true] {
+            let app = StoryScrollStoreAppDelegate()
+            let fixture = makeFixture(app: app)
+            fixture.page.recordsPosition = true
+            fixture.page.drawStory()
+            await delay(0.15)
+            fixture.web.scrollView.contentInset.top = 64
+            fixture.web.scrollView.contentOffset.y = 2_500
+            XCTAssertTrue(requestScrollToTop(on: fixture.page))
+            fixture.web.scrollView.contentOffset.y = -64
+            if reusesPage {
+                fixture.page.activeStory = story("replacement", body: "Replacement article")
+                fixture.page.drawStory()
+                await drainMainQueue()
+                fixture.page.setValue(true, forKey: "hasScrolled")
+                fixture.web.scrollView.contentOffset.y = 1_000
+            }
+
+            let selector = NSSelectorFromString("scrollViewDidScrollToTop:")
+            XCTAssertTrue(fixture.page.responds(to: selector), "StoryDetailObjCViewController.m must persist the explicit completed native action.")
+            if fixture.page.responds(to: selector) {
+                typealias Call = @convention(c) (AnyObject, Selector, UIScrollView) -> Void
+                unsafeBitCast(fixture.page.method(for: selector), to: Call.self)(fixture.page, selector, fixture.web.scrollView)
+                await delay(0.05)
+                XCTAssertEqual(app.positions, reusesPage ? [] : [0])
+            }
+        }
+    }
+
     func test_delayedScrollRestoreCannotOverrideManualScrolling() async {
         let app = StoryLoadAppDelegate()
         let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
