@@ -696,8 +696,10 @@
 - (void)replaceStory:(NSDictionary *)newStory withId:(NSString *)newStoryIdStr {
     NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
     for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
+        NSDictionary *thisStory = [newActiveFeedStories objectAtIndex:i];
+        id storyHash = [thisStory objectForKey:@"story_hash"];
+        NSString *thisStoryIdStr = [storyHash isKindOfClass:[NSString class]] ?
+            storyHash : [NSString stringWithFormat:@"%@", storyHash];
         if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
             [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
             break;
