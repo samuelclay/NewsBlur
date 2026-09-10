@@ -8,11 +8,12 @@ from unittest.mock import MagicMock, patch
 
 import redis
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from apps.rss_feeds.models import MStory
 from apps.statistics.models import MStatistics
 from apps.statistics.rmcp_usage import RMCPUsage
+from apps.statistics.rscrapingbee import RScrapingBee
 from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
@@ -507,3 +508,88 @@ class Test_RMCPUsage(TestCase):
 
         self.assertEqual(weekly["requests"], 5)
         self.assertEqual(weekly["unique_users"], 3)
+
+
+class Test_RScrapingBee(TestCase):
+    """Tests for Redis-backed ScrapingBee proxy usage metrics (apps/statistics/rscrapingbee.py)."""
+
+    def setUp(self):
+        self.r = RScrapingBee._redis()
+        self._delete_keys()
+
+    def tearDown(self):
+        self._delete_keys()
+
+    def _delete_keys(self):
+        for pattern in ("sbCalls:*", "sbCredits:*", "sbDomains:*", "sbDomainCredits:*", "sbUsage"):
+            for key in self.r.scan_iter(match=pattern):
+                self.r.delete(key)
+
+    def test_record_counts_calls_credits_and_domains(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0)
+        RScrapingBee.record("original_story", 404, url="https://news.example.org/story", credits=1)
+        RScrapingBee.record("webfeed", None, url="https://news.example.org/", credits=0)
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("feed", "200")], 1)
+        self.assertEqual(stats["calls"][("feed", "500")], 1)
+        self.assertEqual(stats["calls"][("original_story", "404")], 1)
+        self.assertEqual(stats["calls"][("webfeed", "error")], 1)
+        self.assertEqual(stats["calls_today"], 4)
+        self.assertEqual(stats["credits"], {"feed": 1, "original_story": 1, "webfeed": 0})
+        self.assertEqual(stats["credits_today"], 2)
+        self.assertCountEqual(stats["top_domains"], [("example.com", 1, 2), ("news.example.org", 1, 2)])
+
+    def test_record_never_raises(self):
+        with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):
+            RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+
+    def test_credits_come_from_spb_cost_header(self):
+        self.assertEqual(
+            RScrapingBee.credits_for_response(MagicMock(status_code=200, headers={"Spb-cost": "5"})), 5
+        )
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=200, headers={})), 1)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=404, headers={})), 1)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=500, headers={})), 0)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=304, headers={})), 0)
+
+    def test_daily_totals_cover_requested_days_oldest_first(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0)
+
+        totals = RScrapingBee.get_daily_totals(days=3)
+
+        self.assertEqual(len(totals), 3)
+        self.assertEqual(totals[0][1:], (0, 0))
+        self.assertEqual(totals[-1][0], datetime.date.today().strftime("%Y-%m-%d"))
+        self.assertEqual(totals[-1][1:], (2, 1))
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("apps.statistics.rscrapingbee.requests.get")
+    def test_account_usage_is_read_once_and_cached(self, mock_get):
+        renewal = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        mock_get.return_value = MagicMock(status_code=200)
+        mock_get.return_value.json.return_value = {
+            "max_api_credit": 1000,
+            "used_api_credit": 250,
+            "max_concurrency": 100,
+            "current_concurrency": 1,
+            "renewal_subscription_date": renewal.isoformat(),
+        }
+
+        first = RScrapingBee.get_account_usage()
+        second = RScrapingBee.get_account_usage()
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertEqual(first["used"], 250)
+        self.assertEqual(first["max"], 1000)
+        self.assertEqual(first["remaining"], 750)
+        self.assertEqual(first["used_pct"], 25.0)
+        self.assertTrue(9.9 < first["days_to_renewal"] <= 10.0)
+        self.assertEqual(second, first)
+
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    def test_account_usage_without_api_key_is_empty(self):
+        self.assertEqual(RScrapingBee.get_account_usage(), {})

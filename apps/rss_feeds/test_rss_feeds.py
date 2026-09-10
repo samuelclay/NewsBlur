@@ -2080,3 +2080,295 @@ class Test_OpenRSSFeedRewrite(TestCase):
         found = Feed.get_feed_from_url(preview_url, create=False, fetch=False)
         self.assertEqual(found, legacy)
         self.assertEqual(Feed.objects.filter(feed_address__contains="@JudgeJudy").count(), 1)
+
+
+class Test_ScrapingBeeProxy(TestCase):
+    """Tests for the ScrapingBee paid-proxy path in utils/feed_fetcher.py."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="https://blocked.example.com/feed.xml",
+            feed_link="https://blocked.example.com/",
+            feed_title="Blocked Feed",
+        )
+        self.feed.etag = '"abc123"'
+        self.feed.last_modified = datetime.datetime(2026, 9, 1, 12, 30, 0)
+        self.feed.save()
+
+    def _proxy_response(self, status_code=200, content=b"<rss></rss>", headers=None):
+        response = MagicMock()
+        response.status_code = status_code
+        response.content = content
+        response.headers = headers or {}
+        return response
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.requests.get")
+    def test_fetch_scrapingbee_sends_real_conditional_request_headers(
+        self, mock_get, mock_validate, mock_record
+    ):
+        """ScrapingBee forwards spb-* request headers to the site, so the validators must be
+        If-None-Match / If-Modified-Since. ETag / Last-Modified are response headers that a
+        site ignores on a request, which is why forbidden feeds never returned 304."""
+        from utils.feed_fetcher import FetchFeed
+
+        mock_get.return_value = self._proxy_response(headers={"Spb-cost": "1"})
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        status, body = fetcher.fetch_scrapingbee()
+
+        self.assertEqual(status, 200)
+        kwargs = mock_get.call_args.kwargs
+        self.assertEqual(kwargs["params"]["forward_headers"], "true")
+        self.assertEqual(kwargs["headers"]["spb-if-none-match"], '"abc123"')
+        self.assertEqual(kwargs["headers"]["spb-if-modified-since"], "Tue, 01 Sep 2026 12:30:00 GMT")
+        self.assertNotIn("spb-etag", kwargs["headers"])
+        self.assertNotIn("spb-last-modified", kwargs["headers"])
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.requests.get")
+    def test_fetch_scrapingbee_keeps_validators_from_response(self, mock_get, mock_validate, mock_record):
+        """The site's ETag / Last-Modified come back prefixed as Spb-* headers and must be kept
+        so the next fetch can send them back."""
+        from utils.feed_fetcher import FetchFeed
+
+        mock_get.return_value = self._proxy_response(
+            headers={
+                "Spb-cost": "1",
+                "Spb-etag": '"new-etag"',
+                "Spb-last-modified": "Wed, 02 Sep 2026 08:00:00 GMT",
+            }
+        )
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        fetcher.fetch_scrapingbee()
+
+        self.assertEqual(
+            fetcher.proxy_validators,
+            {"etag": '"new-etag"', "modified": "Wed, 02 Sep 2026 08:00:00 GMT"},
+        )
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.requests.get")
+    def test_fetch_scrapingbee_unwraps_not_modified_hidden_in_a_500(
+        self, mock_get, mock_validate, mock_record
+    ):
+        """ScrapingBee reports any non-2xx site response as its own 500 and puts the real status
+        in Spb-initial-status-code, so a working conditional request looks like a failure."""
+        from utils.feed_fetcher import FetchFeed
+
+        mock_get.return_value = self._proxy_response(
+            status_code=500, content=b"", headers={"Spb-cost": "0", "Spb-initial-status-code": "304"}
+        )
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        status, body = fetcher.fetch_scrapingbee()
+
+        self.assertEqual((status, body), (304, None))
+        self.assertEqual(mock_record.call_args.args[:2], ("feed", 304))
+        self.assertEqual(mock_record.call_args.kwargs["credits"], 0)
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.requests.get")
+    def test_forced_fetch_sends_no_validators(self, mock_get, mock_validate, mock_record):
+        from utils.feed_fetcher import FetchFeed
+
+        mock_get.return_value = self._proxy_response(headers={"Spb-cost": "1"})
+        fetcher = FetchFeed(self.feed.pk, {"force": True})
+
+        fetcher.fetch_scrapingbee()
+
+        kwargs = mock_get.call_args.kwargs
+        self.assertEqual(kwargs["headers"], {})
+        self.assertNotIn("forward_headers", kwargs["params"])
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.requests.get")
+    def test_forbidden_fetch_injects_proxy_validators_into_parsed_feed(
+        self, mock_get, mock_validate, mock_record
+    ):
+        """feedparser.parse(string) never sets etag/modified/status, so the forbidden fetch has to
+        inject them for ProcessFeed.compare_feed_attribute_changes to persist."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        self.feed.is_forbidden = True
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+        rss = (
+            b'<?xml version="1.0"?><rss version="2.0"><channel><title>Blocked</title>'
+            b"<link>https://blocked.example.com/</link><item><title>Hi</title>"
+            b"<link>https://blocked.example.com/1</link><guid>1</guid></item></channel></rss>"
+        )
+        mock_get.return_value = self._proxy_response(
+            content=rss,
+            headers={
+                "Spb-cost": "1",
+                "Spb-etag": '"new-etag"',
+                "Spb-last-modified": "Wed, 02 Sep 2026 08:00:00 GMT",
+            },
+        )
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch("utils.feed_fetcher.random.random", return_value=0.5), patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked")
+        ):
+            result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(parsed.get("status"), 200)
+        self.assertEqual(parsed.get("etag"), '"new-etag"')
+        self.assertEqual(parsed.get("modified"), "Wed, 02 Sep 2026 08:00:00 GMT")
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.feedparser.parse", side_effect=IndexError("unreachable"))
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.requests.get")
+    def test_fallback_not_modified_marks_feed_forbidden_and_returns_same(
+        self, mock_get, mock_random, mock_safe_get, mock_parse, mock_validate, mock_record
+    ):
+        """Every direct fetch failed but the proxy got a 304: the site blocks us and the feed is
+        unchanged, so it's a FEED_SAME and the feed is flagged forbidden for next time."""
+        from utils.feed_fetcher import FEED_SAME, FetchFeed
+
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+        mock_get.return_value = self._proxy_response(
+            status_code=500, content=b"", headers={"Spb-cost": "0", "Spb-initial-status-code": "304"}
+        )
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        # fetch() runs in a @timelimit thread with its own DB connection, so a real save
+        # there would block on this test's uncommitted transaction. Stub the flag instead.
+        def flag_forbidden(feed):
+            feed.is_forbidden = True
+            return feed
+
+        with patch.object(Feed, "set_is_forbidden", autospec=True, side_effect=flag_forbidden) as mock_forbid:
+            with patch.object(Feed, "save_feed_history") as mock_history:
+                result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_SAME)
+        self.assertIsNone(parsed)
+        mock_forbid.assert_called_once()
+        self.assertTrue(fetcher.feed.is_forbidden)
+        mock_history.assert_called_once_with(304, "Not modified")
+
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_skips_paid_proxies_after_repeated_errors(self, mock_get, mock_random):
+        """A feed that keeps failing through the proxy (dead service, homepage redirect, 404) is
+        not worth another credit on every fetch."""
+        from utils.feed_fetcher import SCRAPINGBEE_SKIP_AFTER_ERRORS, FetchFeed
+
+        self.feed.errors_since_good = SCRAPINGBEE_SKIP_AFTER_ERRORS
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(fetcher, "fetch_scrapingbee") as mock_scrapingbee, patch.object(
+            fetcher, "fetch_scrapeninja"
+        ) as mock_scrapeninja:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual((status, body), (None, None))
+        mock_scrapingbee.assert_not_called()
+        mock_scrapeninja.assert_not_called()
+
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_uses_proxy_below_error_threshold(self, mock_get, mock_random):
+        from utils.feed_fetcher import SCRAPINGBEE_SKIP_AFTER_ERRORS, FetchFeed
+
+        self.feed.errors_since_good = SCRAPINGBEE_SKIP_AFTER_ERRORS - 1
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(
+            fetcher, "fetch_scrapingbee", return_value=(200, "<rss></rss>")
+        ) as mock_scrapingbee:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual(status, 200)
+        mock_scrapingbee.assert_called_once()
+
+    @patch("utils.feed_fetcher.random.random", return_value=0.05)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_retries_proxy_occasionally_so_feeds_can_recover(self, mock_get, mock_random):
+        from utils.feed_fetcher import SCRAPINGBEE_SKIP_AFTER_ERRORS, FetchFeed
+
+        self.feed.errors_since_good = SCRAPINGBEE_SKIP_AFTER_ERRORS * 3
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(
+            fetcher, "fetch_scrapingbee", return_value=(200, "<rss></rss>")
+        ) as mock_scrapingbee:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual(status, 200)
+        mock_scrapingbee.assert_called_once()
+
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_failed_forbidden_fetch_is_recorded_as_an_error(self, mock_random):
+        """Proxy failures used to return FEED_ERRHTTP without touching the fetch history, so the
+        feed never backed off and kept spending a credit at its normal cadence."""
+        from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+
+        self.feed.is_forbidden = True
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(fetcher, "fetch_forbidden", return_value=(None, None)), patch.object(
+            Feed, "save_feed_history"
+        ) as mock_history:
+            result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed)
+        mock_history.assert_called_once()
+        self.assertNotIn(mock_history.call_args.args[0], (200, 304))
+
+
+class Test_ForbiddenFeedScheduling(TestCase):
+    """Forbidden feeds fetch through a paid proxy, so their schedule floors in
+    Feed.get_next_scheduled_update (apps/rss_feeds/models.py) decide the ScrapingBee bill."""
+
+    def _forbidden_feed(self, subscribers):
+        feed = Feed.objects.create(
+            feed_address="https://blocked.example.com/%s.xml" % subscribers,
+            feed_link="https://blocked.example.com/",
+            feed_title="Blocked Feed %s" % subscribers,
+        )
+        feed.is_forbidden = True
+        feed.num_subscribers = subscribers
+        feed.active_subscribers = subscribers
+        feed.active_premium_subscribers = subscribers
+        feed.pro_subscribers = subscribers
+        feed.stories_last_month = 300
+        feed.last_story_date = datetime.datetime.now()
+        feed.save()
+        return feed
+
+    def test_single_subscriber_forbidden_feed_waits_a_full_day(self):
+        feed = self._forbidden_feed(1)
+
+        self.assertGreaterEqual(feed.get_next_scheduled_update(force=True, verbose=False), 60 * 24)
+
+    def test_multi_subscriber_forbidden_feed_keeps_twelve_hour_floor(self):
+        feed = self._forbidden_feed(2)
+
+        self.assertEqual(feed.get_next_scheduled_update(force=True, verbose=False), 60 * 12)

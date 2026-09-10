@@ -3253,7 +3253,8 @@ class Feed(models.Model):
                 % (before_mega, total)
             )
 
-        # Forbidden feeds get a min of 6 hours
+        # Forbidden feeds are fetched through ScrapingBee (utils/feed_fetcher.py), which
+        # bills a credit per fetch, so they get a minimum interval scaled by audience.
         if self.is_forbidden:
             before_forbidden = total
             if self.num_subscribers > 1000:
@@ -3263,7 +3264,9 @@ class Feed(models.Model):
             elif self.num_subscribers > 1:
                 hours = 12
             else:
-                hours = 18
+                # Most forbidden feeds have exactly one subscriber; a single reader isn't
+                # worth a proxy credit more than once a day.
+                hours = 24
             total = max(total, hours * 60)
             if before_forbidden != total:
                 adjustments.append(

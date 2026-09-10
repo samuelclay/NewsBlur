@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from lxml import html as lxml_html
 
+from apps.statistics.rscrapingbee import RScrapingBee
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
@@ -159,11 +160,12 @@ def fetch_page_html(url):
                 },
                 timeout=15,
             )
+            RScrapingBee.record_response("webfeed_preview", response, url=url)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
                 return text
         except requests.RequestException:
-            pass
+            RScrapingBee.record("webfeed_preview", None, url=url)
 
     # Fallback to ScrapeNinja
     if getattr(settings, "SCRAPENINJA_API_KEY", None):
