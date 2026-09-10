@@ -133,6 +133,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)reloadStoryRowsForLocation:(NSInteger)location rowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)clearTryFeedSearchState;
 - (void)clearStoryRenderCaches;
+- (void)fetchNextPageForCurrentViewport;
 - (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story;
 - (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location;
 - (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
@@ -788,8 +789,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     NSArray<NSDictionary *> *newRows = [self buildVisibleStoryRowsFromLocation:previousStoryCount];
-    // FeedDetailObjCViewController.m reloads a fully filtered page so willDisplay can advance pagination again.
-    if (!newRows.count) return NO;
+    if (!newRows.count) {
+        // FeedDetailObjCViewController.m preserves a filtered page only when the existing cluster rows also match.
+        return [self.visibleStoryRows isEqualToArray:[self buildVisibleStoryRows]];
+    }
     NSInteger firstRow = self.visibleStoryRows.count;
     self.visibleStoryRows = [self.visibleStoryRows arrayByAddingObjectsFromArray:newRows];
     NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray arrayWithCapacity:newRows.count];
@@ -2922,7 +2925,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     BOOL isPageAppend = newStoriesCount > 0 && storiesCollection.feedPage > 1 && !premiumRestriction;
-    if (!isPageAppend || ![self appendStoryTableFromLocation:previousStoryCount]) {
+    BOOL preservedStoryTable = isPageAppend && [self appendStoryTableFromLocation:previousStoryCount];
+    if (!preservedStoryTable) {
         [self reload];
     }
     
@@ -2936,6 +2940,25 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     });
     
     self.pageFetching = NO;
+
+    if (preservedStoryTable && storiesCollection.storyLocationsCount == previousStoryCount) {
+        // FeedDetailObjCViewController.m advances filtered pages without reloading the loading cell or moving the read anchor.
+        StoriesCollection *collection = storiesCollection;
+        NSInteger page = collection.feedPage;
+        NSUInteger requestId = self.fetchRequestId;
+        NSUInteger renderGeneration = self.storyRenderCacheGeneration;
+        NSDictionary *context = self.renderedStoryAppendContext;
+        __weak FeedDetailObjCViewController *weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            FeedDetailObjCViewController *controller = weakSelf;
+            if (!controller || controller.storiesCollection != collection || collection.feedPage != page ||
+                controller.fetchRequestId != requestId || controller.storyRenderCacheGeneration != renderGeneration ||
+                ![context isEqualToDictionary:[controller storyAppendContext]]) {
+                return;
+            }
+            [controller fetchNextPageForCurrentViewport];
+        });
+    }
 }
 
 - (NSString *)normalizedTryFeedStoryTitle:(NSString *)title {
@@ -3603,7 +3626,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!self.storyThumbnailPrefetcher && storyHashes.count) {
         self.storyThumbnailPrefetcher = [[StoryThumbnailPrefetcher alloc] initWithAppDelegate:appDelegate];
     }
-    [self.storyThumbnailPrefetcher prefetchStoryHashes:storyHashes];
+    [self.traitCollection performAsCurrentTraitCollection:^{
+        [self.storyThumbnailPrefetcher prefetchStoryHashes:storyHashes];
+    }];
 }
 
 - (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
@@ -5009,7 +5034,7 @@ finish_height_measurement:
     return [[self markReadValue] isEqualToString:@"manually"];
 }
 
-- (void)checkScroll {
+- (void)fetchNextPageForCurrentViewport {
     if (!self.isLegacyTable || self.restoringFirstPageViewport) {
         return;
     }
@@ -5037,6 +5062,13 @@ finish_height_measurement:
             [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];
         }
     }
+}
+
+- (void)checkScroll {
+    if (!self.isLegacyTable || self.restoringFirstPageViewport || !storiesCollection.activeFeedStories.count) {
+        return;
+    }
+    [self fetchNextPageForCurrentViewport];
     
     CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
     topRowPoint.y = topRowPoint.y + (self.textSize != FeedDetailTextSizeTitleOnly ? 80.f : 60.f);
