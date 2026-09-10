@@ -560,7 +560,12 @@ import XCTest
             XCTAssertTrue(pages.pageChanges.isEmpty)
             scroll.testingDrag = true
             let rawPage = CGFloat(8 + direction)
-            scroll.contentOffset = pages.isHorizontal ? CGPoint(x: 390 * rawPage, y: 0) : CGPoint(x: 0, y: 844 * rawPage)
+            var projected = pages.isHorizontal ? CGPoint(x: 390 * rawPage, y: 0) : CGPoint(x: 0, y: 844 * rawPage)
+            let expectedProjected = projected
+            pages.scrollViewWillEndDragging(scroll, withVelocity: .zero, targetContentOffset: &projected)
+            XCTAssertEqual(projected, expectedProjected, "The end-of-drag target must preserve direction around the retained frame before deceleration")
+            XCTAssertTrue(pages.pageChanges.isEmpty)
+            scroll.contentOffset = expectedProjected
             pages.scrollViewDidScroll(scroll)
             XCTAssertEqual(pages.pageChanges, [direction > 0 ? 0 : 2])
         }

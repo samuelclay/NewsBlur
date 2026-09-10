@@ -170,6 +170,28 @@ import XCTest
         await assertMiss(relaunched, request: fixture.request)
     }
 
+    func test_uncleanRelaunchDropsIncompletePersistedHistoryButKeepsNewSessionEdits() async throws {
+        let fixture = makeCache()
+        fixture.cache.store(["stories": [makeStory()]], request: fixture.request, revision: fixture.cache.newRevision())
+        fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 1], fields: ["read_status"], account: "owner", host: fixture.request.host)
+        await flush(fixture.cache)
+        fixture.cache.markForeground()
+        let held = expectation(description: "old session journal write held")
+        let gate = DispatchSemaphore(value: 0)
+        fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + 5) }
+        await fulfillment(of: [held], timeout: 2)
+        defer { gate.signal() }
+        fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 0], fields: ["read_status"], account: "owner", host: fixture.request.host)
+        let relaunched = StoryFirstPageCache(directory: fixture.directory)
+        relaunched.record(story: ["story_hash": "cache-story", "user_tags": ["new session"]], fields: ["user_tags"], account: "owner", host: fixture.request.host)
+        await assertMiss(relaunched, request: fixture.request)
+        let response = relaunched.overlay(["stories": [makeStory()]], request: fixture.request, revision: 0)
+        let story = try XCTUnwrap((response["stories"] as? [[String: Any]])?.first)
+        XCTAssertEqual(story["read_status"] as? Int, 0, "An unclean journal may have lost a reversal, so its older persisted value is no longer safe to reassert")
+        XCTAssertEqual(story["user_tags"] as? [String], ["new session"])
+        await flush(relaunched)
+    }
+
     func test_backgroundCheckpointIncludesEditThatArrivesWhileFlushIsPending() async throws {
         let fixture = makeCache()
         fixture.cache.store(["stories": [makeStory()]], request: fixture.request, revision: fixture.cache.newRevision())
