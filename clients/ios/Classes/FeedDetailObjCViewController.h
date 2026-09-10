@@ -15,6 +15,7 @@
 
 @class MCSwipeTableViewCell;
 @class StoryTitlesHeaderBar;
+@class StoryFirstPageLoad;
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
@@ -90,6 +91,10 @@
 - (void)reloadWithSizing;
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
+- (StoryFirstPageLoad *)prepareCachedFirstPage;
+- (BOOL)isCurrentFirstPageLoad:(StoryFirstPageLoad *)load;
+- (BOOL)hasRetainedFirstPageStory;
+- (NSInteger)consumeRetainedFirstPageStoryInDirection:(NSInteger)direction;
 - (void)resetStoryImageSources;
 - (void)reloadStories;
 - (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;

@@ -119,6 +119,7 @@
 - (void)hidePages;
 - (void)refreshPages;
 - (void)reorientPages;
+- (void)preserveCurrentPageAtLocation:(NSInteger)location;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;

@@ -135,6 +135,7 @@
 #pragma mark - Story Traversal
 
 - (BOOL)isStoryUnread:(NSDictionary *)story {
+    if ([story[@"_nb_provisional_read_state"] boolValue]) return [story[@"read_status"] intValue] == 0;
     BOOL readStatusUnread = [[story objectForKey:@"read_status"] intValue] == 0;
     BOOL storyHashUnread = [[appDelegate.unreadStoryHashes
                              objectForKey:[story objectForKey:@"story_hash"]] boolValue];
@@ -634,6 +635,15 @@
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
+    if (appDelegate.activeUsername.length) {
+        [StoryFirstPageCache.shared recordStory:newStory fields:@[@"read_status"] account:appDelegate.activeUsername host:appDelegate.url];
+        if ([self isClusterMarkReadEnabledForStory:story]) {
+            for (NSDictionary *child in newStory[@"cluster_stories"]) {
+                [StoryFirstPageCache.shared recordStory:child fields:@[@"read_status"] account:appDelegate.activeUsername host:appDelegate.url];
+            }
+        }
+    }
+
 
     id storyFeedId = [newStory objectForKey:@"story_feed_id"];
 
@@ -666,7 +676,7 @@
             [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-                 [newStory JSONRepresentation],
+                 [[StoryFirstPageCache publicStory:newStory] JSONRepresentation],
                  storyHash];
                 [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
                  storyHash];
@@ -758,6 +768,8 @@
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
+    if (appDelegate.activeUsername.length) [StoryFirstPageCache.shared recordStory:newStory fields:@[@"read_status"] account:appDelegate.activeUsername host:appDelegate.url];
+
 
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;
@@ -788,7 +800,7 @@
             [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-                 [newStory JSONRepresentation],
+                 [[StoryFirstPageCache publicStory:newStory] JSONRepresentation],
                  storyHash];
                 [db executeUpdate:@"INSERT INTO unread_hashes "
                  "(story_hash, story_feed_id, story_timestamp) VALUES (?, ?, ?)",
@@ -870,6 +882,8 @@
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
+    if (appDelegate.activeUsername.length) [StoryFirstPageCache.shared recordStory:newStory fields:@[@"starred", @"starred_date", @"user_tags"] account:appDelegate.activeUsername host:appDelegate.url];
+
     
     return newStory;
 }

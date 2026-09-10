@@ -368,9 +368,11 @@ import XCTest
         fixture.app.activeStory = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?[5])
         let pages = FirstPageLoadingPages()
         pages.appDelegate = fixture.app
-        let page = StoryDetailViewController()
+        let page = FirstPageLoadingStoryPage()
         page.pageIndex = 5
         pages.currentPage = page
+        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        pages.scrollView.contentSize = CGSize(width: 390 * 15, height: 844 * 15)
         fixture.app.testPages = pages
         fixture.app.releaseReadFlush()
         fixture.app.releaseSavedFlush()
@@ -379,6 +381,13 @@ import XCTest
         await settle()
         XCTAssertTrue(pages.currentPage === page)
         XCTAssertEqual(page.pageIndex, 8)
+        if pages.isHorizontal {
+            XCTAssertEqual(page.view.frame.minX, 390 * 8, accuracy: 0.5)
+            XCTAssertEqual(pages.scrollView.contentOffset.x, 390 * 8, accuracy: 0.5)
+        } else {
+            XCTAssertEqual(page.view.frame.minY, 844 * 8, accuracy: 0.5)
+            XCTAssertEqual(pages.scrollView.contentOffset.y, 844 * 8, accuracy: 0.5)
+        }
         XCTAssertEqual(fixture.app.activeStory["story_hash"] as? String, "first-page-5")
         XCTAssertTrue(pages.pageChanges.isEmpty)
         XCTAssertEqual(pages.advances, 0)
@@ -427,6 +436,32 @@ import XCTest
         fixture.app.releaseSavedFlush()
         await settle()
         XCTAssertEqual(fixture.app.requests.first?.url, firstURL)
+    }
+
+    func test_cancelledFirstPageRetriesPageOneWithoutLosingAnchorOrLocalEditsThenAllowsPageTwo() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        fixture.open()
+        await settle()
+        let load = try XCTUnwrap(fixture.controller.value(forKey: "firstPageLoad") as? StoryFirstPageLoad)
+        let anchor = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 4))
+        fixture.table.contentOffset.y = fixture.table.rectForRow(at: anchor).minY + 17
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.fail(to: fixture.app.requests.count - 1, code: NSURLErrorCancelled)
+        let story = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        fixture.stories.markStoryRead(story, feed: nil)
+        fixture.controller.fetchNextPage(nil)
+        await settle()
+        XCTAssertTrue(fixture.app.requests.last?.url.contains("page=1&") == true)
+        XCTAssertTrue(fixture.controller.value(forKey: "firstPageLoad") as? StoryFirstPageLoad === load)
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response())
+        await settle()
+        XCTAssertEqual((fixture.stories.activeFeedStories as? [[String: Any]])?.first?["read_status"] as? Int, 1)
+        XCTAssertEqual(fixture.table.contentOffset.y - fixture.table.rectForRow(at: anchor).minY, 17, accuracy: 0.5)
+        fixture.controller.fetchNextPage(nil)
+        XCTAssertTrue(fixture.app.requests.last?.url.contains("page=2&") == true)
     }
 
     private func prime(_ fixture: FirstPageFixture, stories: [[String: Any]]? = nil) async throws {
@@ -573,7 +608,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     var testPages: StoryPagesViewController?
     var riverFeeds: [NSNumber] = []
     override func feedIdsForTopLevelRiver(withReadFilter readFilter: String!) -> [Any]! { riverFeeds }
-    @objc(showColumn:debugInfo:animated:) func suppressColumn(_ column: Int, debugInfo: String, animated: Bool) {}
+    override func show(_ column: UISplitViewController.Column, debugInfo: String!, animated: Bool) {}
     override var storyPagesViewController: StoryPagesViewController! { testPages }
     override var feedDetailViewController: FeedDetailViewController! {
         get { testController }
@@ -633,4 +668,9 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     override func advanceToNextUnread() { advances += 1 }
     override func resetPages() {}
     override func hidePages() {}
+}
+
+@MainActor private final class FirstPageLoadingStoryPage: StoryDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
 }
