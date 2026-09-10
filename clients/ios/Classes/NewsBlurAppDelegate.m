@@ -6419,7 +6419,23 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
-    return self.cachedStoryImages[storyHash];
+    if (!storyHash.length) return nil;
+
+    id image = [self.cachedStoryImages.memoryCache objectForKey:storyHash];
+    if ([image isKindOfClass:[UIImage class]]) {
+        return image;
+    }
+
+    // NewsBlurAppDelegate.m: a pending-download placeholder must not hide a disk thumbnail.
+    image = [self.cachedStoryImages.diskCache objectForKey:storyHash];
+    if (![image isKindOfClass:[UIImage class]]) {
+        return nil;
+    }
+
+    CGImageRef cgImage = [(UIImage *)image CGImage];
+    NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
+    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
+    return image;
 }
 
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
@@ -6433,6 +6449,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)cacheStoryImagePlaceholder:(NSString *)storyHash {
     if (!storyHash) return;
+
+    if ([self cachedImageForStoryHash:storyHash]) return;
 
     // Use NSNull as placeholder with minimal cost
     [self.cachedStoryImages.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];

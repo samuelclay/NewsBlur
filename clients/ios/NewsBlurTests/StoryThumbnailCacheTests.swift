@@ -24,7 +24,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
     }
 
-    func test_renderingCachedStoryAndClusterSkipsRedundantImageDownloads() {
+    func test_existingStoryAndClusterThumbnailsRemainVisibleDuringFirstSessionRefresh() {
         let (appDelegate, cache) = makeCache()
         let storyImage = makeImage()
         let clusterImage = makeImage()
@@ -32,14 +32,21 @@ final class Test_StoryThumbnailCache: XCTestCase {
         cache.diskCache.setObject(clusterImage, forKey: "cluster")
         let controller = makeController(appDelegate: appDelegate)
 
-        cacheStories([
+        let stories: [[String: Any]] = [
             ["story_hash": "story", "image_urls": ["https://example.test/story.jpg"],
              "cluster_stories": [["story_hash": "cluster", "image_urls": ["https://example.test/cluster.jpg"]]]]
-        ], on: controller)
+        ]
+        cacheStories(stories, on: controller)
+        cacheStories(stories, on: controller)
 
-        XCTAssertEqual(controller.requestedStoryHashes, [])
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "cluster"])
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === storyImage)
         XCTAssertTrue(cache.object(forKey: "cluster") as? UIImage === clusterImage)
+
+        finish(controller.requests[0], with: storyImage, on: controller)
+        finish(controller.requests[1], with: clusterImage, on: controller)
+        cacheStories(stories, on: controller)
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "cluster"])
     }
 
     func test_missingThumbnailStillStartsDownload() {
@@ -59,6 +66,100 @@ final class Test_StoryThumbnailCache: XCTestCase {
         cacheStories([["story_hash": "retry", "image_urls": ["https://example.test/retry.jpg"]]], on: controller)
 
         XCTAssertEqual(controller.requestedStoryHashes, ["retry"])
+    }
+
+    func test_changedSourceRefreshesWithoutHidingPreviousThumbnail() {
+        let (appDelegate, cache) = makeCache()
+        let original = makeImage()
+        let replacement = makeImage()
+        cache.memoryCache.setObject(original, forKey: "story")
+        let controller = makeController(appDelegate: appDelegate)
+
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]], on: controller)
+        finish(controller.requests[0], with: original, on: controller)
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]], on: controller)
+
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "story"])
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === original)
+
+        finish(controller.requests[1], with: replacement, on: controller)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === replacement)
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]], on: controller)
+        XCTAssertEqual(controller.requestedStoryHashes.count, 2)
+    }
+
+    func test_obsoleteDownloadCannotOverwriteNewerSource() {
+        let (appDelegate, cache) = makeCache()
+        let controller = makeController(appDelegate: appDelegate)
+        let replacement = makeImage()
+
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]], on: controller)
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]], on: controller)
+        finish(controller.requests[1], with: replacement, on: controller)
+        finish(controller.requests[0], with: makeImage(), on: controller)
+
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === replacement)
+    }
+
+    func test_failedRefreshRetriesAndKeepsOldThumbnail() {
+        let (appDelegate, cache) = makeCache()
+        let image = makeImage()
+        cache.memoryCache.setObject(image, forKey: "story")
+        let controller = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+
+        cacheStories(stories, on: controller)
+        finish(controller.requests[0], with: nil, on: controller)
+        cacheStories(stories, on: controller)
+
+        XCTAssertEqual(controller.requestedStoryHashes, ["story", "story"])
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+    }
+
+    func test_revertingToCachedSourceDiscardsPendingReplacement() {
+        let (appDelegate, cache) = makeCache()
+        let image = makeImage()
+        let controller = makeController(appDelegate: appDelegate)
+        let original: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]]
+
+        cacheStories(original, on: controller)
+        finish(controller.requests[0], with: image, on: controller)
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]], on: controller)
+        cacheStories(original, on: controller)
+        finish(controller.requests[1], with: makeImage(), on: controller)
+
+        XCTAssertEqual(controller.requestedStoryHashes.count, 2)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+    }
+
+    func test_explicitlyEmptyImageSourcesRemoveOldThumbnailAndRejectPendingResult() {
+        let (appDelegate, cache) = makeCache()
+        let controller = makeController(appDelegate: appDelegate)
+        cache.memoryCache.setObject(makeImage(), forKey: "story")
+
+        cacheStories([["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]], on: controller)
+        cacheStories([["story_hash": "story", "image_urls": []]], on: controller)
+        finish(controller.requests[0], with: makeImage(), on: controller)
+
+        XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+    }
+
+    func test_resetAllowsCancelledSourceToBeRequestedAgain() {
+        let (appDelegate, cache) = makeCache()
+        let controller = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+
+        cacheStories(stories, on: controller)
+        controller.perform(NSSelectorFromString("resetStoryImageRequests"))
+        cacheStories(stories, on: controller)
+        finish(controller.requests[0], with: makeImage(), on: controller)
+
+        XCTAssertEqual(controller.requestedStoryHashes.count, 2)
+        XCTAssertFalse(cache.object(forKey: "story") is UIImage)
+    }
+
+    private func finish(_ request: NSDictionary, with image: UIImage?, on controller: ThumbnailDownloadController) {
+        controller.perform(NSSelectorFromString("finishStoryImageRequest:withImage:"), with: request, with: image)
     }
 
     private func cacheStories(_ stories: [[String: Any]], on controller: ThumbnailDownloadController) {
@@ -92,12 +193,21 @@ final class Test_StoryThumbnailCache: XCTestCase {
 
 private final class ThumbnailDownloadController: FeedDetailViewController {
     private(set) var requestedStoryHashes = [String]()
+    private(set) var requests = [NSDictionary]()
 
     @objc(getFirstImage:forStoryHash:withManager:)
     func recordImageRequest(_ urls: Any?, forStoryHash hash: String?, withManager manager: Any?) {
         if let hash {
             requestedStoryHashes.append(hash)
+            if let pending = value(forKey: "pendingStoryImageRequests") as? NSDictionary,
+               let request = pending[hash] as? NSDictionary {
+                requests.append(request)
+            }
         }
+    }
+
+    @objc(showImageForStoryHash:)
+    func ignoreVisibleImageRefresh(_ hash: String) {
     }
 }
 
@@ -121,6 +231,12 @@ private final class ThumbnailCacheDouble: NSObject {
     func objectForKeyedSubscript(_ key: String) -> Any? {
         object(forKey: key)
     }
+
+    @objc(removeObjectForKey:)
+    func removeObject(forKey key: String) {
+        memoryCache.removeObject(forKey: key)
+        diskCache.removeObject(forKey: key)
+    }
 }
 
 private final class ThumbnailStorageDouble: NSObject {
@@ -139,5 +255,10 @@ private final class ThumbnailStorageDouble: NSObject {
     @objc(setObject:forKey:withCost:)
     func setObject(_ object: Any, forKey key: String, withCost cost: UInt) {
         setObject(object, forKey: key)
+    }
+
+    @objc(removeObjectForKey:)
+    func removeObject(forKey key: String) {
+        objects.removeValue(forKey: key)
     }
 }
