@@ -154,13 +154,11 @@ import XCTest
 
         fixture.web.trackedScroll.simulatesDragging = true
         fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: 120)
-        fixture.page.observeValue(forKeyPath: "contentOffset", of: fixture.web.scrollView,
-                                  change: [.oldKey: NSValue(cgPoint: .zero), .newKey: NSValue(cgPoint: CGPoint(x: 0, y: 120))], context: nil)
-        fixture.web.trackedScroll.simulatesDragging = false
         database.release()
         await delay(0.05)
 
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 120)
+        fixture.web.trackedScroll.simulatesDragging = false
     }
 
     func test_stalledWebKitSubresourceDoesNotKeepReadableStoryHidden() async throws {
