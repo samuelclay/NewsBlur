@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import QuartzCore
 
 @testable import NewsBlur
 
@@ -15,8 +16,10 @@ import UIKit
 
     override func setUp() {
         super.setUp()
+        let bundleID = Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? ""
+        let persisted = defaults.persistentDomain(forName: bundleID) ?? [:]
         for (key, value) in preferenceValues {
-            savedPreferences[key] = defaults.object(forKey: key)
+            savedPreferences[key] = persisted[key]
             defaults.set(value, forKey: key)
         }
     }
