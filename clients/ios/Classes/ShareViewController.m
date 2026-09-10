@@ -417,6 +417,8 @@
     }
 
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    // ShareViewController.m receives a full story payload, including potentially updated content and clusters.
+    [appDelegate.feedDetailViewController reloadWithSizing];
 
     self.commentField.text = nil;
     [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
