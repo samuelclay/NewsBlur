@@ -528,6 +528,7 @@ import QuartzCore
         controller.view.addSubview(table)
         controller.messageView = UIView()
         controller.messageView.isHidden = true
+        controller.isOnline = false
         controller.pageFetching = true
         let previews = PaginationMeasurementCache()
         previews.countLimit = 512
