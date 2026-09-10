@@ -2406,6 +2406,14 @@
     [appDelegate.feedDetailViewController reload]; // XXX only if successful?
 }
 
+- (void)scrollPageDown:(id)sender {
+    [self.currentPage scrollPageDown:sender];
+}
+
+- (void)scrollPageUp:(id)sender {
+    [self.currentPage scrollPageUp:sender];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(toggleTextView:) ||
         action == @selector(scrollPageDown:) ||
