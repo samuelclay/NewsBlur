@@ -60,6 +60,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'scrapingbee_usage'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/scrapingbee-usage
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'app_times'
       static_configs:
         - targets: ['{{ monitor_server }}']

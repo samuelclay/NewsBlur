@@ -8,6 +8,7 @@ from django.conf import settings
 from lxml import html as lxml_html
 
 from apps.rss_feeds.models import Feed
+from apps.statistics.rscrapingbee import RScrapingBee
 from apps.webfeed.models import MWebFeedConfig
 from apps.webfeed.tasks import decode_response_text, extract_image_url
 from utils import log as logging
@@ -138,11 +139,12 @@ class WebFeedFetcher:
                     },
                     timeout=15,
                 )
+                RScrapingBee.record_response("webfeed", response, url=self.url)
                 text = decode_response_text(response)
                 if response.status_code == 200 and text:
                     return text
             except requests.RequestException:
-                pass
+                RScrapingBee.record("webfeed", None, url=self.url)
 
         # Fallback to ScrapeNinja
         if getattr(settings, "SCRAPENINJA_API_KEY", None):
