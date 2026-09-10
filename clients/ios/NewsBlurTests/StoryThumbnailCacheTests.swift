@@ -4,6 +4,78 @@ import UIKit
 @testable import NewsBlur
 
 final class Test_StoryThumbnailCache: XCTestCase {
+    func test_missingThumbnailIsReadFromDiskOnlyOnceAcrossCellReuse() {
+        let (appDelegate, cache) = makeCache()
+        appDelegate.cacheStoryImagePlaceholder("missing")
+
+        for _ in 0..<500 {
+            XCTAssertNil(appDelegate.cachedImage(forStoryHash: "missing"))
+        }
+
+        XCTAssertEqual(cache.diskCache.readCount, 1)
+    }
+
+    func test_legacyPlaceholderStillRecoversRealDiskThumbnail() {
+        let (appDelegate, cache) = makeCache()
+        let image = makeImage()
+        cache.memoryCache.setObject(NSNull(), forKey: "story")
+        cache.diskCache.setObject(image, forKey: "story")
+
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+        XCTAssertEqual(cache.diskCache.readCount, 1)
+    }
+
+    func test_savedThumbnailReplacesKnownMissAndSurvivesMemoryEviction() {
+        let (appDelegate, cache) = makeCache()
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        let image = makeImage()
+
+        appDelegate.cacheStoryImage(image, forStoryHash: "story")
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+        cache.memoryCache.removeAllObjects()
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+        XCTAssertEqual(cache.diskCache.readCount, 2)
+    }
+
+    func test_clearingMemoryCacheInvalidatesKnownMiss() {
+        let (appDelegate, cache) = makeCache()
+        XCTAssertNil(appDelegate.cachedImage(forStoryHash: "story"))
+        let image = makeImage()
+        cache.diskCache.setObject(image, forKey: "story")
+        cache.memoryCache.removeAllObjects()
+
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === image)
+        XCTAssertEqual(cache.diskCache.readCount, 2)
+    }
+
+    func test_placeholderCannotOverwriteDownloadFinishingAfterItsLookup() {
+        let appDelegate = ThumbnailLookupRaceAppDelegate()
+        let cache = ThumbnailCacheDouble()
+        let image = makeImage()
+        appDelegate.setValue(cache, forKey: "cachedStoryImages")
+        appDelegate.afterLookup = {
+            appDelegate.cacheStoryImage(image, forStoryHash: "story")
+        }
+
+        appDelegate.cacheStoryImagePlaceholder("story")
+
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image)
+    }
+
+    func test_diskPromotionCannotOverwriteNewerDownload() {
+        let (appDelegate, cache) = makeCache()
+        let oldImage = makeImage()
+        let newImage = makeImage()
+        cache.diskCache.setObject(oldImage, forKey: "story")
+        cache.diskCache.afterRead = {
+            appDelegate.cacheStoryImage(newImage, forStoryHash: "story")
+        }
+
+        XCTAssertTrue(appDelegate.cachedImage(forStoryHash: "story") === newImage)
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === newImage)
+    }
+
     func test_placeholderDoesNotReplaceWarmThumbnail() {
         let (appDelegate, cache) = makeCache()
         let image = makeImage()
@@ -211,6 +283,18 @@ private final class ThumbnailDownloadController: FeedDetailViewController {
     }
 }
 
+private final class ThumbnailLookupRaceAppDelegate: NewsBlurAppDelegate {
+    var afterLookup: (() -> Void)?
+
+    override func cachedImage(forStoryHash storyHash: String!) -> UIImage! {
+        let result = super.cachedImage(forStoryHash: storyHash)
+        let completion = afterLookup
+        afterLookup = nil
+        completion?()
+        return result
+    }
+}
+
 private final class ThumbnailCacheDouble: NSObject {
     @objc let memoryCache = ThumbnailStorageDouble()
     @objc let diskCache = ThumbnailStorageDouble()
@@ -241,10 +325,17 @@ private final class ThumbnailCacheDouble: NSObject {
 
 private final class ThumbnailStorageDouble: NSObject {
     private var objects: [String: Any] = [:]
+    private(set) var readCount = 0
+    var afterRead: (() -> Void)?
 
     @objc(objectForKey:)
     func object(forKey key: String) -> Any? {
-        objects[key]
+        readCount += 1
+        let result = objects[key]
+        let completion = afterRead
+        afterRead = nil
+        completion?()
+        return result
     }
 
     @objc(setObject:forKey:)
@@ -260,5 +351,9 @@ private final class ThumbnailStorageDouble: NSObject {
     @objc(removeObjectForKey:)
     func removeObject(forKey key: String) {
         objects.removeValue(forKey: key)
+    }
+
+    @objc func removeAllObjects() {
+        objects.removeAll()
     }
 }
