@@ -51,6 +51,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
+- (void)setPreparedSiteFavicon:(UIImage *)image;
 
 @property (readwrite) int storyScore;
 @property (nonatomic, readwrite) BOOL isSaved;

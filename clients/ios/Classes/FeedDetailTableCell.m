@@ -25,6 +25,7 @@ static UIFont *indicatorFont = nil;
 @interface FeedDetailTableCell ()
 
 @property (nonatomic, strong) UIImage *cachedRoundedSiteFavicon;
+@property (nonatomic) BOOL siteFaviconPrepared;
 
 - (UIImage *)roundedSiteFaviconImage;
 
@@ -145,12 +146,20 @@ static UIFont *indicatorFont = nil;
 }
 
 - (void)setSiteFavicon:(UIImage *)newSiteFavicon {
-    if (siteFavicon == newSiteFavicon) {
+    if (siteFavicon == newSiteFavicon && !self.siteFaviconPrepared) {
         return;
     }
 
+    self.siteFaviconPrepared = NO;
     siteFavicon = newSiteFavicon;
     self.cachedRoundedSiteFavicon = nil;
+}
+
+- (void)setPreparedSiteFavicon:(UIImage *)image {
+    // FeedDetailTableCell.m consumes the same rounded artwork without applying its edge clipping twice.
+    self.siteFavicon = image;
+    self.cachedRoundedSiteFavicon = image;
+    self.siteFaviconPrepared = image != nil;
 }
 
 - (UIImage *)roundedSiteFaviconImage {

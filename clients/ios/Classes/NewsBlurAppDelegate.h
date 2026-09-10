@@ -521,7 +521,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)preparedFavicon:(NSString *)filename size:(CGSize)size;
 - (void)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests;
+- (NSObject *)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests maximumRequestCount:(NSInteger)maximumRequestCount;
 - (void)cancelFaviconPreparation;
+- (void)cancelFaviconPreparation:(NSObject *)preparation;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
