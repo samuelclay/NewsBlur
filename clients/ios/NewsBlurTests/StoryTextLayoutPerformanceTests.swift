@@ -43,7 +43,6 @@ import ObjectiveC.runtime
         }
         defer { probe.restore() }
 
-        let started = CACurrentMediaTime()
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
         wait(for: [measured], timeout: 5)
         // StoryTextLayoutPerformanceTests.swift lets the worker publish its scalar result before drawing.
@@ -57,7 +56,7 @@ import ObjectiveC.runtime
         cell.setValue(fixture.app, forKey: "appDelegate")
         let height = fixture.controller.tableView(fixture.table, heightForRowAt: IndexPath(row: 0, section: 0))
         _ = render(cell, app: fixture.app, size: CGSize(width: 390, height: height))
-        print("TEXT_LAYOUT_BENCHMARK prepare_ms=\((preparedAt - started) * 1_000) first_draw_ms=\((CACurrentMediaTime() - preparedAt) * 1_000) main_measurements=\(probe.counts.main) worker_measurements=\(probe.counts.worker)")
+        print("TEXT_LAYOUT_BENCHMARK worker_layout_ms=\(probe.workerMilliseconds) first_cell_and_draw_ms=\((CACurrentMediaTime() - preparedAt) * 1_000) main_measurements=\(probe.counts.main) worker_measurements=\(probe.counts.worker)")
 
         XCTAssertEqual(beforeDraw.main, 0)
         XCTAssertEqual(beforeDraw.worker, 2)
@@ -279,6 +278,7 @@ private final class TextMeasurementProbe {
     private let replacement: IMP
     private var restored = false
     var counts: (main: Int, worker: Int) { countsRecorder!.counts }
+    var workerMilliseconds: Double { countsRecorder!.workerMilliseconds }
 
     init(matching strings: Set<String>, measured: @escaping (Bool) -> Void) throws {
         let selector = NSSelectorFromString("boundingRectWithSize:options:attributes:context:")
@@ -289,9 +289,10 @@ private final class TextMeasurementProbe {
         // StoryTextLayoutPerformanceTests.swift uses a separate recorder so the block cannot retain an uninitialized self.
         let recorder = TextMeasurementCounts()
         let block: @convention(block) (NSString, CGSize, UInt, NSDictionary?, NSStringDrawingContext?) -> CGRect = { text, size, options, attributes, context in
+            let started = CACurrentMediaTime()
             let result = function(text, selector, size, options, attributes, context)
             if strings.contains(text as String) {
-                recorder.record(main: Thread.isMainThread)
+                recorder.record(main: Thread.isMainThread, milliseconds: (CACurrentMediaTime() - started) * 1_000)
                 measured(Thread.isMainThread)
             }
             return result
@@ -314,10 +315,16 @@ private final class TextMeasurementCounts {
     private let lock = NSLock()
     private var main = 0
     private var worker = 0
-    func record(main isMain: Bool) {
+    private var workerTime = 0.0
+    func record(main isMain: Bool, milliseconds: Double) {
         lock.lock()
-        if isMain { main += 1 } else { worker += 1 }
+        if isMain { main += 1 } else { worker += 1; workerTime += milliseconds }
         lock.unlock()
+    }
+    var workerMilliseconds: Double {
+        lock.lock()
+        defer { lock.unlock() }
+        return workerTime
     }
     var counts: (main: Int, worker: Int) {
         lock.lock()
