@@ -359,6 +359,36 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
     }
 
+    func test_sourceLessImageSaveInvalidatesCompletedSourceOwnership() {
+        let (appDelegate, cache) = makeCache()
+        let controller = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: controller)
+        finish(controller.requests[0], with: makeImage(), on: controller)
+        let replacement = makeImage()
+        appDelegate.cacheStoryImage(replacement, forStoryHash: "story")
+        cacheStories(stories, on: controller)
+        XCTAssertEqual(controller.requests.count, 2)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === replacement)
+    }
+
+    func test_accountResetInvalidatesSourceOwnershipForAnotherLiveController() {
+        let appDelegate = ThumbnailRefreshAppDelegate()
+        let cache = ThumbnailCacheDouble()
+        appDelegate.setValue(cache, forKey: "cachedStoryImages")
+        let primary = makeController(appDelegate: appDelegate)
+        appDelegate.testFeedDetail = primary
+        let supplementary = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: supplementary)
+        let image = makeImage()
+        finish(supplementary.requests[0], with: image, on: supplementary)
+        appDelegate.dictFeeds = nil
+        cacheStories(stories, on: supplementary)
+        XCTAssertEqual(supplementary.requests.count, 2)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+    }
+
     private func finish(_ request: NSDictionary, with image: UIImage?, on controller: ThumbnailDownloadController) {
         controller.perform(NSSelectorFromString("finishStoryImageRequest:withImage:"), with: request, with: image)
     }
