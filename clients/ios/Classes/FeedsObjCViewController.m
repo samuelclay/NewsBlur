@@ -2015,6 +2015,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
         NSArray *folder = appDelegate.dictFolders[folderName];
         if (indexPath.row >= folder.count) continue;
+        if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) continue;
         NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
         BOOL savedSearch = [appDelegate isSavedSearch:identifier];
         NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
@@ -2090,8 +2091,21 @@ static BOOL NBBoolPreferenceValue(id value) {
     return count;
 }
 
+- (UITableViewCell *)blankFeedCellForTableView:(UITableView *)tableView {
+    NSString *identifier = @"BlankCellIdentifier";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    }
+    return cell;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // FeedsObjCViewController.m retains hidden descendants and subfolder duplicates as zero-height data source rows.
+    if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) {
+        return [self blankFeedCellForTableView:tableView];
+    }
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
     
@@ -2119,12 +2133,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     if (isOmitted) {
-        CellIdentifier = @"BlankCellIdentifier";
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
-        return cell;
+        return [self blankFeedCellForTableView:tableView];
     } else if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
     } else if (isSaved) {
