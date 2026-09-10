@@ -4,6 +4,75 @@ import UIKit
 @testable import NewsBlur
 
 final class Test_StoryThumbnailCache: XCTestCase {
+    @MainActor func test_reversePrefetchRestoresEvictedDiskThumbnailBeforeTheOlderCellDraws() throws {
+        let defaults = UserDefaults.standard
+        let imagePreference = defaults.object(forKey: "story_list_preview_images_size")
+        defaults.set("small_right", forKey: "story_list_preview_images_size")
+        defer {
+            if let imagePreference { defaults.set(imagePreference, forKey: "story_list_preview_images_size") }
+            else { defaults.removeObject(forKey: "story_list_preview_images_size") }
+        }
+        let (app, cache) = makeCache()
+        app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
+        app.recentlyReadStories = NSMutableDictionary()
+        app.dictFeeds = ["1": ["id": 1, "feed_title": "Reverse thumbnail fixture", "active": 1]]
+        let stories = StoriesCollection()
+        stories.appDelegate = app
+        stories.activeFeed = ["id": 1]
+        stories.setStories((0..<1_000).map { index -> [String: Any] in
+            ["story_hash": "reverse-\(index)", "story_feed_id": 1,
+             "story_title": "Reverse thumbnail fixture \(index)", "story_content": "Preview text",
+             "story_authors": "Author", "short_parsed_date": "3m", "story_timestamp": 1_800_000_000 - index,
+             "image_urls": ["https://example.test/\(index).jpg"], "read_status": 0,
+             "intelligence": ["feed": 0, "title": 0, "author": 0, "tags": 0]]
+        })
+        let controller = ThumbnailPrefetchController()
+        controller.appDelegate = app
+        controller.storiesCollection = stories
+        controller.textSize = FeedDetailTextSize(rawValue: 0)!
+        controller.pageFetching = true
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 390, height: 780), style: .plain)
+        controller.storyTitlesTable = table
+        controller.view = UIView(frame: table.frame)
+        controller.messageView = UIView()
+        controller.messageView.isHidden = true
+        controller.setValue((0..<1_000).map { ["type": 0, "story_location": $0] }, forKey: "visibleStoryRows")
+        let path = IndexPath(row: 0, section: 0)
+        cache.diskCache.setObject(makeImage(), forKey: "reverse-0")
+        func drawOlderCell() throws -> Data? {
+            let cell = try XCTUnwrap(controller.tableView(table, cellForRowAt: path) as? FeedDetailTableCell)
+            cell.setValue(app, forKey: "appDelegate")
+            let height = controller.tableView(table, heightForRowAt: path)
+            let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: height))
+            view.cell = cell
+            view.appDelegate = app
+            return UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
+        }
+        let reference = try drawOlderCell()
+        XCTAssertNotNil(cache.memoryCache.object(forKey: "reverse-0"))
+        // StoryThumbnailCacheTests.swift reproduces an older image falling out of the bounded memory cache during a long forward scroll.
+        cache.memoryCache.removeAllObjects()
+        cache.diskCache.resetReadTracking()
+        let warmed = expectation(description: "Evicted thumbnail read from disk before the reverse row becomes visible")
+        cache.diskCache.onRead = { hash, isMain in
+            if hash == "reverse-0" && !isMain { warmed.fulfill() }
+        }
+        defer { cache.diskCache.onRead = nil }
+        let prefetcher = try XCTUnwrap(controller as? UITableViewDataSourcePrefetching)
+        prefetcher.tableView(table, prefetchRowsAt: [path])
+        wait(for: [warmed], timeout: 2)
+        let promoted = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            cache.memoryCache.object(forKey: "reverse-0") is UIImage
+        }, object: nil)
+        wait(for: [promoted], timeout: 2)
+        let started = CACurrentMediaTime()
+        let actual = try drawOlderCell()
+        print("THUMBNAIL_REVERSE_BENCHMARK loaded_stories=1000 main_disk_reads=\(cache.diskCache.mainReadCount) worker_disk_reads=\(cache.diskCache.readCount - cache.diskCache.mainReadCount) first_cell_draw_ms=\((CACurrentMediaTime() - started) * 1_000)")
+        XCTAssertEqual(actual, reference, "The prefetched image keeps the exact existing cell rendering")
+        XCTAssertEqual(cache.diskCache.mainReadCount, 0, "Reverse scrolling must not synchronously unarchive the evicted thumbnail while drawing")
+        XCTAssertEqual(cache.diskCache.readCount, 1)
+    }
+
     func test_removingThumbnailDuringDiskReadRejectsItsOldResult() {
         let (appDelegate, cache) = makeCache()
         cache.diskCache.setObject(makeImage(), forKey: "story")
@@ -581,6 +650,12 @@ private final class ThumbnailDownloadController: FeedDetailViewController {
     }
 }
 
+@MainActor private final class ThumbnailPrefetchController: FeedDetailViewController {
+    override var isLegacyTable: Bool { true }
+    override var isDashboard: Bool { false }
+    override func reload() {}
+}
+
 private final class ThumbnailRefreshAppDelegate: NewsBlurAppDelegate {
     var feedRefreshRequests = 0
     weak var testFeedDetail: FeedDetailViewController?
@@ -642,22 +717,41 @@ private final class ThumbnailCacheDouble: NSObject {
 }
 
 private final class ThumbnailStorageDouble: NSObject {
+    private let lock = NSLock()
     private var objects: [String: Any] = [:]
-    private(set) var readCount = 0
+    private var reads = 0
+    private var mainReads = 0
+    var readCount: Int { lock.lock(); defer { lock.unlock() }; return reads }
+    var mainReadCount: Int { lock.lock(); defer { lock.unlock() }; return mainReads }
     var afterRead: (() -> Void)?
+    var onRead: ((String, Bool) -> Void)?
+
+    func resetReadTracking() {
+        lock.lock()
+        reads = 0
+        mainReads = 0
+        lock.unlock()
+    }
 
     @objc(objectForKey:)
     func object(forKey key: String) -> Any? {
-        readCount += 1
+        lock.lock()
+        reads += 1
+        if Thread.isMainThread { mainReads += 1 }
         let result = objects[key]
         let completion = afterRead
         afterRead = nil
+        let recorder = onRead
+        lock.unlock()
+        recorder?(key, Thread.isMainThread)
         completion?()
         return result
     }
 
     @objc(setObject:forKey:)
     func setObject(_ object: Any, forKey key: String) {
+        lock.lock()
+        defer { lock.unlock() }
         objects[key] = object
     }
 
@@ -668,10 +762,14 @@ private final class ThumbnailStorageDouble: NSObject {
 
     @objc(removeObjectForKey:)
     func removeObject(forKey key: String) {
+        lock.lock()
+        defer { lock.unlock() }
         objects.removeValue(forKey: key)
     }
 
     @objc func removeAllObjects() {
+        lock.lock()
+        defer { lock.unlock() }
         objects.removeAll()
     }
 }
