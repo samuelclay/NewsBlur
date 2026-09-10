@@ -1,5 +1,6 @@
 import ObjectiveC.runtime
 import UIKit
+import WebKit
 import XCTest
 
 @testable import NewsBlur
@@ -571,6 +572,48 @@ import XCTest
         }
     }
 
+    func test_retainedArticleSurvivesReorientationAndRefreshWithoutLosingReadingOffset() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        fixture.open()
+        await settle()
+        fixture.app.activeStory = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?[8])
+        let pages = FirstPageLoadingPages()
+        pages.appDelegate = fixture.app
+        let current = FirstPageLoadingStoryPage()
+        current.appDelegate = fixture.app
+        current.pageIndex = 8
+        current.webView = WKWebView(frame: current.view.bounds)
+        current.webView.scrollView.addObserver(current, forKeyPath: "contentOffset", options: [], context: nil)
+        current.view.addSubview(current.webView)
+        current.webView.scrollView.contentSize = CGSize(width: 390, height: 4_000)
+        current.webView.scrollView.contentOffset.y = 321
+        pages.currentPage = current
+        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        pages.scrollView.contentSize = CGSize(width: 390 * 15, height: 844 * 15)
+        pages.scrollView.addSubview(current.view)
+        fixture.app.testPages = pages
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(1..<4)))
+        await settle()
+        pages.scrollView.bounds.size = CGSize(width: 844, height: 390)
+        pages.reorientPages()
+        XCTAssertFalse(current.view.isHidden)
+        XCTAssertEqual(current.pageIndex, 8)
+        XCTAssertEqual(current.webView.scrollView.contentOffset.y, 321, accuracy: 0.5)
+        pages.refreshPages()
+        XCTAssertTrue(pages.currentPage === current)
+        XCTAssertEqual(current.pageIndex, 8)
+        XCTAssertFalse(current.view.isHidden)
+        XCTAssertEqual(current.webView.scrollView.contentOffset.y, 321, accuracy: 0.5)
+        XCTAssertTrue(pages.pageChanges.isEmpty)
+        XCTAssertEqual(fixture.app.activeStory["story_hash"] as? String, "first-page-8")
+        pages.changeToPreviousPage(nil)
+        XCTAssertEqual(pages.pageChanges, [2])
+    }
+
     func test_cachedClusterChildSelectionAndReadEditsSurviveAuthoritativeInsertion() async throws {
         let preferences = UserDefaults.standard
         let original = preferences.object(forKey: "story_clustering")
@@ -790,6 +833,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
         set { testController = newValue }
     }
     override func cleanUpTryFeed() {}
+    override func adjustStoryDetailWebView() {}
     @objc(updateFeedDetailTitleView) func suppressTitleView() {}
 
     var testURL = "https://example.test"
@@ -846,6 +890,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class FirstPageLoadingStoryPage: StoryDetailViewController {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {}
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
 }
