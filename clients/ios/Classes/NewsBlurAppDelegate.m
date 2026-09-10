@@ -6499,7 +6499,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     PINCache *cache = self.cachedStoryImages;
     id image = [cache.memoryCache objectForKey:storyHash];
-    if ([image isKindOfClass:[UIImage class]]) {
+    if ([image isKindOfClass:[UIImage class]] && [StoryThumbnailPrefetcher imageMatchesCurrentDisplay:image]) {
         return image;
     }
     if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) {
@@ -6509,7 +6509,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // NewsBlurAppDelegate.m resolves legacy placeholders once; memory eviction also invalidates known misses.
     @synchronized (cache) {
         image = [cache.memoryCache objectForKey:storyHash];
-        if ([image isKindOfClass:[UIImage class]]) return image;
+        if ([image isKindOfClass:[UIImage class]]) {
+            if ([StoryThumbnailPrefetcher imageMatchesCurrentDisplay:image]) return image;
+            // NewsBlurAppDelegate.m falls back to the original disk image if a prepared bitmap belongs to a different display scale or gamut.
+            self.storyImageCacheGeneration++;
+            [cache.memoryCache removeObjectForKey:storyHash];
+        }
         if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) return nil;
 
         NSUInteger generation = self.storyImageCacheGeneration;
@@ -6538,19 +6543,27 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (!storyHash.length || operation.isCancelled) return;
     PINCache *cache = self.cachedStoryImages;
     id image = [cache.memoryCache objectForKey:storyHash];
-    if ([image isKindOfClass:[UIImage class]] ||
+    if (([image isKindOfClass:[UIImage class]] && [StoryThumbnailPrefetcher imageMatchesCurrentDisplay:image]) ||
         (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash])) return;
 
     NSUInteger generation;
     @synchronized (cache) {
         image = [cache.memoryCache objectForKey:storyHash];
-        if ([image isKindOfClass:[UIImage class]] ||
-            (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash])) return;
+        if ([image isKindOfClass:[UIImage class]]) {
+            if ([StoryThumbnailPrefetcher imageMatchesCurrentDisplay:image]) return;
+            self.storyImageCacheGeneration++;
+            [cache.memoryCache removeObjectForKey:storyHash];
+        }
+        if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) return;
         generation = self.storyImageCacheGeneration;
     }
 
     // NewsBlurAppDelegate.m reads disk without holding the shared publication lock, so nearby prefetch cannot block another row's warm draw or a new download.
     image = [cache.diskCache objectForKey:storyHash];
+    if ([image isKindOfClass:[UIImage class]] && !operation.isCancelled) {
+        // NewsBlurAppDelegate.m also resolves deferred image decoding on the same bounded worker, before its final publication checks.
+        image = [StoryThumbnailPrefetcher preparedImageForDisplay:image];
+    }
     @synchronized (cache) {
         if (operation.isCancelled || generation != self.storyImageCacheGeneration ||
             [[cache.memoryCache objectForKey:storyHash] isKindOfClass:[UIImage class]]) return;
