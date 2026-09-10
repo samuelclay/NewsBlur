@@ -322,6 +322,43 @@ final class Test_StoryThumbnailCache: XCTestCase {
         XCTAssertFalse(cache.object(forKey: "story") is UIImage)
     }
 
+    func test_anotherControllerCannotMakeCompletedSourcesHideAStaleSharedThumbnail() throws {
+        let (appDelegate, cache) = makeCache()
+        let previous = makeController(appDelegate: appDelegate)
+        let current = makeController(appDelegate: appDelegate)
+        let old: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/old.jpg"]]]
+        let updated: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/new.jpg"]]]
+        cacheStories(old, on: previous)
+        cacheStories(updated, on: current)
+        let newImage = makeImage()
+        finish(current.requests[0], with: newImage, on: current)
+        let oldImage = makeImage()
+        finish(previous.requests[0], with: oldImage, on: previous)
+
+        cacheStories(updated, on: current)
+
+        XCTAssertEqual(current.requests.count, 2, "Completed source ownership must match the globally cached bitmap after another controller writes it")
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === oldImage, "Keep the displayed image while its replacement is pending")
+        let retry = try XCTUnwrap(current.requests.dropFirst().first)
+        finish(retry, with: newImage, on: current)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === newImage)
+        cacheStories(updated, on: current)
+        XCTAssertEqual(current.requests.count, 2, "The verified replacement should be reused")
+    }
+
+    func test_completedSourceStillReusesDiskImageAfterMemoryEviction() {
+        let (appDelegate, cache) = makeCache()
+        let controller = makeController(appDelegate: appDelegate)
+        let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
+        cacheStories(stories, on: controller)
+        let image = makeImage()
+        finish(controller.requests[0], with: image, on: controller)
+        cache.memoryCache.removeAllObjects()
+        cacheStories(stories, on: controller)
+        XCTAssertEqual(controller.requests.count, 1)
+        XCTAssertTrue(cache.object(forKey: "story") as? UIImage === image)
+    }
+
     private func finish(_ request: NSDictionary, with image: UIImage?, on controller: ThumbnailDownloadController) {
         controller.perform(NSSelectorFromString("finishStoryImageRequest:withImage:"), with: request, with: image)
     }
