@@ -439,6 +439,48 @@ import XCTest
         }
     }
 
+    func test_realScrollPositionWriterRoundTripsTopSentinelAndPositiveProgress() async throws {
+        for position in [0, 1, 2, 500] {
+            let app = StoryLoadAppDelegate()
+            let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
+            app.testPages = pages
+            defer { app.testPages = nil }
+            pages.appDelegate = app
+            pages.storyToolbar = StoryToolbar()
+            pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+            let database = try XCTUnwrap(FMDatabaseQueue(path: ":memory:"))
+            database.inDatabase { db in
+                XCTAssertTrue(db!.executeUpdate("CREATE TABLE story_scrolls (story_feed_id INTEGER, story_hash TEXT, story_timestamp INTEGER, scroll INTEGER)", withArgumentsIn: []))
+            }
+            app.setValue(database, forKey: "database")
+            let fixture = makeFixture(app: app)
+            pages.currentPage = fixture.page
+            fixture.page.activeStory["story_timestamp"] = 1_700_000_000
+
+            // NewsBlurAppDelegate.m encodes a stored top as one; use its real SQLite writer instead of a position spy.
+            app.markScrollPosition(position, inStory: fixture.page.activeStory as? [AnyHashable: Any])
+            var stored: Int?
+            for _ in 0..<100 where stored == nil {
+                database.inDatabase { db in
+                    let cursor = db!.executeQuery("SELECT scroll FROM story_scrolls", withArgumentsIn: [])
+                    if cursor!.next() { stored = Int(cursor!.int(forColumn: "scroll")) }
+                    cursor!.close()
+                }
+                if stored == nil { await delay(0.01) }
+            }
+            XCTAssertEqual(stored, max(1, position))
+            fixture.page.drawStory()
+            await delay(0.15)
+            fixture.page.viewWillAppear(false)
+            fixture.web.scrollView.contentOffset = .zero
+            restoreScroll(on: fixture.page)
+            for _ in 0..<100 where fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == true { await delay(0.01) }
+
+            let expected = position <= 1 ? -fixture.web.scrollView.adjustedContentInset.top : floor(CGFloat(position) / 1000 * fixture.web.scrollView.contentSize.height)
+            XCTAssertEqual(fixture.web.scrollView.contentOffset.y, expected, accuracy: 0.5, "input=\(position), persisted=\(String(describing: stored))")
+        }
+    }
+
     func test_sameHashTextViewStillSubmitsItsNewCompleteDocument() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
