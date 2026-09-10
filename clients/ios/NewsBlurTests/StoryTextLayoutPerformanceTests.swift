@@ -349,7 +349,7 @@ private final class TextLayoutAppDelegate: NewsBlurAppDelegate {
     }
 }
 
-private final class TextMeasurementProbe {
+final class TextMeasurementProbe {
     private let method: Method
     private let original: IMP
     private let replacement: IMP
