@@ -129,8 +129,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 @property (nonatomic, copy) NSArray<Class> *networkProtocolClassesForTesting;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *missingFavicons;
+@property (atomic, strong) NSCache<NSString *, NSNumber *> *missingStoryImages;
 @property (nonatomic) NSUInteger faviconCacheGeneration;
 @property (nonatomic) NSUInteger faviconWriteGeneration;
+@property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
 
 - (void)presentFeedDetailAfterFeedSelection;
 - (void)updateFeedDetailTitleView;
@@ -181,6 +183,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize missingFavicons = _missingFavicons;
+@synthesize feedIconRenderer = _feedIconRenderer;
 @synthesize cachedStoryImages;
 @synthesize cachedUserAvatars;
 @synthesize activeUsername;
@@ -807,6 +810,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         self.faviconCacheGeneration++;
         [missingFavicons removeAllObjects];
         [cachedFavicons.memoryCache removeAllObjects];
+        [self.feedIconRenderer removeAllImages];
     }
     [cachedUserAvatars.memoryCache removeAllObjects];
     [activeCachedImages removeAllObjects];
@@ -4817,29 +4821,32 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)setDictFeeds:(NSMutableDictionary *)feeds {
     dictFeeds = feeds;
-    // NewsBlurAppDelegate.m snapshots keys before background work; the feed dictionary remains mutable.
-    NSArray<NSString *> *feedIds = [feeds.allKeys copy];
     NSCache *missingFavicons = self.missingFavicons;
-    NSNumber *generation;
     @synchronized (missingFavicons) {
-        generation = @(++self.faviconCacheGeneration);
+        self.faviconCacheGeneration++;
         [missingFavicons removeAllObjects];
         if (!feeds) {
             [self.cachedFavicons.memoryCache removeAllObjects];
+            [self.feedIconRenderer removeAllImages];
         }
     }
-    if (feedIds.count == 0) return;
+}
 
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
-        for (NSString *feedId in feedIds) {
-            @autoreleasepool {
-                @synchronized (missingFavicons) {
-                    if (generation.unsignedIntegerValue != self.faviconCacheGeneration) return;
-                }
-                [self faviconImageForKey:feedId generation:generation];
-            }
+- (FeedIconRenderer *)feedIconRenderer {
+    @synchronized (self) {
+        if (!_feedIconRenderer) {
+            _feedIconRenderer = [[FeedIconRenderer alloc] init];
         }
-    });
+        return _feedIconRenderer;
+    }
+}
+
+- (UIImage *)preparedFavicon:(NSString *)filename size:(CGSize)size {
+    if (!filename.length) return nil;
+    // NewsBlurAppDelegate.m retains the original for larger uses and caches only the cell's exact rounded artwork.
+    return [self.feedIconRenderer imageForKey:filename size:size loader:^UIImage *{
+        return [self faviconImageForKey:filename];
+    }];
 }
 
 - (NSUInteger)faviconMemoryCost:(UIImage *)image {
@@ -4849,7 +4856,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return (NSUInteger)(image.size.width * image.scale * image.size.height * image.scale * 4);
 }
 
-- (UIImage *)faviconImageForKey:(NSString *)filename generation:(NSNumber *)expectedGeneration {
+- (UIImage *)faviconImageForKey:(NSString *)filename {
     if (![filename isKindOfClass:[NSString class]] || filename.length == 0) return nil;
 
     // NewsBlurAppDelegate.m bypasses PINCache's disk timestamp write on every memory hit.
@@ -4862,7 +4869,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     @synchronized (missingFavicons) {
         generation = self.faviconCacheGeneration;
         writeGeneration = self.faviconWriteGeneration;
-        if (expectedGeneration && expectedGeneration.unsignedIntegerValue != generation) return nil;
         if ([missingFavicons objectForKey:filename]) return nil;
     }
 
@@ -4891,6 +4897,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             self.faviconWriteGeneration++;
             [missingFavicons removeObjectForKey:filename];
             [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:[self faviconMemoryCost:image]];
+            [self.feedIconRenderer removeImageForKey:filename];
         }
         [self.cachedFavicons.diskCache setObject:image forKey:filename];
     }
@@ -4905,7 +4912,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved {
-    UIImage *image = [self faviconImageForKey:filename generation:nil];
+    UIImage *image = [self faviconImageForKey:filename];
     
     if (image) {
         return image;
@@ -6421,39 +6428,61 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
     if (!storyHash.length) return nil;
 
-    id image = [self.cachedStoryImages.memoryCache objectForKey:storyHash];
+    PINCache *cache = self.cachedStoryImages;
+    id image = [cache.memoryCache objectForKey:storyHash];
     if ([image isKindOfClass:[UIImage class]]) {
         return image;
     }
-
-    // NewsBlurAppDelegate.m: a pending-download placeholder must not hide a disk thumbnail.
-    image = [self.cachedStoryImages.diskCache objectForKey:storyHash];
-    if (![image isKindOfClass:[UIImage class]]) {
+    if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) {
         return nil;
     }
 
-    CGImageRef cgImage = [(UIImage *)image CGImage];
-    NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
-    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
-    return image;
+    // NewsBlurAppDelegate.m resolves legacy placeholders once; memory eviction also invalidates known misses.
+    @synchronized (cache) {
+        image = [cache.memoryCache objectForKey:storyHash];
+        if ([image isKindOfClass:[UIImage class]]) return image;
+        if (image == [NSNull null] && [self.missingStoryImages objectForKey:storyHash]) return nil;
+
+        image = [cache.diskCache objectForKey:storyHash];
+        id completedImage = [cache.memoryCache objectForKey:storyHash];
+        if ([completedImage isKindOfClass:[UIImage class]]) return completedImage;
+
+        if ([image isKindOfClass:[UIImage class]]) {
+            CGImageRef cgImage = [(UIImage *)image CGImage];
+            NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
+            [self.missingStoryImages removeObjectForKey:storyHash];
+            [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+            return image;
+        }
+
+        if (!self.missingStoryImages) {
+            self.missingStoryImages = [[NSCache alloc] init];
+            self.missingStoryImages.countLimit = 4096;
+        }
+        [self.missingStoryImages setObject:@YES forKey:storyHash];
+        [cache.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
+        return nil;
+    }
 }
 
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
     if (!image || !storyHash) return;
 
-    // Set cost based on image memory size for proper cache eviction
-    NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
-    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
-    [self.cachedStoryImages.diskCache setObject:image forKey:storyHash];
+    PINCache *cache = self.cachedStoryImages;
+    @synchronized (cache) {
+        // NewsBlurAppDelegate.m serializes saves with disk promotion while warm reads remain independent.
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.missingStoryImages removeObjectForKey:storyHash];
+        [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+        [cache.diskCache setObject:image forKey:storyHash];
+    }
 }
 
 - (void)cacheStoryImagePlaceholder:(NSString *)storyHash {
     if (!storyHash) return;
 
-    if ([self cachedImageForStoryHash:storyHash]) return;
-
-    // Use NSNull as placeholder with minimal cost
-    [self.cachedStoryImages.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
+    // NewsBlurAppDelegate.m installs the placeholder during resolution, avoiding a later overwrite of a completed image.
+    [self cachedImageForStoryHash:storyHash];
 }
 
 - (void)cleanImageCache {

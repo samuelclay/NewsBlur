@@ -25,7 +25,7 @@ static enum {
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
-<UITableViewDelegate, UITableViewDataSource,
+<UITableViewDelegate, UITableViewDataSource, UITableViewDataSourcePrefetching,
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 MCSwipeTableViewCellDelegate,
