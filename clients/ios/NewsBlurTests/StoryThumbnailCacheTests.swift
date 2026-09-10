@@ -154,6 +154,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
         app.recentlyReadStories = NSMutableDictionary()
         let queue = DispatchQueue(label: "test.thumbnail-display.pixel-parity")
+        var preparedCount = 0
         for colorSpaceName in [CGColorSpace.sRGB, CGColorSpace.displayP3] {
             let colorSpace = try XCTUnwrap(CGColorSpace(name: colorSpaceName))
             let context = try XCTUnwrap(CGContext(data: nil, width: 63, height: 45, bitsPerComponent: 8, bytesPerRow: 0,
@@ -172,6 +173,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
                     queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation()) }
                     queue.sync {}
                     let actual = try XCTUnwrap(cache.memoryCache.object(forKey: "story") as? UIImage)
+                    if actual !== source { preparedCount += 1 }
                     XCTAssertEqual(actual.size, source.size)
                     XCTAssertEqual(actual.scale, source.scale)
                     XCTAssertEqual(actual.imageOrientation, source.imageOrientation)
@@ -180,7 +182,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
                     XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === source)
                     for imageStyle in ["small_right", "large_left"] {
                         defaults.set(imageStyle, forKey: "story_list_preview_images_size")
-                        for state in 0..<3 {
+                        for state in 0..<5 {
                             func cellPNG(_ image: UIImage) -> Data? {
                                 cache.memoryCache.setObject(image, forKey: "story")
                                 let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
@@ -191,18 +193,53 @@ final class Test_StoryThumbnailCache: XCTestCase {
                                 cell.storyAuthor = "Fixture"
                                 cell.storyDate = "3m"
                                 cell.textSize = FeedDetailTextSize(rawValue: 0)!
-                                cell.isRead = state > 0
+                                cell.isRead = state == 1 || state == 2 || state == 4
                                 cell.isHighlighted = state == 2
+                                cell.isClusterStory = state >= 3
+                                cell.clusterTier = "same"
+                                cell.feedColorBar = .blue
+                                cell.feedColorBarTopBorder = .cyan
                                 let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 180))
                                 view.cell = cell
                                 view.appDelegate = app
                                 return UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
                             }
-                            XCTAssertEqual(cellPNG(actual), cellPNG(source), "\(colorSpaceName), orientation=\(orientation.rawValue), scale=\(scale), \(imageStyle), state=\(state)")
+                            XCTAssertEqual(try XCTUnwrap(cellPNG(actual)), try XCTUnwrap(cellPNG(source)), "\(colorSpaceName), orientation=\(orientation.rawValue), scale=\(scale), \(imageStyle), state=\(state)")
                         }
                     }
                 }
             }
+        }
+        XCTAssertGreaterThan(preparedCount, 0, "The real native preparation path must run for supported bitmap sources, so parity cannot pass by always returning the original")
+    }
+
+    func test_animatedResizableTemplateAndAlignedThumbnailsRetainTheirRenderingSemantics() throws {
+        let (app, cache) = makeCache()
+        let original = makeImage()
+        let images = [
+            try XCTUnwrap(UIImage.animatedImage(with: [original, makeImage()], duration: 0.8)),
+            original.resizableImage(withCapInsets: UIEdgeInsets(top: 3, left: 4, bottom: 5, right: 6), resizingMode: .tile),
+            original.withRenderingMode(.alwaysTemplate),
+            original.withAlignmentRectInsets(UIEdgeInsets(top: 1, left: 2, bottom: 3, right: 4))
+        ]
+        let queue = DispatchQueue(label: "test.thumbnail-display.representations")
+        for (index, image) in images.enumerated() {
+            let hash = "representation-\(index)"
+            cache.diskCache.setObject(image, forKey: hash)
+            queue.async { app.prefetchCachedStoryImage(forStoryHash: hash, operation: BlockOperation()) }
+            queue.sync {}
+            let actual = try XCTUnwrap(cache.memoryCache.object(forKey: hash) as? UIImage)
+            XCTAssertEqual(actual.size, image.size)
+            XCTAssertEqual(actual.scale, image.scale)
+            XCTAssertEqual(actual.imageOrientation, image.imageOrientation)
+            XCTAssertEqual(actual.renderingMode, image.renderingMode)
+            XCTAssertEqual(actual.capInsets, image.capInsets)
+            XCTAssertEqual(actual.resizingMode, image.resizingMode)
+            XCTAssertEqual(actual.alignmentRectInsets, image.alignmentRectInsets)
+            XCTAssertEqual(actual.duration, image.duration)
+            XCTAssertEqual(actual.images?.count, image.images?.count)
+            if image.images != nil { XCTAssertTrue(actual === image) }
+            XCTAssertTrue(cache.diskCache.object(forKey: hash) as? UIImage === image)
         }
     }
 
