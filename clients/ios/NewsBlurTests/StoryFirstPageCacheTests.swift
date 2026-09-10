@@ -303,22 +303,24 @@ import XCTest
     }
 
     func test_realReadUnreadReplacementWithJournalEnabledAtFiveThousandStories() {
-        let app = NewsBlurAppDelegate()
-        app.activeUsername = "first-page-replacement-" + UUID().uuidString
-        let collection = StoriesCollection()
-        collection.appDelegate = app
-        collection.activeFeedStories = (0..<5_000).map { ["story_hash": "replacement-\($0)", "read_status": 0, "story_content": "Benchmark body"] }
-        let warm = collection.activeFeedStories.last as! [AnyHashable: Any]
-        collection.markStoryRead(warm, feed: nil)
-        let began = CACurrentMediaTime()
-        for _ in 0..<20 {
-            collection.markStoryUnread(collection.activeFeedStories.last as! [AnyHashable: Any], feed: nil)
-            collection.markStoryRead(collection.activeFeedStories.last as! [AnyHashable: Any], feed: nil)
+        for journalEnabled in [false, true, false, true] {
+            let app = NewsBlurAppDelegate()
+            app.activeUsername = journalEnabled ? "first-page-replacement-" + UUID().uuidString : ""
+            let collection = StoriesCollection()
+            collection.appDelegate = app
+            collection.activeFeedStories = (0..<5_000).map { ["story_hash": "replacement-\($0)", "read_status": 0, "story_content": "Benchmark body"] }
+            let warm = collection.activeFeedStories.last as! [AnyHashable: Any]
+            collection.markStoryRead(warm, feed: nil)
+            let began = CACurrentMediaTime()
+            for _ in 0..<20 {
+                collection.markStoryUnread(collection.activeFeedStories.last as! [AnyHashable: Any], feed: nil)
+                collection.markStoryRead(collection.activeFeedStories.last as! [AnyHashable: Any], feed: nil)
+            }
+            let elapsed = (CACurrentMediaTime() - began) * 1000
+            print("FIRST_PAGE_REAL_REPLACEMENT stories=5000 replacements=40 journal_enabled=\(journalEnabled) elapsed_ms=\(elapsed) per_replace_ms=\(elapsed / 40)")
+            XCTAssertEqual((collection.activeFeedStories.last as? [String: Any])?["read_status"] as? Int, 1)
+            XCTAssertEqual(collection.activeFeedStories.count, 5_000)
         }
-        let elapsed = (CACurrentMediaTime() - began) * 1000
-        print("FIRST_PAGE_REAL_REPLACEMENT stories=5000 replacements=40 elapsed_ms=\(elapsed) per_replace_ms=\(elapsed / 40)")
-        XCTAssertEqual((collection.activeFeedStories.last as? [String: Any])?["read_status"] as? Int, 1)
-        XCTAssertEqual(collection.activeFeedStories.count, 5_000)
     }
 
     private func makeCache(now: @escaping () -> Date = Date.init) -> (cache: StoryFirstPageCache, request: StoryFirstPageRequest, directory: URL) {
