@@ -103,6 +103,36 @@ final class Test_StoryTextLayoutCache: XCTestCase {
         XCTAssertEqual(cache.pendingRowCount, 0)
     }
 
+    func test_clearingDuringActiveMeasurementRejectsItsResultAndAllowsFreshWork() throws {
+        let queue = DispatchQueue(label: "test.story-text-layout.active-cancel")
+        let cache = StoryTextLayoutCache(worker: queue)
+        let title = "Active cancellation layout fixture 数学 العربية"
+        let item = request(title: title as NSString)
+        let entered = expectation(description: "Worker has measured title and still owns the request")
+        let resume = DispatchSemaphore(value: 0)
+        let probe = try TextMeasurementProbe(matching: [title]) { isMain in
+            if !isMain {
+                entered.fulfill()
+                resume.wait()
+            }
+        }
+        defer { probe.restore() }
+        cache.prefetch([item], identifier: "row")
+        wait(for: [entered], timeout: 5)
+
+        cache.removeAllLayouts()
+        resume.signal()
+        queue.sync {}
+
+        XCTAssertNil(cache.cachedLayout(for: item))
+        XCTAssertEqual(cache.cachedEntryCount, 0)
+        XCTAssertEqual(cache.pendingRowCount, 0)
+        let fresh = request(title: "Replacement content after cancellation")
+        cache.prefetch([fresh], identifier: "row")
+        queue.sync {}
+        XCTAssertNotNil(cache.cachedLayout(for: fresh))
+    }
+
     private func request(title: NSString = "A measured title", preview: NSString = "A paragraph with enough text to wrap onto several lines and exercise the exact title-dependent preview bounds.",
                          width: CGFloat = 250, height: CGFloat = 190, pointSize: CGFloat = 13,
                          textSize: Int = 2, short: Bool = false, river: Bool = true,
