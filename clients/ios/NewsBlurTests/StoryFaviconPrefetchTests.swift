@@ -154,6 +154,10 @@ import UIKit
                        "2": makeImage(size: CGSize(width: 41, height: 31), color: .purple),
                        "3": makeImage(size: CGSize(width: 96, height: 64), color: .cyan)]
         let storage = try StoryFaviconStorage(sources: sources)
+        var decodedSources = [String: UIImage]()
+        for key in sources.keys {
+            decodedSources[key] = try XCTUnwrap(UIImage(contentsOfFile: storage.diskCache.directory.appendingPathComponent(key).path))
+        }
         app.setValue(storage, forKey: "cachedFavicons")
         let queue = DispatchQueue(label: "test.story-favicon-prefetch")
         let renderer = FeedIconRenderer(preparationQueue: queue)
@@ -188,7 +192,7 @@ import UIKit
         controller.textSize = FeedDetailTextSize(rawValue: 0)!
         app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
         return StoryFaviconFixture(app: app, controller: controller, table: table, renderer: renderer,
-                                   queue: queue, storage: storage, sources: sources)
+                                   queue: queue, storage: storage, sources: decodedSources)
     }
 
     private func makeImage(size: CGSize, color: UIColor) -> UIImage {
