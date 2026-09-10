@@ -2386,55 +2386,45 @@
                 return;
             }
             FMResultSet *cursor = [db executeQuery:@"SELECT scroll, story_hash FROM story_scrolls s WHERE s.story_hash = ? LIMIT 1", storyHash];
-            BOOL foundSavedPosition = NO;
-            
+            CGFloat savedFraction = 0;
             while ([cursor next]) {
-                NSDictionary *story = [cursor resultDictionary];
-                id scroll = [story objectForKey:@"scroll"];
-                if (([scroll isKindOfClass:[NSNull class]] || [scroll integerValue] == 0) && !self->scrollPct) {
-                    NSLog(@" ---> No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
-                    // No scroll found
-                    continue;
-                }
-                foundSavedPosition = YES;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    // StoryDetailObjCViewController.m must not apply an old database result after page reuse or a user's scroll.
-                    if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
+                id scroll = [[cursor resultDictionary] objectForKey:@"scroll"];
+                if (![scroll isKindOfClass:[NSNull class]]) savedFraction = [scroll floatValue] / 1000.f;
+            }
+            [cursor close];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // StoryDetailObjCViewController.m must not apply an old database result after page reuse or a user's scroll.
+                if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
+                    scrollActivity != strongSelf.storyScrollActivityGeneration ||
+                    restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
+                    restoringWebView.scrollView.isDecelerating) return;
+                // StoryDetailObjCViewController.m can receive DOM readiness before WK publishes its native content size.
+                [restoringWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return true;"
+                                           arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
+                                   completionHandler:^(id result, NSError *error) {
+                    if (error || ![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
                         scrollActivity != strongSelf.storyScrollActivityGeneration ||
                         restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
                         restoringWebView.scrollView.isDecelerating) return;
-                    // StoryDetailObjCViewController.m can receive DOM readiness before WK publishes its native content size.
-                    [restoringWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return true;"
-                                               arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
-                                       completionHandler:^(id result, NSError *error) {
-                        if (error || ![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
-                            scrollActivity != strongSelf.storyScrollActivityGeneration ||
-                            restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
-                            restoringWebView.scrollView.isDecelerating) return;
-                        strongSelf.awaitingStoryScrollRestoration = NO;
-                        if (!self->scrollPct) self->scrollPct = [scroll floatValue] / 1000.f;
-                        NSInteger position = floor(self->scrollPct * strongSelf.webView.scrollView.contentSize.height);
-                        NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
-                        if (position > maxPosition) {
-                            NSLog(@"Position too far, scaling back to max position: %@ > %@", @(position), @(maxPosition));
-                            position = maxPosition;
-                        }
-                        if (position > 0) {
-                            strongSelf.restoredStoryScrollPosition = YES;
-                            NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, self->scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
-                            [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
-                        }
-                    }];
-                });
-            }
-            [cursor close];
-            if (!foundSavedPosition) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([strongSelf isCurrentStoryLoad:generation] && strongSelf.webView == restoringWebView) {
-                        strongSelf.awaitingStoryScrollRestoration = NO;
+                    strongSelf.awaitingStoryScrollRestoration = NO;
+                    if (!strongSelf->scrollPct) strongSelf->scrollPct = savedFraction;
+                    NSInteger position = floor(strongSelf->scrollPct * restoringWebView.scrollView.contentSize.height);
+                    NSInteger maxPosition = (NSInteger)floor(restoringWebView.scrollView.contentSize.height - restoringWebView.frame.size.height);
+                    if (position > maxPosition) position = maxPosition;
+                    if (position > 0) {
+                        strongSelf.restoredStoryScrollPosition = YES;
+                        [restoringWebView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
+                    } else if (strongSelf->scrollPct == 0) {
+                        // StoryDetailObjCViewController.m restores an explicit zero or missing row below the native toolbar.
+                        // A new WK document can reset to y=0 even though the fixed toolbar inset is already installed.
+                        StoryPagesObjCViewController *pagesVC = strongSelf.appDelegate.storyPagesViewController;
+                        [strongSelf updateContentInsetForNavigationBarAlpha:pagesVC.navigationBarFadeAlpha];
+                        CGFloat top = -restoringWebView.scrollView.adjustedContentInset.top;
+                        if (pagesVC.isCustomToolbarActive) top += pagesVC.toolbarScrollHandler.toolbarOffset;
+                        [restoringWebView.scrollView setContentOffset:CGPointMake(0, top) animated:NO];
                     }
-                });
-            }
+                }];
+            });
             
         }];
     });
