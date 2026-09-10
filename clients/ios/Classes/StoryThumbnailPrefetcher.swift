@@ -1,5 +1,5 @@
 // StoryThumbnailPrefetcher.swift warms only the latest nearby disk images before native rows become visible.
-import Foundation
+import UIKit
 
 @objc final class StoryThumbnailPrefetcher: NSObject {
     private let worker: DispatchQueue
@@ -8,6 +8,7 @@ import Foundation
     private var pendingHashes = [String]()
     private var active: (hash: String, operation: BlockOperation)?
     private var draining = false
+    private var memoryWarningObserver: NSObjectProtocol?
 
     @objc convenience init(appDelegate: NewsBlurAppDelegate) {
         self.init(worker: DispatchQueue(label: "com.newsblur.thumbnail-prefetch", qos: .userInitiated)) {
@@ -20,6 +21,15 @@ import Foundation
         self.worker = worker
         self.loader = loader
         super.init()
+        memoryWarningObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil
+        ) { [weak self] _ in
+            self?.cancelAll()
+        }
+    }
+
+    deinit {
+        if let memoryWarningObserver { NotificationCenter.default.removeObserver(memoryWarningObserver) }
     }
 
     @objc func prefetchStoryHashes(_ hashes: [String]) {

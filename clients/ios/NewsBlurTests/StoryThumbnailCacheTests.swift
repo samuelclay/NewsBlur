@@ -67,7 +67,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         wait(for: [promoted], timeout: 2)
         let started = CACurrentMediaTime()
         let actual = try drawOlderCell()
-        print("THUMBNAIL_REVERSE_BENCHMARK loaded_stories=1000 main_disk_reads=\(cache.diskCache.mainReadCount) worker_disk_reads=\(cache.diskCache.readCount - cache.diskCache.mainReadCount) first_cell_draw_ms=\((CACurrentMediaTime() - started) * 1_000)")
+        print("THUMBNAIL_REVERSE_BENCHMARK loaded_stories=1000 main_disk_reads=\(cache.diskCache.mainReadCount) worker_disk_reads=\(cache.diskCache.readCount - cache.diskCache.mainReadCount) first_cell_draw_and_png_ms=\((CACurrentMediaTime() - started) * 1_000)")
         XCTAssertEqual(actual, reference, "The prefetched image keeps the exact existing cell rendering")
         XCTAssertEqual(cache.diskCache.mainReadCount, 0, "Reverse scrolling must not synchronously unarchive the evicted thumbnail while drawing")
         XCTAssertEqual(cache.diskCache.readCount, 1)
