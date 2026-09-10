@@ -1,3 +1,4 @@
+import Network
 import UIKit
 import WebKit
 import XCTest
@@ -6,7 +7,7 @@ import XCTest
 
 @MainActor final class Test_StoryDetailLoading: XCTestCase {
     private var preferences: [String: Any] = [:]
-    private let preferenceKeys = ["story_font_size", "story_line_spacing"]
+    private let preferenceKeys = ["story_font_size", "story_line_spacing", "fontStyle"]
 
     override func setUp() {
         super.setUp()
@@ -14,7 +15,7 @@ import XCTest
         let persisted = UserDefaults.standard.persistentDomain(forName: bundleID) ?? [:]
         for key in preferenceKeys {
             preferences[key] = persisted[key]
-            UserDefaults.standard.set("medium", forKey: key)
+            UserDefaults.standard.set(key == "fontStyle" ? "GothamNarrow-Book" : "medium", forKey: key)
         }
     }
 
@@ -25,6 +26,36 @@ import XCTest
         }
         preferences.removeAll()
         super.tearDown()
+    }
+
+    func test_bootstrapPreparesBundledFontsWithoutStoryOrRemoteResources() throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        let html = try XCTUnwrap(fixture.web.loads.last?.html)
+
+        for family in ["ChronicleSSm-Book", "GothamNarrow-Book", "WhitneySSm-Book"] {
+            XCTAssertTrue(html.contains(family))
+        }
+        XCTAssertTrue(html.contains("data:font/otf;base64,"))
+        XCTAssertFalse(html.contains("Fixture article"))
+        XCTAssertFalse(html.contains("<img"))
+        XCTAssertFalse(html.contains("https://"))
+    }
+
+    func test_earlyStoryDrawWaitsForBootstrapAndUsesLatestQueuedStory() async throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        let bootstrap = try XCTUnwrap(fixture.web.loads.last?.navigation)
+        fixture.page.drawStory()
+        fixture.page.activeStory = story("second", body: "Latest early story")
+        fixture.page.drawStory()
+        await drainMainQueue()
+
+        XCTAssertEqual(fixture.web.loads.count, 1)
+        fixture.page.webView(fixture.web, didFinish: bootstrap)
+        await drainMainQueue()
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Latest early story") == true)
     }
 
     func test_firstNavigationAlreadyContainsCompleteStoryAndHTTPSOrigin() async {
@@ -249,24 +280,30 @@ import XCTest
         try await checkStalledStoryRendering(restoresPosition: true)
     }
 
-    private func checkStalledStoryRendering(restoresPosition: Bool) async throws {
-        let resource = HeldStoryResource()
+    func test_bootstrappedWebKitRendersFirstAndSecondStoriesWithPendingImages() async throws {
+        try await checkStalledStoryRendering(restoresPosition: false, repeatsStory: true)
+    }
+
+    private func checkStalledStoryRendering(restoresPosition: Bool, repeatsStory: Bool = false) async throws {
+        let resource = try HeldHTTPStoryResource()
+        for _ in 0..<60 where resource.port == nil { await delay(0.05) }
+        let imageURL = try XCTUnwrap(resource.imageURL)
         let configuration = WKWebViewConfiguration()
-        configuration.setURLSchemeHandler(resource, forURLScheme: "nb-story-test")
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: configuration)
         let page = makePage(web: web)
         page.allowsAppearanceCallbacks = false
         if restoresPosition { page.appDelegate.setValue(ImmediateStoryScrollQueue(), forKey: "database") }
-        page.shareHTML = "<img src='nb-story-test://resource/avatar.png' width='30' height='30'>"
+        page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
         page.activeStory = story("first", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
         let window = UIWindow(windowScene: scene)
         window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
         window.rootViewController = UIViewController()
-        window.rootViewController?.view.addSubview(page.view)
+        window.rootViewController?.view.addSubview(web)
         window.makeKeyAndVisible()
         defer {
+            resource.stop()
             window.isHidden = true
             previousKeyWindow?.makeKey()
         }
@@ -280,6 +317,7 @@ import XCTest
         page.readyObserver = { ready.fulfill() }
         page.drawStory()
         await fulfillment(of: [ready], timeout: 5)
+        _ = try await web.evaluateJavaScript("window.nbTestFontReady=false; document.fonts.ready.then(()=>window.nbTestFontReady=true); window.nbTestFrames=0; requestAnimationFrame(function count(){window.nbTestFrames++; if(window.nbTestFrames<120)requestAnimationFrame(count);});")
         await delay(0.15)
         for _ in 0..<40 where web.scrollView.contentSize.height < web.bounds.height + 500 {
             window.layoutIfNeeded()
@@ -291,7 +329,7 @@ import XCTest
         let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Readable article paragraph") == true)
         XCTAssertEqual(page.finishedNavigations, 0)
-        let layout = try await web.evaluateJavaScript("JSON.stringify({ready:document.readyState,body:document.body.scrollHeight,viewport:window.innerHeight,fonts:document.fonts.status,font:getComputedStyle(document.querySelector('#NB-story')).fontFamily,story:document.querySelector('#NB-story').getBoundingClientRect().height})")
+        let layout = try await web.evaluateJavaScript("JSON.stringify({ready:document.readyState,body:document.body.scrollHeight,viewport:window.innerHeight,fonts:document.fonts.status,fontReady:window.nbTestFontReady,frames:window.nbTestFrames,paint:performance.getEntriesByType('paint'),font:getComputedStyle(document.querySelector('#NB-story')).fontFamily,story:document.querySelector('#NB-story').getBoundingClientRect().height,images:Array.from(document.images).map(i=>[i.src,i.complete,i.naturalWidth])})")
         print("STORY_HELD_RESOURCE_LAYOUT native=\(web.scrollView.contentSize) frame=\(web.frame) inWindow=\(web.window != nil) scene=\(window.windowScene?.activationState.rawValue ?? -1) dom=\(layout)")
         let snapshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
             window.drawHierarchy(in: window.bounds, afterScreenUpdates: false)
@@ -313,6 +351,20 @@ import XCTest
         resource.finish()
         await delay(0.15)
         XCTAssertEqual(web.scrollView.contentOffset.y, readingPosition, accuracy: 2)
+        if repeatsStory {
+            let previousHeight = web.scrollView.contentSize.height
+            let secondReady = expectation(description: "Second story is ready on the same prepared WKWebView")
+            page.readyObserver = { secondReady.fulfill() }
+            page.activeStory = story("second", body: String(repeating: "<p>Second article paragraph.</p>", count: 220))
+            page.drawStory()
+            await fulfillment(of: [secondReady], timeout: 5)
+            for _ in 0..<40 where web.scrollView.contentSize.height < previousHeight + 500 { await delay(0.05) }
+            XCTAssertGreaterThan(resource.pendingCount, 0)
+            XCTAssertGreaterThan(web.scrollView.contentSize.height, previousHeight + 500)
+            let secondBody = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent.includes('Second article')") as? Bool
+            XCTAssertEqual(secondBody, true)
+            resource.finish()
+        }
         page.webView = nil
     }
 
@@ -324,10 +376,35 @@ import XCTest
         try await checkPlainWebKitRendering(notifiesNative: true)
     }
 
-    private func checkPlainWebKitRendering(notifiesNative: Bool) async throws {
-        let resource = HeldStoryResource()
+    func test_generatedStoryHTMLRendersWithAnIndependentWebKitDelegate() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true)
+    }
+
+    func test_generatedStoryWithoutStylesRendersWithHeldImage() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<style\\b[^>]*>[\\s\\S]*?</style>")
+    }
+
+    func test_generatedStoryWithoutScriptsRendersWithHeldImage() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<script\\b[^>]*>[\\s\\S]*?</script>")
+    }
+
+    func test_generatedStoryWithoutViewportRendersWithHeldImage() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "<meta\\b[^>]*name=\"viewport\"[^>]*>")
+    }
+
+    func test_generatedStoryWithoutEmbeddedFontsRendersWithHeldImage() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, stripPattern: "@font-face\\s*\\{[^}]+\\}")
+    }
+
+    func test_generatedStoryWithoutReadyNavigationRendersWithHeldImage() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true, generatedStory: true, disableReadyNavigation: true)
+    }
+
+    private func checkPlainWebKitRendering(notifiesNative: Bool, generatedStory: Bool = false, stripPattern: String? = nil, disableReadyNavigation: Bool = false) async throws {
+        let resource = try HeldHTTPStoryResource()
+        for _ in 0..<60 where resource.port == nil { await delay(0.05) }
+        let imageURL = try XCTUnwrap(resource.imageURL)
         let configuration = WKWebViewConfiguration()
-        configuration.setURLSchemeHandler(resource, forURLScheme: "nb-story-test")
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: configuration)
         let navigationDelegate = PlainStoryNavigationDelegate()
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
@@ -337,18 +414,35 @@ import XCTest
         window.rootViewController?.view.addSubview(web)
         window.makeKeyAndVisible()
         defer {
-            resource.finish()
+            resource.stop()
             window.isHidden = true
             previousKeyWindow?.makeKey()
         }
         web.isHidden = false
         web.navigationDelegate = navigationDelegate
         let notify = notifiesNative ? "<script>document.addEventListener('DOMContentLoaded',function(){window.location='http://ios.newsblur.com/notify-loaded';});</script>" : ""
-        web.loadHTMLString("<html><body><img src='nb-story-test://resource/avatar.png' width='30' height='30'>" + String(repeating: "<p>Plain WebKit control paragraph.</p>", count: 150) + notify + "</body></html>", baseURL: nil)
+        var html = "<html><body><img src='\(imageURL)' width='30' height='30'>" + String(repeating: "<p>Plain WebKit control paragraph.</p>", count: 150) + notify + "</body></html>"
+        if generatedStory {
+            let fixture = makeFixture()
+            fixture.page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
+            fixture.page.activeStory = story("first", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
+            fixture.page.drawStory()
+            await drainMainQueue()
+            html = try XCTUnwrap(fixture.web.loads.last?.html)
+        }
+        if let stripPattern {
+            html = try NSRegularExpression(pattern: stripPattern).stringByReplacingMatches(in: html, range: NSRange(html.startIndex..., in: html), withTemplate: "")
+        }
+        if disableReadyNavigation {
+            let readyNavigation = "    window.location = url;\n}"
+            XCTAssertEqual(html.components(separatedBy: readyNavigation).count, 2)
+            html = html.replacingOccurrences(of: readyNavigation, with: "}")
+        }
+        web.loadHTMLString(html, baseURL: nil)
         for _ in 0..<60 where web.scrollView.contentSize.height < web.bounds.height + 500 {
             await delay(0.05)
         }
-        print("STORY_PLAIN_WEBKIT native=\(web.scrollView.contentSize) notify=\(notifiesNative) pending=\(resource.pendingCount) suppressed=\(configuration.suppressesIncrementalRendering)")
+        print("STORY_PLAIN_WEBKIT native=\(web.scrollView.contentSize) notify=\(notifiesNative) generatedStory=\(generatedStory) stripped=\(stripPattern ?? "none") disableReady=\(disableReadyNavigation) pending=\(resource.pendingCount) suppressed=\(configuration.suppressesIncrementalRendering)")
         XCTAssertEqual(resource.pendingCount, 1)
         XCTAssertGreaterThan(web.scrollView.contentSize.height, web.bounds.height + 500)
     }
@@ -445,7 +539,10 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     override func getHeader() -> String! { "<h1>Fixture header</h1>" }
     override func getShareBar() -> String! { shareHTML }
     override func getComments() -> String! { "Fixture comments" }
-    override func changeWebViewWidth() { widthUpdates += 1 }
+    override func changeWebViewWidth() {
+        widthUpdates += 1
+        if webView is RealStoryLoadWebView { super.changeWebViewWidth() }
+    }
     override func checkTryFeedStory() {}
     @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {}
     @objc(getSideOptions) func fixtureSideOptions() -> String { "Fixture side options" }
@@ -547,9 +644,76 @@ private final class StoryScrollCursor: NSObject {
 
 @MainActor private final class RealStoryLoadWebView: WKWebView {
     override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
-        // StoryDetailLoadingTests.swift uses a local scheme origin solely to hold a subresource without live network access.
+        // StoryDetailLoadingTests.swift retains the production HTTPS document origin for real WebKit checks.
         print("STORY_REAL_SUBMISSION length=\(string.count) plain=\(string.contains("Plain WebKit")) full=\(string.contains("Readable article")) trace=\(Thread.callStackSymbols.prefix(8))")
-        return super.loadHTMLString(string, baseURL: URL(string: "nb-story-test://document/"))
+        return super.loadHTMLString(string, baseURL: baseURL ?? URL(string: "https://newsblur.com/"))
+    }
+}
+
+@MainActor private final class HeldHTTPStoryResource {
+    private let listener: NWListener
+    private var connections = [ObjectIdentifier: NWConnection]()
+    private var pending = [ObjectIdentifier: NWConnection]()
+    private let data = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
+        UIColor.clear.setFill()
+        context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+    }
+    var port: UInt16? {
+        guard let value = listener.port?.rawValue, value > 0 else { return nil }
+        return value
+    }
+    var imageURL: String? { port.map { "http://localhost:\($0)/avatar.png" } }
+    var pendingCount: Int { pending.count }
+
+    init() throws {
+        let parameters = NWParameters.tcp
+        parameters.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: .any)
+        listener = try NWListener(using: parameters)
+        listener.newConnectionHandler = { [weak self] connection in
+            Task { @MainActor in
+                guard let self else { connection.cancel(); return }
+                print("STORY_HTTP_CONNECTION \(connection.endpoint)")
+                self.connections[ObjectIdentifier(connection)] = connection
+                connection.start(queue: .main)
+                self.receiveRequest(connection, received: Data())
+            }
+        }
+        listener.start(queue: .main)
+    }
+
+    private func receiveRequest(_ connection: NWConnection, received: Data) {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 16_384) { [weak self] bytes, _, complete, error in
+            guard let self else { connection.cancel(); return }
+            var request = received
+            if let bytes { request.append(bytes) }
+            guard error == nil, request.count < 16_384 else { connection.cancel(); return }
+            guard let end = request.range(of: Data("\r\n\r\n".utf8)) else {
+                if complete { connection.cancel() }
+                else { self.receiveRequest(connection, received: request) }
+                return
+            }
+            let headers = String(decoding: request[..<end.upperBound], as: UTF8.self)
+            guard headers.hasPrefix("GET /avatar.png HTTP/") else { connection.cancel(); return }
+            print("STORY_HELD_HTTP_IMAGE \(self.imageURL ?? "")")
+            self.pending[ObjectIdentifier(connection)] = connection
+            let response = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: \(self.data.count)\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n"
+            connection.send(content: Data(response.utf8), completion: .contentProcessed { _ in })
+        }
+    }
+
+    func finish() {
+        let waiting = Array(pending.values)
+        pending.removeAll()
+        for connection in waiting {
+            connection.send(content: data, completion: .contentProcessed { _ in connection.cancel() })
+        }
+    }
+
+    func stop() {
+        listener.cancel()
+        connections.values.forEach { $0.cancel() }
+        connections.removeAll()
+        pending.removeAll()
     }
 }
 
