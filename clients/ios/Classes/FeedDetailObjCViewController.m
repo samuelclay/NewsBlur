@@ -96,6 +96,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) NSInteger dailyBriefingReloadStoryCount;
 @property (nonatomic) BOOL dailyBriefingDidLogInitialRender;
 @property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
+@property (nonatomic, copy) NSArray<NSString *> *renderedStoryLocationIds;
+@property (nonatomic, copy) NSDictionary *renderedStoryAppendContext;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
 @property (nonatomic, strong) NSCache<NSString *, NSArray *> *completedStoryImageSources;
@@ -585,6 +587,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self clearStoryRenderCaches];
     self.scrollingMarkReadRow = NSNotFound;
     self.visibleStoryRows = [self buildVisibleStoryRows];
+    [self rememberStoryAppendState];
     BOOL shouldLogDailyBriefingRender = storiesCollection.isDailyBriefing;
     if (shouldLogDailyBriefingRender) {
         self.dailyBriefingReloadStartedAt = NBDailyBriefingNow();
@@ -671,13 +674,17 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (NSArray<NSDictionary *> *)buildVisibleStoryRows {
+    return [self buildVisibleStoryRowsFromLocation:0];
+}
+
+- (NSArray<NSDictionary *> *)buildVisibleStoryRowsFromLocation:(NSInteger)startLocation {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
-    if (!storyCount) {
+    if (startLocation < 0 || startLocation >= storyCount) {
         return @[];
     }
 
-    NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithCapacity:(NSUInteger)storyCount];
-    for (NSInteger location = 0; location < storyCount; location++) {
+    NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithCapacity:(NSUInteger)(storyCount - startLocation)];
+    for (NSInteger location = startLocation; location < storyCount; location++) {
         [rows addObject:@{
             FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeStory),
             FeedDetailVisibleRowStoryLocationKey: @(location)
@@ -698,6 +705,81 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     return rows;
+}
+
+- (NSDictionary *)storyAppendContext {
+    NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
+    return @{
+        @"width": @(CGRectGetWidth(self.storyTitlesTable.bounds)),
+        @"short_titles": @([self isShortTitles]),
+        @"text_size": [preferences stringForKey:@"story_list_preview_text_size"] ?: @"",
+        @"image_size": [preferences stringForKey:@"story_list_preview_images_size"] ?: @"",
+        @"spacing": [preferences stringForKey:@"feed_list_spacing"] ?: @"",
+        @"font_size": [preferences stringForKey:@"feed_list_font_size"] ?: @"",
+        @"system_font_size": @([preferences boolForKey:@"use_system_font_size"]),
+        @"content_size": self.traitCollection.preferredContentSizeCategory ?: @"",
+        @"intelligence": @(appDelegate.selectedIntelligence),
+        @"saved_intelligence": @(appDelegate.isSavedStoriesIntelligenceMode),
+        @"show_hidden": @(storiesCollection.showHiddenStories),
+        @"clustering": @([self shouldShowStoryClustering]),
+        @"cluster_mark_read": @([self isClusterMarkReadEnabled]),
+        @"archive": @(appDelegate.isPremiumArchive),
+        @"subscribed_feeds": [appDelegate subscribedFeedIdsForStoryClusters] ?: [NSSet set],
+        @"river": @(storiesCollection.isRiverView),
+        @"social": @(storiesCollection.isSocialView),
+        @"social_river": @(storiesCollection.isSocialRiverView),
+        @"saved": @(storiesCollection.isSavedView),
+        @"read": @(storiesCollection.isReadView),
+        @"widget": @(storiesCollection.isWidgetView),
+        @"feed": storiesCollection.activeFeedIdStr ?: @"",
+        @"folder": storiesCollection.activeFolder ?: @"",
+        @"order": storiesCollection.activeOrder ?: @"",
+        @"read_filter": storiesCollection.activeReadFilter ?: @"",
+        @"search": storiesCollection.searchQuery ?: @"",
+        @"saved_search": storiesCollection.savedSearchQuery ?: @"",
+    };
+}
+
+- (void)rememberStoryAppendState {
+    self.renderedStoryLocationIds = storiesCollection.activeFeedStoryLocationIds;
+    self.renderedStoryAppendContext = [self storyAppendContext];
+}
+
+- (BOOL)appendStoryTableFromLocation:(NSInteger)previousStoryCount {
+    if (!self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing || self.isFadingTable ||
+        !self.messageView.hidden || self.pageFinished || previousStoryCount == 0 ||
+        self.renderedStoryLocationIds.count != previousStoryCount ||
+        storiesCollection.storyLocationsCount < previousStoryCount ||
+        self.storyTitlesTable.hasUncommittedUpdates || self.storyTitlesTable.numberOfSections != 1 ||
+        [self.storyTitlesTable numberOfRowsInSection:0] != self.visibleStoryRows.count + 1 ||
+        ![self.renderedStoryAppendContext isEqualToDictionary:[self storyAppendContext]]) {
+        return NO;
+    }
+
+    // FeedDetailObjCViewController.m only preserves geometry when filtering kept the existing visible prefix.
+    for (NSInteger location = 0; location < previousStoryCount; location++) {
+        if (![self.renderedStoryLocationIds[location] isEqual:storiesCollection.activeFeedStoryLocationIds[location]]) {
+            return NO;
+        }
+    }
+
+    NSArray<NSDictionary *> *newRows = [self buildVisibleStoryRowsFromLocation:previousStoryCount];
+    if (newRows.count) {
+        NSInteger firstRow = self.visibleStoryRows.count;
+        self.visibleStoryRows = [self.visibleStoryRows arrayByAddingObjectsFromArray:newRows];
+        NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray arrayWithCapacity:newRows.count];
+        for (NSInteger row = firstRow; row < self.visibleStoryRows.count; row++) {
+            [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
+        }
+        // FeedDetailObjCViewController.m inserts before the loading row, preserving cells and the scroll-read anchor.
+        [UIView performWithoutAnimation:^{
+            [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        }];
+    }
+    [self rememberStoryAppendState];
+    [self warmStoryPreviewCacheAroundLocation:previousStoryCount];
+    [self updateBottomNextFeedControlForScroll:self.storyTitlesTable];
+    return YES;
 }
 
 - (NSArray<NSDictionary *> *)storyRowDescriptors {
@@ -1526,6 +1608,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)clearStoryRenderCaches {
     self.storyRenderCacheGeneration += 1;
+    self.renderedStoryLocationIds = nil;
+    self.renderedStoryAppendContext = nil;
     [self.storyPreviewTextCache removeAllObjects];
     [self.storyHeightCache removeAllObjects];
 }
@@ -2437,6 +2521,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)renderStories:(NSArray *)newStories {
     NSInteger newStoriesCount = [newStories count];
+    NSInteger previousStoryCount = storiesCollection.storyLocationsCount;
     BOOL premiumRestriction = !appDelegate.isPremium &&
     storiesCollection.isRiverView &&
     !storiesCollection.isDailyBriefing &&
@@ -2462,7 +2547,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.pageFinished = YES;
     }
     
-    [self reload];
+    BOOL isPageAppend = newStoriesCount > 0 && storiesCollection.feedPage > 1 && !premiumRestriction;
+    if (!isPageAppend || ![self appendStoryTableFromLocation:previousStoryCount]) {
+        [self reload];
+    }
     
     if (self.view.window && self.finishedAnimatingIn) {
         [self testForTryFeed];
