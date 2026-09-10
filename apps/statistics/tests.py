@@ -593,3 +593,35 @@ class Test_RScrapingBee(TestCase):
     @override_settings(SCRAPINGBEE_API_KEY=None)
     def test_account_usage_without_api_key_is_empty(self):
         self.assertEqual(RScrapingBee.get_account_usage(), {})
+
+    @override_settings(SCRAPINGBEE_HOST_DAILY_CREDIT_CAP=3)
+    def test_host_over_budget_once_daily_credits_reach_the_cap(self):
+        for _ in range(2):
+            RScrapingBee.record(
+                "webfeed", 200, url="https://www.abebooks.com/servlet/SearchResults?x=1", credits=1
+            )
+
+        self.assertFalse(RScrapingBee.host_over_budget("https://www.abebooks.com/servlet/SearchResults?x=2"))
+
+        RScrapingBee.record("feed", 200, url="https://abebooks.com/other", credits=1)
+
+        self.assertTrue(RScrapingBee.host_over_budget("https://www.abebooks.com/servlet/SearchResults?x=3"))
+        self.assertFalse(RScrapingBee.host_over_budget("https://www.example.com/feed.xml"))
+
+    @override_settings(SCRAPINGBEE_HOST_DAILY_CREDIT_CAP=1)
+    def test_capped_skips_are_counted_and_exported(self):
+        RScrapingBee.record("webfeed", 200, url="https://www.abebooks.com/a", credits=1)
+        RScrapingBee.record_capped("webfeed", url="https://www.abebooks.com/b")
+        RScrapingBee.record_capped("feed", url="https://www.abebooks.com/c")
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("webfeed", "capped")], 1)
+        self.assertEqual(stats["calls"][("feed", "capped")], 1)
+        self.assertEqual(stats["credits_today"], 1)
+        self.assertEqual(stats["host_credit_cap"], 1)
+        self.assertEqual(stats["hosts_over_cap"], 1)
+
+    def test_host_over_budget_is_false_when_redis_is_down(self):
+        with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):
+            self.assertFalse(RScrapingBee.host_over_budget("https://www.abebooks.com/a"))
