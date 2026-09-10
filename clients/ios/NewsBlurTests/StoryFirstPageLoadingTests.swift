@@ -67,7 +67,7 @@ import XCTest
             let fixture = makeFixture()
             try await prime(fixture)
             if changedKey == "account" { fixture.app.activeUsername = "different-" + UUID().uuidString }
-            if changedKey == "host" { fixture.app.url = "https://other.example.test" }
+            if changedKey == "host" { fixture.app.testURL = "https://other.example.test" }
             if changedKey == "filter" { fixture.stories.readFilter = "unread" }
             if changedKey == "order" { fixture.stories.order = "oldest" }
             fixture.open()
@@ -208,7 +208,8 @@ import XCTest
     private func makeFixture() -> FirstPageFixture {
         let app = FirstPageLoadingAppDelegate()
         app.activeUsername = "first-page-test-" + UUID().uuidString
-        app.url = "https://example.test"
+        app.testURL = "https://example.test"
+        app.interceptRequests()
         app.isPremium = true
         app.isPremiumArchive = true
         app.selectedIntelligence = 0
@@ -217,7 +218,7 @@ import XCTest
         app.unsavedStoryHashes = NSMutableDictionary()
         app.dictFeeds = ["1": ["id": 1, "feed_title": "First feed", "active": 1]]
         app.dictActiveFeeds = NSMutableDictionary()
-        app.dictFolders = NSMutableDictionary()
+        app.dictFolders = [:]
         app.dictFoldersArray = NSMutableArray()
         let stories = FirstPageLoadingStories()
         stories.appDelegate = app
@@ -282,7 +283,6 @@ private final class FirstPageLoadingStories: StoriesCollection {
 @MainActor private final class FirstPageLoadingController: FeedDetailViewController {
     var markedHashes: [String] = []
     override var isLegacyTable: Bool { true }
-    override var isPhoneOrCompact: Bool { true }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}
     override func reload() { reloadTable() }
@@ -318,10 +318,9 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     override func cleanUpTryFeed() {}
     @objc(updateFeedDetailTitleView) func suppressTitleView() {}
 
-    override init() {
-        super.init()
-        _ = Self.installInterceptors
-    }
+    var testURL = "https://example.test"
+    override var url: String! { testURL }
+    func interceptRequests() { _ = Self.installInterceptors }
 
     func releaseReadFlush() { if !readFlushes.isEmpty { readFlushes.removeFirst()() } }
     func releaseSavedFlush() { if !savedFlushes.isEmpty { savedFlushes.removeFirst()() } }
