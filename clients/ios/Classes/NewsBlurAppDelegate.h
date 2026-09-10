@@ -51,6 +51,7 @@
 @class PremiumViewController;
 @class WKWebView;
 @class BGAppRefreshTask;
+@class FeedIconPreparationRequest;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -519,6 +520,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)preparedFavicon:(NSString *)filename size:(CGSize)size;
+- (void)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests;
+- (void)cancelFaviconPreparation;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 

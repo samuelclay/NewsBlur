@@ -48,7 +48,9 @@ import UIKit
         let size = CGSize(width: 16, height: 16)
 
         // FeedIconColdScrollTests.swift enters through the production feed-data reload before the first fast pass.
+        let snapshotStarted = CACurrentMediaTime()
         controller.reloadFeedTitlesTable()
+        let snapshotMilliseconds = (CACurrentMediaTime() - snapshotStarted) * 1_000
         let prepared = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             renderer.image(forKey: "\(feedCount)", size: size) { nil } != nil
         }, object: nil)
@@ -71,7 +73,7 @@ import UIKit
             }
         }
         let sorted = cellMilliseconds.sorted()
-        print("FEED_PREPARATION_BENCHMARK feeds=\(feedCount) worker_disk_reads=\(backgroundReads) foreground_disk_reads=\(cache.diskCache.counts.main) original_worker_promotions=\(originalPromotions) cell_mean_ms=\(sorted.reduce(0, +) / Double(sorted.count)) cell_p95_ms=\(sorted[Int(Double(sorted.count - 1) * 0.95)]) cell_max_ms=\(sorted.last ?? 0)")
+        print("FEED_PREPARATION_BENCHMARK feeds=\(feedCount) snapshot_and_reload_ms=\(snapshotMilliseconds) worker_disk_reads=\(backgroundReads) foreground_disk_reads=\(cache.diskCache.counts.main) original_worker_promotions=\(originalPromotions) cell_mean_ms=\(sorted.reduce(0, +) / Double(sorted.count)) cell_p95_ms=\(sorted[Int(Double(sorted.count - 1) * 0.95)]) cell_max_ms=\(sorted.last ?? 0)")
         XCTAssertEqual(backgroundReads, feedCount)
         XCTAssertEqual(cache.diskCache.counts.main, 0, "Cold first-pass cells must consume prepared artwork instead of entering the disk-cache lock.")
         XCTAssertEqual(originalPromotions, 0, "Preparing display-sized icons must not churn the 5 MiB original-image cache.")

@@ -75,6 +75,36 @@ import UIKit
         XCTAssertEqual(fixture.queue.operationsAdded, 1)
     }
 
+    func test_proactivePreparationUsesDisplayedOrderWithoutAggregatedDuplicates() {
+        let fixture = makeFixture()
+
+        fixture.controller.reloadFeedTitlesTable()
+
+        XCTAssertEqual(fixture.appDelegate.proactiveRequests.map(\.key), ["1", "2"])
+        XCTAssertTrue(fixture.appDelegate.proactiveRequests.allSatisfy { $0.size == CGSize(width: 16, height: 16) })
+        XCTAssertEqual(fixture.appDelegate.preparedIconReads, 0, "Collecting nearby identifiers must not decode artwork on main.")
+    }
+
+    func test_proactivePreparationDoesNotSpendItsBudgetOnCollapsedDescendants() {
+        let fixture = makeFixture(collapsedParent: true)
+
+        fixture.controller.reloadFeedTitlesTable()
+
+        XCTAssertTrue(fixture.appDelegate.proactiveRequests.isEmpty)
+        fixture.controller.searchFeedIds = ["2"]
+        fixture.controller.reloadFeedTitlesTable()
+        XCTAssertEqual(fixture.appDelegate.proactiveRequests.map(\.key), ["2"])
+    }
+
+    func test_proactivePreparationSkipsFeedsUsingCustomArtwork() {
+        let fixture = makeFixture()
+        fixture.appDelegate.dictFeedIcons = ["1": ["icon_type": "emoji", "icon_value": "🌞"]]
+
+        fixture.controller.reloadFeedTitlesTable()
+
+        XCTAssertEqual(fixture.appDelegate.proactiveRequests.map(\.key), ["2"])
+    }
+
     private func makeFixture(collapsedParent: Bool = false) -> HiddenFeedFixture {
         let appDelegate = HiddenFeedAppDelegate()
         appDelegate.selectedIntelligence = 0
@@ -113,6 +143,11 @@ import UIKit
 private final class HiddenFeedAppDelegate: NewsBlurAppDelegate {
     let icon = UIImage()
     var preparedIconReads = 0
+    var proactiveRequests = [FeedIconPreparationRequest]()
+
+    override func prepareFavicons(_ requests: [FeedIconPreparationRequest]!) {
+        proactiveRequests = requests
+    }
 
     override func preparedFavicon(_ filename: String!, size: CGSize) -> UIImage! {
         preparedIconReads += 1
