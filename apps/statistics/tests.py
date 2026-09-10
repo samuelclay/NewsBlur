@@ -622,6 +622,17 @@ class Test_RScrapingBee(TestCase):
         self.assertEqual(stats["host_credit_cap"], 1)
         self.assertEqual(stats["hosts_over_cap"], 1)
 
+    def test_record_skip_counts_the_reason_as_a_status(self):
+        RScrapingBee.record_skip("feed", "dormant", url="https://www.example.com/feed.xml")
+        RScrapingBee.record_skip("feed", "dormant", url="https://www.example.com/feed.xml")
+        RScrapingBee.record_capped("webfeed", url="https://www.abebooks.com/a")
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("feed", "dormant")], 2)
+        self.assertEqual(stats["calls"][("webfeed", "capped")], 1)
+        self.assertEqual(stats["credits_today"], 0)
+
     def test_host_over_budget_is_false_when_redis_is_down(self):
         with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):
             self.assertFalse(RScrapingBee.host_over_budget("https://www.abebooks.com/a"))

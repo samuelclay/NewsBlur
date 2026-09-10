@@ -2093,6 +2093,10 @@ class Test_ScrapingBeeProxy(TestCase):
         )
         self.feed.etag = '"abc123"'
         self.feed.last_modified = datetime.datetime(2026, 9, 1, 12, 30, 0)
+        # Feeds with 2+ subscribers are never treated as dormant (Feed.has_dormant_sole_subscriber),
+        # so the proxy paths under test stay reachable. A real subscription row wouldn't do: fetch()
+        # runs in a @timelimit thread whose DB connection can't see this test's transaction.
+        self.feed.num_subscribers = 2
         self.feed.save()
 
     def _proxy_response(self, status_code=200, content=b"<rss></rss>", headers=None):
@@ -2366,6 +2370,54 @@ class Test_ScrapingBeeProxy(TestCase):
         self.assertIsNone(parsed)
         mock_history.assert_not_called()
 
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=True)
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_skips_proxies_when_only_subscriber_is_dormant(
+        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip
+    ):
+        """Half of the single-subscriber forbidden feeds belong to accounts idle for years;
+        a credit a day for a reader who isn't reading is the biggest remaining waste."""
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(fetcher, "fetch_scrapingbee") as mock_scrapingbee, patch.object(
+            fetcher, "fetch_scrapeninja"
+        ) as mock_scrapeninja:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual((status, body), (None, None))
+        self.assertTrue(fetcher.skipped_for_dormant_subscriber)
+        mock_scrapingbee.assert_not_called()
+        mock_scrapeninja.assert_not_called()
+        mock_skip.assert_called_once_with("feed", "dormant", url=self.feed.feed_address)
+
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=True)
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_dormant_forbidden_fetch_records_no_error(
+        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip
+    ):
+        """Like the credit cap, a fetch skipped for a dormant reader was never attempted, so it
+        must not poison fetch history or back the feed off."""
+        from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+
+        self.feed.is_forbidden = True
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(Feed, "save_feed_history") as mock_history:
+            result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed)
+        mock_history.assert_not_called()
+
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     def test_failed_forbidden_fetch_is_recorded_as_an_error(self, mock_random):
         """Proxy failures used to return FEED_ERRHTTP without touching the fetch history, so the
@@ -2416,3 +2468,62 @@ class Test_ForbiddenFeedScheduling(TestCase):
         feed = self._forbidden_feed(2)
 
         self.assertEqual(feed.get_next_scheduled_update(force=True, verbose=False), 60 * 12)
+
+
+class Test_DormantSoleSubscriber(TestCase):
+    """Feed.has_dormant_sole_subscriber decides whether a forbidden feed is worth a ScrapingBee
+    credit: nobody active reads it, so the paid proxy is skipped (utils/feed_fetcher.py)."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="https://blocked.example.com/dormant.xml",
+            feed_link="https://blocked.example.com/",
+            feed_title="Dormant Feed",
+        )
+
+    def _subscribe(self, username, last_seen_days_ago):
+        user = User.objects.create_user(username, "%s@example.com" % username, "pass")
+        profile = user.profile
+        profile.last_seen_on = datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago)
+        profile.save()
+        UserSubscription.objects.create(user=user, feed=self.feed)
+        return user
+
+    def test_dormant_when_only_subscriber_idle_over_a_year(self):
+        self._subscribe("idle_reader", 400)
+        self.feed.num_subscribers = 1
+
+        self.assertTrue(self.feed.has_dormant_sole_subscriber())
+
+    def test_active_sole_subscriber_is_not_dormant(self):
+        self._subscribe("active_reader", 2)
+        self.feed.num_subscribers = 1
+
+        self.assertFalse(self.feed.has_dormant_sole_subscriber())
+
+    def test_two_subscribers_are_never_dormant(self):
+        self._subscribe("idle_one", 900)
+        self._subscribe("idle_two", 800)
+        self.feed.num_subscribers = 2
+
+        self.assertFalse(self.feed.has_dormant_sole_subscriber())
+
+    def test_stale_num_subscribers_defers_to_real_subscriptions(self):
+        self._subscribe("idle_one", 900)
+        self._subscribe("idle_two", 800)
+        self.feed.num_subscribers = 1
+
+        self.assertFalse(self.feed.has_dormant_sole_subscriber())
+
+    def test_feed_nobody_subscribes_to_is_dormant(self):
+        self.feed.num_subscribers = 0
+
+        self.assertTrue(self.feed.has_dormant_sole_subscriber())
+
+    @override_settings(SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS=30)
+    def test_idle_threshold_comes_from_settings(self):
+        self._subscribe("month_idle_reader", 40)
+        self.feed.num_subscribers = 1
+
+        self.assertTrue(self.feed.has_dormant_sole_subscriber())
+        self.assertFalse(self.feed.has_dormant_sole_subscriber(days=365))
