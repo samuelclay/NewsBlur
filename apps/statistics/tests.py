@@ -521,7 +521,16 @@ class Test_RScrapingBee(TestCase):
         self._delete_keys()
 
     def _delete_keys(self):
-        for pattern in ("sbCalls:*", "sbCredits:*", "sbDomains:*", "sbDomainCredits:*", "sbUsage"):
+        for pattern in (
+            "sbCalls:*",
+            "sbCredits:*",
+            "sbDomains:*",
+            "sbDomainCredits:*",
+            "sbUsage",
+            "sbUserCredits:*",
+            "sbUsersCharged:*",
+            "sbUserBudget",
+        ):
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
@@ -632,6 +641,71 @@ class Test_RScrapingBee(TestCase):
         self.assertEqual(stats["calls"][("feed", "dormant")], 2)
         self.assertEqual(stats["calls"][("webfeed", "capped")], 1)
         self.assertEqual(stats["credits_today"], 0)
+
+    def test_record_charges_credits_to_the_feeds_subscribers(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1, user_ids=[11, 12])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/other.xml", credits=1, user_ids=[11])
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0, user_ids=[13])
+
+        self.assertEqual(
+            RScrapingBee.user_credits_this_period([11, 12, 13, 14]), {11: 2, 12: 1, 13: 0, 14: 0}
+        )
+        self.assertEqual(RScrapingBee.users_charged_recently(days=7), 2)
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=None, SCRAPINGBEE_USER_BUDGET_MIN_USERS=10)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage")
+    def test_user_period_budget_shares_remaining_credits_between_active_proxy_users(self, mock_usage):
+        """Remaining credits are split across the users charged in the last week (never fewer than
+        the configured floor), so the pool lasts to renewal no matter who reads what."""
+        mock_usage.return_value = {
+            "remaining": 5000,
+            "days_to_renewal": 20.0,
+            "renewal": "2026-09-30T10:28:41",
+        }
+        for uid in range(1, 26):
+            RScrapingBee.record(
+                "feed", 200, url="https://www.example.com/%s" % uid, credits=1, user_ids=[uid]
+            )
+
+        self.assertEqual(RScrapingBee.user_period_budget(), 200)  # 5000 / 25 users
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=None, SCRAPINGBEE_USER_BUDGET_MIN_USERS=1000)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage")
+    def test_user_period_budget_never_drops_below_one_credit(self, mock_usage):
+        mock_usage.return_value = {
+            "remaining": 300,
+            "days_to_renewal": 20.0,
+            "renewal": "2026-09-30T10:28:41",
+        }
+
+        self.assertEqual(RScrapingBee.user_period_budget(), 1)  # 300 / 1000 users floors to 1
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=7)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage", return_value={})
+    def test_user_period_budget_setting_overrides_the_dynamic_share(self, mock_usage):
+        self.assertEqual(RScrapingBee.user_period_budget(), 7)
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=2)
+    def test_users_over_budget_only_when_every_subscriber_has_spent_their_share(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/a", credits=2, user_ids=[21])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/b", credits=1, user_ids=[22])
+
+        self.assertTrue(RScrapingBee.users_over_budget([21]))
+        self.assertFalse(RScrapingBee.users_over_budget([21, 22]))
+        self.assertFalse(RScrapingBee.users_over_budget([23]))
+        self.assertFalse(RScrapingBee.users_over_budget([]))
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=1)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage", return_value={})
+    def test_stats_report_user_budget_and_users_over_it(self, mock_usage):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/a", credits=1, user_ids=[31, 32])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/b", credits=0, user_ids=[33])
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["user_budget"], 1)
+        self.assertEqual(stats["users_charged_period"], 2)
+        self.assertEqual(stats["users_over_budget"], 2)
 
     def test_host_over_budget_is_false_when_redis_is_down(self):
         with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):

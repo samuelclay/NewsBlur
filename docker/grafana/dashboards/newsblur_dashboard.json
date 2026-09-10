@@ -19728,6 +19728,192 @@
    ],
    "title": "Per-Host Daily Credit Cap",
    "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 12,
+    "y": 727
+   },
+   "id": 358,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "scrapingbee_usage{metric=\"user_budget\"}",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Per-User Credit Share (Period)",
+   "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 16,
+    "y": 727
+   },
+   "id": 359,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "scrapingbee_usage{metric=\"users_over_budget\"}",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Users Over Their Share",
+   "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 5,
+    "w": 4,
+    "x": 20,
+    "y": 727
+   },
+   "id": 360,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "auto"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "scrapingbee_usage{metric=\"users_charged_period\"}",
+     "interval": "",
+     "legendFormat": "",
+     "refId": "A"
+    }
+   ],
+   "title": "Users Charged This Period",
+   "type": "stat"
   }
  ],
  "refresh": "5s",

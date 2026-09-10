@@ -255,6 +255,11 @@ class FetchFeed:
         # Set by should_skip_paid_proxy when the feed's only subscriber hasn't been seen in
         # a year (Feed.has_dormant_sole_subscriber), likewise never attempted
         self.skipped_for_dormant_subscriber = False
+        # Set by should_skip_paid_proxy when every subscriber has spent their share of the
+        # plan for this billing period (RScrapingBee.users_over_budget), also never attempted
+        self.skipped_for_user_budget = False
+        # The subscribers a billed proxy fetch is charged to, looked up by should_skip_paid_proxy
+        self.proxy_user_ids = None
 
     def openrss_corrected_address(self, address):
         """Rewrite a legacy Open RSS preview address to its actual /feed/ form.
@@ -480,7 +485,11 @@ class FetchFeed:
                     # Enough of these in a row also stop the paid proxy, see fetch_forbidden.
                     # A host over its daily credit cap, or a feed nobody active reads, wasn't
                     # attempted at all, so it just waits for its next scheduled fetch.
-                    if not (self.skipped_for_credit_cap or self.skipped_for_dormant_subscriber):
+                    if not (
+                        self.skipped_for_credit_cap
+                        or self.skipped_for_dormant_subscriber
+                        or self.skipped_for_user_budget
+                    ):
                         self.feed.save_feed_history(forbidden_status or 500, "Forbidden feed fetch failed")
                     return FEED_ERRHTTP, None
                 # Apply encoding preprocessing to special feed content
@@ -854,6 +863,7 @@ class FetchFeed:
                 status_code,
                 url=self.feed.feed_address,
                 credits=RScrapingBee.credits_for_response(response),
+                user_ids=self.proxy_user_ids,
             )
 
             # The site's own ETag / Last-Modified come back prefixed with Spb-. Keep them so
@@ -1012,6 +1022,8 @@ class FetchFeed:
         A host that has already spent its daily credit cap (apps/statistics/rscrapingbee.py)
         is skipped outright, and so is a feed whose only subscriber hasn't been seen in a
         year (Feed.has_dormant_sole_subscriber): a credit for a reader who isn't reading.
+        Finally each reader has a share of the plan for the billing period
+        (RScrapingBee.users_over_budget); a feed waits once all of its readers spent theirs.
         """
         if RScrapingBee.host_over_budget(self.feed.feed_address):
             RScrapingBee.record_capped("feed", url=self.feed.feed_address)
@@ -1026,6 +1038,15 @@ class FetchFeed:
             self.skipped_for_dormant_subscriber = True
             logging.debug(
                 "   ***> [%-30s] ~FYSkipping paid proxy, only subscriber hasn't been seen in a year: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+            return True
+        self.proxy_user_ids = self.feed.proxy_budget_subscriber_ids()
+        if RScrapingBee.users_over_budget(self.proxy_user_ids):
+            RScrapingBee.record_skip("feed", "user_budget", url=self.feed.feed_address)
+            self.skipped_for_user_budget = True
+            logging.debug(
+                "   ***> [%-30s] ~FYSkipping paid proxy, every subscriber spent their credit share this period: %s"
                 % (self.feed.log_title[:30], self.feed.feed_address)
             )
             return True

@@ -2418,6 +2418,104 @@ class Test_ScrapingBeeProxy(TestCase):
         self.assertIsNone(parsed)
         mock_history.assert_not_called()
 
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.proxy_budget_subscriber_ids", return_value=[41, 42])
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_fetch_forbidden_skips_proxies_when_every_subscriber_is_over_budget(
+        self,
+        mock_get,
+        mock_random,
+        mock_subscribers,
+        mock_dormant,
+        mock_over_budget,
+        mock_users_over,
+        mock_skip,
+    ):
+        """Each user gets a share of the remaining credits until renewal; a feed whose readers
+        have all spent theirs waits, so no reader can drain the pool for everyone else."""
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(fetcher, "fetch_scrapingbee") as mock_scrapingbee, patch.object(
+            fetcher, "fetch_scrapeninja"
+        ) as mock_scrapeninja:
+            status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual((status, body), (None, None))
+        self.assertTrue(fetcher.skipped_for_user_budget)
+        mock_users_over.assert_called_once_with([41, 42])
+        mock_scrapingbee.assert_not_called()
+        mock_scrapeninja.assert_not_called()
+        mock_skip.assert_called_once_with("feed", "user_budget", url=self.feed.feed_address)
+
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.proxy_budget_subscriber_ids", return_value=[41])
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    def test_user_budget_skip_records_no_error(
+        self,
+        mock_get,
+        mock_random,
+        mock_subscribers,
+        mock_dormant,
+        mock_over_budget,
+        mock_users_over,
+        mock_skip,
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+
+        self.feed.is_forbidden = True
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        with patch.object(Feed, "save_feed_history") as mock_history:
+            result, parsed = fetcher.fetch()
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed)
+        mock_history.assert_not_called()
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.feed_fetcher.RScrapingBee.record")
+    @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=False)
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.proxy_budget_subscriber_ids", return_value=[41, 42])
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
+    @patch("utils.feed_fetcher.requests.get")
+    def test_billed_proxy_fetch_is_charged_to_the_feeds_subscribers(
+        self,
+        mock_get,
+        mock_safe_get,
+        mock_random,
+        mock_validate,
+        mock_subscribers,
+        mock_dormant,
+        mock_over_budget,
+        mock_users_over,
+        mock_record,
+    ):
+        from utils.feed_fetcher import FetchFeed
+
+        mock_get.return_value = self._proxy_response(headers={"Spb-cost": "1"})
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        status, body = fetcher.fetch_forbidden()
+
+        self.assertEqual(status, 200)
+        self.assertEqual(mock_record.call_args.kwargs["user_ids"], [41, 42])
+        self.assertEqual(mock_record.call_args.kwargs["credits"], 1)
+
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     def test_failed_forbidden_fetch_is_recorded_as_an_error(self, mock_random):
         """Proxy failures used to return FEED_ERRHTTP without touching the fetch history, so the
@@ -2527,3 +2625,28 @@ class Test_DormantSoleSubscriber(TestCase):
 
         self.assertTrue(self.feed.has_dormant_sole_subscriber())
         self.assertFalse(self.feed.has_dormant_sole_subscriber(days=365))
+
+
+class Test_ProxyBudgetSubscriberIds(TestCase):
+    """Feed.proxy_budget_subscriber_ids names the readers a proxied fetch is charged to."""
+
+    def test_returns_subscribers_up_to_the_sample_size(self):
+        feed = Feed.objects.create(
+            feed_address="https://blocked.example.com/shared.xml",
+            feed_link="https://blocked.example.com/",
+            feed_title="Shared Feed",
+        )
+        users = [
+            User.objects.create_user("reader%s" % i, "reader%s@example.com" % i, "pass") for i in range(3)
+        ]
+        for user in users:
+            UserSubscription.objects.create(user=user, feed=feed)
+
+        self.assertCountEqual(feed.proxy_budget_subscriber_ids(), [u.pk for u in users])
+        self.assertEqual(len(feed.proxy_budget_subscriber_ids(limit=2)), 2)
+        self.assertEqual(
+            Feed.objects.create(
+                feed_address="https://blocked.example.com/lonely.xml"
+            ).proxy_budget_subscriber_ids(),
+            [],
+        )
