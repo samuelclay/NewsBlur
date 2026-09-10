@@ -12,6 +12,8 @@ Options:
 Actions:
     list                  - List available simulators with UDIDs
     tap:<x>,<y>           - Tap at coordinates
+    text:<text>          - Type into the focused field
+    key:<code>           - Send a hardware key code (40 is Return)
     sleep:<seconds>       - Wait for specified seconds
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
     swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
@@ -20,6 +22,7 @@ Actions:
     checkpoint:<name>     - Timestamp a navigation/load event in the current capture
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     describe              - Print simulator accessibility elements
+    crashes               - Show recent app exception messages from the simulator
     screenshot:<path>     - Take screenshot and save to path
     launch                - Launch the NewsBlur app
     terminate             - Terminate the NewsBlur app
@@ -276,6 +279,10 @@ def parse_and_execute(action):
 
     if cmd == "tap":
         do_tap(arg)
+    elif cmd == "text":
+        subprocess.run(["idb", "ui", "text", "--udid", UDID, arg], check=True)
+    elif cmd == "key":
+        subprocess.run(["idb", "ui", "key", "--udid", UDID, str(int(arg))], check=True)
     elif cmd == "sleep":
         do_sleep(arg)
     elif cmd == "swipe":
@@ -290,6 +297,10 @@ def parse_and_execute(action):
         do_fuzz(arg)
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
+    elif cmd == "crashes":
+        predicate = '(process == "NB Alpha" OR process == "NewsBlur") AND (eventMessage CONTAINS "unrecognized selector" OR eventMessage CONTAINS "uncaught exception")'
+        subprocess.run(["xcrun", "simctl", "spawn", UDID, "log", "show", "--last", "10m",
+                        "--style", "compact", "--predicate", predicate], check=True)
     elif cmd == "screenshot":
         do_screenshot(arg)
     elif cmd == "launch":
