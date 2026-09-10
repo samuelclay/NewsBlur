@@ -108,6 +108,12 @@ import WebKit
     }
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
+
+    deinit {
+        // StoryDetailScrollPerformanceTests.swift never installs the real web view's KVO observer.
+        webView = nil
+    }
+
     override func updateFeedTitleGradientPosition() { gradientUpdates += 1 }
 }
 
