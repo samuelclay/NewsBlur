@@ -47,6 +47,7 @@ final class ReaderPerformance: NSObject {
         wrapVoid(StoryDetailObjCViewController.self, name: "refreshHeader", metric: "detail.header")
         wrapVoid(StoryDetailObjCViewController.self, name: "updateFeedTitleGradientPosition", metric: "detail.gradient")
         for (name, metric) in [("FeedTableCellView", "draw.feed"), ("FeedDetailTableCell", "draw.story"),
+                               ("FeedDetailTableCellView", "draw.story.content"),
                                ("FolderTitleView", "draw.folder")] {
             if let type = NSClassFromString(name) { wrapDraw(type, metric: metric) }
         }

@@ -16,6 +16,7 @@ Actions:
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
     swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
     capture:<directory>   - Record video, CPU samples, and optional app measurements
+    checkpoint:<name>     - Timestamp a navigation/load event in the current capture
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     describe              - Print simulator accessibility elements
     screenshot:<path>     - Take screenshot and save to path
@@ -183,6 +184,15 @@ def do_fuzz(arguments):
         time.sleep(0.25)
 
 
+def do_checkpoint(name):
+    """Record a named timestamp for matching navigation with app measurements."""
+    event = {"checkpoint": name, "at": time.time()}
+    for path in CAPTURE_DIRECTORIES:
+        with open(os.path.join(path, "checkpoints.jsonl"), "a") as file:
+            file.write(json.dumps(event) + "\n")
+    print(json.dumps(event), flush=True)
+
+
 def stop_captures():
     ended_at = time.time()
     for process, _ in CAPTURES:
@@ -258,6 +268,8 @@ def parse_and_execute(action):
         do_swipe(arg)
     elif cmd == "capture":
         do_capture(arg)
+    elif cmd == "checkpoint":
+        do_checkpoint(arg)
     elif cmd == "fuzz":
         do_fuzz(arg)
     elif cmd == "describe":
