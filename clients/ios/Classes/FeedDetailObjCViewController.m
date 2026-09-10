@@ -1778,7 +1778,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             [self.pendingStoryImageRequests removeObjectForKey:storyHash];
             [self.completedStoryImageSources removeObjectForKey:storyHash];
             if ([imageURLs isKindOfClass:[NSArray class]]) {
-                [self.appDelegate.cachedStoryImages removeObjectForKey:storyHash];
+                [self.appDelegate removeCachedStoryImageForStoryHash:storyHash];
             }
         }
         [self.appDelegate cacheStoryImagePlaceholder:storyHash];
