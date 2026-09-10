@@ -102,6 +102,97 @@ import QuartzCore
         }
     }
 
+    func test_appendPreservesScrollMarkReadAnchor() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
+        fixture.resetMeasurements()
+
+        fixture.controller.renderStories(makeStories(100..<112))
+
+        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, 40)
+        XCTAssertEqual(fixture.table.reloadCalls, 0)
+        XCTAssertEqual(fixture.table.insertedRows, 14)
+    }
+
+    func test_emptyPageReloadsCompletionRow() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.resetMeasurements()
+
+        fixture.controller.renderStories([])
+        fixture.table.layoutIfNeeded()
+
+        XCTAssertTrue(fixture.controller.pageFinished)
+        XCTAssertEqual(fixture.table.reloadCalls, 1)
+        XCTAssertEqual(fixture.table.insertedRows, 0)
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 100)
+    }
+
+    func test_firstPageReplacementReloadsInsteadOfAppending() throws {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.stories.feedPage = 1
+        fixture.resetMeasurements()
+
+        fixture.controller.renderStories(makeStories(200..<212))
+        fixture.table.layoutIfNeeded()
+
+        XCTAssertEqual(fixture.table.reloadCalls, 1)
+        XCTAssertEqual(fixture.table.insertedRows, 0)
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 12)
+        let first = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
+        XCTAssertEqual(first["story_hash"] as? String, "pagination-200")
+    }
+
+    func test_changedIntelligenceFilterFallsBackToReload() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.appDelegate.selectedIntelligence = 1
+        fixture.resetMeasurements()
+
+        fixture.controller.renderStories(makeStories(100..<112))
+        fixture.table.layoutIfNeeded()
+
+        XCTAssertEqual(fixture.table.reloadCalls, 1)
+        XCTAssertEqual(fixture.table.insertedRows, 0)
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 0)
+    }
+
+    func test_changedTextSizeOrWidthFallsBackToReload() {
+        for changeWidth in [false, true] {
+            let fixture = makeFixture(storyCount: 100)
+            if changeWidth {
+                fixture.table.bounds.size.width = 320
+            } else {
+                defaults.set("long", forKey: "story_list_preview_text_size")
+            }
+            fixture.resetMeasurements()
+
+            fixture.controller.renderStories(makeStories(100..<112))
+
+            XCTAssertEqual(fixture.table.reloadCalls, 1)
+            XCTAssertEqual(fixture.table.insertedRows, 0)
+            defaults.set("medium", forKey: "story_list_preview_text_size")
+        }
+    }
+
+    func test_changedClusterPreferenceOrSubscriptionsFallsBackToReload() {
+        for changeSubscriptions in [false, true] {
+            let fixture = makeFixture(storyCount: 100)
+            if changeSubscriptions {
+                fixture.controller.appDelegate.dictFeeds.removeObject(forKey: "2")
+            } else {
+                defaults.set(false, forKey: "story_clustering")
+            }
+            fixture.resetMeasurements()
+
+            fixture.controller.renderStories(makeStories(100..<112))
+            fixture.table.layoutIfNeeded()
+
+            XCTAssertEqual(fixture.table.reloadCalls, 1)
+            XCTAssertEqual(fixture.table.insertedRows, 0)
+            XCTAssertEqual(fixture.table.numberOfRows(inSection: 0), 113)
+            defaults.set(true, forKey: "story_clustering")
+        }
+    }
+
     private func makeFixture(storyCount: Int) -> PaginationFixture {
         let appDelegate = NewsBlurAppDelegate()
         appDelegate.isPremium = true
