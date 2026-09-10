@@ -964,14 +964,24 @@
 
 - (void)setToolbarOffset:(CGFloat)offset {
     CGFloat clamped = MAX(0, MIN(self.toolbarScrollHandler.toolbarHeight, offset));
-    [self.toolbarScrollHandler setOffset:clamped];
-    self.storyToolbar.transform = CGAffineTransformMakeTranslation(0, -clamped);
-    [self updateStatusBarState];
-    [self.currentPage updateFeedTitleGradientPosition];
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -clamped);
+    BOOL toolbarChanged = !CGAffineTransformEqualToTransform(self.storyToolbar.transform, transform);
+    // StoryPagesObjCViewController.m is called after the scroll handler has already advanced its offset.
+    if (self.toolbarScrollHandler.toolbarOffset != clamped) {
+        [self.toolbarScrollHandler setOffset:clamped];
+    }
+    if (toolbarChanged) {
+        self.storyToolbar.transform = transform;
+        [self updateStatusBarState];
+        // StoryDetailObjCViewController.m already updates this gradient for content scrolling.
+        [self.currentPage updateFeedTitleGradientPosition];
+    }
 
     // Keep adjacent pages in sync so there's no jump when swiping to them.
     // Only adjust pages that are at the top (not user-scrolled).
-    for (StoryDetailViewController *page in @[self.nextPage, self.previousPage]) {
+    StoryDetailViewController *adjacentPages[] = {self.nextPage, self.previousPage};
+    for (NSUInteger index = 0; index < 2; index++) {
+        StoryDetailViewController *page = adjacentPages[index];
         if (!page || page == self.currentPage) continue;
         UIScrollView *sv = page.webView.scrollView;
         CGFloat topRest = -sv.contentInset.top;
@@ -979,8 +989,14 @@
         CGFloat targetOffset = topRest + clamped;
         // Page is "at top" if within the toolbar adjustment range (topRest to topRest+toolbarHeight)
         if (sv.contentOffset.y <= maxAdjustedTop + 1) {
-            sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
-            [page updateFeedTitleGradientPosition];
+            // StoryPagesObjCViewController.m must still synchronize newly loaded pages when the toolbar is unchanged.
+            BOOL pageOffsetChanged = sv.contentOffset.y != targetOffset;
+            if (pageOffsetChanged) {
+                sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+            }
+            if (pageOffsetChanged || toolbarChanged) {
+                [page updateFeedTitleGradientPosition];
+            }
         }
     }
 }
