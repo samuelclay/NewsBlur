@@ -579,6 +579,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash;
 - (void)cacheStoryImagePlaceholder:(NSString *)storyHash;
+- (void)removeCachedStoryImageForStoryHash:(NSString *)storyHash;
+- (void)removeAllCachedStoryImages;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
 
