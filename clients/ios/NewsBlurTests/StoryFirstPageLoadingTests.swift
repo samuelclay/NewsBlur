@@ -561,7 +561,7 @@ import XCTest
             scroll.testingDrag = true
             let rawPage = CGFloat(8 + direction)
             scroll.contentOffset = pages.isHorizontal ? CGPoint(x: 390 * rawPage, y: 0) : CGPoint(x: 0, y: 844 * rawPage)
-            pages.setStoryFromScroll(false)
+            pages.scrollViewDidScroll(scroll)
             XCTAssertEqual(pages.pageChanges, [direction > 0 ? 0 : 2])
         }
     }
