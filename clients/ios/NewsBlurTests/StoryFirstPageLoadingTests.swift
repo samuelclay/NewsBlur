@@ -658,6 +658,90 @@ import XCTest
         XCTAssertTrue(fixture.app.requests.last?.url.contains("page=2&") == true)
     }
 
+    func test_successiveSearchEditsClearNormalCacheGatesAndRejectEarlierResultsInFeedsAndRivers() async throws {
+        for river in [false, true] {
+            let fixture = makeFixture()
+            if river {
+                fixture.app.riverFeeds = [1]
+                fixture.openRiver()
+                fixture.app.releaseReadFlush()
+                fixture.app.releaseSavedFlush()
+                await settle()
+                fixture.app.reply(to: 0, with: response())
+                await settle()
+            } else {
+                try await prime(fixture)
+            }
+            let search = UITextField()
+            fixture.controller.searchField = search
+            let delegate = fixture.controller as UITextFieldDelegate
+            let reloadSelector = NSSelectorFromString("reloadStories")
+            defer { NSObject.cancelPreviousPerformRequests(withTarget: fixture.controller, selector: reloadSelector, object: nil) }
+            func edit(_ query: String) {
+                search.text = query
+                fixture.controller.perform(NSSelectorFromString("searchFieldDidChange:"), with: search)
+            }
+            func query(in index: Int) -> String? {
+                guard fixture.app.requests.indices.contains(index) else { return nil }
+                return URLComponents(string: fixture.app.requests[index].url)?.queryItems?.first { $0.name == "query" }?.value
+            }
+
+            edit("breeding ground for malicious")
+            await settleSearchDebounce()
+            let firstSearch = fixture.app.requests.count - 1
+            XCTAssertEqual(query(in: firstSearch), "breeding ground for malicious")
+            XCTAssertNil(fixture.controller.value(forKey: "firstPageLoad"))
+            fixture.app.reply(to: firstSearch, with: response(stories: makeStories(100..<102)))
+            await settle()
+            XCTAssertEqual(fixture.hashes, ["first-page-100", "first-page-101"])
+
+            XCTAssertTrue(delegate.textFieldShouldClear?(search) == true)
+            search.text = ""
+            let clearedRequest = fixture.app.requests.count - 1
+            XCTAssertNil(query(in: clearedRequest))
+            edit("Container for Chaos")
+            _ = delegate.textFieldShouldReturn?(search)
+            // StoryFirstPageLoadingTests.swift holds the clear-triggered normal response until the query already changed, then lets the real one-second search debounce run.
+            fixture.app.reply(to: clearedRequest, with: response(stories: makeStories(200..<202)))
+            await settleSearchDebounce()
+            let replacement = fixture.app.requests.count - 1
+            XCTAssertGreaterThan(replacement, clearedRequest)
+            XCTAssertEqual(query(in: replacement), "Container for Chaos")
+            XCTAssertNil(fixture.controller.value(forKey: "firstPageLoad"))
+            fixture.app.reply(to: replacement, with: response(stories: makeStories(300..<302)))
+            await settle()
+            XCTAssertEqual(fixture.hashes, ["first-page-300", "first-page-301"])
+            XCTAssertFalse(fixture.controller.pageFetching)
+
+            while !(search.text ?? "").isEmpty { edit(String((search.text ?? "").dropLast())) }
+            edit("\"container for chaos\"")
+            _ = delegate.textFieldShouldReturn?(search)
+            await settleSearchDebounce()
+            let quoted = fixture.app.requests.count - 1
+            XCTAssertGreaterThan(quoted, replacement)
+            XCTAssertEqual(query(in: quoted), "\"container for chaos\"")
+            fixture.app.reply(to: quoted, with: response(stories: makeStories(400..<402)))
+            fixture.app.reply(to: firstSearch, with: response(stories: makeStories(100..<102)))
+            fixture.app.fail(to: clearedRequest, code: NSURLErrorCancelled)
+            await settle()
+            XCTAssertEqual(fixture.hashes, ["first-page-400", "first-page-401"])
+            XCTAssertFalse(fixture.controller.pageFetching)
+            XCTAssertNil(fixture.controller.value(forKey: "firstPageLoad"))
+
+            fixture.controller.fetchNextPage(nil)
+            let nextPage = fixture.app.requests.count - 1
+            XCTAssertGreaterThan(nextPage, quoted)
+            XCTAssertEqual(query(in: nextPage), "\"container for chaos\"")
+            XCTAssertTrue(fixture.app.requests.last?.url.contains("page=2&") == true)
+        }
+    }
+
+    private func settleSearchDebounce() async {
+        let reloaded = expectation(description: "Real search debounce submits the latest edit")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.15) { reloaded.fulfill() }
+        await fulfillment(of: [reloaded], timeout: 2)
+    }
+
     private func prime(_ fixture: FirstPageFixture, stories: [[String: Any]]? = nil) async throws {
         fixture.open()
         fixture.app.releaseReadFlush()
