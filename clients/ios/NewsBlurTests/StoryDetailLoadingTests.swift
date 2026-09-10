@@ -458,6 +458,96 @@ import XCTest
         XCTAssertEqual(app.positions, [Int(floor(keyboardPosition / 5_000 * 1_000))])
     }
 
+    func test_statusBarScrollToInsetTopStoresZeroAndClearsTheOldRestorationFraction() async {
+        let app = StoryScrollStoreAppDelegate()
+        let fixture = makeFixture(app: app)
+        app.setValue(ImmediateStoryScrollQueue(), forKey: "database")
+        fixture.page.recordsPosition = true
+        fixture.page.drawStory()
+        await delay(0.15)
+        restoreScroll(on: fixture.page)
+        await delay(0.05)
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 2_500)
+        fixture.web.scrollView.contentInset.top = 64
+
+        XCTAssertTrue(requestScrollToTop(on: fixture.page))
+        fixture.web.scrollView.contentOffset.y = -fixture.web.scrollView.adjustedContentInset.top
+        fixture.page.viewWillDisappear(false)
+        await delay(0.05)
+
+        XCTAssertEqual(app.positions, [0])
+        XCTAssertEqual(fixture.page.value(forKey: "scrollPct") as? Double, 0)
+    }
+
+    func test_statusBarTopCancelsAnOutstandingSavedPositionRead() async {
+        let app = StoryScrollStoreAppDelegate()
+        let fixture = makeFixture(app: app)
+        let database = HeldStoryScrollQueue()
+        app.setValue(database, forKey: "database")
+        fixture.page.recordsPosition = true
+        fixture.page.drawStory()
+        await delay(0.15)
+        restoreScroll(on: fixture.page)
+        await fulfillment(of: [database.started], timeout: 2)
+        fixture.web.scrollView.contentInset.top = 64
+
+        XCTAssertTrue(requestScrollToTop(on: fixture.page))
+        fixture.web.scrollView.contentOffset.y = -64
+        fixture.page.viewWillDisappear(false)
+        database.release()
+        await delay(0.05)
+
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, -64)
+        XCTAssertEqual(app.positions, [0])
+        XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
+    }
+
+    func test_statusBarTopCancelsSavedRestorationWaitingForNativeLayout() async throws {
+        let fixture = makeFixture()
+        fixture.app.setValue(ImmediateStoryScrollQueue(), forKey: "database")
+        fixture.web.defersAsyncJavaScript = true
+        fixture.page.drawStory()
+        await delay(0.15)
+        restoreScroll(on: fixture.page)
+        for _ in 0..<60 where fixture.web.asyncCompletions.isEmpty { await delay(0.01) }
+        let complete = try XCTUnwrap(fixture.web.asyncCompletions.first)
+        fixture.web.scrollView.contentInset.top = 64
+
+        XCTAssertTrue(requestScrollToTop(on: fixture.page))
+        fixture.web.scrollView.contentOffset.y = -64
+        complete(true, nil)
+
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, -64)
+        XCTAssertEqual(fixture.page.value(forKey: "scrollPct") as? Double, 0)
+    }
+
+    func test_queuedPositionAfterStatusBarTopStoresZeroOnlyForTheSameDocument() async {
+        for reusesPage in [false, true] {
+            let app = StoryScrollStoreAppDelegate()
+            let fixture = makeFixture(app: app)
+            fixture.page.activeStory = story("status-top-queue-\(reusesPage)", body: "Queued article")
+            fixture.page.recordsPosition = true
+            fixture.page.drawStory()
+            await delay(0.15)
+            fixture.page.setValue(true, forKey: "hasScrolled")
+            fixture.web.scrollView.contentOffset.y = 2_500
+            fixture.page.ignorePositionStorage(true)
+
+            XCTAssertTrue(requestScrollToTop(on: fixture.page))
+            fixture.web.scrollView.contentInset.top = 64
+            fixture.web.scrollView.contentOffset.y = -64
+            if reusesPage {
+                fixture.page.activeStory = story("replacement", body: "Replacement article")
+                fixture.page.drawStory()
+                await drainMainQueue()
+                fixture.web.scrollView.contentOffset.y = 1_000
+            }
+            await delay(2.1)
+
+            XCTAssertEqual(app.positions, reusesPage ? [] : [0])
+        }
+    }
+
     func test_delayedScrollRestoreCannotOverrideManualScrolling() async {
         let app = StoryLoadAppDelegate()
         let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
@@ -698,6 +788,12 @@ import XCTest
         let selector = NSSelectorFromString("scrollToLastPosition:")
         typealias Call = @convention(c) (AnyObject, Selector, Bool) -> Void
         unsafeBitCast(page.method(for: selector), to: Call.self)(page, selector, false)
+    }
+
+    private func requestScrollToTop(on page: StoryLoadPage) -> Bool {
+        let selector = NSSelectorFromString("scrollViewShouldScrollToTop:")
+        typealias Call = @convention(c) (AnyObject, Selector, UIScrollView) -> Bool
+        return unsafeBitCast(page.method(for: selector), to: Call.self)(page, selector, page.webView.scrollView)
     }
 
     private func drainMainQueue() async { await delay(0.01) }
