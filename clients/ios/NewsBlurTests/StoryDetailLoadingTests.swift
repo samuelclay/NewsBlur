@@ -104,11 +104,82 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         fixture.page.widthUpdates = 0
+        fixture.app.activeComment = ["comment": "Still editing"]
 
         sendReady(to: fixture.page, token: nil, mainFrame: true)
 
         XCTAssertEqual(fixture.page.widthUpdates, 0)
         XCTAssertEqual(fixture.page.classifierUpdates, 0)
+        XCTAssertEqual(fixture.app.activeComment?["comment"] as? String, "Still editing")
+    }
+
+    func test_visibleDocumentCanFinishDOMSetupAfterTemporaryPresentation() async throws {
+        let fixture = makeFixture()
+        fixture.page.drawStory()
+        await drainMainQueue()
+        let token = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.first?.html))
+        await delay(0.15)
+        XCTAssertFalse(fixture.web.isHidden)
+
+        fixture.page.viewWillDisappear(false)
+        fixture.page.viewWillAppear(false)
+        sendReady(to: fixture.page, token: token, mainFrame: true)
+
+        XCTAssertEqual(fixture.page.classifierUpdates, 1)
+        XCTAssertEqual(fixture.web.loads.count, 1)
+    }
+
+    func test_returningFromPresentationPreservesRestoredPositionWithHiddenToolbar() async {
+        let app = StoryLoadAppDelegate()
+        let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
+        app.testPages = pages
+        defer { app.testPages = nil }
+        pages.appDelegate = app
+        pages.storyToolbar = StoryToolbar()
+        pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+        pages.toolbarScrollHandler.toolbarHeight = 44
+        pages.toolbarScrollHandler.setOffset(44)
+        let fixture = makeFixture(app: app)
+        pages.currentPage = fixture.page
+        fixture.page.drawStory()
+        await drainMainQueue()
+        await delay(0.15)
+        fixture.page.setValue(true, forKey: "restoredStoryScrollPosition")
+        fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: 250)
+
+        fixture.page.viewWillDisappear(false)
+        fixture.page.viewWillAppear(false)
+
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 250)
+    }
+
+    func test_sameHashTextViewStillSubmitsItsNewCompleteDocument() async {
+        let fixture = makeFixture()
+        fixture.page.drawStory()
+        await drainMainQueue()
+        fixture.page.inTextView = true
+        fixture.page.activeStory["original_text"] = "Full text replacement"
+        fixture.page.drawStory()
+        await drainMainQueue()
+
+        XCTAssertEqual(fixture.web.loads.count, 2)
+        XCTAssertTrue(fixture.web.loads.first?.html.contains("Fixture article body") == true)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Full text replacement") == true)
+        XCTAssertFalse(fixture.web.loads.last?.html.contains("Fixture article body") == true)
+    }
+
+    func test_delayedScrollRestoreStillRestoresTheSameStory() async {
+        let fixture = makeFixture()
+        let database = HeldStoryScrollQueue()
+        fixture.app.setValue(database, forKey: "database")
+        fixture.page.drawStory()
+        await drainMainQueue()
+        restoreScroll(on: fixture.page)
+        await fulfillment(of: [database.started], timeout: 2)
+        database.release()
+        await delay(0.05)
+
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 2_500)
     }
 
     func test_readyTokenMustMatchCurrentMainDocumentAndRunsOnce() async throws {
@@ -169,33 +240,43 @@ import XCTest
         let page = makePage(web: web)
         page.shareHTML = "<img src='nb-story-test://resource/avatar.png' width='30' height='30'>"
         page.activeStory = story("web", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view.addSubview(page.view)
+        window.isHidden = false
+        defer { window.isHidden = true }
         web.navigationDelegate = page
         let ready = expectation(description: "Full story DOM is ready while its image remains pending")
         page.readyObserver = { ready.fulfill() }
         page.drawStory()
         await fulfillment(of: [ready], timeout: 5)
         await delay(0.15)
+        for _ in 0..<40 where web.scrollView.contentSize.height < web.bounds.height + 500 {
+            window.layoutIfNeeded()
+            await delay(0.05)
+        }
 
         XCTAssertGreaterThan(resource.pendingCount, 0)
         XCTAssertFalse(web.isHidden)
         let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Readable article paragraph") == true)
         XCTAssertEqual(page.finishedNavigations, 0)
+        XCTAssertGreaterThan(web.scrollView.contentSize.height, web.bounds.height + 500)
         web.scrollView.contentOffset = CGPoint(x: 0, y: 250)
+        XCTAssertEqual(web.scrollView.contentOffset.y, 250, accuracy: 2)
         resource.finish()
         await delay(0.15)
         XCTAssertEqual(web.scrollView.contentOffset.y, 250, accuracy: 2)
         page.webView = nil
     }
 
-    private func makeFixture() -> (page: StoryLoadPage, web: RecordedStoryLoadWebView, app: NewsBlurAppDelegate) {
+    private func makeFixture(app: NewsBlurAppDelegate = NewsBlurAppDelegate()) -> (page: StoryLoadPage, web: RecordedStoryLoadWebView, app: NewsBlurAppDelegate) {
         let web = RecordedStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
-        let page = makePage(web: web)
+        let page = makePage(web: web, app: app)
         return (page, web, page.appDelegate)
     }
 
-    private func makePage(web: WKWebView) -> StoryLoadPage {
-        let app = NewsBlurAppDelegate()
+    private func makePage(web: WKWebView, app: NewsBlurAppDelegate = NewsBlurAppDelegate()) -> StoryLoadPage {
         app.storiesCollection = StoriesCollection()
         app.storiesCollection.appDelegate = app
         app.isPremium = true
@@ -240,6 +321,23 @@ import XCTest
             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { continuation.resume() }
         }
     }
+}
+
+private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
+    var testPages: StoryPagesViewController?
+    override var storyPagesViewController: StoryPagesViewController! {
+        get { testPages }
+        set { testPages = newValue }
+    }
+}
+
+@MainActor private final class StoryLoadToolbarPages: StoryPagesViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
+    override func setTextButton() {}
+    override func setTextButton(_ storyViewController: StoryDetailViewController!) {}
+    override func resizeScrollView() {}
+    override func updateUITestTraverseFadeProbe() {}
 }
 
 @MainActor private final class StoryLoadPage: StoryDetailViewController {
