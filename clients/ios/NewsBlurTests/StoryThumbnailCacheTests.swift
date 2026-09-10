@@ -61,6 +61,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         appDelegate.setValue(cache, forKey: "cachedStoryImages")
         let controller = makeController(appDelegate: appDelegate)
         let collection = StoriesCollection()
+        collection.appDelegate = appDelegate
         collection.activeFeed = ["id": 1]
         controller.storiesCollection = collection
         let stories: [[String: Any]] = [["story_hash": "story", "image_urls": ["https://example.test/story.jpg"]]]
