@@ -146,6 +146,39 @@ import QuartzCore
         XCTAssertEqual(fixture.stories.feedPage, 3)
     }
 
+    func test_nativePaginationStartsBeforeFastScrollReachesTheLoadingRow() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.isOnline = false
+        fixture.controller.pageFetching = false
+        fixture.controller.runsScrollCheck = true
+        fixture.controller.setValue(NSNotFound, forKey: "scrollingMarkReadRow")
+        let maximumOffset = fixture.table.contentSize.height - fixture.table.bounds.height
+        fixture.table.contentOffset.y = maximumOffset - 1_000
+
+        fixture.controller.checkScroll()
+
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 1,
+                       "StoryPaginationPerformanceTests.swift reproduces waiting until less than one screen remains before preparing another page.")
+        XCTAssertEqual(fixture.stories.feedPage, 3)
+        fixture.controller.checkScroll()
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 1, "One pending page must coalesce repeated scroll callbacks.")
+    }
+
+    func test_nativePaginationDoesNotFetchPagesFarBeyondTheViewport() {
+        let fixture = makeFixture(storyCount: 100)
+        fixture.controller.isOnline = false
+        fixture.controller.pageFetching = false
+        fixture.controller.runsScrollCheck = true
+        fixture.controller.setValue(NSNotFound, forKey: "scrollingMarkReadRow")
+        let maximumOffset = fixture.table.contentSize.height - fixture.table.bounds.height
+        fixture.table.contentOffset.y = maximumOffset - 4 * fixture.table.bounds.height
+
+        fixture.controller.checkScroll()
+
+        XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
+        XCTAssertEqual(fixture.stories.feedPage, 2)
+    }
+
     func test_dailyBriefingPaginationStillUsesItsPresentationAndLoader() {
         let fixture = makeFixture(storyCount: 100)
         fixture.stories.isDailyBriefing = true
@@ -503,12 +536,13 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     var loadingPresentations = 0
     var offlinePageLoads = 0
     var dailyBriefingPages = [Int32]()
+    var runsScrollCheck = false
 
     override var isLegacyTable: Bool { legacyTableForTest }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}
     override func reload() { reloadTable() }
-    override func checkScroll() {}
+    override func checkScroll() { if runsScrollCheck { super.checkScroll() } }
     override func scrollViewDidScroll(_ scrollView: UIScrollView!) {}
     override func loadingFeed() { loadingPresentations += 1 }
     override func loadOfflineStories() { offlinePageLoads += 1 }
