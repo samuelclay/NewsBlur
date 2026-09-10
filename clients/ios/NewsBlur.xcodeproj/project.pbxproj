@@ -1467,6 +1467,8 @@
 		D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */; };
 		D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
 		D74E3909427F4B3AAF85A035 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
+		D74E3909427F4B3AAF85A043 /* StoryThumbnailPrefetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A045 /* StoryThumbnailPrefetcher.swift */; };
+		D74E3909427F4B3AAF85A044 /* StoryThumbnailPrefetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A045 /* StoryThumbnailPrefetcher.swift */; };
 		D74E3909427F4B3AAF85A037 /* StoryTextLayoutCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */; };
 		D74E3909427F4B3AAF85A039 /* StoryTextLayoutEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */; };
 		D74E3909427F4B3AAF85A041 /* FeedIconColdScrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A042 /* FeedIconColdScrollTests.swift */; };
@@ -2492,6 +2494,7 @@
 		D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutPerformanceTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCache.swift; sourceTree = "<group>"; };
+		D74E3909427F4B3AAF85A045 /* StoryThumbnailPrefetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailPrefetcher.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutEvictionTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A042 /* FeedIconColdScrollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedIconColdScrollTests.swift; sourceTree = "<group>"; };
@@ -2669,6 +2672,7 @@
 				D74E3909427F4B3AAF85A022 /* StoryDetailAssetCache.swift */,
 				D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */,
 				D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */,
+				D74E3909427F4B3AAF85A045 /* StoryThumbnailPrefetcher.swift */,
 				23E966198BD700C25CF4103B /* ReaderPerformance.swift */,
 				1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */,
 				0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */,
@@ -5542,6 +5546,7 @@
 				D74E3909427F4B3AAF85A020 /* StoryDetailAssetCache.swift in Sources */,
 				D74E3909427F4B3AAF85A027 /* StoryFirstPageCache.swift in Sources */,
 				D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */,
+				D74E3909427F4B3AAF85A043 /* StoryThumbnailPrefetcher.swift in Sources */,
 				452F7CC253F066DDE7A3E212 /* ReaderPerformance.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */,
 				FF5E1E05A010F0C272F68B3D /* SyncNotifierView.swift in Sources */,
@@ -5780,6 +5785,7 @@
 				D74E3909427F4B3AAF85A021 /* StoryDetailAssetCache.swift in Sources */,
 				D74E3909427F4B3AAF85A028 /* StoryFirstPageCache.swift in Sources */,
 				D74E3909427F4B3AAF85A035 /* StoryTextLayoutCache.swift in Sources */,
+				D74E3909427F4B3AAF85A044 /* StoryThumbnailPrefetcher.swift in Sources */,
 				78C134BF5A92B4328336073C /* ReaderPerformance.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F80 /* CatalystModalDismissal.swift in Sources */,
 				95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */,
