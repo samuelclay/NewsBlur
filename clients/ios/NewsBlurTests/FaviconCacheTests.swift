@@ -73,6 +73,7 @@ final class Test_FaviconCache: XCTestCase {
     private func makeImage() -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 3
+        format.preferredRange = .standard
         return UIGraphicsImageRenderer(size: CGSize(width: 32, height: 32), format: format).image { context in
             UIColor.red.setFill()
             context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
