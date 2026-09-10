@@ -310,6 +310,102 @@ import XCTest
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 250)
     }
 
+    func test_zeroOrMissingSavedPositionStartsBelowTheActualToolbarAcrossReadyTiming() async throws {
+        for savedPosition in [Int?.none, 0] {
+            for toolbarOffset: CGFloat in [0, 44] {
+                for readyBeforeReveal in [false, true] {
+                    let app = StoryLoadAppDelegate()
+                    let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
+                    app.testPages = pages
+                    defer { app.testPages = nil }
+                    pages.appDelegate = app
+                    pages.storyToolbar = StoryToolbar()
+                    pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+                    pages.toolbarScrollHandler.setOffset(toolbarOffset)
+                    app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: savedPosition != nil,
+                                                          position: savedPosition ?? 0), forKey: "database")
+                    let fixture = makeFixture(app: app)
+                    pages.currentPage = fixture.page
+                    fixture.page.drawStory()
+                    await drainMainQueue()
+                    fixture.page.viewWillAppear(false)
+                    let topRest = -fixture.web.scrollView.adjustedContentInset.top + toolbarOffset
+                    XCTAssertLessThan(topRest, 0)
+                    // StoryDetailLoadingTests.swift models the new WK document resetting its native offset after appearance.
+                    fixture.web.scrollView.contentOffset = .zero
+                    let token = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html))
+                    if !readyBeforeReveal { await delay(0.15) }
+                    sendReady(to: fixture.page, token: token, mainFrame: true)
+                    await delay(0.2)
+
+                    XCTAssertEqual(fixture.web.scrollView.contentOffset.y, topRest, accuracy: 0.5,
+                                   "saved=\(String(describing: savedPosition)) toolbar=\(toolbarOffset) earlyReady=\(readyBeforeReveal)")
+                }
+            }
+        }
+    }
+
+    func test_realWebKitReopenAtSavedZeroPreservesTheVisibleHeaderCoordinates() async throws {
+        let app = StoryLoadAppDelegate()
+        let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
+        app.testPages = pages
+        defer { app.testPages = nil }
+        pages.appDelegate = app
+        pages.storyToolbar = StoryToolbar()
+        pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+        app.setValue(ImmediateStoryScrollQueue(position: 0), forKey: "database")
+        let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
+        let page = makePage(web: web, app: app)
+        pages.currentPage = page
+        page.allowsAppearanceCallbacks = false
+        page.activeStory = story("first", body: String(repeating: "<p>Reading from the exact beginning.</p>", count: 150))
+        web.scrollView.contentInsetAdjustmentBehavior = .never
+        web.navigationDelegate = page
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = pages
+        pages.view.addSubview(page.view)
+        pages.view.addSubview(pages.storyToolbar)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previousKeyWindow?.makeKey(); page.webView = nil }
+        page.perform(NSSelectorFromString("clearWebView"))
+        for _ in 0..<60 where page.value(forKey: "preparedWebViewFonts") as? Bool != true { await delay(0.05) }
+        XCTAssertEqual(page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+
+        let firstReady = expectation(description: "Initial real document is ready")
+        page.readyObserver = { firstReady.fulfill() }
+        page.drawStory()
+        await fulfillment(of: [firstReady], timeout: 5)
+        await delay(0.2)
+        XCTAssertTrue(requestScrollToTop(on: page))
+        let expectedOffset = -web.scrollView.adjustedContentInset.top
+        web.scrollView.setContentOffset(CGPoint(x: 0, y: expectedOffset), animated: false)
+        await delay(0.05)
+        let before = try await web.evaluateJavaScript("document.querySelector('h1').getBoundingClientRect().top")
+        XCTAssertLessThan(expectedOffset, 0)
+
+        let reopenedReady = expectation(description: "Reopened real document is ready")
+        page.readyObserver = { reopenedReady.fulfill() }
+        page.clearStory()
+        page.drawStory()
+        await drainMainQueue()
+        page.allowsAppearanceCallbacks = true
+        page.viewWillAppear(false)
+        page.allowsAppearanceCallbacks = false
+        await fulfillment(of: [reopenedReady], timeout: 5)
+        await delay(0.2)
+        let after = try await web.evaluateJavaScript("document.querySelector('h1').getBoundingClientRect().top")
+        print("STORY_TOP_REOPEN before_native=\(expectedOffset) after_native=\(web.scrollView.contentOffset.y) inset=\(web.scrollView.adjustedContentInset.top) toolbar=\(pages.toolbarScrollHandler.toolbarOffset) before_header=\(before) after_header=\(after)")
+        let snapshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: false) }
+        let attachment = XCTAttachment(image: snapshot)
+        attachment.name = "Reopened article at saved zero with custom toolbar"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertEqual(web.scrollView.contentOffset.y, expectedOffset, accuracy: 0.5)
+        XCTAssertEqual(after as? Double, before as? Double)
+    }
+
     func test_sameHashTextViewStillSubmitsItsNewCompleteDocument() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
@@ -861,6 +957,11 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class StoryLoadToolbarPages: StoryPagesViewController {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
     override func setTextButton() {}
     override func setTextButton(_ storyViewController: StoryDetailViewController!) {}
     override func resizeScrollView() {}
@@ -994,22 +1095,25 @@ private final class HeldStoryScrollQueue: NSObject {
 
 private final class StoryScrollDatabase: NSObject {
     let hasSavedPosition: Bool
-    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
-    @objc(executeQuery:) func executeQuery(_ sql: String) -> StoryScrollCursor { StoryScrollCursor(hasSavedPosition: hasSavedPosition) }
+    let position: Int
+    init(hasSavedPosition: Bool = true, position: Int = 500) { self.hasSavedPosition = hasSavedPosition; self.position = position }
+    @objc(executeQuery:) func executeQuery(_ sql: String) -> StoryScrollCursor { StoryScrollCursor(hasSavedPosition: hasSavedPosition, position: position) }
 }
 
 private final class ImmediateStoryScrollQueue: NSObject {
     let hasSavedPosition: Bool
-    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
-    @objc(inDatabase:) func inDatabase(_ block: (AnyObject) -> Void) { block(StoryScrollDatabase(hasSavedPosition: hasSavedPosition)) }
+    let position: Int
+    init(hasSavedPosition: Bool = true, position: Int = 500) { self.hasSavedPosition = hasSavedPosition; self.position = position }
+    @objc(inDatabase:) func inDatabase(_ block: (AnyObject) -> Void) { block(StoryScrollDatabase(hasSavedPosition: hasSavedPosition, position: position)) }
 }
 
 private final class StoryScrollCursor: NSObject {
     private var read = false
     let hasSavedPosition: Bool
-    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
+    let position: Int
+    init(hasSavedPosition: Bool = true, position: Int = 500) { self.hasSavedPosition = hasSavedPosition; self.position = position }
     @objc func next() -> Bool { defer { read = true }; return hasSavedPosition && !read }
-    @objc func resultDictionary() -> NSDictionary { ["scroll": 500, "story_hash": "first"] }
+    @objc func resultDictionary() -> NSDictionary { ["scroll": position, "story_hash": "first"] }
     @objc func close() {}
 }
 
