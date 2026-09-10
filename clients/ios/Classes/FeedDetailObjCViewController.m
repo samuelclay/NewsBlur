@@ -98,6 +98,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, copy) NSArray<NSDictionary *> *visibleStoryRows;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
+@property (nonatomic, strong) NSCache<NSString *, NSArray *> *completedStoryImageSources;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSDictionary *> *pendingStoryImageRequests;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
 @property (nonatomic, strong) BottomNextFeedControl *bottomNextFeedControl;
 @property (nonatomic, strong) UISelectionFeedbackGenerator *bottomNextFeedFeedback;
@@ -1485,6 +1487,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self hideFetchingBanner];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
+    [self resetStoryImageRequests];
 //    [self reload];
 }
 
@@ -1651,8 +1654,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         for (NSDictionary *story in stories) {
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
-            [self.appDelegate cacheStoryImagePlaceholder:storyHash];
-            [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
+            [self cacheImageURLs:imageURLs forStoryHash:storyHash withManager:manager];
 
             NSArray *clusterStories = [story[@"cluster_stories"] isKindOfClass:[NSArray class]] ? story[@"cluster_stories"] : nil;
             for (NSDictionary *clusterStory in clusterStories) {
@@ -1662,8 +1664,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                     continue;
                 }
 
-                [self.appDelegate cacheStoryImagePlaceholder:clusterStoryHash];
-                [self getFirstImage:clusterImageURLs forStoryHash:clusterStoryHash withManager:manager];
+                [self cacheImageURLs:clusterImageURLs forStoryHash:clusterStoryHash withManager:manager];
             }
         }
     }];
@@ -1672,14 +1673,77 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
 
-- (void)getFirstImage:(NSArray *)storyImageUrls forStoryHash:(NSString *)storyHash withManager:(AFHTTPSessionManager *)manager {
-    NSString *storyImageUrl = [[storyImageUrls firstObject] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
-    if (storyImageUrl == nil) {
+- (void)cacheImageURLs:(NSArray *)imageURLs forStoryHash:(NSString *)storyHash withManager:(AFHTTPSessionManager *)manager {
+    if (!storyHash.length) {
         return;
     }
+
+    UIImage *cachedImage = [self.appDelegate cachedImageForStoryHash:storyHash];
+    if (!imageURLs.count) {
+        @synchronized (self) {
+            [self.pendingStoryImageRequests removeObjectForKey:storyHash];
+            [self.completedStoryImageSources removeObjectForKey:storyHash];
+            if ([imageURLs isKindOfClass:[NSArray class]]) {
+                [self.appDelegate.cachedStoryImages removeObjectForKey:storyHash];
+            }
+        }
+        [self.appDelegate cacheStoryImagePlaceholder:storyHash];
+        if (cachedImage && imageURLs) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showImageForStoryHash:storyHash];
+            });
+        }
+        return;
+    }
+
+    @synchronized (self) {
+        if (!self.completedStoryImageSources) {
+            self.completedStoryImageSources = [[NSCache alloc] init];
+            self.completedStoryImageSources.countLimit = 1024;
+            self.pendingStoryImageRequests = [NSMutableDictionary dictionary];
+        }
+
+        if (cachedImage && [[self.completedStoryImageSources objectForKey:storyHash] isEqualToArray:imageURLs]) {
+            [self.pendingStoryImageRequests removeObjectForKey:storyHash];
+            return;
+        }
+
+        NSDictionary *pendingRequest = self.pendingStoryImageRequests[storyHash];
+        if ([pendingRequest[@"urls"] isEqualToArray:imageURLs]) {
+            return;
+        }
+
+        self.pendingStoryImageRequests[storyHash] = @{@"story_hash": storyHash, @"urls": [imageURLs copy]};
+    }
+
+    // FeedDetailObjCViewController.m: keep the current thumbnail during its first
+    // session refresh or a changed source URL, then reuse successful/pending sources.
+    [self.appDelegate cacheStoryImagePlaceholder:storyHash];
+    [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
+}
+
+- (void)getFirstImage:(NSArray *)storyImageUrls forStoryHash:(NSString *)storyHash withManager:(AFHTTPSessionManager *)manager {
+    NSDictionary *request;
+    @synchronized (self) {
+        request = self.pendingStoryImageRequests[storyHash];
+    }
+
+    if ([request[@"urls"] isEqualToArray:storyImageUrls]) {
+        [self downloadFirstImage:storyImageUrls forRequest:request withManager:manager];
+    }
+}
+
+- (void)downloadFirstImage:(NSArray *)storyImageUrls forRequest:(NSDictionary *)request withManager:(AFHTTPSessionManager *)manager {
+    NSString *storyHash = request[@"story_hash"];
+    @synchronized (self) {
+        if (self.pendingStoryImageRequests[storyHash] != request) {
+            return;
+        }
+    }
+    NSString *storyImageUrl = [[storyImageUrls firstObject] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    if ([storyImageUrl hasPrefix:@"http://data:image"]) {
+    if (storyImageUrl == nil || [storyImageUrl hasPrefix:@"http://data:image"]) {
+        [self finishStoryImageRequest:request withImage:nil];
         return;
     }
     
@@ -1691,26 +1755,54 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             if (!image || image.size.height < 50 || image.size.width < 50) {
                 if (storyImageUrls.count > 1) {
                     NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
-                    [self getFirstImage:remainingImageUrls forStoryHash:storyHash withManager:manager];
+                    [self downloadFirstImage:remainingImageUrls forRequest:request withManager:manager];
+                } else {
+                    [self finishStoryImageRequest:request withImage:nil];
                 }
                 return;
             }
             
             CGSize maxImageSize = CGSizeMake(300, 300);
             image = [image imageByScalingAndCroppingForSize:maxImageSize];
-            [self.appDelegate cacheStoryImage:image forStoryHash:storyHash];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self showImageForStoryHash:storyHash];
-            });
+            [self finishStoryImageRequest:request withImage:image];
         });
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"getFirstImage for %@ error: %@", storyHash, error);  // log
         
         if (storyImageUrls.count > 1) {
             NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
-            [self getFirstImage:remainingImageUrls forStoryHash:storyHash withManager:manager];
+            [self downloadFirstImage:remainingImageUrls forRequest:request withManager:manager];
+        } else {
+            [self finishStoryImageRequest:request withImage:nil];
         }
     }];
+}
+
+- (void)finishStoryImageRequest:(NSDictionary *)request withImage:(UIImage *)image {
+    NSString *storyHash = request[@"story_hash"];
+    @synchronized (self) {
+        if (self.pendingStoryImageRequests[storyHash] != request) {
+            return;
+        }
+
+        [self.pendingStoryImageRequests removeObjectForKey:storyHash];
+        if (!image) {
+            return;
+        }
+
+        [self.appDelegate cacheStoryImage:image forStoryHash:storyHash];
+        [self.completedStoryImageSources setObject:request[@"urls"] forKey:storyHash];
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showImageForStoryHash:storyHash];
+    });
+}
+
+- (void)resetStoryImageRequests {
+    @synchronized (self) {
+        [self.pendingStoryImageRequests removeAllObjects];
+    }
 }
 
 - (void)showImageForStoryHash:(NSString *)storyHash {
