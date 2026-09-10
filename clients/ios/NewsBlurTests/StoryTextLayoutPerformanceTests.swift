@@ -30,7 +30,7 @@ import ObjectiveC.runtime
         super.tearDown()
     }
 
-    func test_prefetchMeasuresActualUpcomingUnicodeTextAwayFromMainThread() throws {
+    func test_00_prefetchMeasuresActualUpcomingUnicodeTextAwayFromMainThread() throws {
         let fixture = makeFixture()
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching,
             "Native rows should prepare their actual text before the first visible draw.")
@@ -41,18 +41,21 @@ import ObjectiveC.runtime
         }
         defer { probe.restore() }
 
+        let started = CACurrentMediaTime()
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
         wait(for: [measured], timeout: 5)
         // StoryTextLayoutPerformanceTests.swift lets the worker publish its scalar result before drawing.
         let published = expectation(description: "Worker result publication")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { published.fulfill() }
         wait(for: [published], timeout: 1)
+        let preparedAt = CACurrentMediaTime()
         let beforeDraw = probe.counts
         let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table,
             cellForRowAt: IndexPath(row: 0, section: 0)) as? FeedDetailTableCell)
         cell.setValue(fixture.app, forKey: "appDelegate")
         let height = fixture.controller.tableView(fixture.table, heightForRowAt: IndexPath(row: 0, section: 0))
         _ = render(cell, app: fixture.app, size: CGSize(width: 390, height: height))
+        print("TEXT_LAYOUT_BENCHMARK prepare_ms=\((preparedAt - started) * 1_000) first_draw_ms=\((CACurrentMediaTime() - preparedAt) * 1_000) main_measurements=\(probe.counts.main) worker_measurements=\(probe.counts.worker)")
 
         XCTAssertEqual(beforeDraw.main, 0)
         XCTAssertEqual(beforeDraw.worker, 2)
