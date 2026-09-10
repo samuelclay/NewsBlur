@@ -464,6 +464,139 @@ import XCTest
         XCTAssertTrue(fixture.app.requests.last?.url.contains("page=2&") == true)
     }
 
+    func test_failedQueuedPostsPreservePreOpeningReadSaveAndTagsWhileLaterSuccessAllowsServerChanges() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        let story = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        fixture.stories.markStoryRead(story, feed: nil)
+        var edited = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        edited["user_tags"] = ["pending tag"]
+        _ = fixture.stories.markStory(edited, asSaved: true, forceUpdate: true)
+        fixture.open()
+        await settle()
+        fixture.app.beginQueuedReadPOST(hashes: ["1": ["first-page-0"]])
+        fixture.app.finishPOST(success: false)
+        await settle()
+        fixture.app.beginQueuedSavedPOST(params: ["story_id": "first-page-0", "feed_id": 1, "user_tags": ["pending tag"]])
+        fixture.app.finishPOST(success: false)
+        await settle()
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response())
+        await settle()
+        let preserved = try XCTUnwrap((fixture.stories.activeFeedStories as? [[String: Any]])?.first)
+        XCTAssertEqual(preserved["read_status"] as? Int, 1)
+        XCTAssertEqual(preserved["starred"] as? Bool, true)
+        XCTAssertEqual(preserved["user_tags"] as? [String], ["pending tag"])
+
+        fixture.open()
+        await settle()
+        fixture.app.beginQueuedReadPOST(hashes: ["1": ["first-page-0"]])
+        fixture.app.finishPOST(success: true)
+        await settle()
+        fixture.app.beginQueuedSavedPOST(params: ["story_id": "first-page-0", "feed_id": 1, "user_tags": ["pending tag"]])
+        fixture.app.finishPOST(success: true)
+        await settle()
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response())
+        await settle()
+        let authoritative = try XCTUnwrap((fixture.stories.activeFeedStories as? [[String: Any]])?.first)
+        XCTAssertEqual(authoritative["read_status"] as? Int, 0)
+        XCTAssertEqual(authoritative["starred"] as? Bool, false)
+        XCTAssertEqual(authoritative["user_tags"] as? [String], [])
+    }
+
+    func test_failedQueuedPostsReassertLatestReversalsRatherThanTheirObsoleteRequestValues() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        var edited = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        fixture.stories.markStoryRead(edited, feed: nil)
+        edited["user_tags"] = ["old pending tag"]
+        _ = fixture.stories.markStory(edited, asSaved: true, forceUpdate: true)
+        fixture.open()
+        await settle()
+        fixture.app.beginQueuedReadPOST(hashes: ["1": ["first-page-0"]])
+        let cached = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        fixture.stories.markStoryUnread(cached, feed: nil)
+        fixture.app.finishPOST(success: false)
+        await settle()
+        fixture.app.beginQueuedSavedPOST(params: ["story_id": "first-page-0", "feed_id": 1, "user_tags": ["old pending tag"]])
+        var unsaved = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        unsaved["user_tags"] = [] as [String]
+        _ = fixture.stories.markStory(unsaved, asSaved: false, forceUpdate: true)
+        fixture.app.finishPOST(success: false)
+        await settle()
+        var stale = makeStories(0..<12)
+        stale[0]["read_status"] = 1
+        stale[0]["starred"] = true
+        stale[0]["starred_date"] = "Stale date"
+        stale[0]["user_tags"] = ["old pending tag"]
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: stale))
+        await settle()
+        let final = try XCTUnwrap((fixture.stories.activeFeedStories as? [[String: Any]])?.first)
+        XCTAssertEqual(final["read_status"] as? Int, 0)
+        XCTAssertEqual(final["starred"] as? Bool, false)
+        XCTAssertNil(final["starred_date"])
+        XCTAssertEqual(final["user_tags"] as? [String], [])
+    }
+
+    func test_retainedFarPageSwipeUsesGestureDirectionBeforeNewListClamping() async throws {
+        for direction in [-1, 1] {
+            let fixture = makeFixture()
+            try await prime(fixture)
+            fixture.open()
+            await settle()
+            fixture.app.activeStory = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?[8])
+            let pages = FirstPageLoadingPages()
+            pages.appDelegate = fixture.app
+            pages.currentPage = StoryDetailViewController()
+            pages.currentPage.pageIndex = 8
+            let scroll = FirstPageGestureScroll(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            scroll.contentSize = CGSize(width: 390 * 15, height: 844 * 15)
+            pages.scrollView = scroll
+            fixture.app.testPages = pages
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(9..<10) + makeStories(1..<2) + makeStories(3..<4)))
+            await settle()
+            XCTAssertTrue(pages.pageChanges.isEmpty)
+            scroll.testingDrag = true
+            let rawPage = CGFloat(8 + direction)
+            scroll.contentOffset = pages.isHorizontal ? CGPoint(x: 390 * rawPage, y: 0) : CGPoint(x: 0, y: 844 * rawPage)
+            pages.setStoryFromScroll(false)
+            XCTAssertEqual(pages.pageChanges, [direction > 0 ? 0 : 2])
+        }
+    }
+
+    func test_cachedClusterChildSelectionAndReadEditsSurviveAuthoritativeInsertion() async throws {
+        let preferences = UserDefaults.standard
+        let original = preferences.object(forKey: "story_clustering")
+        preferences.set(true, forKey: "story_clustering")
+        defer {
+            if let original { preferences.set(original, forKey: "story_clustering") }
+            else { preferences.removeObject(forKey: "story_clustering") }
+        }
+        let fixture = makeFixture()
+        fixture.app.dictUserProfile = ["preferences": ["cluster_mark_read": true]]
+        var cached = makeStories(0..<12)
+        cached[4]["cluster_stories"] = [["story_hash": "related-child", "story_feed_id": 1, "story_title": "Related child", "read_status": 0]]
+        try await prime(fixture, stories: cached)
+        fixture.open()
+        await settle()
+        let parent = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 4))
+        let selected = IndexPath(row: parent.row + 1, section: parent.section)
+        fixture.table.selectRow(at: selected, animated: false, scrollPosition: .none)
+        let parentStory = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?[4])
+        fixture.stories.markStoryRead(parentStory, feed: nil)
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(100..<103) + cached))
+        await settle()
+        let moved = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 7))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, IndexPath(row: moved.row + 1, section: moved.section))
+        let story = try XCTUnwrap((fixture.stories.activeFeedStories as? [[String: Any]])?[7])
+        XCTAssertEqual((story["cluster_stories"] as? [[String: Any]])?.first?["read_status"] as? Int, 1)
+    }
+
     private func prime(_ fixture: FirstPageFixture, stories: [[String: Any]]? = nil) async throws {
         fixture.open()
         fixture.app.releaseReadFlush()
@@ -603,6 +736,30 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     }
     var requests: [CapturedRequest] = []
     var readFlushes: [() -> Void] = []
+    var postResults: [(Bool) -> Void] = []
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        postResults.append { passed in
+            if passed { success(nil, [:]) }
+            else { failure(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)) }
+        }
+    }
+    func finishPOST(success: Bool) {
+        guard !postResults.isEmpty else { XCTFail("Missing synthetic queued POST"); return }
+        postResults.removeFirst()(success)
+    }
+    func beginQueuedReadPOST(hashes: NSDictionary) {
+        guard !readFlushes.isEmpty else { XCTFail("Missing queued read flush"); return }
+        let callback: @convention(block) () -> Void = readFlushes.removeFirst()
+        let selector = NSSelectorFromString("syncQueuedReadStories:withStories:withCallback:")
+        typealias Sync = @convention(c) (AnyObject, Selector, AnyObject?, NSDictionary, AnyObject) -> Void
+        let implementation = unsafeBitCast(method(for: selector), to: Sync.self)
+        implementation(self, selector, nil, hashes, callback as AnyObject)
+    }
+    func beginQueuedSavedPOST(params: NSDictionary) {
+        guard !savedFlushes.isEmpty else { XCTFail("Missing queued saved flush"); return }
+        let callback: @convention(block) () -> Void = savedFlushes.removeFirst()
+        perform(NSSelectorFromString("syncQueuedSavedStoryParams:withCallback:"), with: params, with: callback as AnyObject)
+    }
     var savedFlushes: [() -> Void] = []
     weak var testController: FeedDetailViewController?
     var testPages: StoryPagesViewController?
@@ -673,4 +830,9 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class FirstPageLoadingStoryPage: StoryDetailViewController {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
+}
+
+@MainActor private final class FirstPageGestureScroll: UIScrollView {
+    var testingDrag = false
+    override var isDragging: Bool { testingDrag }
 }
