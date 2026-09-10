@@ -1,4 +1,5 @@
 import Network
+import ObjectiveC.runtime
 import UIKit
 import WebKit
 import XCTest
@@ -336,6 +337,75 @@ import XCTest
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 0)
     }
 
+    func test_disappearingAtZeroOffsetCannotOverwriteAPendingSavedPosition() async {
+        let app = StoryScrollStoreAppDelegate()
+        let fixture = makeFixture(app: app)
+        let database = HeldStoryScrollQueue()
+        app.setValue(database, forKey: "database")
+        fixture.page.recordsPosition = true
+        fixture.page.drawStory()
+        await delay(0.15)
+        fixture.web.scrollView.contentInset = .zero
+        fixture.web.scrollView.contentOffset = .zero
+        restoreScroll(on: fixture.page)
+        await fulfillment(of: [database.started], timeout: 2)
+
+        fixture.page.viewWillDisappear(false)
+        await delay(0.05)
+        XCTAssertTrue(app.positions.isEmpty)
+
+        database.release()
+        await delay(0.05)
+        fixture.page.viewWillDisappear(false)
+        await delay(0.05)
+        XCTAssertEqual(app.positions, [500])
+    }
+
+    func test_keyboardScrollCancelsPendingRestorationAndStillStoresProgress() async {
+        for up in [false, true] {
+            let app = StoryScrollStoreAppDelegate()
+            let fixture = makeFixture(app: app)
+            let database = HeldStoryScrollQueue()
+            app.setValue(database, forKey: "database")
+            fixture.page.recordsPosition = true
+            fixture.page.drawStory()
+            await delay(0.15)
+            fixture.web.scrollView.contentInset = .zero
+            fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: up ? 1_600 : 0)
+            restoreScroll(on: fixture.page)
+            await fulfillment(of: [database.started], timeout: 2)
+
+            if up { fixture.page.scrollPageUp(nil) }
+            else { fixture.page.scrollPageDown(nil) }
+            let keyboardPosition = fixture.web.scrollView.contentOffset.y
+            fixture.page.viewWillDisappear(false)
+            await delay(0.05)
+            XCTAssertEqual(app.positions, [Int(floor(keyboardPosition / 5_000 * 1_000))])
+            database.release()
+            await delay(0.05)
+            XCTAssertEqual(fixture.web.scrollView.contentOffset.y, keyboardPosition)
+        }
+    }
+
+    func test_freshStoryWithoutSavedPositionRecordsKeyboardProgress() async {
+        let app = StoryScrollStoreAppDelegate()
+        let fixture = makeFixture(app: app)
+        app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: false), forKey: "database")
+        fixture.page.recordsPosition = true
+        fixture.page.drawStory()
+        await delay(0.15)
+        restoreScroll(on: fixture.page)
+        await delay(0.05)
+
+        fixture.page.scrollPageDown(nil)
+        let keyboardPosition = fixture.web.scrollView.contentOffset.y
+        fixture.page.viewWillDisappear(false)
+        await delay(0.05)
+
+        XCTAssertGreaterThan(keyboardPosition, 0)
+        XCTAssertEqual(app.positions, [Int(floor(keyboardPosition / 5_000 * 1_000))])
+    }
+
     func test_delayedScrollRestoreCannotOverrideManualScrolling() async {
         let app = StoryLoadAppDelegate()
         let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
@@ -559,6 +629,21 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     }
 }
 
+private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
+    private let lock = NSLock()
+    private var savedPositions: [Int] = []
+    var positions: [Int] {
+        lock.lock()
+        defer { lock.unlock() }
+        return savedPositions
+    }
+    override func markScrollPosition(_ position: Int, inStory story: [AnyHashable: Any]!) {
+        lock.lock()
+        savedPositions.append(position)
+        lock.unlock()
+    }
+}
+
 @MainActor private final class StoryLoadToolbarPages: StoryPagesViewController {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
@@ -575,6 +660,7 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     var shareHTML = "Fixture sharing"
     var readyObserver: (() -> Void)?
     var allowsAppearanceCallbacks = true
+    var recordsPosition = false
 
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
@@ -591,7 +677,13 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
         if webView is RealStoryLoadWebView { super.changeWebViewWidth() }
     }
     override func checkTryFeedStory() {}
-    @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {}
+    @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {
+        guard recordsPosition else { return }
+        let selector = NSSelectorFromString("storeScrollPosition:")
+        typealias Call = @convention(c) (AnyObject, Selector, Bool) -> Void
+        let implementation = class_getMethodImplementation(StoryDetailObjCViewController.self, selector)!
+        unsafeBitCast(implementation, to: Call.self)(self, selector, queue)
+    }
     @objc(getSideOptions) func fixtureSideOptions() -> String { "Fixture side options" }
     @objc(applyClassifierHighlights) func recordClassifierHighlights() {
         classifierUpdates += 1
@@ -646,6 +738,9 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class StoryLoadScrollView: UIScrollView {
     var simulatesDragging = false
     override var isDragging: Bool { simulatesDragging }
+    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+        super.setContentOffset(contentOffset, animated: false)
+    }
 }
 
 private final class StoryReadyFrame: NSObject {
@@ -684,16 +779,22 @@ private final class HeldStoryScrollQueue: NSObject {
 }
 
 private final class StoryScrollDatabase: NSObject {
-    @objc(executeQuery:) func executeQuery(_ sql: String) -> StoryScrollCursor { StoryScrollCursor() }
+    let hasSavedPosition: Bool
+    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
+    @objc(executeQuery:) func executeQuery(_ sql: String) -> StoryScrollCursor { StoryScrollCursor(hasSavedPosition: hasSavedPosition) }
 }
 
 private final class ImmediateStoryScrollQueue: NSObject {
-    @objc(inDatabase:) func inDatabase(_ block: (AnyObject) -> Void) { block(StoryScrollDatabase()) }
+    let hasSavedPosition: Bool
+    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
+    @objc(inDatabase:) func inDatabase(_ block: (AnyObject) -> Void) { block(StoryScrollDatabase(hasSavedPosition: hasSavedPosition)) }
 }
 
 private final class StoryScrollCursor: NSObject {
     private var read = false
-    @objc func next() -> Bool { defer { read = true }; return !read }
+    let hasSavedPosition: Bool
+    init(hasSavedPosition: Bool = true) { self.hasSavedPosition = hasSavedPosition }
+    @objc func next() -> Bool { defer { read = true }; return hasSavedPosition && !read }
     @objc func resultDictionary() -> NSDictionary { ["scroll": 500, "story_hash": "first"] }
     @objc func close() {}
 }
