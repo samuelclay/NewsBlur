@@ -91,6 +91,9 @@ import XCTest
             ["stories": Array(repeating: makeStory(), count: 101)],
             ["stories": [makeStory(content: String(repeating: "x", count: StoryFirstPageCache.maximumSnapshotBytes + 1))]],
             ["stories": [makeStory()], "unsupported": Date()],
+            ["stories": [makeStory()], "classifiers": "invalid metadata"],
+            ["stories": [makeStory()], "user_profiles": ["invalid profile"]],
+            ["stories": [makeStory()], "feed_authors": 42],
         ]
         for payload in payloads {
             let fixture = makeCache()
