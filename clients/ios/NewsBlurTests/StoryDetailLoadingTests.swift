@@ -411,6 +411,34 @@ import XCTest
         XCTAssertEqual(after as? Double, before as? Double)
     }
 
+    func test_zeroPositionWaitingForLayoutCannotOverrideKeyboardScrollOrPageReuse() async throws {
+        for reusesPage in [false, true] {
+            let app = StoryLoadAppDelegate()
+            app.setValue(ImmediateStoryScrollQueue(position: 0), forKey: "database")
+            let fixture = makeFixture(app: app)
+            fixture.page.drawStory()
+            await delay(0.15)
+            fixture.web.defersAsyncJavaScript = true
+            restoreScroll(on: fixture.page)
+            for _ in 0..<40 where fixture.web.asyncCompletions.isEmpty { await delay(0.01) }
+            let completeLayout = try XCTUnwrap(fixture.web.asyncCompletions.first)
+
+            if reusesPage {
+                fixture.page.activeStory = story("replacement", body: "Replacement document")
+                fixture.page.drawStory()
+                await drainMainQueue()
+                fixture.web.scrollView.contentOffset.y = 300
+            } else {
+                fixture.page.scrollPageDown(nil)
+            }
+            let currentOffset = fixture.web.scrollView.contentOffset.y
+            XCTAssertGreaterThan(currentOffset, 0)
+            completeLayout(true, nil)
+
+            XCTAssertEqual(fixture.web.scrollView.contentOffset.y, currentOffset)
+        }
+    }
+
     func test_sameHashTextViewStillSubmitsItsNewCompleteDocument() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
