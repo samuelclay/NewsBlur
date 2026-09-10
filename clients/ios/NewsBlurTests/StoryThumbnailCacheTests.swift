@@ -104,7 +104,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
             let (app, cache) = makeCache()
             let prepared = makeImage()
             let newer = makeImage()
-            let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage))
+            let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage), scale: prepared.scale, orientation: prepared.imageOrientation)
             let entered = expectation(description: "Display preparation started: \(invalidation)")
             let resume = DispatchSemaphore(value: 0)
             source.preparation = {
